@@ -138,7 +138,7 @@ static void generateSource(FILE *file, ATermList terms, ATermList afuns)
   fprintf(file, "/*\n * Generated at %s", ctime(&now));
   fprintf(file, " */\n\n");
 
-  fprintf(file, "#include \"%s.h\"\n\n", code_prefix);
+  fprintf(file, "#include \"%s.h\"\n\n", file_prefix);
 
   /*{{{  unzip term and afun lists */
 
@@ -364,12 +364,10 @@ int main(int argc, char *argv[])
     }
 
     for(; *ptr; ptr++) {
-      if (*ptr != '-') {
-	if (!isalnum((int)*ptr)) {
-	  code_buf[index++] = '_';
-	} else {
-	  code_buf[index++] = *ptr;
-	}
+      if (!isalnum((int)*ptr)) {
+	code_buf[index++] = '_';
+      } else {
+	code_buf[index++] = *ptr;
       }
     }
     code_buf[index++] = '\0';
