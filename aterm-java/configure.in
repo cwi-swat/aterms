@@ -14,6 +14,10 @@ AC_PACKAGE_REQUIRE(shared-objects, shared-objects-config,
 SHARED_OBJECTS=`${SHARED_OBJECTS}/bin/shared-objects-config`
 AC_SUBST(SHARED_OBJECTS)
 
+EXTERNAL_JARS=${SHARED_OBJECTS}:`pwd`/jjtraveler-1.3.jar
+
+AC_SUBST(EXTERNAL_JARS)
+
 AC_OUTPUT(
   Makefile
   aterm/Makefile

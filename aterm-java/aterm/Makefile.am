@@ -4,7 +4,7 @@ javadir = ${prefix}/classes/aterm
 
 JAVAROOT = ${top_builddir}
 
-CLASSPATH_ENV = CLASSPATH=${JAVAROOT}:${SHARED_OBJECTS}:${top_srcdir}/jjtraveler-1.3.jar
+CLASSPATH_ENV = CLASSPATH=${JAVAROOT}:${EXTERNAL_JARS}
 
 java_JAVA = \
 	AFun.java \
