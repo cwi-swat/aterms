@@ -742,8 +742,8 @@ void testProtect()
 	ts[1] = ATmake("unique-3");
 	assert(!AT_isValidTerm(ts[0]));
 	assert(AT_isValidTerm(ts[1]));
-	assert(!AT_isInsideValidTerm(ts[0]));
-	assert(AT_isInsideValidTerm((ATerm)((char *)ts[1])+4));
+	assert(AT_isInsideValidTerm(ts[0]) == NULL);
+	assert(AT_isInsideValidTerm((ATerm)(((char *)ts[1])+4)) != NULL);
 	ATprotectMemory((void *)ts, sizeof(ATerm)*2);
 	AT_collect(2);
 	assert(AT_isValidTerm(ts[1]));
