@@ -199,7 +199,8 @@ static int term_size(ATerm t)
 void resize_hashtable()
 {
 	ATerm *oldtable;
-	int i, oldsize;
+	ATerm *newhalf, *p;
+	int oldsize;
 
 	oldtable = hashtable;
 	oldsize = table_size;
@@ -209,34 +210,70 @@ void resize_hashtable()
 	table_mask = table_size-1;
 	if (!silent)
 		fprintf(stderr, "resizing hashtable, class = %d\n", table_class);
-
+	
 	/*{{{  Create new term table */
-
-  hashtable = (ATerm *)calloc(table_size, sizeof(ATerm));
-  if(!hashtable) {
-    ATerror("resize_hashtable: cannot re-allocate term table of size %d\n", 
+	hashtable = (ATerm *) realloc(hashtable, table_size * sizeof(ATerm));
+	if (!hashtable) {
+		ATerror("resize_hashtable: cannot realloc term table of size %d\n",
 						table_size);
-  }
-
+	}
 	/*}}}  */
+	
+	/*{{{  Clear 2nd half of new table, uses increment == 2*oldsize */
+	memset(hashtable+oldsize, 0, oldsize);
+	/*}}}  */
+	
 	/*{{{  Rehash all old elements */
 
-	for(i=0; i<oldsize; i++) {
-		ATerm cur, next;
-		unsigned int hnr;
-
-		cur = oldtable[i];
-		while(cur) {
-			next = cur->next;
-			hnr  = hash_number(cur->header, term_size(cur)-2, (ATerm *)(cur+1));
-			hnr &= table_mask;
-			cur->next = hashtable[hnr];
-			hashtable[hnr] = cur;
-			cur  = next;
+	newhalf = hashtable + oldsize;
+	for(p=hashtable; p < newhalf; p++) {
+		ATerm marked = *p;
+		/*{{{  Loop over marked part */
+		while(marked && IS_MARKED(marked->header)) {
+			CLR_MARK(marked->header);
+			marked = marked->next;
 		}
+		/*}}}  */
+		
+		/*{{{  Loop over unmarked part */
+
+		if (marked) {
+			ATerm unmarked;
+			ATerm *hashspot;
+
+			if (marked == *p) {
+				/* No marked terms */
+				unmarked = marked;
+				*p = NULL;
+			} else {
+				/* disconnect unmarked terms from rest */
+				unmarked = marked->next;
+				marked->next = NULL;
+			}
+
+			while(unmarked) {
+				ATerm next = unmarked->next;
+				unsigned int hnr;
+				
+				hnr = hash_number(unmarked->header, term_size(unmarked)-2,
+													(ATerm *)(unmarked+1));
+				hnr &= table_mask;
+				hashspot = hashtable+hnr;
+				unmarked->next = *hashspot;
+				*hashspot = unmarked;
+
+				if (hashspot > p && hashspot < newhalf)
+					SET_MARK(unmarked->header);
+
+				unmarked = next;
+			}
+		}
+
+		/*}}}  */
 	}
 
 	/*}}}  */
+
 }
 
 
