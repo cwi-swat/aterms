@@ -1,24 +1,3 @@
-/*
-
-    ATerm -- The ATerm (Annotated Term) library
-    Copyright (C) 1998-2000  Stichting Mathematisch Centrum, Amsterdam, 
-                             The  Netherlands.
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
-
-*/
 /*{{{  includes */
 
 #include <ctype.h>
@@ -47,8 +26,8 @@ static char *prg = NULL;
 /*{{{  char *ident_to_C(char *ident) */
 
 /**
-	* Convert a ToolBus identifier to a C identifier
-	*/
+ * Convert a ToolBus identifier to a C identifier
+ */
 
 char *ident_to_C(char *ident)
 {
@@ -67,8 +46,8 @@ char *ident_to_C(char *ident)
 /*{{{  char *uppercase(char *ident) */
 
 /**
-	* Convert a string to uppercase
-	*/
+ * Convert a string to uppercase
+ */
 
 char *uppercase(char *ident)
 {
@@ -87,8 +66,8 @@ char *uppercase(char *ident)
 /*{{{  ATermList read_tifs(int fd, const char *tool) */
 
 /**
-	* Read some tifs from a file descriptor
-	*/
+ * Read some tifs from a file descriptor
+ */
 
 ATermList read_tifs(int fd, const char *tool)
 {
@@ -96,7 +75,7 @@ ATermList read_tifs(int fd, const char *tool)
   ATermList tifs = ATempty;
   ATermPlaceholder ph;
   char *primitive, *name;
-	
+
   do {
     tif = ATBreadTerm(fd);
     if(ATmatch(tif, "<appl(<placeholder>,<list>)>", &primitive, &ph, NULL)) {
@@ -113,8 +92,8 @@ ATermList read_tifs(int fd, const char *tool)
 /*{{{  ATermList generalize_tifs(ATermList tifs) */
 
 /**
-	* Generalize incoming tifs.
-	*/
+ * Generalize incoming tifs.
+ */
 
 ATermList generalize_tifs(ATermList tifs)
 {
@@ -126,7 +105,7 @@ ATermList generalize_tifs(ATermList tifs)
     ATermList newargs = ATempty;
     ATerm tif = ATgetFirst(tifs), newtif, tool;
     ATermAppl appl;
-		
+
     if(ATmatch(tif, "rec-terminate(<term>,<term>)", NULL, NULL) ||
        ATmatch(tif, "rec-ack-event(<term>,<term>)", NULL, NULL)) {
       result = ATinsert(result, tif);
@@ -155,15 +134,15 @@ ATermList generalize_tifs(ATermList tifs)
 /*{{{  ATermList unify_arguments(ATermList args1, ATermList args2) */
 
 /**
-	* Unify two lists of arguments.
-	*/
+ * Unify two lists of arguments.
+ */
 
 ATermList unify_arguments(ATermList args1, ATermList args2)
 {
   int i = ATgetLength(args1);
   ATermList result = ATempty;
 
-	
+
   if(ATgetLength(args2) != i)
     return NULL;
 
@@ -187,8 +166,8 @@ ATermList unify_arguments(ATermList args1, ATermList args2)
 /*{{{  ATermList unify_tifs(ATermList tifs) */
 
 /**
-	* Unify a list of tifs.
-	*/
+ * Unify a list of tifs.
+ */
 
 ATermList unify_tifs(ATermList tifs)
 {
@@ -235,7 +214,7 @@ ATermList unify_tifs(ATermList tifs)
       if(!mgu_args)
 	ATerror("arity mismatch: %t vs. %t\n", tif, cur);
     }
-			
+
     mgu = ATmake("<appl(<list>)>", mgu_name, mgu_args);
     result = ATinsert(result, ATmake("<appl(<term>,<term>)>", 
 				     primitive, tool, mgu));
@@ -249,8 +228,8 @@ ATermList unify_tifs(ATermList tifs)
 /*{{{  void generate_prologue(FILE *f, char *tool, char *msg) */
 
 /**
-	* Generate file prologue (with timestamp!)
-	*/
+ * Generate file prologue (with timestamp!)
+ */
 
 void generate_prologue(FILE *f, char *tool, char *msg)
 {
@@ -267,8 +246,8 @@ void generate_prologue(FILE *f, char *tool, char *msg)
 /*{{{  void generate_argument_list(FILE *f, ATermList args) */
 
 /**
-	* Generate a list of arguments given a list of terms.
-	*/
+ * Generate a list of arguments given a list of terms.
+ */
 
 void generate_argument_list(FILE *f, ATermList args)
 {
@@ -305,7 +284,7 @@ void generate_declarations(FILE *f, ATermList tifs)
   ATermList args;
 
   fprintf(f, "/* Prototypes for functions called from the event handler */\n");
-	
+
   while(!ATisEmpty(tifs)) {
     ATerm tif = ATgetFirst(tifs);
     tifs = ATgetNext(tifs);
@@ -330,7 +309,7 @@ void generate_declarations(FILE *f, ATermList tifs)
     /* Ignoring other patterns */
   }
 }
-	 
+
 
 /*}}}  */
 /*{{{  void generate_header(FILE *f, ATermList tifs, char *tool) */
@@ -367,7 +346,7 @@ int generate_signature(FILE *f, ATermList tifs)
   fprintf(f, "#define NR_SIG_ENTRIES\t%d\n\n", count);
 
   fprintf(f, "static char *signature[NR_SIG_ENTRIES] = {\n");
-	
+
   while(!ATisEmpty(tifs)) {
     ATerm tif = ATgetFirst(tifs);
     tifs = ATgetNext(tifs);
@@ -383,8 +362,8 @@ int generate_signature(FILE *f, ATermList tifs)
 /*{{{  void generate_checker(FILE *f, char *tool) */
 
 /**
-	* Generate the signature checker.
-	*/
+ * Generate the signature checker.
+ */
 
 void generate_checker(FILE *f, char *tool, int nrsigs)
 {
@@ -402,8 +381,8 @@ void generate_checker(FILE *f, char *tool, int nrsigs)
 /*{{{  void generate_variables(FILE *f, ATermList tifs) */
 
 /**
-	* Generate variable declarations
-	*/
+ * Generate variable declarations
+ */
 
 void generate_variables(FILE *f, ATermList tifs)
 {
@@ -480,8 +459,8 @@ void generate_variables(FILE *f, ATermList tifs)
 /*{{{  void generate_match(FILE *f, ATerm pat, char *f, args, ATbool ret) */
 
 /**
-	* Generate matching code.
-	*/
+ * Generate matching code.
+ */
 
 void generate_match(FILE *f, ATerm pattern, char *func, 
 		    ATermList args, ATbool ret)
@@ -511,7 +490,7 @@ void generate_match(FILE *f, ATerm pattern, char *func,
   }
 
   fprintf(f, ")) {\n");
-	
+
   /* Generate call to user function */
   fprintf(f, "    ");
   if(ret)
@@ -540,7 +519,7 @@ void generate_match(FILE *f, ATerm pattern, char *func,
   }
 
   fprintf(f, ");\n");
- 
+
   if(!ret)
     fprintf(f, "    return NULL;\n");
   fprintf(f, "  }\n");
@@ -611,8 +590,8 @@ void generate_handler(FILE *f, ATermList tifs, char *tool)
 /*{{{  void generate_code(FILE *f, ATermList tifs, orig, char *tool, header) */
 
 /**
-	* Generate tif.c code file.
-	*/
+ * Generate tif.c code file.
+ */
 
 void generate_code(FILE *f, ATermList tifs, ATermList original, 
 		   char *tool, char *header)
@@ -631,8 +610,8 @@ void generate_code(FILE *f, ATermList tifs, ATermList original,
 /*{{{  static void usage(char *prg) */
 
 /**
-	* Print usage information and exit.
-	*/
+ * Print usage information and exit.
+ */
 
 static void usage(char *prg)
 {
@@ -644,7 +623,7 @@ static void usage(char *prg)
 	  "specify default signature checker name\n");
   fprintf(stderr, "    -output <basename>      "
 	  "specify which .h and .c files to generate\n");
-  
+
   exit(0);
 }
 
@@ -652,8 +631,8 @@ static void usage(char *prg)
 /*{{{  int main(int argc, char *argv[]) */
 
 /**
-	* Process the commandline arguments and start tiffin'.
-	*/
+ * Process the commandline arguments and start tiffin'.
+ */
 
 int main(int argc, char *argv[])
 {

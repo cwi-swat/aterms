@@ -1,21 +1,10 @@
 
-    ATerm -- The ATerm (Annotated Term) library
-    Copyright (C) 1998-2000  Stichting Mathematisch Centrum, Amsterdam, 
-                             The  Netherlands.
+The Annotated Term Library was developed at the CWI by
+  Pieter Olivier <olivierp@cwi.nl>, and
+  Hayco de Jong  <jong@cwi.nl>
 
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
+The ATermTables were later re-implemented by Jan-Friso Groote
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
-
-Pieter Olivier, CWI, Amsterdam, the Netherlands, <olivierp@cwi.nl>
-Hayco de Jong,  CWI, Amsterdam, the Netherlands, <jong@cwi.nl>
+Several people have contributed to the ATerm library by hinting
+at bugs, sending in bugfixes, pointing out efficiency improvements,
+or in general providing helpful comment: thanks!

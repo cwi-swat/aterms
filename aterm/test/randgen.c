@@ -1,25 +1,3 @@
-/*
-
-   ATerm -- The ATerm (Annotated Term) library
-   Copyright (C) 1998-2000  Stichting Mathematisch Centrum, Amsterdam, 
-   The  Netherlands.
-
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
-
- */
-
 #include <aterm2.h>
 #include <memory.h>
 #include <util.h>
@@ -29,12 +7,18 @@
 
 #define MAX_SYMBOLS   1024;
 
+/*{{{  checks for rand48() suite */
+
 #if HAVE_LRAND48 && HAVE_SRAND48
-    /* Use the rand48() suite */
+/* Use the rand48() suite */
 #else
-    #define lrand48()   random()
-    #define srand48(s)  srandom(s)
+#define lrand48()   random()
+#define srand48(s)  srandom(s)
 #endif
+
+/*}}}  */
+
+/*{{{  variables */
 
 static int nr_symbols = 5;
 static int nr_terms   = 100;
@@ -46,6 +30,10 @@ static ATbool unique_leaves = ATtrue;
 static ATbool binary = ATfalse;
 
 static AFun  *symbols;
+
+/*}}}  */
+
+/*{{{  ATerm genterm(ATerm t) */
 
 ATerm genterm(ATerm t)
 {
@@ -106,6 +94,9 @@ ATerm genterm(ATerm t)
   return (ATerm)ATmakeApplArray(symbols[arity], args);
 }
 
+/*}}}  */
+/*{{{  ATerm randgen() */
+
 ATerm randgen()
 {
   int i;
@@ -130,6 +121,9 @@ ATerm randgen()
   return t;
 }
 
+/*}}}  */
+/*{{{  void usage(char *prg) */
+
 void usage(char *prg)
 {
   fprintf(stderr, "usage: %s [-symbols <nr>] [-terms <nr>] [-wb|-wt] "
@@ -137,6 +131,10 @@ void usage(char *prg)
 	  prg);
   exit(1);
 }
+
+/*}}}  */
+
+/*{{{  int main(int argc, char *argv[]) */
 
 int main(int argc, char *argv[])
 {
@@ -190,3 +188,5 @@ int main(int argc, char *argv[])
 
   return 0;
 }
+
+/*}}}  */

@@ -1,6 +1,12 @@
 
 $Id$
 
+2000/03/02 (jong@cwi.nl)
+ * The ATermLibrary is now distributed under LGPL.
+ * All remaining references to GPL removed
+ * LGPL license added (See toplevel file: COPYING)
+ * brushed up README, NEWS, AUTHORS somewhat
+
 2000/03/01 (jong@cwi.nl)
  * Version 1.5.1
  * deprecated java support removed entirely

@@ -1,25 +1,3 @@
-/*
-
-    ATerm -- The ATerm (Annotated Term) library
-    Copyright (C) 1998-2000  Stichting Mathematisch Centrum, Amsterdam, 
-                             The  Netherlands.
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
-
-*/
-
 /*{{{  includes */
 
 #include <assert.h>
@@ -138,7 +116,7 @@ int
 ATBinit(int argc, char *argv[], ATerm *stack_bottom)
 {
   int lcv;
-  
+
   for (lcv = 1; lcv < argc; lcv++) {
     if (streq(argv[lcv], "-at-help")) {
       fprintf(stderr, "    %-20s: specify toolbus tool name\n", TB_TOOL_NAME);
@@ -149,19 +127,19 @@ ATBinit(int argc, char *argv[], ATerm *stack_bottom)
   }
 
   ATinit(argc, argv, stack_bottom);
-  
+
   /* Parse commandline arguments, set up default values */
   for (lcv = 1; lcv < argc; lcv++)
-    {
-      if (streq(argv[lcv], TB_TOOL_NAME))
-	default_toolname = argv[++lcv];
-      else if (streq(argv[lcv], TB_HOST))
-	default_host = argv[++lcv];
-      else if (streq(argv[lcv], TB_PORT))
-	default_port = atoi(argv[++lcv]);
-      else if (streq(argv[lcv], TB_TOOL_ID))
-	default_tid = atoi(argv[++lcv]);
-    }
+  {
+    if (streq(argv[lcv], TB_TOOL_NAME))
+      default_toolname = argv[++lcv];
+    else if (streq(argv[lcv], TB_HOST))
+      default_host = argv[++lcv];
+    else if (streq(argv[lcv], TB_PORT))
+      default_port = atoi(argv[++lcv]);
+    else if (streq(argv[lcv], TB_TOOL_ID))
+      default_tid = atoi(argv[++lcv]);
+  }
 
   /* Build some constants */
   symbol_rec_do = ATmakeSymbol("rec-do", 1, ATfalse);
@@ -180,11 +158,11 @@ ATBinit(int argc, char *argv[], ATerm *stack_bottom)
     ATerror("cannot allocate initial term buffer of size %d\n", 
 	    INITIAL_BUFFER_SIZE);
   buffer_size = INITIAL_BUFFER_SIZE;
-  
+
   /* Initialize event_queues. */
   for (lcv=0; lcv<MAX_NR_QUEUES; lcv++)
     event_queues[lcv].afun = -1;
-  
+
   /* Get hostname of machine that runs this particular tool */
   return gethostname(this_host, MAXHOSTNAMELEN);
 }
@@ -193,8 +171,8 @@ ATBinit(int argc, char *argv[], ATerm *stack_bottom)
 /*{{{  int ATBconnect(char *tool, char *host, int port, handler) */
 
 /**
-	* Create a new ToolBus connection.
-	*/
+ * Create a new ToolBus connection.
+ */
 
 int
 ATBconnect(char *tool, char *host, int port, ATBhandler h)
@@ -237,7 +215,7 @@ ATBconnect(char *tool, char *host, int port, ATBhandler h)
   connection->verbose  = ATfalse;
   connection->tid      = tid;
   connection->fd       = fd;
-	
+
   /* Link connection in array */
   connections[fd] = connection;
 
@@ -251,8 +229,8 @@ ATBconnect(char *tool, char *host, int port, ATBhandler h)
 /*{{{  void ATBdisconnect(int fd) */
 
 /**
-	* Terminate a ToolBus connection
-	*/
+ * Terminate a ToolBus connection
+ */
 
 void
 ATBdisconnect(int fd)
@@ -260,22 +238,22 @@ ATBdisconnect(int fd)
   /* Abort on illegal filedescriptors */
   assert(fd >= 0 && fd < FD_SETSIZE);
 
-	/* Close the actual filedescriptor */
+  /* Close the actual filedescriptor */
   fclose(connections[fd]->stream);
 
   /* If there was a connection-structure associated with this fd,
-	 * then clean it up.
-	 */
+   * then clean it up.
+   */
   if (connections[fd] != NULL)
-    {
-      if (connections[fd]->toolname)
-	free(connections[fd]->toolname);
-      if (connections[fd]->host)
-	free(connections[fd]->host);
+  {
+    if (connections[fd]->toolname)
+      free(connections[fd]->toolname);
+    if (connections[fd]->host)
+      free(connections[fd]->host);
 
-      free(connections[fd]);
-      connections[fd] = NULL;
-    }
+    free(connections[fd]);
+    connections[fd] = NULL;
+  }
 }
 
 /*}}}  */
@@ -289,16 +267,16 @@ void ATBpostEvent(int fd, ATerm event)
 
   if (ATgetType(event) != AT_APPL)
     ATabort("Illegal eventtype (should be appl): %t\n", event);
-	
+
   afun = ATgetAFun((ATermAppl)event);
-	
+
   for(i=0, free_index=-1; i<MAX_NR_QUEUES; i++) {
     if(event_queues[i].afun == afun)
       break;
     if(event_queues[i].afun == -1)
       free_index = i;
   }
-	
+
   if (i >= MAX_NR_QUEUES) {
     if (free_index == -1)
       ATerror("Maximum number of eventqueues exceeded.\n");
@@ -312,7 +290,7 @@ void ATBpostEvent(int fd, ATerm event)
     event_queues[i].ack_pending = ATfalse;
     nr_event_queues++;
   }
-	
+
   if (event_queues[i].ack_pending == ATfalse) {
     ATBwriteTerm(fd, ATmake("snd-event(<term>)", event));
     event_queues[i].ack_pending = ATtrue;
@@ -331,7 +309,7 @@ void ATBpostEvent(int fd, ATerm event)
 static void handle_ack_event(int fd, AFun afun)
 {
   int i;
-	
+
   for(i=MAX_NR_QUEUES-1; i>=0; i--) {
     if(event_queues[i].afun == afun) {
       ATfprintf(stderr, "found queue: %y\n", afun);
@@ -341,7 +319,7 @@ static void handle_ack_event(int fd, AFun afun)
 	event_queues[i].first =
 	  (event_queues[i].first + 1) % MAX_QUEUE_LEN;
 	ATBwriteTerm(fd, ATmake("snd-event(<term>)", event));
-				/* stil pending */
+	/* stil pending */
       } else {
 	ATfprintf(stderr, "queue empty.\n");
 	event_queues[i].ack_pending = ATfalse;
@@ -355,9 +333,9 @@ static void handle_ack_event(int fd, AFun afun)
 /*{{{  int ATBeventloop(void) */
 
 /**
-	* Wait for terms coming from the ToolBus and dispatch them to 
-	* the appropriate handlers.
-	*/
+ * Wait for terms coming from the ToolBus and dispatch them to 
+ * the appropriate handlers.
+ */
 
 int ATBeventloop(void)
 {
@@ -405,11 +383,11 @@ ATerm  ATBreadTerm(int fd)
   /* Read the first batch */
   if(mread(fd, buffer, MIN_MSG_SIZE) <= 0) 
     ATerror("ATBreadTerm: connection with ToolBus lost.\n");
-  
+
   /* Retrieve the data length */
   if(sscanf(buffer, "%7d:", &len) != 1)
     ATerror("ATBreadTerm: error in lenspec: %s\n", buffer);
-  
+
   /* Make sure the buffer is large enough */
   resize_buffer(len+1);
 
@@ -419,7 +397,7 @@ ATerm  ATBreadTerm(int fd)
       ATerror("ATBreadTerm: connection with ToolBus lost.\n");
   }
   buffer[len] = '\0';
-	
+
   t = ATparse(buffer+8);
   assert(t);
 
@@ -432,8 +410,8 @@ ATerm  ATBreadTerm(int fd)
 /*{{{  ATbool ATBpeekOne(int fd) */
 
 /**
-	* Check if there is any input waiting on a speficic connection.
-	*/
+ * Check if there is any input waiting on a speficic connection.
+ */
 
 ATbool ATBpeekOne(int fd)
 {
@@ -445,7 +423,7 @@ ATbool ATBpeekOne(int fd)
   FD_SET(connections[fd]->fd, &set);
   t.tv_sec = 0;
   t.tv_usec = 0;
-	
+
   count = select(FD_SETSIZE, &set, NULL, NULL, &t);
   if(count)
     return ATtrue;
@@ -457,8 +435,8 @@ ATbool ATBpeekOne(int fd)
 /*{{{  int ATBpeekAny(void) */
 
 /**
-	* Check if there is input pending on any ToolBus connection.
-	*/
+ * Check if there is input pending on any ToolBus connection.
+ */
 
 int ATBpeekAny(void)
 {
@@ -469,10 +447,10 @@ int ATBpeekAny(void)
 
   t.tv_sec = 0;
   t.tv_usec = 0;
-	
+
   FD_ZERO(&set);
   max = ATBgetDescriptors(&set);
-	
+
   count = select(max+1, &set, NULL, NULL, &t);
   if(count <= 0)
     return -1;
@@ -521,15 +499,15 @@ int ATBhandleOne(int fd)
 /*{{{  int ATBhandleAny(void) */
 
 /**
-	* Handle a single term coming from any ToolBus connection.
-	*/
+ * Handle a single term coming from any ToolBus connection.
+ */
 
 int ATBhandleAny(void)
 {
   fd_set set;
   static int last = -1;
   int start, max, cur, count = 0;
-	
+
   FD_ZERO(&set);
   max = ATBgetDescriptors(&set) + 1;
 
@@ -557,8 +535,8 @@ int ATBhandleAny(void)
 /*{{{  int ATBgetDescriptors(fd_set *set) */
 
 /**
-	* Retrieve a set of descriptors for all connections.
-	*/
+ * Retrieve a set of descriptors for all connections.
+ */
 
 int ATBgetDescriptors(fd_set *set)
 {
@@ -579,8 +557,8 @@ int ATBgetDescriptors(fd_set *set)
 /*{{{  ATermList ATBcheckSignature(ATerm signature, char *sigs[], int nrsigs) */
 
 /**
-	* Check a signature.
-	*/
+ * Check a signature.
+ */
 
 ATerm ATBcheckSignature(ATerm signature, char *sigs[], int nrsigs)
 {
@@ -610,8 +588,8 @@ ATerm ATBcheckSignature(ATerm signature, char *sigs[], int nrsigs)
 /*{{{  static int connect_unix_socket(int port) */
 
 /**
-	* Connect to a AF_UNIX type socket.
-	*/
+ * Connect to a AF_UNIX type socket.
+ */
 
 static int connect_to_unix_socket(int port)
 {
@@ -649,8 +627,8 @@ static int connect_to_unix_socket(int port)
 /*{{{  static int connect_to_inet_socket(const char *host, int port) */
 
 /**
-	* Connect to a AF_INET type socket.
-	*/
+ * Connect to a AF_INET type socket.
+ */
 
 static int connect_to_inet_socket(const char *host, int port)
 {
@@ -692,8 +670,8 @@ static int connect_to_inet_socket(const char *host, int port)
 /*{{{  static int connect_to_socket (const char *host, int port) */
 
 /**
-	* Connect to a well-known ToolBus socket.
-	*/
+ * Connect to a well-known ToolBus socket.
+ */
 
 static int connect_to_socket (const char *host, int port)
 {
@@ -707,8 +685,8 @@ static int connect_to_socket (const char *host, int port)
 /*{{{  static void resize_buffer(int size) */
 
 /**
-	* Make the term buffer big enough.
-	*/
+ * Make the term buffer big enough.
+ */
 
 static void resize_buffer(int size)
 {
@@ -725,9 +703,9 @@ static void resize_buffer(int size)
 /*{{{  static int mwrite(int fd, char *buf, int len) */
 
 /**
-	* Write a buffer to a file descriptor. 
-	* Make sure all data has been written.
-	*/
+ * Write a buffer to a file descriptor. 
+ * Make sure all data has been written.
+ */
 
 static int mwrite(int fd, char *buf, int len)
 {
@@ -736,7 +714,7 @@ static int mwrite(int fd, char *buf, int len)
   while(cnt < len) {
     if((n = write(fd, &buf[cnt], len-cnt)) <= 0) {
       if(errno != EINTR)
-        return n;
+	return n;
     } else
       cnt += n;
   }
@@ -748,8 +726,8 @@ static int mwrite(int fd, char *buf, int len)
 /*{{{  static int mread(int fd, char *buf, int len) */
 
 /**
-	* Read len bytes from fd in buf.
-	*/
+ * Read len bytes from fd in buf.
+ */
 
 static int mread(int fd, char *buf, int len)
 {
@@ -758,7 +736,7 @@ static int mread(int fd, char *buf, int len)
   while(cnt < len){
     if((n = read(fd, &buf[cnt], len - cnt)) <= 0) {
       if(errno != EINTR)
-        return n;
+	return n;
     } else
       cnt += n;
   }
@@ -771,8 +749,8 @@ static int mread(int fd, char *buf, int len)
 /*{{{  static void handshake(Connection *connection) */
 
 /**
-	* Execute the ToolBus handshake protocol.
-	*/
+ * Execute the ToolBus handshake protocol.
+ */
 
 static void handshake(Connection *conn)
 {
@@ -793,7 +771,7 @@ static void handshake(Connection *conn)
   if(!streq(remote_toolname, conn->toolname))
     ATerror("handshake: protocol error, wrong toolname %s != %s\n", 
 	    remote_toolname, conn->toolname);
-	
+
   if(remote_tid < 0 || (conn->tid >= 0 && remote_tid != conn->tid))
     ATerror("handshake: illegal tid assigned by ToolBus (%d != %d)\n",
 	    remote_tid, conn->tid);
@@ -809,7 +787,7 @@ ATerm ATBpack(ATerm t)
   int len;
   char *ptr, *data;
   ATermBlob blob;
-  
+
   ptr = ATwriteToBinaryString(t, &len);
   assert(ptr != NULL);
   data = (char *)malloc(len);
@@ -818,7 +796,7 @@ ATerm ATBpack(ATerm t)
   }
   memcpy(data, ptr, len);
   blob = ATmakeBlob(len, data);
-  
+
   return (ATerm)ATmakeAppl(symbol_baf, blob); 
 }
 #else
@@ -839,70 +817,70 @@ ATerm ATBunpack(ATerm t)
 
   annos = AT_getAnnotations(t);
   switch (ATgetType(t)) {
-  case AT_INT:
-  case AT_REAL:
-  case AT_BLOB:
-    result = t;
-    break;
+    case AT_INT:
+    case AT_REAL:
+    case AT_BLOB:
+      result = t;
+      break;
 
-  case AT_PLACEHOLDER:
-    {
-      ATerm type = ATgetPlaceholder((ATermPlaceholder)t);
-      ATerm unpacked_type = ATBunpack(type);
-      if (ATisEqual(unpacked_type, type)) {
-	result = t;
-      } else {
-        result = (ATerm)ATmakePlaceholder(unpacked_type);
+    case AT_PLACEHOLDER:
+      {
+	ATerm type = ATgetPlaceholder((ATermPlaceholder)t);
+	ATerm unpacked_type = ATBunpack(type);
+	if (ATisEqual(unpacked_type, type)) {
+	  result = t;
+	} else {
+	  result = (ATerm)ATmakePlaceholder(unpacked_type);
+	}
       }
-    }
-    break;
+      break;
 
-  case AT_APPL:
-    {
-      ATermAppl appl = (ATermAppl)t;
-      AFun fun = ATgetAFun(appl);
-      if (fun == symbol_baf) {
-	ATerm unpacked_term, arg;
-	ATermBlob blob;
-	char *data;
-	int size;
+    case AT_APPL:
+      {
+	ATermAppl appl = (ATermAppl)t;
+	AFun fun = ATgetAFun(appl);
+	if (fun == symbol_baf) {
+	  ATerm unpacked_term, arg;
+	  ATermBlob blob;
+	  char *data;
+	  int size;
 
-	arg = ATgetArgument(appl, 0);
-	assert(ATgetType(arg) == AT_BLOB);
-	blob = (ATermBlob)arg;
-	data = ATgetBlobData(blob);
-	size = ATgetBlobSize(blob);
-	unpacked_term = ATreadFromBinaryString(data, size);
+	  arg = ATgetArgument(appl, 0);
+	  assert(ATgetType(arg) == AT_BLOB);
+	  blob = (ATermBlob)arg;
+	  data = ATgetBlobData(blob);
+	  size = ATgetBlobSize(blob);
+	  unpacked_term = ATreadFromBinaryString(data, size);
 
-	result = unpacked_term;
-      } else {
-	ATermList unpacked_args = ATempty;
+	  result = unpacked_term;
+	} else {
+	  ATermList unpacked_args = ATempty;
 
-	for (i=ATgetArity(fun)-1; i>=0; i--) {
-	  unpacked_args = ATinsert(unpacked_args, ATBunpack(ATgetArgument(appl, i)));
+	  for (i=ATgetArity(fun)-1; i>=0; i--) {
+	    unpacked_args = ATinsert(unpacked_args, ATBunpack(ATgetArgument(appl, i)));
+	  }
+
+	  result = (ATerm)ATmakeApplList(fun, unpacked_args);
+	}
+      }
+      break;
+
+    case AT_LIST:
+      {
+	ATermList list = (ATermList)t;
+	ATermList unpacked_list = ATempty;
+
+	while (!ATisEmpty(list)) {
+	  unpacked_list = ATinsert(unpacked_list, ATBunpack(ATgetFirst(list)));
+	  list = ATgetNext(list);
 	}
 
-	result = (ATerm)ATmakeApplList(fun, unpacked_args);
+	result = (ATerm)ATreverse(unpacked_list);
       }
-    }
-    break;
+      break;
 
-  case AT_LIST:
-    {
-      ATermList list = (ATermList)t;
-      ATermList unpacked_list = ATempty;
-
-      while (!ATisEmpty(list)) {
-	unpacked_list = ATinsert(unpacked_list, ATBunpack(ATgetFirst(list)));
-	list = ATgetNext(list);
-      }
-      
-      result = (ATerm)ATreverse(unpacked_list);
-    }
-    break;
-
-  default:
-    abort();
+    default:
+      abort();
   }
 
   if (annos != NULL) {
