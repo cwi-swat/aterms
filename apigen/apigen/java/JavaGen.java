@@ -250,7 +250,7 @@ public class JavaGen
       Alternative alt = (Alternative)iter.next();
       String alt_id   = buildId(alt.getId());
       String alt_class = buildAltClassName(type, alt);
-      println("    args = pat" + alt_id + ".match(term);");
+      println("    args = term.match(pat" + alt_id + ");");
       println("    if (args != null) {");
       println("      return new " + alt_class + "(term, args);");
       println("    }");

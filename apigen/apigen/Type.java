@@ -7,7 +7,7 @@ import aterm.*;
 public class Type
 {
   String id;
-  List   alts;
+  AlternativeList alts;
   Map    fields;
   List   field_list;
 
@@ -17,7 +17,7 @@ public class Type
   {
     this.id = id;
 
-    alts   = new LinkedList();
+    alts   = new AlternativeList();
     fields = new HashMap();
     field_list = new Vector();
   }
@@ -128,6 +128,14 @@ public class Type
 
   //}}}
 
+  //{{{ public List getAlternatives()
+
+  public AlternativeList getAlternatives()
+  {
+    return (AlternativeList)alts.clone();
+  }
+
+  //}}}
   //{{{ public Iterator alternativeIterator()
 
   public Iterator alternativeIterator()
@@ -215,6 +223,14 @@ public class Type
     }
 
     return sortedAltFields.iterator();
+  }
+
+  //}}}
+  //{{{ public int getAlternativeCount()
+
+  public int getAlternativeCount()
+  {
+    return alts.size();
   }
 
   //}}}

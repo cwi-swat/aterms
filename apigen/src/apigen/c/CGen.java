@@ -47,6 +47,10 @@ public class CGen
   private String      prefix;
   private String      prologue;
   private String      macro;
+  
+  private int nextAFun;
+  private Map afuns_by_name;
+  private Map afuns_by_afun;
 
   private PrintStream source;
   private PrintStream header;
@@ -139,6 +143,8 @@ public class CGen
     this.capOutput = capitalize(output);
     this.prefix    = prefix;
     this.prologue  = prologue;
+    afuns_by_name  = new HashMap();
+    afuns_by_afun  = new HashMap();
     specialChars   = new HashMap();
     reservedTypes  = new HashMap();
 
@@ -176,6 +182,23 @@ public class CGen
     ATerm dict = buildDictionary(api);
     OutputStream dict_out = new FileOutputStream(output + ".dict");
     dict.writeToTextFile(dict_out);
+  }
+
+  //}}}
+
+  //{{{ public void lookupAFunName(AFun afun)
+
+  public String lookupAFunName(AFun afun)
+  {
+    String name = (String)afuns_by_afun.get(afun);
+
+    if (name == null) {
+      name = prefix + "afun" + nextAFun++;
+      afuns_by_name.put(name, afun);
+      afuns_by_afun.put(afun, name);
+    }
+
+    return name;
   }
 
   //}}}
@@ -228,6 +251,8 @@ public class CGen
     //}}}
 
     /* Source stuff */
+    source.println("#include <assert.h>");
+    source.println();
     source.println("#include <aterm2.h>");
     source.println("#include <deprecated.h>");
     source.println("#include \"" + output + ".h\"");
@@ -368,6 +393,107 @@ public class CGen
   }
 
   //}}}
+  //{{{ private String genConstructorImpl(ATerm pattern)
+
+  private String genConstructorImpl(ATerm pattern)
+  {
+    String result = null;
+
+    switch (pattern.getType()) {
+      case ATerm.REAL:
+	result = "(ATerm)ATmakeReal(" + ((ATermReal)pattern).getReal() + ")";
+	break;
+
+      case ATerm.INT:
+	result = "(ATerm)ATmakeInt(" + ((ATermInt)pattern).getInt() + ")";
+	break;
+
+      case ATerm.BLOB:
+	throw new RuntimeException("blobs are not supported");
+
+      case ATerm.LIST:
+	//{{{ Generate list creation code
+	{
+	  ATermList list = (ATermList)pattern;
+	  int length = list.getLength();
+	  if (length == 0) {
+	    result = "ATempty";
+	  } else {
+	    ATerm last = list.elementAt(length-1);
+	    if (last.getType() == ATerm.PLACEHOLDER) {
+	      ATerm ph = ((ATermPlaceholder)last).getPlaceholder();
+	      if (ph.getType() == ATerm.LIST) {
+		ATermAppl field = (ATermAppl)(((ATermList)ph).getFirst());
+		result = "(ATermList)" + buildId(field.getName());
+	      }
+	    }
+	    if (result == null) {
+	      result = "ATmakeList1(" + genConstructorImpl(last) + ")";
+	    }
+	    for (int i=length-2; i>=0; i--) {
+	      ATerm elem = list.elementAt(i);
+	      result = "ATinsert(" + result + ", " + genConstructorImpl(elem) + ")";
+	    }
+	  }
+	  result = "(ATerm)" + result;
+	}
+	//}}}
+	break;
+
+      case ATerm.APPL:
+	//{{{ Generate application creation code
+	{
+
+	  ATermAppl appl = (ATermAppl)pattern;
+	  int arity = appl.getArity();
+	  if (arity > 0) {
+	    ATerm last = appl.getArgument(arity-1);
+	    if (last.getType() == ATerm.PLACEHOLDER) {
+	      ATerm ph = ((ATermPlaceholder)last).getPlaceholder();
+	      if (ph.getType() == ATerm.LIST) {
+		throw new RuntimeException("list placeholder not supported in"
+					   + " argument list of function application");
+	      }
+	    }
+	  }
+	  result = "(ATerm)ATmakeAppl"+(arity <= 6 ? String.valueOf(arity) : "")+"(";
+	  result += lookupAFunName(appl.getAFun());
+	  for (int i=0; i<arity; i++) {
+	    ATerm arg = appl.getArgument(i);
+	    result += ", " + genConstructorImpl(arg);
+	  }
+	  result += ")";
+	}
+
+	//}}}
+	break;
+
+      case ATerm.PLACEHOLDER:
+	//{{{ Generate placeholder code (argument substitution)
+
+	{
+	  ATermAppl hole = (ATermAppl)((ATermPlaceholder)pattern).getPlaceholder();
+	  String name = buildId(hole.getName());
+	  String type = hole.getArgument(0).toString();
+	  if (type.equals("int")) {
+	    result = "(ATerm)ATmakeInt(" + name + ")";
+	  } else if (type.equals("real")) {
+	    result = "(ATerm)ATmakeReal(" + name + ")";
+	  } else if (type.equals("str")) {
+	    result = "(ATerm)ATmakeAppl0(ATmakeAFun(" + name + ", 0, ATtrue))";
+	  } else {
+	    result = "(ATerm)" + name;
+	  }
+	}
+
+	//}}}
+	break;
+    }
+
+    return result;
+  }
+
+  //}}}
   //{{{ private void genConstructors(API api)
 
   private void genConstructors(API api)
@@ -390,6 +516,10 @@ public class CGen
 	printFoldOpen(source, decl.toString());
 	source.println(decl);
 	source.println("{");
+
+	source.println("  return (" + type_name + ")"
+		       + genConstructorImpl(alt.getPattern()) + ";");
+	/*
 	source.print("  return (" + type_name + ")ATmakeTerm("
 		     + prefix + "pattern" + type_id
 		     + capitalize(buildId(alt.getId())));
@@ -399,6 +529,8 @@ public class CGen
 	  source.print(", " + buildId(field.getId()));
 	}
 	source.println(");");
+	 */
+
 	source.println("}");
 	printFoldClose(source);
 
@@ -523,21 +655,95 @@ public class CGen
   {
     String type_id = buildId(type.getId());
     String type_name = buildTypeName(type);
-    String decl = "ATbool " + buildIsAltName(type, alt) + "(" + type_name + " arg)";
+    String decl = "inline ATbool " + buildIsAltName(type, alt) + "(" + type_name + " arg)";
+    String pattern;
+    StringBuffer match_code = new StringBuffer();
+    boolean contains_placeholder = alt.containsPlaceholder();
+    int alt_count = type.getAlternativeCount();
+    boolean inverted = false;
+
+    if (alt_count == 2 && contains_placeholder) {
+      Iterator iter = type.alternativeIterator();
+      while (iter.hasNext()) {
+	Alternative cur = (Alternative)iter.next();
+	if (cur != alt && !cur.containsPlaceholder()) {
+	  inverted = true;
+	  alt = cur;
+	  contains_placeholder = false;
+	}
+      }
+    }
+
+    pattern = prefix + "pattern" + type_id + capitalize(buildId(alt.getId()));
+
+    if (contains_placeholder) {
+      match_code.append("ATmatchTerm((ATerm)arg, " + pattern);
+      Iterator fields = type.altFieldIterator(alt.getId());
+      while (fields.hasNext()) {
+	fields.next();
+	match_code.append(", NULL");
+      }
+      match_code.append(")");
+    } else {
+      match_code.append("ATisEqual((ATerm)arg, " + pattern + ")");
+    }
 
     header.println(decl + ";");
 
     printFoldOpen(source, decl);
     source.println(decl);
     source.println("{");
-    source.print("  return ATmatchTerm((ATerm)arg, " + prefix + "pattern"
-                 + type_id + capitalize(buildId(alt.getId())));
-    Iterator fields = type.altFieldIterator(alt.getId());
-    while (fields.hasNext()) {
-      fields.next();
-      source.print(", NULL");
+    if (inverted) {
+      source.println("  return !(" + match_code + ");");
+    } else if (alt_count != 1 && !contains_placeholder) {
+      source.println("  return " + match_code + ";");
+    } else {
+      AlternativeList alts_left = type.getAlternatives();
+      alts_left.remove(alt);
+
+      alt_count = alts_left.size();
+      int pat_type = alt.getPatternType();
+      alts_left.keepByType(pat_type);
+      if (alts_left.size() != alt_count) {
+	source.println("  if (ATgetType((ATerm)arg) != "
+		       + getATermTypeName(pat_type) + ") {");
+	source.println("    return ATfalse;");
+	source.println("  }");
+      }
+      if (pat_type == ATerm.APPL) {
+	AFun afun = ((ATermAppl)alt.buildMatchPattern()).getAFun();
+	alt_count = alts_left.size();
+	alts_left.keepByAFun(afun);
+	if (alts_left.size() < alt_count) {
+	  source.println("  if (ATgetAFun((ATermAppl)arg) != ATgetAFun("
+			 + pattern + ")) {");
+	  source.println("    return ATfalse;");
+	  source.println("  }");
+	}
+      }
+
+      if (alts_left.size() == 0) {
+	source.println("#ifndef DISABLE_DYNAMIC_CHECKING");
+	source.println("  assert(arg != NULL);");
+	source.println("  assert(" + match_code + ");");
+	source.println("#endif");
+	source.println("  return ATtrue;");
+      } else {
+	source.println("  {");
+	source.println("    static ATerm last_arg = NULL;");
+	source.println("    static ATbool last_result;");
+	source.println();
+	source.println("    assert(arg != NULL);");
+	source.println();
+	source.println("    if ((ATerm)arg != last_arg) {");
+	source.println("      last_arg = (ATerm)arg;");
+	source.println("      last_result = " + match_code + ";");
+	source.println("    }");
+	source.println();
+	source.println("    return last_result;");
+	source.println("  }");
+      }
     }
-    source.println(");");
     source.println("}");
 
     printFoldClose(source);
@@ -736,7 +942,11 @@ public class CGen
       else {
 	source.print("else ");
       }
-      source.println("if (" + buildIsAltName(type, loc.getAltId()) + "(arg)) {");
+      if (locs.hasNext()) {
+	source.println("if (" + buildIsAltName(type, loc.getAltId()) + "(arg)) {");
+      } else {
+	source.println("");
+      }
       source.print("    return (" + field_type_name + ")");
       Iterator steps = loc.stepIterator();
       String[] type_getter = genReservedTypeGetter(field.getType());
@@ -744,12 +954,16 @@ public class CGen
       genGetterSteps(steps, "arg");
       source.print(type_getter[1]);
       source.println(";");
-      source.println("  }");
+      if (locs.hasNext()) {
+	source.println("  }");
+      }
     }
+    /*
     source.println();
     source.println("  ATabort(\"" + type_id + " has no " + fieldId
 		   + ": %t\\n\", arg);");
     source.println("  return (" + field_type_name + ")NULL;");
+     */
 
     source.println("}");
     printFoldClose(source);
@@ -774,18 +988,29 @@ public class CGen
   {
     if (steps.hasNext()) {
       Step step = (Step)steps.next();
+      int index = step.getIndex();
       switch (step.getType()) {
 	case Step.ARG:
 	  genGetterSteps(steps, "ATgetArgument((ATermAppl)" + arg
 			 + ", " + step.getIndex() + ")");
 	  break;
 	case Step.ELEM:
-	  genGetterSteps(steps, "ATelementAt((ATermList)" + arg
-			 + ", " + step.getIndex() + ")");
+	  if (index == 0) {
+	    genGetterSteps(steps, "ATgetFirst((ATermList)" + arg + ")");
+	  } else {
+	    genGetterSteps(steps, "ATelementAt((ATermList)" + arg
+			   + ", " + step.getIndex() + ")");
+	  }
 	  break;
 	case Step.TAIL:
-	  genGetterSteps(steps, "ATgetTail((ATermList)" + arg
-			 + ", " + step.getIndex() + ")");
+	  if (index == 0) {
+	    genGetterSteps(steps, arg);
+	  } else if (index == 1) {
+	    genGetterSteps(steps, "ATgetNext((ATermList)" + arg + ")");
+	  } else {
+	    genGetterSteps(steps, "ATgetTail((ATermList)" + arg
+			   + ", " + step.getIndex() + ")");
+	  }
 	  break;
       }
     }
@@ -988,7 +1213,19 @@ public class CGen
 
   private ATerm buildDictionary(API api)
   {
-    ATermList entries = factory.makeList();
+    ATermList afun_list = factory.makeList();
+    for (int i=nextAFun-1; i>=0; i--) {
+      String name = prefix + "afun" + i;
+      AFun afun = (AFun)afuns_by_name.get(name);
+      ATerm[] args = new ATerm[afun.getArity()];
+      for (int j=0; j<afun.getArity(); j++) {
+	args[j] = factory.parse("x");
+      }
+      ATerm term = factory.makeAppl(afun, args);
+      afun_list = afun_list.insert(factory.make("[" + name + ",<term>]", term));
+    }
+
+    ATermList term_list = factory.makeList();
 
     Iterator types = api.typeIterator();
     while (types.hasNext()) {
@@ -1001,11 +1238,11 @@ public class CGen
 				   prefix + "pattern" + id
 				   + buildId(capitalize(alt.getId())),
 				   alt.buildMatchPattern());
-	entries = factory.makeList(entry, entries);
+	term_list = factory.makeList(entry, term_list);
       }
     }
 
-    return factory.make("[afuns([]),terms(<term>)]", entries);
+    return factory.make("[afuns(<term>),terms(<term>)]", afun_list, term_list);
   }
 
   //}}}
@@ -1046,6 +1283,23 @@ public class CGen
       return "ATmakeAppl0(ATmakeAFun(" + id + ", 0, ATtrue))";
     } else {
       return id;
+    }
+  }
+
+  //}}}
+
+  //{{{ private String getATermTypeName(int type)
+
+  private String getATermTypeName(int type)
+  {
+    switch (type) {
+      case ATerm.INT:         return "AT_INT";
+      case ATerm.REAL:        return "AT_REAL";
+      case ATerm.APPL:        return "AT_APPL";
+      case ATerm.LIST:        return "AT_LIST";
+      case ATerm.PLACEHOLDER: return "AT_PLACEHOLDER";
+      case ATerm.BLOB:        return "AT_BLOB";
+      default: throw new RuntimeException("illegal ATerm type: " + type);
     }
   }
 

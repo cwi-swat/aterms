@@ -9,7 +9,7 @@ SUBDIRS		= c java
 CLASSPATH := $(ATERM)/classes:$(CLASSPATH)
 
 java_JAVA       = API.java Alternative.java Field.java Location.java \
-		 Step.java Type.java
+		 Step.java Type.java AlternativeList.java
 
 javadir         = ${prefix}/classes/apigen
 
