@@ -1,21 +1,26 @@
 definition
-
 module Main
-imports Booleans
+  imports Booleans
 
 module Booleans
 
 exports
   sorts Bool BoolList
 
+  lexical syntax
+    [\ \t\n]			-> LAYOUT
+    [t][r][u][e]		-> Bool {cons(true)} 
+
+  context-free restrictions
+    LAYOUT? -/- [\ \t\n]
+
   context-free syntax
-    true			-> Bool {cons(true)}
     false			-> Bool {cons(false)}
     Bool "&" Bool		-> Bool {cons(and),left}
     Bool "|" Bool		-> Bool {cons(or),left}
 
-    "[" { Bool ";" }* "]"	-> BoolList {cons(list)}
+    "[" { Bool ";" }* "]" 	-> BoolList {cons(list)}
 
    context-free priorities
-    Bool "&" Bool -> Bool > Bool "|" Bool -> Bool
-
+    Bool "&" Bool -> Bool
+  > Bool "|" Bool -> Bool

@@ -11,6 +11,8 @@ hiddens
     grammar-to-adt ( ModuleName , Grammar )		-> ATerms
     productions-to-adt ( ModuleName , Production* )	-> ATerms
     production-to-adt ( ModuleName , Production )	-> ATerms
+    lexicals-to-adt ( Production* )			-> ATerms
+    lexical-to-adt ( Production )			-> ATerms
     sort-to-afun ( Sort )				-> AFun
     build-asfix-prod ( ModuleName , Symbol* , Symbol , Attributes) -> ATerm
     build-asfix-prod-args ( Symbol* )			-> ATerms

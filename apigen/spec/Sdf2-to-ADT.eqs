@@ -25,10 +25,13 @@ equations
   ===>
   grammar-to-adt($ModName, $Grammar1 $Grammar2) = $Entries1, $Entries2
 
-
 [equ-grammar-to-adt-context-free-syntax]
   grammar-to-adt($ModName, context-free syntax $Production*) = 
 	productions-to-adt($ModName, $Production*)
+
+[equ-grammar-to-adt-lexical-syntax]
+  grammar-to-adt($ModName, lexical syntax $Production*) =
+        lexicals-to-adt($Production*)
 
 [equ-productions-to-adt-empty]
   productions-to-adt($ModName, ) =
@@ -291,3 +294,23 @@ equations
 
 [equ-build-asfix-attr-cons]
   build-asfix-attr(cons($ATerm)) = ql(aterm-to-lit(cons($ATerm)))
+
+[equ-lexicals-to-adt-empty]
+  lexicals-to-adt() =
+
+[equ-lexicals-to-adt-divide]
+  lexical-to-adt($Production) = $Entries1,
+  lexicals-to-adt($Production*) = $Entries2
+  ===>
+  lexicals-to-adt($Production $Production*) = $Entries1, $Entries2
+
+[equ-lexical-to-adt-LAYOUT]
+  lexical-to-adt($Symbol* -> LAYOUT $Attributes) =
+
+[default-lexical-to-adt]
+  $Attributes = { $Attr*1, cons($AltId), $Attr*2 },
+  $TypeId = sort-to-afun($Sort),
+  $AFSort = sort-to-lit($Sort)
+  ===>
+  lexical-to-adt($Symbol* -> $Sort $Attributes) = 
+	[ $TypeId, $AltId, lex(<lex(SDFLexical)>,sort($AFSort)) ]

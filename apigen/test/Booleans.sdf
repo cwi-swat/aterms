@@ -3,8 +3,14 @@ module Booleans
 exports
   sorts Bool BoolList
 
+  lexical syntax
+    [\ \t\n]			-> LAYOUT
+    [t][r][u][e]		-> Bool {cons(true)} 
+
+  context-free restrictions
+    LAYOUT? -/- [\ \t\n]
+
   context-free syntax
-    true			-> Bool {cons(true)}
     false			-> Bool {cons(false)}
     lop:Bool and:"&" rop:Bool	-> Bool {cons(and),left}
     lop:Bool or:"|" rop:Bool	-> Bool {cons(or),left}

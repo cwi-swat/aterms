@@ -9,8 +9,11 @@ static void testBooleans(BoolList l)
   Bool b, left, right, bool[2];
   BoolElems elems;
   SDFWhiteSpace ws;
+  Bool true;
 
   /*ATfprintf(stderr, "l=%t\n", l);*/
+
+  true = makeBoolTrue(ATparse("\"true\""));
 
   assert(isValidBoolList(l));
   assert(hasBoolListElems(l));
@@ -46,9 +49,9 @@ static void testBooleans(BoolList l)
 
   assert(hasBoolWsAfterAnd(b));
   ws = getBoolWsAfterAnd(b);
-  assert(ATmatch(ws, "\"\""));
+  assert(ATmatch(ws, "\" \""));
 
-  bool[1] = makeBoolOr(makeBoolAnd(makeBoolTrue(),ws,ws,makeBoolFalse()),ws,ws,makeBoolTrue());
+  bool[1] = makeBoolOr(makeBoolAnd(true,ws,ws,makeBoolFalse()),ws,ws,true);
   assert(ATisEqual(bool[0], bool[1]));
 
   elems = getBoolElemsTail(elems);

@@ -7,6 +7,7 @@ equations
   c-api : $FileName, 
           typedef ATerm SDFWhiteSpace;
           typedef ATerm SDFSeparator;
+          typedef ATerm SDFLexical;
         , $ADT = $CAPI
   ===>
   sdf2-to-c-api : $Module = $CAPI
