@@ -5,13 +5,18 @@ public class TopDown
 {
   Visitor visitor;
 
+  //{{{ public TopDown(Visitor visitor)
+
   public TopDown(Visitor visitor)
   {
     this.visitor = visitor;
   }
 
-  public void visit(Visitable visitable)
-    throws VisitFailure
+  //}}}
+
+  //{{{ public void visit(Visitable visitable) throws VisitFailure
+
+  public void visit(Visitable visitable) throws VisitFailure
   {
     visitor.visit(visitable);
 
@@ -20,4 +25,6 @@ public class TopDown
       visit(visitable.getChild(i));
     }
   }
+
+  //}}}
 }
