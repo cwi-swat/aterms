@@ -8,17 +8,20 @@ equations
   gen-c-api($Prefix, $Prologue, $API) =
         build-header-tag($Prefix) $Header $$
         build-source-tag($Prefix) $Source $$
-        build-dict-tag($Prefix) [ $Dict ] $$
+        build-dict-tag($Prefix) [ afuns([]), terms([$Dict]) ] $$
 
 [equ-gen-header]
   gen-typedefs($API) = $Typedef*,
   gen-fun-decls($API) = $FunDeclList,
-  build-macro($Prefix) = $Macro
+  build-macro($Prefix) = $Macro,
+  build-dict-header($Prefix) = $DictHeader
   ===
   gen-header($Prefix, $Prologue, $API) = 
 	#ifndef $Macro @
 	#define $Macro @
+        #include $DictHeader@
 	$Prologue $Typedef* $FunDeclList
+        extern build-init-decl($Prefix);
 	#endif @
 
 [equ-gen-typedefs-empty]
@@ -87,11 +90,10 @@ equations
   gen-access-decls(type [ $TypeId, $Alt+, $Field $Field* ]) = $FunDeclList2
 
 [equ-gen-source]
-   gen-struct-decls($API) = $Typedef*1,
-   gen-pattern-defs($API) = $Typedef*2,
+   gen-struct-decls($API) = $Typedef*,
    gen-fun-impls($API)    = $FunImplList
    ===
-   gen-source($API) = $Typedef*1 $Typedef*2 $FunImplList
+   gen-source($API) = $Typedef* $FunImplList
 
 [equ-gen-struct-decls-empty]
   gen-struct-decls(api [ ]) =
@@ -105,19 +107,6 @@ equations
 [equ-gen-struct-decl]
   gen-struct-decl(type [ $TypeId, $Alt+, $Field* ]) = 
 	typedef struct ATerm build-c-id(_ $TypeId);
-
-[equ-gen-pattern-defs-empty]
-  gen-pattern-defs(api [ ]) =
-
-[equ-gen-pattern-defs-divide]
-  gen-pattern-def($Type) = $VarDef,
-  gen-pattern-defs(api [ $Type* ]) = $VarDef*
-  ===
-  gen-pattern-defs(api [ $Type $Type* ]) = $VarDef $VarDef*
-
-[equ-gen-pattern-def]
-  gen-pattern-def(type [ $TypeId, $Alt+, $Field* ]) =
-	ATerm build-c-id(pattern $TypeId) = NULL;
 
 [equ-gen-fun-impls-empty]
   gen-fun-impls(api [ ]) =
@@ -192,6 +181,10 @@ equations
   gen-access-impls(type [ $TypeId, $Alt+, $Field* ]) = $FunImplList
   ===
   gen-access-impls(type [ $TypeId, $Alt+, $Field $Field* ]) = $GetImpl $SetImpl $FunImplList
+
+[equ-build-init-decl]
+  build-init-decl(c-file-name($Char*)) = 
+	void build-c-id(init afun($Char*) api)()
 
 [equ-build-check-decl]
   build-check-decl($TypeId, $AltId) =
@@ -357,6 +350,10 @@ equations
 
 [equ-build-dict-tag]
   build-dict-tag(c-file-name($Char*)) = c-file-tag($Char* "." "d" "i" "c" "t" ":")
+
+[equ-build-dict-header]
+  build-dict-header(c-file-name($Char*)) = 
+	c-include-file(""" $Char* "_" "d" "i" "c" "t" "." "h" """)
 
 [equ-build-macro]
   build-macro(c-file-name($Char*)) = c-id("_" "_" $Char* "_" "H")

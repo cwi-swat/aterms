@@ -26,6 +26,10 @@ module ATerm-Syntax
 
       lexical syntax
 	 [a-zA-Z\_][a-zA-Z0-9\_\-]*	-> AFun {avoid}
+
+      lexical restrictions
+	AFun -/- [a-zA-Z0-9\_\-]
+
       context-free syntax
          "[" {ATerm ","}* "]"      -> ATermList
          IntCon                    -> ACon      {constructor}

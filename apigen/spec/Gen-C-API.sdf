@@ -32,8 +32,6 @@ module Gen-C-API
       gen-source(API)					-> C-FILE
       gen-struct-decls(API)				-> C-CONSTRUCTS
       gen-struct-decl(API-Type)				-> C-CONSTRUCT
-      gen-pattern-defs(API)				-> C-CONSTRUCTS
-      gen-pattern-def(API-Type)				-> C-CONSTRUCT
 
       { ATerm "," }*					-> ATerms
       gen-dict(API)					-> ATerms
@@ -51,6 +49,7 @@ module Gen-C-API
       gen-setter-impl ( AFun, API-Field )		-> C-CONSTRUCT
       gen-setter-body ( AFun, AFun, AFun, API-Location* ) -> C-SERIES
 
+      build-init-decl ( C-FILE-NAME )			-> C-FUNCTION-DECL
       build-check-decl ( AFun, AFun )			-> C-FUNCTION-DECL
       build-get-expr ( ATerm-Path , C-EXPR )		-> C-EXPR
       build-getter-decl ( AFun, AFun , AFun )		-> C-FUNCTION-DECL
@@ -67,6 +66,7 @@ module Gen-C-API
       build-header-tag ( C-FILE-NAME )			-> C-FILE-TAG
       build-source-tag ( C-FILE-NAME )			-> C-FILE-TAG
       build-dict-tag ( C-FILE-NAME )			-> C-FILE-TAG
+      build-dict-header ( C-FILE-NAME )			-> C-INCLUDE-FILE
       build-macro ( C-FILE-NAME )			-> C-ID
 
     variables
@@ -76,6 +76,7 @@ module Gen-C-API
       "$AltField*"		-> API-Field*
       "$API"			-> API
       "$Dict"[0-9]*		-> { ATerm "," }*
+      "$DictHeader"		-> C-INCLUDE-FILE
       "$Field"			-> API-Field
       "$Field*"			-> API-Field*
       "$FieldId"		-> AFun
