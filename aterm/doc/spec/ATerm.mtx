@@ -10,7 +10,6 @@
 %%
 \ifundefined{ASF+SDF.sty}\catcode`@=11\input{ASF+SDF.sty}\catcode`@=12\fi
 %%
-\inputifundef{/home/olivierp/Research/aterm/doc/spec}{ATerm.imp}
 %%
 %%
 \MODULEBEGIN{ATerm}

@@ -58,7 +58,7 @@ need to handle, we need a very efficient implementation of this
 datatype, both in time and space.
 
 %}}}
-%{{{ The applications domain
+%{{{ The application domain
 
 \section{Application domain}
 
@@ -118,6 +118,7 @@ includes annotating parse trees with positional or typesetting information,
 and annotating abstract syntax trees with the result of typechecking.}.
 
 \subsection{Concrete syntax}
+\label{concrete-syntax}
 
 Besides the abstract syntax described above, we also define a
 concrete syntax for \ATerms. The primary reason for having a concrete
@@ -127,7 +128,7 @@ binary format for the exchange of \ATerms\ in a format that is only
 suitable for processing by a machine.
 
 \vspace{0.4cm}
-\input{spec/ATerm.mtx}
+{\NOAUTOHEADER  \input{spec/ATerm.mtx}}
 \vspace{0.4cm}
 Note that there is no concrete syntax defined for blobs, because 
 a humanly readable representation of blobs depends on the type
@@ -158,7 +159,8 @@ term created by taking the string pattern, parsing it as a term and filling
 \item {\tt ATerm readFromTextFile(\emph{file})}: Creates a new term by parsing the
 data from \emph{file}.
 \item {\tt ATerm readFromBinaryFile(\emph{file})}: Creates a new term by reading a
-compact binary representation from \emph{file}.
+compact, portable, binary representation from \emph{file}. This format
+is discussed in Section \ref{baf}.
 \item {\tt Integer getType(\emph{term})}: Retrieve the type of a term. This
 operation returns one of the constants mentioned above.
 \item {\tt ATbool ATisEqual(\emph{t1},\emph{t2})}: Check if two terms are 
@@ -170,9 +172,8 @@ in \emph{pattern}.
 \item {\tt Boolean writeToTextFile(\emph{term}, \emph{file})}: Write the text
 representation of \emph{term} to \emph{file}. Returns {\tt true} for
 success and {\tt false} for failure.
-\item {\tt Boolean writeToBinaryFile(\emph{term}, \emph{file})}: Write the compact
-binary representation of \emph{term} to \emph{file}. Returns
-{\tt true} for success, and {\tt false} for failure.
+\item {\tt Boolean writeToBinaryFile(\emph{term}, \emph{file})}: Write the compact, portable, binary representation of \emph{term} to \emph{file}. Returns
+{\tt true} for success, and {\tt false} for failure (see Section \ref{baf}).
 \item {\tt String writeToString(\emph{term})}: Return the text representation
 of \emph{term} as a string.
 \item {\tt ATerm setAnnotation(\emph{term}, \emph{label}, \emph{annotation})}:
@@ -192,7 +193,7 @@ In order to accomodate \ATerm\ `power users',
 we also provide a \emph{level two} interface, which provides a more extensive
 set of datatypes and functions. These extensions are useful only
 when more control over the underlying implementation is needed
-and in situations where some operations that can be implemented using
+or in situations where some operations that can be implemented using
 level one constructs but can be expressed more concisely and implemented more
 efficiently using level two constructs.
 The level two interface is a strict superset of the level one
@@ -296,7 +297,7 @@ The maximal sharing of terms can only be maintained when we check
 at term creation time if a particular term already exists. This term
 lookup must be executed \emph{extremely fast}, in order to implement term
 creation efficiently. We decided to use the fastest algorithm available
-in this situation, hashing. Using a hash function that depends on the
+in this situation, namely hashing. Using a hash function that depends on the
 \emph{addresses} of the function symbol and the arguments of a function
 application, we can quickly search the term database to find a function 
 application before creating it.
@@ -306,7 +307,7 @@ One of the issues when using hash techniques
 is how to handle collisions in the hashtable. The simplest
 technique is to linearly chain entries together that hash to the 
 same bucket. In this scenario, one pointer is needed in each
-object for hash chaining, which in our case would mean a memory
+object for hash chaining, which in our case means a memory
 overhead of about 25 percent. Other solutions for collision
 resolution will either increase the memory requirements (e.g.
 binary tree chaining), or the CPU requirements for insertions
@@ -325,19 +326,20 @@ However, there are severe drawbacks to this approach:
       objects in memory is not allowed because we can only determine
       a conservative root set and therefore are not allowed to change
       the pointers to roots.
-      This means that the hashtable cannot grow beyond its initial size,
-      clearly an undesirable feature.
+      This would mean that the hashtable could not grow beyond its 
+      initial size, clearly an undesirable feature.
 \item The internal fragmentation is increased, because empty slots
       in the hashtable are as large as the object size instead of
       only one machine word.
-\item We need a separate hashtable for each term size in order to
+\item We would need a separate hashtable for each term size in order to
       decrease the internal fragmentation. 
 \end{itemize}
 
 Because of these problems, we decided to use linear hash chaining
 in combination with indirect hashing.
-When the hashtable is nearly full, we just allocate a larger
-table, and rehash all the entries of the old table in the new one.
+When load off the hashtable reaches a certain threshold, 
+we allocate a larger table, and rehash all the entries of the 
+old table in the new one.
 
 %{{{ Garbage collection
 
@@ -348,9 +350,9 @@ mark-sweep collection. We will discuss these three strategies
 in turn, and explain why we base our design on mark-sweep garbage collection.
 
 \subsubsection{Reference counting}
-Reference counting works by keeping track of the number of references
-to an object. If this number drops to zero, there are no more references
-to this object and it can be reclaimed.
+Reference counting in its simplest form works by keeping track of the 
+number of references to an object. If this number drops to zero, 
+there are no more references to this object and it can be reclaimed.
 
 Reference counting has the advantage that unused terms can be reclaimed 
 immediately when they become unused, while in the other strategies 
@@ -382,9 +384,10 @@ Mark-compact garbage collection works by periodically copying all
 original space because it only contains unused objects. Although
 this strategy has merits, it is unusable in our situation. 
 Mark-compact garbage collection assumes that objects
-can be relocated to a different memory location, but when using C as
-implementation language, we cannot be sure to find all
-references to an object without relying on support from the programmer.
+can be relocated to a different memory location, requiring that
+all references to objects can be updated.
+But when using C as implementation language, we cannot be sure to relyably 
+find all references to an object without support from the programmer.
 
 \subsubsection{Mark-sweep garbage collection}
 
@@ -396,7 +399,8 @@ are swept into a list of free objects.
 
 Mark-sweep garbage collection is very attractive, because it
 can be implemented in C, both efficiently and without support from the 
-programmer or compiler \cite{BW88,Bo93}. Mark-sweep collection is more efficient,
+programmer or compiler \cite{BW88,Bo93}. 
+Mark-sweep collection is more efficient,
 both in time and space than reference counting \cite{JL96}.
 The typical space overhead for a mark-sweep garbage collection algorithm is
 only 1 bit per object.
@@ -408,7 +412,7 @@ existing implementation instead of implementing our own collector?
 
 We have examined a number of alternatives, but none of these quite 
 fit our needs. The Boehm-Weiser garbage collector \cite{BW88} came close,
-we face a number of unusual circumstances that render existing
+but we face a number of unusual circumstances that render existing
 garbage collectors impractible:
 
 \begin{itemize}
@@ -416,14 +420,17 @@ garbage collectors impractible:
       all objects. It must be possible to instruct the garbage collector
       not to scan this area for roots.
 \item After an object becomes garbage, it must also be removed from the
-      term database. This means that we need a very low level control
+      term database. This means that we need very low level control
       over the garbage collector.
 \item The \ATerm\ datatype has some special characteristics that can
       be exploited to dramatically increase performance:
       \begin{itemize}
 	\item Destructive updates are not allowed. In garbage collection
               terminology, this means that there are no pointers from
-              old objects to young objects.
+              old objects to young objects. Although we do not exploit
+	      it in the current implementation, this characteristic
+              makes the use of a \emph{generational} garbage collector
+              very attractive.
         \item The overwhelming majority of objects consists of between 2
 	      and 5 machine words.
 	\item Practical experience has shown that not many root pointers
@@ -440,46 +447,43 @@ These observations allow us to gain efficiency on several
 levels, using everything from the low level system 'hacks' to high-level 
 algorithm optimizations.
 
-\subsubsection{Design of a mark-sweep algorithm}
-{\tt <HJ> Geen lazy-sweeping meer, moet anders.}
-Given these facts, we opted for a variant of Mark-sweep garbage collection
-to reclaim unused terms because this gives us the highest possible performance,
-and because small pauses due to garbage collection are acceptable, as long
-as they are short enough to allow smooth user interaction.
-
-% We have designed a variant of the basic
-% mark-sweep algorithm that fits seamlessly with the hashing strategy that
-% we discussed earlier. It turns out that the solution we adopted for using 
-% hashtables efficiently, also benefits the garbage collection strategy.
+\subsubsection{The mark-sweep algorithm}
+Given these facts, we opted for a straightforward version of mark-sweep 
+garbage collection to reclaim unused terms because this gives us very good
+performance in combination with a high level of maintainability of the
+code that uses the library.
 
 As we shall see in Section \ref{implementation}, 
-most objects consist of only a couple
-of machine words. This enables us to base the memory management 
+most objects consist of only a couple of machine words. 
+By restricting the maximum arity of a function, we can also
+set an upperbound on the maximum size of objects.
+This enables us to base the memory management 
 algorithms we use on a small number of block sizes.
 
-For each block size, we store all the mark bits in a single bitmap.
-In the first phase of the mark-sweep algorithm, we clear the mark
-bits by clearing all bits in every bitmap. During the rest of the
-mark phase, only objects that are alive need to be traversed.
-For every live object found, the corresponding bit in the bitmap is set.
+Every object contains a single bit used by the mark-sweep algorithm
+to indicate 'live' (marked) objects. At the start of a garbage collection,
+all objects are unmarked. The garbage collector tries to locate and mark all
+live object. The garbage collector starts by scanning the stack for
+and looking for words could be references to objects. When such a
+word is found, the object (and the transitive closure of all of the 
+objects it refers to) are marked as 'live'. 
 
-Instead of sweeping all the unused objects in a free list in the
-sweep phase, a more efficient approach is to use \emph{lazy sweeping} 
-(see \cite{Hu82}).
-This means that the heap is swept incrementally each time a free
-object is needed. This has the advantage that no free list manipulation
-is needed, and that the complete garbage collection phase can be
-completed \emph{without touching a single unused object}. Only live
-nodes are traversed. This can have a dramatic impact on both the
-caching and paging behaviour of the system, especially when most
-objects are recycled quickly. Typically, only a small portion of all 
-objects survives the garbage collection. Not having to touch
-the objects that do not survive the garbage collection is a major 
-advantage.
+This scan of the stack causes all objects referenced from local
+variables to be protected from being garbage collected.
+Note however that our garbage collector 
+is a  conservative collector in the sense that some of the words on the
+stack could accidentally look like object references, resulting in objects 
+marked as 'live' that are actually garbage.
 
-At allocation time, a free object can be found by searching for the
-first clear bit in the bitmap that corresponds with the size of
-object that is needed.
+After this scan of the stack, all objects that are explicitly protected
+by the programmer are marked also.
+
+When all live objects are marked, a single sweep through the heap
+is used to store all objects that are free in separate lists of free
+objects, one list for each object size.
+
+Allocation of objects is now simply a matter of taking the first element
+from the appropriate free-list, which is an extremely cheap operation.
 
 %}}}
 
@@ -579,13 +583,8 @@ The remaining 3 bytes following the header in the first word are used to
 represent the function symbol. The second word contains a linkfield to
 facilitate bucket hashing.  The words following the second word hold
 references to the function arguments.
-
-Function applications can be encoded in
-$2+n$ machine words, with $n$ the arity of the
-function application, with $n < 15$. If $n >= 15$, $15$ is used,
-and the actual arity is stored in the third word. In this case,
-the arguments start after the third word instead of after the second word.
-In this case the function application uses $3+n$ words.
+In this way, function applications can be encoded in
+$2+n$ machine words, with $n$ the arity of the function application.
 
 \paragraph{LIST encoding}
 The binary list constructor can be seen as a special function
@@ -634,6 +633,188 @@ This technique requires an extra hash-lookup when the annotation
 of a term is needed, but annotations are usually very rare\footnote{ 
 Typically, only 1 in every 1000 terms is annotated.}. 
 The absence of annotations can be detected by checking a single bit.
+
+%}}}
+%{{{ The Binary ATerm Format (BAF)
+
+\subsection{The Binary \ATerm Format (BAF)}
+\label{baf}
+As discussed in the introduction, the efficient exchange of \ATerms\ 
+between processes is very important. The simplest form of exchange would
+be to use the conrete syntax presented in Section \ref{concrete-syntax}.
+This would involve pretty printing the term on one side, and parsing it
+on the other. There are a number of efficiency problems with this approach:
+\begin{itemize}
+\item The concrete syntax of \ATerms\ does not take into account any
+      of the subterm sharing that is exploited in other parts of the
+      implementation. This means that this format is unnecessarily verbose.
+\item Parsing of terms is an expensive operation. Function symbols need
+      to be rescanned everytime they are encountered and all information about
+      the sharing of subterms needs to be rebuild.
+\end{itemize}
+
+A much nicer solution would be to just send the abstract syntax tree
+(including sharing information) of the term that is to be exchanged. 
+Just sending a
+dump of the memory used by the term is not a solution, because such
+a dump contains addresses in the memory space of the sending process
+that have no meaning for the receiving process.
+We have devised an exchange format called BAF (Binary ATerm Format)
+that preserves the sharing information in a compact and portable way, 
+and is easy to encode and decode.
+
+\subsubsection{The BAF virtual machine}
+A term in BAF format consists of a stream of bytes representing instructions
+for a very simple virtual machine. The BAF virtual machine consists of
+three stacks, the term stack, the symbol stack, and the argument stack,
+and has an instruction set consisting of ten instructions.
+We will discuss these instructions, and show how they are used together
+with the three stacks to efficiently encode terms.
+
+\par{\tt RESET}\newline
+Every term in BAF format starts with the {\tt RESET} command.
+This command contains a magic number, a version indication, and a
+size estimate of the term stack.
+
+\par{\tt TPUSH\_INT}\newline
+The {\tt TPUSH\_INT} command is used to push an integer term on the
+term stack. It has a single argument: the value of the integer term.
+
+\par{\tt TPUSH\_REAL}\newline
+The {\tt TPUSH\_REAL} command is used to push a real term on the
+term stack. It has a single argument: a string representing the
+value of the real-valued term.
+
+\par{\tt TPUSH\_BLOB}\newline
+The {\tt TPUSH\_BLOB} command is used to push a blob term on the
+term stack. It has a single argument: the binary data that is stored
+in the blob.
+
+\par{\tt SPUSH\_SYM}\newline
+The {\tt SPUSH\_SYM} command is used to push a new symbol on the symbol
+stack. The command has two arguments: the arity of the symbol and the
+symbol string.
+
+\par{\tt SPUSH\_QSYM}\newline
+The {\tt SPUSH\_QSYM} command is similar to the {\tt SPUSH\_SYM} command,
+but is used with quoted symbols.
+
+\par{\tt TPUSH\_APPL}\newline
+The {\tt TPUSH\_APPL} command is used to push a new function application on 
+the term stack. This command has one argument: the index of the function
+symbol relative to the current top of the symbol stack. The arity of
+this symbol is used to pop as many arguments from the argument stack as
+needed.
+
+\par{\tt TPUSH\_LIST}\newline
+The {\tt TPUSH\_LIST} command pushes a new list on the term stack.
+It's single argument indicates the number of terms that are to be
+taken of the argument stack and stored in the new list.
+
+\par{\tt APUSH}\newline
+The {\tt APUSH} command is used to push a term on the argument stack.
+This command has one argument: the index of the argument term 
+on the term stack, relative to the current top of the term stack.
+
+\subsubsection{An example}
+Lets suppose we want to encode the term {\tt f(g("a","a"),123,g("a","a"))}.
+A possible BAF encoding of this term would be:
+\begin{verbatim}
+RESET      0xBAF, 0x0100, yy
+SPUSH_QSYM 0, a
+TPUSH_APPL 0
+APUSH      0
+APUSH      0
+SPUSH_SYM  2, g
+TPUSH_APPL 0
+TPUSH_INT  123
+APUSH      1
+APUSH      0
+APUSH      1
+SPUSH_SYM  3, f
+TPUSH_APPL 0
+\end{verbatim}
+
+After the {\tt RESET} command, the quoted symbol {\tt "a"} of arity
+0 is defined. This symbol is used to push the function application {\tt "a"}
+on the term stack. This function application is then pushed on the
+argument stack twice. These two instances are then used to create
+the function application g("a","a"). The integer {\tt 123} is pushed
+on the term stack. Now that all arguments of the outer function application
+are created, they are pushed on the argument stack and used to create
+the final function symbol.
+
+\subsubsection{Binary encoding}
+The textual representation of the encoding described above can hardly be 
+seen as an improvement over the textual representation of the term.
+But this changes when we take a look at the actual binary encoding that
+is used describe a term in BAF format.
+
+All numbers used in the BAF format are encoded in such a way that small
+integers take less space than large numbers, because small numbers
+occur far more often than large numbers. The number of bytes needed to 
+encode a number can be found by looking at the number of leading 1
+bits in the first byte of the number (with a maximum of 3), and
+increasing this number by one.
+Numbers between 0 and $2^{7}$ (7 bits) use only one byte:\newline
+{\tt 0xxxxxxx}.\newline
+Numbers between 0 and $2^{14}$ (14 bits) use two bytes:\newline
+{\tt 10xxxxxx, xxxxxxxx}.\newline
+Numbers between 0 and $2^{21}$ (21 bits) use three bytes:\newline
+{\tt 110xxxxx, xxxxxxxx, xxxxxxxx}.\newline
+Numbers between 0 and $2^{28}$ (28 bits) use four bytes:\newline
+{\tt 1110xxxx, xxxxxxxx, xxxxxxxx, xxxxxxxx}.\newline
+Numbers between 0 and $2^{32}$ (32 bits) use five bytes:\newline
+{\tt 11110000, xxxxxxxx, xxxxxxxx, xxxxxxxx, xxxxxxxx}.\newline
+
+Each command of the BAF virtual machine has its own command number,
+except for the {\tt APUSH} command. Because this command is used the
+most, it is implicitly assumed when a command with a number greater
+than 10 is read. In this case, 10 is subtracted from the command
+to get the {\tt APUSH} argument, the term index on the term stack
+that must be pushed on the argument stack. The other command numbers
+are:
+\begin{itemize}
+\item 0: {\tt RESET}
+\item 1: {\tt TPUSH\_APPL}
+\item 2: {\tt TPUSH\_INT}
+\item 3: {\tt TPUSH\_REAL}
+\item 4: {\tt TPUSH\_LIST}
+\item 5: {\tt TPUSH\_PLACEHOLDER}
+\item 6: {\tt TPUSH\_BLOB}
+\item 7: {\tt SPUSH\_SYM}
+\item 8: {\tt SPUSH\_QSYM}
+\end{itemize}
+
+Strings are encoded by their length indicator followed by their contents.
+The lenght indicator is of course encoded as described above.
+
+\subsubsection{The example again}
+Using this mechanism the example described above can be encoded
+using the following sequence of bytes (in hexadecimal notation):
+\begin{verbatim}
+00 8B AF 81 00 04       %% The reset command
+08 00 01 61             %% A quoted symbol "a", with arity 0.
+01 00                   %% Push application "a" on the term stack.
+00                      %% Push application "a" on the argument stack
+00                      %% Push application "a" on the argument stack
+07 02 01 67             %% An unquoted symbol g, with arity 2.
+01 00                   %% Push appl. g("a","a") on the term stack
+02 7B                   %% Push integer term 123 on the term stack
+01                      %% Push appl. g("a","a") on the argument stack
+00                      %% Push integer term 123 on the term stack
+01                      %% Push appl. g("a","a") on the argument stack
+07 03 01 66             %% Unquoted symbol f with arity 3.
+01 00                   %% Push appl. f(g("a","a"),123,g("a","a"))
+\end{verbatim}
+
+If we ignore the {\tt RESET} command, we are still left with
+25 bytes against the 28 bytes of the original term. The fact that we 
+do not gain anything is mainly due to the size of this example.
+The overhead of the {\tt SPUSH\_SYM} and {\tt SPUSH\_QSYM} commands 
+diminishes as the size of the term increases. The following table
+gives an impression of the compression that can be reached in real-world
+terms when the term size increases:
 
 %}}}
 
