@@ -2,7 +2,7 @@
 
 #include  "asc-support.h"
 static Symbol lf_AUX_Sdf2_to_ADT2_1sym ;
-static ATerm lf_AUX_Sdf2_to_ADT2_1 ( ATerm arg1 ) ;
+static ATerm lf_AUX_Sdf2_to_ADT2_1 ( ATerm arg1 , ATerm arg2 ) ;
 static Symbol ef3sym ;
 static funcptr ef3 ;
 static Symbol ef4sym ;
@@ -20,14 +20,14 @@ static ATerm lf2 ( ATerm arg1 ) ;
 static Symbol ef6sym ;
 static funcptr ef6 ;
 void register_AUX_Sdf2_to_ADT2 ( ) {
-lf_AUX_Sdf2_to_ADT2_1sym = ATmakeSymbol ( "prod(id(\"Sdf2-to-ADT\"),w(\"\"),[ql(\"sdf-to-adt\"),w(\"\"),ql(\"(\"),w(\"\"),sort(\"SDF\"),w(\"\"),ql(\")\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"ATerm\"),w(\"\"),no-attrs)"
- , 1 , ATtrue ) ;
+lf_AUX_Sdf2_to_ADT2_1sym = ATmakeSymbol ( "prod(id(\"Sdf2-to-ADT\"),w(\"\"),[ql(\"sdf-to-adt\"),w(\"\"),ql(\"(\"),w(\"\"),sort(\"SDF\"),w(\"\"),ql(\",\"),w(\"\"),sort(\"ConsOption\"),w(\"\"),ql(\")\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"ATerm\"),w(\"\"),no-attrs)"
+ , 2 , ATtrue ) ;
 ATprotectSymbol ( lf_AUX_Sdf2_to_ADT2_1sym ) ;
 lf3sym = ATmakeSymbol ( "listtype(sort(\"ATerm\"),ql(\",\"))" , 1 , ATtrue ) ;
 ATprotectSymbol ( lf3sym ) ;
 lf2sym = ATmakeSymbol ( "listtype(sort(\"Module\"))" , 1 , ATtrue ) ;
 ATprotectSymbol ( lf2sym ) ;
-register_prod ( ATparse ( "prod(id(\"Sdf2-to-ADT\"),w(\"\"),[ql(\"sdf-to-adt\"),w(\"\"),ql(\"(\"),w(\"\"),sort(\"SDF\"),w(\"\"),ql(\")\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"ATerm\"),w(\"\"),no-attrs)" ) , lf_AUX_Sdf2_to_ADT2_1 , lf_AUX_Sdf2_to_ADT2_1sym ) ;
+register_prod ( ATparse ( "prod(id(\"Sdf2-to-ADT\"),w(\"\"),[ql(\"sdf-to-adt\"),w(\"\"),ql(\"(\"),w(\"\"),sort(\"SDF\"),w(\"\"),ql(\",\"),w(\"\"),sort(\"ConsOption\"),w(\"\"),ql(\")\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"ATerm\"),w(\"\"),no-attrs)" ) , lf_AUX_Sdf2_to_ADT2_1 , lf_AUX_Sdf2_to_ADT2_1sym ) ;
 register_prod ( ATparse ( "listtype(sort(\"Module\"))" ) , lf2 , lf2sym ) ;
 register_prod ( ATparse ( "listtype(sort(\"ATerm\"),ql(\",\"))" ) , lf3 , lf3sym ) ;
 }
@@ -40,8 +40,8 @@ ef3 = lookup_func ( ATreadFromString ( "prod(id(\"ATerm-Syntax\"),w(\"\"),[sort(
 ef3sym = lookup_sym ( ATreadFromString ( "prod(id(\"ATerm-Syntax\"),w(\"\"),[sort(\"ATermList\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"ATerm\"),w(\"\"),attrs(l(\"{\"),w(\"\"),[l(\"constructor\")],w(\"\"),l(\"}\")))" ) ) ;
 ef4 = lookup_func ( ATreadFromString ( "prod(id(\"ATerm-Syntax\"),w(\"\"),[ql(\"[\"),w(\"\"),iter-sep(l(\"{\"),w(\"\"),sort(\"ATerm\"),w(\"\"),ql(\",\"),w(\"\"),l(\"}\"),w(\"\"),l(\"*\")),w(\"\"),ql(\"]\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"ATermList\"),w(\"\"),no-attrs)" ) ) ;
 ef4sym = lookup_sym ( ATreadFromString ( "prod(id(\"ATerm-Syntax\"),w(\"\"),[ql(\"[\"),w(\"\"),iter-sep(l(\"{\"),w(\"\"),sort(\"ATerm\"),w(\"\"),ql(\",\"),w(\"\"),l(\"}\"),w(\"\"),l(\"*\")),w(\"\"),ql(\"]\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"ATermList\"),w(\"\"),no-attrs)" ) ) ;
-ef5 = lookup_func ( ATreadFromString ( "prod(id(\"Sdf2-to-ADT\"),w(\"\"),[ql(\"sdf-module-to-adt\"),w(\"\"),ql(\"(\"),w(\"\"),sort(\"Module\"),w(\"\"),ql(\")\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"ATerm\"),w(\"\"),no-attrs)" ) ) ;
-ef5sym = lookup_sym ( ATreadFromString ( "prod(id(\"Sdf2-to-ADT\"),w(\"\"),[ql(\"sdf-module-to-adt\"),w(\"\"),ql(\"(\"),w(\"\"),sort(\"Module\"),w(\"\"),ql(\")\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"ATerm\"),w(\"\"),no-attrs)" ) ) ;
+ef5 = lookup_func ( ATreadFromString ( "prod(id(\"Sdf2-to-ADT\"),w(\"\"),[ql(\"sdf-module-to-adt\"),w(\"\"),ql(\"(\"),w(\"\"),sort(\"Module\"),w(\"\"),ql(\",\"),w(\"\"),sort(\"ConsOption\"),w(\"\"),ql(\")\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"ATerm\"),w(\"\"),no-attrs)" ) ) ;
+ef5sym = lookup_sym ( ATreadFromString ( "prod(id(\"Sdf2-to-ADT\"),w(\"\"),[ql(\"sdf-module-to-adt\"),w(\"\"),ql(\"(\"),w(\"\"),sort(\"Module\"),w(\"\"),ql(\",\"),w(\"\"),sort(\"ConsOption\"),w(\"\"),ql(\")\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"ATerm\"),w(\"\"),no-attrs)" ) ) ;
 ef6 = lookup_func ( ATreadFromString ( "prod(id(\"ATerm-Utils\"),w(\"\"),[ql(\"merge-adts\"),w(\"\"),ql(\"(\"),w(\"\"),sort(\"ATerm\"),w(\"\"),ql(\",\"),w(\"\"),sort(\"ATerm\"),w(\"\"),ql(\")\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"ATerm\"),w(\"\"),no-attrs)" ) ) ;
 ef6sym = lookup_sym ( ATreadFromString ( "prod(id(\"ATerm-Utils\"),w(\"\"),[ql(\"merge-adts\"),w(\"\"),ql(\"(\"),w(\"\"),sort(\"ATerm\"),w(\"\"),ql(\",\"),w(\"\"),sort(\"ATerm\"),w(\"\"),ql(\")\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"ATerm\"),w(\"\"),no-attrs)" ) ) ;
 }
@@ -49,10 +49,10 @@ static ATerm constant0 = NULL ;
 void init_AUX_Sdf2_to_ADT2 ( ) {
 ATprotect ( & constant0 ) ;
 }
-ATerm lf_AUX_Sdf2_to_ADT2_1 ( ATerm arg0 ) {
+ATerm lf_AUX_Sdf2_to_ADT2_1 ( ATerm arg0 , ATerm arg1 ) {
 {
 ATerm tmp [ 5 ] ;
-FUNC_ENTRY ( lf_AUX_Sdf2_to_ADT2_1sym , ATmakeAppl ( lf_AUX_Sdf2_to_ADT2_1sym , arg0 ) ) ;
+FUNC_ENTRY ( lf_AUX_Sdf2_to_ADT2_1sym , ATmakeAppl ( lf_AUX_Sdf2_to_ADT2_1sym , arg0 , arg1 ) ) ;
 if ( check_sym ( arg0 , ef1sym ) ) {
 {
 ATerm atmp00 = arg_0 ( arg0 ) ;
@@ -65,8 +65,8 @@ ATerm atmp0000 = arg_0 ( atmp000 ) ;
 if ( not_empty_list ( atmp0000 ) ) {
 ( tmp [ 0 ] = list_head ( atmp0000 ) ) ;
 ( tmp [ 1 ] = list_tail ( atmp0000 ) ) ;
-( tmp [ 2 ] = ( * ef5 ) ( tmp [ 0 ] ) ) ;
-( tmp [ 3 ] = lf_AUX_Sdf2_to_ADT2_1 ( ( * ef1 ) ( make_nf1 ( ef2sym , lf2 ( make_list ( tmp [ 1 ] ) ) ) ) ) ) ;
+( tmp [ 2 ] = ( * ef5 ) ( tmp [ 0 ] , arg1 ) ) ;
+( tmp [ 3 ] = lf_AUX_Sdf2_to_ADT2_1 ( ( * ef1 ) ( make_nf1 ( ef2sym , lf2 ( make_list ( tmp [ 1 ] ) ) ) ) , arg1 ) ) ;
 ( tmp [ 4 ] = ( * ef6 ) ( tmp [ 2 ] , tmp [ 3 ] ) ) ;
 FUNC_EXIT ( tmp [ 4 ] ) ;
 }
@@ -79,7 +79,7 @@ FUNC_EXIT_CONST ( constant0 , make_nf1 ( ef3sym , ( * ef4 ) ( lf3 ( make_list ( 
 }
 }
 }
-FUNC_EXIT ( make_nf1 ( lf_AUX_Sdf2_to_ADT2_1sym , arg0 ) ) ;
+FUNC_EXIT ( make_nf2 ( lf_AUX_Sdf2_to_ADT2_1sym , arg0 , arg1 ) ) ;
 }
 }
 ATerm lf2 ( ATerm arg0 ) {

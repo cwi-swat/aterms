@@ -2,7 +2,7 @@
 
 #include  "asc-support.h"
 static Symbol lf_AUX_Sdf2_to_ADT8_1sym ;
-static ATerm lf_AUX_Sdf2_to_ADT8_1 ( ATerm arg1 , ATerm arg2 ) ;
+static ATerm lf_AUX_Sdf2_to_ADT8_1 ( ATerm arg1 , ATerm arg2 , ATerm arg3 ) ;
 static Symbol ef6sym ;
 static funcptr ef6 ;
 static Symbol ef5sym ;
@@ -48,8 +48,8 @@ static funcptr ef17 ;
 static Symbol lf2sym ;
 static ATerm lf2 ( ATerm arg1 ) ;
 void register_AUX_Sdf2_to_ADT8 ( ) {
-lf_AUX_Sdf2_to_ADT8_1sym = ATmakeSymbol ( "prod(id(\"Sdf2-to-ADT\"),w(\"\"),[ql(\"production-to-adt\"),w(\"\"),ql(\"(\"),w(\"\"),sort(\"ModuleName\"),w(\"\"),ql(\",\"),w(\"\"),sort(\"Production\"),w(\"\"),ql(\")\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"ATerms\"),w(\"\"),no-attrs)"
- , 2 , ATtrue ) ;
+lf_AUX_Sdf2_to_ADT8_1sym = ATmakeSymbol ( "prod(id(\"Sdf2-to-ADT\"),w(\"\"),[ql(\"production-to-adt\"),w(\"\"),ql(\"(\"),w(\"\"),sort(\"ModuleName\"),w(\"\"),ql(\",\"),w(\"\"),sort(\"Production\"),w(\"\"),ql(\",\"),w(\"\"),sort(\"ConsOption\"),w(\"\"),ql(\")\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"ATerms\"),w(\"\"),no-attrs)"
+ , 3 , ATtrue ) ;
 ATprotectSymbol ( lf_AUX_Sdf2_to_ADT8_1sym ) ;
 lf4sym = ATmakeSymbol ( "listtype(sort(\"Attribute\"),ql(\",\"))" , 1 , ATtrue ) ;
 ATprotectSymbol ( lf4sym ) ;
@@ -59,7 +59,7 @@ lf3sym = ATmakeSymbol ( "listtype(sort(\"ATerm\"),ql(\",\"))" , 1 , ATtrue ) ;
 ATprotectSymbol ( lf3sym ) ;
 lf2sym = ATmakeSymbol ( "listtype(sort(\"Symbol\"))" , 1 , ATtrue ) ;
 ATprotectSymbol ( lf2sym ) ;
-register_prod ( ATparse ( "prod(id(\"Sdf2-to-ADT\"),w(\"\"),[ql(\"production-to-adt\"),w(\"\"),ql(\"(\"),w(\"\"),sort(\"ModuleName\"),w(\"\"),ql(\",\"),w(\"\"),sort(\"Production\"),w(\"\"),ql(\")\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"ATerms\"),w(\"\"),no-attrs)" ) , lf_AUX_Sdf2_to_ADT8_1 , lf_AUX_Sdf2_to_ADT8_1sym ) ;
+register_prod ( ATparse ( "prod(id(\"Sdf2-to-ADT\"),w(\"\"),[ql(\"production-to-adt\"),w(\"\"),ql(\"(\"),w(\"\"),sort(\"ModuleName\"),w(\"\"),ql(\",\"),w(\"\"),sort(\"Production\"),w(\"\"),ql(\",\"),w(\"\"),sort(\"ConsOption\"),w(\"\"),ql(\")\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"ATerms\"),w(\"\"),no-attrs)" ) , lf_AUX_Sdf2_to_ADT8_1 , lf_AUX_Sdf2_to_ADT8_1sym ) ;
 register_prod ( ATparse ( "listtype(sort(\"Symbol\"))" ) , lf2 , lf2sym ) ;
 register_prod ( ATparse ( "listtype(sort(\"ATerm\"),ql(\",\"))" ) , lf3 , lf3sym ) ;
 register_prod ( ATparse ( "listtype(sort(\"Attribute\"),ql(\",\"))" ) , lf4 , lf4sym ) ;
@@ -88,8 +88,8 @@ ef10 = lookup_func ( ATreadFromString ( "prod(id(\"GEN-LexConsFuncs\"),w(\"\"),[
 ef10sym = lookup_sym ( ATreadFromString ( "prod(id(\"GEN-LexConsFuncs\"),w(\"\"),[ql(\"afun\"),w(\"\"),ql(\"(\"),w(\"\"),iter(sort(\"CHAR\"),w(\"\"),l(\"*\")),w(\"\"),ql(\")\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"AFun\"),w(\"\"),no-attrs)" ) ) ;
 ef11 = lookup_func ( ATreadFromString ( "prod(id(\"Sdf2-to-ADT\"),w(\"\"),[ql(\"sort-to-afun\"),w(\"\"),ql(\"(\"),w(\"\"),sort(\"Sort\"),w(\"\"),ql(\")\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"AFun\"),w(\"\"),no-attrs)" ) ) ;
 ef11sym = lookup_sym ( ATreadFromString ( "prod(id(\"Sdf2-to-ADT\"),w(\"\"),[ql(\"sort-to-afun\"),w(\"\"),ql(\"(\"),w(\"\"),sort(\"Sort\"),w(\"\"),ql(\")\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"AFun\"),w(\"\"),no-attrs)" ) ) ;
-ef12 = lookup_func ( ATreadFromString ( "prod(id(\"Sdf2-to-ADT\"),w(\"\"),[ql(\"build-asfix-prod\"),w(\"\"),ql(\"(\"),w(\"\"),sort(\"ModuleName\"),w(\"\"),ql(\",\"),w(\"\"),iter(sort(\"Symbol\"),w(\"\"),l(\"*\")),w(\"\"),ql(\",\"),w(\"\"),sort(\"Symbol\"),w(\"\"),ql(\",\"),w(\"\"),sort(\"Attributes\"),w(\"\"),ql(\")\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"ATerm\"),w(\"\"),no-attrs)" ) ) ;
-ef12sym = lookup_sym ( ATreadFromString ( "prod(id(\"Sdf2-to-ADT\"),w(\"\"),[ql(\"build-asfix-prod\"),w(\"\"),ql(\"(\"),w(\"\"),sort(\"ModuleName\"),w(\"\"),ql(\",\"),w(\"\"),iter(sort(\"Symbol\"),w(\"\"),l(\"*\")),w(\"\"),ql(\",\"),w(\"\"),sort(\"Symbol\"),w(\"\"),ql(\",\"),w(\"\"),sort(\"Attributes\"),w(\"\"),ql(\")\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"ATerm\"),w(\"\"),no-attrs)" ) ) ;
+ef12 = lookup_func ( ATreadFromString ( "prod(id(\"Sdf2-to-ADT\"),w(\"\"),[ql(\"build-asfix-prod\"),w(\"\"),ql(\"(\"),w(\"\"),sort(\"ModuleName\"),w(\"\"),ql(\",\"),w(\"\"),iter(sort(\"Symbol\"),w(\"\"),l(\"*\")),w(\"\"),ql(\",\"),w(\"\"),sort(\"Symbol\"),w(\"\"),ql(\",\"),w(\"\"),sort(\"Attributes\"),w(\"\"),ql(\",\"),w(\"\"),sort(\"ConsOption\"),w(\"\"),ql(\")\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"ATerm\"),w(\"\"),no-attrs)" ) ) ;
+ef12sym = lookup_sym ( ATreadFromString ( "prod(id(\"Sdf2-to-ADT\"),w(\"\"),[ql(\"build-asfix-prod\"),w(\"\"),ql(\"(\"),w(\"\"),sort(\"ModuleName\"),w(\"\"),ql(\",\"),w(\"\"),iter(sort(\"Symbol\"),w(\"\"),l(\"*\")),w(\"\"),ql(\",\"),w(\"\"),sort(\"Symbol\"),w(\"\"),ql(\",\"),w(\"\"),sort(\"Attributes\"),w(\"\"),ql(\",\"),w(\"\"),sort(\"ConsOption\"),w(\"\"),ql(\")\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"ATerm\"),w(\"\"),no-attrs)" ) ) ;
 ef13 = lookup_func ( ATreadFromString ( "prod(id(\"Sdf2-to-ADT\"),w(\"\"),[ql(\"build-asfix-appl-args\"),w(\"\"),ql(\"(\"),w(\"\"),iter(sort(\"Symbol\"),w(\"\"),l(\"*\")),w(\"\"),ql(\")\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"ATerms\"),w(\"\"),no-attrs)" ) ) ;
 ef13sym = lookup_sym ( ATreadFromString ( "prod(id(\"Sdf2-to-ADT\"),w(\"\"),[ql(\"build-asfix-appl-args\"),w(\"\"),ql(\"(\"),w(\"\"),iter(sort(\"Symbol\"),w(\"\"),l(\"*\")),w(\"\"),ql(\")\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"ATerms\"),w(\"\"),no-attrs)" ) ) ;
 ef14 = lookup_func ( ATreadFromString ( "prod(id(\"ATerm-Syntax\"),w(\"\"),[sort(\"ATermList\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"ATerm\"),w(\"\"),attrs(l(\"{\"),w(\"\"),[l(\"constructor\")],w(\"\"),l(\"}\")))" ) ) ;
@@ -107,10 +107,10 @@ static ATerm constant0 = NULL ;
 void init_AUX_Sdf2_to_ADT8 ( ) {
 ATprotect ( & constant0 ) ;
 }
-ATerm lf_AUX_Sdf2_to_ADT8_1 ( ATerm arg0 , ATerm arg1 ) {
+ATerm lf_AUX_Sdf2_to_ADT8_1 ( ATerm arg0 , ATerm arg1 , ATerm arg2 ) {
 {
 ATerm tmp [ 22 ] ;
-FUNC_ENTRY ( lf_AUX_Sdf2_to_ADT8_1sym , ATmakeAppl ( lf_AUX_Sdf2_to_ADT8_1sym , arg0 , arg1 ) ) ;
+FUNC_ENTRY ( lf_AUX_Sdf2_to_ADT8_1sym , ATmakeAppl ( lf_AUX_Sdf2_to_ADT8_1sym , arg0 , arg1 , arg2 ) ) ;
 if ( check_sym ( arg1 , ef1sym ) ) {
 {
 ATerm atmp10 = arg_0 ( arg1 ) ;
@@ -154,7 +154,7 @@ if ( not_empty_list ( tmp [ 10 ] ) ) {
 if ( term_equal ( list_last ( tmp [ 10 ] ) , make_char ( 34 ) ) ) {
 ( tmp [ 12 ] = ( * ef10 ) ( lf5 ( make_list ( tmp [ 11 ] ) ) ) ) ;
 ( tmp [ 13 ] = ( * ef11 ) ( atmp110 ) ) ;
-( tmp [ 14 ] = ( * ef12 ) ( arg0 , lf2 ( make_list ( atmp1000 ) ) , ( * ef3 ) ( atmp110 ) , atmp12 ) ) ;
+( tmp [ 14 ] = ( * ef12 ) ( arg0 , lf2 ( make_list ( atmp1000 ) ) , ( * ef3 ) ( atmp110 ) , atmp12 , arg2 ) ) ;
 ( tmp [ 15 ] = ( * ef13 ) ( lf2 ( make_list ( atmp1000 ) ) ) ) ;
 if ( check_sym ( tmp [ 15 ] , ef4sym ) ) {
 ( tmp [ 16 ] = arg_0 ( tmp [ 15 ] ) ) ;
@@ -188,7 +188,7 @@ FUNC_EXIT ( ( * ef4 ) ( lf3 ( cons ( make_list ( tmp [ 18 ] ) , make_list ( tmp 
 if ( term_equal ( atmp12 , ( constant0 ? constant0 : ( constant0 = ( * ef5 ) ( lf4 ( make_list ( ( * ef18 ) ( ) ) ) ) ) ) ) ) {
 ( tmp [ 0 ] = ( * ef10 ) ( lf5 ( ( ATerm ) ATmakeList ( 7 , char_table [ 66 ] , char_table [ 114 ] , char_table [ 97 ] , char_table [ 99 ] , char_table [ 107 ] , char_table [ 101 ] , char_table [ 116 ] ) ) ) ) ;
 ( tmp [ 1 ] = ( * ef11 ) ( atmp110 ) ) ;
-( tmp [ 2 ] = ( * ef12 ) ( arg0 , lf2 ( make_list ( atmp1000 ) ) , ( * ef3 ) ( atmp110 ) , atmp12 ) ) ;
+( tmp [ 2 ] = ( * ef12 ) ( arg0 , lf2 ( make_list ( atmp1000 ) ) , ( * ef3 ) ( atmp110 ) , atmp12 , arg2 ) ) ;
 ( tmp [ 3 ] = ( * ef13 ) ( lf2 ( make_list ( atmp1000 ) ) ) ) ;
 if ( check_sym ( tmp [ 3 ] , ef4sym ) ) {
 ( tmp [ 4 ] = arg_0 ( tmp [ 3 ] ) ) ;
@@ -234,7 +234,7 @@ ATerm atmp110 = arg_0 ( atmp11 ) ;
 ATerm atmp12 = arg_2 ( arg1 ) ;
 ( tmp [ 0 ] = ( * ef10 ) ( lf5 ( ( ATerm ) ATmakeList ( 7 , char_table [ 68 ] , char_table [ 101 ] , char_table [ 102 ] , char_table [ 97 ] , char_table [ 117 ] , char_table [ 108 ] , char_table [ 116 ] ) ) ) ) ;
 ( tmp [ 1 ] = ( * ef11 ) ( atmp110 ) ) ;
-( tmp [ 2 ] = ( * ef12 ) ( arg0 , lf2 ( make_list ( atmp1000 ) ) , ( * ef3 ) ( atmp110 ) , atmp12 ) ) ;
+( tmp [ 2 ] = ( * ef12 ) ( arg0 , lf2 ( make_list ( atmp1000 ) ) , ( * ef3 ) ( atmp110 ) , atmp12 , arg2 ) ) ;
 ( tmp [ 3 ] = ( * ef13 ) ( lf2 ( make_list ( atmp1000 ) ) ) ) ;
 if ( check_sym ( tmp [ 3 ] , ef4sym ) ) {
 ( tmp [ 4 ] = arg_0 ( tmp [ 3 ] ) ) ;
@@ -261,7 +261,7 @@ FUNC_EXIT ( ( * ef4 ) ( lf3 ( cons ( make_list ( tmp [ 6 ] ) , make_list ( tmp [
 }
 }
 }
-FUNC_EXIT ( make_nf2 ( lf_AUX_Sdf2_to_ADT8_1sym , arg0 , arg1 ) ) ;
+FUNC_EXIT ( make_nf3 ( lf_AUX_Sdf2_to_ADT8_1sym , arg0 , arg1 , arg2 ) ) ;
 }
 }
 ATerm lf2 ( ATerm arg0 ) {

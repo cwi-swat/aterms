@@ -2,7 +2,7 @@
 
 #include  "asc-support.h"
 static Symbol lf_AUX_Sdf2_to_ADT4_1sym ;
-static ATerm lf_AUX_Sdf2_to_ADT4_1 ( ATerm arg1 ) ;
+static ATerm lf_AUX_Sdf2_to_ADT4_1 ( ATerm arg1 , ATerm arg2 ) ;
 static Symbol ef5sym ;
 static funcptr ef5 ;
 static Symbol ef6sym ;
@@ -22,8 +22,8 @@ static funcptr ef4 ;
 static Symbol lf4sym ;
 static ATerm lf4 ( ATerm arg1 ) ;
 void register_AUX_Sdf2_to_ADT4 ( ) {
-lf_AUX_Sdf2_to_ADT4_1sym = ATmakeSymbol ( "prod(id(\"Sdf2-to-ADT\"),w(\"\"),[ql(\"sdf-module-to-adt\"),w(\"\"),ql(\"(\"),w(\"\"),sort(\"Module\"),w(\"\"),ql(\")\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"ATerm\"),w(\"\"),no-attrs)"
- , 1 , ATtrue ) ;
+lf_AUX_Sdf2_to_ADT4_1sym = ATmakeSymbol ( "prod(id(\"Sdf2-to-ADT\"),w(\"\"),[ql(\"sdf-module-to-adt\"),w(\"\"),ql(\"(\"),w(\"\"),sort(\"Module\"),w(\"\"),ql(\",\"),w(\"\"),sort(\"ConsOption\"),w(\"\"),ql(\")\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"ATerm\"),w(\"\"),no-attrs)"
+ , 2 , ATtrue ) ;
 ATprotectSymbol ( lf_AUX_Sdf2_to_ADT4_1sym ) ;
 lf2sym = ATmakeSymbol ( "listtype(sort(\"ImpSection\"))" , 1 , ATtrue ) ;
 ATprotectSymbol ( lf2sym ) ;
@@ -31,7 +31,7 @@ lf3sym = ATmakeSymbol ( "listtype(sort(\"Section\"))" , 1 , ATtrue ) ;
 ATprotectSymbol ( lf3sym ) ;
 lf4sym = ATmakeSymbol ( "listtype(sort(\"ATerm\"),ql(\",\"))" , 1 , ATtrue ) ;
 ATprotectSymbol ( lf4sym ) ;
-register_prod ( ATparse ( "prod(id(\"Sdf2-to-ADT\"),w(\"\"),[ql(\"sdf-module-to-adt\"),w(\"\"),ql(\"(\"),w(\"\"),sort(\"Module\"),w(\"\"),ql(\")\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"ATerm\"),w(\"\"),no-attrs)" ) , lf_AUX_Sdf2_to_ADT4_1 , lf_AUX_Sdf2_to_ADT4_1sym ) ;
+register_prod ( ATparse ( "prod(id(\"Sdf2-to-ADT\"),w(\"\"),[ql(\"sdf-module-to-adt\"),w(\"\"),ql(\"(\"),w(\"\"),sort(\"Module\"),w(\"\"),ql(\",\"),w(\"\"),sort(\"ConsOption\"),w(\"\"),ql(\")\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"ATerm\"),w(\"\"),no-attrs)" ) , lf_AUX_Sdf2_to_ADT4_1 , lf_AUX_Sdf2_to_ADT4_1sym ) ;
 register_prod ( ATparse ( "listtype(sort(\"ImpSection\"))" ) , lf2 , lf2sym ) ;
 register_prod ( ATparse ( "listtype(sort(\"Section\"))" ) , lf3 , lf3sym ) ;
 register_prod ( ATparse ( "listtype(sort(\"ATerm\"),ql(\",\"))" ) , lf4 , lf4sym ) ;
@@ -45,8 +45,8 @@ ef3 = lookup_func ( ATreadFromString ( "prod(id(\"ATerm-Syntax\"),w(\"\"),[sort(
 ef3sym = lookup_sym ( ATreadFromString ( "prod(id(\"ATerm-Syntax\"),w(\"\"),[sort(\"ATermList\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"ATerm\"),w(\"\"),attrs(l(\"{\"),w(\"\"),[l(\"constructor\")],w(\"\"),l(\"}\")))" ) ) ;
 ef4 = lookup_func ( ATreadFromString ( "prod(id(\"ATerm-Syntax\"),w(\"\"),[ql(\"[\"),w(\"\"),iter-sep(l(\"{\"),w(\"\"),sort(\"ATerm\"),w(\"\"),ql(\",\"),w(\"\"),l(\"}\"),w(\"\"),l(\"*\")),w(\"\"),ql(\"]\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"ATermList\"),w(\"\"),no-attrs)" ) ) ;
 ef4sym = lookup_sym ( ATreadFromString ( "prod(id(\"ATerm-Syntax\"),w(\"\"),[ql(\"[\"),w(\"\"),iter-sep(l(\"{\"),w(\"\"),sort(\"ATerm\"),w(\"\"),ql(\",\"),w(\"\"),l(\"}\"),w(\"\"),l(\"*\")),w(\"\"),ql(\"]\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"ATermList\"),w(\"\"),no-attrs)" ) ) ;
-ef5 = lookup_func ( ATreadFromString ( "prod(id(\"Sdf2-to-ADT\"),w(\"\"),[ql(\"section-to-adt\"),w(\"\"),ql(\"(\"),w(\"\"),sort(\"ModuleName\"),w(\"\"),ql(\",\"),w(\"\"),sort(\"Section\"),w(\"\"),ql(\")\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"ATerms\"),w(\"\"),no-attrs)" ) ) ;
-ef5sym = lookup_sym ( ATreadFromString ( "prod(id(\"Sdf2-to-ADT\"),w(\"\"),[ql(\"section-to-adt\"),w(\"\"),ql(\"(\"),w(\"\"),sort(\"ModuleName\"),w(\"\"),ql(\",\"),w(\"\"),sort(\"Section\"),w(\"\"),ql(\")\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"ATerms\"),w(\"\"),no-attrs)" ) ) ;
+ef5 = lookup_func ( ATreadFromString ( "prod(id(\"Sdf2-to-ADT\"),w(\"\"),[ql(\"section-to-adt\"),w(\"\"),ql(\"(\"),w(\"\"),sort(\"ModuleName\"),w(\"\"),ql(\",\"),w(\"\"),sort(\"Section\"),w(\"\"),ql(\",\"),w(\"\"),sort(\"ConsOption\"),w(\"\"),ql(\")\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"ATerms\"),w(\"\"),no-attrs)" ) ) ;
+ef5sym = lookup_sym ( ATreadFromString ( "prod(id(\"Sdf2-to-ADT\"),w(\"\"),[ql(\"section-to-adt\"),w(\"\"),ql(\"(\"),w(\"\"),sort(\"ModuleName\"),w(\"\"),ql(\",\"),w(\"\"),sort(\"Section\"),w(\"\"),ql(\",\"),w(\"\"),sort(\"ConsOption\"),w(\"\"),ql(\")\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"ATerms\"),w(\"\"),no-attrs)" ) ) ;
 ef6 = lookup_func ( ATreadFromString ( "prod(id(\"ATerm-Syntax\"),w(\"\"),[iter-sep(l(\"{\"),w(\"\"),sort(\"ATerm\"),w(\"\"),ql(\",\"),w(\"\"),l(\"}\"),w(\"\"),l(\"*\"))],w(\"\"),l(\"->\"),w(\"\"),sort(\"ATerms\"),w(\"\"),attrs(l(\"{\"),w(\"\"),[l(\"avoid\")],w(\"\"),l(\"}\")))" ) ) ;
 ef6sym = lookup_sym ( ATreadFromString ( "prod(id(\"ATerm-Syntax\"),w(\"\"),[iter-sep(l(\"{\"),w(\"\"),sort(\"ATerm\"),w(\"\"),ql(\",\"),w(\"\"),l(\"}\"),w(\"\"),l(\"*\"))],w(\"\"),l(\"->\"),w(\"\"),sort(\"ATerms\"),w(\"\"),attrs(l(\"{\"),w(\"\"),[l(\"avoid\")],w(\"\"),l(\"}\")))" ) ) ;
 }
@@ -54,10 +54,10 @@ static ATerm constant0 = NULL ;
 void init_AUX_Sdf2_to_ADT4 ( ) {
 ATprotect ( & constant0 ) ;
 }
-ATerm lf_AUX_Sdf2_to_ADT4_1 ( ATerm arg0 ) {
+ATerm lf_AUX_Sdf2_to_ADT4_1 ( ATerm arg0 , ATerm arg1 ) {
 {
 ATerm tmp [ 9 ] ;
-FUNC_ENTRY ( lf_AUX_Sdf2_to_ADT4_1sym , ATmakeAppl ( lf_AUX_Sdf2_to_ADT4_1sym , arg0 ) ) ;
+FUNC_ENTRY ( lf_AUX_Sdf2_to_ADT4_1sym , ATmakeAppl ( lf_AUX_Sdf2_to_ADT4_1sym , arg0 , arg1 ) ) ;
 if ( check_sym ( arg0 , ef1sym ) ) {
 {
 ATerm atmp00 = arg_0 ( arg0 ) ;
@@ -77,12 +77,12 @@ ATerm atmp0200 = arg_0 ( atmp020 ) ;
 if ( not_empty_list ( atmp0200 ) ) {
 ( tmp [ 0 ] = list_head ( atmp0200 ) ) ;
 ( tmp [ 1 ] = list_tail ( atmp0200 ) ) ;
-( tmp [ 2 ] = ( * ef5 ) ( atmp00 , tmp [ 0 ] ) ) ;
+( tmp [ 2 ] = ( * ef5 ) ( atmp00 , tmp [ 0 ] , arg1 ) ) ;
 if ( check_sym ( tmp [ 2 ] , ef6sym ) ) {
 ( tmp [ 3 ] = arg_0 ( tmp [ 2 ] ) ) ;
 if ( check_sym ( tmp [ 3 ] , lf4sym ) ) {
 ( tmp [ 4 ] = arg_0 ( tmp [ 3 ] ) ) ;
-( tmp [ 5 ] = lf_AUX_Sdf2_to_ADT4_1 ( ( * ef1 ) ( atmp00 , lf2 ( make_list ( atmp010 ) ) , make_nf1 ( ef2sym , lf3 ( make_list ( tmp [ 1 ] ) ) ) ) ) ) ;
+( tmp [ 5 ] = lf_AUX_Sdf2_to_ADT4_1 ( ( * ef1 ) ( atmp00 , lf2 ( make_list ( atmp010 ) ) , make_nf1 ( ef2sym , lf3 ( make_list ( tmp [ 1 ] ) ) ) ) , arg1 ) ) ;
 if ( check_sym ( tmp [ 5 ] , ef3sym ) ) {
 ( tmp [ 6 ] = arg_0 ( tmp [ 5 ] ) ) ;
 if ( check_sym ( tmp [ 6 ] , ef4sym ) ) {
@@ -109,7 +109,7 @@ FUNC_EXIT_CONST ( constant0 , make_nf1 ( ef3sym , ( * ef4 ) ( lf4 ( make_list ( 
 }
 }
 }
-FUNC_EXIT ( make_nf1 ( lf_AUX_Sdf2_to_ADT4_1sym , arg0 ) ) ;
+FUNC_EXIT ( make_nf2 ( lf_AUX_Sdf2_to_ADT4_1sym , arg0 , arg1 ) ) ;
 }
 }
 ATerm lf4 ( ATerm arg0 ) {
