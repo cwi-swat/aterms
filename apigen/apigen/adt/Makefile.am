@@ -8,8 +8,17 @@ SUBDIRS=api
 
 CLASSPATH_ENV	= CLASSPATH=${top_srcdir}:${EXTERNAL_JARS}
 
-java_JAVA       = ADT.java Alternative.java AlternativeList.java Field.java \
-                  Location.java Step.java Type.java
+java_JAVA=\
+	ADT.java\
+	AlternativeConstructor.java\
+	AlternativeList.java\
+	ListAlternative.java\
+	ListAlternativeEmpty.java\
+	ListAlternativeMany.java\
+	Field.java\
+	Location.java\
+	Step.java\
+	Type.java
 
 javadir         = ${prefix}/classes/apigen/adt
 JAVAROOT	= ${top_builddir}
