@@ -37,6 +37,11 @@ documentation and/or software.
 #define PROTOTYPES 0
 #endif
 
+#ifdef __cplusplus
+extern "C"
+{
+#endif/* __cplusplus */
+
 /* POINTER defines a generic pointer type */
 typedef unsigned char *POINTER;
 
@@ -68,4 +73,8 @@ void MD5Init PROTO_LIST ((MD5_CTX *));
 void MD5Update PROTO_LIST
   ((MD5_CTX *, unsigned char *, unsigned int));
 void MD5Final PROTO_LIST ((unsigned char [16], MD5_CTX *));
+
+#ifdef __cplusplus
+}
+#endif/* __cplusplus */ 
 

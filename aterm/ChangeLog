@@ -2,6 +2,7 @@ $Id$
 
 Tue Sep  2 15:08:51 CEST 2003 <jong@cwi.nl>
  * configure.in: version bump to 2.0.4
+ * aterm/*.h: insert 'extern "C" { ... }' for C++ compilers
  * aterm/gc.c:
    - removed several unused variables in WIN32 specific code.
      Closes: "Missing declarations in gc.c" by J.W.Wesselink@TUE.nl

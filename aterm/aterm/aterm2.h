@@ -15,6 +15,11 @@
 #include "afun.h"
 #include "abool.h"
 
+#ifdef __cplusplus
+extern "C"
+{
+#endif/* __cplusplus */
+
 /**
   * We define some new datatypes.
   */
@@ -255,5 +260,9 @@ void AT_writeToStringBuffer(ATerm t, char *buffer);
 #define ATwriteToStringBuffer(t,b) AT_writeToStringBuffer((t),(b))
 
 #define ATgetAFunId(afun) ((afun))
+
+#ifdef __cplusplus
+}
+#endif/* __cplusplus */ 
 
 #endif

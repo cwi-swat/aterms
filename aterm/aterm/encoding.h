@@ -7,6 +7,11 @@
 #ifndef ENCODING_H
 #define ENCODING_H
 
+#ifdef __cplusplus
+extern "C"
+{
+#endif/* __cplusplus */
+
 /*
  |--------------------------------|
  |info|type |arity|quoted|mark|age|
@@ -133,5 +138,9 @@ typedef unsigned int header_type;
 
 #define AT_TABLE_SIZE(table_class)  (1<<(table_class))
 #define AT_TABLE_MASK(table_class)  (AT_TABLE_SIZE(table_class)-1)
+
+#ifdef __cplusplus
+}
+#endif/* __cplusplus */ 
 
 #endif

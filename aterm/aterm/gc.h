@@ -4,6 +4,11 @@
 #include "abool.h"
 #include "aterm2.h"
 
+#ifdef __cplusplus
+extern "C"
+{
+#endif/* __cplusplus */
+
 void AT_initGC(int argc, char *argv[], ATerm *bottomOfStack);
 void AT_setBottomOfStack(ATerm *bottomOfStack);
 void AT_cleanupGC();
@@ -18,12 +23,15 @@ extern int good_gc_ratio;
 extern int small_allocation_rate_ratio;
 extern int old_increase_rate_ratio;
 
-
 #endif
 
 void AT_collect();
 
 extern AFun at_parked_symbol;
 #define PARK_SYMBOL(afun) at_parked_symbol = (afun)
+
+#ifdef __cplusplus
+}
+#endif/* __cplusplus */ 
 
 #endif

@@ -3,6 +3,11 @@
 
 #include <string.h>
 
+#ifdef __cplusplus
+extern "C"
+{
+#endif/* __cplusplus */
+
 #ifndef streq
 #  define streq(s,t)	(!(strcmp(s,t)))
 #endif
@@ -31,5 +36,9 @@
 #endif
 
 #define MYMAXINT 0x7FFFFFFF
+
+#ifdef __cplusplus
+}
+#endif/* __cplusplus */ 
 
 #endif

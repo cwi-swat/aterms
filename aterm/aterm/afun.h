@@ -4,6 +4,11 @@
 #include "atypes.h"
 #include "encoding.h"
 
+#ifdef __cplusplus
+extern "C"
+{
+#endif/* __cplusplus */
+
 #define Symbol AFun
 
 #define AS_INT          0
@@ -66,5 +71,9 @@ void AT_markProtectedSymbols_young();
 unsigned int AT_hashSymbol(char *name, int arity);
 ATbool AT_findSymbol(char *name, int arity, ATbool quoted);
 void AT_unmarkAllAFuns();
+
+#ifdef __cplusplus
+}
+#endif/* __cplusplus */ 
 
 #endif

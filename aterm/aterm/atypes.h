@@ -3,6 +3,11 @@
 
 #include "abool.h"
 
+#ifdef __cplusplus
+extern "C"
+{
+#endif/* __cplusplus */
+
 typedef unsigned int ShortHashNumber;
 
 #ifdef AT_64BIT
@@ -18,5 +23,9 @@ typedef unsigned int HashNumber;
 #endif /* AT_64BIT */
 
 #define ADDR_TO_HNR(a) (((HashNumber)(a)) >> 2)
+
+#ifdef __cplusplus
+}
+#endif/* __cplusplus */ 
 
 #endif /* ATYPES_H */

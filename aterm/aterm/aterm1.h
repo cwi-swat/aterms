@@ -11,6 +11,11 @@
 #include "encoding.h"
 #include "abool.h"
 
+#ifdef __cplusplus
+extern "C"
+{
+#endif/* __cplusplus */
+
 #define	AT_FREE         0
 #define AT_APPL         1
 #define AT_INT          2 
@@ -110,5 +115,9 @@ void ATabort(const char *format, ...);
 int  ATprintf(const char *format, ...);
 int  ATfprintf(FILE *stream, const char *format, ...);
 int  ATvfprintf(FILE *stream, const char *format, va_list args);
+
+#ifdef __cplusplus
+}
+#endif/* __cplusplus */ 
 
 #endif

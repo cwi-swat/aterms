@@ -3,6 +3,11 @@
 
 #include "aterm2.h"
 
+#ifdef __cplusplus
+extern "C"
+{
+#endif/* __cplusplus */
+
 typedef struct ProtEntry
 {
 	struct ProtEntry *next;
@@ -39,5 +44,9 @@ int  AT_calcTermDepth(ATerm t);
 void AT_assertUnmarked(ATerm t);
 void AT_assertMarked(ATerm t);
 int AT_calcAllocatedSize();
+
+#ifdef __cplusplus
+}
+#endif/* __cplusplus */ 
 
 #endif

@@ -3,6 +3,11 @@
 
 #include "aterm2.h"
 
+#ifdef __cplusplus
+extern "C"
+{
+#endif/* __cplusplus */
+
 #define MAX_ARITY            256
 #define MIN_TERM_SIZE          2
 #define MAX_TERM_SIZE       (MAX_ARITY+3)
@@ -106,5 +111,9 @@ void  AT_validateFreeList(int size);
 int AT_inAnyFreeList(ATerm t);
 void AT_printAllTerms(FILE *file);
 void AT_printAllAFunCounts(FILE *file);
+
+#ifdef __cplusplus
+}
+#endif/* __cplusplus */ 
 
 #endif

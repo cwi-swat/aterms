@@ -5,6 +5,11 @@
 #ifndef DEBUG_H
 #define DEBUG_H
 
+#ifdef __cplusplus
+extern "C"
+{
+#endif/* __cplusplus */
+
 #define EXEC(cmd) (cmd); fflush(stdout)
 
 #ifdef DEBUG_ALL
@@ -23,5 +28,9 @@
 #else
 #define DBG_ARITY(cmd)
 #endif
+
+#ifdef __cplusplus
+}
+#endif/* __cplusplus */ 
 
 #endif
