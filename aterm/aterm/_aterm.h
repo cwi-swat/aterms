@@ -16,6 +16,7 @@ typedef struct ProtEntry
 extern ATbool silent;
 extern ProtEntry **at_prot_table;
 extern int at_prot_table_size;
+extern ProtEntry *at_prot_memory;
 
 void AT_markTerm(ATerm t);
 void AT_unmarkTerm(ATerm t);

@@ -73,6 +73,7 @@ static int      error_idx = 0;
 ProtEntry      *free_prot_entries = NULL;
 ProtEntry     **at_prot_table = NULL;
 int             at_prot_table_size = 0;
+ProtEntry      *at_prot_memory = NULL;
 
 static ATerm   *mark_stack = NULL;
 static int      mark_stack_size = 0;
@@ -459,6 +460,43 @@ void AT_printAllProtectedTerms(FILE *file)
 	}
       }
     }
+  }
+}
+
+/*}}}  */
+/*{{{  void ATprotectMemory(void *start, int size) */
+
+void ATprotectMemory(void *start, int size)
+{
+  ProtEntry *entry = (ProtEntry *)malloc(sizeof(ProtEntry));
+  if (entry == NULL) {
+    ATerror("out of memory in ATprotectMemory.\n");
+  }
+  entry->start = (ATerm *)start;
+  entry->size  = size;
+  entry->next  = at_prot_memory;
+  at_prot_memory = entry;
+}
+
+/*}}}  */
+/*{{{  void ATunprotectMemory(void *start) */
+
+void ATunprotectMemory(void *start)
+{
+  ProtEntry *entry, *prev;
+
+  prev = NULL;
+  for (entry=at_prot_memory; entry; entry=entry->next) {
+    if (entry->start == start) {
+      if (prev) {
+	prev->next = entry->next;
+      } else {
+	at_prot_memory = entry->next;
+      }
+      free(entry);
+      break;
+    }
+    prev = entry;
   }
 }
 

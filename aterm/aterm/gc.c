@@ -33,10 +33,6 @@ static int     gc_count            = 0;
 static clock_t sweep_time[3]       = { 0, MYMAXINT, 0 };
 static clock_t mark_time[3]        = { 0, MYMAXINT, 0 };
 static int     stack_depth[3]      = { 0, MYMAXINT, 0 };
-static int     stack_terms[3]      = { 0, MYMAXINT, 0 };
-static int     stack_symbols[3]    = { 0, MYMAXINT, 0 };
-static int     register_terms[3]   = { 0, MYMAXINT, 0 };
-static int     register_symbols[3] = { 0, MYMAXINT, 0 };
 static int     reclaim_perc[3]     = { 0, MYMAXINT, 0 };
 extern int     mark_stats[3];
 extern int     nr_marks;
@@ -106,7 +102,43 @@ ATerm *stack_top()
 }
 
 /*}}}  */
- 
+/*{{{  static void mark_memory(ATerm *start, ATerm *stop) */
+
+static void mark_memory(ATerm *start, ATerm *stop)
+{
+  ATerm *cur, real_term;
+#ifdef AT_64BIT
+  ATerm odd_term;
+  AFun odd_sym;
+#endif
+
+  /* Traverse the stack */
+  for(cur=start; cur<stop; cur++) {
+    real_term = AT_isInsideValidTerm(*cur);
+    if (real_term != NULL) {
+      AT_markTerm(real_term);
+    }
+
+    if (AT_isValidSymbol((Symbol)*cur)) {
+      AT_markSymbol((Symbol)*cur);
+    }
+
+#ifdef AT_64BIT
+    odd_term = *((ATerm *)((MachineWord)cur)+4);
+    real_term = AT_isInsideValidTerm(odd_term);
+    if (real_term != NULL) {
+      AT_markTerm(odd_term);
+    }
+
+    odd_sym = *((AFun *)((MachineWord)cur)+4);
+    if (AT_isValidSymbol(odd_sym)) {
+      AT_markSymbol(odd_sym);
+    }
+#endif
+  }
+}
+
+/*}}}  */
 /*{{{  void mark_phase() */
 
 /**
@@ -116,16 +148,14 @@ ATerm *stack_top()
 #ifdef WIN32
 void __cdecl mark_phase()
 #else
-     void mark_phase()
+void         mark_phase()
 #endif
 {
   int i, j;
   int stack_size;
-  int nr_stack_terms, nr_stack_syms;
-  int nr_reg_terms, nr_reg_syms;
-
   ATerm *stackTop;
-  ATerm *start, *stop, *cur, real_term;
+  ATerm *start, *stop;
+  ProtEntry *prot;
 
 #ifdef AT_64BIT
   ATerm oddTerm;
@@ -166,22 +196,16 @@ void __cdecl mark_phase()
   nr_reg_terms   = 0;
   nr_reg_syms    = 0;
 
-  /* First traverse the reg-array to count the nr of aterms
-     that were in registers */
   for(i=0; i<8; i++) {
     real_term = AT_isInsideValidTerm(reg[i]);
     if (real_term != NULL) {
       AT_markTerm(real_term);
-      nr_reg_terms++;
     }
     if (AT_isValidSymbol((Symbol)reg[i])) {
       AT_markSymbol((Symbol)reg[i]);
-      nr_reg_syms++;
     }
   }
 
-  STATS(register_terms, nr_reg_terms);
-  STATS(register_symbols, nr_reg_syms);
   /* The register variables are on the stack aswell
      I set them to zero so they won't be processed again when
      the stack is traversed. The reg-array is also in the stack
@@ -206,49 +230,14 @@ void __cdecl mark_phase()
 
   start = (ATerm *)env;
   stop  = ((ATerm *)(((char *)env) + sizeof(sigjmp_buf)));
-
-  nr_stack_terms = 0;
-  nr_stack_syms  = 0;
-  nr_reg_terms   = 0;
-  nr_reg_syms    = 0;
-
-  for(cur=start; cur<stop; cur++) {
-    real_term = AT_isInsideValidTerm(*cur);
-    if (real_term != NULL) {
-      AT_markTerm(real_term);
-      nr_reg_terms++;
-    }
-
-    if (AT_isValidSymbol((AFun)*cur)) {
-      AT_markSymbol((AFun)*cur);
-      nr_reg_syms++;
-    }
-
-#ifdef AT_64BIT
-    oddTerm = *((ATerm *)((MachineWord)cur)+4);
-    real_term = AT_isInsideValidTerm(oddTerm);
-    if (real_term != NULL) {
-      AT_markTerm(real_term);
-      nr_reg_terms++;
-    }
-
-    oddSym = *((AFun *)((MachineWord)cur)+4);
-    if (AT_isValidSymbol(oddSym)) {
-      AT_markSymbol(oddSym);
-      nr_reg_syms++;
-    }
-#endif
-  }
-
-  STATS(register_terms, nr_reg_terms);
-  STATS(register_symbols, nr_reg_syms);
+  mark_memory(start, stop);
 
 /*}}}  */
 #endif
 
   stackTop = stack_top();
 
-  /*{{{  Determine stack orientation */
+  /*{{{  Mark the stack */
 
   start = MIN(stackTop, stackBot);
   stop  = MAX(stackTop, stackBot);
@@ -256,51 +245,7 @@ void __cdecl mark_phase()
   stack_size = stop-start;
   STATS(stack_depth, stack_size);
 
-  /*}}}  */
-
-  /*{{{  Traverse the stack */
-
-  /* Traverse the stack */
-  for(cur=start; cur<stop; cur++) {
-    real_term = AT_isInsideValidTerm(*cur);
-    if (real_term != NULL) {
-      AT_markTerm(real_term);
-      nr_stack_terms++;
-    }
-
-    if (AT_isValidSymbol((Symbol)*cur)) {
-      AT_markSymbol((Symbol)*cur);
-      nr_stack_syms++;
-    }
-
-#ifdef AT_64BIT
-    oddTerm = *((ATerm *)((MachineWord)cur)+4);
-    real_term = AT_isInsideValidTerm(oddTerm);
-    if (real_term != NULL) {
-      AT_markTerm(oddTerm);
-      nr_reg_terms++;
-    }
-
-    oddSym = *((AFun *)((MachineWord)cur)+4);
-    if (AT_isValidSymbol(oddSym)) {
-      AT_markSymbol(oddSym);
-      nr_reg_syms++;
-    }
-#endif
-  }
-
-#ifdef WIN32
-  /* Alex: Env variabele wordt verderop in de code ook al doorlopen
-     omdat hij op de stack staat. De aantallen reg_terms moeten dus
-     achteraf van de aantallen stack_terms worden afgetrokken
-     Adjust the nr_stack-variables because the reg-array is also on the stack
-  */
-  nr_stack_terms = nr_stack_terms - nr_reg_terms;
-  nr_stack_syms  = nr_stack_syms  - nr_stack_syms;
-#endif
-
-  STATS(stack_terms, nr_stack_terms);
-  STATS(stack_symbols, nr_stack_syms);
+  mark_memory(start, stop);
 
   /*}}}  */
 
@@ -319,6 +264,13 @@ void __cdecl mark_phase()
   }
 
   /*}}}  */
+  /*{{{  Traverse protected memory */
+
+  for (prot=at_prot_memory; prot != NULL; prot=prot->next) {
+    mark_memory((ATerm *)prot->start, (ATerm *)(((char *)prot->start) + prot->size));
+  }
+
+  /*}}}  */
 
   /* Mark protected symbols */
   AT_markProtectedSymbols();
@@ -330,6 +282,8 @@ void __cdecl mark_phase()
 }
 
 /*}}}  */
+
+
 /*{{{  void sweep_phase() */
 
 /**
@@ -510,22 +464,6 @@ void AT_cleanupGC()
 							stack_depth[IDX_MIN],  
 							stack_depth[IDX_TOTAL]/gc_count,
 							stack_depth[IDX_MAX]);
-			fprintf(stderr, "  term roots on stack: %d/%d/%d\n", 
-							stack_terms[IDX_MIN], 
-							stack_terms[IDX_TOTAL]/gc_count,
-							stack_terms[IDX_MAX]);
-			fprintf(stderr, "  symbol roots on stack: %d/%d/%d\n", 
-							stack_symbols[IDX_MIN], 
-							stack_symbols[IDX_TOTAL]/gc_count,
-							stack_symbols[IDX_MAX]);
-			fprintf(stderr, "  term roots in registers: %d/%d/%d\n", 
-							register_terms[IDX_MIN], 
-							register_terms[IDX_TOTAL]/gc_count,
-							register_terms[IDX_MAX]);
-			fprintf(stderr, "  symbol roots in registers: %d/%d/%d\n", 
-							register_symbols[IDX_MIN], 
-							register_symbols[IDX_TOTAL]/gc_count,
-							register_symbols[IDX_MAX]);
 			fprintf(stderr, "\n  reclamation percentage: %d/%d/%d\n",
 							reclaim_perc[IDX_MIN],
 							reclaim_perc[IDX_TOTAL]/gc_count,

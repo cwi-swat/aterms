@@ -1,6 +1,11 @@
 $Id$
 
+2001/06/01 (olivierp@cwi.nl)
+ * Added ATprotectMemory/ATunprotectMemory functions requested by
+   Pierre-Etienne Moreau
+
 2001/05/31 ({jong,olivierp}@cwi.nl)
+ * Version is now 1.6
  * Added support for pointers that point INSIDE aterms:
    this should fix the strange gc problems in gcc-2.95.2 related
    to strength-reduce optimizations.

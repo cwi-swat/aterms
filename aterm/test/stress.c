@@ -725,6 +725,7 @@ void testGC()
 void testProtect()
 {
 	static ATerm ts1 = NULL, ts2 = NULL;
+	static ATerm ts[2];
 
 	ATprotect(&ts1);
 	ts1 = ATmake("unique-1");
@@ -735,6 +736,18 @@ void testProtect()
 	assert(AT_isValidTerm(ts1));
 
 	ATunprotect(&ts1);
+	AT_collect(2);
+
+	ts[0] = (ATerm)"garbage";
+	ts[1] = ATmake("unique-3");
+	assert(!AT_isValidTerm(ts[0]));
+	assert(AT_isValidTerm(ts[1]));
+	assert(!AT_isInsideValidTerm(ts[0]));
+	assert(AT_isInsideValidTerm((ATerm)((char *)ts[1])+4));
+	ATprotectMemory((void *)ts, sizeof(ATerm)*2);
+	AT_collect(2);
+	assert(AT_isValidTerm(ts[1]));
+	ATunprotectMemory((void *)ts);
 	AT_collect(2);
 }
 

@@ -213,6 +213,8 @@ void    ATprotectAFun(AFun sym);
 #define ATprotectSymbol ATprotectAFun
 void    ATunprotectAFun(AFun sym);
 #define ATunprotectSymbol ATunprotectAFun
+void ATprotectMemory(void *start, int size);
+void ATunprotectMemory(void *start);
 
 /* convenience macro's for previously private functions */
 #define ATgetAnnotations(t) AT_getAnnotations( (t) )
