@@ -136,7 +136,6 @@ apigen/adt/Makefile
 apigen/gen/Makefile
 apigen/gen/c/Makefile
 apigen/gen/java/Makefile
-apigen/gen/jtom/Makefile
 test/Makefile
 doc/Makefile
 doc/paper/Makefile

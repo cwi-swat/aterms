@@ -59,18 +59,10 @@ extends Generator
   }
 
   //}}}
-  //{{{ public static String capitalize(String s)
-
-  public static String capitalize(String s)
-  {
-    return Character.toUpperCase(s.charAt(0)) + s.substring(1);
-  }
-
-  //}}}
 
   //{{{ public final static void main(String[] args)
 
-  public final static void main(String[] args)
+  public static void main(String[] args)
     throws IOException
   {
     String pkg = "";

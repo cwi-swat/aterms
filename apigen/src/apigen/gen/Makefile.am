@@ -4,7 +4,7 @@
 # $Id: Makefile.am,v 1.7 2001/07/16 13:41:54 jong Exp $
 #
 
-SUBDIRS = . c java jtom
+SUBDIRS = . c java 
 
 CLASSPATH_ENV	= CLASSPATH=${top_srcdir}:$(ATERM)/classes
 
