@@ -42,9 +42,9 @@ operations described earlier.
 The operations on ATermInt are:
 
 \begin{itemize}
-\item {\tt ATermInt makeInt(Integer \emph{value})}: Construct a new integer
+\item {\tt ATermInt ATmakeInt(Integer \emph{value})}: Construct a new integer
 term.
-\item {\tt Integer getInt(ATermInt \emph{i})}: Retrieve the value of an 
+\item {\tt Integer ATgetInt(ATermInt \emph{i})}: Retrieve the value of an 
       integer term.
 \end{itemize}
 
@@ -54,12 +54,11 @@ term.
 
 \paragraph{ATermReal:} This datatype represents real-number terms.
 The operations on ATermReal are:
-XXX Hier komen Real en double beide voor; is dit de bedoeling? Niet mooiXXX
 
 \begin{itemize}
-\item {\tt ATermReal makeReal(Real \emph{value})}: Construct a new 
+\item {\tt ATermReal ATmakeReal(Real \emph{value})}: Construct a new 
       real term.
-\item {\tt double getReal(ATermReal \emph{r})}: Retrieve the value of 
+\item {\tt Real ATgetReal(ATermReal \emph{r})}: Retrieve the value of 
       a real term.
 \end{itemize}
 
@@ -71,15 +70,15 @@ XXX Hier komen Real en double beide voor; is dit de bedoeling? Niet mooiXXX
 name, an arity, and an indication whether the symbol name is quoted or not.
 The operations on symbols are:
 \begin{itemize}
-\item {\tt makeAFun(String \emph{name}, Integer \emph{arity}, Boolean \emph{quoted})}: Construct
+\item {\tt ATmakeAFun(String \emph{name}, Integer \emph{arity}, Boolean \emph{quoted})}: Construct
 a new symbol. If a symbol with the given name, arity, and quotation already 
 exists, the existing symbol is returned. Otherwise a new symbol is created
 and returned. \AFuns\ are also subject to garbage collection in order
 to avoid long running (interactive) programs from slowly running out of
 symbols.
-\item {\tt getName(AFun \emph{symbol})}: Retrieve the name of a symbol.
-\item {\tt getArity(AFun \emph{symbol})}: Retrieve the arity of a symbol.
-\item {\tt isQuoted(AFun \emph{symbol})}: Check if a symbol is quoted.
+\item {\tt ATgetName(AFun \emph{symbol})}: Retrieve the name of a symbol.
+\item {\tt ATgetArity(AFun \emph{symbol})}: Retrieve the arity of a symbol.
+\item {\tt ATisQuoted(AFun \emph{symbol})}: Check if a symbol is quoted.
 \end{itemize}
 
 %}}}
@@ -89,18 +88,18 @@ symbols.
 consisting of a function symbol and a number of arguments.
 The operations on this datatype are:
 \begin{itemize}
-\item {\tt ATermAppl makeAppl$n$(AFun$\!\!$ \emph{fun}, ATerm \emph{arg}$_0$,
+\item {\tt ATermAppl ATmakeAppl$n$(AFun$\!\!$ \emph{fun}, ATerm \emph{arg}$_0$,
            $\ldots$, ATerm \emph{arg}$_{n-1}$)}:
 	  This is a family of operations, one for each $n$ between $0$ and $6$
 	  (inclusive). These operations are used to construct a new
 	  function application with the given function symbol and 
 	  arguments.
-\item {\tt ATermAppl makeAppl(AFun \emph{fun}, ATermList \emph{args})}:
+\item {\tt ATermAppl ATmakeAppl(AFun \emph{fun}, ATermList \emph{args})}:
 		Construct a new function application with the given function
 		symbol and arguments.
-\item {\tt AFun getFun(ATermAppl \emph{appl})}: 
+\item {\tt AFun ATgetFun(ATermAppl \emph{appl})}: 
       Retrieve the function symbol of a function application.
-\item {\tt ATerm getArgument(ATermAppl \emph{appl}, Integer \emph{n})}: 
+\item {\tt ATerm ATgetArgument(ATermAppl \emph{appl}, Integer \emph{n})}: 
       Retrieve a specific argument.
 \end{itemize}
 
@@ -112,51 +111,51 @@ Element indices start at 0. Thus a list of length $n$ has elements
 $0,\ldots,n-1$.
 The operations on ATermList are:
 \begin{itemize}
-\item {\tt ATermList makeList$n$(ATerm \emph{el}$_0$$,\ldots,$
+\item {\tt ATermList ATmakeList$n$(ATerm \emph{el}$_0$$,\ldots,$
 	       ATerm \emph{el}$_{n-1}$)}:
       This is a family of operations, one for each $n$ between
       $0$ and $6$ (inclusive). These operations are used to quickly construct
 	  small lists of terms.
-\item {\tt Integer getLength(ATermList \emph{list})}: Retrieve the length of
+\item {\tt Integer ATgetLength(ATermList \emph{list})}: Retrieve the length of
 		\emph{list}.
-\item {\tt ATerm getFirst(ATermList \emph{list})}: Retrieve the first element of
+\item {\tt ATerm ATgetFirst(ATermList \emph{list})}: Retrieve the first element of
 	\emph{list}.
-\item {\tt ATermList getNext(ATermList \emph{list})}: Retrieve all but the first
+\item {\tt ATermList ATgetNext(ATermList \emph{list})}: Retrieve all but the first
 	element of \emph{list}.
-\item {\tt ATermList getPrefix(ATermList \emph{list})}: Retrieve all but the last
+\item {\tt ATermList ATgetPrefix(ATermList \emph{list})}: Retrieve all but the last
 	element of \emph{list}.
-\item {\tt ATerm getLast(ATermList \emph{list})}: Retrieve the last element from
+\item {\tt ATerm ATgetLast(ATermList \emph{list})}: Retrieve the last element from
       \emph{list}.
-\item {\tt ATermList getSlice(ATermList \emph{list}, Integer \emph{start},
+\item {\tt ATermList ATgetSlice(ATermList \emph{list}, Integer \emph{start},
    Integer \emph{end})}: Retrieve the portion of \emph{list} from position
    \emph{start} through \emph{end-1}. 
-\item {\tt Boolean isEmpty(ATermList \emph{list})}: Check if \emph{list}
+\item {\tt Boolean ATisEmpty(ATermList \emph{list})}: Check if \emph{list}
 	contains zero elements.
-\item {\tt ATermList insert(ATermList \emph{list}, ATerm \emph{el})}:
+\item {\tt ATermList ATinsert(ATermList \emph{list}, ATerm \emph{el})}:
       Insert a single element at the start of a list.
-\item {\tt ATermList insertAt(ATermList \emph{list}, ATerm \emph{el},
+\item {\tt ATermList ATinsertAt(ATermList \emph{list}, ATerm \emph{el},
        Integer \emph{index})}:
       Insert a single element at position index in \emph{list}.
-\item {\tt ATermList append(ATermList \emph{list}, ATerm \emph{el})}:
+\item {\tt ATermList ATappend(ATermList \emph{list}, ATerm \emph{el})}:
       Append a single element to the end of \emph{list}.
-\item {\tt ATermList concat(ATermList \emph{list1}, ATermList \emph{list2})}:
+\item {\tt ATermList ATconcat(ATermList \emph{list1}, ATermList \emph{list2})}:
       Concatenate \emph{list1} and \emph{list2}.
-\item {\tt Integer indexOf(ATermList \emph{list}, ATerm \emph{el},
+\item {\tt Integer ATindexOf(ATermList \emph{list}, ATerm \emph{el},
        Integer \emph{n})}:
       Search for an element in \emph{list} and return the index of the first
       location where \emph{el} is present. Start searching at index \emph{n}.
       If the element is not present after element \emph{n}, return $-1$.
-\item {\tt Integer lastIndexOf(ATermList \emph{list}, ATerm \emph{el},
+\item {\tt Integer ATlastIndexOf(ATermList \emph{list}, ATerm \emph{el},
        Integer \emph{n})}:
       Search backwards for \emph{el} in \emph{list}, and return the index of
 	  the last location where the element is present. Start searching 
 	at index \emph{n}. 
 	If the element is not present before element \emph{n}, return $-1$.
-\item {\tt ATerm elementAt(ATermList \emph{list}, Integer \emph{index})}:
+\item {\tt ATerm ATelementAt(ATermList \emph{list}, Integer \emph{index})}:
       Retrieve element at position \emph{index} from \emph{list}.
-\item {\tt ATermList removeElement(ATermList \emph{list}, ATerm \emph{elem})}:
+\item {\tt ATermList ATremoveElement(ATermList \emph{list}, ATerm \emph{elem})}:
 	Remove once occurrence of an element from a list.
-\item {\tt ATermList removeElementAt(ATermList \emph{list}, 
+\item {\tt ATermList ATremoveElementAt(ATermList \emph{list}, 
 	Integer \emph{index})}: Remove an indexed element from a list.
 \end{itemize}
 
@@ -168,9 +167,9 @@ The operations on ATermList are:
 The operations on ATermPlaceholder are:
 
 \begin{itemize}
-\item {\tt ATermPlaceholder makePlaceholder(ATerm \emph{type})}: 
+\item {\tt ATermPlaceholder ATmakePlaceholder(ATerm \emph{type})}: 
       Construct a new placeholder term.
-\item {\tt ATerm getPlaceholder(ATermPlaceholder \emph{placeholder})}: 
+\item {\tt ATerm ATgetPlaceholder(ATermPlaceholder \emph{placeholder})}: 
       Retrieve the type of this placeholder.
 \end{itemize}
 
@@ -183,14 +182,14 @@ The operations on ATermPlaceholder are:
 %%Blob destructors can be registered using the
 %%{\tt registerBlobDestructor} function. All registered destructors are
 %%called before the space occupied by a `dead' ATermBlob is reused. 
-The operations on ATermBlob are: XXX blob versus *blob?? XXX
+The operations on ATermBlob are:
 
 \begin{itemize}
-\item {\tt ATermBlob makeBlob(Integer \emph{size}, Data \emph{data})}: 
+\item {\tt ATermBlob ATmakeBlob(Integer \emph{size}, Data \emph{data})}: 
       Construct a new blob term.
 \item {\tt Integer getBlobSize(ATermBlob \emph{blob})}: Retrieve the size of
       a blob.
-\item {\tt Data getBlobData(ATermBlob *\emph{blob})}: Retrieve the data
+\item {\tt Data ATgetBlobData(ATermBlob \emph{blob})}: Retrieve the data
       pointer stored in a blob.
 \end{itemize}
 

@@ -184,10 +184,6 @@ show some of the features of the textual representation of \ATerms.
 \subsection{Operations on ATerms}
 \label{aterm-operations}
 
-XXX Inconsistentie tussen deze sectie en appendix B: hier hebben argumenten
-van de level 1 functies GEEN type, dat is voor het level 2 interface in
-appendx B WEL het geval; hier nog toevoegen XXX
-
 The operations on \ATerms\ fall into three categories: making and
 matching (Section~\ref{making}), annotating (Section~\ref{annotating}),
 and reading and writing (Section~\ref{reading}) of \ATerms. The total
@@ -229,23 +225,33 @@ The operations are:
 
 \begin{itemize}
 
-\item {\tt ATerm make(\emph{pattern}, \emph{args})}: Create a new
+\item {\tt ATerm ATmake(String $pattern$, $arg_1$, ..., $arg_n$)}:
+	 Create a new
 term by taking the string pattern, parsing it as an \ATerm\ and filling
-the placeholders in the resulting term with values taken from {\tt args}.
+the placeholders in the resulting term with values taken from $arg_1$
+through $arg_n$.
 If the parse fails, a message is printed and the program is aborted.
-
-\item {\tt ATermList match(\emph{term}, \emph{pattern})}: Match \emph{term} against
-\emph{pattern}, and return a list of substitutions for the placeholders
-in \emph{pattern}.
-If the parse fails, a message is printed and the program is aborted.
+The types of the arguments depend on the specific placeholders used
+in \emph{pattern}. For instance when the placeholder {\tt <int>} is used,
+an integer is expected as argument and a new integer ATerm is constructed.
+\item {\tt ATbool ATmatch(ATerm $term$, String $pattern$, $arg_1$, ..., $arg_n$)}: 
+Match \emph{term} against
+\emph{pattern}, and bind subterms that match with placeholders in
+\emph{pattern} with the result variables $arg_1$ through $arg_n$.
+Again, the type of the result variables depend on the placeholders
+used.
+If the parse of \emph{pattern} fails, a message is printed and the program 
+is aborted.
 If the term itself contains placeholders these may occur in the 
 resulting substitutions.
-If the match fails, a special error value is returned.
+The function returns {\tt true} when the match succeeds,
+{\tt false} otherwise.
 
-\item {\tt Boolean ATisEqual(\emph{t1},\emph{t2})}: Check if two \ATerms\ are 
+\item {\tt Boolean ATisEqual(ATerm \emph{t1}, ATerm \emph{t2})}: 
+Check if two \ATerms\ are 
 equal. The annotations of {\emph t1} and {\emph t2} must also be equal.
 
-\item {\tt Integer getType(\emph{term})}: Retrieves the type of an
+\item {\tt Integer ATgetType(ATerm \emph{term})}: Retrieves the type of an
 \ATerm. This operation returns one of the subtypes mentioned before in
 Section~\ref{aterm-datatype}.
 
@@ -266,26 +272,27 @@ The operations are:
 
 \begin{itemize}
 
-\item {\tt ATerm readFromString(\emph{string})}: Creates a new term by parsing
+\item {\tt ATerm ATreadFromString(String \emph{string})}: Creates a new term 
+by parsing
 \emph{string}. When a parse error occurs, a message is printed, and
 a special error value is returned.
 
-\item {\tt ATerm readFromTextFile(\emph{file})}: Creates a new term by 
+\item {\tt ATerm readFromTextFile(File \emph{file})}: Creates a new term by 
 parsing the data from \emph{file}. Again, parse errors result in a 
 message being printed and an error value being returned.
 
-\item {\tt ATerm readFromBinaryFile(\emph{file})}: Creates a new term by reading a
+\item {\tt ATerm ATreadFromBinaryFile(File \emph{file})}: Creates a new term by reading a
 binary representation from \emph{file}. 
 
-\item {\tt Boolean writeToTextFile(\emph{term}, \emph{file})}: Write the text
+\item {\tt Boolean ATwriteToTextFile(ATerm \emph{term}, File \emph{file})}: Write the text
 representation of \emph{term} to \emph{file}. Returns {\tt true} for
 success and {\tt false} for failure.
 
-\item {\tt Boolean writeToBinaryFile(\emph{term}, \emph{file})}: Write a 
+\item {\tt Boolean ATwriteToBinaryFile(ATerm \emph{term}, ATerm \emph{file})}: Write a 
 binary representation of \emph{term} to \emph{file}. Returns
 {\tt true} for success, and {\tt false} for failure.
 
-\item {\tt String writeToString(\emph{term})}: Return the text representation
+\item {\tt String ATwriteToString(ATerm \emph{term})}: Return the text representation
 of \emph{term} as a string.
 
 \end{itemize}
@@ -299,17 +306,17 @@ following operations for manipulating annotations:
 
 \begin{itemize}
 
-\item {\tt ATerm setAnnotation(\emph{term}, \emph{label}, \emph{annotation})}:
+\item {\tt ATerm ATsetAnnotation(ATerm \emph{term}, ATerm \emph{label}, ATerm \emph{annotation})}:
 Return a copy of \emph{term} with annotation labeled by \emph{label} changed
 to \emph{annotation}. If \emph{term} does not have an annotation with
 the specified label, it is added.
 
-\item {\tt ATerm getAnnotation(\emph{term}, \emph{label})}:
+\item {\tt ATerm ATgetAnnotation(ATerm \emph{term}, ATerm \emph{label})}:
 Retrieve the annotation labeled by \emph{label} of \emph{term}.
 If \emph{term} does not have an annotation with the specified label,
 a special error value is returned.
 
-\item {\tt ATerm removeAnnotation(\emph{term}, \emph{label})}: Return a copy
+\item {\tt ATerm ATremoveAnnotation(ATerm \emph{term}, ATerm \emph{label})}: Return a copy
 of \emph{term} with its annotation labeled by \emph{label} removed.
 If \emph{term} does not have an annotation with the specified label,
 it is returned unchanged.
@@ -951,7 +958,8 @@ be exploited and there are many subterms with a relatively high arity.
 embedded SQL and CICS. The number of entries in the table is XXX.
 This is an example on abstract data type represented as \ATerm.
 
-\item[COBOL Program:] a XXX-line COBOL program that has been parsed with the
+\item[COBOL System:] a COBOL system consisting of 117 programs with
+a total of 247548 lines of COBOL that has been parsed with the
 above parse table. Note that due to the specific form of parse trees we use,
 the amount of sharing is substantial.
 
@@ -978,7 +986,7 @@ Random-unique		&  1000000 &   1000000 &    0.00 & 15198694 & 15.20   \\ \hline
 Random			&  1000000 &	 92246 &   90.81 &  2997120 &  3.00   \\ \hline \hline
 
 COBOL Parse Table 	&   733237 &     81115 &   88.94 &  2174662 &  2.97   \\ \hline
-COBOL Program 		& 31332871 &    470872 &   98.50 & 12896609 &  0.41   \\ \hline
+COBOL System 		& 31332871 &    470872 &   98.50 & 12896609 &  0.41   \\ \hline
 Risla library           &   708838 &     40073 &   94.35 &   960170 &  1.35   \\ \hline \hline
 Averages		&	   &	       &   93.93 &	    &  1.57   \\ \hline    
 \end{tabular}
@@ -1024,7 +1032,7 @@ Random-unique		&6888889 & 6.89	& 34.76	& 34.76	&  4.06	& 4.06	\\ \hline
 Random			&6200251 & 6.20	& 15.90	& 15.90	&  3.67	& 3.67	\\ \hline \hline
 
 COBOL Parse Table	&3161908 & 4.31	&  5.83	&  7.95	&  1.89	& 2.58	\\ \hline
-COBOL Program	      &135350005 & 4.32	&199.43 &  6.36	& 65.02	& 2.08	\\ \hline
+COBOL System	      &135350005 & 4.32	&199.43 &  6.36	& 65.02	& 2.08	\\ \hline
 Risla library           &2955964 & 4.17 &  4.25 &  6.00 &  1.40 & 1.98  \\ \hline \hline
 Averages		&	 & 4.27 &       &  6.77 &       & 2.21  \\ \hline
 \end{tabular}
@@ -1068,7 +1076,7 @@ Random-unique		&6073795& 6.07	& 8.85 	& 8.85	& 11.57	& 11.57 \\ \hline
 Random			&567419 & 0.57	& 2.06	& 2.06	& 2.76	& 2.76  \\ \hline \hline
 
 COBOL Parse Table	&303621 & 0.41	& 0.50	& 0.68	& 1.36	& 1.85  \\ \hline
-COBOL Program		&2279066& 0.07  & 4.88	& 0.16  &20.76	& 0.66	\\ \hline
+COBOL System		&2279066& 0.07  & 4.88	& 0.16  &20.76	& 0.66	\\ \hline
 Risla library           & 141946& 0.20  & 0.22  & 0.31  & 0.75  & 1.06  \\ \hline \hline
 Averages		&       & 0.23  &       & 0.58  &       & 1.19  \\ \hline
 \end{tabular}
@@ -1107,7 +1115,7 @@ Random-unique		& 6888889	& 6073795	& 11.8		& 2324804	& 66.3	\\ \hline
 Random			& 6199981	& 567419	& 90.9		& 439293	& 92.9	\\ \hline \hline
 
 COBOL Parse Table	& 3161908	& 303621	& 90.4		& 243990	& 92.3	\\ \hline
-COBOL Program		&135350005      & 2279066	& 98.3		& 3072774	& 97.7	\\ \hline
+COBOL System		&135350005      & 2279066	& 98.3		& 3072774	& 97.7	\\ \hline
 Risla library           & 2955964       & 141946        & 95.2          &  80009        & 97.3  \\ \hline
 Averages		&		&		& 94.6		&               & 95.8  \\ \hline
 \end{tabular}
