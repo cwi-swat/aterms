@@ -2,6 +2,8 @@
  * Version 0.8
  * Several fixes to prepare apigen for a dailybuild regime
  * apigen succesfully handles "gmake clean all check install distcheck"
+ * added `-t | --no-timestamp' option to adt-to-c; should reduce CVS
+   conflicts when generated adts are put under CVS' control.
 
 2001/02/20 (markvdb@cwi.nl)
  * Bug fixed in specification which removes the constructor annotations

@@ -22,6 +22,7 @@ Parameters:
   -P | --prefix <STR>     specify API-prefix               [""]
   -c | --classpath <PATH> override CGen classes            [see below]
   -d | --dicttoc <FILE>   override default dicttoc         [see below]
+  -t | --no-timestamp     do not output timestamps         [off]
   -v | --verbose          be verbose during generation     [off]
   -h | --help             display this information
 
@@ -64,10 +65,11 @@ require() {
 # {{{  default settings
 
 # settings/options
-   INPUT=""
-  PREFIX=""
-PROLOGUE=""
- VERBOSE=0
+     INPUT=""
+    PREFIX=""
+  PROLOGUE=""
+   VERBOSE=0
+TIMESTAMPS=1
 
 # data needed
    CGEN=${prefix}/classes
@@ -102,6 +104,9 @@ do
 
     -d | --dicttoc)
       shift; DICTTOC=$1 ;;
+
+    -t | --no-timestamps)
+      shift; TIMESTAMPS=0 ;;
 
     -v | --verbose)
       VERBOSE=1 ;;
@@ -153,6 +158,10 @@ java  -classpath ${CGEN} apigen.c.CGen \
 	  ${OPTIONAL_PROLOGUE}	\
 	  ${OPTIONAL_PREFIX}
 
-${DICTTOC} -dict ${OUTPUT}.dict
+if [ $TIMESTAMPS -gt 0 ]; then
+  ${DICTTOC} -dict ${OUTPUT}.dict
+else
+  ${DICTTOC} -no-date -dict ${OUTPUT}.dict
+fi
 
 # }}}
