@@ -1,6 +1,9 @@
 $Id$
 
-2021/11/15 (jong@cwi.nl)
+2001/11/22 (jong@cwi.nl)
+ * Version 1.6.5 released, containing C-support for tuple syntax.
+
+2001/11/21 (jong@cwi.nl)
  * Quoted, empty tuple is now printed as "", rather than ""()
  * Changed the output of the empty tuple to be "()", rather than ""
  * Fixed several typo's in aterm.c ("to long" -> "too long").
