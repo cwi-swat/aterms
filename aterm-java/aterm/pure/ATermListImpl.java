@@ -33,7 +33,7 @@ import aterm.ATermList;
 import aterm.ATermPlaceholder;
 import aterm.Visitor;
 
-class ATermListImpl extends ATermImpl implements ATermList {
+public class ATermListImpl extends ATermImpl implements ATermList {
   ATerm first;
   ATermList next;
   int length;
