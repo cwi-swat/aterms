@@ -13,22 +13,20 @@
 % }}}
 % {{{  commands
 
-\newcommand{\aterm}{\mbox{ATerm}}
-\newcommand{\aterms}{\mbox{ATerms}}
-\newcommand{\atlib}{\mbox{ATerm-Library}}
-
-\newcommand{\asfix}{\mbox{AsFix}}
-
-\newcommand{\sdf}{\mbox{\sc Sdf}}
-\newcommand{\asf}{\mbox{\sc Asf}}
-\newcommand{\asdf}{\mbox{\sc Asf+Sdf}}
-\newcommand{\metaenv}{{\sc Asf+Sdf}\ Meta-En\-vir\-on\-ment}
-\newcommand{\api}{\mbox{\sc api}}
 
 \newcommand{\C}{\mbox{\sc C}}
-\newcommand{\java}{\mbox{\sc Java}}
+\newcommand{\adt}{\mbox{\sc adt}}
+\newcommand{\api}{\mbox{\sc api}}
+\newcommand{\asdf}{\mbox{\sc Asf+Sdf}}
+\newcommand{\asfix}{\mbox{AsFix}}
+\newcommand{\asf}{\mbox{\sc Asf}}
+\newcommand{\aterms}{\mbox{ATerms}}
+\newcommand{\aterm}{\mbox{ATerm}}
+\newcommand{\atlib}{\mbox{ATerm-Library}}
 \newcommand{\autocode}{\mbox{\sc autocode}}
-
+\newcommand{\java}{\mbox{\sc Java}}
+\newcommand{\metaenv}{{\sc Asf+Sdf}\ Meta-En\-vir\-on\-ment}
+\newcommand{\sdf}{\mbox{\sc Sdf}}
 % }}}
 
 % {{{  Title page
@@ -412,10 +410,13 @@ toolbuilder would like, given a \sdf\ syntax definition.
 
 % {{{  What you want to be able to do, given an SDF definition
 
-Just to name a few operations given our boolean syntax, a toolbuilder
-might want to do the following:
+Typical things a toolbuilder would like to have, given our boolean
+syntax are:
 
 \begin{itemize}
+
+\item A type definition for booleans (it is better to have a type
+      \texttt{Bool} than to use the generic \texttt{ATerm} type);
 
 \item Create the basic booleans: \texttt{true}, and \texttt{false};
 
@@ -440,6 +441,156 @@ Fortunately, this wishlist is not at all utopian. All the information
 necessary to generate an \api, and (much more important) an actual
 \emph{implementation} of such an \api, is present in the \sdf-definition.
 
+Because we want to generate code in a variety of target languages, we
+opted for a ``frontend-backend'' approach. First the necessary information
+is extracted from an \sdf\ specification into a proprietary intermediate
+format (frontend), which is then be re-used in several code-generation
+phases (backend).
+
+The intermediate format is called \emph{annotated data type}, or \adt\
+for short. It holds the minimal amount of information for each syntax
+rule in the original \sdf\ specification. In particular, for each rule
+we need:
+
+% {{{  The necessary elements of an adt-entry
+
+\begin{itemize}
+
+\item The \emph{sortname} of the production. In our boolean syntax this
+is \texttt{Bool};
+
+\item The \emph{alternative} of the production. Our boolean syntax
+has five alternatives: \texttt{true}, \texttt{false}, \texttt{not},
+\texttt{and}, \texttt{or}.
+
+\item The actual \aterm-\emph{pattern} representation of the rule.
+In this pattern, each non-terminal from the syntax rule is replaced by
+a typed placeholder, containing, the \emph{sort} of the non-terminal
+and a \emph{descriptive name}. For the \texttt{and} rule we could use
+\texttt{lhs}, and \texttt{rhs}, both of type \texttt{Bool}.
+
+\end{itemize}
+
+% }}}
+% {{{  Example adt-entry with explanation
+
+In the example of the boolean conjunction, we know that the sortname of
+the production is \texttt{Bool}, the alternative is called \texttt{and}.
+There are two operands, \texttt{lhs} and \texttt{rhs}, both of type
+Bool.  In the pattern we put typed placeholders \texttt{<lhs(Bool)>}
+and \texttt{<rhs(Bool)>} at the location of the nonterminals. Also,
+because the \aterm\ pattern is a parse tree pattern, we have to deal
+with any whitespace (layout) that might occur in the terms. Layout can
+occur both after the non-terminal \texttt{lhs}, and after the literal
+\texttt{and}. The \adt\ entry thus becomes:
+
+\begin{scriptsize}
+\begin{verbatim}
+ 1  [Bool,
+ 2   and,
+ 3   appl(prod(
+ 4    [cf(sort("Bool")),cf(opt(layout)),lit("and"),cf(opt(layout)),cf(sort("Bool"))],
+ 5     cf(sort("Bool")),attrs([assoc(left)])),
+ 6    [<lhs(Bool)>,<ws-after-lhs(Layout)>,lit("and"),<ws-after-and(Layout)>,
+ 7     <rhs(Bool)>])]
+\end{verbatim}
+\end{scriptsize}
+
+The sortname is in line $1$, the alternative is seen in line
+$2$. Following, in lines $4-7$ is the \aterm\ pattern of the actual
+parse tree. Lines $3-5$ spell out the \texttt{prod} of the \asfix\
+function application.  Lines $7-8$ show the \texttt{args} part. Clearly
+visible are the typed placeholders for \texttt{lhs} and \texttt{rhs},
+as well as the two placeholders matching optional layout. We gave them
+somewhat arbitrary names \texttt{ws-after-lhs}, and \texttt{ws-after-and}
+respectively.
+
+% }}}
+
+% }}}
+
+% {{{  Deriving the \adt\ from a \sdf\ specification
+
+\section{Deriving the \adt\ from a \sdf\ specification}
+\label{sec:sdf-to-adt}
+
+Now that we know what information we would like to have, how do we get
+it from the \sdf\ definition? If we look back at our \sdf\ definition
+of the booleans, we can derive some of the information already. The
+result \emph{sort} of a syntax rule is easy: it is explicitly mentioned
+at the end of each rule. The \aterm\ pattern is relatively easy, as we
+know the \sdf\ normalization rules and the underlying \asfix\ format that
+is used in the \metaenv. We can follow the same rules to find the \aterm\
+pattern that represents the syntax rule in actual parse trees.
+
+But what about the \emph{alternative} and the \emph{descriptive} names
+for the non-terminals that we need? Given our \sdf\ rule for the boolean
+\texttt{and}, can we derive a sensible name for each of the \texttt{Bool}
+non-terminals? The only information we have is in our syntax rule:
+{\small\texttt{Bool "and" Bool -> Bool \{left\}} }
+
+
+If we use heuristics to call them e.g. \texttt{lhs} and \texttt{rhs},
+what do we do when we find another syntax rule that has three, four or
+even more arguments? In syntax rules with only one non-terminal, we could
+default to using the sort name of that non-terminal. But in general,
+it is hard to come up with any kind of descriptive naming scheme.
+Keep in mind that most toolbuilders will not really be happy if they
+are confronted with access functions that have arbitrary generated
+names, or numbered arguments. Instead of coming up with any heuristic,
+we use the \emph{labeling} mechanism present in \sdf, to label each
+non-terminal. This eliminates the need to invent a descriptive name
+altogether. Our syntax rule for \texttt{and} becomes:
+{\small \texttt{lhs:Bool "and" rhs:Bool -> Bool \{left\}} }
+
+Similarly, we need a solution for the \emph{alternative} name. In this
+case the literal \texttt{and} is exactly the name we want. But what
+if there is no literal at all? Or what if the literal is some sort of
+baroque lexical expression (think of the \C\ and \java\ symbols \verb+&&+
+for conjunction). Again we are saved by \sdf, as it provides a way to
+annotate syntax rules. In fact, we will re-use the annotation which is
+quite commonly used in \sdf\ syntax files to annotate the name of the
+\emph{abstract syntax} node that corresponds to this particular syntax
+rule. Traditionally the \texttt{cons} annotation is used for this purpose.
+So, finally our \texttt{and} syntax rule becomes:
+{\small {\texttt{lhs:Bool "and" rhs:Bool -> Bool \{left, cons("and")\}} }
+
+% }}}
+
+% {{{  Code generation from \adt\ to \C
+
+\section{Code generation from \adt\ to \C}
+\label{sec:adt-to-c}
+
+For each sortname in an \adt, we generate:
+
+\begin{itemize}
+
+\item An opaque type definition to distinguish instances of this
+      particular sort from other \aterms.
+
+\item Conversion functions \texttt{fromTerm} and \texttt{toTerm}
+      to interface with generic \atlib-functions, such as
+      \texttt{ATreadFromFile}. These functions perform a type cast,
+      and as such form the entry and exit points to type safety.
+
+\item A validity function to test whether an instance of a sort
+      is indeed valid, i.e. that it indeed matches one of the
+      \aterm-patterns defined as an alternative of this sort. This is
+      useful to assert the validity of an externally acquired instance
+      of this sort, e.g. if it has just been read from file.
+
+\item Constructor functions for each possible alternative for this
+      sort to create instances from scratch.
+
+\item An equality function to test equality with another instance of
+      this sort.
+
+\item For each alternative of the sort, an \texttt{isAlternative} function
+      that checks if the current object is an instance of that particular
+      alternative.
+
+\end{itemize}
 
 % }}}
 
