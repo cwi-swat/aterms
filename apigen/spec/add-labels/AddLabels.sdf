@@ -1,6 +1,6 @@
 module AddLabels
 
-imports Sdf2-Syntax
+imports Sdf2
 
 exports
   context-free syntax
@@ -16,6 +16,9 @@ hiddens
     "add-labels-to-symbols" "(" Symbols ")"    -> Symbols {traverse}
     "add-labels-to-symbols" "(" Symbol ")"     -> Symbol {traverse}
 
+    args-to-symbols( {Symbol ","}* ) -> Symbols
+    "args-to-symbols" -> UQLiteral {reject}
+
   variables
     "$Attributes"[0-9]*  -> Attributes
     "$Definition"[0-9]*  -> Definition
@@ -27,3 +30,7 @@ hiddens
     "$Separator"[0-9]*   -> Symbol
     "$Symbols"[0-9]*     -> Symbols
     "Char+"              -> CHAR+
+    "$Symbol*"[0-9]*     -> Symbol*
+    "$FuncArg*"[0-9]*    -> { Symbol ","}*
+    "$FuncArg+"[0-9]*    -> { Symbol ","}+
+    "$Lit"               -> Literal

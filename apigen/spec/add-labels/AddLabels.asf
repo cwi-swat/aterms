@@ -16,6 +16,12 @@ equations
             add-labels-to-symbols($Symbols1 -> $Symbol $Attributes) =
               $Symbols2 -> $Symbol $Attributes
 
+  [als-1'5] args-to-symbols($FuncArg*) = $Symbol*,
+            add-labels-to-symbols($Lit "(" $Symbol* ")") = $Symbols
+            ==========================================
+            add-labels-to-symbols($Lit($FuncArg*) -> $Symbol $Attributes) =
+              $Symbols -> $Symbol $Attributes
+
   [als-1'4] $Sort = sort(Char+),
             $Label = literal(""" Char+ """)
             ===============================
@@ -32,3 +38,11 @@ equations
 
   [als-1'9] add-labels-to-symbols({$Symbol $Separator}*) = 
               "list":{$Symbol $Separator}*
+
+[ats-1] args-to-symbols() =
+
+[ats-2] args-to-symbols($Symbol) = $Symbol
+
+[ats-3] args-to-symbols($FuncArg+) = $Symbol*
+        ======================================
+        args-to-symbols($Symbol,$FuncArg+) = $Symbol "," $Symbol*

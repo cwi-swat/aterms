@@ -3,3 +3,4 @@ Makefile
 .deps
 init.c
 Sdf2-to-AsFix2ME-ADT
+*.asfix
