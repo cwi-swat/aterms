@@ -101,8 +101,8 @@ static ATerm *hashtable;
 static int destructor_count = 0;
 static ATbool (*destructors[MAX_DESTRUCTORS])(ATermBlob) = { NULL };
 
-static MachineWord protoTerm[MAX_TERM_SIZE] = { 0 };
-static ATerm *arg_buffer = (ATerm *) (protoTerm + 2);
+static MachineWord *protoTerm = NULL;
+static ATerm *arg_buffer = NULL;
 static ATerm protected_buffer[MAX_ARITY] = { NULL };
 
 ATermList ATempty;
@@ -343,6 +343,9 @@ void AT_initMemory(int argc, char *argv[])
 #endif
 
 	table_class = 17;
+
+  protoTerm  = (MachineWord *) calloc(MAX_TERM_SIZE, sizeof(MachineWord));
+  arg_buffer = (ATerm *) (protoTerm + 2);
 
 	/*{{{  Analyze arguments */
 
