@@ -1,5 +1,10 @@
 $Id$
 
+Tue Dec 16 10:01:13 CET 2003 <{jong,jurgenv}@cwi.nl>
+ * Added const attributes to ATmakeAFun and ATmakeSymbol and AT_hashSymbol
+   functions on the char* arguments.
+ * Bumped version to 2.0.6
+
 Tue Oct  7 13:55:03 CEST 2003 <{jong,kooiker}@cwi.nl>
  * configure.in: bump to 2.0.5
  * utils/dicttoc.c:

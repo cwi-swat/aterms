@@ -209,7 +209,7 @@ ATermBlob ATmakeBlob(int size, void *data);
 void    ATregisterBlobDestructor(ATbool (*destructor)(ATermBlob));
 void    ATunregisterBlobDestructor(ATbool (*destructor)(ATermBlob));
 
-AFun  ATmakeAFun(char *name, int arity, ATbool quoted);
+AFun  ATmakeAFun(const char *name, int arity, ATbool quoted);
 #define ATmakeSymbol ATmakeAFun
 
 /*char   *ATgetName(AFun sym);*/

@@ -68,7 +68,7 @@ void AT_markProtectedSymbols();
 void AT_markProtectedSymbols_young();
 #endif
 
-unsigned int AT_hashSymbol(char *name, int arity);
+unsigned int AT_hashSymbol(const char *name, int arity);
 ATbool AT_findSymbol(char *name, int arity, ATbool quoted);
 void AT_unmarkAllAFuns();
 

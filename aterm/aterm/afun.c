@@ -298,7 +298,7 @@ int AT_writeAFun(AFun fun, byte_writer *writer)
 
 /*}}}  */
 
-/*{{{  ShortHashNumber AT_hashSymbol(char *name, int arity) */
+/*{{{  ShortHashNumber AT_hashSymbol(const char *name, int arity) */
 
 /**
  * Calculate the hash value of a symbol.
@@ -320,7 +320,7 @@ int AT_writeAFun(AFun fun, byte_writer *writer)
 typedef  unsigned long  int  ub4;   /* unsigned 4-byte quantities */
 typedef  unsigned       char ub1;   /* unsigned 1-byte quantities */
 
-ShortHashNumber AT_hashSymbol(char *name, int arity) {
+ShortHashNumber AT_hashSymbol(const char *name, int arity) {
    register ub4 a,b,c,len;
    ub1 *k=name;
    ub4 length = strlen(name);
@@ -363,10 +363,10 @@ ShortHashNumber AT_hashSymbol(char *name, int arity) {
    return c;
 }
 #else
-ShortHashNumber AT_hashSymbol(char *name, int arity)
+ShortHashNumber AT_hashSymbol(const char *name, int arity)
 {
   ShortHashNumber hnr;
-  char *walk = name;
+  const char *walk = name;
 
   for(hnr = arity*3; *walk; walk++)
     hnr = 251 * hnr + *walk;
@@ -377,9 +377,9 @@ ShortHashNumber AT_hashSymbol(char *name, int arity)
 
 /*}}}  */
 
-/*{{{  Symbol ATmakeSymbol(char *name, int arity, ATbool quoted) */
+/*{{{  Symbol ATmakeSymbol(const char *name, int arity, ATbool quoted) */
 
-Symbol ATmakeSymbol(char *name, int arity, ATbool quoted)
+Symbol ATmakeSymbol(const char *name, int arity, ATbool quoted)
 {
   header_type header = SYMBOL_HEADER(arity, quoted);
   ShortHashNumber hnr = AT_hashSymbol(name, arity) & table_mask;
