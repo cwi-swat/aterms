@@ -49,7 +49,6 @@ void test_term(char *cat, int id, ATerm t, int type)
 
 /*}}}  */
 
-
 /*{{{  void testAlloc(void) */
 
 /**
@@ -160,6 +159,7 @@ testAppl(void)
   symmies[0] = ATmakeSymbol("f0", 0, ATfalse);
   symmies[1] = ATmakeSymbol("f1", 1, ATfalse);
   symmies[2] = ATmakeSymbol("f6", 6, ATfalse);
+  symmies[3] = ATmakeSymbol("f10", 10, ATfalse);
 
   apples[0] = ATmakeAppl0(symmies[0]);
   apples[1] = ATmakeAppl1(symmies[1], (ATerm)apples[0]);
@@ -168,13 +168,16 @@ testAppl(void)
   apples[4] = ATmakeAppl6(symmies[2], (ATerm)apples[0], (ATerm)apples[0], 
 			  (ATerm)apples[1], (ATerm)apples[0], 
 			  (ATerm)apples[0], (ATerm)apples[1]);
+  apples[5] = ATmakeAppl(symmies[3], apples[0], apples[1], apples[0],
+			 apples[1], apples[0], apples[1], apples[0],
+			 apples[1], apples[0], apples[1]);
 
   assert(apples[1] == apples[3]);
   assert(apples[1] != apples[2]);
   assert(apples[2] != apples[3]);
   assert(apples[0] != apples[1]);
 
-  for(i=0; i<5; i++) {
+  for(i=0; i<6; i++) {
     fprintf(stdout, "apples[%d] = ", i);
     ATwriteToTextFile((ATerm)apples[i], stdout);
     fprintf(stdout, "\n");
@@ -246,10 +249,74 @@ void testList(void)
   test_assert("list-ops",17, ATlastIndexOf(list[4], (ATerm)ATmakeInt(2),0) == 1);
   test_assert("list-ops",16, ATindexOf(list[4], (ATerm)ATmakeInt(2),2) == -1);
   test_assert("list-ops",17, ATlastIndexOf(list[4], (ATerm)ATmakeInt(2),0) == 1);
+
+  test_assert("list-ops",18, ATisEqual(ATgetArguments(ATmakeAppl(ATmakeSymbol("f",2,0),
+								 (ATerm)ATmakeInt(1),
+								 (ATerm)ATmakeInt(2))),
+				       list[2]));
+
 }
 
 /*}}}  */
+/*{{{  void testRead(void) */
 
+/**
+  * Test read functions
+  */
+
+void
+testRead(void)
+{
+  ATerm t;
+  FILE *f = fopen("test.trms", "r");
+  if(!f)
+    ATerror("cannot open file \"test.trms\"");
+
+  do {
+    t = ATreadFromTextFile(f);
+    if(t) {
+      fprintf(stdout, "term read: ");
+      ATwriteToTextFile(t, stdout);
+      fprintf(stdout, "\n");
+    } else
+      fprintf(stdout, "no more terms to read.\n");
+  } while(t);
+
+  fclose(f);
+}
+
+/*}}}  */
+/*{{{  void testPrint(void) */
+
+/**
+  * Test printing functions
+  */
+
+void
+testPrint(void)
+{
+}
+
+/*}}}  */
+/*{{{  void testMake(void) */
+
+void
+testMake(void)
+{
+}
+
+/*}}}  */
+/*{{{  void testMatch(void) */
+
+/**
+  * Test matching functions
+  */
+
+void testMatch(void)
+{
+}
+
+/*}}}  */
 /*{{{  void testPrintf(void) */
 void testPrintf()
 {
@@ -274,6 +341,7 @@ int main(int argc, char *argv[])
   testAppl();
   testList();
   testOther();
+  testRead();
   testPrintf();
 
   return 0;
