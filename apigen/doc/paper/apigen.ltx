@@ -64,12 +64,12 @@ in various tools makes it difficult to maintain the tools with respect
 to changes in the datastructure.
 
 By lifting the data definition and its mapping to an \aterm\
-representation from the level of tool implementation, it becomes possible
-to generate a library of access functions on the data type, which can be
-used by all the tools that need access to it. The tools no longer directly
-manipulate the \aterm\ representation, but rather invoke methods described
-by the \api\ of the library, thus abstracting from the fact that \aterms\
-are used for the implementation of the data type.
+representation away from the level of tool implementation, it becomes
+possible to generate a library of access functions on the data type,
+which can be used by all the tools that need access to it. The tools no
+longer directly manipulate the \aterm\ representation, but rather invoke
+methods described by the \api\ of the library, thus abstracting from
+the fact that \aterms\ are used for the implementation of the data type.
 
 This paper describes how an \api\ and its implementation can be generated
 from a syntax definition of the data type. In particular we describe
@@ -102,21 +102,21 @@ ELAN system~\cite{BR01}, Stratego~\cite{Vis01.rta}, CASL, muCRL toolkit?
 As more and more tools in the \metaenv\ were converted to work with
 the \atlib, it became apparent that the tools had become inflexible with
 respect to changes in the parse tree format (called \asfix), and were hard
-to maintain. Evidence supporting these claims were the frequent use of
-handcrafted \aterm-patterns: literal strings of characters representing
-a matching pattern, characterized by many backslash-escaped quotes,
-illegible sequences of closing parentheses, braces and square brackets,
-and the presence of typed placeholders.
+to maintain. The reason behind this inflexibility was the fact that all
+tools used manually encoded structural knowledge about the location of
+data elements inside their \aterm\ representation. With such knowledge
+hardwired into the tools it becomes difficult, if not impossible, to
+change the \aterm\ representation of the data type.
 
-The use of these patterns is not in any way restricted to the realm of
-parse trees. In fact, anyone who has programmed with the \atlib, will
-probably be familiar with patterns such as \texttt{and(<bool>,<bool>)}.
-In this simple form these patterns are quite easy to work with and they
-are to some extent even pleasing to the eye. But as these patterns
-become longer and more intricate with a liberal sprinkling of quoted
-strings containing backslash-escaped quotes, and as they begin to contain
-lists and annotations, the once so simple \emph{make-and-match} paradigm
-becomes a developer's nightmare.
+The coding practise that uses such structural knowledge is not in any
+way restricted to the realm of parse trees. In fact, anyone who has
+programmed with the \atlib, will probably be familiar with patterns such
+as \texttt{and(<bool>,<bool>)}. And given such a pattern, what could
+be easier than to write a function that extracts the left-hand side?
+But as these patterns become longer and more intricate with a liberal
+sprinkling of quoted strings containing backslash-escaped quotes,
+and as they begin to contain lists and annotations, the once so simple
+\emph{make-and-match} paradigm becomes a developer's nightmare.
 
 Motivated by the desire to change \asfix\ and to avoid the herculean
 maintenance task this operation would impose on our tools, we decided
@@ -375,9 +375,9 @@ example.
 Line 4 shows the application of the production \texttt{"true" -> Bool} to
 the literal \texttt{"true"}
 
-Line 5 are the instantiated notions of optional layout. In this case the
+Line 5 are the instantiated terms for the optional layout. In this case the
 input term contained exactly one space immediately before and just after
-the keyword \texttt{"and"}.
+the keyword \texttt{and}.
 
 Line 6 is similar to Line 4, except that it represents the literal
 \texttt{"false"}.
@@ -395,47 +395,137 @@ representation of a data type.
 \section{Accessing \aterm\ Data Types}
 \label{sec:aterm-access}
 
-We briefly discuss the two layers of access provided by the \C\
-implementation of the \atlib, and show the steps needed to gain access
-to specific elements of a parse tree. Similar statements are needed in
+The \atlib\ provides two levels of access to \aterms. We briefly
+discuss these two layers of access (Section~\ref{sec:aterm-lvl1}, and
+Section~\ref{sec:aterm-lvl2}) by showing some examples using the \C\
+implementation of the \atlib. Similar statements are needed when using
 the \java\ implementation.
 
-% {{{  Accessing Parse Trees using the Level One interface
+In Section~\ref{sec:asfix-access} we show the typical way that tools in
+the \metaenv\ used to access \asfix\ parse trees. As \asfix\ terms are
+of impressive complexity to the human eye, the code needed to access
+them becomes equally complex if it has to be written down manually.
 
-\subsection{Accessing Parse Trees using the Level One interface}
+% {{{  Accessing \aterms\ using the Level One interface
+
+\subsection{Accessing \aterms\ using the Level One interface}
 \label{sec:aterm-lvl1}
 
-The level one interface offers easy to learn, but less
-efficient access by using the \emph{make and match} paradigm. Terms are
-constructed using \texttt{ATmake}:
+The first level of access functions is through the easy to learn
+\emph{make and match} paradigm which allows construction of terms by
+parsing their string representation. Placeholders in these patterns are
+used to designate ``holes'' in the term which are to be filled in by
+other variables, including both other \aterms, as well as native types
+(\texttt{int}, \texttt{string}, etc.). Terms are constructed using
+\texttt{ATmake}, for example:
 
 % {{{  ATmake example
 
 \begin{footnotesize}
 \begin{verbatim}
-  ATerm phoneTerm = ATmake("phone(<int>)", 5554242);
+  ATerm t = ATmake("person(name(<str>),age(<int>))", "Anthony", 7);
 \end{verbatim}
 \end{footnotesize}
 
+Will result in term \texttt{t} being assigned the value:
+\begin{quote}
+  \texttt{person(name("Anthony"),age(7))}
+\end{quote}
+
 % }}}
 
-\noindent and elements can be extracted using \texttt{ATmatch}:
+\noindent Elements from terms can be extracted using \texttt{ATmatch},
+for example:
 
 % {{{  ATmatch example
 
 \begin{footnotesize}
 \begin{verbatim}
-  int number;
-  ATmatch(phoneTerm, "phone(<int>)", &number);
+  char *name;
+  int age;
+  if (ATmatch(t, "person(name(<str>),age(<int>))", &name, &age)) {
+    printf("name = %s, age = %d\n", name, age);
+  }
 \end{verbatim}
 \end{footnotesize}
 
+Will result in the variables \texttt{name} and \texttt{age} being
+assigned the values \texttt{Anthony}, and \texttt{7}, respectively.
+The output of this fragment would thus be:
+
+\begin{quote}
+  \texttt{name = Anthony, age = 7}
+\end{quote}
+
+In case we are only interested in extracting the \texttt{age} field
+and we do not care about the actual value of \texttt{name}, we can pass
+\texttt{NULL} instead of the address of a local variable. In this case,
+that particular subterm is still used during matching, but its actual
+value is never assigned. So we can test if a term matches a pattern,
+without binding every placeholder in the pattern.
+
 % }}}
 
-Suppose we want to write down the \C\ code necessary to construct
-the boolean term \texttt{true}. The \aterm-pattern required is quite
-complex already, as we have to escape all the double quotes (the \verb+"+
-characters) from interpretation by the compiler.
+% }}}
+% {{{  Accessing \aterms\ using the Level Two interface
+
+\subsection{Accessing \aterms\ using the Level Two interface}
+\label{sec:aterm-lvl2}
+
+The second level allows more direct manipulation of aterms by means of
+access-functions that operate directly on a term or its subterms. This
+way of access is more efficient than using the level one interface,
+because there is no need to parse a string pattern to find out which
+part of the (sub-)term is needed.
+
+For example, consider the term from the previous section:
+\begin{quote}
+  \texttt{t = person(name("Anthony"),age(7))}
+\end{quote}
+
+We can get \texttt{Anthony}'s age by first extracting the \texttt{age}
+subterm from \texttt{t}, and subsequently getting the actual \texttt{7}
+from this \texttt{age} term:
+
+\begin{quote}
+  \texttt{int age = ATgetInt(ATgetArgument(ATgetArgument(t, 1), 0));}
+\end{quote}
+
+The exact location of the integer representing the person's age is used
+in this example. If the \texttt{person} record were to change, (e.g. a
+field for the person's last name is added inbetween the person's name
+and his age), the example code would be broken. 
+
+Also note that this code does not even check if the term \texttt{t} is of
+the right form, i.e. satisfies the \texttt{person(name(<str>),age(<int>))}
+pattern. On an arbitrary input term, the age-extraction code will most
+likely fail and dump core. But if only correct input terms are given,
+it is the most efficient way to encode the extraction of the age subterm
+in this \aterm\ representation of the \texttt{person} record.
+
+% }}}
+
+\subsection{Accessing \asfix\ parse trees}
+\label{sec:asfix-access}
+
+This section shows several ways in which \asfix\ terms can be
+accessed. The code fragments are typical for the way parse trees are
+manipulated in the \metaenv. 
+
+First, we show the \C\ code necessary to construct the boolean term
+\texttt{true} which, when yielded by the parser, looks like this:
+
+\begin{quote}
+\begin{verbatim}
+   appl(prod([lit("true")],cf(sort("Bool")),no-attrs),
+       [lit("true")])
+\end{verbatim}
+\end{quote}
+
+Even for such a simple input term, its \aterm\ representation written
+as a \C\ (or \java) string is quite complex already. This is because
+we have to escape all the double quotes (the \verb+"+ characters) from
+interpretation by the compiler:
 
 % {{{  Parse Tree for "true"
 
@@ -450,15 +540,21 @@ characters) from interpretation by the compiler.
 
 As another example, consider a \C\ function that extracts the left-hand
 side from a boolean conjunction. It needs to match the parse tree
-of the incoming term against the pattern for the syntax production
-for {\footnotesize\texttt{Bool "and" Bool -> Bool \{left\}} } with a
-\texttt{<term>} placeholder at the correct spot. Because the pattern
-is written as a \C\ string, we once again need to escape all quotes.
-Moreover, the string representation of the match-pattern is so long that
-it does not legibly fit on one line anymore, and we need to resort to
-ANSI \C\ string concatenation\footnote{Strings can be split over multiple
-lines by ending one line with a \texttt{"} and starting the next line
-with another \texttt{"}.} to span the string over multiple lines.
+of the incoming term against the pattern for the syntax production:
+
+\begin{quote}
+  \texttt{Bool "and" Bool -> Bool \{left\}}
+\end{quote}
+
+An implementation using the level one interface would need the pattern
+written as a string, with a \texttt{<term>} placeholder at the correct
+spot. Because the pattern is written inside a string, we once again
+need to escape all quotes.  Moreover, the string representation of the
+match-pattern is so long that it does not legibly fit on one line anymore,
+and we need to resort to ANSI \C\ string concatenation\footnote{Strings
+can be split over multiple lines by ending one line with a \texttt{"}
+and starting the next line with another \texttt{"}.} to span the string
+over multiple lines.
 
 % {{{  Level One: Extracting lhs from "Bool and Bool -> Bool"
 
@@ -491,53 +587,29 @@ Keep in mind that:
 
 \begin{itemize}
 
-\item as long as it is a valid \C\ string, the \C\ compiler is not going to
-warn you if you make a mistake (e.g. you wrote \texttt{lit(and)} instead of
-\verb+lit(\"and\")+);
+\item as long as it is a valid \C\ string, the \C\ compiler is not going
+to warn you if you make a mistake (e.g. you wrote \texttt{lit(and)}
+instead of \verb+lit(\"and\")+);
 
-\item as long as it is a valid \aterm-pattern, the \aterm-library is
+\item as long as it is a valid \aterm-pattern, the \aterm\ parser is
 not going to warn you if you make a mistake (e.g. you forgot to add
 \texttt{<term>} placeholders for the optional layout);
 
-\item the only noticable effect is your application bailing out, because
-the extraction function failed to come up with the desired answer;
-
-\item your only hope to fix any problems lies in visually inspecting
-the incoming term versus the expected matching pattern and figuring
-out why they didn't match!
+\item the only hope to fix any mistakes lies in visually inspecting
+the incoming term and the expected matching pattern, and figuring out
+why they do not match!
 
 \end{itemize}
 
-% }}}
-% {{{  Accessing Parse Trees using the Level Two interface
-
-\subsection{Accessing Parse Trees using the Level Two interface}
-\label{sec:aterm-lvl2}
-
-Extracting information from an \aterm\ using \texttt{ATmatch} is
-inefficient. Each time the function is invoked, the match-pattern has
-to be parsed before any matching can be done. Also, if you \emph{know}
-which part of the \aterm\ you need, there is really no need to build
-any sort of matching automaton. Instead you can just \emph{get} the
-element you are looking for. In our boolean example, if we \emph{know}
-for sure that we have a valid \texttt{and}-term, we can directly extract
-its left-hand side. If, however, our incoming term can be any arbitrary
-\aterm, we can no longer safely extract a subterm, we have to match the
-term against the pattern for an \texttt{and}-term, to see if it even
-has a left-hand side.
-
-Therefore, if we assume as a precondition to our function that it will
-always be called with a valid boolean \texttt{and}-term, we can use
-more direct \aterm-calls, such as \texttt{ATgetFirst} to get the head
-of a list, and \texttt{ATgetArgument} to get a specific argument from
-a function application.
-
-In particular, recalling that in \asfix\ we are dealing with
-\texttt{appl(prod,[args])} patterns, the \texttt{args} are always the
-second argument of the \texttt{appl}. If we look closely at the \asfix\
-pattern for our \texttt{and}-terms, we notice that the left-hand side
-is the first element from this list of \texttt{args}. The extraction
-function can thus be simplified to the more efficient:
+An implementation using the level two interface encodes structural
+knowledge about the exact location of the \texttt{lhs} in terms of direct
+\aterm\ access functions. In particular, recalling that in \asfix\ we
+are dealing with \texttt{appl(prod,[args])} patterns, the \texttt{args}
+are always the second argument of the \texttt{appl}. If we look closely
+at the \asfix\ pattern for our \texttt{and}-terms, we notice that the
+\texttt{lhs} is the first element in this list of \texttt{args}. The
+extraction function can thus be simplified to the more efficient, but
+very type-unsafe and obfuscated:
 
 % {{{  Level Two: Extracting lhs from "true and false"
 
@@ -552,7 +624,10 @@ function can thus be simplified to the more efficient:
 
 % }}}
 
-% }}}
+After all, this function would work on any \aterm\ function application
+that has (at least) two arguments, the first of which is a list with
+(at least) one element.
+
 % {{{  Maintenance issues
 
 \subsection{Maintenance issues}
