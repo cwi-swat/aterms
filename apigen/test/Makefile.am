@@ -29,7 +29,7 @@ javadir = ${top_builddir}/test/classfiles
 JAVAROOT = ${top_builddir}
 CLASSPATH_ENV = CLASSPATH=${top_builddir}:${SHARED_OBJECTS}:${JAVA_ATERM}:${srcdir}/$(JAVAROOT)::$$CLASSPATH
 
-java_JAVA = PeanoTest.java
+java_JAVA = PeanoTest.java PeanoFactory.java 
 
 CLEANFILES		= ${noinst_PROGRAMS} ${noinst_LIBRARIES} \
 			rolodex*.[ch] rolodex_dict.[ch] \
@@ -52,13 +52,15 @@ list.c list.h: list.adt list.pro
 		--compat-term \
 		--classpath ${top_builddir}:${JAVA_ATERM}:${SHARED_OBJECTS}
 
-peanotest.sh: PeanoTest.java peano.adt Makefile
-	${ADTJAVA} --input ${top_srcdir}/test/peano.adt \
-	           --output ${top_builddir}/test \
-		   --package test \
-		   --name peano
+peanotest.sh: PeanoTest.java PeanoFactory.java Makefile
 	@(echo "#! /bin/sh";\
 	  echo "CLASSPATH=${top_builddir}:${JAVA_ATERM}:${SHARED_OBJECTS}";\
 	  echo "export CLASSPATH";\
 	  echo "java test.PeanoTest") > $@ && chmod +x $@
 
+PeanoFactory.java: peano.adt Makefile
+	${ADTJAVA} --input ${top_srcdir}/test/peano.adt \
+	           --output ${top_builddir}/test \
+		   --package test \
+		   --name peano \
+		   --classpath ${top_builddir}
