@@ -79,8 +79,8 @@ Besides function applications that are needed to represent the basic
 tree structure, a small number of other primitives are provided to
 make the \ATerm\ data type more generally applicable.  These include
 integer constants, real number constants, binary large data objects
-(``blobs''), lists of \ATerms, and the special placeholder subtype
-that is used to represent typed gaps in \ATerms.  Using the
+(``blobs''), lists of \ATerms, and placeholders
+to represent typed gaps in \ATerms.  Using the
 comprehensive set of primitives and operations on \ATerms, it is
 possible to perform operations on an \ATerm\ received from another
 application without first converting it to an application-specific
@@ -229,7 +229,7 @@ or matched.  An example of a pattern is {\tt "and(<int>,<appl>)"}.
 These patterns appear as string argument of both make and match and
 are remotely comparable to the format strings in the {\tt printf}/{\tt
 scanf} functions in C.
-The operations are:
+The operations for making and matching \ATerms\ are:
 
 \begin{itemize}
 \begin{sloppypar}
@@ -289,7 +289,7 @@ and any sharing of the in-memory representation of terms is lost.
 The binary format (Binary ATerm Format, see Section~\ref{baf}) is 
 portable, machine-readable, very compact, 
 and preserves all in-memory sharing.
-The operations are:
+The operations for reading and writing \ATerms\ are:
 
 \begin{itemize}
 
@@ -318,7 +318,7 @@ of term $t$ as a string.
 
 \end{itemize}
 
-Either format can be used on any linear stream, including files, sockets,
+Either format (textual or binary) can be used on any linear stream, including files, sockets,
 pipes, etc.
 
 \subsubsection{Annotating \ATerms} \label{annotating}
@@ -796,8 +796,8 @@ once. Every time a parent term wishes to refer to a subterm, it just
 uses the subterm's index.
 
 \subsubsection{Exploiting \ATerm\ Regularities}
-When sending a large term containing a many subterms, the subterm
-indices can become quite large. Consequently a many bits are needed
+When sending a large term containing many subterms, the subterm
+indices can become quite large. Consequently many bits are needed
 to represent these indices. We can considerably reduce the size of
 these indices when we take into account some of the regularities in
 the structure of terms. Empirical study shows that the set of function
@@ -992,8 +992,8 @@ as \aterms\ we refer to Section \ref{casfix}.
 \cite{Wan97} has been added to the lcc compiler \cite{Han99}.
 This back-end maps the internal format used by
 the lcc compiler to \aterms.
-The \ATerm\ format represents the equivalent information of a C program
-as the ASDL representation of that C program.
+The \ATerm\ representation and the ASDL representation of a C program
+contain equivalent information.
 
 Given this back-end the C sources of the lcc compiler itself are mapped
 to \aterms. 
@@ -1003,7 +1003,7 @@ The lcc compiler consists of 34 source files, consisting of a total of
 \item[S-expressions:] a simple translator has been developed which
 transforms an S-expression into an \ATerm. This translator has been
 used to process an arbitrary collection of ``.el'' files
-containing S-expressions found within the emacs source tree
+containing S-expressions found within the Emacs source tree
 under Linux.
 The total number of ``.el'' files was 738, these files together contained 
 286,973 lines of code.
@@ -1070,8 +1070,10 @@ lower, but this is due to the fact that the set of
 Casl specifications is small and each specification tests another
 feature of the Casl language, so not much sharing was to be expected.
 The S-expressions have the lowest ratio of sharing, but this was to
-be expected because these S-expressions represent concrete {\em hand-written}
-Lisp programs.
+be expected: they represent ad hoc {\em hand-written}
+Lisp programs while in the other cases the \ATerms\ are obtained by
+a systematic translation from source code. In the latter case,
+recurring patterns in the translation scheme result in higher levels of sharing.
 
 \begin{figure}
 \centerline{\epsfig{file=sharing.eps}}
@@ -1247,9 +1249,12 @@ the size of the \baf\ version of the same term (column 2)
 and percentage of compression achieved (column 3).
 Next, we give the results of compressing the \ascii\ version of each term
 with {\tt gzip} (column 4), and compression achieved (column 5).
-The compression factors are near 96\% in both cases.
+The compression factors are  85\%  for \baf\ and 92\% for {\tt gzip}.
 The worst case compression of {\tt gzip} (66\%) is considerably
 better than the worst case compression using \baf\ (12\%).
+No gains are to be expected from using {\tt gzip} instead of \baf,
+since this would imply first writing the \ATerm\ in textual format (an expensive operation which looses sharing)
+and then compressing it with {\tt gzip}.
 
 \begin{table}[!htb]
 \begin{center}
