@@ -8,7 +8,6 @@ import apigen.adt.ADT;
 import apigen.adt.api.ADTFactory;
 import apigen.adt.api.Entries;
 import apigen.gen.tom.TomSignatureGenerator;
-import aterm.ATerm;
 
 public class Main {
 	private static boolean verbose = false;
@@ -44,23 +43,32 @@ public class Main {
 		for (int i = 0; i < args.length; i++) {
 			if ("-help".startsWith(args[i])) {
 				usage();
-			} else if ("-verbose".startsWith(args[i])) {
+			}
+			else if ("-verbose".startsWith(args[i])) {
 				verbose = true;
-			} else if ("-prefix".startsWith(args[i])) {
+			}
+			else if ("-prefix".startsWith(args[i])) {
 				prefix = args[++i];
-			} else if ("-output".startsWith(args[i])) {
+			}
+			else if ("-output".startsWith(args[i])) {
 				output = args[++i];
-			} else if ("-prologue".startsWith(args[i])) {
+			}
+			else if ("-prologue".startsWith(args[i])) {
 				prologue = args[++i];
-			} else if ("-input".startsWith(args[i])) {
+			}
+			else if ("-input".startsWith(args[i])) {
 				input = args[++i];
-			} else if ("-compatible:term".equals(args[i])) {
+			}
+			else if ("-compatible:term".equals(args[i])) {
 				make_term_compatibility = true;
-			} else if ("-jtom".startsWith(args[i])) {
+			}
+			else if ("-jtom".startsWith(args[i])) {
 				jtom = true;
-			} else if ("-jtype".startsWith(args[i])) {
+			}
+			else if ("-jtype".startsWith(args[i])) {
 				jtype = true;
-			} else {
+			}
+			else {
 				usage();
 			}
 		}
@@ -70,7 +78,8 @@ public class Main {
 			if (output == null) {
 				usage();
 			}
-		} else {
+		}
+		else {
 			inputStream = new FileInputStream(input);
 			if (output == null) {
 				int extIndex = input.lastIndexOf((int) '.');
@@ -85,20 +94,29 @@ public class Main {
 		ADT adt;
 
 		try {
-      ADTFactory factory = new ADTFactory();
-      Entries entries = factory.EntriesFromFile(input);      
-      
-			adt = new ADT(entries);
-            
-			APIGenerator apigen = 
-			new APIGenerator(adt, output, prefix, prologue, verbose, true, make_term_compatibility);
-			apigen.run();
-            if (jtom) {
-              new TomSignatureGenerator(adt,new CTomSignatureImplementation(prefix, jtype),".",output,prefix,verbose,true).run();
-            }
-			new CDictionaryGenerator(factory, adt, ".", output, prefix,  apigen.getAFunRegister(), verbose, true).run();
+			ADTFactory factory = new ADTFactory();
+			Entries entries = factory.EntriesFromFile(input);
 
-		} catch (IOException e) {
+			adt = new ADT(entries);
+
+			APIGenerator apigen =
+				new APIGenerator(adt, output, prefix, prologue, verbose, true, make_term_compatibility);
+			apigen.run();
+			if (jtom) {
+				new TomSignatureGenerator(
+					adt,
+					new CTomSignatureImplementation(prefix, jtype),
+					".",
+					output,
+					prefix,
+					verbose,
+					true)
+					.run();
+			}
+			new CDictionaryGenerator(factory, adt, ".", output, prefix, apigen.getAFunRegister(), verbose, true).run();
+
+		}
+		catch (IOException e) {
 			System.out.println("Failed to read ADT from file");
 			System.exit(1);
 		}
