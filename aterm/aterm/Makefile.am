@@ -34,10 +34,10 @@ ALLSRCS			= aterm.c list.c make.c memory.c afun.c gc.c \
 			hash.c bafio.c byteio.c tafio.c version.c
 
 PUBLIC_INCL		= abool.h atypes.h aterm1.h aterm2.h deprecated.h \
-			encoding.h afun.h
+			encoding.h afun.h byteio.h
 
 PRIVATE_INCL		= _aterm.h debug.h gc.h list.h make.h memory.h \
-			util.h bafio.h byteio.h version.h tafio.h
+			util.h bafio.h version.h tafio.h
 
 CFLAGS			= -Wall -g -O2
 
