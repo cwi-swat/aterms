@@ -90,7 +90,7 @@ while [ $# -gt 0 ]
 do
   case $1 in
     -i | --input)
-      shift; INPUT=$1 ;;
+      shift; INPUT="$INPUT --input $1" ;;
  
     -c | --classpath)
       shift; CLASSES=$1;;
@@ -131,12 +131,6 @@ done
 # }}}
 
 # {{{ sanity checks and variable setup
-
-if [ "a${INPUT}" = "a" ]; then
-  error "no input file specified (use -i <file>)"
-else
-  require ${INPUT}
-fi
 
 if [ "a${OUTPUT}" = "a" ]; then
   OUTPUT="."
@@ -184,12 +178,12 @@ fi
 # {{{  generate Java code from ADT
 java  -classpath ${CLASSES}:${SHARED_OBJECTS}:${JAVA_ATERM} \
           apigen.gen.java.Main \
-	  --input ${INPUT}	\
-	  --output ${OUTPUT}	\
-	  ${OPT_IMPORTS}	\
-	  ${OPT_PACKAGE}	\
-	  ${OPT_VERBOSE}        \
-	  ${OPT_FOLDING}        \
+	  ${INPUT} \
+	  --output ${OUTPUT} \
+	  ${OPT_IMPORTS} \
+	  ${OPT_PACKAGE} \
+	  ${OPT_VERBOSE} \
+	  ${OPT_FOLDING} \
 	  ${OPT_VISITABLE} \
 	  ${OPT_JTOM} \
 	  ${OPT_NAME}
