@@ -1,3 +1,14 @@
+2003-05-30    <pem@bach>
+
+	* apigen/gen/java/TypeImplGenerator.java: generate public 
+          fromString and fromTextFile static functions
+	
+2003-04-14    <pem@bach>
+
+	* apigen/gen/java/AlternativeImplGenerator.java: fix a hashing
+	  problem. 'b' is now initialized by the AFun().hashCode() instead
+	  of the goldenRatio.
+	
 
 2003-05-06  Pierre-Etienne Moreau  <pem@escher.loria.fr>
  

@@ -48,13 +48,13 @@ public class TypeImplGenerator extends JavaGenerator {
 			GenericConstructorGenerator.className(apiName));
 			println("{");
 
-			println("  static " + class_name + " fromString(String str)");
+			println("  public static " + class_name + " fromString(String str)");
 			println("  {");
 			println("    aterm.ATerm trm = " + get_factory + ".parse(str);");
 			println("    return fromTerm(trm);");
 			println("  }");
 
-			println("  static " + class_name + " fromTextFile(InputStream stream) " +
+			println("  public static " + class_name + " fromTextFile(InputStream stream) " +
 				"throws aterm.ParseError, IOException");
 			println("  {");
 			println("    aterm.ATerm trm = " + get_factory + ".readFromTextFile(stream);");
