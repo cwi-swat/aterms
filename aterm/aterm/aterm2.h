@@ -128,7 +128,7 @@ ATermList ATmakeList1(ATerm el0);
 #define ATmakeList6(el0, el1, el2, el3, el4, el5) \
                 ATinsert(ATmakeList5(el1,el2,el3,el4,el5), el0)
 
-/* int ATgetLength(ATermList list);*/
+//int ATgetLength(ATermList list);
 #define   ATgetLength(l) ((int)GET_LENGTH((l)->header))
 
 /* ATerm ATgetFirst(ATermList list);*/
@@ -196,7 +196,8 @@ ATermPlaceholder ATmakePlaceholder(ATerm type);
 ATermBlob ATmakeBlob(int size, void *data);
 /*void   *ATgetBlobData(ATermBlob blob);*/
 #define ATgetBlobData(blob) ((blob)->data)
-/*int     ATgetBlobSize(ATermBlob blob);*/
+
+//int     ATgetBlobSize(ATermBlob blob);
 #define ATgetBlobSize(blob) ((int)GET_LENGTH((blob)->header))
 
 void    ATregisterBlobDestructor(ATbool (*destructor)(ATermBlob));

@@ -846,19 +846,19 @@ static ATerm rparse_term(int *c, byte_reader *reader, ATermIndexedSet abbrevs)
     }
 
     /*}}}  */
-  }
 
-  end = reader->bytes_read;
+    end = reader->bytes_read;
 
-  if (abbrev_size(next_abbrev) < (end-start)) {
-    ATbool isnew;
-    long abbrev;
+    if (abbrev_size(next_abbrev) < (end-start)) {
+      ATbool isnew;
+      long abbrev;
 
-    abbrev = ATindexedSetPut(abbrevs, result, &isnew);
-    if (isnew) {
-      /*ATfprintf(stderr, "%5d: %t\n", abbrev, result);*/
-      assert(abbrev == next_abbrev);
-      next_abbrev++;
+      abbrev = ATindexedSetPut(abbrevs, result, &isnew);
+      if (isnew) {
+	/*ATfprintf(stderr, "%5d: %t\n", abbrev, result);*/
+	assert(abbrev == next_abbrev);
+	next_abbrev++;
+      }
     }
   }
 

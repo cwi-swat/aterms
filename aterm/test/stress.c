@@ -859,7 +859,6 @@ void testMark()
   AT_unmarkTerm(result);
   test_assert("marking", 3, !IS_MARKED(zero->header));
   test_assert("marking", 4, !IS_MARKED(one->header));
-
   printf("mark tests ok.\n");
 }
 
@@ -1095,7 +1094,6 @@ void testBaffle()
   FILE *file;
   ATerm test2, test1 = ATparse("f(1,a,<abc>,[24,g]{[a,b]})");
   int len = 0;
-
   test_assert("baffle", 1, AT_calcUniqueSubterms(ATparse("f(a,[1])"))==5);
   sprintf(buf, "baffle-test-%d.baf", (int)getpid());
   file = fopen(buf, "wb");
@@ -1243,7 +1241,6 @@ int main(int argc, char *argv[])
   ATerm bottomOfStack;
 
   ATinit(argc, argv, &bottomOfStack);
-
   testAlloc();
   testSymbol();
   testAppl();

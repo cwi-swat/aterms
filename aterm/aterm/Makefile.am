@@ -7,7 +7,7 @@ lib_LIBRARIES		= libATerm.a @ATERM_LIB_GCC@ @ATERM_LIB_CC@ \
 			@ATERM_LIB_DBG@ @ATERM_LIB_PROF@ @ATERM_LIB_NS@
 
 EXTRA_LIBRARIES		= libATerm-gcc.a libATerm-cc.a libATerm-dbg.a \
-			libATerm-prof.a libATerm-ns.a
+			libATerm-prof.a libATerm-ns.a libATerm-pem.a
 
 ALLSRCS			= aterm.c list.c make.c memory.c afun.c gc.c \
 			hash.c bafio.c byteio.c tafio.c version.c md5c.c
@@ -32,6 +32,7 @@ libATerm_gcc_a_SOURCES	=
 libATerm_dbg_a_SOURCES	=
 libATerm_prof_a_SOURCES	=
 libATerm_ns_a_SOURCES	=
+libATerm_pem_a_SOURCES	=
 
 libATerm_ns_a_CFLAGS	= -DNO_SHARING
 
@@ -41,6 +42,7 @@ libATerm_gcc_a_LIBADD	= $(ALLSRCS:.c=-gcc.o)
 libATerm_dbg_a_LIBADD	= $(ALLSRCS:.c=-dbg.o)
 libATerm_prof_a_LIBADD	= $(ALLSRCS:.c=-prof.o)
 libATerm_ns_a_LIBADD	= $(ALLSRCS:.c=-ns.o)
+libATerm_pem_a_LIBADD	= $(ALLSRCS:.c=-pem.o)
 
 version.o:      version.c $(ALLINCLUDES) $(ALLSRCS)
 version-cc.o:   version.c $(ALLINCLUDES) $(ALLSRCS)
@@ -48,3 +50,4 @@ version-gcc.o:  version.c $(ALLINCLUDES) $(ALLSRCS)
 version-dbg.o:  version.c $(ALLINCLUDES) $(ALLSRCS)
 version-prof.o: version.c $(ALLINCLUDES) $(ALLSRCS)
 version-ns.o:   version.c $(ALLINCLUDES) $(ALLSRCS)
+version-pem.o:  version.c $(ALLINCLUDES) $(ALLSRCS)

@@ -7,6 +7,7 @@
 
 # Common defines for all libraries
 STDDEFS = $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS)
+#CC = gcc31
 
 ## Library specific compiler flags
 GCC_COMPILE    = $(CC_GCC)    $(CFLAGS_GCC)    $(DEFS_GCC)    $(STDDEFS)
@@ -36,3 +37,4 @@ NS_COMPILE     = $(CC_NS)     $(CFLAGS_NS)     $(DEFS_NS)     $(STDDEFS)
 
 %-ns.o   : %.c $(ALLINCLUDES)
 	$(NS_COMPILE) -c $< -o $@
+

@@ -1,5 +1,29 @@
 $Id$
 
+2002/09/11 <olivierp@cwi.nl>
+* Merged GENGC version back into the main tree. Let's see how it holds out!
+
+2002/08/08 <jong@cwi.nl>
+* Include java sourcefiles in jar and name jar after VERSION.
+
+2002/08/06 <jong@cwi.nl>
+* First attempt at creating "aterms.jar" (ends up in $prefix/share/aterms.jar)
+
+2002/08/05 <olivierp@cwi.nl>
+* Added AT_unmarkAll and AT_unmarkAllAFuns. These functions traverse
+  the ATerm memory blocks instead of the actual ATerms. This can be
+  more efficient when most of your terms are marked.
+* Fixed efficiency problem of ATcalcUniqueSubterms: this function now
+  takes time proportional to the number of unique nodes instead of the
+  total number of nodes.
+
+2002/07/02 <olivierp@cwi.nl>
+* Improved hashing of ATprotectArray
+* Fixed potential bug in tafio.c
+
+2002/06/20 <olivierp@cwi.nl>
+* Merged changes by Pierre-Etienne Moreau with our own changes since 1.6.6
+
 2002/06/05 <jong@cwi.nl>
 * minor tweaks to satisfy autoconf/automake versions up to 1.6.1
 * Start 1.6.8beta
@@ -9,6 +33,23 @@ $Id$
 
 2002/03/05 <jong@cwi.nl>
 * Increased magical LENSPEC from 8 to 12 bytes
+
+2002-02-15  Pierre-Etienne Moreau  <pem@escher.loria.fr>
+
+	* aterm/gc.c : new sweep phase
+	  - at_freelist[size] is empty before being re-filled. 
+	    this reduces fragmentation
+	  - empty blocks are detected and recycled
+	  - if at_freeblocklist_size becomes too large, the block is
+	    removed from the block_table and deleted
+	
+	* aterm/memory.c: 
+	  - add a at_freeblocklist and a at_freeblocklist_size
+	  - reuse empty block when possible
+	  - fix a bug in allocate_block: the last cell had a bad header
+
+	* aterm/memory.h: block reduced to 2^12 instead of 2^16
+
 
 2002/02/07 <jong@cwi.nl>
 * Release 1.6.6

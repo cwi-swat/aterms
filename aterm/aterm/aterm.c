@@ -26,8 +26,12 @@
 /*}}}  */
 /*{{{  defines */
 
-#define SILENT_FLAG	"-at-silent"
+#define SILENT_FLAG  "-at-silent"
 #define VERBOSE_FLAG "-at-verbose"
+
+#ifndef PO
+#define LOW_MEMORY_FLAG "-at-low-memory"
+#endif
 
 #define DEFAULT_BUFFER_SIZE 4096
 #define RESIZE_BUFFER(n) if(n > buffer_size) resize_buffer(n)
@@ -52,7 +56,12 @@
 char            aterm_id[] = "$Id$";
 
 /* Flag to tell whether to keep quiet or not. */
-ATbool silent	= ATtrue;
+#ifndef PO
+ATbool silent	  = ATtrue;
+ATbool low_memory = ATfalse;
+#else
+ATbool silent	  = ATtrue;
+#endif
 
 /* warning_handler is called when a recoverable error is detected */
 static void     (*warning_handler) (const char *format, va_list args) = NULL;
@@ -80,7 +89,9 @@ ProtEntry      *at_prot_memory = NULL;
 static ATerm   *mark_stack = NULL;
 static int      mark_stack_size = 0;
 int             mark_stats[3] = {0, MYMAXINT, 0};
+#ifdef WITH_STATS
 int             nr_marks = 0;
+#endif
 
 /*}}}  */
 /*{{{  function declarations */
@@ -146,6 +157,10 @@ ATinit(int argc, char *argv[], ATerm * bottomOfStack)
       silent = ATtrue;
     } else if(streq(argv[lcv], VERBOSE_FLAG)) {
       silent = ATfalse;
+#ifndef PO
+    } else if(0 || streq(argv[lcv], LOW_MEMORY_FLAG)) {
+      low_memory              = ATtrue;
+#endif
     } else if(streq(argv[lcv], "-at-help")) {
       help = ATtrue;
     }
@@ -154,6 +169,11 @@ ATinit(int argc, char *argv[], ATerm * bottomOfStack)
   /*}}}  */
   /*{{{  Optionally print some information */
 
+#ifndef PO
+  AT_init_gc_parameters(low_memory);
+#endif
+
+  
   if (!silent)
 #ifdef NO_SHARING
     ATfprintf(stderr, "  ATerm Library (no maximal sharing), "
@@ -169,6 +189,10 @@ ATinit(int argc, char *argv[], ATerm * bottomOfStack)
 	    "-at-verbose");
     fprintf(stderr, "    %-20s: suppress runtime gc information.\n",
 	    "-at-silent");
+#ifndef PO
+    fprintf(stderr, "    %-20s: try to minimize the memory usage.\n",
+	    "-at-low-memory");
+#endif
   }
 
   /*}}}  */
@@ -2195,25 +2219,26 @@ ATreadFromString(const char *string)
 /**
  * Mark a term and all of its children.
  */
-
-void
-AT_markTerm(ATerm t)
+void AT_markTerm(ATerm t)
 {
   int             i, arity;
   Symbol          sym;
   ATerm          *current = mark_stack + 1;
   ATerm          *limit = mark_stack + mark_stack_size - MARK_STACK_MARGE;
+#ifdef WITH_STATS
   ATerm          *depth = mark_stack;
-
+#endif
+  
   mark_stack[0] = NULL;
   *current++ = t;
 
   while (ATtrue) {
     if (current >= limit) {
-      int current_index, depth_index;
-
+      int current_index;
+#ifdef WITH_STATS
+      int depth_index = depth - mark_stack;
+#endif
       current_index = current - mark_stack;
-      depth_index   = depth - mark_stack;
 
       /* We need to resize the mark stack */
       mark_stack_size = mark_stack_size * 2;
@@ -2227,12 +2252,16 @@ AT_markTerm(ATerm t)
       fflush(stderr);
 
       current = mark_stack + current_index;
+#ifdef WITH_STATS
       depth   = mark_stack + depth_index;
+#endif
     }
 
+#ifdef WITH_STATS
     if (current > depth)
       depth = current;
-
+#endif
+    
     t = *--current;
 
     if (!t) {
@@ -2246,7 +2275,13 @@ AT_markTerm(ATerm t)
       continue;
 
     SET_MARK(t->header);
-
+    
+#ifndef PO
+      //fprintf(stderr,"MAJOR OLD MARK(%x)\n",(unsigned int)t);
+      //fprintf(stderr,"INCREMENT_AGE(%x,%d)\n",(unsigned int)t,GET_AGE(t->header));
+    INCREMENT_AGE(t->header);
+#endif
+    
     if(HAS_ANNO(t->header))
       *current++ = AT_getAnnotations(t);
 
@@ -2258,7 +2293,23 @@ AT_markTerm(ATerm t)
 
       case AT_APPL:
 	sym = ATgetSymbol((ATermAppl) t);
-	AT_markSymbol(sym);
+
+          //fprintf(stderr,"AT_markTerm: AT_markSymbol(adr = %d, id = %d)\n",at_lookup_table[(sym)],sym);
+        if(AT_isValidSymbol(sym)) {
+          AT_markSymbol(sym);
+        } else {
+          continue;
+        }
+            /*
+        {
+          SymEntry tmpTerm;
+          tmpTerm = at_lookup_table[(sym)];
+          printf("sym = %d\n",sym);
+          printf("tmpTerm = %x\n",(void*)tmpTerm);
+          printf("tmpTerm->header = %x\n",tmpTerm->header);
+          tmpTerm->header |= MASK_MARK;
+        }
+            */
 	arity = GET_ARITY(t->header);
 	if (arity > MAX_INLINE_ARITY) {
 	  arity = ATgetArity(sym);
@@ -2281,9 +2332,129 @@ AT_markTerm(ATerm t)
 	break;
     }
   }
+#ifdef WITH_STATS
   STATS(mark_stats, depth - mark_stack);
   nr_marks++;
+#endif
 }
+
+#ifndef PO
+void AT_markTerm_young(ATerm t) {
+  int             i, arity;
+  Symbol          sym;
+  ATerm          *current = mark_stack + 1;
+  ATerm          *limit = mark_stack + mark_stack_size - MARK_STACK_MARGE;
+#ifdef WITH_STATS
+  ATerm          *depth = mark_stack;
+#endif
+
+  if(IS_MARKED(t->header) || IS_OLD(t->header)) {
+      //fprintf(stderr,"AT_markTerm_young (%p) STOP MARK: age = %d\n",t,GET_AGE(t->header));
+    return;
+  }
+  
+  mark_stack[0] = NULL;
+  *current++ = t;
+
+  while (ATtrue) {
+    if (current >= limit) {
+      int current_index;
+#ifdef WITH_STATS
+      int depth_index   = depth - mark_stack;
+#endif
+
+      current_index = current - mark_stack;
+      /* We need to resize the mark stack */
+      mark_stack_size = mark_stack_size * 2;
+      mark_stack = (ATerm *) realloc(mark_stack, sizeof(ATerm) * mark_stack_size);
+      if (!mark_stack)
+	ATerror("cannot realloc mark stack to %d entries.\n", mark_stack_size);
+      limit = mark_stack + mark_stack_size - MARK_STACK_MARGE;
+      if(!silent) {
+	fprintf(stderr, "resized mark stack to %d entries\n", mark_stack_size);
+      }
+      fflush(stderr);
+
+      current = mark_stack + current_index;
+#ifdef WITH_STATS
+      depth   = mark_stack + depth_index;
+#endif
+    }
+
+#ifdef WITH_STATS
+    if (current > depth)
+      depth = current;
+#endif
+    
+    t = *--current;
+
+    if (!t) {
+      if(current != mark_stack) {
+	ATabort("AT_markTerm: premature end of mark_stack.\n");
+      }
+      break;
+    }
+      // TODO: optimize
+    if(IS_MARKED(t->header) || IS_OLD(t->header)) {
+        //fprintf(stderr,"AT_markTerm_young (%p) STOP MARK: age = %d\n",t,GET_AGE(t->header));
+      continue;
+    }
+
+    SET_MARK(t->header);
+      //fprintf(stderr,"MINOR YOUNG MARK(%x)\n",(unsigned int)t);
+      //fprintf(stderr,"YOUNG INCREMENT_AGE(%x,%d)\n",(unsigned int)t,GET_AGE(t->header));
+    INCREMENT_AGE(t->header);
+
+    if(HAS_ANNO(t->header))
+      *current++ = AT_getAnnotations(t);
+
+    switch (GET_TYPE(t->header)) {
+      case AT_INT:
+      case AT_REAL:
+      case AT_BLOB:
+	break;
+
+      case AT_APPL:
+	sym = ATgetSymbol((ATermAppl) t);
+          //fprintf(stderr,"AT_markTerm_young: AT_markSymbol_young(%d)\n",sym);
+        if(AT_isValidSymbol(sym)) {
+          AT_markSymbol_young(sym);
+        } else {
+          continue;
+        }
+
+	arity = GET_ARITY(t->header);
+	if (arity > MAX_INLINE_ARITY) {
+	  arity = ATgetArity(sym);
+	}
+	for (i = 0; i < arity; i++) {
+	  ATerm arg = ATgetArgument((ATermAppl) t, i);
+	  *current++ = arg;
+	}
+        
+	break;
+
+      case AT_LIST:
+	if (!ATisEmpty((ATermList) t)) {
+	  *current++ = (ATerm) ATgetNext((ATermList) t);
+	  *current++ = ATgetFirst((ATermList) t);
+	}
+	break;
+
+      case AT_PLACEHOLDER:
+	*current++ = ATgetPlaceholder((ATermPlaceholder) t);
+	break;
+    }
+  }
+#ifdef WITH_STATS
+  STATS(mark_stats, depth - mark_stack);
+  nr_marks++;
+#endif
+}
+#endif
+
+
+
 
 /*}}}  */
 /*{{{  void AT_unmarkTerm(ATerm t) */
@@ -2516,7 +2687,6 @@ calcCoreSize(ATerm t)
   return size;
 }
 
-
 /*}}}  */
 /*{{{  int AT_calcCoreSize(ATerm t) */
 
@@ -2664,8 +2834,7 @@ int ATcalcUniqueSubterms(ATerm t)
  * Calculate the number of unique symbols.
  */
 
-static int
-calcUniqueSymbols(ATerm t)
+static int calcUniqueSymbols(ATerm t)
 {
   int    i, arity, nr_unique = 0;
   Symbol sym;

@@ -1,13 +1,25 @@
-SUBDIRS		= aterm
+SUBDIRS = aterm
 
-noinst_DATA	= ${JAVADOCDIR}.tar.gz
+JARFILE = aterm-${VERSION}.jar
 
-JAVA_CLASSES	= AFun ATerm ATermInt ATermReal ATermBlob ATermAppl \
-		ATermList ATermPlaceholder ATermFactory
-JAVA_FILES	= $(patsubst %,$(srcdir)/aterm/%.java,$(JAVA_CLASSES)) \
-		$(srcdir)/aterm/pure/PureFactory.java
+noinst_DATA = ${JAVADOCDIR}.tar.gz
+data_DATA = ${JARFILE}
 
-JAVADOCDIR	= aterm-javadoc
+JAVA_CLASSES = \
+	AFun \
+	ATerm \
+	ATermAppl \
+	ATermBlob \
+	ATermFactory \
+	ATermInt \
+	ATermList \
+	ATermPlaceholder \
+	ATermReal
+
+JAVA_FILES = $(patsubst %,$(srcdir)/aterm/%.java,$(JAVA_CLASSES)) \
+	$(srcdir)/aterm/pure/PureFactory.java
+
+JAVADOCDIR = aterm-javadoc
 
 javadoc: ${JAVADOCDIR}.tar.gz
 
@@ -16,3 +28,8 @@ ${JAVADOCDIR}.tar.gz: ${JAVA_FILES}
 	javadoc -public -d ${JAVADOCDIR} $(JAVA_FILES)
 	tar cf - ${JAVADOCDIR} | gzip --best > ${JAVADOCDIR}.tar.gz
 	@rm -rf ${JAVADOCDIR}
+
+${JARFILE}:
+	jar cf ${JARFILE} \
+	`cd ${top_builddir}/java && find . -name '*.java'` \
+	`cd ${top_builddir}/java && find . -name '*.class'`

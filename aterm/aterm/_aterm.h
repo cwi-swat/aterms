@@ -14,11 +14,19 @@ typedef struct ProtEntry
 #define LENSPEC 12
 
 extern ATbool silent;
+#ifndef PO
+extern ATbool low_memory;
+#endif
 extern ProtEntry **at_prot_table;
 extern int at_prot_table_size;
 extern ProtEntry *at_prot_memory;
 
 void AT_markTerm(ATerm t);
+#ifndef PO
+void AT_markTerm_young(ATerm t);
+#endif
+
+
 void AT_unmarkTerm(ATerm t);
 void AT_unmarkIfAllMarked(ATerm t);
 void AT_unmarkAll();

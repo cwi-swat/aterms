@@ -5,13 +5,13 @@
 
 AC_INIT(configure)
 AM_CONFIG_HEADER(config.h)
-AM_INIT_AUTOMAKE(aterm, 1.6.8beta)
+AM_INIT_AUTOMAKE(aterm, 2.0beta)
 
 AC_PROG_CC
 
 # Default values
 CC_GCC=gcc
-CFLAGS_GCC="-Wall" #" -O4" disabled due to gcc optimizer bugs
+CFLAGS_GCC="-Wall -g -O" #" -O4" disabled due to gcc optimizer bugs
 LFLAGS_GCC=""
 DEFS_GCC="\$(DEFS) -DNDEBUG"
 INCL_GCC=""
@@ -29,7 +29,7 @@ DEFS_DBG="\$(DEFS)"
 INCL_DBG=""
 
 CC_PROF=gcc
-CFLAGS_PROF="-Wall -pg -g"
+CFLAGS_PROF="-Wall -pg -g -O -DNDEBUG"
 LFLAGS_PROF="-pg"
 DEFS_PROF="\$(DEFS)"
 INCL_PROF=""
@@ -40,7 +40,7 @@ LFLAGS_CC64="-64"
 INCL_CC64=""
 
 CC_NS=gcc
-CFLAGS_NS="-Wall -g" # " -O2" disabled due to gcc optimizer bugs
+CFLAGS_NS="-Wall -DNDEBUG -O -DXGC_VERBOSE -DWITH_STATS" # " -O2" disabled due to gcc optimizer bugs
 LFLAGS_NS=""
 DEFS_NS="\$(DEFS) -DNO_SHARING"
 INCL_NS=""
@@ -63,7 +63,7 @@ AC_ARG_WITH(cflags,
    [  --with-cflags=CFLAGS     standard options of C compiler],
    CFLAGS=${withval},
    if test "a${GCC}" = "ayes"; then
-     CFLAGS="-Wall -g" # " -O2" disabled due to gcc optimizer bugs
+     CFLAGS="-Wall -DNDEBUG -O -DXGC_VERBOSE -DXHASHPEM  -DWITH_STATS" # " -O2" disabled due to gcc optimizer bugs
    fi;
 )
 

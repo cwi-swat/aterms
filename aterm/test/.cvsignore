@@ -14,3 +14,4 @@ test-tool2
 tool2.tif.c
 tool2.tif.h
 vararg[123]
+fib

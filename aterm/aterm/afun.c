@@ -304,6 +304,65 @@ int AT_writeAFun(AFun fun, byte_writer *writer)
  * Calculate the hash value of a symbol.
  */
 
+#ifdef HASHPEM
+#define mix(a,b,c) \
+{ \
+  a -= b; a -= c; a ^= (c>>13); \
+  b -= c; b -= a; b ^= (a<<8); \
+  c -= a; c -= b; c ^= (b>>13); \
+  a -= b; a -= c; a ^= (c>>12);  \
+  b -= c; b -= a; b ^= (a<<16); \
+  c -= a; c -= b; c ^= (b>>5); \
+  a -= b; a -= c; a ^= (c>>3);  \
+  b -= c; b -= a; b ^= (a<<10); \
+  c -= a; c -= b; c ^= (b>>15); \
+}
+typedef  unsigned long  int  ub4;   /* unsigned 4-byte quantities */
+typedef  unsigned       char ub1;   /* unsigned 1-byte quantities */
+
+ShortHashNumber AT_hashSymbol(char *name, int arity) {
+   register ub4 a,b,c,len;
+   ub1 *k=name;
+   ub4 length = strlen(name);
+   
+   /* Set up the internal state */
+   len = length;
+   a = b = 0x9e3779b9;  /* the golden ratio; an arbitrary value */
+   c = arity;         /* the previous hash value */
+
+   /*---------------------------------------- handle most of the key */
+   while (len >= 12) {
+     a += (k[0] +((ub1)k[1]<<8) +((ub1)k[2]<<16) +((ub1)k[3]<<24));
+     b += (k[4] +((ub1)k[5]<<8) +((ub1)k[6]<<16) +((ub1)k[7]<<24));
+     c += (k[8] +((ub1)k[9]<<8) +((ub1)k[10]<<16)+((ub1)k[11]<<24));
+     mix(a,b,c);
+     k += 12; len -= 12;
+   }
+
+   /*------------------------------------- handle the last 11 bytes */
+   c += length;
+   switch(len)              /* all the case statements fall through */
+   {
+   case 11: c+=((ub1)k[10]<<24);
+   case 10: c+=((ub1)k[9]<<16);
+   case 9 : c+=((ub1)k[8]<<8);
+      /* the first byte of c is reserved for the length */
+   case 8 : b+=((ub1)k[7]<<24);
+   case 7 : b+=((ub1)k[6]<<16);
+   case 6 : b+=((ub1)k[5]<<8);
+   case 5 : b+=k[4];
+   case 4 : a+=((ub1)k[3]<<24);
+   case 3 : a+=((ub1)k[2]<<16);
+   case 2 : a+=((ub1)k[1]<<8);
+   case 1 : a+=k[0];
+     /* case 0: nothing left to add */
+   }
+   mix(a,b,c);
+   /*-------------------------------------------- report the result */
+     //fprintf(stderr,"AT_hashSymbol(%s,%d) = %u\tsize = %d\n",name,length,c,table_size);
+   return c;
+}
+#else
 ShortHashNumber AT_hashSymbol(char *name, int arity)
 {
   ShortHashNumber hnr;
@@ -314,7 +373,7 @@ ShortHashNumber AT_hashSymbol(char *name, int arity)
   
   return hnr*MAGIC_PRIME;
 }
-
+#endif
 
 /*}}}  */
 
@@ -333,7 +392,7 @@ Symbol ATmakeSymbol(char *name, int arity, ATbool quoted)
 
   /* Find symbol in table */
   cur = hash_table[hnr];
-  while (cur && (cur->header != header || !streq(cur->name, name))) {
+  while (cur && (!EQUAL_HEADER(cur->header,header) || !streq(cur->name, name))) {
     cur = cur->next;
   }
   
@@ -372,6 +431,8 @@ Symbol ATmakeSymbol(char *name, int arity, ATbool quoted)
     hash_table[hnr] = cur;
   }
 
+    //fprintf(stderr,"AT_makeAFun(%d)\tid = %d\n",cur,cur->id);
+  
   return cur->id;
 }
 
@@ -385,8 +446,14 @@ Symbol ATmakeSymbol(char *name, int arity, ATbool quoted)
 void AT_freeSymbol(SymEntry sym)
 {
   ShortHashNumber hnr;
+#ifdef PO
   ATerm t = (ATerm)sym;
+#endif
   /*char *walk = sym->name;*/
+
+  nb_reclaimed_cells_during_last_gc[TERM_SIZE_SYMBOL]++;
+  
+  //fprintf(stderr,"AT_freeSymbol(%d)\tid = %d\n",sym, sym->id);
   
   /* Assert valid name-pointer */
   assert(sym->name);
@@ -415,11 +482,13 @@ void AT_freeSymbol(SymEntry sym)
   
   at_lookup_table[sym->id] = (SymEntry)SYM_SET_NEXT_FREE(first_free);
   first_free = sym->id;
-  
+
+#ifdef PO
   /* Put the node in the appropriate free list */
   t->header = FREE_HEADER;
   t->next  = at_freelist[TERM_SIZE_SYMBOL];
   at_freelist[TERM_SIZE_SYMBOL] = t;
+#endif
 }
 
 /*}}}  */
@@ -441,7 +510,7 @@ ATbool AT_findSymbol(char *name, int arity, ATbool quoted)
 
   /* Find symbol in table */
   cur = hash_table[hnr];
-  while (cur && (cur->header != header || !streq(cur->name, name)))
+  while (cur && (!EQUAL_HEADER(cur->header,header) || !streq(cur->name, name)))
     cur = cur->next;
   
   return (cur == NULL) ? ATfalse : ATtrue;
@@ -540,11 +609,24 @@ void ATunprotectSymbol(Symbol sym)
 void AT_markProtectedSymbols()
 {
   int lcv;
-
   for(lcv = 0; lcv < nr_protected_symbols; lcv++) {
     SET_MARK(((ATerm)at_lookup_table[protected_symbols[lcv]])->header);
   }
 }
+
+#ifndef PO
+// TODO: Optimisation (Old+Mark in one step)
+void AT_markProtectedSymbols_young() {
+  int lcv;
+
+    //printf("Warning: AT_markProtectedSymbols_young\n");
+  for(lcv = 0; lcv < nr_protected_symbols; lcv++) {
+    if(!IS_OLD(((ATerm)at_lookup_table[protected_symbols[lcv]])->header)) {
+      SET_MARK(((ATerm)at_lookup_table[protected_symbols[lcv]])->header);
+    }
+  }
+}
+#endif
 
 /*}}}  */
 /*{{{  void AT_unmarkAllAFuns() */

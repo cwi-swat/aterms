@@ -884,4 +884,14 @@ ATermList ATgetArguments(ATermAppl appl)
   return result;
 }
 
+/*
+int ATgetLength(ATermList list) {
+  return ((int)GET_LENGTH((list)->header));
+}
+
+int     ATgetBlobSize(ATermBlob blob) {
+  return ((int)GET_LENGTH((blob)->header));
+}
+*/
+
 /*}}}  */

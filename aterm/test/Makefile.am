@@ -23,13 +23,19 @@ INCLUDES = \
 LDFLAGS = -L$(top_builddir)/aterm/
 LDLIBS = -lATerm
 
-noinst_PROGRAMS = stress primes randgen termstats
+noinst_PROGRAMS = stress primes randgen termstats fib
+
+LDFLAGS = -L$(top_builddir)/aterm/
+LDLIBS = -lATerm
 
 stress_SOURCES = stress_dict.c stress_dict.h stress.c
 stress_LDADD = $(LDLIBS)
 
 primes_SOURCES = primes.c
 primes_LDADD = $(LDLIBS)
+
+fib_SOURCES = fib.c
+fib_LDADD = $(LDLIBS)
 
 # To be used to find out which vararg-implementation is used on a new
 # platform. Do not remove, but uncomment as needed.
