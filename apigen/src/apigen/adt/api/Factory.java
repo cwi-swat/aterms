@@ -3,6 +3,7 @@ package apigen.adt.api;
 public class Factory {
   private aterm.pure.PureFactory factory;
 
+
   private apigen.adt.api.types.Entries proto_Entries;
 
   private aterm.AFun fun_Entry_Constructor;
@@ -29,6 +30,12 @@ public class Factory {
 
   private apigen.adt.api.types.Imports proto_Imports;
 
+  private aterm.AFun fun_Type_Type;
+  private apigen.adt.api.types.Type proto_Type_Type;
+  private aterm.ATerm pattern_Type_Type;
+
+  private apigen.adt.api.types.Sorts proto_Sorts;
+
   private aterm.AFun fun_ModuleName_Name;
   private apigen.adt.api.types.ModuleName proto_ModuleName_Name;
   private aterm.ATerm pattern_ModuleName_Name;
@@ -37,6 +44,7 @@ public class Factory {
   private apigen.adt.api.types.Separators empty_Separators;
   private apigen.adt.api.types.Modules empty_Modules;
   private apigen.adt.api.types.Imports empty_Imports;
+  private apigen.adt.api.types.Sorts empty_Sorts;
 
   public Factory(aterm.pure.PureFactory factory) {
     this.factory = factory;
@@ -48,6 +56,7 @@ public class Factory {
   }
 
   private void initialize() {
+
     proto_Entries = new apigen.adt.api.types.Entries(this);
     proto_Entries.init(84, null, null, null);
     empty_Entries = (apigen.adt.api.types.Entries) factory.build(proto_Entries);
@@ -76,20 +85,29 @@ public class Factory {
     proto_Modules.init(168, null, null, null);
     empty_Modules = (apigen.adt.api.types.Modules) factory.build(proto_Modules);
     empty_Modules.init(168, empty_Modules, null, null);
-    pattern_Module_Modulentry = factory.parse("modulentry(<term>,<term>,<term>)");
-    fun_Module_Modulentry = factory.makeAFun("_Module_Modulentry", 3, false);
+    pattern_Module_Modulentry = factory.parse("modulentry(<term>,<term>,<term>,<term>)");
+    fun_Module_Modulentry = factory.makeAFun("_Module_Modulentry", 4, false);
     proto_Module_Modulentry = new apigen.adt.api.types.module.Modulentry(this);
 
     proto_Imports = new apigen.adt.api.types.Imports(this);
     proto_Imports.init(210, null, null, null);
     empty_Imports = (apigen.adt.api.types.Imports) factory.build(proto_Imports);
     empty_Imports.init(210, empty_Imports, null, null);
+    pattern_Type_Type = factory.parse("Type(<str>)");
+    fun_Type_Type = factory.makeAFun("_Type_Type", 1, false);
+    proto_Type_Type = new apigen.adt.api.types.type.Type(this);
+
+    proto_Sorts = new apigen.adt.api.types.Sorts(this);
+    proto_Sorts.init(252, null, null, null);
+    empty_Sorts = (apigen.adt.api.types.Sorts) factory.build(proto_Sorts);
+    empty_Sorts.init(252, empty_Sorts, null, null);
     pattern_ModuleName_Name = factory.parse("Name(<str>)");
     fun_ModuleName_Name = factory.makeAFun("_ModuleName_Name", 1, false);
     proto_ModuleName_Name = new apigen.adt.api.types.modulename.Name(this);
 
   }
 
+/*genAlternativeMethods*/
   public apigen.adt.api.types.entry.Constructor makeEntry_Constructor(aterm.AFun fun, aterm.ATerm[] args, aterm.ATermList annos) {
     synchronized (proto_Entry_Constructor) {
       proto_Entry_Constructor.initHashCode(annos, fun, args);
@@ -231,8 +249,8 @@ public class Factory {
     }
   }
 
-  public apigen.adt.api.types.module.Modulentry makeModule_Modulentry(apigen.adt.api.types.ModuleName _modulename, apigen.adt.api.types.Imports _imports, apigen.adt.api.types.Entries _entries) {
-    aterm.ATerm[] args = new aterm.ATerm[] {_modulename, _imports, _entries};
+  public apigen.adt.api.types.module.Modulentry makeModule_Modulentry(apigen.adt.api.types.ModuleName _modulename, apigen.adt.api.types.Imports _imports, apigen.adt.api.types.Sorts _sorts, apigen.adt.api.types.Entries _entries) {
+    aterm.ATerm[] args = new aterm.ATerm[] {_modulename, _imports, _sorts, _entries};
     return makeModule_Modulentry(fun_Module_Modulentry, args, factory.getEmpty());
   }
 
@@ -243,7 +261,8 @@ public class Factory {
       return makeModule_Modulentry(
         ModuleNameFromTerm((aterm.ATerm) children.get(0)),
         ImportsFromTerm((aterm.ATerm) children.get(1)),
-        EntriesFromTerm((aterm.ATerm) children.get(2))
+        SortsFromTerm((aterm.ATerm) children.get(2)),
+        EntriesFromTerm((aterm.ATerm) children.get(3))
       );
     }
     else {
@@ -255,8 +274,40 @@ public class Factory {
     java.util.List args = new java.util.LinkedList();
     args.add(arg.getModulename().toTerm());
     args.add(arg.getImports().toTerm());
+    args.add(arg.getSorts().toTerm());
     args.add(arg.getEntries().toTerm());
     return factory.make(pattern_Module_Modulentry, args);
+  }
+
+  public apigen.adt.api.types.type.Type makeType_Type(aterm.AFun fun, aterm.ATerm[] args, aterm.ATermList annos) {
+    synchronized (proto_Type_Type) {
+      proto_Type_Type.initHashCode(annos, fun, args);
+      return (apigen.adt.api.types.type.Type) factory.build(proto_Type_Type);
+    }
+  }
+
+  public apigen.adt.api.types.type.Type makeType_Type(String _name) {
+    aterm.ATerm[] args = new aterm.ATerm[] {(aterm.ATerm) factory.makeAppl(factory.makeAFun(_name, 0, true))};
+    return makeType_Type(fun_Type_Type, args, factory.getEmpty());
+  }
+
+  protected apigen.adt.api.types.Type Type_TypeFromTerm(aterm.ATerm trm) {
+    java.util.List children = trm.match(pattern_Type_Type);
+
+    if (children != null) {
+      return makeType_Type(
+        (String) children.get(0)
+      );
+    }
+    else {
+      return null;
+    }
+  }
+
+  public aterm.ATerm toTerm(apigen.adt.api.types.type.Type arg) {
+    java.util.List args = new java.util.LinkedList();
+    args.add(arg.getName());
+    return factory.make(pattern_Type_Type, args);
   }
 
   public apigen.adt.api.types.modulename.Name makeModuleName_Name(aterm.AFun fun, aterm.ATerm[] args, aterm.ATermList annos) {
@@ -290,6 +341,7 @@ public class Factory {
     return factory.make(pattern_ModuleName_Name, args);
   }
 
+/*genMakeLists*/
   public apigen.adt.api.types.Entries makeEntries() {
     return empty_Entries;
   }
@@ -538,6 +590,69 @@ public class Factory {
     return concat(list, makeImports(elem));
   }
 
+  public apigen.adt.api.types.Sorts makeSorts() {
+    return empty_Sorts;
+  }
+
+  public apigen.adt.api.types.Sorts makeSorts(apigen.adt.api.types.Type elem) {
+    return (apigen.adt.api.types.Sorts) makeSorts(elem, empty_Sorts);
+  }
+
+  public apigen.adt.api.types.Sorts makeSorts(apigen.adt.api.types.Type head, apigen.adt.api.types.Sorts tail) {
+    return (apigen.adt.api.types.Sorts) makeSorts((aterm.ATerm) head, (aterm.ATermList) tail, factory.getEmpty());
+  }
+
+  protected apigen.adt.api.types.Sorts makeSorts(aterm.ATerm head, aterm.ATermList tail, aterm.ATermList annos) {
+    synchronized (proto_Sorts) {
+      proto_Sorts.initHashCode(annos, head, tail);
+      return (apigen.adt.api.types.Sorts) factory.build(proto_Sorts);
+    }
+  }
+
+  public apigen.adt.api.types.Sorts makeSorts(apigen.adt.api.types.Type elem0, apigen.adt.api.types.Type elem1) {
+    return makeSorts(elem0, makeSorts(elem1));
+  }
+
+  public apigen.adt.api.types.Sorts makeSorts(apigen.adt.api.types.Type elem0, apigen.adt.api.types.Type elem1, apigen.adt.api.types.Type elem2) {
+    return makeSorts(elem0, makeSorts(elem1, elem2));
+  }
+
+  public apigen.adt.api.types.Sorts makeSorts(apigen.adt.api.types.Type elem0, apigen.adt.api.types.Type elem1, apigen.adt.api.types.Type elem2, apigen.adt.api.types.Type elem3) {
+    return makeSorts(elem0, makeSorts(elem1, elem2, elem3));
+  }
+
+  public apigen.adt.api.types.Sorts makeSorts(apigen.adt.api.types.Type elem0, apigen.adt.api.types.Type elem1, apigen.adt.api.types.Type elem2, apigen.adt.api.types.Type elem3, apigen.adt.api.types.Type elem4) {
+    return makeSorts(elem0, makeSorts(elem1, elem2, elem3, elem4));
+  }
+
+  public apigen.adt.api.types.Sorts makeSorts(apigen.adt.api.types.Type elem0, apigen.adt.api.types.Type elem1, apigen.adt.api.types.Type elem2, apigen.adt.api.types.Type elem3, apigen.adt.api.types.Type elem4, apigen.adt.api.types.Type elem5) {
+    return makeSorts(elem0, makeSorts(elem1, elem2, elem3, elem4, elem5));
+  }
+
+  public apigen.adt.api.types.Sorts reverse(apigen.adt.api.types.Sorts arg) {
+    apigen.adt.api.types.Sorts reversed = makeSorts();
+    while (!arg.isEmpty()) {
+      reversed = makeSorts(arg.getHead(), reversed);
+      arg = arg.getTail();
+    }
+    return reversed;
+  }
+
+  public apigen.adt.api.types.Sorts concat(apigen.adt.api.types.Sorts arg0, apigen.adt.api.types.Sorts arg1) {
+    apigen.adt.api.types.Sorts result = arg1;
+
+    for (apigen.adt.api.types.Sorts list = reverse(arg0); !list.isEmpty(); list = list.getTail()) {
+      result = makeSorts(list.getHead(), result);
+    }
+
+    return result;
+  }
+
+  public apigen.adt.api.types.Sorts append(apigen.adt.api.types.Sorts list, apigen.adt.api.types.Type elem) {
+    return concat(list, makeSorts(elem));
+  }
+
+/*genTypeFromTermMethods*/
   public apigen.adt.api.types.Entries EntriesFromTerm(aterm.ATerm trm) {
      if (trm instanceof aterm.ATermList) {
         aterm.ATermList list = ((aterm.ATermList) trm).reverse();
@@ -638,6 +753,31 @@ public class Factory {
      }
   }
 
+  public apigen.adt.api.types.Type TypeFromTerm(aterm.ATerm trm) {
+    apigen.adt.api.types.Type tmp;
+    tmp = Type_TypeFromTerm(trm);
+    if (tmp != null) {
+      return tmp;
+    }
+
+    throw new IllegalArgumentException("This is not a Type: " + trm);
+  }
+
+  public apigen.adt.api.types.Sorts SortsFromTerm(aterm.ATerm trm) {
+     if (trm instanceof aterm.ATermList) {
+        aterm.ATermList list = ((aterm.ATermList) trm).reverse();
+        apigen.adt.api.types.Sorts result = makeSorts();
+        for (; !list.isEmpty(); list = list.getNext()) {
+           apigen.adt.api.types.Type elem = TypeFromTerm(list.getFirst());
+            result = makeSorts(elem, result);
+        }
+        return result;
+     }
+     else {
+       throw new RuntimeException("This is not a Sorts: " + trm);
+     }
+  }
+
   public apigen.adt.api.types.ModuleName ModuleNameFromTerm(aterm.ATerm trm) {
     apigen.adt.api.types.ModuleName tmp;
     tmp = ModuleName_NameFromTerm(trm);
@@ -648,6 +788,7 @@ public class Factory {
     throw new IllegalArgumentException("This is not a ModuleName: " + trm);
   }
 
+/*genTypeFromMethods*/
   public apigen.adt.api.types.Entries EntriesFromString(String str) {
     return EntriesFromTerm(factory.parse(str));
   }
@@ -704,6 +845,22 @@ public class Factory {
     return ImportsFromTerm(factory.readFromFile(stream));
   }
 
+  public apigen.adt.api.types.Type TypeFromString(String str) {
+    return TypeFromTerm(factory.parse(str));
+  }
+
+  public apigen.adt.api.types.Type TypeFromFile(java.io.InputStream stream) throws java.io.IOException {
+    return TypeFromTerm(factory.readFromFile(stream));
+  }
+
+  public apigen.adt.api.types.Sorts SortsFromString(String str) {
+    return SortsFromTerm(factory.parse(str));
+  }
+
+  public apigen.adt.api.types.Sorts SortsFromFile(java.io.InputStream stream) throws java.io.IOException {
+    return SortsFromTerm(factory.readFromFile(stream));
+  }
+
   public apigen.adt.api.types.ModuleName ModuleNameFromString(String str) {
     return ModuleNameFromTerm(factory.parse(str));
   }
@@ -712,6 +869,10 @@ public class Factory {
     return ModuleNameFromTerm(factory.readFromFile(stream));
   }
 
+/*genForwardingAlternativeMethods*/
+/*genForwardingMakeLists*/
+/*genForwardingTypeFromTermMethods*/
+/*TODOgenForwardingTypeFromMethods*/
   public static String charsToString(aterm.ATerm arg) {
     aterm.ATermList list = (aterm.ATermList) arg;
     StringBuffer str = new StringBuffer();

@@ -10,8 +10,10 @@
   constructor(Separator, Default, <term-pattern(term)>),
 	
 	list(Modules, Module),
-	constructor(Module, Modulentry, modulentry(<modulename(ModuleName)>,<imports(Imports)>,<entries(Entries)>)),
+	constructor(Module, Modulentry, modulentry(<modulename(ModuleName)>,<imports(Imports)>,<sorts(Sorts)>,<entries(Entries)>)),
 	list(Imports, ModuleName),
+	constructor(Type, Type, Type(<name(str)>)),
+	list(Sorts, Type),
 	constructor(ModuleName, Name, Name(<name(str)>))
 
 ]

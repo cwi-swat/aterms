@@ -33,6 +33,10 @@ abstract public class Module extends apigen.adt.api.AbstractType {
     return false;
   }
 
+  public boolean hasSorts() {
+    return false;
+  }
+
   public boolean hasEntries() {
     return false;
   }
@@ -51,6 +55,14 @@ abstract public class Module extends apigen.adt.api.AbstractType {
 
   public Module setImports(apigen.adt.api.types.Imports _imports) {
      throw new IllegalArgumentException("Illegal argument: " + _imports);
+  }
+
+  public apigen.adt.api.types.Sorts getSorts() {
+     throw new UnsupportedOperationException("This Module has no Sorts");
+  }
+
+  public Module setSorts(apigen.adt.api.types.Sorts _sorts) {
+     throw new IllegalArgumentException("Illegal argument: " + _sorts);
   }
 
   public apigen.adt.api.types.Entries getEntries() {

@@ -1,4 +1,4 @@
-dnl $Id$
+`dnl $Id$
 
 dnl Process this file with autoconf to produce a configure script.
 AC_INIT
@@ -79,6 +79,7 @@ apigen/adt/api/types/entry/Makefile
 apigen/adt/api/types/separator/Makefile
 apigen/adt/api/types/module/Makefile
 apigen/adt/api/types/modulename/Makefile
+apigen/adt/api/types/type/Makefile
 apigen/gen/Makefile
 apigen/gen/c/Makefile
 apigen/gen/java/Makefile

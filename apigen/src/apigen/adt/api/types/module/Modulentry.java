@@ -15,7 +15,8 @@ public class Modulentry extends apigen.adt.api.types.Module {
 
   private static int index_modulename = 0;
   private static int index_imports = 1;
-  private static int index_entries = 2;
+  private static int index_sorts = 2;
+  private static int index_entries = 3;
   public shared.SharedObject duplicate() {
     Modulentry clone = new Modulentry(getApiFactory());
     clone.init(hashCode(), getAnnotations(), getAFun(), getArgumentArray());
@@ -53,6 +54,10 @@ public class Modulentry extends apigen.adt.api.types.Module {
     return true;
   }
 
+  public boolean hasSorts() {
+    return true;
+  }
+
   public boolean hasEntries() {
     return true;
   }
@@ -74,6 +79,16 @@ public class Modulentry extends apigen.adt.api.types.Module {
 
   public apigen.adt.api.types.Module setImports(apigen.adt.api.types.Imports _imports) {
     return (apigen.adt.api.types.Module) super.setArgument(_imports, index_imports);
+  }
+
+
+  public apigen.adt.api.types.Sorts getSorts() {
+    return (apigen.adt.api.types.Sorts) getArgument(index_sorts);
+  }
+
+
+  public apigen.adt.api.types.Module setSorts(apigen.adt.api.types.Sorts _sorts) {
+    return (apigen.adt.api.types.Module) super.setArgument(_sorts, index_sorts);
   }
 
 
@@ -100,8 +115,13 @@ public class Modulentry extends apigen.adt.api.types.Module {
         }
         break;
       case 2:
+        if (! (arg instanceof apigen.adt.api.types.Sorts)) { 
+          throw new RuntimeException("Argument 2 of a Modulentry should have type Sorts");
+        }
+        break;
+      case 3:
         if (! (arg instanceof apigen.adt.api.types.Entries)) { 
-          throw new RuntimeException("Argument 2 of a Modulentry should have type Entries");
+          throw new RuntimeException("Argument 3 of a Modulentry should have type Entries");
         }
         break;
       default: throw new RuntimeException("Modulentry does not have an argument at " + i );
@@ -112,6 +132,7 @@ public class Modulentry extends apigen.adt.api.types.Module {
     int c = 0 + (getAnnotations().hashCode()<<8);
     int a = 0x9e3779b9;
     int b = (getAFun().hashCode()<<8);
+    a += (getArgument(3).hashCode() << 24);
     a += (getArgument(2).hashCode() << 16);
     a += (getArgument(1).hashCode() << 8);
     a += (getArgument(0).hashCode() << 0);

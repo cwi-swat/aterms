@@ -60,6 +60,14 @@ abstract public class AbstractType extends aterm.pure.ATermApplImpl {
     return false;
   }
 
+  public boolean isSortType() {
+    return false;
+  }
+
+  public boolean isSortSorts() {
+    return false;
+  }
+
   public boolean isSortModuleName() {
     return false;
   }

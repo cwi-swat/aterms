@@ -36,6 +36,7 @@ public class ADTReader {
                                     factory.makeModule_Modulentry(
 									factory.makeModuleName_Name(""),
 									factory.makeImports(),
+                  factory.makeSorts(),
 									factory.EntriesFromFile(fis)));
 				
 				}
