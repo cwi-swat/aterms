@@ -215,7 +215,7 @@ static void generateSource(FILE *file, ATermList terms, ATermList afuns)
   ATfprintf(file, " *\n");
   ATfprintf(file, " */\n");
 
-  ATfprintf(file, "\nstatic ATermList _%s = NULL;\n\n", code_prefix);
+  ATfprintf(file, "\nstatic ATerm _%s = NULL;\n\n", code_prefix);
 
   all = ATmake("[<term>,<term>]", afun_values, term_values);
   data = (unsigned char *)ATwriteToBinaryString(all, &len);
@@ -244,11 +244,11 @@ static void generateSource(FILE *file, ATermList terms, ATermList afuns)
   ATfprintf(file, "{\n");
   ATfprintf(file, "  ATermList afuns, terms;\n\n");
 
-  ATfprintf(file, "  _%s = (ATermList)ATreadFromBinaryString(_%s_baf, _%s_LEN);\n\n", 
+  ATfprintf(file, "  _%s = ATreadFromBinaryString(_%s_baf, _%s_LEN);\n\n", 
 	    code_prefix, code_prefix, code_prefix);
-  ATfprintf(file, "  ATprotect((ATerm *)&_%s);\n\n", code_prefix);
+  ATfprintf(file, "  ATprotect(&_%s);\n\n", code_prefix);
 
-  ATfprintf(file, "  afuns = (ATermList)ATelementAt(_%s, 0);\n\n", code_prefix);
+  ATfprintf(file, "  afuns = (ATermList)ATelementAt((ATermList)_%s, 0);\n\n", code_prefix);
 
   list = afuns;
   while (!ATisEmpty(list)) {
@@ -260,7 +260,7 @@ static void generateSource(FILE *file, ATermList terms, ATermList afuns)
     ATfprintf(file, "  afuns = ATgetNext(afuns);\n");
   }
 
-  ATfprintf(file, "\n  terms = (ATermList)ATelementAt(_%s, 1);\n\n", code_prefix);
+  ATfprintf(file, "\n  terms = (ATermList)ATelementAt((ATermList)_%s, 1);\n\n", code_prefix);
 
   list = terms;
   index = 0;

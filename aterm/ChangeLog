@@ -1,5 +1,11 @@
 $Id$
 
+Tue Oct  7 13:55:03 CEST 2003 <{jong,kooiker}@cwi.nl>
+ * configure.in: bump to 2.0.5
+ * utils/dicttoc.c:
+   - slightly change code generation to avoid gcc 3.3.1 warning
+     "dereferencing type-punned pointer will break strict-aliasing rules"
+
 2003-09-24  Jurgen Vinju, Tijs van de Storm <{jurgenv,storm}@cwi.nl>
  * ATcompare extended: ATblobs are compared using memcmp. Also, annotations
    are now supported by the ordering. ATcompare is now a complete ordering on 
