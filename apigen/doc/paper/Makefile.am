@@ -1,5 +1,7 @@
 # $Id$
 
+EXTRA_DIST=jlap.ps
+
 SPECS = ATerms.sdf Symbol.sdf Tree.sdf Attributes.sdf
 FIGS = old-new.eps gen.eps names.eps
 EXAMPLES = bool.example set.example bool_and_dict
