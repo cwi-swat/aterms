@@ -27,8 +27,7 @@ public abstract class JavaGenerator extends Generator {
         this.basePackageName = params.getPackageName();
         this.imports = params.getImports();
         setExtension(".java");
-        setDirectory(
-            buildDirectoryName(params.getOutputDirectory(), params.getPackageName()));
+        setDirectory(buildDirectoryName(params.getOutputDirectory(), params.getPackageName()));
     }
 
     public JavaGenerationParameters getJavaGenerationParameters() {

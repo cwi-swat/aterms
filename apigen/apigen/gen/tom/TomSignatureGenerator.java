@@ -1,5 +1,6 @@
 package apigen.gen.tom;
 
+import java.io.File;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -27,25 +28,50 @@ public class TomSignatureGenerator extends Generator {
 	public TomSignatureGenerator(ADT adt, TomSignatureImplementation impl, GenerationParameters params, Module module) {
 		super(params);
 		this.module = module;
-		setDirectory(params.getOutputDirectory());
+		
 		setExtension(".tom");
 		String moduleName = module.getModulename().getName();
 		this.apiName = (moduleName.equals("")?params.getApiName():moduleName);
+		
+		//System.out.println("outputDir = " + params.getOutputDirectory());
+		//System.out.println("apiname   = " + this.apiName);
+		
+		//setDirectory(params.getOutputDirectory());
+		
+		//System.out.println("getDirectory   = " + getDirectory());
+		
+		
+		
 		setFileName(StringConversions.makeIdentifier((moduleName.equals(""))?params.getApiName():moduleName));
 		this.adt = adt;
 		this.impl = impl;
 		this.prefix = params.getPrefix();
-
-    this.packagePrefix = "";
-    if(params instanceof JavaGenerationParameters) {
-      JavaGenerationParameters javaParams = (JavaGenerationParameters) params;
-      if(javaParams.getPackageName() != null) {
-        this.packagePrefix += javaParams.getPackageName() + ".";
-      }
-      this.packagePrefix += javaParams.getApiExtName(module).toLowerCase() + ".";
-      this.packagePrefix += TypeGenerator.packageName() + ".";
-    } 
+		this.packagePrefix = "";
+		if(params instanceof JavaGenerationParameters) {
+			JavaGenerationParameters javaParams = (JavaGenerationParameters) params;
+			if(javaParams.getPackageName() != null) {
+				this.packagePrefix += javaParams.getPackageName() + ".";
+			}
+			this.packagePrefix += javaParams.getApiExtName(module).toLowerCase() + ".";
+			this.packagePrefix += TypeGenerator.packageName() + ".";
+			setDirectory(buildDirectoryName(javaParams.getOutputDirectory(), javaParams.getPackageName()));
+		} else {
+			setDirectory(params.getOutputDirectory());
+		}
 	}
+	
+	  private String buildDirectoryName(String baseDir, String pkgName) {
+        StringBuffer buf = new StringBuffer();
+        buf.append(baseDir);
+        buf.append(File.separatorChar);
+
+        if (pkgName != null) {
+            buf.append(pkgName.replace('.', File.separatorChar));
+        }
+
+        return buf.toString();
+    }
+
 	
 	public void generate() {
 		genTomBuiltinTypes();
