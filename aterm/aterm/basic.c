@@ -11,13 +11,13 @@
 /* error_handler is called when a fatal error is detected */
 static void (*error_handler)(const char *format, va_list args) = NULL;
 
-/*{{{  void Tinit(int argc, char *argv[], error, int *bottomOfStack) */
+/*{{{  void ATinit(int argc, char *argv[], error, int *bottomOfStack) */
 
 /**
   * Initialize the ATerm library.
   */
 
-void Tinit(int argc, char *argv[], 
+void ATinit(int argc, char *argv[], 
 	   void (*error)(const char *format, va_list args), int *bottomOfStack)
 {
   /* Check for reasonably sized ATerm (32 bits, 4 bytes)     */
@@ -26,19 +26,19 @@ void Tinit(int argc, char *argv[],
   assert(sizeof(ATerm) == 4);
 
   error_handler = error;
-  T_initMemory(argc, argv);
-/*  TinitGC(argc, argv, bottomOfStack);
+  AT_initMemory(argc, argv);
+/*  ATinitGC(argc, argv, bottomOfStack);
 */
 }
 
 /*}}}  */
-/*{{{  void Terror(const char *format, ...) */
+/*{{{  void ATerror(const char *format, ...) */
 
 /**
   * A fatal error was detected.
   */
 
-void Terror(const char *format, ...)
+void ATerror(const char *format, ...)
 {
   va_list args;
 

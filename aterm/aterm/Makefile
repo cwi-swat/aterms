@@ -3,7 +3,7 @@ PRODUCT		= aterm
 VERSION		= 0.0.1
 
 CC		= gcc
-CFLAGS		= -g -pedantic -Wall
+CFLAGS		= -g -ansi -pedantic -Wall
 DEFS		= -DDEBUG_ALL
 LFLAGS		= -g
 AR		= ar

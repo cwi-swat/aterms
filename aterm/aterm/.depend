@@ -1,1 +1,0 @@
-basic.o: basic.c aterm2.h aterm1.h asymbol.h tbool.h

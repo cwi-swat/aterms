@@ -6,18 +6,18 @@
 #ifndef ASYMBOL_H
 #define ASYMBOL_H
 
-#include "tbool.h"
+#include "abool.h"
 
 typedef struct Symbol {
-  char *name;
-  int   arity;
-  Tbool quoted;
+  char  *name;
+  int    arity;
+  ATbool quoted;
 } Symbol;
 
 /* The Symbol type */
-Symbol *TmakeSymbol(char *name, int arity, Tbool quoted);
-char   *TgetName(Symbol *sym);
-int     TgetArity(Symbol *sym);
-Tbool   TisQuoted(Symbol *sym);
+Symbol *ATmakeSymbol(char *name, int arity, ATbool quoted);
+char   *ATgetName(Symbol *sym);
+int     ATgetArity(Symbol *sym);
+ATbool  ATisQuoted(Symbol *sym);
 
 #endif

@@ -8,8 +8,8 @@
 
 #include "aterm2.h"
 
-void T_initMemory(int argc, char *argv[]);
-ATerm *T_allocate(int size);
-ATerm *T_collect();
+void AT_initMemory(int argc, char *argv[]);
+ATerm *AT_allocate(int size);
+ATerm *AT_collect();
 
 #endif

@@ -6,7 +6,7 @@
 #ifndef DEBUG_H
 #define DEBUG_H
 
-#define EXEC(cmd) cmd; fflush(stdout)
+#define EXEC(cmd) (cmd); fflush(stdout)
 
 #ifdef DEBUG_ALL
 #define DEBUG_MEM

@@ -23,23 +23,23 @@
 /*}}}  */
 /*{{{  globals */
 
-unsigned char *freemap[NR_SIZES];
-unsigned char *sweeper[NR_SIZES];
-unsigned char *endsweep[NR_SIZES];
-int allocated_since_gc[NR_SIZES];
+static unsigned char *freemap[NR_SIZES];
+static unsigned char *sweeper[NR_SIZES];
+static unsigned char *endsweep[NR_SIZES];
+static int allocated_since_gc[NR_SIZES];
 
-ATerm *blocks[NR_SIZES][MAX_BLOCKS_PER_SIZE];
-int nrblocks[NR_SIZES];
+static ATerm *blocks[NR_SIZES][MAX_BLOCKS_PER_SIZE];
+static int nrblocks[NR_SIZES];
 
 /*}}}  */
 
-/*{{{  T_initMemory(int argc, char *argv[]) */
+/*{{{  AT_initMemory(int argc, char *argv[]) */
 
 /**
   * Initialize memory allocation datastructures
   */
 
-void T_initMemory(int argc, char *argv[])
+void AT_initMemory(int argc, char *argv[])
 {
   int i;
 
@@ -87,25 +87,25 @@ static void allocate_block(int size_class)
 }
 
 /*}}}  */
-/*{{{  void T_collect() */
+/*{{{  void AT_collect() */
 
 /**
   * Collect all garbage
   */
 
-void T_collect()
+void AT_collect()
 {
   fprintf(stderr, "collection not implemented yet!");
 }
 
 /*}}}  */
-/*{{{  ATerm *T_allocate(int size) */
+/*{{{  ATerm *AT_allocate(int size) */
 
 /**
   * Allocate a node of a particular size
   */
 
-ATerm *T_allocate(int size)
+ATerm *AT_allocate(int size)
 {
   int idx, size_class = SIZE_CLASS(size);
   ATerm *result;
@@ -119,7 +119,7 @@ ATerm *T_allocate(int size)
     if(allocated_since_gc[size_class] < GC_THRESHOLD)
       allocate_block(size_class);
     else
-      T_collect();
+      AT_collect();
   }
 
   for(idx=0; idx<7; idx++)

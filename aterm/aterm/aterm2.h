@@ -14,7 +14,7 @@
 
 #include "aterm1.h"
 #include "asymbol.h"
-#include "tbool.h"
+#include "abool.h"
 
 /**
   * We define some new datatypes.
@@ -35,60 +35,65 @@ typedef ATerm ATermBlob;
   */
 
 /* The ATermInt type */
-ATermInt *TmakeInt(int value);
-int       TgetInt(ATermInt *term);
+ATermInt *ATmakeInt(int value);
+int       ATgetInt(ATermInt *term);
 
 /* The ATermReal type */
-ATermInt *TmakeReal(double value);
-double    TgetReal(ATermReal *term);
+ATermInt *ATmakeReal(double value);
+double    ATgetReal(ATermReal *term);
 
 /* The ATermAppl type */
-ATermAppl *TmakeAppl(Symbol *sym, ...);
-ATermAppl *TmakeAppl0(Symbol *sym);
-ATermAppl *TmakeAppl1(Symbol *sym, ATerm *arg0);
-ATermAppl *TmakeAppl2(Symbol *sym, ATerm *arg0, ATerm *arg1);
-ATermAppl *TmakeAppl3(Symbol *sym, ATerm *arg0, ATerm *arg1, ATerm *arg2);
-Symbol    *TgetSymbol(ATermAppl *appl);
-ATerm     *TgetArgument(ATermAppl *appl, int arg);
+ATermAppl *ATmakeAppl(Symbol *sym, ...);
+ATermAppl *ATmakeAppl0(Symbol *sym);
+ATermAppl *ATmakeAppl1(Symbol *sym, ATerm *arg0);
+ATermAppl *ATmakeAppl2(Symbol *sym, ATerm *arg0, ATerm *arg1);
+ATermAppl *ATmakeAppl3(Symbol *sym, ATerm *arg0, ATerm *arg1, ATerm *arg2);
+Symbol    *ATgetSymbol(ATermAppl *appl);
+ATerm     *ATgetArgument(ATermAppl *appl, int arg);
+
+/* Portability */
+ATerms *ATgetArguments(ATermAppl *appl);
 
 /* The ATermList type */
-ATermList *TmakeList(ATerms *terms);
-ATerms    *TgetTerms(ATermList *list);
+ATermList *ATmakeList(ATerms *terms);
+ATerms    *ATgetTerms(ATermList *list);
 
 /* The ATerms type */
-ATerms *TmakeTerms(ATerm *head, ATerms *tail);
-ATerms *TmakeTerms0();
-ATerms *TmakeTerms1(ATerm *el0);
-ATerms *TmakeTerms2(ATerm *el0, ATerm *el1);
-ATerms *TmakeTerms3(ATerm *el0, ATerm *el1, ATerm *el2);
-ATerms *TmakeTerms4(ATerm *el0, ATerm *el1, ATerm *el2, ATerm *el3);
-ATerms *TmakeTerms5(ATerm *el0, ATerm *el1, ATerm *el2, ATerm *el3, 
+ATerms *ATmakeTerms0();
+ATerms *ATmakeTerms1(ATerm *el0);
+ATerms *ATmakeTerms2(ATerm *el0, ATerm *el1);
+ATerms *ATmakeTerms3(ATerm *el0, ATerm *el1, ATerm *el2);
+ATerms *ATmakeTerms4(ATerm *el0, ATerm *el1, ATerm *el2, ATerm *el3);
+ATerms *ATmakeTerms5(ATerm *el0, ATerm *el1, ATerm *el2, ATerm *el3, 
 		    ATerm *el4);
-ATerms *TmakeTerms6(ATerm *el0, ATerm *el1, ATerm *el2, ATerm *el3, 
+ATerms *ATmakeTerms6(ATerm *el0, ATerm *el1, ATerm *el2, ATerm *el3, 
 		    ATerm *el4, ATerm *el5);
-ATerms *TmakeTerms7(ATerm *el0, ATerm *el1, ATerm *el2, ATerm *el3, 
+ATerms *ATmakeTerms7(ATerm *el0, ATerm *el1, ATerm *el2, ATerm *el3, 
 		    ATerm *el4, ATerm *el5, ATerm *el6);
-int     Tlength(ATerms *l);
-ATerm  *Tfirst(ATerms *l);
-ATerms *Tnext(ATerms *l);
-ATerms *Tprefix(ATerms *l);
-ATerm  *Tlast(ATerms *l);
-ATerms *Tslice(ATerms *l, int start, int end);
-Tbool  *TisEmpty(ATerms *l);
-ATerms *Tappend(ATerms *l, ATerm *el);
-ATerms *Tconcat(ATerms *l1, ATerms *l2);
-int     Tsearch(ATerms *l, ATerm *el, int start);
-int     Trsearch(ATerms *l, ATerm *el, int start);
-ATerm   Tindex(ATerms *l, int index);
+int     ATgetLength(ATerms *terms);
+ATerm  *ATgetFirst(ATerms *terms);
+ATerms *ATgetNext(ATerms *terms);
+ATerms *ATgetPrefix(ATerms *terms);
+ATerm  *ATgetLast(ATerms *terms);
+ATerms *ATgetSlice(ATerms *terms, int start, int end);
+ATbool *ATisEmpty(ATerms *terms);
+ATerms *ATinsert(ATerms *terms, ATerm *el);
+ATerms *ATinsertAt(ATerms *terms, ATerm *el, int index);
+ATerms *ATappend(ATerms *terms, ATerm *el);
+ATerms *ATconcat(ATerms *terms1, ATerms *terms2);
+int     ATindexOf(ATerms *terms, ATerm *el, int start);
+int     ATlastIndexOf(ATerms *terms, ATerm *el, int start);
+ATerm   ATelementAt(ATerms *terms, int index);
 
 /* The ATermPlaceholder type */
-ATermPlaceholder *TmakePlaceholder(ATerm *type);
-ATerm            *TplaceholderType(ATermPlaceholder *ph);
+ATermPlaceholder *ATmakePlaceholder(ATerm *type);
+ATerm            *ATgetPlaceholder(ATermPlaceholder *ph);
 
 /* The ATermBlob type */
-ATermBlob *makeBlob(void *data, int size, int flags);
-int     TgetBlobSize(ATermBlob *blob);
-void    TgetBlobData(ATermBlob *blob);
-void    TsetBlobDestructor(void (*destructor)(ATermBlob *));
+ATermBlob *ATmakeBlob(void *data, int size, int flags);
+void   *ATgetBlobData(ATermBlob *blob);
+int     ATgetBlobSize(ATermBlob *blob);
+int     ATgetBlobFlags(ATermBlob *blob);
+void    ATsetBlobDestructor(void (*destructor)(ATermBlob *));
 
 #endif
