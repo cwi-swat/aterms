@@ -1,9 +1,9 @@
 
 %{{{ Introduction
 
-\section{Introduction}
-Cut and paste operations on complex data structures are the standard in
-most desktop software environments: one can easily clip part of a
+\section{Introduction} \label{intro}
+Cut and paste operations on complex data structures are standard in
+most desktop software environments: one can easily clip a part of a
 spreadsheet and paste it into  a text document.  The exchange of complex
 data is also common in distributed applications: complex queries,
 transaction records and more complex data are exchanged between
@@ -69,7 +69,7 @@ coordinates of their corresponding source text and a formatter may add
 font or color information to be used by an editor when displaying the
 textual representation of the tree.
 
-The \ATerm\ data type has been designed to very closely match such
+The \ATerm\ data type has been designed to represent such
 tree-like data structures and it is therefore very natural to use
 \ATerms\ both for the internal representation of data inside an
 application and for the exchange of information between applications.
@@ -86,9 +86,10 @@ representation.
 
 First, we will now give a quick overview of \ATerms
 (Section~\ref{at-a-glance}).  Next, we discuss implementation issues
-(Section~\ref{implementation}) and present some applications
-(Section~\ref{applications}). A discussion concludes the paper
-(Section~\ref{discussion}).
+(Section~\ref{implementation}) and give some insight in performance issues
+(Section~\ref{measurements}).
+An overview of applications (Section~\ref{applications}) and a
+discussion (Section~\ref{discussion}) conclude the paper.
 
 %}}}
 %{{{ ATerms at a Glance
@@ -96,8 +97,8 @@ First, we will now give a quick overview of \ATerms
 \section{ATerms at a Glance} \label{at-a-glance}
 
 Without further fanfare we describe now the constructors of the
-\ATerm\ data type (Section~\ref{aterm}) and
-the operations defined on it (Section~\ref{operations}).
+\ATerm\ data type (Section~\ref{aterm-datatype}) and
+the operations defined on it (Section~\ref{aterm-operations}).
 
 %}}}
 %{{{ The ATerm datatype
@@ -181,7 +182,7 @@ show some of the features of the textual representation of \ATerms.
 \end{itemize}
 
 \subsection{Operations on ATerms}
-\label{operations}
+\label{aterm-operations}
 
 The operations on \ATerms\ fall into three categories: making and
 matching (Section~\ref{making}), annotating (Section~\ref{annotating}),
@@ -252,7 +253,7 @@ For reasons of efficiency and conciseness, reading and writing can
 take place in two forms: using ordinary text files and using special
 binary files.  In the first form, files are read and written in a
 format that is identical to the textual representation discussed
-earlier in Section~\ref{aterm}.  This format is human-readable,
+earlier in Section~\ref{aterm-datatype}.  This format is human-readable,
 space-inefficient, and any sharing in terms is lost.  In the second
 form, a dedicated binary format is used (Binary ATerm Format, see
 Section~\ref{baf}). This portable format is machine-readable, very
@@ -369,9 +370,8 @@ that make this a fairly unique problem:
 With these considerations in mind, we will now discuss
 maximal sharing of terms (Section~\ref{max-sharing}),
 garbage collection (Section~\ref{garbage-collection}),
-the encoding of terms (Section~\ref{term-encoding}),
-the representation of lists (Section~\ref{lists}), and
-the Binary Term Format (Section~\ref{baf})
+the encoding of terms (Section~\ref{term-encoding}), and
+the Binary Term Format (Section~\ref{baf}).
      
 %}}}
 %{{{ Design
@@ -661,6 +661,20 @@ Figure \ref{header}):
 \begin{figure}[tb]
   \centerline{\epsfig{file=header.ps,scale=0.6}}
   \caption{\label{header}The header layout}
+
+{\bf 
+PK: De volgende wijzigingen zijn nodig in deze figuur:
+\begin{itemize}
+\item De volgorde aanpassen aan die in de tekst, dw.z INT, REAL, APPL, LIST, PLACEHOLDER, BLOB.
+
+\item Links steeds de tekst ``Encoding of XXX terms'' vervangen door ``XXX''.
+
+\item Bij lijsten: Head en Tail vervangen door First en Next
+
+\item Nu staan alleen bij APPL rechts indices van woorden: vervangen door
+0, 1, ... (ipv ``Word 0'' enz. Zet bij alle types deze indices.
+\end{itemize}
+}
 \end{figure}
  
 \begin{itemize}
@@ -764,62 +778,66 @@ between processes is very important. The simplest form of exchange
 is the concrete syntax presented in Section \ref{concrete-syntax}.
 This would involve pretty printing the term on one side, and parsing it
 on the other. The concrete syntax is not a very efficient exchange format
-however, because function symbol and subterm sharing cannot be expressed
-this way.
+however, because the sharing of function symbols and subterms cannot be expressed
+in this way.
 
-A better solution would be to exchange a representation in which 
+A better solution would be to exchange a representation in which
 sharing (both of function symbols and subterms) can be expressed
-concisely
-A memory dump is not practical, because addresses
-in the address space of one process have no meaning in the address space
-of another process.
+concisely.  A raw memory dump cannot be used, because addresses in the
+address space of one process have no meaning in the address space of
+another process.
 
 In order to address these problems, we have developed \baf, the
 {\bf B}inary {\bf A}Term {\bf F}ormat.
-Instead of writing addresses, we assign a unique number
+Instead of writing addresses, we assign a unique number (index)
 to each subterm and each symbol occurring in a term that we want to 
-exchange. When referring to this term, we could use this number instead
+exchange. When referring to this term, we could use its index instead
 of its address. 
 
-When writing a term, we first start by writing all function symbols
-used in this term. Each function symbol consists of the string 
-representation of the symbol followed by its arity.
+When writing a term, we first start by writing a table (in order of
+increasing index) of all function symbols used in this term. Each
+function symbol consists of the string representation of its name
+followed by its arity.
 
-To write a function application, first the index of the
-function symbol is written. Then the indices of the arguments
-are written. When an argument consists of a term that has not
-been written yet, the index of the argument is first written itself
-before continuing with the next argument.
-In this way, every subterm is written exactly once. Every time
-a parent term wishes to refer to a subterm, it just uses the
-index.
+{\em ATerms are written in prefix order.}
+To write a function application, first the index of the function
+symbol is written. Then the indices of the arguments are written. When
+an argument consists of a term that has not been written yet, the
+index of the argument is first written itself before continuing with
+the next argument.  In this way, every subterm is written exactly
+once. Every time a parent term wishes to refer to a subterm, it just
+uses the subterm's index.
 
 \subsubsection{Exploiting \ATerm\ regularities}
 When sending a large term containing a lot of subterms, the subterm
 indices can become quite large. Consequently a lot of bits are needed
-to represent these indices. We can considerably reduce the size of these
-indices when we take into account some of the regularities in the
-structure of terms. Empirical study shows that the set of function symbols
-that actually occur at each argument position of all terms over a
-certain function symbol is often very small. A rationale for this is that
-although \ATerm\ applications themselves are not typed, the data types
-they represent often are. In this case, function applications represent
-objects and the type of the object is represented by the function
-symbol. The type hierarchy determines which types can occur at each
-position in the object.
+to represent these indices. We can considerably reduce the size of
+these indices when we take into account some of the regularities in
+the structure of terms. Empirical study shows that the set of function
+symbols that can actually occur at each of the argument positions of a
+function application with a given function symbol is often very small.
+A rationale for this is that although \ATerm\ applications themselves
+are not typed, the data types they represent often are. In this case,
+function applications represent objects and the type of the object is
+represented by the function symbol. The type hierarchy determines
+which types can occur at each position in the object.
 
-We exploit this knowledge by grouping all terms according to their
-top function symbol. Terms that are not function applications are
-grouped based on dummy function symbols, one for each term type.
-For each function symbol, we determine which function symbols can
-occur at each argument position. When writing all function symbols
-at the start of the BAF file, we also write this information also.
+We exploit this knowledge by grouping all terms according to their top
+function symbol. Terms that are not function applications are grouped
+based on dummy function symbols, one for each term type.  For each
+function symbol, we determine which function symbols can occur at each
+argument position. When writing the table of function symbols at the
+start of the BAF file, we write this information as well.  In most
+cases this number of function symbol occurrences is very small
+compared to the number of terms that is to be written. Storing some
+extra information for every function symbol in order to get better
+compression is therefore worthwhile.
 
 When writing the argument of a function application, we start
 by writing the actual symbol of the argument. Because this symbol
 is taken from a limited set of function symbols (only those symbols
 that can actually occur at this position), we can use a very small
-number to represent this it. Following this function symbol we
+number to represent it. Following this function symbol we
 write the index of the argument term itself in the table of terms
 over this function symbol instead of the index of the argument in
 the total term table.
@@ -831,40 +849,39 @@ arity two, {\tt s} with arity one, and {\tt z} with arity zero.
 When grouping the subterms by function symbol we get:
 \vspace{0.5cm}
 
+\begin{center}
 \begin{tabular}{|c|c|c|}
 \hline
-mult               & s & z       \\
+{\tt mult}               	& {\tt s} 		& {\tt z}       \\
 \hline
-mult(s(s(z)),s(z)) & s(s(z)) & z \\
-                   & s(z)    &   \\
+0: {\tt mult(s(s(z)),s(z))}	& 0: {\tt s(s(z))}	& 0: {\tt z} \\
+                   		& 1: s(z)    &   \\
 \hline
 \end{tabular}
+\end{center}
 \vspace{0.5cm}
 
-When we look at the function symbols that can occur
-at every argument position we get:
+\noindent When we look at the function symbols that can occur
+at every argument position ($\geq 0$) we get:
 \vspace{0.5cm}
 
+\begin{center}
 \begin{tabular}{|c|c|c|c|}
 \hline
-position & mult               & s    & z \\
+position & {\tt mult}               & {\tt s}    		& {\tt z} \\
 \hline
-0        & s                  & s, z & \\
-1        & s                  &      & \\
+0        & {\tt s}                  & 0: {\tt s}, 1: {\tt z}	& \\
+1        & {\tt s}                  &      			& \\
 \hline
 \end{tabular}
+\end{center}
 \vspace{0.5cm}
 
-The information in this last table is written first in a 
-straightforward manner
-that we will not discuss here. It is important to note that
-in most cases the number of function symbols is very small
-compared to the number of terms that is to be written. Storing
-some extra information for every function symbol in order
-to better compress the actual term data is no problem.
+Given this additional information (which is included in the table at
+the start of the \baf\ file) the following bits need to be written in
+order to encode the example term {\tt mult(s(s(z),s(z)))}:
 
-The following bits need to be written in order to encode
-the example term:
+{\bf Vraag: waar blijft het functiesymbool {\tt mult} zelf?}
 
 \begin{tabbing}
 00 \= : \= \kill
@@ -886,14 +903,95 @@ the example term:
    \>   \> this term has already been written, we are done.
 \end{tabbing}
 
-Only five bits were needed to encode the term {\tt mult(s(s(z)),s(z))}
-after some information about the symbols was written! As mentioned
-earlier, the amount of data needed to write the symbols is in most
-cases negligible compared to the actual term data so the extra
-information stored with the symbols really pays of in the long run.
+Only five bits are thus needed to encode the term {\tt
+mult(s(s(z)),s(z))}.  As mentioned earlier, the amount of data needed
+to write the table of function symbols at the start of the \baf\ file
+is in most cases negligible compared to the actual term data.
 
-\subsubsection{Compression results}
-The compression ratio that can be reached using the techniques discussed
+%}}}
+
+%{{{ Measurements
+
+\section{Measurements} \label{measurements}
+
+How concise is the ATerm representation and how fast can \baf\ files
+be read and written? Since results highly depend on the actual terms being used,
+we will base our measurements on a collection of terms that cover most applications:
+
+\begin{description}
+\item[Random10:] a randomly generated term over a signature of 10 function symbols
+with arities ranging from 0 to 9. These terms are the worst case for our implementation:
+there is no regularity to exploit and there are many subterms with a high arity.
+
+
+\item[Random5:] a randomly generated term over a signature of 5 function symbols
+with arities ranging from 0 to 4. These terms do not exhibit any regularity,
+but there are no subterms with high arity.
+
+\item[COBOL Parse Table:] a generated parse table for COBOL including
+embedded SQL and CICS. The number of entries in the table is XXX.
+This is an example on abstract data type represented as ATerm.
+
+\item[COBOL Program:] a XXX-line COBOL program that has been parsed with the
+above parse table. Note that due to the specific form of parse trees we use,
+the amount of sharing is substantial.
+
+\item[CASL Specification:] the Common Algebraic Specification Language (CASL)
+is a standardization effort in the area of algebraic specifications.
+We have used the parse tree for a XXX-line CASL specification.
+
+\item[Other:] ANDERE TERMEN: BV UIT ATERM TEST SUITE, MuASF, ...???
+
+\end{description}
+
+
+\begin{figure}[tb]
+\begin{center}
+\begin{tabular}{|l||c|c|c|} \hline
+Term			&	\# nodes	& Bytes	& Bytes/Node	\\ \hline \hline
+Random10		&	x		& x	& x		\\ \hline
+Random5			&	x		& x	& x		\\ \hline
+COBOL Parse Table 	&	x		& x	& x		\\ \hline
+COBOL Program 		&	x		& x	& x		\\ \hline
+CASL Specification	&	x		& x	& x		\\ \hline
+\end{tabular}
+\caption{Memory usage} \label{measurements-in-memory}
+\end{center}
+\end{figure}
+
+In figure~\ref{measurements-in-memory}, we give results for the memory usage
+for our sample terms. The three columns give the number of nodes in each term,
+the amount of memory (in bytes) used for the storage of the term,
+and the average number of bytes needed per node.
+
+\begin{figure}[tb]
+\begin{center}
+\begin{tabular}{|l||c|c|c|c|c|c|} \hline
+
+Term			& Bytes	& Bytes/	& Read	& Read/ 	& Write	& Write/	\\
+			& 	& Node		& 	& Node 		& 	& Node		\\
+			& 	& 		& (s)	& (ms) 		& (s)	& (ms)		\\ \hline \hline
+
+Random10		& x	& x		& x	& x		& x	& x		\\ \hline
+Random5			& x	& x		& x	& x		& x	& x		\\ \hline
+COBOL Parse Table	& x	& x		& x	& x		& x	& x		\\ \hline
+COBOL Program		& x	& x		& x	& x		& x	& x		\\ \hline
+CASL Specification	& x	& x		& x	& x		& x	& x		\\ \hline
+\end{tabular}
+\caption{Reading and writing \baf} \label{measurements-baf}
+\end{center}
+\end{figure}
+
+In figure~\ref{measurements-baf} we give results for reading and writing \baf\ files
+for the same set of sample terms.
+The column give in order: the size of the \baf\ files in bytes,
+the average number of bytes needed per node,
+the time to read the \baf\ representation,
+the average read time per node,
+the time to write the \baf\ representation,
+and the average write time per node.
+
+(****) The compression ratio that can be reached using the techniques discussed
 in this section depend on characteristics of the term being written,
 like the amount of sharing, the number of different symbols, and the
 distribution of terms over these symbols. In practice we reach a compression
@@ -902,7 +1000,11 @@ of the term. Reading \baf\ terms is about a factor two to four faster
 than reading their textual representation. Writing of \baf\ terms is
 only a fraction slower than writing their textual representation.
 
+
+
 %}}}
+
+
 %{{{ Applications
 
 \section{Applications}	\label{applications}
