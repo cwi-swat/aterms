@@ -347,17 +347,19 @@ public class FactoryGenerator extends JavaGenerator {
             Type type = (Type) types.next();
 
             if (type instanceof ListType) {
-                continue;
-            }
+                if (type instanceof SeparatedListType) {
+                    genSeparatedListToTerm((SeparatedListType) type);
+                }
+            } else {
+                Iterator alts = type.alternativeIterator();
+                while (alts.hasNext()) {
+                    Alternative alt = (Alternative) alts.next();
 
-            Iterator alts = type.alternativeIterator();
-            while (alts.hasNext()) {
-                Alternative alt = (Alternative) alts.next();
-
-                genInternalMakeMethod(type, alt);
-                genMakeMethod(type, alt);
-                genAltFromTerm(type, alt);
-                genAltToTerm(type, alt);
+                    genInternalMakeMethod(type, alt);
+                    genMakeMethod(type, alt);
+                    genAltFromTerm(type, alt);
+                    genAltToTerm(type, alt);
+                }
             }
         }
     }
@@ -407,42 +409,46 @@ public class FactoryGenerator extends JavaGenerator {
         println("    java.util.List args = new java.util.LinkedList();");
 
         Iterator fields = type.altFieldIterator(alt.getId());
+        print(buildAddFieldsToListCalls(fields));
+        println("    return make(" + patternVariable(className) + ", args);");
+        println("  }");
+        println();
+    }
+
+    private String buildAddFieldsToListCalls(Iterator fields) {
+        String result = "";
+
         for (int i = 0; fields.hasNext(); i++) {
             Field field = (Field) fields.next();
             String field_type = field.getType();
             String getArgumentCall = "arg.getArgument(" + i + ")";
 
             if (field_type.equals("str")) {
-                println(
-                    "    args.add(((aterm.ATermAppl)"
-                        + getArgumentCall
-                        + ").getAFun().getName());");
+                result += "    args.add(((aterm.ATermAppl)"
+                    + getArgumentCall
+                    + ").getAFun().getName());";
             } else if (field_type.equals("int")) {
-                println(
-                    "    args.add(new Integer(((aterm.ATermInt)"
-                        + getArgumentCall
-                        + ").getInt()));");
+                result += "    args.add(new Integer(((aterm.ATermInt)"
+                    + getArgumentCall
+                    + ").getInt()));";
             } else if (field_type.equals("real")) {
-                println(
-                    "    args.add(new Double (((aterm.ATermReal)"
-                        + getArgumentCall
-                        + ").getReal()));");
+                result += "    args.add(new Double (((aterm.ATermReal)"
+                    + getArgumentCall
+                    + ").getReal()));";
             } else if (field_type.equals("term")) {
-                println("    args.add((aterm.ATerm)" + getArgumentCall + ");");
+                result += "    args.add((aterm.ATerm)" + getArgumentCall + ");";
             } else if (field_type.equals("list")) {
-                println("    args.add((aterm.ATermList)" + getArgumentCall + ");");
+                result += "    args.add((aterm.ATermList)" + getArgumentCall + ");";
             } else {
-                println(
-                    "    args.add((("
-                        + TypeGenerator.className(field_type)
-                        + ")"
-                        + getArgumentCall
-                        + ").toTerm());");
+                result += "    args.add((("
+                    + TypeGenerator.className(field_type)
+                    + ")"
+                    + getArgumentCall
+                    + ").toTerm());";
             }
         }
-        println("    return make(" + patternVariable(className) + ", args);");
-        println("  }");
-        println();
+
+        return result;
     }
 
     private void genFactoryInitialization(ADT api) {
@@ -793,7 +799,10 @@ public class FactoryGenerator extends JavaGenerator {
         // TODO: make this work for separators that are not palindromes, the reverse in 
         // combination with the match with the many pattern currently prevents this.
         // Note that non-palindrome separators do not occur naturally anyway if the API is
-        // generated from an SDF definition
+        // generated from an SDF definition.
+
+        // TODO: fix a bug, this algorithm now flips around all separators in between the
+        // elements. so [e1,l1,l2,e2] becomes [e1,l2,l1,e2] after a fromTerm!!
 
         println("  public " + className + " " + className + "FromTerm(aterm.ATerm trm)");
         println("  {");
@@ -832,17 +841,17 @@ public class FactoryGenerator extends JavaGenerator {
                 + className
                 + "Many);");
         println("        if (children != null) {");
-        genFromTermSeparatorHeadAssignment(type); 
+        genFromTermSeparatorHeadAssignment(type);
         int tailIndex = genFromTermSeparatorFieldAssigments(type);
         genFromTermSeparatorTailAssignment(tailIndex);
         println("          result = make" + className + "(head);");
 
-
         println("          while (children != null) {");
         println("            children = list.match(pattern" + className + "Many);");
         println("            if (children != null) {");
-        genFromTermSeparatorHeadAssignment(type); 
-        println("              result = make"
+        genFromTermSeparatorHeadAssignment(type);
+        println(
+            "              result = make"
                 + className
                 + "(head,"
                 + actualSeparators
@@ -852,23 +861,60 @@ public class FactoryGenerator extends JavaGenerator {
         println("            }");
         println("          }");
         println("          if (list.getLength() == 1) {");
-        println("            return make" + className + "(" + elementTypeName + "FromTerm(list.getFirst()), " +
-        actualSeparators + "result);");
+        println(
+            "            return make"
+                + className
+                + "("
+                + elementTypeName
+                + "FromTerm(list.getFirst()), "
+                + actualSeparators
+                + "result);");
         println("          }");
         println("        }");
         println("      }");
-        println("     throw new RuntimeException(\"This is not a " + className + ": \" + trm);");
+        println(
+            "     throw new RuntimeException(\"This is not a "
+                + className
+                + ": \" + trm);");
+        println("  }");
+    }
+
+    private void genSeparatedListToTerm(SeparatedListType type) {
+        String className = TypeGenerator.className(type);
+        // TODO: Fix this algorithm for bugs in the ordering of the separators
+        println("  public aterm.ATerm toTerm(" + className + " arg) {");
+        println("    if (arg.isEmpty()) {");
+        println("      return getEmpty();");
+        println("    }");
+        println("    if (arg.isSingle()) {");
+        println("      return makeList(arg.getHead().toTerm());");
+        println("    }");
+        println("    aterm.ATermList result = getEmpty();");
+        println("    while (!arg.isEmpty()) {");
+        println("      java.util.List args = new java.util.LinkedList();");
+        println("      args.add(arg.getHead().toTerm());");
+        println("      if (!arg.isSingle()) {");
+        println("        aterm.ATermList tmp = (aterm.ATermList) pattern" + className + "Many.make(args);");
+        println("        result = result.concat(tmp.reverse());");
+        println("      }");
+        println("      else {");
+        println("        return result.insert((aterm.ATerm) args.get(0));");
+        println("      }");
+        println("    }");
+        println("    return result.reverse();");
         println("  }");
     }
 
     private void genFromTermSeparatorHeadAssignment(SeparatedListType type) {
         println(
             "            head = "
-                + buildFieldMatchResultRetriever(0, type.getManyField("head") ) + ";");
+                + buildFieldMatchResultRetriever(0, type.getManyField("head"))
+                + ";");
     }
 
     private void genFromTermSeparatorTailAssignment(int tailIndex) {
-        println("              list = (aterm.ATermList) children.get(" + tailIndex + ");");
+        println(
+            "              list = (aterm.ATermList) children.get(" + tailIndex + ");");
     }
 
     private int genFromTermSeparatorFieldAssigments(SeparatedListType type) {
