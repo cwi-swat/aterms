@@ -156,6 +156,7 @@ extends Generator
       genFactoryClassFile(api);
       genGenericConstructorClassFile();
       genTypeClassFiles(api);
+      genMakeIncludeFile(api);
     
       if (jtom) {
         genTomSignatureFile(api);
@@ -166,6 +167,56 @@ extends Generator
       System.err.println(exc);
     }
   }
+
+	private void genMakeIncludeFile(ADT api) {
+    char sep = File.separatorChar;
+    String cap_api_name = capitalize(buildId(api_name));
+    createFileStream(basedir + sep + cap_api_name + "MakeRules","");
+    String prefix = cap_api_name + "API";
+    
+    info("generating " + cap_api_name + "MakeRules");
+    Iterator types = api.typeIterator();
+    int bucket = 0;
+    int i = 0;
+    while(types.hasNext()) {
+      Type type = (Type) types.next();
+      
+      if (i % 50 == 0) {
+        println(); println();
+        print(prefix + bucket++ + "=");
+      }
+      
+      print("\\\n" + buildClassName(type) + ".java ");
+      print(buildClassImplName(type) + ".java ");
+      i++;
+            
+      Iterator alts = type.alternativeIterator();
+      while(alts.hasNext()) {
+        Alternative alt = (Alternative) alts.next();
+
+        if (i % 50 == 0) {
+          println(); println();
+          print(prefix + bucket++ + "=");
+        }
+               
+        print("\\\n" + buildAltClassImplName(type,alt) + ".java ");
+        print(buildAltClassName(type,alt) + ".java"); 
+        i++;
+      }
+    }
+    
+    println();
+    println();
+    
+    println(prefix + "=\\\n" + 
+    api_factory + ".java " + api_constructor + ".java \\");
+    while(--bucket >= 0) {
+      print("${" + prefix + bucket + "} ");
+    }
+       
+    closeStream();
+	}
+
 
 	
 
@@ -1089,8 +1140,8 @@ extends Generator
     printFoldOpen("fromTerm(ATerm trm)"); 
     println("  static public " + class_name + " fromTerm(aterm.ATerm trm)");
     println("  {");
-    println("    java.util.List children = trm.match(pattern);");
-    
+    println("    java.util.List children = trm.match(pattern);");  
+    println();
     println("    if (children != null) {");    
     print  ("      " + class_name + " tmp = getStatic" + api_factory + 
             "().make" + alt_class_name + "(");
@@ -1133,6 +1184,9 @@ extends Generator
     println("  }");
     printFoldClose();
   }
+
+	
+
  
 
   //}}}

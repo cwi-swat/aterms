@@ -1,3 +1,7 @@
+2002/11/21 (vinju@loria.fr)
+ * adt-to-java generates a file containing a make variable that contains a list of all generated
+   java files
+   
 2002/11/14 (vinju@loria.fr)
  * adt-to-java generates empty classes for every type and every constructor. These classes
    can contain user defined methods and are not overwritten if the API is regenerated.
