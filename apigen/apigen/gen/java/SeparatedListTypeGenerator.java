@@ -4,6 +4,7 @@ import java.util.Iterator;
 
 import apigen.adt.Field;
 import apigen.adt.SeparatedListType;
+import apigen.gen.GenerationParameters;
 import apigen.gen.StringConversions;
 import apigen.gen.TypeConverter;
 
@@ -60,7 +61,21 @@ public class SeparatedListTypeGenerator extends TypeGenerator {
         genReverseMethods();
         genConcatMethods();
         genAppendMethods();
+        genElementAtMethod();
         println("}");
+    }
+
+    private void genElementAtMethod() {
+        JavaGenerationParameters params = getJavaGenerationParameters();
+        String elementName = StringConversions.capitalize(elementType);
+        println("  public " + elementTypeName + " get" + elementName + "At(int index) {");
+        println("    return (" + elementTypeName + ") elementAt(index);");
+        println("  }");
+    }
+
+    private void genOverrideElementAtMethod() {
+        // TODO Auto-generated method stub
+        
     }
 
     private void genAppendMethods() {

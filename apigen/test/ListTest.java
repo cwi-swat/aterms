@@ -171,8 +171,24 @@ public class ListTest {
         testAssert(factory.concat(sep, l1, l2, sep).toTerm().isEqual(pc), "concat test");
 
         testAppend();
+        testElementAt();
 
         testNineSeps();
+    }
+
+    private void testElementAt() {
+        Separated triple =
+            factory.SeparatedFromString(
+                "[\"m0\",l(\" \"),\"sep\",l(\" \"),\"m1\",l(\" \"),\"sep\",l(\" \"),\"m2\"]");
+
+        for (int i = 0; i < 3; i++) {
+          Module m = (Module) triple.elementAt(i);
+          Module ref = factory.makeModule_Default("m" + i);
+          testAssert(m.isEqual(ref), "elementAt " + i);
+          
+          m = triple.getModuleAt(i);
+          testAssert(m.isEqual(ref), "getModuleAt " + i);
+        }
     }
 
     private void testAppend() {
@@ -185,9 +201,11 @@ public class ListTest {
             single.isEqual(factory.SeparatedFromString("[\"m\"]")),
             "test append on empty list");
 
-        Separated twin = single.append(l,l,m);
-        testAssert(twin.isEqual(factory.SeparatedFromString("[\"m\",l(\" \"),\"sep\",l(\" \"),\"m\"]")),
-                "append on singleton");
+        Separated twin = single.append(l, l, m);
+        testAssert(
+            twin.isEqual(
+                factory.SeparatedFromString("[\"m\",l(\" \"),\"sep\",l(\" \"),\"m\"]")),
+            "append on singleton");
     }
 
     private void testNineSeps() {
