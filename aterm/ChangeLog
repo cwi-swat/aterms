@@ -19,6 +19,12 @@
 
 $Id$
 
+2000/6/28 (jong@cwi.nl)
+  * version is now 1.1
+  * ToolBus-tools using the ATerm-library can now ATBpack() terms
+    before sending them. This causes terms to travel over the TB
+    in BAF-encoded form as a binary string.
+
 2000/4/25 (olivierp@cwi.nl)
    * Version 1.0.1: fixed overflow bug in gc heuristics.
    * Fixed alignment bug in memory.c
