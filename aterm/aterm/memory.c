@@ -98,8 +98,8 @@ MachineWord total_nodes = 0;
 
 static MachineWord alloc_since_gc[MAX_TERM_SIZE] = { 0 };
 static unsigned int table_class = INITIAL_TERM_TABLE_CLASS;
-static HashNumber table_size    = TABLE_SIZE(INITIAL_TERM_TABLE_CLASS);
-static HashNumber table_mask    = TABLE_MASK(INITIAL_TERM_TABLE_CLASS);
+static HashNumber table_size    = AT_TABLE_SIZE(INITIAL_TERM_TABLE_CLASS);
+static HashNumber table_mask    = AT_TABLE_MASK(INITIAL_TERM_TABLE_CLASS);
 #ifndef NO_SHARING
 static int maxload = 80;
 #endif
@@ -359,8 +359,8 @@ void AT_initMemory(int argc, char *argv[])
   for (i = 1; i < argc; i++) {
     if (streq(argv[i], TERM_HASH_OPT)) {
       table_class = atoi(argv[++i]);
-      table_size  = TABLE_SIZE(table_class);
-      table_mask  = TABLE_MASK(table_class);
+      table_size  = AT_TABLE_SIZE(table_class);
+      table_mask  = AT_TABLE_MASK(table_class);
     } else if(streq(argv[i], HASH_INFO_OPT)) {
       infoflags |= INFO_HASHING;
     } else if(strcmp(argv[i], TERM_CHECK_OPT) == 0) {

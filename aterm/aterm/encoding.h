@@ -123,7 +123,7 @@ typedef unsigned int header_type;
 
 #define MAX_HEADER_BITS 64
 
-#define TABLE_SIZE(table_class)  (1<<(table_class))
-#define TABLE_MASK(table_class)  (TABLE_SIZE(table_class)-1)
+#define AT_TABLE_SIZE(table_class)  (1<<(table_class))
+#define AT_TABLE_MASK(table_class)  (AT_TABLE_SIZE(table_class)-1)
 
 #endif

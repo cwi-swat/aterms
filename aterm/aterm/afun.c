@@ -59,8 +59,8 @@
 char afun_id[] = "$Id$";
 
 static unsigned int table_class = INITIAL_AFUN_TABLE_CLASS;
-static unsigned int table_size  = TABLE_SIZE(INITIAL_AFUN_TABLE_CLASS);
-static unsigned int table_mask  = TABLE_MASK(INITIAL_AFUN_TABLE_CLASS);
+static unsigned int table_size  = AT_TABLE_SIZE(INITIAL_AFUN_TABLE_CLASS);
+static unsigned int table_mask  = AT_TABLE_MASK(INITIAL_AFUN_TABLE_CLASS);
 
 static SymEntry *hash_table     = NULL;
 
@@ -87,8 +87,8 @@ static void resize_table()
 {
   int i;
   int new_class = table_class+1;
-  int new_size  = TABLE_SIZE(new_class);
-  int new_mask  = TABLE_MASK(new_class);
+  int new_size  = AT_TABLE_SIZE(new_class);
+  int new_mask  = AT_TABLE_MASK(new_class);
 
   at_lookup_table = (SymEntry *)realloc(at_lookup_table, new_size*sizeof(SymEntry));
   at_lookup_table_alias = (ATerm *)at_lookup_table;
@@ -145,8 +145,8 @@ void AT_initSymbol(int argc, char *argv[])
 	      SYMBOL_HASH_OPT, AFUN_TABLE_OPT, AFUN_TABLE_OPT);
     } else if (streq(argv[i], AFUN_TABLE_OPT)) {
       table_class = atoi(argv[++i]);
-      table_size  = TABLE_SIZE(table_class);
-      table_mask  = TABLE_MASK(table_class);
+      table_size  = AT_TABLE_SIZE(table_class);
+      table_mask  = AT_TABLE_MASK(table_class);
     } else if(streq(argv[i], "-at-help")) {
       fprintf(stderr, "    %-20s: initial afun table class " 
 	      "(default=%d)\n",	AFUN_TABLE_OPT " <class>", table_class);
