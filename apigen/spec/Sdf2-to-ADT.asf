@@ -357,8 +357,7 @@ equations
   build-asfix-attr(cons(at-literal(""" $Char* """)), cons-remove) =
 
 [equ-build-asfix-attr-cons-expand]
-  build-asfix-attr(cons(at-literal(""" $Char* """)), cons-expand) =
-    ql(at-literal(""" "c" "o" "n" "s" "(" $Char* ")" """))
+  build-asfix-attr(cons($ATerm), cons-expand) = cons($ATerm)
 
 [equ-lexicals-to-adt-empty]
   lexicals-to-adt() =
