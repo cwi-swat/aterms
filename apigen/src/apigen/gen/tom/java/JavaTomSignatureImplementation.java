@@ -7,7 +7,7 @@ import apigen.gen.tom.TomSignatureImplementation;
 import apigen.gen.tom.TomTypeConversions;
 
 public class JavaTomSignatureImplementation implements TomSignatureImplementation {
-	private static TypeConverter javaConverter = new TypeConverter(new JavaTypeConversions("factory","factory"));
+	private static TypeConverter javaConverter = new TypeConverter(new JavaTypeConversions("factory"));
 	private static TypeConverter tomConverter = new TypeConverter(new TomTypeConversions());
 	private boolean jtype = false;
 

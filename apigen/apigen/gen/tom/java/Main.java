@@ -1,7 +1,5 @@
 package apigen.gen.tom.java;
 
-//import java.util.ArrayList;
-import java.io.File;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -13,9 +11,8 @@ import apigen.gen.tom.TomSignatureGenerator;
 public class Main {
 	public static final void main(String[] arguments) {
 		JavaTomGenerationParameters params = buildDefaultParameters();
-		JavaTomGenerationParameters duplicatedParams = null;
 		List args = new LinkedList(Arrays.asList(arguments));
-		
+
 		if (args.size() == 0) {
 			usage(params);
 			return;
@@ -33,14 +30,14 @@ public class Main {
 			usage(params);
 			return;
 		}
-		
+
 		ADT adt = ADTReader.readADT(params);
 		JavaTomSignatureImplementation signature = new JavaTomSignatureImplementation(params);
 		new TomSignatureGenerator(adt, signature, params).run();
-		
-		if(params.isJavaGen()) { // generate Java Stuff
+
+		if (params.isJavaGen()) { // generate Java Stuff
 			params.check();
-			apigen.gen.java.Main.generateAPI(adt, params);		
+			apigen.gen.java.Main.generateAPI(adt, params);
 		}
 	}
 
@@ -57,9 +54,4 @@ public class Main {
 		System.err.println();
 		System.err.println(params.usage());
 	}
-	
-	private static String concat(String outputDir, String packageName) {
-		return outputDir+File.separatorChar+ packageName.replace('.', File.separatorChar);
-	}
-	 
 }

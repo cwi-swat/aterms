@@ -12,7 +12,7 @@ import apigen.gen.StringConversions;
 import apigen.gen.TypeConverter;
 
 public abstract class JavaGenerator extends Generator {
-    private static TypeConverter converter = new TypeConverter(new JavaTypeConversions("factory","getFactory()"));
+    private static TypeConverter converter = new TypeConverter(new JavaTypeConversions("factory"));
 
     private String basePackageName;
     private List imports;
@@ -126,7 +126,6 @@ public abstract class JavaGenerator extends Generator {
         while (fields.hasNext()) {
             Field field = (Field) fields.next();
             String field_id = getFieldId(field.getId());
-            String field_type = field.getType();
 
             buf.append(field_id);
 

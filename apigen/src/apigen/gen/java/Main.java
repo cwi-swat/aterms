@@ -106,7 +106,7 @@ public class Main {
         ADT adt,
         JavaGenerationParameters params,
         GenerationObserver observer) {
-        TypeConverter typeConverter = new TypeConverter(new JavaTypeConversions("factory","factory"));
+        TypeConverter typeConverter = new TypeConverter(new JavaTypeConversions("factory"));
         Iterator typeIterator = adt.typeIterator();
         while (typeIterator.hasNext()) {
             Type type = (Type) typeIterator.next();

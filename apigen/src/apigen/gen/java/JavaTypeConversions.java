@@ -3,12 +3,10 @@ package apigen.gen.java;
 import apigen.gen.TypeConversions;
 
 public class JavaTypeConversions implements TypeConversions {
-    private String atermFactory;
     private String factory;
 
-    public JavaTypeConversions(String atermFactory, String factory) {
-        this.atermFactory = atermFactory;
-        this.factory = factory;
+    public JavaTypeConversions(String atermFactory) {
+        this.factory = atermFactory;
     }
     
     public String getIntegerType() {
@@ -37,17 +35,17 @@ public class JavaTypeConversions implements TypeConversions {
     
     
     public String makeIntegerToATermConversion(String expression) {
-        return "(aterm.ATerm) " + atermFactory + ".makeInt(" + expression + ")";
+        return "(aterm.ATerm) " + factory + ".makeInt(" + expression + ")";
     }
 
     
     public String makeRealToATermConversion(String expression) {
-        return "(aterm.ATerm) " + atermFactory + ".makeReal(" + expression + ")";
+        return "(aterm.ATerm) " + factory + ".makeReal(" + expression + ")";
     }
 
     
     public String makeStringToATermConversion(String expression) {
-        return "(aterm.ATerm) " + atermFactory + ".makeAppl(factory.makeAFun(" + expression + ", 0, true))";
+        return "(aterm.ATerm) " + factory + ".makeAppl(factory.makeAFun(" + expression + ", 0, true))";
     }
 
     public String makeListToATermConversion(String expression) {
