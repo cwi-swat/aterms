@@ -20,6 +20,8 @@
 
 /*}}}  */
 
+char stress_id[] = "$Id$";
+
 /*{{{  void test_failed(char *category, int id) */
 
 /**

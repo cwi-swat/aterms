@@ -2,6 +2,8 @@
 #include <AsFix-init-patterns.h>
 #include <AsFix.h>
 
+char asfixtest_id[] = "$Id$";
+
 int main(int argc, char **argv)
 {
   char *fname;
