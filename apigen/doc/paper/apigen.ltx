@@ -53,16 +53,22 @@
 \begin{abstract}
 \label{abstract}
 
-Syntax definition languages are used to describe the syntax of a language.
-Terms over these languages are parsed to produce parse trees.  These parse
-trees can subsequently be processed, e.g. by a compiled specification. For
-top notch performance, dedicated tools can be written in languages such as
-{\tt C}. Maintainability and readability of such tools improves when they
-do not operate on the tree structure directly, but rather access (parts
-of) the tree using an Abstract Programming Interface~(\api). This paper
-describes how a \sdf{} specification can be used to generate an abstract
-\api, as well as \emph{type-safe}, \emph{efficient} implementations of
-this \api{} in various programming languages.
+Using the \atlib\ to represent tree-like datastructures has become a
+popular activity, especially to developers of e.g. lexical scanners,
+parsers, rewrite engines and model checkers. Practical experience
+with the \atlib\ in the \metaenv\ has shown that the development and
+maintenance of tools that use handcrafted \aterm-patterns is quite
+involved and very error prone. These issues are fundamental and put
+a burden on any tool developer who uses handcrafted \aterm-patterns.
+This paper addresses these issues from the point of view of the \metaenv,
+specifically dealing with the parsetree format called \asfix\ that is
+used in most of its tools. We describe a way to generate an Abstract
+Programming Interface (\api) as well as various implementations, geared
+towards \emph{type-safety} or \emph{efficiency} as needed. Application
+of these techniques to the tools in the \metaenv\ has resulted in the
+spectacular elimination of 25\% of the handwritten code, thus greatly
+improving both maintainability of the tools and their flexibility with
+respect to changes in the parsetree format.
 
 \end{abstract}
 
