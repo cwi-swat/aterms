@@ -1,3 +1,7 @@
+
+2000/08/07 (jong@cwi.nl)
+  * Added date+timestamp to generated {configure.in, Makefile.am, reconf} files
+
 2000/08/04 ({jong,olivierp}@cwi.nl)
   * First working version of apigen stuff.
   * Added generation of isValidxxx, makeTermFromxxx, 
