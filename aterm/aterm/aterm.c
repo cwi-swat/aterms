@@ -1914,39 +1914,36 @@ AT_unmarkTerm(ATerm t)
 		if (!t)
 	    break;
 		
-		if(IS_MARKED(t->header)) {
-			CLR_MARK(t->header);
+		CLR_MARK(t->header);
 		
-			switch (GET_TYPE(t->header)) {
-				case AT_INT:
-				case AT_REAL:
-				case AT_BLOB:
-					break;
+		switch (GET_TYPE(t->header)) {
+			case AT_INT:
+			case AT_REAL:
+			case AT_BLOB:
+				break;
 					
-				case AT_APPL:
-					sym = ATgetSymbol((ATermAppl) t);
-					AT_unmarkSymbol(sym);
-					arity = GET_ARITY(t->header);
-					if (arity > MAX_INLINE_ARITY)
-						arity = ATgetArity(sym);
-					for (i = 0; i < arity; i++)
-						*current++ = ATgetArgument((ATermAppl) t, i);
-					break;
-					
-				case AT_LIST:
-					if (!ATisEmpty((ATermList) t)) {
-						*current++ = (ATerm) ATgetNext((ATermList) t);
-						*current++ = ATgetFirst((ATermList) t);
-					}
-					break;
-					
-				case AT_PLACEHOLDER:
-					*current++ = ATgetPlaceholder((ATermPlaceholder) t);
-					break;
-			}
+			case AT_APPL:
+				sym = ATgetSymbol((ATermAppl) t);
+				AT_unmarkSymbol(sym);
+				arity = GET_ARITY(t->header);
+				if (arity > MAX_INLINE_ARITY)
+					arity = ATgetArity(sym);
+				for (i = 0; i < arity; i++)
+					*current++ = ATgetArgument((ATermAppl) t, i);
+				break;
+				
+			case AT_LIST:
+				if (!ATisEmpty((ATermList) t)) {
+					*current++ = (ATerm) ATgetNext((ATermList) t);
+					*current++ = ATgetFirst((ATermList) t);
+				}
+				break;
+				
+			case AT_PLACEHOLDER:
+				*current++ = ATgetPlaceholder((ATermPlaceholder) t);
+				break;
 		}
 	}
-	STATS(mark_stats, depth - mark_stack);
 }
 
 /*}}}  */
