@@ -14,13 +14,14 @@ public class RoloTest
   }
 
   public void run() throws jjtraveler.VisitFailure, java.io.IOException {
-      RoloList list = RoloList.fromTerm(factory.readFromFile(directory + "/rolodex.trm"));
+      RoloList list = 
+      RoloList.fromTerm(factory.readFromFile(directory + "/rolodex.trm"));
 
       Collector c = new Collector();
       jjtraveler.Visitor tester = new jjtraveler.BottomUp(c);
       tester.visit(list);
 
-      testAssert(c.concatenation.equals("voice(1)voice(2)voice(3)"),"bottom-up");
+      testAssert(c.concatenation.equals("123"),"bottom-up");
   }
 
   public final static void main(String[] args) throws jjtraveler.VisitFailure,
@@ -48,6 +49,6 @@ class Collector extends Fwd {
   }
 
   public void visit_PhoneNumber_Voice(PhoneNumber_VoiceImpl v) {
-    concatenation = concatenation + v.toString();
+    concatenation = concatenation + v.getVoice().toString();
   }
 }
