@@ -1,5 +1,8 @@
 $Id$
 
+2001/11/12 (jong@cwi.nl)
+ * Version 1.6.4 released
+
 2001/10/08 (Joost.Visser@cwi.nl)
  * Added declaration of method setChildAt to the aterm.visitor.Visitable
    class and corresponding implementations to aterm.pure.*, in order to 
