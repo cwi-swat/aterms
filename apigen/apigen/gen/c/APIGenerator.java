@@ -128,18 +128,15 @@ public class APIGenerator extends CGenerator {
 
 	private void genTypes(ADT api) {
 		Iterator types = api.typeIterator();
-		hprintFoldOpen("typedefs");
-		printFoldOpen("typedefs");
+		bothPrintFoldOpen("typedefs");
 		while (types.hasNext()) {
 			Type type = (Type) types.next();
 			String id = buildTypeName(type);
 			hprintln("typedef struct _" + id + " *" + id + ";");
 			println("typedef struct ATerm _" + id + ";");
 		}
-		printFoldClose();
-		printFoldClose();
-		println();
-		hprintln();
+		bothPrintFoldClose();
+		bothPrintln();
 	}
 
 	//}}}
@@ -186,8 +183,7 @@ public class APIGenerator extends CGenerator {
 
 	private void genTermConversions(ADT api) {
 		Iterator types = api.typeIterator();
-		hprintFoldOpen("term conversion functions");
-		printFoldOpen("term conversion functions");
+		bothPrintFoldOpen("term conversion functions");
 		while (types.hasNext()) {
 			Type type = (Type) types.next();
 			String type_id = StringConversions.makeIdentifier(type.getId());
@@ -195,11 +191,8 @@ public class APIGenerator extends CGenerator {
 
 			genFromTerm(type_id, type_name);
 			genToTerm(type_id, type_name);
-
-			//}}}
 		}
-		printFoldClose();
-		hprintFoldClose();
+		bothPrintFoldClose();
 	}
 
 	private void genToTerm(String type_id, String type_name) {
@@ -257,8 +250,7 @@ public class APIGenerator extends CGenerator {
 
 	private void genIsEquals(ADT api) {
 		Iterator types = api.typeIterator();
-		hprintFoldOpen("equality functions");
-		printFoldOpen("equality functions");
+		bothPrintFoldOpen("equality functions");
 
 		while (types.hasNext()) {
 			Type type = (Type) types.next();
@@ -287,8 +279,7 @@ public class APIGenerator extends CGenerator {
 			}
 		}
 
-		printFoldClose();
-		hprintFoldClose();
+		bothPrintFoldClose();
 	}
 
 	//}}}
@@ -413,8 +404,8 @@ public class APIGenerator extends CGenerator {
 
 	private void genConstructors(ADT api) {
 		Iterator types = api.typeIterator();
-		hprintFoldOpen("constructors");
-		printFoldOpen("constructors");
+		bothPrintFoldOpen("constructors");
+
 		while (types.hasNext()) {
 			Type type = (Type) types.next();
 			String type_name = buildTypeName(type);
@@ -439,8 +430,7 @@ public class APIGenerator extends CGenerator {
 				println("}");
 			}
 		}
-		printFoldClose();
-		hprintFoldClose();
+		bothPrintFoldClose();
 	}
 
 	//}}}
@@ -451,8 +441,7 @@ public class APIGenerator extends CGenerator {
 		while (types.hasNext()) {
 			Type type = (Type) types.next();
 			String type_name = buildTypeName(type);
-			hprintFoldOpen(type_name + " accessors");
-			printFoldOpen(type_name + " accessors");
+			bothPrintFoldOpen(type_name + " accessors");
 
 			genTypeIsValid(type);
 
@@ -470,8 +459,7 @@ public class APIGenerator extends CGenerator {
 				genSetField(type, field);
 			}
 
-			printFoldClose();
-			printFoldClose();
+			bothPrintFoldClose();
 		}
 	}
 
@@ -481,8 +469,7 @@ public class APIGenerator extends CGenerator {
 
 	private void genSortVisitors(ADT api) {
 		Iterator types = api.typeIterator();
-		hprintFoldOpen("sort visitors");
-		printFoldOpen("sort visitors");
+		bothPrintFoldOpen("sort visitors");
 
 		while (types.hasNext()) {
 			Type type = (Type) types.next();
@@ -527,8 +514,7 @@ public class APIGenerator extends CGenerator {
 			printFoldClose();
 		}
 
-		printFoldClose();
-		hprintFoldClose();
+		bothPrintFoldClose();
 	}
 
 	//}}}
