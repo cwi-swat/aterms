@@ -580,19 +580,20 @@ void generate_handler(FILE *f, ATermList tifs, char *tool)
 }
 
 /*}}}  */
-/*{{{  void generate_code(FILE *f, ATermList tifs, char *tool) */
+/*{{{  void generate_code(FILE *f, ATermList tifs, orig, char *tool, header) */
 
 /**
 	* Generate tif.c code file.
 	*/
 
-void generate_code(FILE *f, ATermList tifs, char *tool, char *header)
+void generate_code(FILE *f, ATermList tifs, ATermList original, 
+									 char *tool, char *header)
 {
   int count;
 
 	generate_prologue(f, tool, "implementation");
 	fprintf(f, "#include \"%s\"\n\n", header);
-	count = generate_signature(f, tifs);
+	count = generate_signature(f, original);
 	generate_handler(f, tifs, tool);
 	generate_checker(f, tool, count);
 }
@@ -632,7 +633,7 @@ int main(int argc, char *argv[])
 	ATerm topOfStack;
 	char *tool = NULL, *handler = NULL, *checker = NULL, *output = NULL;
 	char *tifname = NULL;
-	ATermList tifs;
+	ATermList tifs, original;
 	char *p, *codename, *headername;
 	FILE *file;
 	char buf[2][BUFSIZ];
@@ -678,9 +679,9 @@ int main(int argc, char *argv[])
 	if(fd < 0)
 		ATerror("cannot open tifs file %s\n", tifname);
 
-	tifs = read_tifs(fd, tool);
+	original = read_tifs(fd, tool);
 	close(fd);
-	tifs = generalize_tifs(tifs);
+	tifs = generalize_tifs(original);
 	tifs = unify_tifs(tifs);
 
 	file = fopen(headername, "w"); 
@@ -694,7 +695,7 @@ int main(int argc, char *argv[])
 	if(!file)
 		ATerror("cannot open output file %s\n", codename);
 
-	generate_code(file, tifs, tool, headername);
+	generate_code(file, tifs, original, tool, headername);
 	fclose(file);
 
 	return 0;
