@@ -15,7 +15,7 @@ doc: apigen.ps
 
 apigen.ps: apigen.dvi $(PICS)
 
-apigen.dvi: $(SOURCES)
+apigen.dvi: $(SOURCES) $(PICS)
 
 CLEANFILES = *.aux *.blg *.dvi *.log *.ps
 
