@@ -3,6 +3,8 @@ package apigen.gen.java;
 import java.util.Iterator;
 import java.util.List;
 
+import sun.security.krb5.internal.ccache.ao;
+
 import apigen.adt.Field;
 import apigen.adt.SeparatedListType;
 import apigen.adt.api.Separators;
@@ -120,13 +122,20 @@ public class SeparatedListTypeImplGenerator extends ListTypeImplGenerator {
         }
 
         println("  public " + fieldClass + " get" + fieldName + "() {");
-        println("    return " + fieldId + ";");
+        println("    if (!isEmpty() && !isSingle()) {");
+        println("      return " + fieldId + ";");
+        println("    }");
+        println("    throw new RuntimeException(\"This " + className + " does not have a " + field.getId() + ".\");");
         println("  }");
 
-        // TODO : implement separator setters
         println(
             "  public " + className + " set" + fieldName + "(" + fieldClass + " arg) {");
-        println("    return (" + className + ") null; // not yet implemented");
+        println("    if (!isEmpty() && !isSingle()) {");
+        String arglist = buildActualSeparatorArguments(listType);
+        arglist = arglist.replaceAll(fieldId,"arg");
+        println("      return get" + FactoryGenerator.className(apiName) + "().make" + className + "(getHead(), " + arglist +  "getTail());");
+        println("    }");
+        println("    throw new RuntimeException(\"This " + className + " does not have a " + fieldId + ".\");");
         println("  }");
     }
 

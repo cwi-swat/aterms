@@ -109,7 +109,6 @@ public class ListTest {
     Layout l4 = sep.getTail().getWsr();
     testAssert(l4.isEqual(factory.makeLayout_Default("l3")), "getSeparator test l4");
     
-    System.err.println(head + "#" + l1 + "#" + l2 + "#" + second + "#" + l3 + "#" + l4);
     testAssert(sep.getLength() == 4, "separated list length test");
   }
 
