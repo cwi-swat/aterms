@@ -1044,18 +1044,18 @@ as the ASDL representation of that C program.
 
 Given this back-end the C sources of the lcc compiler itself are mapped
 to \aterms. 
-The lcc compiler consists of XXX programs, all these programs
-together consist of XXX lines of code.
+The lcc compiler consists of 34 source files, consisting of a total of
+13588 lines of source code.
 
 \item[emacs Parse Forest:] given the \aterm\ back-end of the
-lcc compiler the C sources of emacs \cite{} has been processed as
+lcc compiler the C sources of emacs have been processed as
 well.
-The emacs source consists of XXX programs, and XXX lines of code.
+The emacs source consists of 169 source files, consisting of a total of
+216766 lines of source code.
 \end{description}
 
 \noindent Measurements were performed on an ULTRA SPARC-5 (270 MHz) with 256 Mb
 of memory. All times measured are the user CPU time for that particular job. 
-
 
 \subsection{Measurements}
 
@@ -1161,8 +1161,7 @@ Casl Specifications     & 217958 & 6.31 &  0.36 & 10.43 &  0.08 & 2.32  \\ \hlin
 lcc Parse Forest	&2132245 & 6.22 &  3.13 &  9.14 &  0.86 & 2.51  \\ \hline
 emacs Parse Forest     &15793029 & 6.90 & 25.98 & 11.35 &  6.40 & 2.80  \\ \hline
 \hline
-Real Case Averages      &        & 4.36 &       &  7.38 &       & 2.48  \\ \hline
-with Casl 		&	 & 4.75 &       &  7.99 &       & 2.45  \\ \hline
+Real Case Averages      &        & 5.27 &       &  8.49 &       & 2.47 \\ \hline
 \end{tabular}
 \caption{Reading and writing \ATerms\ as \ascii\ text} \label{measurements-text}
 \end{center}
@@ -1174,8 +1173,8 @@ The six columns give the size of the text
 representation of the test term in bytes, the average number of bytes per node,
 the time needed to read the text file, average time needed to read a node,
 the time needed to write the text file, and the average time needed to write a node.
-On the average, a node requires 4.4 bytes and reading and writing requires
-7.4 $\mu$s and 2.5 $\mu$s, respectively.
+On the average, a node requires 5.3 bytes and reading and writing requires
+8.5 $\mu$s and 2.5 $\mu$s, respectively.
 
 
 \begin{table}[tb]
@@ -1215,8 +1214,7 @@ Casl Specifications 	& 32083 & 0.93  & 0.05  & 1.45  & 0.15  & 4.34  \\ \hline
 lcc Parse Forest	&358318 & 0.99  & 0.71  & 1.97  & 1.50  & 4.16  \\ \hline
 emacs Parse Forest      &2493457& 1.09  &10.25  & 4.48  & 10.43 & 4.56  \\ \hline  
 \hline
-Real Case Averages      &       & 0.20  &       & 0.34  &       & 1.16  \\ \hline
-with Casl		&	& 0.35  &       & 0.56  &       & 1.80  \\ \hline
+Real Case Averages      &       & 0.54  &       & 1.32  &       & 2.38  \\ \hline
 \end{tabular}
 \caption{Reading and writing \ATerms\ as \baf} \label{measurements-baf}
 \end{center}
@@ -1230,7 +1228,7 @@ the time to read the \baf\ representation,
 the average read time per node,
 the time to write the \baf\ representation,
 and the average write time per node.
-Typically, we can read a node in 0.3 $\mu$s and write it in 1.2 $\mu$s.
+Typically, we can read a node in 1.3 $\mu$s and write it in 2.4 $\mu$s.
 
 Note that reading a \baf\ term is faster than writing the same term,
 whereas in case of \ascii\ the writing is faster than reading. This is
@@ -1271,8 +1269,7 @@ Casl Specifications     &  217958	&   32083 	& 85.3          &  20767        & 9
 lcc Parse Forest        & 2244691       &  358318       & 84.0          & 244502        & 89.1  \\ \hline
 emacs Parse Forest      &15793029	& 2493457       & 84.2          &1633754        & 89.7  \\ \hline
 \hline
-Real Case Averages      &               &               & 95.3          &               & 96.3  \\ \hline
-with Casl               &               &               & 93.3          &               & 95.1  \\ \hline
+Real Case Averages      &               &               & 90.8         &                & 93.8  \\ \hline
 \end{tabular}
 \caption{\baf\ \emph{versus} {\tt gzip}} \label{measurements-baf-gzip}
 \end{center}
@@ -1297,10 +1294,10 @@ better than that of \baf\ (12\%).
 \begin{tabular}{|l||r|r|r|} \hline
 
                         & \multicolumn{1}{c|}{Memory}   & \multicolumn{1}{c|}{\ascii}   & \multicolumn{1}{c|}{\baf}\\ \hline \hline
-Size per node (bytes)   & 2.9           & 4.4   &  0.2  \\
+Size per node (bytes)   & 2.9           & 5.27   & 0.54  \\
 
-Read node ($\mu$s)      &               & 7.4   & 0.3 \\
-Write node ($\mu$s)     &               & 2.5   & 1.2\\ \hline
+Read node ($\mu$s)      &               & 8.49   & 1.32 \\
+Write node ($\mu$s)     &               & 2.47   & 2.38\\ \hline
 \end{tabular}
 \caption{Summary of measurements (based on Real Case averages)} \label{summary}
 \end{center}
