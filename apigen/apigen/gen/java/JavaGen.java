@@ -287,9 +287,6 @@ extends Generator
     println("    return (" + api_factory + ") getStaticFactory();");
     println("  }");
     println();
-    println("  public aterm.ATermAppl setArgument(aterm.ATerm arg, int pos) {");
-    println("    throw new RuntimeException(\"Illegal use of a generic setter on a specific type\");");
-    println("  }");
     println("}");
   }
  
