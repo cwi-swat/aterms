@@ -4,7 +4,7 @@ CLEANFILES = ${PACKAGE}-${VERSION}.pkg
 
 DIST_SUBDIRS = aterm utils test doc
 
-EXTRA_DIST = make_rules LICENSE $(wildcard *.pkg)
+EXTRA_DIST = make_rules LICENSE $(wildcard *.pkg) aterm.spec
 
 DISTFILE = ${distdir}.tar.gz
 WWWDIR = /hosts/www/projects/MetaEnv/aterm
