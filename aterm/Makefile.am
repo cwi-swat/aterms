@@ -14,7 +14,7 @@ WWWDIR = /hosts/www/projects/MetaEnv/aterm
 noinst_SCRIPTS = ${PACKAGE}-${VERSION}.pkg
 
 ${PACKAGE}-${VERSION}.pkg: package Makefile
-	cp $ < $@
+	cp $< $@
 
 
 www-dist: distcheck
