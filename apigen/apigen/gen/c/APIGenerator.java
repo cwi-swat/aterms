@@ -49,7 +49,7 @@ public class APIGenerator extends CGenerator {
 		genPrologue();
 		genStaticConversions();
 		genTypes(adt);
-		genBottomSorts();
+//		genBottomSorts();
 		genInitFunction();
         genProtectFunctions(adt);
 		genTermConversions(adt);
@@ -130,6 +130,7 @@ public class APIGenerator extends CGenerator {
 	}
 
 	private void genBottomSorts() {
+		// disabled because it clashes (rather than generating a default implementation) with prologue.
 		Iterator types = adt.bottomTypeIterator();
 		TypeConverter conv = new TypeConverter(new CTypeConversions(prefix));
 
