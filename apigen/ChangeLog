@@ -1,3 +1,6 @@
+2000/09/08 (jong@cwi.nl)
+  * Removed unlabeled sdf-specification now that pgen understands labels.
+
 2000/09/06 ({jong,olivierp}@cwi.nl)
   * Version 0.4
   * Lexical support works

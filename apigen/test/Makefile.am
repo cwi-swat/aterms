@@ -65,8 +65,9 @@ liblist.a list/list.h: list.adt list.pro
 	${MAKE}
 	@cp list/liblist.a .
 
-Booleans.trm.tbl: Booleans.sdf.unlabeled
-	${SDF2TABLE} -i $< -o $@
+Booleans.trm.tbl: Booleans.sdf
+	(printf "definition\nmodule Main\nimports Booleans\n"; cat $<) |\
+	${SDF2TABLE} -o $@
 
 booltest.af1: Booleans.trm.tbl booltest.trm
 	${SGLR} -1 -p Booleans.trm.tbl -i booltest.trm -o $@
