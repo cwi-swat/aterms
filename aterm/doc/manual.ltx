@@ -748,7 +748,7 @@ them.
 \Macro{ATgetName}{char *}{\Symbol\ sym}
 {Return the name of an \Symbol}.
 
-\Macro{ATgetArity}{int}{\Symbol sym}
+\Macro{ATgetArity}{int}{\Symbol\ sym}
 {Return the arity (number of arguments) of a function symbol (\Symbol)}
 
 \Macro{ATisQuoted}{ATbool}{\Symbol\ sym}
@@ -1124,7 +1124,7 @@ makes them less suitable for large \aterm-to-\aterm\ mappings. To this end,
 
 
 \Function{ATtableRemove}{void}{ATermTable table, ATerm key}
-{Remove the ({\tt key}, value)-pair from {\tt table}}
+{Remove the (key, value)-pair from {\tt table}}
 
 \Function{ATtableKeys}{ATermList}{ATermTable table}
 {Get an ATermList of all the keys in a table}
