@@ -1039,7 +1039,7 @@ in \aterm\ we refer to Section \ref{casfix}.
 \cite{Wan97} has been added to the lcc compiler \cite{Han99}.
 This back-end maps the internal format used by
 the lcc compiler to \aterms.
-The \ATerm\ format represents the equivalent information of an C program
+The \ATerm\ format represents the equivalent information of a C program
 as the ASDL representation of that C program.
 
 Given this back-end the C sources of the lcc compiler itself are mapped
@@ -1615,10 +1615,10 @@ access functions based on the\emph{ match-and-make} paradigm.
 There exist numerous frameworks for compilers and programming
 environments that provide facilities for representing intermediate
 data. Examples are Centaur's VTP~\cite{BCDILP89}, Eli~\cite{Eli92},
-Cocktail's Ast~\cite{Ast92} SUIF~\cite{Suif94} and
+Cocktail's Ast~\cite{Ast92}, SUIF~\cite{Suif94}, ASDL~\cite{WAKS97}, and
 Montana~\cite{Karasick98}. These systems either provide an explicit
 intermediate format (Eli, Ast, SUIF) or they provide a programmable
-interface to the intermediate data (VTP, Montana).  Lamb's
+interface to the intermediate data (VTP, Montana, ASDL).  Lamb's
 IDL~\cite{Lamb-IDL} and OMG's IDL~\cite{OMG-IDL} are frameworks for
 representing intermediate data that are not tied to a specific
 compiler construction paradigm but have objectives similar to the
@@ -1638,7 +1638,7 @@ acyclic graphs), while intermediate representations for compilers are
 more specialized and give a higher-level view on the intermediate
 data.  They provide primitives for representing program constructs,
 symbol tables, flow graphs and other derived information. In most
-cases they also provide a fixed formats for representing programs at
+cases they also provide a fixed format for representing programs at
 different levels of abstraction ranging from call graphs to
 machine-like instructions. \ATerms\ are thus simpler and more general
 and they can be used to represent each of these compiler's
@@ -1652,15 +1652,16 @@ each different intermediate format. In the case of \ATerms, a dynamic
 check may be necessary on the intermediate data but only a single,
 generic, set of access functions is needed.
 
-
-
 \paragraph{ASDL}
 
 The abstract syntax definition language (ASDL) \cite{Wan97} is a
 language for describing tree data structures and is used as
 intermediate representation language between the various phases of a
-compiler \cite{Han99}.  The goals of ASDL and \aterms\ are in fact
-quite similar, exchanging syntax trees between tools, although
+compiler \cite{Han99}.  We consider ASDL in more detail, because of
+its public availability and the fact that the goals of
+ASDL and \aterms\ are
+quite similar as they are both used to exchange of syntax trees 
+between tools, although
 \aterms\ are more general in the sense that other types of
 information, such as unstructured binary objects and annotations, can
 also be represented as an \aterm.  Everything that can be represented
