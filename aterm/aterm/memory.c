@@ -2421,6 +2421,62 @@ ATbool AT_isValidTerm(ATerm term)
 }
 
 /*}}}  */
+/*{{{  ATbool ATisValidTerm(ATerm term) */
+
+/**
+ * Determine if a given term is valid.
+ */
+
+ATerm AT_isInsideValidTerm(ATerm term)
+{
+  Block *cur;
+  header_type header;
+  ATbool inblock = ATfalse;
+  int idx = ADDR_TO_BLOCK_IDX(term);
+  int type;
+  int offset = 0;
+
+  for(cur=block_table[idx].first_after; cur; cur=cur->next_after) 
+  {
+    offset  = ((char *)term) - ((char *)&cur->data);
+    if (offset >= 0	&& offset < (BLOCK_SIZE * sizeof(header_type))) {
+      inblock = ATtrue;
+      /*fprintf(stderr, "term %p in block %p, size=%d, offset=%d\n", 
+	term, &cur->data[0], cur->size, offset);*/
+      break;
+    }
+  }
+
+  if(!inblock)
+  {
+    for(cur=block_table[idx].first_before; cur; cur=cur->next_before) 
+    {
+      offset  = ((char *)term) - ((char *)&cur->data);
+      if (offset >= 0 && offset < (BLOCK_SIZE * sizeof(header_type))) {
+	inblock = ATtrue;
+	/*fprintf(stderr, "term %p in block %p, size=%d, offset=%d\n", 
+	  term, &cur->data[0], cur->size, offset);*/
+	break;
+      }
+    }
+  }
+
+  if(!inblock) {
+    /*fprintf(stderr, "not in block: %p\n", term);*/
+    return ATfalse;
+  }
+
+  offset -= (offset % (cur->size*sizeof(header)));
+  term = (ATerm)(((char *)cur->data) + offset);
+
+  header = term->header;
+  type = GET_TYPE(header);
+
+  /* The only possibility left for an invalid term is AT_FREE */
+  return (((type == AT_FREE) || (type == AT_SYMBOL)) ? NULL : term);
+}
+
+/*}}}  */
 
 /*{{{  void AT_validateFreeList(int size) */
 

@@ -247,6 +247,10 @@ class ATermListImpl
 
   public ATermList concat(ATermList rhs)
   {
+    if (isEmpty()) {
+      return rhs;
+    }
+
     if (next == PureFactory.empty) {
       return factory.makeList(first, rhs);
     }

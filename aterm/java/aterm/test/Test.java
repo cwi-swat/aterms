@@ -204,6 +204,10 @@ public class Test
     list = (ATermList)factory.parse("[1,2,3]");
     result = list.replace(factory.parse("99"), 1);
     assert(result.equals(factory.parse("[1,99,3]")));
+
+    list = factory.makeList();
+    result = list.append(factory.parse("1"));
+    assert(result.equals(factory.parse("[1]")));
   }
 
   //}}}

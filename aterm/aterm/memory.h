@@ -42,6 +42,7 @@ ATerm AT_allocate(int size);
 void  AT_freeTerm(int size, ATerm t);
 void  AT_collect(int size);
 ATbool AT_isValidTerm(ATerm term);
+ATerm AT_isInsideValidTerm(ATerm term);
 void  AT_validateFreeList(int size);
 int AT_inAnyFreeList(ATerm t);
 void AT_printAllTerms(FILE *file);

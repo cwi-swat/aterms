@@ -1,5 +1,11 @@
 $Id$
 
+2001/05/31 ({jong,olivierp}@cwi.nl)
+ * Added support for pointers that point INSIDE aterms:
+   this should fix the strange gc problems in gcc-2.95.2 related
+   to strength-reduce optimizations.
+ * fixed ATermList.concat bug in Java aterm library.
+
 2001/05/17 (jong@cwi.nl)
  * added configure option: --with-texdoclet <PATH_TO_JAR> which activates
    generation of java-api.ltx which is used to build java-api.ps.

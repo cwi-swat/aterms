@@ -312,16 +312,13 @@ static void handle_ack_event(int fd, AFun afun)
 
   for(i=MAX_NR_QUEUES-1; i>=0; i--) {
     if(event_queues[i].afun == afun) {
-      ATfprintf(stderr, "found queue: %y\n", afun);
       if (event_queues[i].first != event_queues[i].last) {
 	ATerm event = event_queues[i].data[event_queues[i].first];
-	ATfprintf(stderr, "reviving queued event: %t\n", event);
 	event_queues[i].first =
 	  (event_queues[i].first + 1) % MAX_QUEUE_LEN;
 	ATBwriteTerm(fd, ATmake("snd-event(<term>)", event));
 	/* stil pending */
       } else {
-	ATfprintf(stderr, "queue empty.\n");
 	event_queues[i].ack_pending = ATfalse;
       }
     }

@@ -125,7 +125,7 @@ void __cdecl mark_phase()
   int nr_reg_terms, nr_reg_syms;
 
   ATerm *stackTop;
-  ATerm *start, *stop, *cur;
+  ATerm *start, *stop, *cur, real_term;
 
 #ifdef AT_64BIT
   ATerm oddTerm;
@@ -169,8 +169,9 @@ void __cdecl mark_phase()
   /* First traverse the reg-array to count the nr of aterms
      that were in registers */
   for(i=0; i<8; i++) {
-    if (AT_isValidTerm(reg[i])) {
-      AT_markTerm(reg[i]);
+    real_term = AT_isInsideValidTerm(reg[i]);
+    if (real_term != NULL) {
+      AT_markTerm(real_term);
       nr_reg_terms++;
     }
     if (AT_isValidSymbol((Symbol)reg[i])) {
@@ -212,8 +213,9 @@ void __cdecl mark_phase()
   nr_reg_syms    = 0;
 
   for(cur=start; cur<stop; cur++) {
-    if (AT_isValidTerm(*cur)) {
-      AT_markTerm(*cur);
+    real_term = AT_isInsideValidTerm(*cur);
+    if (real_term != NULL) {
+      AT_markTerm(real_term);
       nr_reg_terms++;
     }
 
@@ -224,8 +226,9 @@ void __cdecl mark_phase()
 
 #ifdef AT_64BIT
     oddTerm = *((ATerm *)((MachineWord)cur)+4);
-    if (AT_isValidTerm(oddTerm)) {
-      AT_markTerm(oddTerm);
+    real_term = AT_isInsideValidTerm(oddTerm);
+    if (real_term != NULL) {
+      AT_markTerm(real_term);
       nr_reg_terms++;
     }
 
@@ -259,8 +262,9 @@ void __cdecl mark_phase()
 
   /* Traverse the stack */
   for(cur=start; cur<stop; cur++) {
-    if (AT_isValidTerm(*cur)) {
-      AT_markTerm(*cur);
+    real_term = AT_isInsideValidTerm(*cur);
+    if (real_term != NULL) {
+      AT_markTerm(real_term);
       nr_stack_terms++;
     }
 
@@ -271,7 +275,8 @@ void __cdecl mark_phase()
 
 #ifdef AT_64BIT
     oddTerm = *((ATerm *)((MachineWord)cur)+4);
-    if (AT_isValidTerm(oddTerm)) {
+    real_term = AT_isInsideValidTerm(oddTerm);
+    if (real_term != NULL) {
       AT_markTerm(oddTerm);
       nr_reg_terms++;
     }
