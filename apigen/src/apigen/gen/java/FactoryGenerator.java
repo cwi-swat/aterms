@@ -124,7 +124,7 @@ public class FactoryGenerator extends JavaGenerator {
             Type type = (Type) types.next();
             if (type instanceof ListType) {
                 String className = TypeGenerator.className(type);
-                println("  static protected " + className + " empty" + className + ";");
+                println("  private " + className + " empty" + className + ";");
             }
         }
 
@@ -274,7 +274,7 @@ public class FactoryGenerator extends JavaGenerator {
                 + className
                 + ") make"
                 + className
-                + "((aterm.ATerm) head, (aterm.ATermList) tail, empty);");
+                + "((aterm.ATerm) head, (aterm.ATermList) tail, getEmpty());");
         println("  }");
     }
 
@@ -308,7 +308,7 @@ public class FactoryGenerator extends JavaGenerator {
                 + className
                 + "((aterm.ATerm) head, "
                 + actualSeps
-                + "(aterm.ATermList) tail, empty);");
+                + "(aterm.ATermList) tail, getEmpty());");
         println("  }");
     }
 
@@ -457,7 +457,7 @@ public class FactoryGenerator extends JavaGenerator {
         print("    aterm.ATerm[] args = new aterm.ATerm[] {");
         printActualTypedArgumentList(type, alt);
         println("};");
-        println("    return make" + altClassName + "( " + funVar + ", args, empty);");
+        println("    return make" + altClassName + "(" + funVar + ", args, getEmpty());");
         println("  }");
         println();
     }

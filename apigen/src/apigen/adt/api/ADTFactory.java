@@ -5,6 +5,7 @@ import aterm.pure.PureFactory;
 public class ADTFactory extends PureFactory
 {
   private Entries protoEntries;
+  private aterm.ATerm patternEntriesMany;
   private aterm.AFun funEntry_Constructor;
   private Entry protoEntry_Constructor;
   private aterm.ATerm patternEntry_Constructor;
@@ -15,11 +16,12 @@ public class ADTFactory extends PureFactory
   private Entry protoEntry_SeparatedList;
   private aterm.ATerm patternEntry_SeparatedList;
   private Separators protoSeparators;
+  private aterm.ATerm patternSeparatorsMany;
   private aterm.AFun funSeparator_Default;
   private Separator protoSeparator_Default;
   private aterm.ATerm patternSeparator_Default;
-  static protected Entries emptyEntries;
-  static protected Separators emptySeparators;
+  private Entries emptyEntries;
+  private Separators emptySeparators;
   public ADTFactory()
   {
      super();
@@ -70,7 +72,7 @@ public class ADTFactory extends PureFactory
 
   public Entry_Constructor makeEntry_Constructor(aterm.ATerm _sort, aterm.ATerm _alternative, aterm.ATerm _termPattern) {
     aterm.ATerm[] args = new aterm.ATerm[] {_sort, _alternative, _termPattern};
-    return makeEntry_Constructor( funEntry_Constructor, args, empty);
+    return makeEntry_Constructor(funEntry_Constructor, args, getEmpty());
   }
 
   public Entry Entry_ConstructorFromTerm(aterm.ATerm trm)
@@ -87,10 +89,7 @@ public class ADTFactory extends PureFactory
   }
   protected aterm.ATerm toTerm(Entry_ConstructorImpl arg) {
     java.util.List args = new java.util.LinkedList();
-    args.add((aterm.ATerm)arg.getArgument(0));
-    args.add((aterm.ATerm)arg.getArgument(1));
-    args.add((aterm.ATerm)arg.getArgument(2));
-    return make(patternEntry_Constructor, args);
+    args.add((aterm.ATerm)arg.getSort());    args.add((aterm.ATerm)arg.getAlternative());    args.add((aterm.ATerm)arg.getTermPattern());    return make(patternEntry_Constructor, args);
   }
 
   protected Entry_List makeEntry_List(aterm.AFun fun, aterm.ATerm[] args, aterm.ATermList annos) {
@@ -102,7 +101,7 @@ public class ADTFactory extends PureFactory
 
   public Entry_List makeEntry_List(aterm.ATerm _sort, aterm.ATerm _elemSort) {
     aterm.ATerm[] args = new aterm.ATerm[] {_sort, _elemSort};
-    return makeEntry_List( funEntry_List, args, empty);
+    return makeEntry_List(funEntry_List, args, getEmpty());
   }
 
   public Entry Entry_ListFromTerm(aterm.ATerm trm)
@@ -119,9 +118,7 @@ public class ADTFactory extends PureFactory
   }
   protected aterm.ATerm toTerm(Entry_ListImpl arg) {
     java.util.List args = new java.util.LinkedList();
-    args.add((aterm.ATerm)arg.getArgument(0));
-    args.add((aterm.ATerm)arg.getArgument(1));
-    return make(patternEntry_List, args);
+    args.add((aterm.ATerm)arg.getSort());    args.add((aterm.ATerm)arg.getElemSort());    return make(patternEntry_List, args);
   }
 
   protected Entry_SeparatedList makeEntry_SeparatedList(aterm.AFun fun, aterm.ATerm[] args, aterm.ATermList annos) {
@@ -133,7 +130,7 @@ public class ADTFactory extends PureFactory
 
   public Entry_SeparatedList makeEntry_SeparatedList(aterm.ATerm _sort, aterm.ATerm _elemSort, Separators _separators) {
     aterm.ATerm[] args = new aterm.ATerm[] {_sort, _elemSort, _separators};
-    return makeEntry_SeparatedList( funEntry_SeparatedList, args, empty);
+    return makeEntry_SeparatedList(funEntry_SeparatedList, args, getEmpty());
   }
 
   public Entry Entry_SeparatedListFromTerm(aterm.ATerm trm)
@@ -150,10 +147,7 @@ public class ADTFactory extends PureFactory
   }
   protected aterm.ATerm toTerm(Entry_SeparatedListImpl arg) {
     java.util.List args = new java.util.LinkedList();
-    args.add((aterm.ATerm)arg.getArgument(0));
-    args.add((aterm.ATerm)arg.getArgument(1));
-    args.add(((Separators)arg.getArgument(2)).toTerm());
-    return make(patternEntry_SeparatedList, args);
+    args.add((aterm.ATerm)arg.getSort());    args.add((aterm.ATerm)arg.getElemSort());    args.add((arg.getSeparators()).toTerm());    return make(patternEntry_SeparatedList, args);
   }
 
   protected Separator_Default makeSeparator_Default(aterm.AFun fun, aterm.ATerm[] args, aterm.ATermList annos) {
@@ -165,7 +159,7 @@ public class ADTFactory extends PureFactory
 
   public Separator_Default makeSeparator_Default(aterm.ATerm _termPattern) {
     aterm.ATerm[] args = new aterm.ATerm[] {_termPattern};
-    return makeSeparator_Default( funSeparator_Default, args, empty);
+    return makeSeparator_Default(funSeparator_Default, args, getEmpty());
   }
 
   public Separator Separator_DefaultFromTerm(aterm.ATerm trm)
@@ -182,8 +176,7 @@ public class ADTFactory extends PureFactory
   }
   protected aterm.ATerm toTerm(Separator_DefaultImpl arg) {
     java.util.List args = new java.util.LinkedList();
-    args.add((aterm.ATerm)arg.getArgument(0));
-    return make(patternSeparator_Default, args);
+    args.add((aterm.ATerm)arg.getTermPattern());    return make(patternSeparator_Default, args);
   }
 
   public Entries makeEntries() {
@@ -193,7 +186,7 @@ public class ADTFactory extends PureFactory
     return (Entries) makeEntries(elem, emptyEntries);
   }
   public Entries makeEntries(Entry head, Entries tail) {
-    return (Entries) makeEntries((aterm.ATerm) head, (aterm.ATermList) tail, empty);
+    return (Entries) makeEntries((aterm.ATerm) head, (aterm.ATermList) tail, getEmpty());
   }
   protected Entries makeEntries(aterm.ATerm head, aterm.ATermList tail, aterm.ATermList annos) {
     synchronized (protoEntries) {
@@ -208,7 +201,7 @@ public class ADTFactory extends PureFactory
     return (Separators) makeSeparators(elem, emptySeparators);
   }
   public Separators makeSeparators(Separator head, Separators tail) {
-    return (Separators) makeSeparators((aterm.ATerm) head, (aterm.ATermList) tail, empty);
+    return (Separators) makeSeparators((aterm.ATerm) head, (aterm.ATermList) tail, getEmpty());
   }
   protected Separators makeSeparators(aterm.ATerm head, aterm.ATermList tail, aterm.ATermList annos) {
     synchronized (protoSeparators) {

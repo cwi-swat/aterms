@@ -17,7 +17,7 @@ abstract public class SeparatorImpl extends ADTConstructor
   }
   public boolean isEqual(Separator peer)
   {
-    return term.isEqual(peer.toTerm());
+    return super.isEqual(peer);
   }
   public boolean isSortSeparator()  {
     return true;

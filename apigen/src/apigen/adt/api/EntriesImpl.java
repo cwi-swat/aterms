@@ -6,7 +6,7 @@ import java.io.IOException;
 
 abstract public class EntriesImpl extends aterm.pure.ATermListImpl
 {
-  protected void init (int hashCode, aterm.ATermList annos, aterm.ATerm first,	aterm.ATermList next) {
+  protected void init (int hashCode, aterm.ATermList annos, aterm.ATerm first, aterm.ATermList next) {
     super.init(hashCode, annos, first, next);
   }
   protected void initHashCode(aterm.ATermList annos, aterm.ATerm first, aterm.ATermList next) {
@@ -48,10 +48,13 @@ abstract public class EntriesImpl extends aterm.pure.ATermListImpl
   }
 
   public boolean isEmpty() {
-    return this == ADTFactory.emptyEntries;
+    return this == ((ADTFactory) getFactory()).makeEntries();
   }
   public boolean isMany() {
     return !isEmpty();
+  }
+  public boolean isSingle() {
+    return !isEmpty() && getNext().isEmpty();
   }
   public boolean hasHead() {
     return !isEmpty();

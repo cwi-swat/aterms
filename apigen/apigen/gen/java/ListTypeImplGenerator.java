@@ -232,13 +232,13 @@ public class ListTypeImplGenerator extends TypeImplGenerator {
     }
 
     protected void genIsEmpty(String className) {
+    	String factoryName = FactoryGenerator.className(apiName);
         println("  public boolean isEmpty() {");
         println(
             "    return this == "
-                + FactoryGenerator.className(apiName)
-                + ".empty"
+                + "((" + factoryName + ") getFactory()).make"
                 + className
-                + ";");
+                + "();");
         println("  }");
     }
 

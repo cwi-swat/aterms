@@ -17,7 +17,7 @@ abstract public class EntryImpl extends ADTConstructor
   }
   public boolean isEqual(Entry peer)
   {
-    return term.isEqual(peer.toTerm());
+    return super.isEqual(peer);
   }
   public boolean isSortEntry()  {
     return true;
