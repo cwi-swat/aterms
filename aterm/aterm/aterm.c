@@ -2085,11 +2085,15 @@ calcUniqueSubterms(ATerm t)
 			break;
 			
 		case AT_LIST:
-			nr_unique = 1;
 			list = (ATermList)t;
 			while(!ATisEmpty(list) && !IS_MARKED(list->header)) {
-			  nr_unique += calcUniqueSubterms(ATgetFirst(list));
+			  nr_unique += calcUniqueSubterms(ATgetFirst(list)) + 1;
+				SET_MARK(list->header);
 			  list = ATgetNext(list);
+			}
+			if (ATisEmpty(list) && !IS_MARKED(list->header)) {
+				SET_MARK(list->header);
+				nr_unique++;
 			}
 		  break;
 	}
@@ -2122,7 +2126,7 @@ AT_calcUniqueSubterms(ATerm t)
 /*{{{  static int calcUniqueSymbols(ATerm t) */
 
 /**
-	* Calculate the number of unique subterms.
+	* Calculate the number of unique symbols.
 	*/
 
 static int
@@ -2137,14 +2141,27 @@ calcUniqueSymbols(ATerm t)
 	
 	switch (ATgetType(t)) {
 		case AT_INT:
+			if (!at_lookup_table[AS_INT]->count++)
+				nr_unique = 1;
+			break;
 		case AT_REAL:
+			if (!at_lookup_table[AS_REAL]->count++)
+				nr_unique = 1;
+			break;
 		case AT_BLOB:
+			if (!at_lookup_table[AS_BLOB]->count++)
+				nr_unique = 1;
+			break;
 		case AT_PLACEHOLDER:
+			if (!at_lookup_table[AS_PLACEHOLDER]->count++)
+				nr_unique = 1;
 			break;
 			
 		case AT_APPL:
 			sym = ATgetSymbol((ATermAppl) t);
 			nr_unique = AT_isMarkedSymbol(sym) ? 0 : 1;
+			assert(at_lookup_table[sym]);
+			at_lookup_table[sym]->count++;
 			AT_markSymbol(sym);
 			arity = ATgetArity(sym);
 			for (i = 0; i < arity; i++)
@@ -2154,14 +2171,25 @@ calcUniqueSymbols(ATerm t)
 		case AT_LIST:
 			list = (ATermList)t;
 			while(!ATisEmpty(list) && !IS_MARKED(list->header)) {
+				SET_MARK(list->header);
+				if (!at_lookup_table[AS_LIST]->count++)
+					nr_unique++;
 			  nr_unique += calcUniqueSymbols(ATgetFirst(list));
 			  list = ATgetNext(list);
+			}
+			if(ATisEmpty(list) && !IS_MARKED(list->header)) {
+				SET_MARK(list->header);
+				if (!at_lookup_table[AS_EMPTY_LIST]->count++)
+					nr_unique++;
 			}
 		  break;
 	}
 	
-	if(HAS_ANNO(t->header))
+	if(HAS_ANNO(t->header)) {
+		if (!at_lookup_table[AS_ANNOTATION]->count++)
+			nr_unique++;
 		nr_unique += calcUniqueSymbols(AT_getAnnotations(t));
+	}
 
 	SET_MARK(t->header);
 

@@ -196,11 +196,11 @@ AFun  ATmakeAFun(char *name, int arity, ATbool quoted);
 #define ATmakeSymbol ATmakeAFun
 
 /*char   *ATgetName(AFun sym);*/
-#define ATgetName(sym) (lookup_table[(sym)]->name)
+#define ATgetName(sym) (at_lookup_table[(sym)]->name)
 /*int     ATgetArity(AFun sym);*/
-#define ATgetArity(sym) GET_LENGTH(lookup_table_alias[(sym)]->header)
+#define ATgetArity(sym) GET_LENGTH(at_lookup_table_alias[(sym)]->header)
 /*ATbool  ATisQuoted(AFun sym);*/
-#define ATisQuoted(sym) IS_QUOTED(lookup_table_alias[(sym)]->header)
+#define ATisQuoted(sym) IS_QUOTED(at_lookup_table_alias[(sym)]->header)
 
 void    ATprotectAFun(AFun sym);
 #define ATprotectSymbol ATprotectAFun

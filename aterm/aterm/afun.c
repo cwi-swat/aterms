@@ -25,7 +25,6 @@
 #define SHIFT_INDEX 1
 #define SYM_GET_NEXT_FREE(sym)    ((sym) >> SHIFT_INDEX)
 #define SYM_SET_NEXT_FREE(next)   (1 | ((next) << SHIFT_INDEX))
-#define SYM_IS_FREE(sym)          (((sym) & 1) == 1)
 
 #define INITIAL_PROTECTED_SYMBOLS   1024
 #define SYM_PROTECT_EXPAND_SIZE     1024
@@ -45,8 +44,8 @@ static int nr_protected_symbols  = 0;
 static int max_protected_symbols  = 0;
 
 /* Efficiency hack: was static */
-SymEntry *lookup_table = NULL;
-ATerm    *lookup_table_alias = NULL;
+SymEntry *at_lookup_table = NULL;
+ATerm    *at_lookup_table_alias = NULL;
 
 /*}}}  */
 /*{{{  function declarations */
@@ -55,10 +54,16 @@ extern char *strdup(const char *s);
 
 /*}}}  */
 
+unsigned int AT_symbolTableSize()
+{
+	return table_size;
+}
+
 /*{{{  void AT_initSymbol(int argc, char *argv[]) */
 void AT_initSymbol(int argc, char *argv[])
 {
 	int i;
+	AFun sym;
 
 	table_size = SYMBOL_HASH_SIZE;
 
@@ -76,21 +81,49 @@ void AT_initSymbol(int argc, char *argv[])
 		ATerror("AT_initSymbol: cannot allocate %d hash-entries.\n",
 		        table_size);
 
-	lookup_table = (SymEntry *) calloc(table_size, sizeof(SymEntry));
-	lookup_table_alias = (ATerm *)lookup_table;
-	if (lookup_table == NULL)
+	at_lookup_table = (SymEntry *) calloc(table_size, sizeof(SymEntry));
+	at_lookup_table_alias = (ATerm *)at_lookup_table;
+	if (at_lookup_table == NULL)
 		ATerror("AT_initSymbol: cannot allocate %d lookup-entries.\n",
 		        table_size);
 
 	for (i = first_free = 0; i < table_size; i++)
-		lookup_table[i] = (SymEntry) SYM_SET_NEXT_FREE(i+1);
+		at_lookup_table[i] = (SymEntry) SYM_SET_NEXT_FREE(i+1);
 
-	lookup_table[i-1] = (SymEntry) SYM_SET_NEXT_FREE(-1);		/* Sentinel */
+	at_lookup_table[i-1] = (SymEntry) SYM_SET_NEXT_FREE(-1);		/* Sentinel */
 
 	protected_symbols = (Symbol *)calloc(INITIAL_PROTECTED_SYMBOLS, 
 																			 sizeof(Symbol));
 	if(!protected_symbols)
 		ATerror("AT_initSymbol: cannot allocate initial protection buffer.\n");
+	
+	sym = ATmakeAFun("<int>", 0, ATfalse);
+	assert(sym == AS_INT);
+	ATprotectAFun(sym);
+
+	sym = ATmakeAFun("<real>", 0, ATfalse);
+	assert(sym == AS_REAL);
+	ATprotectAFun(sym);
+
+	sym = ATmakeAFun("<blob>", 0, ATfalse);
+	assert(sym == AS_BLOB);
+	ATprotectAFun(sym);
+
+	sym = ATmakeAFun("<_>", 1, ATfalse);
+	assert(sym == AS_PLACEHOLDER);
+	ATprotectAFun(sym);
+
+	sym = ATmakeAFun("[_,_]", 2, ATfalse);
+	assert(sym == AS_LIST);
+	ATprotectAFun(sym);
+
+	sym = ATmakeAFun("[]", 0, ATfalse);
+	assert(sym == AS_EMPTY_LIST);
+	ATprotectAFun(sym);
+
+	sym = ATmakeAFun("{_}", 2, ATfalse);
+	assert(sym == AS_ANNOTATION);
+	ATprotectAFun(sym);
 }
 /*}}}  */
 
@@ -102,7 +135,7 @@ void AT_initSymbol(int argc, char *argv[])
 
 void AT_printSymbol(Symbol sym, FILE *f)
 {
-  SymEntry entry = lookup_table[sym];
+  SymEntry entry = at_lookup_table[sym];
   char *id = entry->name;
 
   if (IS_QUOTED(entry->header)) {
@@ -190,8 +223,8 @@ Symbol ATmakeSymbol(char *name, int arity, ATbool quoted)
     if(free_entry == -1)
       ATerror("AT_initSymbol: out of symbol slots!\n");
 
-    first_free = SYM_GET_NEXT_FREE((int)lookup_table[first_free]);
-    lookup_table[free_entry] = cur;
+    first_free = SYM_GET_NEXT_FREE((int)at_lookup_table[first_free]);
+    at_lookup_table[free_entry] = cur;
     cur->id = free_entry;
   }
 
@@ -235,7 +268,7 @@ void AT_freeSymbol(SymEntry sym)
 	free(sym->name);
 	sym->name = NULL;
 
-	lookup_table[sym->id] = (SymEntry)SYM_SET_NEXT_FREE(first_free);
+	at_lookup_table[sym->id] = (SymEntry)SYM_SET_NEXT_FREE(first_free);
 	first_free = sym->id;
 
 	/* Put the node in the appropriate free list */
@@ -256,7 +289,7 @@ Replaced by ATgetArity macro
 
 int ATgetArity(Symbol sym)
 {
-  return GET_LENGTH(lookup_table[sym]->header);
+  return GET_LENGTH(at_lookup_table[sym]->header);
 }
 
 /*}}}  */
@@ -271,7 +304,7 @@ int ATgetArity(Symbol sym)
 ATbool AT_isValidSymbol(Symbol sym)
 {
 	return (sym >= 0 && sym < table_size
-		&& !SYM_IS_FREE((int)lookup_table[sym])) ?  ATtrue : ATfalse;
+		&& !SYM_IS_FREE(at_lookup_table[sym])) ?  ATtrue : ATfalse;
 }
 
 /*}}}  */
@@ -284,7 +317,7 @@ ATbool AT_isValidSymbol(Symbol sym)
 /* <PO> This is now a macro
 void AT_markSymbol(Symbol s)
 {
-  lookup_table[s]->header |= MASK_MARK;
+  at_lookup_table[s]->header |= MASK_MARK;
 }
 */
 
@@ -298,7 +331,7 @@ void AT_markSymbol(Symbol s)
 /* <PO> This is now a macro
 void AT_unmarkSymbol(Symbol s)
 {
-  lookup_table[s]->header &= ~MASK_MARK;
+  at_lookup_table[s]->header &= ~MASK_MARK;
 }
 */
 
@@ -311,7 +344,7 @@ void AT_unmarkSymbol(Symbol s)
 
 ATbool AT_isMarkedSymbol(Symbol s)
 {
-  return IS_MARKED(lookup_table[s]->header);
+  return IS_MARKED(at_lookup_table[s]->header);
 }
 
 /*}}}  */
@@ -369,7 +402,7 @@ void AT_markProtectedSymbols()
 	int lcv;
 
 	for(lcv = 0; lcv < nr_protected_symbols; lcv++)
-		SET_MARK(((ATerm)lookup_table[protected_symbols[lcv]])->header);
+		SET_MARK(((ATerm)at_lookup_table[protected_symbols[lcv]])->header);
 }
 
 /*}}}  */
