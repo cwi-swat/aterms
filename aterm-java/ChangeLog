@@ -3,8 +3,9 @@ $Id$
 2003-03-18 <jurgenv@cwi.nl>
  * Use shared-objects-config script to obtain last version of 
    shared-objects
- * aterm-java-config script now prints last version of aterm-java.jar
-   file
+ * aterm-java-config script now prints the classpath needed to
+   USE aterm-java, including the shared-objects and JJTraveler jar files.
+ * Added normal dependency on JJTraveler package
 
 Mon Mar 17 10:13:11 CET 2003 <jong@cwi.nl>
  * Major hack to fix unexpected dependency on jjtraveler:
@@ -16,7 +17,7 @@ Mon Mar 17 10:13:11 CET 2003 <jong@cwi.nl>
 2003-03-14 <jurgenv@cwi.nl>
  * Bumped to 1.2beta
  * Removed specialized visitor package from aterm implementation
- * Made aterm implementation depend on and use jjtraveler-1.3.jar
+ * Made aterm implementation depend on and use the JJTraveler package
  * TODO: make real dependency on jjtraveler package instead of jar inclusion
  
 Tue Feb 25 16:16:51 CET 2003 <jong@cwi.nl>
