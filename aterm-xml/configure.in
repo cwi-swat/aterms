@@ -28,12 +28,14 @@ AC_PACKAGE_REQUIRE(aterm, baffle,
 AC_SUBST(ATERM)
 
 dnl Require Xml library
-AC_PACKAGE_REQUIRE(xml, xml2-config,
-   [  --with-xml=DIR          XML library is in DIR])
+AC_PACKAGE_REQUIRE(libxml2, xml2-config,
+   [  --with-libxml2=DIR          XML library is in DIR])
+XML="${LIBXML2}"
 XMLCFG="${XML}/bin/xml2-config"
 XMLLIB=`${XMLCFG} --libs`
 XMLINCLUDE=`${XMLCFG} --cflags`/libxml
 XMLINCLUDE="${XMLINCLUDE} `${XMLCFG} --cflags`"
+AC_SUBST(LIBXML2)
 AC_SUBST(XML)
 AC_SUBST(XMLLIB)
 AC_SUBST(XMLINCLUDE)
