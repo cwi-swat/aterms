@@ -52,6 +52,44 @@ static ATerm makePlaceholder(ATermPlaceholder pat, va_list *args);
 static ATermAppl makeArguments(ATermAppl appl, char *name, ATbool quoted,
 							   va_list *args);
 static ATerm AT_vmakeTerm(ATerm pat, va_list *args);
+static ATerm AT_vmatchTerm(ATerm t, ATerm pat, va_list *args);
+
+/*}}}  */
+
+/*{{{  ATerm AT_getPattern(const char *pat) */
+
+/**
+  * Retrieve a pattern using hash techniques.
+  */
+
+ATerm AT_getPattern(const char *pat)
+{
+  unsigned int hash_val;
+  char        *walk = (char *) pat;
+  at_entry    *bucket;
+  
+  for(hash_val = 0; *walk; walk++)
+	hash_val = 251 * hash_val + *walk;
+  hash_val %= TABLE_SIZE;
+  
+  bucket = &(pattern_table[hash_val]);
+  if (bucket->pat)
+	{
+	  if (streq(bucket->pat, pat))
+		return bucket->term;
+	  else
+		free(bucket->pat);
+	}
+  else
+	ATprotect(&(bucket->term));
+  
+  bucket->pat = strdup(pat);
+  if (!bucket->pat)
+	ATerror("ATvmake: no room for pattern.\n");
+  
+  bucket->term = ATreadFromString(pat);
+  return bucket->term;
+}
 
 /*}}}  */
 
@@ -73,7 +111,6 @@ void AT_initMake(int argc, char *argv[])
 	symbol_placeholder = ATmakeSymbol("placeholder", 0, ATfalse);
 }
 /*}}}  */
-
 /*{{{  ATerm ATmake(const char *pat, ...) */
 ATerm ATmake(const char *pat, ...)
 {
@@ -87,7 +124,6 @@ ATerm ATmake(const char *pat, ...)
 	return t;
 }
 /*}}}  */
-
 /*{{{  ATerm ATmakeTerm(ATerm pat, ...) */
 ATerm ATmakeTerm(ATerm pat, ...)
 {
@@ -101,45 +137,30 @@ ATerm ATmakeTerm(ATerm pat, ...)
 	return t;
 }
 /*}}}  */
-
 /*{{{  ATerm ATvmake(const char *pat, va_list args) */
+
+/**
+  * Make a new term using a string pattern and a list of arguments.
+  */
+
 ATerm ATvmake(const char *pat, va_list args)
 {
-	unsigned int hash_val;
-	char        *walk = (char *) pat;
-	at_entry    *bucket;
-
-	for(hash_val = 0; *walk; walk++)
-		hash_val = 251 * hash_val + *walk;
-	hash_val %= TABLE_SIZE;
-	
-	bucket = &(pattern_table[hash_val]);
-	if (bucket->pat)
-	{
-		if (streq(bucket->pat, pat))
-			return AT_vmakeTerm(bucket->term, &args);
-		else
-			free(bucket->pat);
-	}
-	else
-		ATprotect(&(bucket->term));
-
-	bucket->pat = strdup(pat);
-	if (!bucket->pat)
-		ATerror("ATvmake: no room for pattern.\n");
-
-	bucket->term = ATreadFromString(pat);
-	return AT_vmakeTerm(bucket->term, &args);
+  return AT_vmakeTerm(AT_getPattern(pat), &args);
 }
-/*}}}  */
 
+/*}}}  */
 /*{{{  ATerm ATvmakeTerm(ATerm pat, va_list args) */
+
+/**
+  * Match a term pattern against a list of arguments.
+  */
+
 ATerm ATvmakeTerm(ATerm pat, va_list args)
 {
 	return AT_vmakeTerm(pat, &args);
 }
-/*}}}  */
 
+/*}}}  */
 /*{{{  ATerm AT_vmakeTerm(ATerm pat, va_list *args) */
 
 static ATerm
@@ -213,7 +234,6 @@ AT_vmakeTerm(ATerm pat, va_list *args)
 }
 
 /*}}}  */
-
 /*{{{  static ATermAppl makeArguments(ATermAppl appl, name, quoted, *args) */
 static ATermAppl
 makeArguments(ATermAppl appl, char *name, ATbool quoted, va_list *args)
@@ -280,7 +300,6 @@ makeArguments(ATermAppl appl, char *name, ATbool quoted, va_list *args)
 
 }
 /*}}}  */
-
 /*{{{  ATerm makePlaceholder(ATermPlaceholder pat, va_list *args) */
 
 ATerm
@@ -310,6 +329,62 @@ makePlaceholder(ATermPlaceholder pat, va_list *args)
 	}
 	ATerror("makePlaceholder: illegal pattern %t\n", pat);
 	return (ATerm) NULL;
+}
+
+/*}}}  */
+
+/*{{{  ATerm ATvmatch(ATerm t, const char *pat, va_list args) */
+
+/**
+  * Match a string pattern against a term using a list of arguments.
+  */
+
+ATerm ATvmatch(ATerm t, const char *pat, va_list args)
+{
+  return AT_vmatchTerm(t, AT_getPattern(pat), args);
+}
+
+/*}}}  */
+/*{{{  ATerm ATmatch(ATerm t, const char *pat, ...) */
+
+/**
+  * Match a term against a string pattern.
+  */
+
+ATerm ATmatch(ATerm t, const char *pat, ...)
+{
+  ATerm trm;
+  va_list args;
+
+  va_start(args, pat);
+  trm = ATvmatch(t, pat, args);
+  va_end(args);
+
+  return trm;
+}
+
+/*}}}  */
+/*{{{  ATerm ATvmatchTerm(ATerm t, ATerm pat, va_list args) */
+
+/**
+  * Match a term against a string pattern using a list of arguments.
+  */
+
+ATerm ATvmatchTerm(ATerm t, ATerm pat, va_list args)
+{
+  return AT_vmatchTerm(t, pat, &args);
+}
+
+/*}}}  */
+/*{{{  ATerm AT_vmatchTerm(ATerm t, ATerm pat, va_list *args) */
+
+/**
+  * Match a term against a term pattern using a list of arguments.
+  */
+
+ATerm AT_vmatchTerm(ATerm t, ATerm pat, va_list *args)
+{
+  return NULL;
 }
 
 /*}}}  */
