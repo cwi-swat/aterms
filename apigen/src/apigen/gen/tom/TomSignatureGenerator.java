@@ -170,33 +170,11 @@ public class TomSignatureGenerator extends Generator {
 					impl.ListHead(type.getId()),
 					impl.ListTail(type.getId()),
 					impl.ListEmpty(type.getId())));
-			println("");
-			// conc operator
-			println("%oplist " + type.getId() + " conc" + eltType + "(" + eltType + "*) {");
-			println("  fsym { null }");
-			println("  is_fsym(t) {" + impl.ListIsList("t",type.getId()) + "}");
-			println("  make_empty() {" + impl.ListmakeEmpty(type.getId()) + "}");
-			println("  make_insert(e,l) {" + impl.ListmakeInsert(type.getId(), eltType) +"}");
-			println("}");
-			// empty operator
-			String class_name = "class_name";
-			println("%op " + type.getId() + " empty" + type.getId()+ "{");
-			println("  fsym { null }");
-	  	 	println("  is_fsym(t) { " + prefix + impl.OperatorIsFSym("t", class_name, "empty") + "}");
-			println("  make() {" + impl.ListmakeEmpty(type.getId()) +"}");
-			println("}");
-			// many operator
-			println("%op " + type.getId() + " many" + type.getId() 
-			               + "(head:" + eltType + ", tail:" + type.getId() + ") {");
-			println("  fsym { null }");
-			
-			println("  is_fsym(t) { " + prefix + impl.OperatorIsFSym("t", class_name, "many") + "}");
-			println("  get_slot(head,t) { " + impl.OperatorGetSlot("t", class_name, "head") + "}");
-			println("  get_slot(tail,t) { " + impl.OperatorGetSlot("t", class_name, "tail") + "}");
-			println("  make(e,l) {" + impl.ListmakeInsert(type.getId(),eltType) +"}");
-			println("}");
-			
 			println();
+			genTomConcOperator(type, eltType);
+			String class_name = "class_name";
+			genTomEmptyOperator(type, class_name);
+			genTomManyOperator(type, eltType, class_name);
 			genListTypeTomAltOperators(type);
 		} else {
 			println(
@@ -214,6 +192,37 @@ public class TomSignatureGenerator extends Generator {
 		
 	}
 	
+	private void genTomManyOperator(Type type, String eltType, String class_name) {
+		// many operator
+		println("%op " + type.getId() + " many" + type.getId() 
+		               + "(head:" + eltType + ", tail:" + type.getId() + ") {");
+		println("  fsym { null }");
+		
+		println("  is_fsym(t) { " + prefix + impl.OperatorIsFSym("t", class_name, "many") + "}");
+		println("  get_slot(head,t) { " + impl.OperatorGetSlot("t", class_name, "head") + "}");
+		println("  get_slot(tail,t) { " + impl.OperatorGetSlot("t", class_name, "tail") + "}");
+		println("  make(e,l) {" + impl.ListmakeInsert(type.getId(),eltType) +"}");
+		println("}");
+	}
+
+	private void genTomEmptyOperator(Type type, String class_name) {
+		println("%op " + type.getId() + " empty" + type.getId()+ "{");
+		println("  fsym { null }");
+		println("  is_fsym(t) { " + prefix + impl.OperatorIsFSym("t", class_name, "empty") + "}");
+		println("  make() {" + impl.ListmakeEmpty(type.getId()) +"}");
+		println("}");
+	}
+
+	private void genTomConcOperator(Type type, String eltType) {
+		// conc operator
+		println("%oplist " + type.getId() + " conc" + eltType + "(" + eltType + "*) {");
+		println("  fsym { null }");
+		println("  is_fsym(t) {" + impl.ListIsList("t",type.getId()) + "}");
+		println("  make_empty() {" + impl.ListmakeEmpty(type.getId()) + "}");
+		println("  make_insert(e,l) {" + impl.ListmakeInsert(type.getId(), eltType) +"}");
+		println("}");
+	}
+
 	private void genListTypeTomAltOperators(Type type) {
 			Iterator alts = type.alternativeIterator();
 

@@ -233,17 +233,15 @@ public class CTomSignatureImplementation implements TomSignatureImplementation {
 	}
 
 	public String ListIsList(String term, String type) {
-		// TODO Auto-generated method stub
-		return "not yet implemented";
+		return prefix + "is" + buildAltTypeName(type,"empty") + "(" + term + ") ||" +
+		prefix + "is" + buildAltTypeName(type,"many") + "(" + term + ")"; 
 	}
 
 	public String ListmakeEmpty(String type) {
-		// TODO Auto-generated method stub
-		return "not yet implemented";
+		return prefix + "make" + buildAltTypeName(type, "empty") + "()";
 	}
 
 	public String ListmakeInsert(String type, String eltType) {
-		// TODO Auto-generated method stub
-		return "not yet implemented";
+		return prefix + "make" + buildAltTypeName(type,"many") + "(e, l)";
 	}
 }
