@@ -351,9 +351,10 @@ makePlaceholder(ATermPlaceholder pat, va_list *args)
 			makeAppl = ATtrue;
 			quoted = ATtrue;
 		  }
-		  if(makeAppl)
-			return (ATerm) makeArguments(appl, va_arg(*args, char *),
-										 quoted, args);
+		  if(makeAppl) {
+			char *name = va_arg(*args, char *);
+			return (ATerm) makeArguments(appl, name, quoted, args);
+		  }
 		}
 	}
 	ATerror("makePlaceholder: illegal pattern %t\n", pat);
@@ -464,6 +465,10 @@ ATbool AT_vmatchTerm(ATerm t, ATerm pat, va_list *args)
 	  listpat = (ATermList)pat;
 	  list = (ATermList)t;
 	  len = ATgetLength(listpat);
+
+	  if(len == 0)
+		return ATisEmpty(list);
+
 	  while(--len > 0) {
 		if(ATisEmpty(list))
 		  return ATfalse;
@@ -517,7 +522,8 @@ static ATbool matchArguments(ATermAppl appl, ATermAppl applpat,
 {
   Symbol sym = ATgetSymbol(appl);
   Symbol psym = ATgetSymbol(applpat);
-  int i, arity = ATgetArity(sym), parity = ATgetArity(psym)-1;
+  int i, arity = ATgetArity(sym);
+  int parity = ATgetArity(psym)-1; /* -1, because last arg can be <list> */
   ATerm pat;
 
   if(parity == -1)
@@ -540,7 +546,7 @@ static ATbool matchArguments(ATermAppl appl, ATermAppl applpat,
 	  ATermList *listarg = va_arg(*args, ATermList *);
 	  if(listarg) {
 		*listarg = ATmakeList0();
-		for(i=arity-1; i>parity; i--) {
+		for(i=arity-1; i>=parity; i--) {
 		  *listarg = ATinsert(*listarg, ATgetArgument(appl, i));
 		}
 	  }

@@ -622,14 +622,15 @@ static char *writeToString(ATerm t, char *buf)
       /*{{{  write list */
 
       list = (ATermList)t;
-      if(!ATisEmpty(list))
-	buf = topWriteToString(ATgetFirst(list), buf);
-      list = ATgetNext(list);
-      while(!ATisEmpty(list)) {
-	*buf++ = ',';
-	buf = topWriteToString(ATgetFirst(list), buf);
-	list = ATgetNext(list);
-      }
+      if(!ATisEmpty(list)) {
+				buf = topWriteToString(ATgetFirst(list), buf);
+				list = ATgetNext(list);
+				while(!ATisEmpty(list)) {
+					*buf++ = ',';
+					buf = topWriteToString(ATgetFirst(list), buf);
+					list = ATgetNext(list);
+				}
+			}
 
       /*}}}  */
       break;
@@ -716,13 +717,17 @@ static int textSize(ATerm t)
       break;
 
     case AT_LIST:
-      list = (ATermList)t;
-      size = ATgetLength(list)-1; /* Add space for the ',' characters */
-      while(!ATisEmpty(list)) {
-				size += topTextSize(ATgetFirst(list));
-				list = ATgetNext(list);
-      }
-      break;
+			list = (ATermList)t;
+			if(ATisEmpty(list))
+				size = 0;
+			else {
+				size = ATgetLength(list)-1; /* Space for the ',' characters */
+				while(!ATisEmpty(list)) {
+					size += topTextSize(ATgetFirst(list));
+					list = ATgetNext(list);
+				}
+			}
+			break;
 
     case AT_PLACEHOLDER:
       trm = ATgetPlaceholder((ATermPlaceholder)t);
