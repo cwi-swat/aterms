@@ -1,4 +1,7 @@
 
+2002-11-20    <jurgenv@loria.fr>
+  * Bugfix in list matching code.
+  
 2002-11-19    <{moreau,vinju}@loria.fr>
   * fixed a bug: make("[<term>,<list>]",1,[]) should return "[1]" 
     instead of "[1,[]]"

@@ -81,11 +81,15 @@ class ATermListImpl extends ATermImpl implements ATermList {
 
 
   protected boolean match(ATerm pattern, List list) {
+    if (pattern == null) {
+      System.err.println("???");
+    }
+    
     if (pattern.getType() == LIST) {
       ATermList l = (ATermList) pattern;
 
 
-        /*
+/*        
       if (this == PureFactory.empty) {
         return l == PureFactory.empty;
       }
@@ -93,7 +97,7 @@ class ATermListImpl extends ATermImpl implements ATermList {
       if (l == PureFactory.empty) {
         return false;
       }
-        */
+       */
 
       if (l == PureFactory.empty) {
         return this == PureFactory.empty;
@@ -112,21 +116,26 @@ class ATermListImpl extends ATermImpl implements ATermList {
         }
       }
 
-      List submatches = first.match(l.getFirst());
-      if (submatches == null) {
-        return false;
+      if (!isEmpty()) {
+        List submatches = first.match(l.getFirst());
+        if (submatches == null) {
+          return false;
+        }
+
+        list.addAll(submatches);
+
+        submatches = next.match(l.getNext());
+
+        if (submatches == null) {
+          return false;
+        }
+
+        list.addAll(submatches);
+        return true;
       }
-
-      list.addAll(submatches);
-
-      submatches = next.match(l.getNext());
-
-      if (submatches == null) {
-        return false;
+      else {
+        return l.isEmpty();
       }
-
-      list.addAll(submatches);
-      return true;
     }
 
     return super.match(pattern, list);
