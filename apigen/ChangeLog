@@ -1,5 +1,9 @@
 # $Id$
 
+Thu Apr 29 07:48:23 CEST 2004 <jurgenv@cwi.nl>
+ * Added JavaTomSignatureGenerator.java to Makefile.am. Where is the
+   ChangeLog entry for adding this file? 
+
 Fri Apr 23 09:53:59 CEST 2004 <jurgenv@cwi.nl>
  * Fixed bug 227; an extra check is generated in the getTail for
    separated lists. Now you can program a loop over a separated list
