@@ -207,6 +207,16 @@ extends Generator
         println("      " + buildAltClassName( type, alt) + ".initialize(this);");
       }
     }
+    
+    Iterator bottoms = api.bottomTypeIterator();
+    
+    while (bottoms.hasNext()) {
+      String type = (String) bottoms.next();
+      
+      if (!isReservedType(type)) {
+        println("      " + buildId(type) + ".initialize(this);");
+      }
+    }
   }
   
 	private void genTypeClassFiles(ADT api) throws IOException {
