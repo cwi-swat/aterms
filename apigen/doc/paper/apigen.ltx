@@ -30,11 +30,11 @@ As more and more tools in the \metaenv\ were converted to work with
 the \atlib, it became apparent that the tools had become inflexible with
 respect to changes in the parse tree format (called \asfix), and were hard
 to maintain. The reason behind this inflexibility was the fact that all
-tools used manually encoded structural knowledge about the signature
-of the data types, i.e. the location of
-data elements inside their \aterm\ representation. Hard-wiring such knowledge
-into the tools without an explicit signature definition makes it difficult,
-if not impossible, to change the \aterm\ representation of the data type. 
+tools used manually encoded structural knowledge about the signature of
+the data types, i.e. the location of data elements inside their \aterm\
+representation. Hard-wiring such knowledge into the tools without an
+explicit signature definition makes it difficult, if not impossible,
+to change the \aterm\ representation of the data type.
 
 The coding practice that uses such structural knowledge is not in any
 way restricted to the realm of parse trees. In fact, anyone who has
@@ -928,9 +928,8 @@ actual generation for a specific target language.
 We call the intermediate format \emph{annotated data type}, or \adt\
 for short.
 
- It holds the minimal amount of information for each syntax
-rule in the original \sdf\ specification. In particular, for each rule
-we need:
+It holds the minimal amount of information for each syntax rule in the
+original \sdf\ specification. In particular, for each rule we need:
 
 % {{{  The necessary elements of an adt-entry
 
@@ -939,9 +938,9 @@ we need:
 \item The \emph{sortname} of the production. In our boolean syntax this
 is \texttt{Bool};
 
-\item The \emph{alternative} of the production. Our boolean syntax
-has five alternatives: \texttt{true}, \texttt{false}, \texttt{not},
-\texttt{and}, \texttt{or}.
+\item The \emph{alternative} of the production. Our boolean syntax (from
+Figure~\ref{fig:bool-example}) has five alternatives: \texttt{true},
+\texttt{false}, \texttt{not}, \texttt{and}, \texttt{or}.
 
 \item The actual \aterm-\emph{pattern} representation of the rule.
 In this pattern, each \emph{field} (non-terminal in the syntax rule)
@@ -1494,12 +1493,11 @@ most of this library is now generated from the SDF definition of SDF itself.
 Only some high level functionality that could not be generated remains in
 this library.
 
-Somewhat more subjective but still quite spectacular is the fact that
-after apification, we where able to make significant changes to the
-\asfix\ format itself and implement these changes in all our tools
-in a matter of days. Similar changes that where implemented before
-apification took weeks of extensive coding and painstaking
-debugging sessions to find all affected locations.
+An other interesting aspect we noted was the fact that after apification,
+we where able to make significant changes to the \asfix\ format itself
+and implement these changes in all our tools in a matter of days. Similar
+changes that where implemented before apification took weeks of extensive
+coding and painstaking debugging sessions to find all affected locations.
 
 % }}}
 % {{{  Conclusions
@@ -1522,6 +1520,13 @@ manually crafted libraries that provide access to compound data types
 implemented by \aterms. Even though several optimization opportunities
 have not yet been fully explored, the efficiency of the generated library
 is already comparable to its manually written predecessor.
+
+More generically speaking, the approach presented in this paper is
+applicable in situations where type safety is needed at a different
+(higher) abstraction level than is offered by the underlying data
+format. This is especially true in situations where representing the
+data at the higher abstraction level directly is unfeasible, e.g. due
+to performance issues.
 
 % }}}
 % {{{  Discussion

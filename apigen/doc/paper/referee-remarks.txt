@@ -1,104 +1,131 @@
 [Referee 1]
 
+Because we felt that for a Special Issue on ATerms, this paper should
+be self-contained, we decided to put in several examples of ATerms,
+AsFix and SDF. This obviously leads to a more lengthy (perhaps even
+somewhat boring) paper. Because it is harder for unfamiliar readers to
+find examples that are not in a paper, than it is for familiar readers
+to skip them, we have decided to leave them in.
+
+
 minor comments:
 ===============
-  - the abstract should be shortened and made more self-contained
-  - the authors should take care to avoid colloquialisms such as
-"spectacular elimination",
-    "why on earth", "works like a charm", etc.
-  - I would recommend moving the related work to the end of the paper, so
-you can get
-    to your own contributions sooner.
-  - page 9: is "true" a sort? I would think it's a constant or literal.
-  - please try to be more explicit in the description of examples. For
-instance, it
-    would help to say that "Anthony" is substituted in the place of <str>
-in the example
-    on page 11. Similarly, please explain the constants 1 and 0 in the
-example on p.12
-  - to some extent the need for this work is an artifact of the fact that
-you're
-    communicating untyped terms between components. Would it be possible to
-communicate
-    typed components so that a type checker could ensure that type
-violations don't
-    take place?
+ - the abstract should be shortened and made more self-contained
+
+We have rewritten the abstract to a single paragraph.
+
+
+ - the authors should take care to avoid colloquialisms such as
+ "spectacular elimination", "why on earth", "works like a charm", etc.
+
+These and several other colloquialisms have been removed / rewritten.
+
+
+ - I would recommend moving the related work to the end of the paper,
+ so you can get to your own contributions sooner.
+
+We have decided to leave the related work section at the beginning to
+position the paper right away.
+
+
+ - page 9: is "true" a sort? I would think it's a constant or literal.
+
+Referee's observation is correct, we have corrected this section.
+
+
+ - please try to be more explicit in the description of examples. For
+ instance, it would help to say that "Anthony" is substituted in the
+ place of <str> in the example on page 11. Similarly, please explain
+ the constants 1 and 0 in the example on p.12
+
+Both substitutions are now explicitly addressed.
+
+
+ - to some extent the need for this work is an artifact of the fact
+ that you're communicating untyped terms between components. Would it
+ be possible to communicate typed components so that a type checker
+ could ensure that type violations don't take place?
+
+We have now addressed this issue in the last paragraph of the Conclusions
+section.
 
 ---------------------------------------------------------------------------
 
 [Referee 2]
 
-The term "maximal subterm sharing" appears on several pages (e.g. 3, 4, 9) and
-should be shortly explained for readers not familiar with them.
+ - The term "maximal subterm sharing" appears on several pages (e.g. 3,
+ 4, 9) and should be shortly explained for readers not familiar with them.
 
-In the short overview of the paper (in the introduction) authors skiped
-explanation for sections 4, 5 and 7.  This is really uncommon and have to be
-corrected. Moreover, a reader might get impression that these sections are not
-important at all.
+The first occurence of "maximal subterm sharing" has been annotated
+(footnote) with a brief explanation.
 
-The reference [BSVV02] to "scannerless generalized LR parsing" (SGLR) should be
-cited  when the term SGLR is mentioned on first time (on page 6).
 
-It seems to me that the statement on page 9 "The result of a successful parse
-is a parse tree." is not accurate enough, because authors are using SGRL
-parsing where result can be parse forest.
+ - In the short overview of the paper (in the introduction) authors
+ skiped explanation for sections 4, 5 and 7. This is really uncommon
+ and have to be corrected. Moreover, a reader might get impression that
+ these sections are not important at all.
 
-On several places (e.g. page 9) authors used terms left-hand (right-hand) side
-(of the production). Since SDF formalism change the order of LHS and RHS of
-usual BNF notation it is not clear enough if authors mean LHS (RHS) of usual
-BNF notation or SDF.
+This has been remedied by adding an explanation for all missing sections.
 
-The reference to fig. 2 should be provided also with the following statement on
-page 16 "Our boolean syntax has five alternatives: true, false, not, and, or."
 
-For naming nonterminals and alternatives authors suggest to use SDF labeling
-mechanism and "cons" annotations. However, these features are optionaly and not
-obligatory in SDF. How you get descriptive names for nonterminals and
-alternatives if grammar writer does not  label each nonterminal nor use "cons"
-annotations? Moreover, SDF for ATerms and  AsFix (provided in appendix A and B)
-also do not use these features.
+ - The reference [BSVV02] to "scannerless generalized LR parsing"
+ (SGLR) should be cited when the term SGLR is mentioned on first time
+ (on page 6).
 
-The section 5 is too short and have to be expanded. This section is very
-important for readers and somehow justify the work done. If the paper can not
-be extended due to page limitation then authors can shorten some lenghty
-explanations in sections 2, 3 and 4.
+The citation has been moved as suggested.
 
-In the related work authors compare their work with Grammars as Contract,
-Zephyr ASDL, (D)COM, XML data binding, Generative Programming and  JJForester.
-Since the aim of the paper (section 3) is to show how the library of access
-functions that manipulate parse trees can be generated from syntax definition
-this work is also very related to [Heering2000, Henriques2002] where authors
-show that many language-based tools can be automatically generated by
-extracting/augmenting information from language definition. Authors should
-compare their work also with this research area.
 
-@Article{Heering2000,
-  author =   "Jan Heering and Paul Klint",
-  title =    "Semantics of Programming Languages: A
-                  Tool-Oriented Approach",
-  journal =  "ACM Sigplan Notices",
-  year =     "2000",
-  volume =   "35",
-  number =   "3",
-  pages =    "39--48",
-  month =    mar
-}
+ - It seems to me that the statement on page 9 "The result of a successful
+ parse is a parse tree." is not accurate enough, because authors are
+ using SGRL parsing where result can be parse forest.
 
-@inProceedings{Henriques2002,
-    author = {Pedro Henriques and Maria Varanda Pereira and Marjan Mernik and
-Mitja Leni\v{c} and Enis Avdi\v{c}au\v{s}evi\'{c} and Viljem {\v Z}umer},
-    title = {Automatic Generation of Language-based Tools},
-    booktitle = {Electronic Notes in Theoretical Computer Science},
-    volume = {65},
-    issue = {3},
-    publisher = {Elsevier Science Publishers},
-    editor = {Mark van den Brand and Ralf Laemmel},
-    year = {2002}
-}
+Referee's observation is correct: the result is a forest, not a tree.
+Although we concentrate on trees in the rest of the paper, this was
+confusing, so we have corrected the erroneous statement.
 
-The citation [EFB01] for Aspect Oriented Programming (AOP) seems to me is
-unfair for AOP inventors. The credit have to be put to AOP inventors first.
-Therefore, I suggest to change this reference with the following reference
+
+ - On several places (e.g. page 9) authors used terms left-hand
+ (right-hand) side (of the production). Since SDF formalism change the
+ order of LHS and RHS of usual BNF notation it is not clear enough if
+ authors mean LHS (RHS) of usual BNF notation or SDF.
+
+A footnote clarifying this has been added near the first figure that
+shows SDF.
+
+
+ - The reference to fig. 2 should be provided also with the following
+ statement on page 16 "Our boolean syntax has five alternatives: true,
+ false, not, and, or."
+
+The reference has been added.
+
+
+ - For naming nonterminals and alternatives authors suggest to use SDF
+ labeling mechanism and "cons" annotations. However, these features are
+ optionaly and not obligatory in SDF. How you get descriptive names for
+ nonterminals and alternatives if grammar writer does not  label each
+ nonterminal nor use "cons" annotations? Moreover, SDF for ATerms and
+ AsFix (provided in appendix A and B) also do not use these features.
+
+ - The section 5 is too short and have to be expanded. This section
+ is very important for readers and somehow justify the work done. If
+ the paper can not be extended due to page limitation then authors can
+ shorten some lenghty explanations in sections 2, 3 and 4.
+
+ - In the related work authors compare their work with Grammars as
+ Contract, Zephyr ASDL, (D)COM, XML data binding, Generative Programming
+ and  JJForester.  Since the aim of the paper (section 3) is to show
+ how the library of access functions that manipulate parse trees can
+ be generated from syntax definition this work is also very related to
+ [Heering2000, Henriques2002] where authors show that many language-based
+ tools can be automatically generated by extracting/augmenting information
+ from language definition. Authors should compare their work also with
+ this research area.
+
+ - The citation [EFB01] for Aspect Oriented Programming (AOP) seems
+ to me is unfair for AOP inventors. The credit have to be put to AOP
+ inventors first.  Therefore, I suggest to change this reference with
+ the following reference
 
 @InProceedings{   kla+97a,
   author        = {Gregor Kiczales and John Lamping and Anurag Mendhekar and
