@@ -210,6 +210,7 @@ of the induction variable inside the loop using a simpler computation.
 % {{{  example of strength-reduction.
 
 \begin{figure}[!htb]
+\hrulefill
 \begin{footnotesize}
 \begin{verbatim}
 01  before strength reduction       |    after strength reduction
@@ -218,7 +219,6 @@ of the induction variable inside the loop using a simpler computation.
 04    a[i] = j * i;                        a[i] = tmp;
 05                                  >      tmp = tmp + j;
 06  }                                    }
-
 \end{verbatim}
 \end{footnotesize}
   \caption{
@@ -242,6 +242,8 @@ case \texttt{ATBunpack}) on each of these arguments and inserting the
 result in \texttt{list}. The variable \texttt{arity} holds the arity
 of \texttt{appl}.
 
+\begin{figure}[!htb]
+\hrulefill
 \begin{footnotesize}
 \begin{verbatim}
 01  ATermList list = ATempty;
@@ -251,17 +253,23 @@ of \texttt{appl}.
 05  }
 \end{verbatim}
 \end{footnotesize}
+\caption{
+  \label{fig:atb-tool}
+  \texttt{C}-source of the snippet which was the target of strength reduction.
+}
+\end{figure}
 
 % }}}
 
 \begin{figure}[!htb]
-  \begin{footnotesize}
-    \verbatiminput{asm-diff.ltx}
-  \end{footnotesize}
-  \caption{
-    \label{fig:asm-diff}
-    Assembly \emph{before} (L) and \emph{after} (R) strength reduction.
-  }
+\hrulefill
+\begin{footnotesize}
+\verbatiminput{asm-diff.ltx}
+\end{footnotesize}
+\caption{
+\label{fig:asm-diff}
+Assembly \emph{before} (L) and \emph{after} (R) strength reduction.
+}
 \end{figure}
 
 % }}}
