@@ -15,7 +15,7 @@ dnl AC_SUBST(SHARED_OBJECTS)
 
 AC_PACKAGE_REQUIRE(shared-objects, shared-objects-config,
    [ --with-shared-objects=DIR       installation directory of shared-objects])
-SHARED_OBJECTS=${SHARED_OBJECTS}/share/shared-objects-1.0beta.jar
+SHARED_OBJECTS="${SHARED_OBJECTS}/share/shared-objects-1.0beta.jar"
 AC_SUBST(SHARED_OBJECTS)
 
 AC_OUTPUT(
