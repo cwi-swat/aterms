@@ -29,9 +29,7 @@
 #define SILENT_FLAG  "-at-silent"
 #define VERBOSE_FLAG "-at-verbose"
 
-#ifndef PO
 #define LOW_MEMORY_FLAG "-at-low-memory"
-#endif
 
 #define DEFAULT_BUFFER_SIZE 4096
 #define RESIZE_BUFFER(n) if(n > buffer_size) resize_buffer(n)
@@ -56,12 +54,8 @@
 char            aterm_id[] = "$Id$";
 
 /* Flag to tell whether to keep quiet or not. */
-#ifndef PO
 ATbool silent	  = ATtrue;
 ATbool low_memory = ATfalse;
-#else
-ATbool silent	  = ATtrue;
-#endif
 
 /* warning_handler is called when a recoverable error is detected */
 static void     (*warning_handler) (const char *format, va_list args) = NULL;
@@ -157,10 +151,8 @@ ATinit(int argc, char *argv[], ATerm * bottomOfStack)
       silent = ATtrue;
     } else if(streq(argv[lcv], VERBOSE_FLAG)) {
       silent = ATfalse;
-#ifndef PO
     } else if(0 || streq(argv[lcv], LOW_MEMORY_FLAG)) {
       low_memory              = ATtrue;
-#endif
     } else if(streq(argv[lcv], "-at-help")) {
       help = ATtrue;
     }
@@ -169,9 +161,7 @@ ATinit(int argc, char *argv[], ATerm * bottomOfStack)
   /*}}}  */
   /*{{{  Optionally print some information */
 
-#ifndef PO
   AT_init_gc_parameters(low_memory);
-#endif
 
   
   if (!silent)
@@ -189,10 +179,8 @@ ATinit(int argc, char *argv[], ATerm * bottomOfStack)
 	    "-at-verbose");
     fprintf(stderr, "    %-20s: suppress runtime gc information.\n",
 	    "-at-silent");
-#ifndef PO
     fprintf(stderr, "    %-20s: try to minimize the memory usage.\n",
 	    "-at-low-memory");
-#endif
   }
 
   /*}}}  */
@@ -2282,11 +2270,7 @@ void AT_markTerm(ATerm t)
 
     SET_MARK(t->header);
     
-#ifndef PO
-      /*fprintf(stderr,"MAJOR OLD MARK(%x)\n",(unsigned int)t);*/
-      /*fprintf(stderr,"INCREMENT_AGE(%x,%d)\n",(unsigned int)t,GET_AGE(t->header));*/
     INCREMENT_AGE(t->header);
-#endif
     
     if(HAS_ANNO(t->header))
       *current++ = AT_getAnnotations(t);
@@ -2344,8 +2328,9 @@ void AT_markTerm(ATerm t)
 #endif
 }
 
-#ifndef PO
-void AT_markTerm_young(ATerm t) {
+/* Jurgen asks: why is this function not in gc.c ? */
+void AT_markTerm_young(ATerm t) 
+{
   int             i, arity;
   Symbol          sym;
   ATerm          *current = mark_stack + 1;
@@ -2457,10 +2442,6 @@ void AT_markTerm_young(ATerm t) {
   nr_marks++;
 #endif
 }
-#endif
-
-
-
 
 /*}}}  */
 /*{{{  void AT_unmarkTerm(ATerm t) */

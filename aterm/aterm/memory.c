@@ -25,14 +25,9 @@
    Otherwise a new garbage collect is started. */
 #define GC_THRESHOLD 45
 
-#ifndef PO
 #define CHECK_HEADER(h) assert((GET_AGE(h)==0) && !IS_MARKED(h) )
 #define CHECK_ARGUMENT(t,n) { assert( (GET_AGE(t->header) <= GET_AGE(ATgetArgument(t,n)->header)) );\
                               assert( (GET_AGE(t->header) <= GET_AGE(at_lookup_table[ATgetSymbol((ATermAppl)t)]->header))); }
-#else
-#define CHECK_HEADER(h)
-#define CHECK_ARGUMENT(t,n) 
-#endif
 
 #define MAX_DESTRUCTORS     16
 #define MAX_BLOCKS_PER_SIZE 1024
@@ -146,18 +141,12 @@ FINISH(COMBINE(START( (AT_INT<<SHIFT_TYPE) ), val))
 char memory_id[] = "$Id$";
 
 Block *at_blocks[MAX_TERM_SIZE]  = { NULL };
-#ifndef PO
 Block *at_old_blocks[MAX_TERM_SIZE]  = { NULL };
 header_type *top_at_blocks[MAX_TERM_SIZE]  = { NULL };
 Block *at_freeblocklist = NULL;
 int at_freeblocklist_size = 0;
-#endif
 ATerm at_freelist[MAX_TERM_SIZE] = { NULL };
-/* #ifndef PO */
-/* Block *block_table[BLOCK_TABLE_SIZE] = { NULL }; */
-/* #else */
 BlockBucket block_table[BLOCK_TABLE_SIZE] = { { NULL, NULL } };
-/* #endif */
 
 int at_nrblocks[MAX_TERM_SIZE]   = { 0 };
 MachineWord total_nodes = 0;
@@ -176,11 +165,6 @@ int old_bytes_in_young_blocks_since_last_major = 0; /* only live cells */
 int nb_live_blocks_before_last_gc[MAX_TERM_SIZE] = { 0 }; /* holes included */
 int nb_reclaimed_blocks_during_last_gc[MAX_TERM_SIZE] = { 0 }; /* dead blocks */
 int nb_reclaimed_cells_during_last_gc[MAX_TERM_SIZE] = { 0 };
-/*
- * Can be computed:
- * nb_allocated_blocks_since_last_gc[MAX_TERM_SIZE] =
- *   at_nrblocks[size]-nb_live_blocks_before_last_gc[size]
- */
 
 #ifndef NO_SHARING
 static int maxload = 80;
@@ -320,7 +304,6 @@ static HashNumber hash_number(ATerm t, int size) {
 static HashNumber hash_number_anno(ATerm t, int size, ATerm anno) {
   HashNumber hnr;
   hnr = hash_number(t,size);
-    /*hnr = COMBINE(hnr, (MachineWord)anno);*/
   fprintf(stderr,"hash_number_anno(%p) = %d\tsize = %d\n",t,hnr,table_size);
   return hnr;
 }
@@ -332,17 +315,12 @@ static HashNumber hash_number(ATerm t, int size)
   int i;
   HashNumber hnr;
 
-#ifndef PO
   hnr = START(HIDE_AGE_MARK(words[0]));
-#else
-  hnr = START(words[0]);
-#endif
   
   for (i=2; i<size; i++) {
     hnr = COMBINE(hnr, words[i]);
   }
 
-    /*fprintf(stderr,"hash_number(%x) = %d\tsize = %d\n",t,hnr,size);*/
   return FINISH(hnr);
 }
 
@@ -352,12 +330,7 @@ static HashNumber hash_number_anno(ATerm t, int size, ATerm anno)
   int i;
   HashNumber hnr;
 
-#ifndef PO
   hnr = START(HIDE_AGE_MARK(words[0]));
-#else
-  hnr = START(words[0]);
-#endif
-
   
   for (i=2; i<size; i++) {
     hnr = COMBINE(hnr, words[i]);
@@ -692,11 +665,13 @@ void AT_cleanupMemory()
  * Allocate a new block of a particular size class
  */
 
-#ifndef PO
 header_type *min_heap_address = (header_type*)(~0);
 header_type *max_heap_address = 0;
 
-static void allocate_block(int size) {
+/*{{{  static void allocate_block(int size)  */
+
+static void allocate_block(int size) 
+{
   int idx;
   Block *newblock;
   int init = 0;
@@ -762,61 +737,15 @@ static void allocate_block(int size) {
     block_table[idx].first_before = newblock;
   }
 }
-#else
-static void allocate_block(int size)
-{
-  int idx, last;
-  Block *newblock = (Block *)calloc(1, sizeof(Block));
-  ATerm data;
 
-  assert(size >= MIN_TERM_SIZE && size < MAX_TERM_SIZE);
-
-  if (newblock == NULL) {
-    ATerror("allocate_block: out of memory!\n");
-  }
-  at_nrblocks[size]++;
-
-  CLEAR_FROZEN(newblock);
-  newblock->size = size;
-  newblock->next_by_size = at_blocks[size];
-  at_blocks[size] = newblock;
-  data = (ATerm)newblock->data;
-
-  /* subtract garbage, and 1xsize */
-  last = BLOCK_SIZE - (BLOCK_SIZE % size) - size;
-  at_freelist[size] = data;
-  for (idx=0; idx < last; idx += size)
-  {
-    ((ATerm)(((header_type *)data)+idx))->next =
-      (ATerm)(((header_type *)data)+idx+size);
-    ((ATerm)(((header_type *)data)+idx))->header = FREE_HEADER;
-  }
-  ((ATerm)(((header_type *)data)+idx))->next = NULL;
-  ((ATerm)(((header_type *)data)+idx))->header = AT_FREE;
-
-  /* Place the new block in the block_table */
-  /*idx = (((MachineWord)newblock) >> (BLOCK_SHIFT+2)) % BLOCK_TABLE_SIZE;*/
-  idx = ADDR_TO_BLOCK_IDX(newblock);
-  newblock->next_after = block_table[idx].first_after;
-  block_table[idx].first_after = newblock;
-  idx = (idx+1) % BLOCK_TABLE_SIZE;
-  newblock->next_before = block_table[idx].first_before;
-  block_table[idx].first_before = newblock;
-
-  total_nodes += BLOCK_SIZE/size;
-}
-#endif
 /*}}}  */
-/*{{{  ATerm AT_allocate(int size) */
 
 /**
  * Allocate a node of a particular size
  */
-#ifndef PO
 
-/*  fprintf(stderr,"total_nodes = %d\n",total_nodes); */
+/*{{{  statistics macros */
 
-/*#define AT_STATISTICS AT_statistics()*/
 #define AT_STATISTICS 
 
 #ifndef NO_SHARING
@@ -863,8 +792,13 @@ static void allocate_block(int size)
         AT_STATISTICS;
 
 
+/*}}}  */
+
 static int nb_at_allocate=0;
-void AT_statistics() {
+/*{{{  void AT_statistics()  */
+
+void AT_statistics() 
+{
   int size;
   Block *block;
   header_type *cur;
@@ -933,8 +867,12 @@ void AT_statistics() {
   
 }
 
+/*}}}  */
 
-ATerm AT_allocate(int size) {
+/*{{{  ATerm AT_allocate(int size)  */
+
+ATerm AT_allocate(int size) 
+{
   ATerm at;
   nb_at_allocate++;
   
@@ -1037,43 +975,6 @@ ATerm AT_allocate(int size) {
     /*fprintf(stderr,"AT_allocate term[%d] = %x\n",size,(unsigned int)at);*/
   return at;
 }
-#else
-static MachineWord alloc_since_gc[MAX_TERM_SIZE] = { 0 };
-ATerm AT_allocate(int size)
-{
-  ATerm at;
-
-  while (!at_freelist[size])
-  {
-    long total = ((long)at_nrblocks[size])*(BLOCK_SIZE/size);
-    /*printf("alloc_since_gc[%d] = %d, total=%d\n", size,
-      alloc_since_gc[size], total);*/
-    if(100*(alloc_since_gc[size]/GC_THRESHOLD) <= total) {
-      allocate_block(size);
-#ifndef NO_SHARING
-      /* Hashtable might need resizing. */
-      if((total_nodes/maxload)*100 > table_size) {
-	resize_hashtable();
-      }
-#endif
-    } else {
-      if(infoflags & INFO_HASHING) {
-	hash_info(hash_info_before_gc);
-      }
-      AT_collect();	
-      if(infoflags & INFO_HASHING) {
-	hash_info(hash_info_after_gc);
-      }
-      alloc_since_gc[size] = 0;
-    }
-  }
-
-  at = at_freelist[size];
-  ++alloc_since_gc[size];
-  at_freelist[size] = at_freelist[size]->next;
-  return at;
-}
-#endif
 
 /*}}}  */
 
@@ -1090,13 +991,7 @@ void AT_freeTerm(int size, ATerm t)
   /* Put the node in the appropriate free list */
 
   nb_reclaimed_cells_during_last_gc[size]++;
-#ifdef PO
-  t->header = FREE_HEADER;
-  t->next  = at_freelist[size];
-  at_freelist[size] = t;
-#else
   total_nodes--;
-#endif
 }
 
 /*}}}  */
@@ -1664,14 +1559,7 @@ void AT_freeTerm(int size, ATerm t)
 	hashtable[hnr] = cur->next;
       /* Put the node in the appropriate free list */
       /*printf("AT_freeTerm: put cell[%d] %x into freelist\n",size,t);*/
-#ifdef PO
-      t->header = FREE_HEADER;
-      t->next  = at_freelist[size];
-      at_freelist[size] = t;
-#else
-      /*printf("freeTerm type = %d\n",ATgetType(t));*/
       total_nodes--;
-#endif
       return;
     }
   } while(((prev=cur), (cur=cur->next)));
@@ -2673,9 +2561,7 @@ ATerm AT_setAnnotations(ATerm t, ATerm annos)
     /* Delay masking until after AT_allocate */
     hnr &= table_mask;
     cur->header = header;
-#ifndef PO
     SET_AGE(cur->header,YOUNG_AGE);
-#endif
     CHECK_HEADER(cur->header);
     
     cur->next   = hashtable[hnr];
@@ -2974,8 +2860,6 @@ ATbool AT_isValidTerm(ATerm term)
       offset  = ((char *)term) - ((char *)&cur->data);
       if (offset >= 0	&& offset < (BLOCK_SIZE * sizeof(header_type))) {
         inblock = ATtrue;
-          /*fprintf(stderr, "term %p in block %p, size=%d, offset=%d\n", 
-            term, &cur->data[0], cur->size, offset);*/
         break;
       }
     }
@@ -2990,8 +2874,6 @@ ATbool AT_isValidTerm(ATerm term)
         offset  = ((char *)term) - ((char *)&cur->data);
         if (offset >= 0 && offset < (BLOCK_SIZE * sizeof(header_type))) {
           inblock = ATtrue;
-            /*fprintf(stderr, "term %p in block %p, size=%d, offset=%d\n", 
-              term, &cur->data[0], cur->size, offset);*/
           break;
         }
       }
@@ -2999,27 +2881,21 @@ ATbool AT_isValidTerm(ATerm term)
   }
 
   if(!inblock) {
-    /*fprintf(stderr, "not in block: %p\n", term);*/
     return ATfalse;
   }
 
   /* Check if we point to the start of a term. Pointers inside terms
      are not allowed.
      */
-  if(offset % (cur->size*sizeof(header)))
+  if(offset % (cur->size*sizeof(header))) {
     return ATfalse;
-
-  /* <PO> was: 
-     if((((header_type)term - (header_type)&cur->data) % cur->size) != 0)
-     return ATfalse;
-     */
+  }
 
   header = term->header;
   type = GET_TYPE(header);
 
   /* The only possibility left for an invalid term is AT_FREE */
   return (((type == AT_FREE) || (type == AT_SYMBOL)) ? ATfalse : ATtrue);
-  /*return ((type == AT_FREE) ? ATfalse : ATtrue);*/
 }
 
 /*}}}  */
@@ -3033,7 +2909,6 @@ ATbool AT_isValidTerm(ATerm term)
 
 ATerm AT_isInsideValidTerm(ATerm term)
 {
-#ifndef PO
   Block *cur;
   ATbool inblock = ATfalse;
   int idx = ADDR_TO_BLOCK_IDX(term);
@@ -3090,105 +2965,11 @@ ATerm AT_isInsideValidTerm(ATerm term)
 
 
   term = (ATerm)(((char*)term)-(((char*)term-((char*)cur->data))%(cur->size*sizeof(header_type)))); 
-
-  
-#if 0
-  fprintf(stderr,"data = %p\tterm = %p\tsize = %d\tend = %p\n",cur->data,term,cur->size,cur->end);
-    /*term -= (((header_type*)term-(cur->data))%(cur->size));*/
-
-    {
-      /*header_type *term2 = (header_type *)term; */
-      ATerm term2 = term;
-      int diff1,diff2;
-    
-      int offset = ((char*)term) - ((char*)cur->data);
-      diff1 = (offset % (cur->size*sizeof(header_type)));
-      offset -= diff1;
-      term = (ATerm) (((char*)cur->data) + offset);
-
-        /*diff2 = (((header_type*)term2-((header_type*)cur->data)) % cur->size );*/
-          /*term2 -= diff2; */
-          diff2 = (((char*)term2-((char*)cur->data)) % (cur->size*sizeof(header_type)) );
-          term2 = (ATerm)(((char*)term2) - diff2); 
-    
-          if(term != term2) {
-          fprintf(stderr,"*** term  = %p\tdiff1 = %d\n",term,diff1);
-          fprintf(stderr,"*** term2 = %p\tdiff2 = %d\n",term2,diff2);
-          assert(term == term2);
-          }
-
-    
-          }
-
- 
-
-          fprintf(stderr,"new term = %p\n",term);
-#endif
   
   type = GET_TYPE(term->header);
 
-    /*fprintf(stderr, "found in block: %p\n", term);*/
-  
     /* The only possibility left for an invalid term is AT_FREE */
   return (((type == AT_FREE) || (type == AT_SYMBOL)) ? NULL : term);
-  
-#else
-  Block *cur;
-  header_type header;
-  ATbool inblock = ATfalse;
-  int idx = ADDR_TO_BLOCK_IDX(term);
-  int type;
-  int offset = 0;
-  
-  assert(block_table[idx].first_after == block_table[(idx+1)%BLOCK_TABLE_SIZE].first_before);
-
-  for(cur=block_table[idx].first_after; cur; cur=cur->next_after) 
-  {
-    if(cur->size) {
-      assert(cur->next_before == cur->next_after);
-      offset  = ((char *)term) - ((char *)&cur->data);
-      if (offset >= 0	&& offset < (BLOCK_SIZE * sizeof(header_type))) {
-        inblock = ATtrue;
-          /*fprintf(stderr, "term %p in block %p, size=%d, offset=%d\n", 
-            term, &cur->data[0], cur->size, offset);*/
-        break;
-      }
-    }
-  }
-  
-  if(!inblock)
-  {
-    for(cur=block_table[idx].first_before; cur; cur=cur->next_before)
-    {
-      if(cur->size) {
-        assert(cur->next_before == cur->next_after);
-        offset  = ((char *)term) - ((char *)&cur->data);
-        if (offset >= 0 && offset < (BLOCK_SIZE * sizeof(header_type))) {
-          inblock = ATtrue;
-            /*fprintf(stderr, "term %p in block %p, size=%d, offset=%d\n", 
-              term, &cur->data[0], cur->size, offset);*/
-          break;
-        }
-      }
-    }
-  }
-
-  if(!inblock) {
-      /*fprintf(stderr, "not in block: %p\n", term);*/
-    return NULL;
-  }
-
-  offset -= (offset % (cur->size*sizeof(header)));
-  term = (ATerm)(((char *)cur->data) + offset);
-
-  header = term->header;
-  type = GET_TYPE(header);
-
-    /* The only possibility left for an invalid term is AT_FREE */
-  return (((type == AT_FREE) || (type == AT_SYMBOL)) ? NULL : term);
-
-#endif
-  
 }
 
 /*}}}  */

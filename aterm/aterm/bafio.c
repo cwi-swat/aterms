@@ -772,12 +772,9 @@ static ATbool write_symbols(byte_writer *writer)
 	return ATfalse;
       for(top_idx=0; top_idx<nr_symbols; top_idx++) {
 	top_symbol *ts = &cur_sym->top_symbols[arg_idx].symbols[top_idx];
-	if (writeInt(ts->index, writer)<0)
+	if (writeInt(ts->index, writer)<0) {
 	  return ATfalse;
-	/* <PO> count not needed! 
-	   if (writeInt(ts->count, writer)<0)
-	   return ATfalse;
-	*/
+	}
       }
     }
   }

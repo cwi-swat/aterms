@@ -1,5 +1,10 @@
 $Id$
 
+Mon Feb  2 14:22:41 CET 2004 <jurgenv@cwi.nl>
+ * aterm package is now up-to-date with automake-1.6.3
+ * Removed all unused '#ifndef PO ... #else ... #endif' code and
+   all commented out code from the ATerm implementation.
+
 Tue Dec 16 10:01:13 CET 2003 <{jong,jurgenv}@cwi.nl>
  * Added const attributes to ATmakeAFun and ATmakeSymbol and AT_hashSymbol
    functions on the char* arguments.

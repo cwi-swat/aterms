@@ -446,22 +446,13 @@ Symbol ATmakeSymbol(const char *name, int arity, ATbool quoted)
 void AT_freeSymbol(SymEntry sym)
 {
   ShortHashNumber hnr;
-#ifdef PO
-  ATerm t = (ATerm)sym;
-#endif
-  /*char *walk = sym->name;*/
 
   nb_reclaimed_cells_during_last_gc[TERM_SIZE_SYMBOL]++;
   
-  /*fprintf(stderr,"AT_freeSymbol(%d)\tid = %d\n",sym, sym->id);*/
-  
-  /* Assert valid name-pointer */
   assert(sym->name);
   
   /* Calculate hashnumber */
   hnr = AT_hashSymbol(sym->name, GET_LENGTH(sym->header));
-  /*for(hnr = GET_LENGTH(sym->header)*3; *walk; walk++)
-    hnr = 251 * hnr + *walk;*/
   hnr &= table_mask;
   
   /* Update hashtable */
@@ -482,13 +473,6 @@ void AT_freeSymbol(SymEntry sym)
   
   at_lookup_table[sym->id] = (SymEntry)SYM_SET_NEXT_FREE(first_free);
   first_free = sym->id;
-
-#ifdef PO
-  /* Put the node in the appropriate free list */
-  t->header = FREE_HEADER;
-  t->next  = at_freelist[TERM_SIZE_SYMBOL];
-  at_freelist[TERM_SIZE_SYMBOL] = t;
-#endif
 }
 
 /*}}}  */
@@ -529,20 +513,6 @@ ATbool AT_isValidSymbol(Symbol sym)
   return (sym >= 0 && sym < table_size
 	  && !SYM_IS_FREE(at_lookup_table[sym])) ?  ATtrue : ATfalse;
 }
-
-/*}}}  */
-/*{{{  void AT_unmarkSymbol(Symbol s) */
-
-/**
-  * Unmark a symbol by clearing its mark bit.
-  */
-
-/* <PO> This is now a macro
-void AT_unmarkSymbol(Symbol s)
-{
-  at_lookup_table[s]->header &= ~MASK_MARK;
-}
-*/
 
 /*}}}  */
 /*{{{  ATbool AT_isMarkedSymbol(Symbol s) */
@@ -614,7 +584,6 @@ void AT_markProtectedSymbols()
   }
 }
 
-#ifndef PO
 /* TODO: Optimisation (Old+Mark in one step)*/
 void AT_markProtectedSymbols_young() {
   int lcv;
@@ -626,7 +595,6 @@ void AT_markProtectedSymbols_young() {
     }
   }
 }
-#endif
 
 /*}}}  */
 /*{{{  void AT_unmarkAllAFuns() */
