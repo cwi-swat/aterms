@@ -1,4 +1,4 @@
-SUBDIRS = . visitor pure test 
+SUBDIRS = visitor . pure test 
 
 javadir = ${prefix}/classes/aterm
 
