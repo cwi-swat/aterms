@@ -19,6 +19,13 @@
 
 $Id$
 
+2001/01/09 (jong@cwi.nl)
+  * Version 1.4.6 (released)
+  * Significant progress made in de Java implementation (i.e. the version
+    in java/aterm/pure). This code is still under construction, but is
+    released so external parties who cannot use the cvs-tree can have a
+    go at the Java implementation as well.
+
 2000/11/17 (markvdb@cwi.nl)
   * Memory leak fixed in reading baf.
 
