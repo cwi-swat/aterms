@@ -28,8 +28,7 @@
 In this paper, we will introduce the abstract datatype \emph{Annotated Term}
 (\emph{\ATerm}).
 We will discuss a number of applications of this datatype, and we will
-present a time and space efficient implementation of this datatype, 
-called a \emph{heap table}.
+present a time and space efficient implementation of this datatype.
 \end{abstract}
 
 %}}}
@@ -171,7 +170,7 @@ we also provide a second level interface, which provides a more extensive
 set of datatypes and functions. These extensions are useful only
 when more control over the underlying implementation is needed
 and in situations where some operations that can be implemented using
-level one constructs can be expressed more consisely and implemented more
+level one constructs but can be expressed more concisely and implemented more
 efficiently using level two constructs.
 The second level interface is a strict superset of the level one
 interface. An description of the second level interface
@@ -210,7 +209,8 @@ of the \ATerm\ datatype is easy to use:
       datatype do not need to deallocate \ATerms\ objects explicitly.
 \item The interface of the library should
       be intuitive, and be as small as possible to avoid a steep
-      learning curve. This is realized by restricting the first level
+      learning curve. This is among others realized by restricting the 
+      first level
       interface to the 12 operations presented in Section \ref{operations}.
 \end{itemize}
 
@@ -224,9 +224,9 @@ and that make this a fairly unique problem:
       This means that garbage collection must be fast and should touch
       as little memory locations as possible to improve caching and paging 
       performance.
-\item The total memory requirements of a application cannot be estimated
+\item The total memory requirements of an application cannot be estimated
       in advance. It must be possible to allocate more memory incrementally.
-\item A lot of applications never use annotations occur seldom. It is therefore
+\item A lot of applications will use annotations seldom. It is therefore
       important that annotations do not add significantly to the
       overall memory requirements when they are not used.
 \item In order to have a portable yet efficient implementation, our
@@ -235,7 +235,7 @@ and that make this a fairly unique problem:
       implemented the library in Java. In this case, a lot of the issues
       we discuss in this paper are not relevant, either because we can use 
       build-in features of Java (garbage collection), or
-      because we just cannot express these low level concerns in Java.}
+      because we just cannot express these low level concerns in Java.}.
 \end{enumerate}
      
 %}}}
@@ -256,11 +256,11 @@ the redundancy that is typically present in terms that are build,
 we never create the same term twice. Before a new term is created,
 a lookup is done to see if that term already exist. If it exists, the old
 version is reused and no new term is created.
-This results in optimally shared terms.
+This results in optimal shared terms.
 
 This design decision has a number of important consequences:
 \begin{itemize}
-\item Because terms can be shared without the creator knowing about it,
+\item Because terms can be shared without the creator knowing it,
       terms cannot be modified without creating unwanted side effects.
 \item This means that terms effectively become \emph{immutable} after creation.
       Destructive updates on terms are not allowed.
@@ -273,7 +273,7 @@ The optimal sharing of terms can only be maintained when we check
 at term creation time if a particular term already exists. This term
 lookup must be executed \emph{extremely fast}, in order to implement term
 creation efficiently. We decided to use the fastest algorithm available
-in this situation, hashing. Using a hashfunction that depends on the
+in this situation, hashing. Using a hash function that depends on the
 \emph{addresses} of the function symbol and the arguments of a function
 application, we can quickly search for a function application before
 creating it.
@@ -285,8 +285,8 @@ technique is to lineary chain entries together that hash to the
 same bucket. In this scenario, one pointer is needed in each
 object for hash chaining, which in our case would mean a memory
 overhead of about 25 percent. Other solutions for collision
-resolution will either increase the memory requirements (binary tree
-chaining for instance), or the CPU requirements for insertions
+resolution will either increase the memory requirements (for instnance
+binary tree chaining), or the CPU requirements for insertions
 or deletions (open addressing, see \cite{Knuth73}).
 
 \subsubsection{Direct or indirect hashing}
@@ -308,7 +308,7 @@ However, there a severe drawbacks to this approach:
 Because of these problems, we decided to store references in the
 hashtable instead.
 
-When the hashtable grows full, we can now allocate a new and
+When the hashtable is nearly full, we can now allocate a new and
 bigger table, and rehash all the entries of the old table in
 the new one.
 
@@ -368,7 +368,7 @@ objects are marked as `live'. In the third phase, all `dead' objects
 are swept into a list of free objects.
 
 Mark-sweep garbage collection is very attractive, because it
-can be implemented in C both efficiently, and without support from the 
+can be implemented in C, both efficiently and without support from the 
 programmer or compiler \cite{BW88}. Mark-sweep collection is more efficient,
 both in time and space than reference counting \cite{JL96}.
 The typical space overhead for a mark-sweep garbage collection algorithm is
@@ -385,7 +385,8 @@ mark-sweep algorithm that fits seamlessly with the hashing strategy that
 we discussed earlier. It turns out that the solution we adopted for using 
 hashtables efficiently, also benefits the garbage collection strategy.
 
-As we shall see later on, most objects consist of only a couple
+As we shall see in Section \ref{implementation}, 
+most objects consist of only a couple
 of machine words. This enables us to base the memory management 
 algorithms we use on a small number of block sizes.
 
@@ -579,7 +580,7 @@ The absence of annotations can be detected by checking a single bit.
 The operations described in Section \ref{aterm} are not sufficient for
 all applications. Some applications need more control over the underlying 
 implementation, or need operations that that can be implemented using
-level one constructs but can be expressed more consisely and implemented more
+level one constructs but can be expressed more concisely and implemented more
 efficiently using special constructs.
 
 We have therefore designed a level 2 interface is a strict superset of the 
