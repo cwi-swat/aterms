@@ -123,14 +123,16 @@ class ATermListImpl
   
   private boolean isListPlaceHolder(ATerm trm) 
   {
-    ATerm ph_type = ((ATermPlaceholder) trm).getPlaceholder();
+    if (trm.getType() == PLACEHOLDER) {
+      ATerm ph_type = ((ATermPlaceholder) trm).getPlaceholder();
    
-    if (ph_type.getType() == APPL) {
-      ATermAppl appl = (ATermAppl)ph_type;
-      if (appl.getName().equals("list") && appl.getArguments().isEmpty()) {
-        return true;
-      }
-    } 
+      if (ph_type.getType() == APPL) {
+        ATermAppl appl = (ATermAppl)ph_type;
+        if (appl.getName().equals("list") && appl.getArguments().isEmpty()) {
+          return true;
+        }
+      } 
+    }
    
     return false; 
   }
