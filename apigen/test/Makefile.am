@@ -19,7 +19,7 @@ builtins_Main = BuiltinsTest
 INCLUDES = \
 	-I$(ATERM)/include 
 
-LDFLAGS = \
+AM_LDFLAGS = \
 	-L$(ATERM)/lib 
 
 # Build the C programs that are to be run during testing:
