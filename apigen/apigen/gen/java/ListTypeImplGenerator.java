@@ -51,6 +51,7 @@ public class ListTypeImplGenerator extends TypeImplGenerator {
 	private void genListTypeClassImpl() {
 		println(classModifier() + " class " + typeName + " extends aterm.pure.ATermListImpl");
 		println("{");
+		genTermField();
 		genFromString(typeName);
 		genFromTextFile(typeName);
 		genFromTerm();
@@ -120,22 +121,22 @@ public class ListTypeImplGenerator extends TypeImplGenerator {
 	private void genDuplicateMethod() {
 		String className = ListTypeGenerator.className(type);
 		println("  public shared.SharedObject duplicate() {");
-		println("	" + className + " clone = new " + className + "();");
-		println("	clone.init(hashCode(), getAnnotations(), getFirst(), getNext());");
-		println("	return clone;");
+		println("	 " + className + " clone = new " + className + "();");
+		println("	 clone.init(hashCode(), getAnnotations(), getFirst(), getNext());");
+		println("	 return clone;");
 		println("  }");
 	}
 
 	private void genEquivalentMethod() {
 		String className = ListTypeGenerator.className(type);
 		
-		println("public boolean equivalent(shared.SharedObject peer) {");
-		println("	if (peer instanceof " + className + ") {");
-		println("		return super.equivalent(peer);");
-		println("	}");
-		println("	else {");
-		println("		return false;");
-		println("	}");
+		println("  public boolean equivalent(shared.SharedObject peer) {");
+		println("	 if (peer instanceof " + className + ") {");
+		println("	 	return super.equivalent(peer);");
+		println("	 }");
+		println("	 else {");
+		println("      return false;");
+		println("	 }");
 		println("  }");
 	}
 
@@ -202,6 +203,7 @@ public class ListTypeImplGenerator extends TypeImplGenerator {
 		println("             throw new RuntimeException(\"Invalid element in " + className + ":\" + tmp);");
 		println("           }");
 		println("        }");
+		println("        tmp.setTerm(trm);");
 		println("        return tmp;");
 		println("     }");
 		println("     else {");
@@ -218,16 +220,26 @@ public class ListTypeImplGenerator extends TypeImplGenerator {
 
 		println("  public aterm.ATerm toTerm()");
 		println("  {");
-		println("    " + className + " reversed = ("+ className +")this.reverse();");
-		println("    aterm.ATermList tmp = " + get_factory + ".makeList();");
-		println("    for (; !reversed.isEmpty(); reversed = reversed.getTail()) {");
-		println("       aterm.ATerm elem = reversed.getHead().toTerm();");
-		println("       tmp = " + get_factory + ".makeList(elem, tmp);");
+		println("    if (this.term == null) {");
+		println("      " + className + " reversed = ("+ className +")this.reverse();");
+		println("      aterm.ATermList tmp = " + get_factory + ".makeList();");
+		println("      for (; !reversed.isEmpty(); reversed = reversed.getTail()) {");
+		println("         aterm.ATerm elem = reversed.getHead().toTerm();");
+		println("         tmp = " + get_factory + ".makeList(elem, tmp);");
+		println("      }");
+		println("      this.term = tmp;");
 		println("    }");
-		println("    return tmp;");
+		println("    return this.term;");
 		println("  }");
 	}
 
+    private void genTermField() {
+    	println("  protected aterm.ATerm term = null;");
+    	println("  protected void setTerm(aterm.ATerm term) {");
+    	println("    this.term = term;");
+    	println("  }");
+    }
+    
 	private void genToString() {
 		println("  public String toString() {");
 		println("    return toTerm().toString();");

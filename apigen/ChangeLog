@@ -1,3 +1,8 @@
+2003-08-10  (jurgenv@cwi.nl)
+ * Added caching of ATerm representation in list classes (just like normal
+   constructors) If they were constructed by calling fromTerm(), the toTerm()
+   will be cheap. Also consecutive calls to toTerm are cheap now.
+   
 2003-08-08  (jurgenv@cwi.nl)
  * Set dependency on aterm-java 1.4 because of visibility of ATermListImpl
  * Added implementation of lists for Java. Lists inherit from ATermListImpl.
