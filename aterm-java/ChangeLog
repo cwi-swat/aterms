@@ -1,5 +1,5 @@
 2003-01-22    <jurgenv@cwi.nl>
-  * Release 1.1
+  * Release 1.1 under LGPL
 
 2002-12-21    <pem@bach>
   * aterm/pure/ATermListImpl.java: fix a bug in reverse()
