@@ -1,5 +1,10 @@
 $Id$
 
+2003-05-15
+ * Add identifiable interface (with getId) to ATerm
+ * AtermImpl implements SharedObjectWithId
+ * Now each ATerm has a unique identifier
+
 2003-04-23 julien Guyon <julien.guyon@loria.fr>
  * Release 1.2
 
