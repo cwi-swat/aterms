@@ -156,6 +156,36 @@ public interface ATerm {
     public ATerm removeAnnotation(ATerm label);
 
     /**
+     * Gets all annotations of this term.
+     * 
+     * @return all annotations of this term or null if this term has no annotations
+     * 
+     * @see #setAnnotations
+     */
+    public ATerm getAnnotations();
+
+    /**
+     * Sets all annotations of this term.
+     * 
+     * @param annos the annotations to set. Annotations are cleared when annos is null.
+     * 
+     * @return a new version of this term with the requested annotations.
+     * 
+     * @see #getAnnotations
+     */
+    public ATerm setAnnotations(ATerm annos);
+
+    /**
+     * Removes all annotations of this term.
+     *
+     * 
+     * @return a new version of this term without annotations.
+     * 
+     * @see #setAnnotations
+     */
+    public ATerm removeAnnotations();
+
+    /**
      * Checks equality of this term against another term.
      * This method exists to keep a tight relation to the C-library.
      * Experienced Java programmers might feel more comfortable using

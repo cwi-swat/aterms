@@ -1,2 +1,8 @@
+Makefile.in
 Makefile
 tifstoc
+tblog
+tblog-interface.tifs
+.deps
+*.tif.[ch]
+*_dict.[ch]

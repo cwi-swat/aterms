@@ -314,10 +314,18 @@ public class PureFactory
   public synchronized ATermAppl makeAppl(AFun fun, ATerm[] args)
   {
     ATerm term;
-    int hnr = ATermApplImpl.hashFunction(fun, args);
-    int idx = hnr % term_table_size;
-
+    int hnr;
+    int idx;
     HashedWeakRef prev, cur;
+
+    if (args.length != fun.getArity()) {
+      throw new IllegalArgumentException("arity does not match argument count: " +
+					 fun.getArity() + " != " + args.length);
+    }
+
+    hnr = ATermApplImpl.hashFunction(fun, args);
+    idx = hnr % term_table_size;
+
     prev = null;
     cur  = term_table[idx];
     while (cur != null) {
@@ -362,16 +370,36 @@ public class PureFactory
 
   //}
 
+  //{ public ATermAppl makeAppl(AFun fun)
+
+  public ATermAppl makeAppl(AFun fun)
+  {
+    return makeAppl(fun, new ATerm[0]);
+  }
+
+  //}
+  //{ public ATermAppl makeAppl(AFun fun, ATerm arg)
+
+  public ATermAppl makeAppl(AFun fun, ATerm arg)
+  {
+    ATerm[] args = new ATerm[1];
+    args[0] = arg;
+    return makeAppl(fun, args);
+  }
+
+  //}
+
 
   //{ private ATerm parseNumber(ATermReader reader)
 
   private ATerm parseNumber(ATermReader reader)
+    throws IOException
   {
     StringBuffer str = new StringBuffer();
     ATerm result;
 
     do {
-      str.append(reader.getLastChar());
+      str.append((char)reader.getLastChar());
     } while(Character.isDigit((char)reader.read()));
 
     if(reader.getLastChar() != '.' && 
@@ -390,20 +418,20 @@ public class PureFactory
 	if(!Character.isDigit((char)reader.getLastChar()))
 	  throw new ParseError("digit expected");
 	do {
-	  str.append(reader.getLastChar());
+	  str.append((char)reader.getLastChar());
 	} while(Character.isDigit((char)reader.read()));
       }
       if(reader.getLastChar() == 'e' || reader.getLastChar() == 'E') {
-	str.append(reader.getLastChar());
+	str.append((char)reader.getLastChar());
 	reader.read();
 	if(reader.getLastChar() == '-' || reader.getLastChar() == '+') {
-	  str.append(reader.getLastChar());
+	  str.append((char)reader.getLastChar());
 	  reader.read();
 	}
 	if(!Character.isDigit((char)reader.getLastChar()))
 	  throw new ParseError("digit expected!");
 	do {
-	  str.append(reader.getLastChar());
+	  str.append((char)reader.getLastChar());
 	} while(Character.isDigit((char)reader.read()));
       }
       double val;
@@ -421,6 +449,7 @@ public class PureFactory
   //{ private String parseId(ATermReader reader)
 
   private String parseId(ATermReader reader)
+    throws IOException
   {
     int c = reader.getLastChar();
     StringBuffer buf = new StringBuffer(32);
@@ -437,6 +466,7 @@ public class PureFactory
   //{ private String parseString(ATermReader reader)
 
   private String parseString(ATermReader reader)
+    throws IOException
   {
     boolean escaped;
     StringBuffer str = new StringBuffer();
@@ -462,19 +492,20 @@ public class PureFactory
 	case '4':	case '5':	case '6':	case '7':
 	  str.append(reader.readOct());
 	  break;
-	default:	str.append('\\').append(reader.getLastChar());
+	default:	str.append('\\').append((char)reader.getLastChar());
 	} 
       } else if(reader.getLastChar() != '\"')
-	str.append(reader.getLastChar());
+	str.append((char)reader.getLastChar());
     } while(escaped || reader.getLastChar() != '"');
 
     return str.toString();
   }
 
   //}
-  //{ private ATermList parseATermList(ATermReader reader)
+  //{ private ATermList parseATerms(ATermReader reader)
 
-  private ATermList parseATermList(ATermReader reader)
+  private ATermList parseATerms(ATermReader reader)
+    throws IOException
   {
     ATerm[] terms = parseATermsArray(reader);
     ATermList result = ATermListImpl.empty;
@@ -489,6 +520,7 @@ public class PureFactory
   //{ private ATerm[] parseATermsArray(ATermReader reader)
 
   private ATerm[] parseATermsArray(ATermReader reader)
+    throws IOException
   {
     List list = new Vector();
     ATerm term;
@@ -511,13 +543,13 @@ public class PureFactory
   //{ private ATerm parseFromReader(ATermReader reader)
 
   synchronized private ATerm parseFromReader(ATermReader reader)
+    throws IOException
   {    
-    ATerm[] list;
     ATerm result;
     int c;
     String funname;
 
-    switch(reader.readSkippingWS()) {
+    switch(reader.getLastChar()) {
       case -1:
 	throw new ParseError("permature EOF encountered.");
 
@@ -537,7 +569,7 @@ public class PureFactory
 	  
 	  result = (ATerm)ATermListImpl.empty;
 	} else {
-	  list = parseATermsArray(reader);
+	  result = parseATerms(reader);
 	  if(reader.getLastChar() != ']') {
 	    throw new ParseError("expected ']' but got '" + (char)reader.getLastChar() + "'");
 	  }
@@ -577,7 +609,7 @@ public class PureFactory
 	  if (reader.getLastChar() == ')') {
 	    result = makeAppl(makeAFun(funname, 0, true));
 	  } else {
-	    list = parseATermsArray(reader);
+	    ATerm[] list = parseATermsArray(reader);
 
 	    if(reader.getLastChar() != ')') {
 	      throw new ParseError("expected ')' but got '" + reader.getLastChar() + "'");
@@ -616,7 +648,7 @@ public class PureFactory
 	    if (reader.getLastChar() == ')') {
 	      result = makeAppl(makeAFun(funname, 0, false));
 	    } else {
-	      list = parseATermsArray(reader);
+	      ATerm[] list = parseATermsArray(reader);
 
 	      if(reader.getLastChar() != ')') {
 		throw new ParseError("expected ')' but got '" + reader.getLastChar() + "'");
@@ -646,7 +678,7 @@ public class PureFactory
 	reader.readSkippingWS();
 	annos = ATermListImpl.empty;
       } else {
-	annos = parseATermList(reader);
+	annos = parseATerms(reader);
 	if(reader.getLastChar() != '}') {
 	  throw new ParseError("'}' expected");
 	}
@@ -661,12 +693,12 @@ public class PureFactory
     if(reader.getLastChar() == ':') {
       reader.read();
       ATerm anno = parseFromReader(reader);
-      result = result.setAnnotation(ATerm.parse("type"), anno);
+      result = result.setAnnotation(parse("type"), anno);
     }
 
     if(reader.getLastChar() == '?') {
       reader.readSkippingWS();
-      result = result.setAnnotation(ATerm.parse("result"),ATerm.parse("true"));
+      result = result.setAnnotation(parse("result"), parse("true"));
     }
 
 
@@ -679,7 +711,15 @@ public class PureFactory
 
   public ATerm parse(String trm)
   {
-    return parseFromReader(new ATermReader(new StringReader(trm)));
+    try {
+      ATermReader reader = new ATermReader(new StringReader(trm));
+      reader.readSkippingWS();
+      ATerm result = parseFromReader(reader);
+      System.out.println("parsing " + trm + " yields " + result);
+      return result;
+    } catch (IOException e) {
+      throw new ParseError("premature end of string");
+    }
   }
 
   //}
@@ -716,6 +756,31 @@ public class PureFactory
   }
 
   //}
+  //{ public ATerm getAnnotation(ATerm term, ATerm label)
+
+  public ATerm getAnnotation(ATerm term, ATerm label)
+  {
+    throw new RuntimeException("not yet implemented!");
+  }
+
+  //}
+
+  //{ public ATerm setAnnotations(ATerm term, ATerm annos)
+
+  public ATerm setAnnotations(ATerm term, ATerm annos)
+  {
+    throw new RuntimeException("not yet implemented!");
+  }
+
+  //}
+  //{ public ATerm removeAnnotations(ATerm term)
+
+  public ATerm removeAnnotations(ATerm term)
+  {
+    throw new RuntimeException("not yet implemented!");
+  }
+
+  //}
 
   //{ ATerm parsePattern(String pattern)
 
@@ -740,6 +805,7 @@ public class PureFactory
   //{ public ATerm readFromTextFile(InputStream stream)
 
   public ATerm readFromTextFile(InputStream stream)
+    throws IOException
   {
     return parseFromReader(new ATermReader(new InputStreamReader(stream)));
   }
@@ -817,24 +883,27 @@ class ATermReader
   }
 
   public int read()
+    throws IOException
   {
     last_char = reader.read();
     return last_char;
   }
 
   public int readSkippingWS()
+    throws IOException
   {
     do {
       last_char = reader.read();
-    } while (Character.isWhitespace(last_char));
+    } while (Character.isWhitespace((char)last_char));
 
     return last_char;
 
   }
 
   public int readOct()
+    throws IOException
   {
-    int val = Character.digit((char)lastChar, 8);
+    int val = Character.digit((char)last_char, 8);
     val += Character.digit((char)read(), 8);
 
     if(val < 0) {

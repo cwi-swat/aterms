@@ -1424,7 +1424,7 @@ fparse_unquoted_appl(int *c, FILE * f)
   char           *name;
 
   /* First parse the identifier */
-  while (isalnum(*c) || *c == '-' || *c == '_' || *c == '+' || *c == '*')
+  while (isalnum(*c) || *c == '-' || *c == '_' || *c == '+' || *c == '*' || *c == '$')
     {
       store_char(*c, len++);
       fnext_char(c, f);
@@ -1577,21 +1577,38 @@ fparse_term(int *c, FILE * f)
   if(result != NULL) {
     fskip_layout(c, f);
 			
-    if (*c == '{')
-      {
-	/* Term is annotated */
-	fnext_skip_layout(c, f);
-	if (*c != '}')
-	  {
-	    ATerm annos = (ATerm) fparse_terms(c, f);
-	    if (annos == NULL || *c != '}')
-	      return NULL;
-	    result = AT_setAnnotations(result, annos);
-	  }
-	fnext_skip_layout(c, f);
+    if (*c == '{') {
+      /* Term is annotated */
+      fnext_skip_layout(c, f);
+      if (*c != '}') {
+	ATerm annos = (ATerm) fparse_terms(c, f);
+	if (annos == NULL || *c != '}')
+	  return NULL;
+	result = AT_setAnnotations(result, annos);
       }
+      fnext_skip_layout(c, f);
+    }
+    /*{{{  Parse backwards compatible toolbus anomalies */
+    
+    if (*c == ':') {
+      ATerm type;
+      fnext_skip_layout(c, f);
+      type = fparse_term(c, f);
+      if (type != NULL) {
+	result = ATsetAnnotation(result, ATparse("type"), type);
+      } else {
+	return NULL;
+      }
+    }
+
+    if (*c == '?') {
+      fnext_skip_layout(c, f);
+      result = ATsetAnnotation(result, ATparse("result"), ATparse("true"));
+    }
+
+    /*}}}  */
   }
-		
+
   return result;
 }
 
@@ -1876,7 +1893,7 @@ sparse_unquoted_appl(int *c, char **s)
   char           *name;
 
   /* First parse the identifier */
-  while (isalnum(*c) || *c == '-' || *c == '_' || *c == '+' || *c == '*')
+  while (isalnum(*c) || *c == '-' || *c == '_' || *c == '+' || *c == '*' || *c == '$')
     {
       store_char(*c, len++);
       snext_char(c, s);
@@ -2029,19 +2046,41 @@ sparse_term(int *c, char **s)
   if(result != NULL) {
     sskip_layout(c, s);
 		
-    if (*c == '{')
-      {
-	/* Term is annotated */
-	snext_skip_layout(c, s);
-	if (*c != '}')
-	  {
-	    ATerm annos = (ATerm) sparse_terms(c, s);
-	    if (annos == NULL || *c != '}')
-	      return NULL;
-	    result = AT_setAnnotations(result, annos);
-	  }
-	snext_skip_layout(c, s);
+    if (*c == '{') {
+      /*{{{  Parse annotation  */
+
+      /* Term is annotated */
+      snext_skip_layout(c, s);
+      if (*c != '}') {
+	ATerm annos = (ATerm) sparse_terms(c, s);
+	if (annos == NULL || *c != '}')
+	  return NULL;
+	result = AT_setAnnotations(result, annos);
       }
+      snext_skip_layout(c, s);
+
+      /*}}}  */
+    }
+
+    /*{{{  Parse backwards compatible toolbus anomalies */
+
+    if (*c == ':') {
+      ATerm type;
+      snext_skip_layout(c, s);
+      type = sparse_term(c, s);
+      if (type != NULL) {
+	result = ATsetAnnotation(result, ATparse("type"), type);
+      } else {
+	return NULL;
+      }
+    }
+
+    if (*c == '?') {
+      snext_skip_layout(c, s);
+      result = ATsetAnnotation(result, ATparse("result"), ATparse("true"));
+    }
+
+    /*}}}  */
   }
 
   return result;

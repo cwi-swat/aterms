@@ -71,10 +71,36 @@ public abstract class ATermImpl
 
   public ATerm getAnnotation(ATerm label)
   {
-    throw new RuntimeException("not implemented!");
+    return factory.getAnnotation(this, label);
   }
 
   //}
+
+  //{ public ATerm setAnnotations(ATerm annos)
+
+  public ATerm setAnnotations(ATerm annos)
+  {
+    return factory.setAnnotations(this, annos);
+  }
+
+  //}
+  //{ public ATerm removeAnnotations()
+
+  public ATerm removeAnnotations()
+  {
+    return factory.removeAnnotations(this);
+  }
+
+  //}
+  //{ public ATerm getAnnotations()
+
+  public ATerm getAnnotations()
+  {
+    return annotations;
+  }
+
+  //}
+
   //{ public List match(String pattern)
 
   public List match(String pattern) 

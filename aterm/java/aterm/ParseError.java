@@ -43,7 +43,7 @@ public class ParseError extends RuntimeException {
      * @param msg the error message describing the parse error.
      *
      */
-    protected ParseError(String msg) {
+    public ParseError(String msg) {
 	super(msg);
     }
 

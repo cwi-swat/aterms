@@ -79,8 +79,8 @@ tool2.tif.o : tool2.tif.c tool2.tif.h
 stress_dict.o: stress_dict.c stress_dict.h
 stress.o: stress_dict.h
 
-%_dict.c %_dict.h: %.dict ${top_srcdir}/utils/dicttoc
-	${top_srcdir}/utils/dicttoc -dict $<
+%_dict.c %_dict.h: %.dict ${top_builddir}/utils/dicttoc
+	${top_builddir}/utils/dicttoc -dict $<
 
 
 test: stress

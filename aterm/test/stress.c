@@ -989,6 +989,22 @@ void testDictToC()
 }
 
 /*}}}  */
+/*{{{  void testTBLegacy() */
+
+void testTBLegacy()
+{
+  ATerm t[4];
+
+  t[0] = ATparse("logpoint([Mid$INIT:logger?],[[Mid$INIT:logger?,logger(0)]])");
+  t[1] = ATparse("logpoint([Mid$INIT{[type,logger{[result,true]}]}],"
+		 "[[Mid$INIT{[type,logger{[result,true]}]},logger(0)]])");
+
+  test_assert("TB-legacy", 1, ATisEqual(t[0],t[1]));
+
+  printf("TB legacy tests ok.\n");
+}
+
+/*}}}  */
 
 /*{{{  void testBaffle() */
 
@@ -1057,6 +1073,7 @@ int main(int argc, char *argv[])
   testTable();
   testIndexedSet();
   testDictToC();
+  testTBLegacy();
 
   return 0;
 }

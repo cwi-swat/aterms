@@ -1,0 +1,10 @@
+
+tool logger is { command = "./tblog -logfile log.out" }
+
+process TBLOG is
+  ( printf("hello world!\n") .
+    tau delay(sec(1)) 
+  ) * delta
+
+
+toolbus(TBLOG)

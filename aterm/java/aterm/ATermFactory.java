@@ -24,6 +24,7 @@ package aterm;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.IOException;
 import java.util.List;
 
 public interface ATermFactory
@@ -31,7 +32,6 @@ public interface ATermFactory
   ATerm parse(String trm);
   ATerm make(String pattern, List args);
   ATerm make(ATerm pattern, List args);
-
 
   ATermInt makeInt(int val);
   ATermReal makeReal(double val);
@@ -46,12 +46,12 @@ public interface ATermFactory
   ATerm setAnnotation(ATerm term, ATerm label, ATerm anno);
   ATerm removeAnnotation(ATerm term, ATerm label);
 
-  ATerm readFromTextFile(InputStream stream);
-  ATerm readFromBinaryFile(InputStream stream);
-  ATerm readFromFile(InputStream stream);
+  ATerm readFromTextFile(InputStream stream) throws IOException;
+  ATerm readFromBinaryFile(InputStream stream) throws IOException;
+  ATerm readFromFile(InputStream stream) throws IOException;
 
-  void writeToTextFile(OutputStream stream);
-  void writeToBinaryFile(OutputStream stream);
+  void writeToTextFile(OutputStream stream) throws IOException;
+  void writeToBinaryFile(OutputStream stream) throws IOException;
 
   ATerm importTerm(ATerm term);
 }

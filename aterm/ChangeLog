@@ -19,6 +19,12 @@
 
 $Id$
 
+2000/7/14 ({jong,olivierp}@cwi.nl)
+  * relaxed ATerm parser to accept TB legacy constructs (:,?,$)
+  * added tblog tool that can be used as a replacement for the old
+    Tcl/Tk logger to log executed atoms to a file.
+  * fixed handling of rec-monitor atoms by tifstoc
+
 2000/7/12 ({jong,olivierp}@cwi.nl)
   * introduced subdir 'utils' with utility programs
   * added dicttoc program so constant terms and afuns can be placed in a 

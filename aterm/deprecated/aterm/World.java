@@ -1102,7 +1102,8 @@ public class World
       result = result.setAnnotations(annos);	
     }
 
-    /* Parse some ToolBus anomalies for backwards compatibility */
+    //{ Parse some ToolBus anomalies for backwards compatibility 
+
     if(channel.last() == ':') {
       channel.readNext();
       ATerm anno = parseATerm(channel);
@@ -1113,6 +1114,8 @@ public class World
       channel.readNext();
       result = result.setAnnotation(ATerm.parse("result"),ATerm.parse("true"));
     }
+
+    //}
 
 
     return result;
@@ -1198,10 +1201,10 @@ public class World
   //}
   //{ private ATerm parseNumber(ATermChannel channel)
 
-	/**
-		* Parse a number. This function can eiter return an ATermInt,
-		* or an ATermReal.
-		*/
+  /**
+   * Parse a number. This function can eiter return an ATermInt,
+   * or an ATermReal.
+   */
 	
   private ATerm parseNumber(ATermChannel channel)
     throws ParseError, IOException
