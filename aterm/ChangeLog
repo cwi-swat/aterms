@@ -20,6 +20,7 @@
 $Id$
 
 2000/03/28 <mdejonge@cwi.nl>
+   * no longer distribute reconf script
    * version is now 0.24
    * Added GPL license headers to the files in the distribution
    * (re) Added \$(DEFS) to compiler flags in configure.in
