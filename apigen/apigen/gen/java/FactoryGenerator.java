@@ -480,7 +480,6 @@ public class FactoryGenerator extends JavaGenerator {
 			argnr++;
 		}
 		println(");");
-		println("      tmp.setTerm(trm);");
 		println("      return tmp;");
 		println("    }"); // endif      
 		println("    else {");

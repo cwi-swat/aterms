@@ -66,6 +66,7 @@ public class ListTypeImplGenerator extends TypeImplGenerator {
 		genSharedObjectInterface();
 		genGetEmptyMethod();
 		genInsertMethod();
+		genOverrideInsertMethod();
 		println("}");
 	}
 
@@ -105,19 +106,7 @@ public class ListTypeImplGenerator extends TypeImplGenerator {
 
 	private void genInsertMethod() {
 		String className = TypeGenerator.className(type);
-		println("  public aterm.ATermList insert(aterm.ATerm head) {");
-		println(
-			"    return (aterm.ATermList)"
-				+ factoryGetter()
-				+ ".make"
-				+ className
-				+ "(("
-				+ elementTypeName
-				+ ") head, ("
-				+ className
-				+ ") this);");
-		println("  }");
-		println("");
+	
 		println(
 			"  public "
 				+ className
@@ -132,6 +121,14 @@ public class ListTypeImplGenerator extends TypeImplGenerator {
 				+ "(head, ("
 				+ className
 				+ ") this);");
+		println("  }");
+	}
+
+	private void genOverrideInsertMethod() {
+		ListType listType = (ListType)type;
+		String className = TypeGenerator.className(listType.getElementType());
+		println("  public aterm.ATermList insert(aterm.ATerm head) {");
+		println("    return insert((" + className + ") head);");
 		println("  }");
 	}
 

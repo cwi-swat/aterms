@@ -101,7 +101,7 @@ public class AlternativeImplGenerator extends JavaGenerator {
 
 	private void genAltConstructor(Type type, Alternative alt) {
 		println(
-			"  "
+			"  protected "
 				+ className
 				+ "("
 				+ FactoryGenerator.className(apiName)

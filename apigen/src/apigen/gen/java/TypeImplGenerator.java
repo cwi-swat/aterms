@@ -74,7 +74,7 @@ public class TypeImplGenerator extends JavaGenerator {
 	}
 	protected void genConstructor(String class_impl_name) {
 		println(
-			"  "
+			"  protected "
 				+ class_impl_name
 				+ "("
 				+ FactoryGenerator.className(apiName)

@@ -5,6 +5,8 @@
  * Renamed OLDADT library to ADT10 library
  * Added generation of init and initHashCode methods to deal with better
    access restrictions in aterm-java library
+ * Refactored generated code for insert methods (one uses the other)
+ * Minimized access to generated methods that should not be used by the user.
 
 2003-08-13  (jurgenv@cwi.nl)
  * Major change in code generation. The first step toward no more static

@@ -62,7 +62,7 @@ public class TypeGenerator extends JavaGenerator {
 		println(classModifier() + " class " + className);
 		println("extends " + TypeImplGenerator.className(type));
 		println("{");
-		println("  " + className + "(" + FactoryGenerator.className(apiName) + " factory) {");
+		println("  protected " + className + "(" + FactoryGenerator.className(apiName) + " factory) {");
 		println("    super(factory);");
 		println("  }");
 		println();

@@ -73,7 +73,7 @@ public class AlternativeGenerator extends JavaGenerator {
 		String alt_class = className(type, alt);
 
 		println(
-			"  "
+			"  protected "
 				+ alt_class
 				+ "("
 				+ FactoryGenerator.className(apiName)
