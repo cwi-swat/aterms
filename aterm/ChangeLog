@@ -1,11 +1,19 @@
 $Id$
 
-2001/03/29 ({jong,olivierp})
+2001/03/30 ({jong,olivierp}@cwi.nl)
+ * version 1.5.5
+ * added --with-visitor-pkg option to configure.in
+ * configure.in now also creates ATerm{Visitable,Visitor,VisitFailure}.java
+ * moved subdir "visitor" from aterm/java to aterm/java/aterm
+ * folded ATerm{Visitable,Visitor,VisitFailure}.java.in
+ * fixed accept-method in ATermListImpl.java (return-type was: vooid)
+
+2001/03/29 ({jong,olivierp}@cwi.nl)
  * added java/visitor/.cvsignore
  * moved example file Accu.java from java/visitor to java/aterm
  * fixed some compilation errors in Java traversal combinator support
 
-2001/03/28 ({jong,olivierp})
+2001/03/28 ({jong,olivierp}@cwi.nl)
  * Added traversal combinator support
 
 2001/03/26 ({markvdb,olivierp}@cwi.nl)

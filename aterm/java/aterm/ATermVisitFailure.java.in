@@ -3,8 +3,12 @@ package aterm;
 public class ATermVisitFailure
   extends @VISITOR_PKG@.VisitFailure
 {
+  //{{{ public ATermVisitFailure(String msg)
+
   public ATermVisitFailure(String msg)
   {
     super(msg);
   }
+
+  //}}}
 }

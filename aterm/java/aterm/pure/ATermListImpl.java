@@ -563,7 +563,7 @@ class ATermListImpl
 
   //{{{ public vooid accept(ATermVisitor v)
 
-  public vooid accept(ATermVisitor v)
+  public void accept(ATermVisitor v)
     throws ATermVisitFailure
   {
     v.visitList(this);

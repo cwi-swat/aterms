@@ -4,7 +4,7 @@ dnl
 dnl $Id$
 
 AC_INIT(Makefile.in)
-AM_INIT_AUTOMAKE(aterm, 1.5.4)
+AM_INIT_AUTOMAKE(aterm, 1.5.5)
 
 dnl Default values
 CC_GCC=gcc
@@ -118,6 +118,11 @@ AC_ARG_WITH(java,
       JAVA_SUBDIR="java",)
 AC_SUBST(JAVA_SUBDIR)
 
+VISITOR_PKG=aterm.visitor
+AC_ARG_WITH(visitor-pkg,
+  [  --with-visitor-pkg        change visitor package (default: aterm.visitor)],
+  VISITOR_PKG=${withval},)
+AC_SUBST(VISITOR_PKG)
 
 AC_SUBST(ATERM_LIB_GCC)
 AC_SUBST(ATERM_LIB_CC)
@@ -197,9 +202,12 @@ AC_OUTPUT( \
 	test/Makefile \
 	toolbus/Makefile \
 	java/Makefile \
-	java/visitor/Makefile \
 	java/aterm/Makefile \
+	java/aterm/ATermVisitable.java \
+	java/aterm/ATermVisitor.java \
+	java/aterm/ATermVisitFailure.java \
 	java/aterm/pure/Makefile \
+	java/aterm/visitor/Makefile \
 	java/aterm/test/Makefile \
         java/toolbus/Makefile \
         java/toolbus/tifstojava \

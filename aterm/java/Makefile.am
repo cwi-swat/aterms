@@ -1,1 +1,1 @@
-SUBDIRS = visitor aterm toolbus
+SUBDIRS = aterm toolbus
