@@ -87,7 +87,7 @@ possible to perform operations on an \ATerm\ received from another
 application without first converting it to an application-specific
 representation.
 
-First, we will now give a quick overview of \ATerms\
+First, we will give a quick overview of \ATerms\
 (Section~\ref{aterms-at-a-glance}).  Next, we discuss implementation issues
 (Section~\ref{implementation}) and give some insight in performance issues
 (Section~\ref{measurements}).
@@ -115,7 +115,7 @@ The data type of \ATerms\ ({\tt ATerm}) is defined as follows:
 \begin{itemize}
 \item  {\tt INT}: An integer constant (32-bits integer) is an \ATerm.\footnote{
 We are currently upgrading the \aterm\ library
-to support 64-bits architectures as well.}.
+to support 64-bits architectures as well.}
 
 \item {\tt REAL}: A real constant (64-bits real) is an \ATerm.
 
@@ -201,7 +201,7 @@ the \emph{level one} interface of the \ATerm\ data type.
 To accommodate ``power'' users of \ATerms\ we also provide a
 \emph{level two} interface, which contains a more sophisticated set of
 data types and functions. It is typically used in generated C code
-that calls \ATerm\ primitives or in efficiency critical applications.
+that calls \ATerm\ primitives, or in efficiency critical applications.
 These extensions are useful only when more control over the underlying
 implementation is needed or in situations where some operations that
 can be implemented using level one constructs, can be expressed more
@@ -1001,7 +1001,7 @@ be exploited and there are many subterms with a relatively high arity.
 
 \subsubsection{Real Cases}
 
-Several ``real'' cases are used that are based on actual applications:
+Several real-life cases are used that are based on actual applications:
 
 \begin{description}
 \item[COBOL Parse Table:] a generated parse table for COBOL including
@@ -1036,9 +1036,7 @@ These states are represented as \aterms, and are rather complex.
 \end{description}
 
 \noindent Measurements were performed on an ULTRA SPARC-5 (270 MHz) with 256 Mb
-of memory.
-
-**** ZEG IETS over WELKE TIJDEN *** (issue \#29)
+of memory. All times measured are the user CPU time for that particular job.
 
 
 \subsection{Measurements}
@@ -1072,18 +1070,17 @@ Real Case Averages      &          &           &   94.82 &          &  1.29   \\
 \end{center}
 \end{table}
 
-In Table~\ref{measurements-in-memory}\footnote{Since we consider
-Random-unique and Random as unrepresentative cases, we only give the averages
-for the real cases in this and the following tables.}, we give results for the memory
-usage for our sample terms. The five columns give the total number of
-nodes in each term, the number of unique nodes in each term, the
-sharing percentage, the amount of memory (in bytes) used for the
-storage of the term, and the average number of bytes needed per
-node. As can be seen from these figures, at least in our applications
-sharing \emph{does} make a difference. By fully exploiting the
-redundancies in the input terms, we can store a node using on the average
-1.3 bytes, and still perform operations on them efficiently.  The
-worst case behaviour is 15 bytes per node.
+In Table~\ref{measurements-in-memory}, we give results for the memory usage
+of our sample terms\footnote{Since we consider the Random-unique and
+Random cases to be unrepresentative, we only present the averages for the real
+cases in this and the following tables.}. The five columns give the total
+number of nodes in each term, the number of unique nodes in each term, the
+sharing percentage, the amount of memory (in bytes) used for the storage of
+the term, and the average number of bytes needed per node. As can be seen
+in these figures, at least in our applications sharing \emph{does} make a
+difference. By fully exploiting the redundancies in the input terms, we can
+store a node using on the average 1.3 bytes, and still perform operations
+on them efficiently.  The worst case behaviour is 15 bytes per node.
 
 \begin{figure}
 \centerline{\epsfig{file=sharing.eps}}
