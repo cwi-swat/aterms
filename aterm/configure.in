@@ -1,43 +1,64 @@
+dnl
+dnl    ATerm -- The ATerm (Annotated Term) library
+dnl    Copyright (C) 1998-2000  Stichting Mathematisch Centrum, Amsterdam, 
+dnl                             The  Netherlands.
+dnl
+dnl    This program is free software; you can redistribute it and/or modify
+dnl    it under the terms of the GNU General Public License as published by
+dnl    the Free Software Foundation; either version 2 of the License, or
+dnl    (at your option) any later version.
+dnl
+dnl    This program is distributed in the hope that it will be useful,
+dnl    but WITHOUT ANY WARRANTY; without even the implied warranty of
+dnl    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+dnl    GNU General Public License for more details.
+dnl
+dnl    You should have received a copy of the GNU General Public License
+dnl    along with this program; if not, write to the Free Software
+dnl    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
+dnl
 dnl Process this file with autoconf to produce a configure script.
+dnl
+dnl $Id$
 
 AC_INIT(Makefile.in)
-AM_INIT_AUTOMAKE(aterm, 0.23)
+AM_INIT_AUTOMAKE(aterm, 0.24)
 
 dnl Default values
 CC_GCC=gcc
 CFLAGS_GCC="-Wall -O4"
 LFLAGS_GCC=""
-DEFS_GCC="-DNDEBUG"
+DEFS_GCC="\$(DEFS) -DNDEBUG"
 INCL_GCC=""
 
 CC_CC=cc
 CFLAGS_CC="-O"
 LFLAGS_CC=""
-DEFS_CC="-DNDEBUG"
+DEFS_CC="\$(DEFS) -DNDEBUG"
 INCL_CC=""
 
 CC_DBG=gcc
 CFLAGS_DBG="-Wall -g"
 LFLAGS_DBG="-g"
-DEFS_DBG=""
+DEFS_DBG="\$(DEFS)"
 INCL_DBG=""
 
 CC_PROF=gcc
 CFLAGS_PROF="-Wall -pg"
 LFLAGS_PROF="-pg"
-DEFS_PROF=""
+DEFS_PROF="\$(DEFS)"
 INCL_PROF=""
 
 CC_CC64=cc
 CFLAGS_CC64=""
 LFLAGS_CC64="-64"
-DEFS_CC64=""
+DEFS_CC64="\$(DEFS)"
 INCL_CC64=""
 
 CC_SHARED=gcc
 CFLAGS_SHARED="-Wall"
 LFLAGS_SHARED=""
-DEFS_SHARED=""
+DEFS_SHARED="\$(DEFS)"
 INCL_SHARED=""
 
 AC_PROG_CC
