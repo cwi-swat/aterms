@@ -2,6 +2,11 @@
 
 Wed Nov 26 10:15:32 CET 2003 <jong@cwi.nl>
  * several Makefile.am fixes to get distcheck working
+ * removed all functionality to check command line arguments
+   as this is now done in the GenerationParameters mechanism
+   in the Generator itself.
+ * first attempt to compile generated classes and build a jar
+   of both generated source and classes.
 
 Mon Nov 24 16:05:19 CET 2003 <jong@cwi.nl>
  * fixed list-generation, separated-list generation
