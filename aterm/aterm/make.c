@@ -52,7 +52,7 @@ static ATerm makePlaceholder(ATermPlaceholder pat, va_list *args);
 static ATermAppl makeArguments(ATermAppl appl, char *name, ATbool quoted,
 							   va_list *args);
 static ATerm AT_vmakeTerm(ATerm pat, va_list *args);
-static ATerm AT_vmatchTerm(ATerm t, ATerm pat, va_list *args);
+static ATbool AT_vmatchTerm(ATerm t, ATerm pat, va_list *args);
 
 /*}}}  */
 
@@ -333,58 +333,58 @@ makePlaceholder(ATermPlaceholder pat, va_list *args)
 
 /*}}}  */
 
-/*{{{  ATerm ATvmatch(ATerm t, const char *pat, va_list args) */
+/*{{{  ATbool ATvmatch(ATerm t, const char *pat, va_list args) */
 
 /**
   * Match a string pattern against a term using a list of arguments.
   */
 
-ATerm ATvmatch(ATerm t, const char *pat, va_list args)
+ATbool ATvmatch(ATerm t, const char *pat, va_list args)
 {
   return AT_vmatchTerm(t, AT_getPattern(pat), args);
 }
 
 /*}}}  */
-/*{{{  ATerm ATmatch(ATerm t, const char *pat, ...) */
+/*{{{  ATbool ATmatch(ATerm t, const char *pat, ...) */
 
 /**
   * Match a term against a string pattern.
   */
 
-ATerm ATmatch(ATerm t, const char *pat, ...)
+ATbool ATmatch(ATerm t, const char *pat, ...)
 {
-  ATerm trm;
+  ATbool result;
   va_list args;
 
   va_start(args, pat);
-  trm = ATvmatch(t, pat, args);
+  result = ATvmatch(t, pat, args);
   va_end(args);
 
-  return trm;
+  return result;
 }
 
 /*}}}  */
-/*{{{  ATerm ATvmatchTerm(ATerm t, ATerm pat, va_list args) */
+/*{{{  ATbool ATvmatchTerm(ATerm t, ATerm pat, va_list args) */
 
 /**
   * Match a term against a string pattern using a list of arguments.
   */
 
-ATerm ATvmatchTerm(ATerm t, ATerm pat, va_list args)
+ATbool ATvmatchTerm(ATerm t, ATerm pat, va_list args)
 {
   return AT_vmatchTerm(t, pat, &args);
 }
 
 /*}}}  */
-/*{{{  ATerm AT_vmatchTerm(ATerm t, ATerm pat, va_list *args) */
+/*{{{  ATbool AT_vmatchTerm(ATerm t, ATerm pat, va_list *args) */
 
 /**
   * Match a term against a term pattern using a list of arguments.
   */
 
-ATerm AT_vmatchTerm(ATerm t, ATerm pat, va_list *args)
+ATbool AT_vmatchTerm(ATerm t, ATerm pat, va_list *args)
 {
-  return NULL;
+  return ATfalse;
 }
 
 /*}}}  */
