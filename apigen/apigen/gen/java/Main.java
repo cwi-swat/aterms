@@ -1,6 +1,7 @@
 package apigen.gen.java;
 
 import java.io.FileInputStream;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -117,7 +118,9 @@ public class Main {
 						usage();
 					}
 					else {
-						apiName = input.substring(0, input.lastIndexOf((int) '.'));
+						File apiFile = new File(input);
+						String apiFileName = apiFile.getName();
+						apiName = apiFileName.substring(0, apiFileName.lastIndexOf((int) '.'));
 					}
 				}
 

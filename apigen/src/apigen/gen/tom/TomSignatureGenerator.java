@@ -20,7 +20,7 @@ public class TomSignatureGenerator extends Generator {
 		String prefix,
 		boolean verbose,
 		boolean folding) {
-		super(directory, StringConversions.makeIdentifier(api_name), ".t", verbose, folding);
+		super(directory, StringConversions.makeIdentifier(api_name), ".tom", verbose, folding);
 		this.adt = adt;
 		this.impl = impl;
 		this.prefix = prefix;
