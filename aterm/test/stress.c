@@ -29,6 +29,20 @@
 
 char stress_id[] = "$Id$";
 
+#ifdef ABORT_ON_PARSE_ERROR
+ATbool parse_error_encountered = ATfalse
+#endif
+
+/*}}}  */
+
+/*{{{  void abort_handler(const char *format, va_list args) */
+
+#ifdef ABORT_ON_PARSE_ERROR
+void abort_handler(const char *format, va_list args)
+{
+	parse_error_encountered = ATtrue;
+}
+#endif
 /*}}}  */
 
 /*{{{  void test_failed(char *category, int id) */
@@ -360,11 +374,18 @@ testRead(void)
 	t = ATreadFromString("\"quoted: \\\"abc\\\"\"");
   ATfprintf(stdout, "read from string: %t\n", t);
 
+#ifdef ABORT_ON_PARSE_ERROR
+	ATsetAbortHandler(abort_handler);
+	parse_error_encountered = ATfalse;
+#endif
   fprintf(stdout, "Next term should give a parse error at line 0, col 17\n");
   f = fopen("error.trm", "r");
   t = ATreadFromTextFile(f);
   fclose(f);
-
+#ifdef ABORT_ON_PARSE_ERROR
+	ATsetAbortHandler(NULL);
+	assert(parse_error_encountered);
+#endif
 }
 
 /*}}}  */
@@ -458,9 +479,16 @@ testMake(void)
 																		ATparse("[\"f\"([1,2,3])]")));
 
 	fprintf(stderr, "The following tests should generate parse errors.\n");
+#ifdef ABORT_ON_PARSE_ERROR
+	ATsetAbortHandler(abort_handler);
+	parse_error_encountered = ATfalse;
+#endif
 	ATparse("<int");
 	ATparse("f(<int>,<int>,<int>,<int>,<int>,<int>,<int>,<int>,<int>,<int>,<int>,<int>,<int>,<int>,<int>,<int>,<int>,<int>,<int>,<int>asdfaksdjfhasjkhf)");
-
+#ifdef ABORT_ON_PARSE_ERROR
+  ATsetAbortHandler(NULL);
+	assert(parse_error_encountered);
+#endif
 	printf("make tests ok.\n");
 }
 
@@ -623,13 +651,14 @@ void testGC()
 	test_assert("gc", 10, !AT_isValidTerm(t[10]));
 	test_assert("gc", 11, AT_isValidTerm(t[11]));
 	
-	AT_markTerm(t[12]);
 #ifndef NO_SHARING
+	AT_markTerm(t[12]);
 	test_assert("gc-mark", 0, IS_MARKED(t[0]->header));
 	test_assert("gc-mark", 1, IS_MARKED(t[1]->header));
 	test_assert("gc-mark", 2, IS_MARKED(t[12]->header));
 	test_assert("gc-mark", 3, !IS_MARKED(t[2]->header));
 	test_assert("gc-mark", 4, AT_isMarkedSymbol(ATgetSymbol((ATermAppl)t[0])));
+	AT_unmarkTerm(t[12]);
 #endif
 
 	printf("gc tests ok.\n");	
