@@ -42,13 +42,13 @@
 Syntax definition languages are used to describe the syntax of a language.
 Terms over these languages are parsed to produce parse trees.  These parse
 trees can subsequently be processed, e.g. by a compiled specification. For
-top notch performance, dedicated tools can be written in languages such
-as {\tt C}. Maintainability and readability of such tools improves when
-they do not operate on the tree structure directly, but rather access
-(parts of) the tree using an Abstract Programming Interface~(\api). This
-paper describes how a \emph{labeled \sdf\ specification} can be used to
-generate an abstract \api, as well as \emph{type-safe}, \emph{efficient}
-implementations of this \api.
+top notch performance, dedicated tools can be written in languages such as
+{\tt C}. Maintainability and readability of such tools improves when they
+do not operate on the tree structure directly, but rather access (parts
+of) the tree using an Abstract Programming Interface~(\api). This paper
+describes how a \sdf{} specification can be used to generate an abstract
+\api, as well as \emph{type-safe}, \emph{efficient} implementations of
+this \api{} in various programming languages.
 
 \end{abstract}
 
@@ -59,7 +59,7 @@ implementations of this \api.
 
 Syntax definition languages such as \sdf~\cite{HHKR92} can be used
 to specify the syntax of a (programming) language in a formal way. An
-integrated environment such as the \asmetaenv~\cite{XXX} can be used to
+integrated environment such as the \asmetaenv~\cite{Kli93} can be used to
 develop syntax definitions and specify rewrite rules. These rules can be
 applied to terms which are parsed over the specified language. The view
 on the language as used in the \asmetaenv{} is of a formal, high level
@@ -74,8 +74,9 @@ compiled specification however, is sometimes found to be inadequate for
 industrial strength applications. In these cases, the insights gained
 in the problem area through writing the specification are re-used in a
 ``high-performance'' language, such as \texttt{C}. In \sdf{} related
-cases, such a tool relies on the \atlib{}~\cite{} for both efficient
-in-memory storage of terms, as well as high-speed access to terms.
+cases, such a tool relies on the \atlib{}~\cite{BJKO2000} for both
+efficient in-memory storage of terms, as well as high-speed access
+to terms.
 
 So, why bother to generate an \api? It turns out that writing tools based
 on a particular version of a syntax is subject to a particular maintenance
@@ -93,5 +94,8 @@ which encapsulates the tree representation.
 \texttt{TODO: type-safeness, layer must be efficient}
 
 % }}}
+
+\bibliographystyle{alpha}
+\bibliography{apigen}
 
 \end{document}
