@@ -42,7 +42,7 @@ EXTRA_LIBRARIES          = libATerm-gcc.a libATerm-cc.a libATerm-dbg.a libATerm-
 ALLSRCS                  = aterm.c list.c make.c memory.c afun.c gc.c \
                            hash.c bafio.c version.c
 
-PUBLIC_INCL              = abool.h aterm1.h aterm2.h deprecated.h \
+PUBLIC_INCL              = abool.h atypes.h aterm1.h aterm2.h deprecated.h \
                            encoding.h afun.h
 
 PRIVATE_INCL             = _aterm.h debug.h gc.h list.h make.h memory.h \
