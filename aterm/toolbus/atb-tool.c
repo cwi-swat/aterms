@@ -273,13 +273,15 @@ ATerm  ATBreadTerm(int fd)
 	ATerror("ATBreadTerm: error in lenspec: %s\n", buffer);
   
   /* Make sure the buffer is large enough */
-  resize_buffer(len);
+  resize_buffer(len+1);
 
   if(len > MIN_MSG_SIZE) {
-	/* Read the rest of the data */
-	if(mread(fd, buffer+MIN_MSG_SIZE, len-MIN_MSG_SIZE) < 0)
-	  ATerror("ATBreadTerm: connection with ToolBus lost.\n");
+		/* Read the rest of the data */
+		if(mread(fd, buffer+MIN_MSG_SIZE, len-MIN_MSG_SIZE) < 0)
+			ATerror("ATBreadTerm: connection with ToolBus lost.\n");
   }
+	buffer[len] = '\0';
+	
 
   /* Parse the string */
   t = ATparse(buffer+8);
