@@ -39,7 +39,6 @@ public class GenericConstructorGenerator extends JavaGenerator {
 		buf.append('.');
 		buf.append(StringConversions.makeCapitalizedIdentifier(params.getApiName()));
 		buf.append("Constructor");
-		System.err.println("GenericConstructorGenerator.className: " + buf.toString());
 		return buf.toString();
 	}
 
@@ -115,7 +114,7 @@ public class GenericConstructorGenerator extends JavaGenerator {
 	}
 
 	private void genAccept() {
-		println("  abstract public void accept(Visitor v) throws jjtraveler.VisitFailure;");
+		println("  abstract public void accept(jjtraveler.Visitor v) throws jjtraveler.VisitFailure;");
 		println();
 	}
 

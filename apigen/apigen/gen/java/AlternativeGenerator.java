@@ -411,7 +411,7 @@ public class AlternativeGenerator extends JavaGenerator {
 	private void genAltVisitableInterface(Type type, Alternative alt) {
 		String altClassName = className(alt);
 
-		println("  public void accept(Visitor v) throws jjtraveler.VisitFailure {");
+		println("  public void accept(jjtraveler.Visitor v) throws jjtraveler.VisitFailure {");
 		println("    v.visit_" + altClassName + "(this);");
 		println("  }");
 		println();
