@@ -19,8 +19,12 @@
 #define test_assert(cat,id,cond) if(!(cond)) test_failed(cat, id)
 
 /*}}}  */
+/*{{{  globals */
 
 char stress_id[] = "$Id$";
+static ATerm T[16] = { NULL };
+
+/*}}}  */
 
 /*{{{  void test_failed(char *category, int id) */
 
@@ -215,6 +219,8 @@ void testList(void)
 
   assert(ATisEmpty(list[0]));
   assert(!ATisEmpty(list[1]));
+
+	ATprintf("list nodes: %n, %n, %n, %n\n", list[0], list[1], list[2], list[3]);
 
   for(i=0; i<6; i++) {
     test_term("list-creation", i+1, (ATerm)list[i], AT_LIST);
@@ -547,6 +553,8 @@ void testGC()
 	t[11] = ATsetAnnotation(t[1], t[0], t[3]);
 	t[12] = ATparse("[abc,f(abc)]");
 
+	AT_collect(2);
+
 	test_assert("gc", 0, AT_isValidTerm(t[0]));
 	test_assert("gc", 1, AT_isValidTerm(t[1]));
 	test_assert("gc", 2, AT_isValidTerm(t[2]));
@@ -559,7 +567,7 @@ void testGC()
 	test_assert("gc", 9, !AT_isValidTerm(t[9]));
 	test_assert("gc", 10, !AT_isValidTerm(t[10]));
 	test_assert("gc", 11, AT_isValidTerm(t[11]));
-
+	
 	AT_markTerm(t[12]);
 	test_assert("gc-mark", 0, IS_MARKED(t[0]->header));
 	test_assert("gc-mark", 1, IS_MARKED(t[1]->header));
@@ -567,7 +575,7 @@ void testGC()
 	test_assert("gc-mark", 3, !IS_MARKED(t[2]->header));
 	test_assert("gc-mark", 4, AT_isMarkedSymbol(ATgetSymbol((ATermAppl)t[0])));
 
-  printf("gc tests ok.\n");	
+	printf("gc tests ok.\n");	
 }
 
 /*}}}  */
