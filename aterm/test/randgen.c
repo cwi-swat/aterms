@@ -8,6 +8,11 @@
 
 #define MAX_SYMBOLS   1024;
 
+#ifdef __APPLE__
+    #define lrand48()	random()
+    #define srand48(s)  srandom(s)
+#endif
+
 static int nr_symbols = 5;
 static int nr_terms   = 100;
 static int open;
