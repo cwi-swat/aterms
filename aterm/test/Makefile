@@ -4,22 +4,25 @@ VERSION		= 0.0.1
 
 CC		= gcc
 CFLAGS		= -g -ansi -pedantic -Wall
-INCLUDES	= -I../aterm
+INCLUDES	= -I ../asfix -I../aterm
 DEFS		=
 LFLAGS		= -g
-LIBS		= -L../aterm -lATerm -L$(EFENCE) -lefence
+LIBS		= -L../asfix -lAsFix -L../aterm -lATerm -L$(EFENCE) -lefence
 AR		= ar
 
 EFENCE		= /home/olivierp/ElectricFence-2.0.5
 TESTS		= test-stress
-TESTPRGS	= stress
-TESTSRCS	= stress.c
-TESTOBJS	= stress.o
+TESTPRGS	= stress asfixtest
+TESTSRCS	= stress.c asfixtest.c
+TESTOBJS	= stress.o asfixtest.o
 
 all: clean $(TESTPRGS) $(TESTS)
 
 stress: stress.o
 	$(CC) $(LFLAGS) -o stress stress.o $(LIBS)
+
+asfixtest: asfixtest.o
+	$(CC) $(LFLAGS) -o asfixtest asfixtest.o $(LIBS)
 
 include ../implicit-rules
 
