@@ -1,3 +1,8 @@
+2002/09/23 (vinju@loria.fr)
+ * Partly re-implemented and finished initial functionality of adt-to-java
+ * Added --folding to adt-to-java to (de)activate folding support in the generated classes
+ * Added --visitable to adt-to-java (functionality not yet fixed)
+ 
 2002/05/29 (jong@cwi.nl)
  * Replaced sdf2-to-imploded-adt script by a "-I|--imploded" flag to
    sdf2-to-adt
