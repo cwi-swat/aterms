@@ -37,11 +37,11 @@ public class ATermApplImpl extends ATermImpl implements ATermAppl {
     return clone;
   }
 
-  public ATermAppl make(AFun fun, ATerm[] i_args, ATermList annos) {
+  protected ATermAppl make(AFun fun, ATerm[] i_args, ATermList annos) {
     return getPureFactory().makeAppl(fun, i_args, annos);
   }
 
-  public ATermAppl make(AFun fun, ATerm[] i_args) {
+  protected ATermAppl make(AFun fun, ATerm[] i_args) {
     return make(fun, i_args, getPureFactory().makeList());
   }
   
@@ -230,7 +230,7 @@ public class ATermApplImpl extends ATermImpl implements ATermAppl {
 
     /*------------------------------------- handle the last 11 bytes */
     c += len;
-      //c += (getAnnotations().hashCode()<<8);
+    c += (getAnnotations().hashCode()<<8);
     b += (getAFun().hashCode()<<8);
     
     switch (len) {
@@ -241,9 +241,9 @@ public class ATermApplImpl extends ATermImpl implements ATermAppl {
       case 7 : b += (getArgument(6).hashCode() << 16);
       case 6 : b += (getArgument(5).hashCode() << 8);
       case 5 : b += (getArgument(4).hashCode());
-      case 4 : a += (getArgument(3).hashCode() << 8);
+      case 4 : a += (getArgument(3).hashCode() << 24);
       case 3 : a += (getArgument(2).hashCode() << 16);
-      case 2 : a += (getArgument(1).hashCode() << 24);
+      case 2 : a += (getArgument(1).hashCode() << 8);
       case 1 : a += (getArgument(0).hashCode());
           /* case 0: nothing left to add */
     }
