@@ -272,22 +272,22 @@ public class AlternativeGenerator extends JavaGenerator {
 		println("  public " + fieldClass + " get" + fieldName + "() {");
 
 		if (fieldType.equals("str")) {
-			println("   return ((aterm.ATermAppl) this.getArgument(" + fieldIndex + ")).getAFun().getName();");
+			println("   return ((aterm.ATermAppl) getArgument(" + fieldIndex + ")).getAFun().getName();");
 		}
 		else if (fieldType.equals("int")) {
-			println("   return ((aterm.ATermInt) this.getArgument(" + fieldIndex + ")).getInt();");
+			println("   return ((aterm.ATermInt) getArgument(" + fieldIndex + ")).getInt();");
 		}
 		else if (fieldType.equals("real")) {
-			println("   return ((aterm.ATermReal) this.getArgument(" + fieldIndex + ")).getReal();");
+			println("   return ((aterm.ATermReal) getArgument(" + fieldIndex + ")).getReal();");
 		}
 		else if (fieldType.equals("term")) {
-			println("   return this.getArgument(" + fieldIndex + ");");
+			println("   return getArgument(" + fieldIndex + ");");
 		}
         else if (fieldType.equals("chars")) {
-            println("   return " + buildFactoryGetter() + ".charsToString(this.getArgument(" + fieldIndex + "));");
+            println("   return " + buildFactoryGetter() + ".charsToString(getArgument(" + fieldIndex + "));");
         }
 		else {
-			println("    return (" + fieldClass + ") this.getArgument(" + fieldIndex + ");");
+			println("    return (" + fieldClass + ") getArgument(" + fieldIndex + ");");
 		}
 
 		println("  }");

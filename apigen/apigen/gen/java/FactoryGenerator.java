@@ -77,7 +77,7 @@ public class FactoryGenerator extends JavaGenerator {
         println("    StringBuffer str = new StringBuffer();");
         println();
         println("    for (int i = 0; !list.isEmpty(); list = list.getNext(), i++) {");
-        println("      str.append((byte) ((aterm.ATermInt) list.getFirst()).getInt());");
+        println("      str.append((char) ((aterm.ATermInt) list.getFirst()).getInt());");
         println("    }");
         println();
         println("    return str.toString();");
