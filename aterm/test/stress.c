@@ -1066,8 +1066,17 @@ void testIndexedSet()
       ATerror("Problem5\n");
   }
 
-  if (ATgetLength(ATindexedSetElements(set))!=MAX_ELEM)
+  if (ATgetLength(ATindexedSetElements(set))!=MAX_ELEM) {
     ATerror("Problem6\n");
+  }
+
+  ATindexedSetReset(set);
+  ATindexedSetPut(set, (ATerm)ATmakeInt(4), NULL);
+  ATindexedSetPut(set, (ATerm)ATmakeInt(2), NULL);
+  ATindexedSetPut(set, (ATerm)ATmakeInt(1), NULL);
+  ATindexedSetPut(set, (ATerm)ATmakeInt(3), NULL);
+  test_assert("ATindexedSet order", 7,
+	      ATisEqual(ATindexedSetElements(set), ATparse("[4,2,1,3]")));
 
   printf("indexedSet tests ok.\n");
 }

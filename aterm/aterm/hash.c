@@ -315,7 +315,7 @@ static ATermList tableContent(ATerm **tableindex,long nr_entries)
   ATerm t;
   ATermList result = ATempty;
 
-  for(i=0; i<nr_entries; i++ ) { 
+  for (i=nr_entries-1; i>=0; i--) {
     t = tableGet(tableindex, i);
     if (t != NULL) { 
       result = ATinsert(result, t);

@@ -1,5 +1,11 @@
 $Id$
 
+Mon Jun 14 14:03:37 CEST 2004 <jong@cwi.nl>
+ * aterm/hash.c: reverse order in which ATindexedSetElements are returned,
+   so that it matches what the manual says: return elements in the exact
+   order in which they were inserted into the indexed set.
+ * test/stress.c: add test on above fix
+
 Wed Jun  9 10:51:21 CEST 2004 <jong@cwi.nl>
  * configure.in: bump version to 2.3 because interface changes
  * aterm/aterm1.h: add convenience macros to circumvent gcc valid warning
