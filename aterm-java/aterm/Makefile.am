@@ -18,5 +18,6 @@ java_JAVA = \
 	ATermReal.java \
 	Fwd.java \
 	Visitable.java \
+	Identifiable.java \
 	Visitor.java \
 	ParseError.java

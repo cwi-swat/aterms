@@ -30,6 +30,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import shared.SharedObjectWithID;
 import shared.SharedObject;
 import aterm.AFun;
 import aterm.ATerm;
@@ -44,10 +45,11 @@ import aterm.Visitor;
 import aterm.ParseError;
 import jjtraveler.VisitFailure;
 
-public abstract class ATermImpl extends ATermVisitableImpl implements ATerm, SharedObject {
+public abstract class ATermImpl extends ATermVisitableImpl implements ATerm, SharedObjectWithID {
   private ATermList annotations;
   static protected PureFactory factory;
   private int hashCode;
+  private int uniqueId;
 
   static public void initialize(PureFactory f) {
     factory = f;
@@ -217,7 +219,15 @@ public abstract class ATermImpl extends ATermVisitableImpl implements ATerm, Sha
     throw new RuntimeException("no children!");
   }
 
-}
+  public int getId() {
+    return uniqueId;
+  }
+  
+  public void setId(int uniqueId) {
+    this.uniqueId = uniqueId;
+  }
+  
+} // class ATermImpl
 
 class ATermWriter extends Visitor {
 
@@ -419,5 +429,5 @@ class ATermWriter extends Visitor {
   public void initializeSharing() {
     table = new HashMap();
   }
-
-}
+  
+} //class ATermWriter

@@ -32,7 +32,7 @@ import java.util.List;
  * @author Pieter Olivier (olivierp@cwi.nl)
  */
 public interface ATerm
-  extends Visitable
+  extends Visitable, Identifiable
 {
     /**
      * A term of type INT
