@@ -96,7 +96,7 @@ ATermAppl ATmakeAppl6(Symbol sym, ATerm arg0, ATerm arg1, ATerm arg2,
 
 /* ATerm     ATgetArgument(ATermAppl appl, int arg); */
 #define ATgetArgument(appl,arg) (*((ATerm *)(appl)+(arg<=6 ? 2:3) + (arg)))
-				              
+ATermAppl ATsetArgument(ATermAppl appl, ATerm arg, int n);
 
 /* Portability */
 ATermList ATgetArguments(ATermAppl appl);
@@ -149,6 +149,7 @@ int       ATlastIndexOf(ATermList list, ATerm el, int start);
 ATerm     ATelementAt(ATermList list, int index);
 ATermList ATremoveElement(ATermList list, ATerm el);
 ATermList ATremoveElementAt(ATermList list, int idx);
+ATermList ATreplace(ATermList list, ATerm el, int idx);
 ATerm     ATdictCreate();
 ATerm     ATdictGet(ATerm dict, ATerm key);
 ATerm     ATdictPut(ATerm dict, ATerm key, ATerm value);
