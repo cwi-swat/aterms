@@ -19,7 +19,6 @@
 
 \newcommand{\asfix}{\mbox{AsFix}}
 
-\newcommand{\apigen}{\mbox{\sc apigen}}
 \newcommand{\sdf}{\mbox{\sc Sdf}}
 \newcommand{\asf}{\mbox{\sc Asf}}
 \newcommand{\asdf}{\mbox{\sc Asf+Sdf}}
@@ -28,6 +27,7 @@
 
 \newcommand{\C}{\mbox{\sc C}}
 \newcommand{\java}{\mbox{\sc Java}}
+\newcommand{\autocode}{\mbox{\sc autocode}}
 
 % }}}
 
@@ -220,9 +220,9 @@ appl(
 % }}}
 
 % }}}
-% {{{  Using the \atlib\ to access parse trees
+% {{{  Parse Tree access: the artisan approach
 
-\section{Using the \atlib\ to access parse trees}
+\section{Parse Tree access: the artisan approach}
 \label{sec:using-atlib}
 
 We briefly discuss the two layers of access provided by the \C\
@@ -355,29 +355,91 @@ function can now be simplified to the more efficient:
 % }}}
 
 % }}}
-
 % {{{  Maintenance issues
 
 \subsection{Maintenance issues}
 \label{sec:maintenance}
 
-There are a number of serious maintenance issues inherent in both
-approaches.
+There are several fundamental maintenance issues inherent in using the \atlib\
+to access parse trees. These issues are fundamental as long as 
 
-First of all, manually typing in multi-line string patterns with exotic
-escaping and partial substitution schemes is so error prone that it is
-guaranteed to go wrong somewhere. Practical experience in the \metaenv\
-has proven this time and again. Handwritten \aterm-patterns proliferate
-through various versions of different tools, and after a while all sorts
-of ``mysterious'' bugs appear where one tool cannot handle the output
-of another tool, often due to some pattern mismatch between tools,
-or a typo in escaping one of the many quotes.
+\begin{itemize}
 
-#2 Changes in the syntax of "Bool and Bool -> Bool"
+\item The esoteric art of writing down multi-line, quote-escaped string
+patterns and substituting parts of these patterns into the correct
+placeholders is so error prone that it is guaranteed to go wrong
+somewhere. Practical experience in the \metaenv\ has proven this many
+times. Handwritten \aterm-patterns proliferate through various versions of
+different tools, and after a while all sorts of ``mysterious'' bugs appear
+where one tool cannot handle the output of another tool, often due to some
+pattern mismatch, or a typo in the escaping of one of the many quotes.
 
-#3 Changes in the AsFix format.
+\item Even if the patterns are written down correctly, or when the Level
+Two interface, which doesn't use \aterm-patterns, is used, there is much
+work to be done when the original syntax changes. If our example syntax of
+the boolean conjunction is changed into: {\footnotesize\texttt{"[" Bool
+"and" Bool "]" -> Bool \{left\}} } then all of a sudden, the left-hand
+side is \emph{not} at the same location in the parse tree anymore and we
+need to adjust our extraction function, even though, conceptually, nothing
+changed. All we did was put square brackets around our conjunction.
+
+\item What happens if the representation of parse trees \emph{itself}
+changes? We wanted to get rid of some legacy constructions in \asfix,
+as well as be able to change it, without having to patch all our tools
+every time we decided on an upgrade of the parse tree format.
+
+\end{itemize}
+
+These maintenance issues are not specific to the access of elements of
+parse trees. They are fundamental to each application that needs access
+to an \aterm\ with more information about the location of subterms than
+can be expressed in general \aterm access functions. This paper will
+addresses these issues from a parse tree point of view.
 
 % }}}
+
+% }}}
+
+% {{{  From syntax to \api
+
+\section{From syntax to \api}
+\label{sec:syntax-to-api}
+
+Abstracting from implementation details about the facts that there
+is such a thing as a parse tree format and that this format in turn
+is implemented using \aterms, it is easy to name several operations a
+toolbuilder would like, given a \sdf\ syntax definition.
+
+% {{{  What you want to be able to do, given an SDF definition
+
+Just to name a few operations given our boolean syntax, a toolbuilder
+might want to do the following:
+
+\begin{itemize}
+
+\item Create the basic booleans: \texttt{true}, and \texttt{false};
+
+\item Create a compound boolean term using basic and other compound boolean terms;
+
+\item Given an arbitrary term, ask: \emph{is this a valid boolean term?}
+
+\item Given an arbitrary boolean term, distinguish between a basic term
+      and a compound term, e.g. by asking: \emph{Does this boolean have
+      a left-hand side?}
+
+\item Give me the right-hand side of this boolean term;
+
+\item Replace the left-hand side of a compound boolean term by another
+      boolean term.
+
+\end{itemize}
+
+% }}}
+
+Fortunately, this wishlist is not at all utopian. All the information
+necessary to generate an \api, and (much more important) an actual
+\emph{implementation} of such an \api, is present in the \sdf-definition.
+
 
 % }}}
 
