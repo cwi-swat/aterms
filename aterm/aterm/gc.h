@@ -12,7 +12,6 @@ extern "C"
 void AT_initGC(int argc, char *argv[], ATerm *bottomOfStack);
 void AT_setBottomOfStack(ATerm *bottomOfStack);
 void AT_cleanupGC();
-#ifndef PO
 void AT_collect_minor();
 
 extern void AT_init_gc_parameters(ATbool low_memory);
@@ -22,8 +21,6 @@ extern int min_nb_minor_since_last_major;
 extern int good_gc_ratio;
 extern int small_allocation_rate_ratio;
 extern int old_increase_rate_ratio;
-
-#endif
 
 void AT_collect();
 

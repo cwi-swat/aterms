@@ -1,5 +1,8 @@
 $Id$
 
+Tue Apr 27 11:09:50 CEST 2004 <jurgenv@cwi.nl>
+ * Removed all #ifndef PO directives from the header files
+
 Wed Apr 14 13:43:28 CEST 2004 <jurgenv@cwi.nl>
  * GET_SYMBOL macro used shifts to retrieve a symbol key, but did
    not cast to Symbol type, which results in a 'comparison between

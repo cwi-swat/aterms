@@ -35,18 +35,8 @@ typedef struct _SymEntry
 /* defined on SymEntry */
 #define SYM_IS_FREE(sym)          (((MachineWord)(sym) & 1) == 1)
 
-/* void AT_markSymbol(Symbol sym); */
-#ifndef PO
-
-/*#define AT_markSymbol(s)   { INCREMENT_AGE(at_lookup_table[(s)]->header); */
-/*                             (at_lookup_table[(s)]->header |= MASK_MARK); }*/
 #define AT_markSymbol(s)       (at_lookup_table[(s)]->header |= MASK_AGE_MARK)
 #define AT_markSymbol_young(s) if(!IS_OLD(at_lookup_table[(s)]->header)) AT_markSymbol(s)
-/*#define AT_markSymbol_young(s) AT_markSymbol(s)*/
-
-#else
-#define AT_markSymbol(s)   (at_lookup_table[(s)]->header |= MASK_MARK)
-#endif
 
 /* void AT_unmarkSymbol(Symbol sym); */
 #define AT_unmarkSymbol(s) (at_lookup_table[(s)]->header &= ~MASK_MARK)
@@ -63,10 +53,7 @@ ATbool AT_isValidSymbol(Symbol sym);
 ATbool AT_isMarkedSymbol(Symbol sym);
 void  AT_freeSymbol(SymEntry sym);
 void AT_markProtectedSymbols();
-
-#ifndef PO
 void AT_markProtectedSymbols_young();
-#endif
 
 unsigned int AT_hashSymbol(const char *name, int arity);
 ATbool AT_findSymbol(char *name, int arity, ATbool quoted);

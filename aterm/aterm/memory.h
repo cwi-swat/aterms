@@ -16,11 +16,7 @@ extern "C"
 #define MAX_INLINE_ARITY       6
 
 /* To change the block size, modify BLOCK_SHIFT only! */
-#ifndef PO
 #define BLOCK_SHIFT      13
-#else
-#define BLOCK_SHIFT      16
-#endif
 
 #define BLOCK_SIZE       (1<<BLOCK_SHIFT)
 #define BLOCK_TABLE_SIZE 4099     /* nextprime(4096) */
@@ -48,17 +44,10 @@ typedef struct Block
   int size;
   int frozen; /* this int is used as a boolean */
   struct Block *next_by_size;
-/*#ifndef PO*/
-/*  struct Block *next;*/
-/*  struct Block *foo;*/
-/*#else*/
   struct Block *next_before;
   struct Block *next_after;
-/*#endif*/
 
-#ifndef PO
   header_type *end;
-#endif
 } Block;
 
 typedef struct BlockBucket
@@ -68,22 +57,15 @@ typedef struct BlockBucket
 } BlockBucket;
 
 extern Block *at_blocks[MAX_TERM_SIZE];
-#ifndef PO
 extern Block *at_old_blocks[MAX_TERM_SIZE];
 extern header_type *top_at_blocks[MAX_TERM_SIZE];
 extern Block *at_freeblocklist;
 extern int at_freeblocklist_size;
 #define SIZE_TO_BYTES(size) ((size)*sizeof(header_type))
 
-#endif
-
 extern int at_nrblocks[MAX_TERM_SIZE];
 extern ATerm at_freelist[MAX_TERM_SIZE];
-/*#ifndef PO*/
-/*extern Block *block_table[BLOCK_TABLE_SIZE];*/
-/*#else*/
 extern BlockBucket block_table[BLOCK_TABLE_SIZE];
-/*#endif*/
 
 extern int nb_minor_since_last_major;
 extern int old_bytes_in_young_blocks_after_last_major;
@@ -93,12 +75,9 @@ extern int nb_live_blocks_before_last_gc[MAX_TERM_SIZE];
 extern int nb_reclaimed_blocks_during_last_gc[MAX_TERM_SIZE];
 extern int nb_reclaimed_cells_during_last_gc[MAX_TERM_SIZE];
 
-#ifndef PO
 extern header_type *min_heap_address;
 extern header_type *max_heap_address;
 #define AT_isPotentialTerm(term) (min_heap_address <= (header_type*)(term) && (header_type*)(term) <= max_heap_address)
-
-#endif
 
 void AT_initMemory(int argc, char *argv[]);
 void AT_cleanupMemory();
