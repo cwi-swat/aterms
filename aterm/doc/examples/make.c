@@ -25,16 +25,16 @@ void foo()
     appl[1] = ATmake("<appl(<int>)>", func, ival);
     appl[2] = ATmake("<appl(<int>, <term>, <list>)>", func, 42, term[3], list[2]);
 
-	ATprintf("appl[2] = %t\n", appl[2]);
+    ATprintf("appl[2] = %t\n", appl[2]);
 }
 
 int main(int argc, char *argv[])
 {
-	ATerm bottomOfStack;
+    ATerm bottomOfStack;
 
-	ATinit(argc, argv, &bottomOfStack);
+    ATinit(argc, argv, &bottomOfStack);
 
-	foo();
+    foo();
 
-	return 0;
+    return 0;
 }
