@@ -19,6 +19,9 @@
 
 $Id$
 
+2000/02/27 (jong@cwi.nl)
+ * Added switch "-no-date" to prevent outputting timestamp in utils/dicttoc.c
+
 2000/02/23 ({jong,olivierp}@cwi.nl)
  * Fixed garbage collection bug reported by Arne de Bruijn <arne@knoware.nl>
  * JavaTif now generates xxxTif.java interface, xxxTool.java class, and

@@ -32,6 +32,9 @@
 static char *code_prefix = NULL;
 static char *file_prefix = NULL;
 
+/* should we output a generation-timestamp */
+static int opt_gen_date = 1;
+
 /*{{{  static void usage(char *prg, int exit_code) */
 
 static void usage(char *prg, int exit_code)
@@ -78,10 +81,11 @@ static void checkAlias(ATerm alias)
 
 static void generateHeader(FILE *file, ATermList terms, ATermList afuns)
 {
-  time_t now = time(NULL);
-
-  fprintf(file, "/*\n * Generated at %s", ctime(&now));
-  fprintf(file, " */\n\n");
+  if (opt_gen_date) {
+    time_t now = time(NULL);
+    fprintf(file, "/*\n * Generated at %s", ctime(&now));
+    fprintf(file, " */\n\n");
+  }
 
   fprintf(file, "#ifndef __%s_H\n", code_prefix);
   fprintf(file, "#define __%s_H\n\n", code_prefix);
@@ -133,10 +137,12 @@ static void generateSource(FILE *file, ATermList terms, ATermList afuns)
   ATerm all;
   ATermList list, term_aliases, afun_aliases;
   ATermList term_values, afun_values;
-  time_t now = time(NULL);
 
-  fprintf(file, "/*\n * Generated at %s", ctime(&now));
-  fprintf(file, " */\n\n");
+  if (opt_gen_date) {
+    time_t now = time(NULL);
+    fprintf(file, "/*\n * Generated at %s", ctime(&now));
+    fprintf(file, " */\n\n");
+  }
 
   fprintf(file, "#include \"%s.h\"\n\n", file_prefix);
 
@@ -340,11 +346,17 @@ int main(int argc, char *argv[])
   for (i=1; i<argc; i++) {
     if (strcmp(argv[i], "-h") == 0) {
       usage(argv[0], 0);
-    } else if(strcmp(argv[i], "-dict") == 0) {
+    }
+    else if (strcmp(argv[i], "-no-date") == 0) {
+      opt_gen_date = 0;
+    }
+    else if (strcmp(argv[i], "-dict") == 0) {
       dict_name = argv[++i];
-    } else if(strcmp(argv[i], "-code-prefix") == 0) {
+    }
+    else if (strcmp(argv[i], "-code-prefix") == 0) {
       code_prefix = argv[++i];
-    } else if (strcmp(argv[i], "-file-prefix") == 0) {
+    }
+    else if (strcmp(argv[i], "-file-prefix") == 0) {
       file_prefix = argv[++i];
     }
   }
