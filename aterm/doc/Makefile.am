@@ -26,7 +26,7 @@ JAVA_FILES	= $(patsubst %,../java/aterm/%.java,$(JAVA_CLASSES))
 doc: at.ps manual.ps java-api.ps
 
 # This uses the TexDoclet available at c2_tech.com
-javadoc: $(JAVA_FILES)
+java-api.ltx: $(JAVA_FILES)
 	javadoc -public \
 		-doclet com.c2_tech.doclets.TexDoclet \
 		-docletpath ${TEXDOCLET} \

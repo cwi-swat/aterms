@@ -1,5 +1,9 @@
 $Id$
 
+2001/05/04 ({jong,olivierp}@cwi.nl)
+ * Removed debug spam in AbstractTool.java
+ * Added support for javadoc generation
+
 2001/05/03 (jong@cwi.nl)
  * version 1.5.6
  * Added convenience macros AT{get,set,remove}Annotatations for their

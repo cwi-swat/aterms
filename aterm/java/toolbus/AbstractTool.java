@@ -464,20 +464,11 @@ abstract public class AbstractTool
   {
     ATermAppl appl   = (ATermAppl)event;
     EventQueue queue = (EventQueue)queueMap.get(appl.getName());
-    System.err.println("!!! ackEvent received: " + event);
     if (queue != null && queue.ackWaiting()) {
-      System.err.println("ack event received");
       appl = queue.nextEvent();
       if (appl != null) {
-	System.err.println("unqueueing event: " + appl);
 	sendTerm(factory.make("snd-event(<term>)", appl));
 	return;
-      }
-    } else {
-      if (queue == null) {
-	System.err.println("no queue for this event?");
-      } else {
-	System.err.println("no ack waiting for this event? queue=" + queue);
       }
     }
   }
@@ -505,7 +496,6 @@ class EventQueue
 
   public boolean ackWaiting()
   {
-    System.err.println("### ack retrieved of "+ this);
     return ack;
   }
 
@@ -514,8 +504,6 @@ class EventQueue
 
   public void setAckWaiting()
   {
-    System.err.println("*************** ack set on queue " + this
-		       + " in thread " + Thread.currentThread());
     ack = true;
   }
 
@@ -525,8 +513,6 @@ class EventQueue
   public ATermAppl nextEvent()
   {
     if (events.size() == 0) {
-      System.err.println("***************** ack of " + this + " cleared."
-		       + " in thread " + Thread.currentThread());
       ack = false;
       return null;
     }
