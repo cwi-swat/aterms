@@ -827,9 +827,6 @@ static ATermAppl fparse_quoted_appl(int *c, FILE *f)
                case 't':
                   buffer[len++] = '\t';
                   break;
-               case '\\':
-                  buffer[len++] = '\\';
-                  break;
                default:
                   buffer[len++] = '\\';
                   buffer[len++] = *c;
