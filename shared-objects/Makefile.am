@@ -7,5 +7,5 @@ CLEANFILES = ${JARFILE}
 
 ${JARFILE}:
 	jar cf ${JARFILE} \
-	`cd ${top_builddir} && find . -name '*.java' -o -name '*.class'`
+	`cd ${top_builddir} && find . -name '*.class'`
 
