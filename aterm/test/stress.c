@@ -1,3 +1,6 @@
+/* vim:ts=2
+*/
+
 /*
 
     ATerm -- The ATerm (Annotated Term) library
@@ -735,7 +738,7 @@ void testMark()
 		t2 = ATmake("succ(<int>,<term>)", i, t2);
 	}
 	result = ATmake("result(<term>,<term>)", t1, t2);
-	AT_assertUnmarked(result);
+	/*AT_assertUnmarked(result); Needs stacksize >> 8M */
 	
 	AT_markTerm(result);
 	test_assert("marking", 1, IS_MARKED(zero->header));
