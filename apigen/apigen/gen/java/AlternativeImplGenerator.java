@@ -449,7 +449,7 @@ public class AlternativeImplGenerator extends JavaGenerator {
 	  {
 		String altClassName = AlternativeGenerator.className( type,alt );
 
-		println("  public void jjtAccept(Visitor v) throws jjtraveler.VisitFailure");
+		println("  public void accept(Visitor v) throws jjtraveler.VisitFailure");
 		println("  {");
 		println("    v.visit_" + altClassName + "(this);");
 		println("  }");

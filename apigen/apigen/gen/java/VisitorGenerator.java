@@ -67,6 +67,11 @@ public class VisitorGenerator extends JavaGenerator {
         //in the visitable class which can be set via its constructor method (and per default Failure)
         
 		println("  public void voidVisit(jjtraveler.Visitable any) throws jjtraveler.VisitFailure {");
-		println("    if (any instanceof " + visitable + ") {");        println("        ((" + visitable +") any).jjtAccept(this);");        println("    } else {");        println("      throw new jjtraveler.VisitFailure();");        println("    }");        println("  }");
+		println("    if (any instanceof " + visitable + ") {");
+		println("        ((" + visitable +") any).accept(this);");
+		println("    } else {");
+		println("      throw new jjtraveler.VisitFailure();");
+		println("    }");
+		println("  }");
 	}
 }

@@ -73,6 +73,6 @@ public class GenericConstructorGenerator extends JavaGenerator {
 	  }
       
       private void genAccept() {
-          println("  abstract public void jjtAccept(Visitor v) throws jjtraveler.VisitFailure;"); 
+          println("  abstract public void accept(Visitor v) throws jjtraveler.VisitFailure;"); 
       }
 }

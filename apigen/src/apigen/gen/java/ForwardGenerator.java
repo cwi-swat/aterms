@@ -53,7 +53,7 @@ public class ForwardGenerator extends JavaGenerator {
 	protected void generate() {
 		printPackageDecl();
 		
-        println("class Fwd extends Visitor implements jjtraveler.Visitor");
+        println("public class Fwd extends Visitor implements jjtraveler.Visitor");
         println("{");
         genConstructor();
 		genVisits(adt);
