@@ -1,9 +1,7 @@
-SUBDIRS=aterm utils toolbus test $(JAVA_SUBDIR) doc
+SUBDIRS		= aterm utils toolbus test $(JAVA_SUBDIR) doc
 
-DIST_SUBDIRS=aterm utils toolbus test doc java
-
-EXTRA_DIST=make_rules reconf
-
+DIST_SUBDIRS	= aterm utils toolbus test java doc
+EXTRA_DIST	= make_rules reconf
 DISTFILE	= ${distdir}.tar.gz
 WWWDIR		= /usr/local/www.cwi.nl/projects/MetaEnv/aterm
 
