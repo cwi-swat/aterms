@@ -101,6 +101,7 @@ public class APIGenerator extends CGenerator {
         genReverse(typeId, typeName);
         genSeparatedAppend(type, typeId, typeName, elementTypeId, elementTypeName);
         genSeparatedConcat(type, typeId, typeName, elementTypeId, elementTypeName);
+        // TODO: extend the API to match the normal list API
 	}
 
 	private void genListApi(ListType type) {
@@ -116,6 +117,7 @@ public class APIGenerator extends CGenerator {
 	   genGetElementAt(typeId, typeName, elementTypeId, elementTypeName);
 	   genReplaceElementAt(typeId, typeName, elementTypeId, elementTypeName);
 	   genListMakes(typeId, typeName, elementTypeId, elementTypeName);
+	   // TODO: extend the API to completely cover the ATermList API
 	}
 
 	private void genListMakes(String typeId, String typeName, String elementTypeId, String elementTypeName) {
