@@ -8,6 +8,8 @@ Both versions:
   case there are several annotations...
 * Use lex/yacc/javacc for a readable less abstract version of the adt formalism...
 * support list of builtin types
+* Add the generation of placeholder constructors such that the full match/make
+  paradigm of the ATerm library is covered in a typed fashion.
 
 C version:
 * generate makeSingle for separated and normal lists in C
