@@ -1013,6 +1013,41 @@ void testTBLegacy()
 }
 
 /*}}}  */
+/*{{{  void testBaffle() */
+
+void testBaffle()
+{
+  char buf[BUFSIZ], *ptr;
+  FILE *file;
+  ATerm test2, test1 = ATparse("f(1,a,<abc>,[24,g]{[a,b]})");
+  int len = 0;
+
+  test_assert("baffle", 1, AT_calcUniqueSubterms(ATparse("f(a,[1])"))==5);
+  sprintf(buf, "baffle-test-%d.baf", (int)getpid());
+  file = fopen(buf, "w");
+  if(file) {
+    test_assert("baffle", 2, ATwriteToBinaryFile(test1, file));
+    fclose(file);
+    file = fopen(buf, "r");
+    test2 = ATreadFromBinaryFile(file); 
+    test_assert("baffle", 3, test2);
+    test_assert("baffle", 4, ATisEqual(test1, test2));
+    fclose(file);
+    unlink(buf);
+  } else {
+    fprintf(stderr, "warning could not open file: %s for writing.\n", buf);
+  }
+
+  ptr = ATwriteToBinaryString(test1, &len);
+  ATfprintf(stderr, "term written to binary string: %t, size=%d\n", test1, len);
+  test2 = ATreadFromBinaryString(ptr, len);
+  ATfprintf(stderr, "term read from binary string : %t\n", test2);
+  test_assert("baffle", 5, ATisEqual(test1, test2));
+
+  printf("baffle tests ok.\n");
+}
+
+/*}}}  */
 /*{{{  void testTaf() */
 
 void testTaf()
@@ -1067,42 +1102,60 @@ void testTaf()
 }
 
 /*}}}  */
+/*{{{  void testChecksum() */
 
-/*{{{  void testBaffle() */
-
-void testBaffle()
+void testChecksum()
 {
-  char buf[BUFSIZ], *ptr;
-  FILE *file;
-  ATerm test2, test1 = ATparse("f(1,a,<abc>,[24,g]{[a,b]})");
-  int len = 0;
+  ATerm t = ATparse("f(a,b,1,2,[])");
+  char expected_digest[16] = { 0xf0, 0xbb, 0xaf, 0x3d, 0x93, 0xfa, 0x08, 0x2c,
+			       0xb7, 0xfe, 0xa9, 0x79, 0x6c, 0xd5, 0xdd, 0xdd };
 
-  test_assert("baffle", 1, AT_calcUniqueSubterms(ATparse("f(a,[1])"))==5);
-  sprintf(buf, "baffle-test-%d.baf", (int)getpid());
-  file = fopen(buf, "w");
-  if(file) {
-    test_assert("baffle", 2, ATwriteToBinaryFile(test1, file));
-    fclose(file);
-    file = fopen(buf, "r");
-    test2 = ATreadFromBinaryFile(file); 
-    test_assert("baffle", 3, test2);
-    test_assert("baffle", 4, ATisEqual(test1, test2));
-    fclose(file);
-    unlink(buf);
-  } else {
-    fprintf(stderr, "warning could not open file: %s for writing.\n", buf);
-  }
+  test_assert("checksum", 0, memcmp(expected_digest, ATchecksum(t), 16) == 0);
 
-  ptr = ATwriteToBinaryString(test1, &len);
-  ATfprintf(stderr, "term written to binary string: %t, size=%d\n", test1, len);
-  test2 = ATreadFromBinaryString(ptr, len);
-  ATfprintf(stderr, "term read from binary string : %t\n", test2);
-  test_assert("baffle", 5, ATisEqual(test1, test2));
-
-  printf("baffle tests ok.\n");
+  printf("checksum tests ok.\n");
 }
 
 /*}}}  */
+/*{{{  void testDiff() */
+
+void testDiff()
+{
+  ATerm t1 = ATparse("f(a)");
+  ATerm t2 = ATparse("f(b)");
+  ATerm diffs;
+  ATerm template;
+
+  test_assert("diff", 0, ATdiff(t1, t2, &template, &diffs));
+  test_assert("diff", 1, ATisEqual(template, ATparse("f(<diff-appls>)")));
+  test_assert("diff", 2, ATisEqual(diffs, ATparse("[diff(a,b)]")));
+
+  diffs = NULL;
+  test_assert("diff", 3, ATdiff(t1, t2, NULL, &diffs));
+  test_assert("diff", 4, ATisEqual(diffs, ATparse("[diff(a,b)]")));
+
+  template = NULL;
+  test_assert("diff", 5, ATdiff(t1, t2, &template, NULL));
+  test_assert("diff", 6, ATisEqual(template, ATparse("f(<diff-appls>)")));
+
+  test_assert("diff", 7, ATdiff(t1, t2, NULL, NULL));
+
+  t1 = ATparse("[<f(4,3.14)>,[] ,[a,b],[e,f]]");
+  t2 = ATparse("[<f(5,3.14)>,[1],7    ,[e]]");
+
+  test_assert("diff", 0, ATdiff(t1, t2, &template, &diffs));
+
+  /*ATfprintf(stderr, "template = %t, diffs = %t\n", template, diffs);*/
+
+  test_assert("diff", 1, ATisEqual(template, 
+     ATparse("[<f(<diff-values>,3.140000)>,[<diff-lists>],<diff-types>,[e,<diff-lists>]]")));
+  test_assert("diff", 2, ATisEqual(diffs, 
+     ATparse("[diff(4,5),diff([],[1]),diff([a,b],7),diff([f],[])]")));
+
+  printf("diff tests ok.\n");
+}
+
+/*}}}  */
+
 
 /*{{{  int main(int argc, char *argv[]) */
 
@@ -1137,6 +1190,8 @@ int main(int argc, char *argv[])
   testIndexedSet();
   testDictToC();
   testTBLegacy();
+  testChecksum();
+  testDiff();
 
   return 0;
 }

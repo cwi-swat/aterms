@@ -110,6 +110,7 @@ int             nr_marks = 0;
 
 static ATerm    fparse_term(int *c, FILE * f);
 static ATerm    sparse_term(int *c, char **s);
+static ATerm AT_diff(ATerm t1, ATerm t2, ATermList *diffs);
 
 /*}}}  */
 
@@ -2808,11 +2809,132 @@ unsigned char *ATchecksum(ATerm t)
 
   MD5Init(&context);
   buf = ATwriteToSharedString(t, &len);
-  ATfprintf(stderr, "calculating sum over %s\n", buf);
   MD5Update(&context, buf, len);
   MD5Final(digest, &context);
 
   return digest;
+}
+
+/*}}}  */
+
+/*{{{  static ATermList AT_diffList(ATermList l1, ATermList l2, ATermList *diffs) */
+
+static ATermList AT_diffList(ATermList l1, ATermList l2, ATermList *diffs)
+{
+  ATermList result = ATempty;
+  ATerm el1, el2;
+
+  while (!ATisEmpty(l1)) {
+    if (ATisEmpty(l2)) {
+      if (*diffs) {
+	*diffs = ATinsert(*diffs, ATmake("diff(<term>,[])", l1));
+      }
+      return ATreverse(ATinsert(result, ATparse("<diff-lists>")));
+    }
+    el1 = ATgetFirst(l1);
+    el2 = ATgetFirst(l2);
+    result = ATinsert(result, AT_diff(el1, el2, diffs));
+
+    l1 = ATgetNext(l1);
+    l2 = ATgetNext(l2);
+  }
+
+  if (!ATisEmpty(l2)) {
+    if (*diffs) {
+      *diffs = ATinsert(*diffs, ATmake("diff([],<term>)", l2));
+    }
+    return ATreverse(ATinsert(result, ATparse("<diff-lists>")));
+  }
+
+  return ATreverse(result);
+}
+
+/*}}}  */
+/*{{{  static ATerm AT_diff(ATerm t1, ATerm t2, ATermList *diffs) */
+
+static ATerm AT_diff(ATerm t1, ATerm t2, ATermList *diffs) 
+{
+  ATerm diff = NULL;
+
+  if (ATisEqual(t1, t2)) {
+    return t1;
+  }
+
+  if (ATgetType(t1) != ATgetType(t2)) {
+    diff = ATparse("<diff-types>");
+  } else {
+    switch (ATgetType(t1)) {
+      case AT_INT:
+      case AT_REAL:
+      case AT_BLOB:
+	diff = ATparse("<diff-values>");
+	break;
+
+      case AT_PLACEHOLDER:
+	{
+	  ATerm ph1, ph2;
+	  
+	  ph1 = ATgetPlaceholder((ATermPlaceholder)t1);
+	  ph2 = ATgetPlaceholder((ATermPlaceholder)t2);
+	  return (ATerm)ATmakePlaceholder(AT_diff(ph1, ph2, diffs));
+	}
+	break;
+
+      case AT_APPL:
+	{
+	  ATermAppl appl1, appl2;
+	  AFun afun1, afun2;
+	  
+	  appl1 = (ATermAppl)t1;
+	  appl2 = (ATermAppl)t2;
+	  afun1 = ATgetAFun(appl1);
+	  afun2 = ATgetAFun(appl2);
+	  if (afun1 == afun2) {
+	    ATermList args1 = ATgetArguments(appl1);
+	    ATermList args2 = ATgetArguments(appl2);
+	    ATermList args = AT_diffList(args1, args2, diffs);
+	    return (ATerm)ATmakeApplList(afun1, args);
+	  } else {
+	    diff = ATparse("<diff-appls>");
+	  }
+	}
+	break;
+	
+      case AT_LIST:
+	return (ATerm)AT_diffList((ATermList)t1, (ATermList)t2, diffs);
+    }
+  }
+
+  if (diffs) {
+    *diffs = ATinsert(*diffs, ATmake("diff(<term>,<term>)", t1, t2));
+  }
+  
+  return diff;
+}
+
+/*}}}  */
+
+/*{{{  ATerm ATdiff(ATerm t1, ATerm t2) */
+
+ATbool ATdiff(ATerm t1, ATerm t2, ATerm *template, ATerm *diffs)
+{
+  ATerm templ;
+
+  if (diffs) {
+    *diffs = (ATerm)ATempty;
+  }
+
+  templ = AT_diff(t1, t2, (ATermList *)diffs);
+
+  if (template) {
+    *template = templ;
+  }
+
+  if (diffs) {
+    *diffs = (ATerm)ATreverse((ATermList)*diffs);
+  }
+
+  return !ATisEqual(t1, t2);
 }
 
 /*}}}  */

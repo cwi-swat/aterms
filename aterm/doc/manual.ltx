@@ -1424,6 +1424,22 @@ the RSA Data Security, Inc. MD5 Message-Digest Algorithm (see RFC1321).
 
 \smallskip\noindent Usage: {\tt atsum [\emph{inputfile}]}.
 
+\subsection{Calculating differences between two \ATerms: {\tt atdiff}}
+\label{util-atdiff}
+This utility compares two terms and prints a template term that
+covers the common parts containing {\tt <diff>} placeholders for
+subterms that differed, and a list of their differing subterms.
+
+\smallskip\noindent
+\begin{small}
+\begin{verbatim}
+Usage: atdiff [<options>] <file1> <file2>
+Options:
+    --nodiffs | --diffs <diff-file>              (default: stdout)
+    --notemplate | --template <template-file>    (default: stdout)
+\end{verbatim}
+\end{small}
+
 %}}}
 %{{{ Index
 

@@ -247,5 +247,6 @@ ATerm ATremoveAllAnnotations(ATerm t);
    "RSA Data Security, Inc. MD5 Message-Digest Algorithm" (see RFC1321)
 */
 unsigned char *ATchecksum(ATerm t);
+ATbool ATdiff(ATerm t1, ATerm t2, ATerm *template, ATerm *diffs);
 
 #endif
