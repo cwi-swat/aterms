@@ -31,6 +31,7 @@ public class RoloTest
     directory = args[0];
 
     test.run();
+    System.out.println("klaar!");
     return;
   }
 

@@ -58,7 +58,35 @@ public class ListTypeImplGenerator extends TypeImplGenerator {
 		genIsAlternativeMethods();
 		genGetters();
 		genGetStaticFactory();
+		genSharedObjectInterface();
 		println("}");
+	}
+
+	private void genSharedObjectInterface() {
+		genEquivalentMethod();
+		genDuplicateMethod();
+	}
+
+	private void genDuplicateMethod() {
+		String className = ListTypeGenerator.className(type);
+		println("  public shared.SharedObject duplicate() {");
+		println("	" + className + " clone = new " + className + "();");
+		println("	clone.init(hashCode(), getAnnotations(), getFirst(), getNext());");
+		println("	return clone;");
+		println("  }");
+	}
+
+	private void genEquivalentMethod() {
+		String className = ListTypeGenerator.className(type);
+		
+		println("public boolean equivalent(shared.SharedObject peer) {");
+		println("	if (peer instanceof " + className + ") {");
+		println("		return super.equivalent(peer);");
+		println("	}");
+		println("	else {");
+		println("		return false;");
+		println("	}");
+		println("  }");
 	}
 
 	private void genGetStaticFactory() {
@@ -108,11 +136,11 @@ public class ListTypeImplGenerator extends TypeImplGenerator {
 		println("  {");
 		println("     if (trm instanceof aterm.ATermList) {");
 		println("        aterm.ATermList list = ((aterm.ATermList) trm).reverse();");
-		println("        " + className + " tmp = (" + className + ") " + get_factory + ".makeList();");
+		println("        " + className + " tmp = (" + className + ") " + get_factory + ".make" + className + "();");
 		println("        for (; !list.isEmpty(); list = list.getNext()) {");
 		println("          " + elementTypeName + " elem = " + elementTypeName + ".fromTerm(list.getFirst());");
 		println("           if (elem != null) {");
-		println("             tmp.insert((aterm.ATerm) elem);");
+		println("             tmp = " + get_factory + ".make" + className + "(elem, tmp);");
 		println("           }");
 		println("           else {");
 		println("             throw new RuntimeException(\"Invalid element in " + typeName + ":\" + elem);");
