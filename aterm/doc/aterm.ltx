@@ -62,7 +62,7 @@ applications~\cite{BK98} but are much more widely applicable.
 Typically, we want to exchange and process tree-like data structures
 such as parse trees, abstract syntax trees, parse tables, generated
 code, and formatted source texts. The applications involved include
-parsers, typecheckers, compilers, formatters, syntax-directed editors
+parsers, typecheckers, compilers, formatters, syntax-directed editors,
 and user-interfaces written in a variety of languages.  Typically, a
 parser may add annotations to nodes in the tree describing the
 coordinates of their corresponding source text and a formatter may add
@@ -84,12 +84,12 @@ possible to perform operations on an \ATerm\ received from another
 application without first converting it to an application-specific
 representation.
 
-First, we will now give a quick overview of \ATerms
+First, we will now give a quick overview of \ATerms\
 (Section~\ref{aterms-at-a-glance}).  Next, we discuss implementation issues
 (Section~\ref{implementation}) and give some insight in performance issues
 (Section~\ref{measurements}).
 An overview of applications (Section~\ref{applications}) and a
-discussion (Section~\ref{discussion}) conclude the paper.
+discussion (Section~\ref{discussion}) conclude this paper.
 
 %}}}
 %{{{ ATerms at a Glance
@@ -225,7 +225,7 @@ The operations are:
 
 \begin{itemize}
 
-\item {\tt ATerm ATmake(String $pattern$, $arg_1$, ..., $arg_n$)}:
+\item {\tt ATerm ATmake(String $pattern$, ATerm $arg_1$, ..., ATerm $arg_n$)}:
 	 Create a new
 term by taking the string pattern, parsing it as an \ATerm\ and filling
 the placeholders in the resulting term with values taken from $arg_1$
@@ -234,7 +234,7 @@ If the parse fails, a message is printed and the program is aborted.
 The types of the arguments depend on the specific placeholders used
 in \emph{pattern}. For instance when the placeholder {\tt <int>} is used,
 an integer is expected as argument and a new integer ATerm is constructed.
-\item {\tt ATbool ATmatch(ATerm $term$, String $pattern$, $arg_1$, ..., $arg_n$)}: 
+\item {\tt ATbool ATmatch(ATerm $term$, String $pattern$, ATerm $arg_1$, ..., ATerm $arg_n$)}: 
 Match \emph{term} against
 \emph{pattern}, and bind subterms that match with placeholders in
 \emph{pattern} with the result variables $arg_1$ through $arg_n$.
@@ -288,7 +288,7 @@ binary representation from \emph{file}.
 representation of \emph{term} to \emph{file}. Returns {\tt true} for
 success and {\tt false} for failure.
 
-\item {\tt Boolean ATwriteToBinaryFile(ATerm \emph{term}, ATerm \emph{file})}: Write a 
+\item {\tt Boolean ATwriteToBinaryFile(ATerm \emph{term}, File \emph{file})}: Write a 
 binary representation of \emph{term} to \emph{file}. Returns
 {\tt true} for success, and {\tt false} for failure.
 
@@ -483,15 +483,13 @@ When the load of the hash table reaches a certain threshold,
 we allocate a larger table, rehash all the entries of the 
 old table in the new one, and free the old hash table.
 
+It is possible for a user to increase the initial size of
+the hash table, in order to save resizing and rehashing operations.
 
-\paragraph{Dynamic aspects}
-
-XXX nog verder invullen? XXX
-
-\begin{itemize}
-\item Resizing.
-\item Relation with ``user-defined'' hash tables.
-\end{itemize}
+The \ATerm\ library also provides facilities for defining hash tables
+as well. This allows the implementation of a fast lookup mechanism
+for \ATerms. The user-defined hash tables are used to implement
+memo-functions in the \asdf\ to C compiler, see Section \ref{asdf2c}.
 
 %{{{ Garbage collection
 
@@ -506,14 +504,14 @@ in turn, and explain why we base our design on mark-sweep garbage collection.
 \paragraph{Reference Counting}
 Reference counting in its simplest form works by keeping track of the 
 number of references to an object. If this number drops to zero, 
-there are no more references to it and it can be reclaimed.
+there are no more references to an object and it can be reclaimed.
 
 Reference counting has the advantage that unused terms can be reclaimed 
 immediately when they become unused, while in the other strategies 
 reclamation of space is more batch oriented. 
 In most of the target applications this is not a major
 issue but it might be important in some cases, especially
-in real-time applications where the unpredictable pauses in execution
+in real-time applications where the unpredictable pauses during execution
 caused by sweeping garbage collection are unacceptable.
 The usual problem with reference counting that circular
 structures are not collected does not apply because terms cannot
@@ -741,7 +739,7 @@ Due to the nature of the operations on \ATerm\ lists, there are
 two obvious list representations: an array of term references or a linked
 list of term references. Experiments have shown that in typical applications
 quite varying list sizes are encountered. This renders the array approach 
-inferior, because adding and deleting elements of a list would become to
+inferior, because adding and deleting elements of a list would become too
 expensive. Consequently, we have opted for the linked list approach.
 Lists are constructed using binary list constructors, containing 
 a reference to the first element in the list and to the tail of the list.
@@ -778,11 +776,11 @@ with type {\tt AT\_LIST}, which represents the list of annotations.
 
 As discussed in the introduction, the efficient exchange of \ATerms\ 
 between processes is very important. The simplest form of exchange 
-is the concrete syntax presented in Section \ref{concrete-syntax}.
+is based on the concrete syntax presented in Section \ref{concrete-syntax}.
 This would involve pretty printing the term on one side, and parsing it
 on the other. The concrete syntax is not a very efficient exchange format
-however, because the sharing of function symbols and subterms cannot be expressed
-in this way.
+however, because the sharing of function symbols and subterms cannot 
+be expressed in this way.
 
 A better solution would be to exchange a representation in which
 sharing (both of function symbols and subterms) can be expressed
@@ -960,11 +958,15 @@ This is an example on abstract data type represented as \ATerm.
 
 \item[COBOL System:] a COBOL system consisting of 117 programs with
 a total of 247548 lines of COBOL that has been parsed with the
-above parse table. Note that due to the specific form of parse trees we use,
+above parse table.
+The parse trees constructed for these COBOL programs are represented
+as \ATerms, see Section \ref{asfix} for more details.
+Note that due to the specific form of parse trees we use,
 the amount of sharing is substantial.
 
 \item[Risla library:] a parse tree of the component library for the Risla
-language.
+language, a domain specific language for describing financial products
+\cite{ADR95}.
 
 
 \end{description}
@@ -1000,9 +1002,11 @@ the number of unique nodes in each term, the sharing percentage,
 the amount of memory (in bytes) used for the storage of the term,
 and the average number of bytes needed per node. As can be seen from these figures,
 at least in our applications sharing \emph{does} make a difference. By fully exploiting
-the reduncies in the input terms, we can store a node using on the avrage 1.6 
+the reduncies in the input terms, we can store a node using on the average 1.6 
 bytes, and still perform operations on them efficiently. 
 The worst case behaviour is 15 bytes per node.
+
+XXX Table for increasing COBOL and Risla to see how the sharing increases. XXX
 
 \begin{table}[tb]
 \begin{center}
@@ -1044,7 +1048,7 @@ In Table~\ref{measurements-text} we give results for reading and writing
 our sample terms as Ascii text files. The six columns give the size of the text
 representation of the test term in bytes, the average number of bytes per node,
 the time needed to read the text file, average time needed to read a node,
-the time needed to write the text file and the average time needed to write a node.
+the time needed to write the text file, and the average time needed to write a node.
 On the average, a node requires 4.3 bytes and reading and writing requires
 6.8, respectively, 2.2 $\mu$s.
 
@@ -1116,7 +1120,7 @@ Random			& 6199981	& 567419	& 90.9		& 439293	& 92.9	\\ \hline \hline
 
 COBOL Parse Table	& 3161908	& 303621	& 90.4		& 243990	& 92.3	\\ \hline
 COBOL System		&135350005      & 2279066	& 98.3		& 3072774	& 97.7	\\ \hline
-Risla library           & 2955964       & 141946        & 95.2          &  80009        & 97.3  \\ \hline
+Risla library           & 2955964       & 141946        & 95.2          &  80009        & 97.3  \\ \hline \hline
 Averages		&		&		& 94.6		&               & 95.8  \\ \hline
 \end{tabular}
 \caption{\baf\ \emph{versus} {\tt gzip}} \label{measurements-baf-gzip}
@@ -1179,11 +1183,12 @@ of function symbols parse trees and (abstract) syntax trees can be
 represented for any language or formalism.
 
 \subsubsection{AsFix}
+\label{asfix}
 
 \asfix\ (\asdf\ Fixed format) is an incarnation of \ATerms\ for
 representing \asdf~\cite{HHKR92.new,BHK89,DHK96}
 
-modules and terms.  Each module or term is
+Each module or term is
 represented by its parse tree which contains both the syntax rules
 used and all original layout and comments. In this way, the original
 source text can be reconstructed from the \asfix\ representation, thus
@@ -1334,6 +1339,7 @@ rewrite rules that must be compiled are exchanged as \asfix\ terms.
 
 
 \subsection{ASF+SDF to C compiler}
+\label{asdf2c}
 
 The \asdf\ to C compiler \cite{BKO99} is a compiler for \asdf.  It
 generates ANSI-C code and depends on the \aterm\ library as run-time
@@ -1402,7 +1408,7 @@ is necessary to share as many states as possible.
 
 \item A tool for the detection of code clones in legacy code.
 
-\item The Stratego compiler develop by Eelco Visser \cite{Stratego}.
+\item The Stratego compiler develop by Eelco Visser \cite{Vis98}.
 
 \end{itemize}
 
@@ -1512,8 +1518,9 @@ A very first version of the \ATerm\ library was developed as part of
 the \TB\ coordination architecture~\cite{BK98}. It was used to
 represent data which were transported between tools written in
 different languages running on different machines.  Simultaneously, we
-were developing a formalism for representing parse trees \cite{AsFix}.
-In addition, incompatible term formats ware in use in various of our
+were developing a formalism for representing parse 
+trees \cite{GB94,BKOV99.asfix}.
+In addition, incompatible term formats were in use in various of our
 compiler projects~\cite{FKW98}. Observing the similarities between all
 these incompatible term data types triggered the work on \ATerms\ as
 described here. The benefits are twofold. First, a common term data
@@ -1546,6 +1553,26 @@ operations.
 
 %}}}
 
+\section*{Availability}
+
+The \ATerm\ library can be obtained via 
+
+\begin{quote}
+\begin{verbatim}
+http://www.wins.uva.nl/pub/programming-research/software/aterm/
+\end{verbatim}
+\end{quote}
+
+The current version of the library is available for Unix and Linux,
+we are currently porting the library to Windows/NT.
+
+
 \section*{Acknowledgements}
-?????
+
+We want to thank all current users of the \ATerm\ library,
+special thanks to Jan-Friso Groote, for his input and sometimes
+severe requirements, Merijn de Jonge and Jeroen Scheerders,
+for detecting quite a lot of (hairy) bugs.
+Finally, we want to thank Pierre-Etienne Moreau for the fruitful
+discussions on this subject during his stay in Amsterdam.
 

@@ -5,8 +5,9 @@
 \section{Concrete Syntax}
 \label{concrete-syntax}
 
-here follows a formal definition of the concrete
-syntax of \ATerms\ using the syntax definition formalism SDF\cite{HHKR92.new}.
+A formal definition of the concrete
+syntax of \ATerms\ using the syntax definition formalism {\sc Sdf} \cite{HHKR92.new}
+is presented here.
 Note that there is no concrete syntax defined for blobs, because 
 a humanly readable representation of blobs depends on the type
 of data stored in the blob.
@@ -70,15 +71,15 @@ The operations on ATermReal are:
 name, an arity, and an indication whether the symbol name is quoted or not.
 The operations on symbols are:
 \begin{itemize}
-\item {\tt ATmakeAFun(String \emph{name}, Integer \emph{arity}, Boolean \emph{quoted})}: Construct
+\item {\tt AFun ATmakeAFun(String \emph{name}, Integer \emph{arity}, Boolean \emph{quoted})}: Construct
 a new symbol. If a symbol with the given name, arity, and quotation already 
 exists, the existing symbol is returned. Otherwise a new symbol is created
 and returned. \AFuns\ are also subject to garbage collection in order
 to avoid long running (interactive) programs from slowly running out of
 symbols.
-\item {\tt ATgetName(AFun \emph{symbol})}: Retrieve the name of a symbol.
-\item {\tt ATgetArity(AFun \emph{symbol})}: Retrieve the arity of a symbol.
-\item {\tt ATisQuoted(AFun \emph{symbol})}: Check if a symbol is quoted.
+\item {\tt String ATgetName(AFun \emph{symbol})}: Retrieve the name of a symbol.
+\item {\tt Integer ATgetArity(AFun \emph{symbol})}: Retrieve the arity of a symbol.
+\item {\tt Boolean ATisQuoted(AFun \emph{symbol})}: Check if a symbol is quoted.
 \end{itemize}
 
 %}}}
@@ -96,7 +97,7 @@ The operations on this datatype are:
 	  arguments.
 \item {\tt ATermAppl ATmakeAppl(AFun \emph{fun}, ATermList \emph{args})}:
 		Construct a new function application with the given function
-		symbol and arguments.
+		symbol and a list of arguments.
 \item {\tt AFun ATgetFun(ATermAppl \emph{appl})}: 
       Retrieve the function symbol of a function application.
 \item {\tt ATerm ATgetArgument(ATermAppl \emph{appl}, Integer \emph{n})}: 
@@ -187,7 +188,7 @@ The operations on ATermBlob are:
 \begin{itemize}
 \item {\tt ATermBlob ATmakeBlob(Integer \emph{size}, Data \emph{data})}: 
       Construct a new blob term.
-\item {\tt Integer getBlobSize(ATermBlob \emph{blob})}: Retrieve the size of
+\item {\tt Integer ATgetBlobSize(ATermBlob \emph{blob})}: Retrieve the size of
       a blob.
 \item {\tt Data ATgetBlobData(ATermBlob \emph{blob})}: Retrieve the data
       pointer stored in a blob.
@@ -195,6 +196,10 @@ The operations on ATermBlob are:
 
 The memory management of blobs must be done explicitly by the application
 programmer. 
+
+
+\paragraph{Auxilary:} The level two interface provides functionality
+to create and manipulate user-defined hash tables.
 
 %}}}
 
