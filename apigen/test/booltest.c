@@ -49,7 +49,7 @@ static void testBooleans(SDFBoolList l)
 
   assert(SDFhasBoolWsAfterAmp(b));
   ws = SDFgetBoolWsAfterAmp(b);
-  assert(!strcmp(ws, "\" \""));
+  assert(!strcmp(ws, " "));
 
   bool[1] = SDFmakeBoolOr(SDFmakeBoolAnd(true,ws,ws,SDFmakeBoolFalse()),ws,ws,true);
   assert(ATisEqual(bool[0], bool[1]));
