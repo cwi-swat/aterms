@@ -2018,7 +2018,7 @@ AT_markTerm(ATerm t)
 			if (!mark_stack)
 				ATerror("cannot realloc mark stack to %d entries.\n", mark_stack_size);
 			limit = mark_stack + mark_stack_size - MARK_STACK_MARGE;
-			fprintf(stderr, "resized mark stack to %d entries", mark_stack_size);
+			fprintf(stderr, "resized mark stack to %d entries\n", mark_stack_size);
 			fflush(stderr);
 			
 			current = mark_stack + current_index;
