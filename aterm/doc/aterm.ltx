@@ -961,7 +961,7 @@ We have used the parse tree for a XXX-line CASL specification.
 
 \end{description}
 
-\begin{figure}[tb]
+\begin{table}[tb]
 \begin{center}
 \begin{tabular}{|l||c|c|c|c|c|} \hline
 Term			& \# nodes & \# unique & Sharing &   Bytes  & Bytes/  \\
@@ -974,18 +974,18 @@ CASL Specification	&	   &           &         &          &         \\ \hline
 \end{tabular}
 \caption{Memory usage for \ATerms} \label{measurements-in-memory}
 \end{center}
-\end{figure}
+\end{table}
 
-In Figure~\ref{measurements-in-memory}, we give results for the memory usage
+In Table~\ref{measurements-in-memory}, we give results for the memory usage
 for our sample terms. The five columns give the total number of nodes in each term,
 the number of unique nodes in each term, the sharing percentage,
 the amount of memory (in bytes) used for the storage of the term,
 and the average number of bytes needed per node. As can be seen from these figures,
 at least in our applications sharing \emph{does} make a difference. By fully exploiting
 the reduncies in the input terms, we can store a node using an average of only three
-bytes, and still perform operations o them efficiently. 
+bytes, and still perform operations on them efficiently. 
 
-\begin{figure}[tb]
+\begin{table}[tb]
 \begin{center}
 \begin{tabular}{|l||c|c|c|c|c|c|} \hline
 Term			&Text	 & Bytes/& Read	& Read/ & Write	& Write/\\
@@ -1000,15 +1000,15 @@ CASL Specification	& x	 & x	& x	& x	& x	& x	\\ \hline
 \end{tabular}
 \caption{Reading and writing text} \label{measurements-text}
 \end{center}
-\end{figure}
+\end{table}
 
-In Figure~\ref{measurements-text} we give results for reading and writing
+In Table~\ref{measurements-text} we give results for reading and writing
 our sample terms as text files. The six columns give the size of the text
 representation of the test term in bytes, the average number of bytes per node,
 the time needed to read the text file, average time needed to read a node,
 the time needed to write the text file and the average time needed to write a node.
 
-\begin{figure}[tb]
+\begin{table}[tb]
 \begin{center}
 \begin{tabular}{|l||c|c|c|c|c|c|} \hline
 Term			&BAF	& Bytes/& Read	& Read/ & Write	& Write/\\
@@ -1022,9 +1022,9 @@ CASL Specification	& x	& x	& x	& x	& x	& x	\\ \hline
 \end{tabular}
 \caption{Reading and writing \baf} \label{measurements-baf}
 \end{center}
-\end{figure}
+\end{table}
 
-In Figure~\ref{measurements-baf} we give results for reading and writing \baf\ files
+In Table~\ref{measurements-baf} we give results for reading and writing \baf\ files
 for the same set of sample terms.
 The columns give in order: the size of the \baf\ files in bytes,
 the average number of bytes needed per node,
@@ -1033,7 +1033,7 @@ the average read time per node,
 the time to write the \baf\ representation,
 and the average write time per node.
 
-\begin{figure}[tb]
+\begin{table}[tb]
 \begin{center}
 \begin{tabular}{|l||c|c|c|c|c|} \hline
 
@@ -1049,11 +1049,11 @@ CASL Specification	& x		& x		& x		& x		& x	\\ \hline
 \end{tabular}
 \caption{\baf\ \emph{versus} {\tt gzip}} \label{measurements-baf-gzip}
 \end{center}
-\end{figure}
+\end{table}
 
 
 
-In Figure~\ref{measurements-baf-gzip} we show how the compression in \baf\ files
+In Table~\ref{measurements-baf-gzip} we show how the compression in \baf\ files
 compares to the compression of the standard Unix utility {\tt gzip}.
 Considering the same set of examples, we give figures
 for a straightforward dump of each term  as Ascii text (column 1),
@@ -1327,7 +1327,7 @@ states as possible. (** ref? **)
 \paragraph{Intermediate representations in compiler frameworks}
 There exist numerous frameworks for compilers and programming
 environments that provide facilities for representing intermediate
-data. Examples are Centaur's VTP~\cite{xxx}, Eli~\cite{Eli92},
+data. Examples are Centaur's VTP~\cite{BCDILP89}, Eli~\cite{Eli92},
 Cocktail's Ast~\cite{Ast92} SUIF~\cite{Suif94} and
 Montana~\cite{Karasick98}, These systems either provide an explicit
 intermediate format (Eli, Ast, SUIF) or they provide a programmable
@@ -1343,7 +1343,7 @@ functions as well as readers and writers for these intermediate data. In most
 cases support exists for accessing the intermediate data from a small
 collection of source languages.
 
-The major difference between these approaches and \ATerms is that they
+The major difference between these approaches and \ATerms\ is that they
 operate at different levels of abstraction. \ATerms\ just provide the
 lower-level representation for terms (or more precisely directed
 acyclic graphs), while intermediate representations for compilers are
