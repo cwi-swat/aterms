@@ -68,8 +68,6 @@
 
 #define HASH_PRIME 12007
 
-static ATerm pack_term(ATerm t);
-
 #define STRING_MARK 0xFF /* marker for binary strings */
 #define LENSPEC 8
 

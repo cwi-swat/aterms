@@ -182,7 +182,7 @@ static sym_entry *first_topsym = NULL;
 static char *text_buffer = NULL;
 static int   text_buffer_size = 0;
 
-static char bit_buffer     = '\0';
+static unsigned char bit_buffer = '\0';
 static int  bits_in_buffer = 0; /* how many bits in bit_buffer are used */
 
 /*}}}  */
@@ -293,7 +293,7 @@ static int read_byte(baf_reader *reader)
 
 static int read_bytes(char *buf, int count, baf_reader *reader)
 {
-  int i, index, size, left, result;
+  int index, size, left, result;
 
   result = EOF;
   switch (reader->type) {
@@ -1036,14 +1036,18 @@ static ATbool write_arg(sym_entry *trm_sym, ATerm arg, int arg_idx,
   arg_trm_idx = find_term(arg_sym, arg);
   /*	ATfprintf(stderr, "writing arg term index of %t = %d\n",
 	arg, arg_trm_idx);*/
-  if(writeBits(arg_trm_idx, arg_sym->term_width, writer)<0)
+  if (writeBits(arg_trm_idx, arg_sym->term_width, writer)<0) {
+ATfprintf(stderr, "writeBits in write_arg failed for %t\n", arg);
     return ATfalse;
+  }
 
   /*ATfprintf(stderr, "argument %t at index %d (cur_index of %y = %d)\n",
     arg, arg_trm_idx, arg_sym->id, arg_sym->cur_index);*/
-  if(arg_trm_idx >= arg_sym->cur_index && 
-     !write_term(arg, writer, anno_done))
+  if (arg_trm_idx >= arg_sym->cur_index && 
+     !write_term(arg, writer, anno_done)) {
+fprintf(stderr, "write_term in write_arg failed\n");
     return ATfalse;
+  }
 	
   return ATtrue;
 }
@@ -1068,15 +1072,18 @@ static ATbool write_term(ATerm t, baf_writer *writer, ATbool anno_done)
     /*ATfprintf(stderr, "  writing annotated term, term=%t, annos=%t\n",
       t, annos);*/
     trm_sym = &sym_entries[at_lookup_table[AS_ANNOTATION]->index];
-    if(!write_arg(trm_sym, t, 0, writer, ATtrue))
+    if(!write_arg(trm_sym, t, 0, writer, ATtrue)) {
       return ATfalse;
-    if(!write_arg(trm_sym, annos, 1, writer, ATfalse)) 
+    }
+    if(!write_arg(trm_sym, annos, 1, writer, ATfalse)) {
       return ATfalse;
+    }
   } else {
     switch(ATgetType(t)) {
     case AT_INT:
-      if(writeBits(ATgetInt((ATermInt)t), HEADER_BITS, writer) < 0)
+      if(writeBits(ATgetInt((ATermInt)t), HEADER_BITS, writer) < 0) {
 	return ATfalse;
+      }
 #if 0
       if (flushBitsToWriter(writer)<0)
 	return ATfalse;
@@ -1121,10 +1128,12 @@ static ATbool write_term(ATerm t, baf_writer *writer, ATbool anno_done)
 	  trm_sym = &sym_entries[at_lookup_table[AS_EMPTY_LIST]->index];
 	else {
 	  trm_sym = &sym_entries[at_lookup_table[AS_LIST]->index];
-	  if(!write_arg(trm_sym, ATgetFirst(list), 0, writer, ATfalse))
+	  if(!write_arg(trm_sym, ATgetFirst(list), 0, writer, ATfalse)) {
 	    return ATfalse;
-	  if(!write_arg(trm_sym, (ATerm)ATgetNext(list), 1, writer, ATfalse))
+          }
+	  if(!write_arg(trm_sym, (ATerm)ATgetNext(list), 1, writer, ATfalse)) {
 	    return ATfalse;
+          }
 	}
       }
       break;
@@ -1137,8 +1146,9 @@ static ATbool write_term(ATerm t, baf_writer *writer, ATbool anno_done)
 	arity = ATgetArity(sym);
 	for (arg_idx=0; arg_idx<arity; arg_idx++) {
 	  ATerm cur_arg = ATgetArgument((ATermAppl)t, arg_idx);
-	  if(!write_arg(trm_sym, cur_arg, arg_idx, writer, ATfalse))
+	  if(!write_arg(trm_sym, cur_arg, arg_idx, writer, ATfalse)) {
 	    return ATfalse;
+          }
 	}
       }
       break;
@@ -1300,16 +1310,18 @@ write_baf(ATerm t, baf_writer *writer)
 
   /*}}}  */
 	
-  if(!write_symbols(writer))
+  if(!write_symbols(writer)) {
     return ATfalse;
+  }
 
   /* Write the top symbol */
   sym = get_top_symbol(t, ATfalse)->id;
   if(writeInt(get_top_symbol(t, ATfalse)-sym_entries, writer) < 0)
     return ATfalse;
 
-  if (!write_term(t, writer, ATfalse)) /* sym == AS_ANNOTATION)) */
+  if (!write_term(t, writer, ATfalse)) {
     return ATfalse;
+  }
 	
   if (flushBitsToWriter(writer)<0)
     return ATfalse;
@@ -1332,9 +1344,9 @@ char *ATwriteToBinaryString(ATerm t, int *len)
     writer.type = STRING_WRITER;
     writer.u.string_data.buf = (char *)calloc(BUFSIZ, 1);
     writer.u.string_data.max_size = BUFSIZ;
-    writer.u.string_data.cur_size = 0;
     initialized = ATtrue;
   }
+  writer.u.string_data.cur_size = 0;
 
   if (!write_baf(t, &writer)) {
     return NULL;
