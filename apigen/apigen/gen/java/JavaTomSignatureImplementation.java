@@ -230,17 +230,17 @@ public class JavaTomSignatureImplementation implements TomSignatureImplementatio
 		return "l.isEmpty()";
 	}
 
-	public String IsList(String type) {
+	public String ListIsList(String type) {
 		return "true";
 	}
 
-	public String makeEmpty(String type) {
+	public String ListmakeEmpty(String type) {
 		return "get" + StringConversions.makeCapitalizedIdentifier(api_name)
 		+ "Factory().make" + StringConversions.makeCapitalizedIdentifier(type) 
 		+ "()";		 
 	}
 
-	public String makeInsert(String type, String eltType) {
+	public String ListmakeInsert(String type, String eltType) {
 		return "get" + StringConversions.makeCapitalizedIdentifier(api_name)
 				+ "Factory().make" + StringConversions.makeCapitalizedIdentifier(type) 
 				+ "(e,l)";

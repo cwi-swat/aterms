@@ -57,7 +57,7 @@ public interface TomSignatureImplementation {
 	String ListHead(String type);
 	String ListTail(String type);
 	String ListEmpty(String type);
-	String IsList(String type);
-	String makeEmpty(String type);
-	String makeInsert(String type, String eltType);
+	String ListIsList(String type);
+	String ListmakeEmpty(String type);
+	String ListmakeInsert(String type, String eltType);
 }

@@ -173,9 +173,9 @@ public class TomSignatureGenerator extends Generator {
 					
 			println("%oplist conc" + type.getId() + "(" + eltType + "*) {");
 			println("  fsym { null }");
-			println("  is_fsym(t) {" + impl.IsList(type.getId()) + "}");
-			println("  make_empty() {" + impl.makeEmpty(type.getId()) + "}");
-			println("  make_insert(e,l) {" + impl.makeInsert(type.getId(), eltType));
+			println("  is_fsym(t) {" + impl.ListIsList(type.getId()) + "}");
+			println("  make_empty() {" + impl.ListmakeEmpty(type.getId()) + "}");
+			println("  make_insert(e,l) {" + impl.ListmakeInsert(type.getId(), eltType));
 			println("}");
 		} else {
 			println(
