@@ -1,9 +1,9 @@
 package test;
 
-import aterm.*;
-import aterm.pure.*;
-
-import java.util.*;
+import aterm.AFun;
+import aterm.ATermAppl;
+import aterm.ATermFactory;
+import aterm.pure.PureFactory;
 
 public class TestFib {
 
