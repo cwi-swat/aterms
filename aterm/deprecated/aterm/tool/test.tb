@@ -1,0 +1,24 @@
+
+%%tool testing is { command="../../java-adapter -class toolbus.tool.Test" }
+tool testing is { command="../../java-adapter -TB_VERBOSE -class toolbus.tool.TestingTool" }
+
+process TEST is
+let
+  T : testing,
+  X : term,
+  Y : int
+in
+  execute(testing, T?) .
+  snd-do(T, testit("abc")) .
+  snd-do(T, testit("a", 3)) .
+  snd-do(T, testit("a", f(3))) .
+  snd-eval(T, question(square)) .
+  rec-value(T, answer(X?)) .
+  printf("X = %t\n", X) .
+  ( rec-event(T, test-event(Y?)) .
+    printf("acknowledging event: test-event(%d)\n", Y) .
+    snd-ack-event(T, test-event(Y, 4.5))
+  ) * delta
+endlet
+
+toolbus(TEST)
