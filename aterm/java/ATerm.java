@@ -7,9 +7,8 @@ import java.util.List;
  * which will ultimately be implemented by two separate
  * ATerm Factories (a native and a pure one).
  * 
- * 
- * @author Pieter Olivier (olivierp@cwi.nl)
  * @author Hayco de Jong (jong@cwi.nl)
+ * @author Pieter Olivier (olivierp@cwi.nl)
  * @version 0.1, Thu Jan 27 15:45:52 MET 2000
  */
 public interface ATerm {

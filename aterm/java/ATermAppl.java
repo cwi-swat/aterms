@@ -3,9 +3,8 @@ package aterm;
 /**
  * An ATermAppl represents a function application.
  * 
- * 
- * @author Pieter Olivier (olivierp@cwi.nl)
  * @author Hayco de Jong (jong@cwi.nl)
+ * @author Pieter Olivier (olivierp@cwi.nl)
  * @version 0.1, Fri Jan 28 10:19:58 MET 2000
  */
 public interface ATermAppl extends ATerm {

@@ -3,9 +3,8 @@ package aterm;
 /**
  * This interface describes the functionality of an ATermList
  * 
- * 
- * @author Pieter Olivier (olivierp@cwi.nl)
  * @author Hayco de Jong (jong@cwi.nl)
+ * @author Pieter Olivier (olivierp@cwi.nl)
  * @version 0.1, Fri Jan 28 10:19:58 MET 2000
  */
 public interface ATermList extends ATerm {
@@ -30,6 +29,13 @@ public interface ATermList extends ATerm {
      * @return the first element of this list.
      */
     public ATerm getFirst();
+
+    /**
+     * Gets the last element of this list.
+     *
+     * @return the last element of this list.
+     */
+    public ATerm getLast();
 
     /**
      * Gets the tail (all but the first element) of this list.
@@ -80,7 +86,7 @@ public interface ATermList extends ATerm {
      *
      * @param el the element to append to this list.
      *
-     * @return the list with el appended to it.
+     * @return a list with el appended to it.
      */
     public ATermList append(ATerm el);
 
@@ -91,8 +97,94 @@ public interface ATermList extends ATerm {
      *
      * @return the ith element of this list.
      *
-     * @throws IndexOutOfBoundsException if i does not signify
+     * @throws IndexOutOfBoundsException if i does not refer
      * to a position in this list.
      */
     public ATerm elementAt(int i);
+
+    /**
+     * Removes one occurance of an element from this list.
+     *
+     * @param el the element to be removed.
+     *
+     * @return this list with one occurance of el removed.
+     */
+    public ATermList remove(ATerm el);
+
+    /**
+     * Removes the element at a specific index in this list.
+     *
+     * @param i the index of the element to be removed.
+     *
+     * @return a list with the ith element removed.
+     *
+     * @throws IndexOutOfBoundsException if i does not refer
+     * to a position in this list.
+     */
+    public ATermList removeElementAt(int n);
+
+    /**
+     * Removes all occurances of an element in this list.
+     *
+     * @param el the element to be removed.
+     *
+     * @return this list with all occurances of el removed.
+     */
+    public ATermList removeAll(ATerm el);
+
+    /**
+     * Inserts a term in front of this list.
+     *
+     * @param el the element to be inserted.
+     *
+     * @return a list with el inserted.
+     */
+    public ATermList insert(ATerm el);
+
+    /**
+     * Inserts an element at a specific position in this list.
+     *
+     * @param el the element to be inserted.
+     * @param i the index at which to insert.
+     *
+     * @return a list with el inserted as ith element.
+     */
+    public ATermList insertAt(ATerm el, int i);
+
+    /**
+     * Gets the prefix (all but the last element) of this list.
+     *
+     * @return the prefix of this list.
+     */
+    public ATermList getPrefix();
+
+    /**
+     * Gets a portion (slice) of this list.
+     *
+     * @param start the start of the slice (included).
+     * @param end the end of the slice (excluded).
+     *
+     * @return the portion of this list between start and end.
+     */
+    public ATermList getSlice(int start, int end);
+
+    /**
+     * Replaces a specific term in this list with another.
+     *
+     * @param el the element to be put into this list.
+     * @param i the index of the element in this list to be replaced.
+     *
+     * @return this list with the ith element replaced by el.
+     *
+     * @throws IndexOutOfBoundsException if i does not refer
+     * to a position in this list.
+     */
+    public ATermList replace(ATerm el, int i);
+
+    /**
+     * Reverses the elements of this list.
+     *
+     * @return a reverse order copy of this list.
+     */
+    public ATermList reverse();
 }
