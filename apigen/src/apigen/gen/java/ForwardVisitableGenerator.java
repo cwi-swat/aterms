@@ -1,11 +1,6 @@
 package apigen.gen.java;
 
-import java.util.Set;
-
 import apigen.adt.ADT;
-import apigen.adt.Alternative;
-import apigen.adt.ListType;
-import apigen.adt.Type;
 import apigen.adt.api.types.Module;
 
 public class ForwardVisitableGenerator extends JavaGenerator {

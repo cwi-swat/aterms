@@ -7,7 +7,6 @@ import apigen.adt.Alternative;
 import apigen.adt.ListType;
 import apigen.adt.Type;
 import apigen.adt.api.types.Module;
-import apigen.gen.GenerationParameters;
 
 public class VisitorGenerator extends JavaGenerator {
     public static final String CLASS_NAME = "Visitor";
