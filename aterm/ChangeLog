@@ -1,5 +1,10 @@
 $Id$
 
+2001/07/09 (olivierp@cwi.nl)
+ * Version is now 1.6.2
+ * Added some functions to ToolBus layer in order to support the
+   new toolbus adapter
+
 2001/07/02 (olivierp@cwi.nl)
  * Fixed CLASSPATH problem with tifstojava
 
