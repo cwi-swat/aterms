@@ -577,6 +577,10 @@ testMake(void)
 					   ATparse("[1,2,3]")),
 				    ATparse("[\"f\"([1,2,3])]")));
 
+  test_assert("make", 11, ATisEqual(ATmakeAppl2(ATmakeSymbol("", 2, ATfalse),
+						ATparse("a"), ATparse("b")),
+				    ATparse("(a,b)")));
+
   fprintf(stderr, "The following two tests should generate parse errors.\n");
 #ifdef ABORT_ON_PARSE_ERROR
   ATsetAbortHandler(abort_handler);

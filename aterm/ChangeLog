@@ -1,5 +1,10 @@
 $Id$
 
+2001/11/15 (jong@cwi.nl)
+ * version 1.6.5beta started
+ * Implemented tuple syntax at Eelco Visser's request.
+   example: ("a","b") is now allowed by the ATerm parser.
+
 2001/11/12 (jong@cwi.nl)
  * Version 1.6.4 released
 

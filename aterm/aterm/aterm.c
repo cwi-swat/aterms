@@ -1295,6 +1295,7 @@ fnext_skip_layout(int *c, FILE * f)
 }
 
 /*}}}  */
+
 /*{{{  static ATermList fparse_terms(int *c, FILE *f) */
 
 /**
@@ -1450,44 +1451,51 @@ fparse_quoted_appl(int *c, FILE * f)
  * Parse a quoted application.
  */
 
-static          ATermAppl
+static ATermAppl
 fparse_unquoted_appl(int *c, FILE * f)
 {
-  int             len = 0;
-  Symbol          sym;
-  ATermList       args = ATempty;
-  char           *name;
+  int len = 0;
+  Symbol sym;
+  ATermList args = ATempty;
+  char *name = NULL;
 
-  /* First parse the identifier */
-  while (isalnum(*c) || *c == '-' || *c == '_' || *c == '+' || *c == '*' || *c == '$')
-  {
-    store_char(*c, len++);
-    fnext_char(c, f);
+  if (*c != '(') {
+    /* First parse the identifier */
+    while (isalnum(*c)
+	   || *c == '-' || *c == '_' || *c == '+' || *c == '*' || *c == '$')
+    {
+      store_char(*c, len++);
+      fnext_char(c, f);
+    }
+    store_char('\0', len++);
+    name = strdup(buffer);
+    if (!name) {
+      ATerror("fparse_unquoted_appl: symbol too long.");
+    }
+
+    fskip_layout(c, f);
   }
-  store_char('\0', len++);
-  name = strdup(buffer);
-  if (!name)
-    ATerror("fparse_unquoted_appl: symbol to long.");
-
-  fskip_layout(c, f);
 
   /* Time to parse the arguments */
-  if (*c == '(')
-  {
+  if (*c == '(') {
     fnext_skip_layout(c, f);
     if(*c != ')') {
       args = fparse_terms(c, f);
     } else {
       args = ATempty;
     }
-    if (args == NULL || *c != ')')
+    if (args == NULL || *c != ')') {
       return NULL;
+    }
     fnext_skip_layout(c, f);
   }
 
   /* Wrap up this function application */
-  sym = ATmakeSymbol(name, ATgetLength(args), ATfalse);
-  free(name);
+  sym = ATmakeSymbol(name ? name : "", ATgetLength(args), ATfalse);
+  if (name != NULL) {
+    free(name);
+  }
+
   return ATmakeApplList(sym, args);
 }
 
@@ -1560,17 +1568,16 @@ fparse_num(int *c, FILE * f)
 }
 
 /*}}}  */
-
 /*{{{  static ATerm fparse_term(int *c, FILE *f) */
 
 /**
  * Parse a term from file.
  */
 
-static          ATerm
+static ATerm
 fparse_term(int *c, FILE * f)
 {
-  ATerm           t, result = NULL;
+  ATerm t, result = NULL;
 
   switch (*c)
   {
@@ -1599,14 +1606,18 @@ fparse_term(int *c, FILE * f)
       }
       break;
     default:
-      if (isalpha(*c))
+      if (isalpha(*c) || *c == '(') {
 	result = (ATerm) fparse_unquoted_appl(c, f);
-      else if (isdigit(*c))
+      }
+      else if (isdigit(*c)) {
 	result = fparse_num(c, f);
-      else if (*c == '.' || *c == '-')
+      }
+      else if (*c == '.' || *c == '-') {
 	result = fparse_num(c, f);
-      else
+      }
+      else {
 	result = NULL;
+      }
   }
 
   if(result != NULL) {
@@ -1648,6 +1659,7 @@ fparse_term(int *c, FILE * f)
 }
 
 /*}}}  */
+
 /*{{{  ATerm readFromTextFile(FILE *file) */
 
 /**
@@ -1927,30 +1939,33 @@ sparse_quoted_appl(int *c, char **s)
  * Parse a quoted application.
  */
 
-static          ATermAppl
+static ATermAppl
 sparse_unquoted_appl(int *c, char **s)
 {
-  int             len = 0;
-  Symbol          sym;
-  ATermList       args = ATempty;
-  char           *name;
+  int len = 0;
+  Symbol sym;
+  ATermList args = ATempty;
+  char *name = NULL;
 
-  /* First parse the identifier */
-  while (isalnum(*c) || *c == '-' || *c == '_' || *c == '+' || *c == '*' || *c == '$')
-  {
-    store_char(*c, len++);
-    snext_char(c, s);
+  if (*c != '(') {
+    /* First parse the identifier */
+    while (isalnum(*c)
+	   || *c == '-' || *c == '_' || *c == '+' || *c == '*' || *c == '$')
+    {
+      store_char(*c, len++);
+      snext_char(c, s);
+    }
+    store_char('\0', len);
+    name = strdup(buffer);
+    if (!name) {
+      ATerror("sparse_unquoted_appl: symbol to long.");
+    }
+
+    sskip_layout(c, s);
   }
-  store_char('\0', len);
-  name = strdup(buffer);
-  if (!name)
-    ATerror("sparse_unquoted_appl: symbol to long.");
-
-  sskip_layout(c, s);
 
   /* Time to parse the arguments */
-  if (*c == '(')
-  {
+  if (*c == '(') {
     snext_skip_layout(c, s);
     if(*c != ')') {
       args = sparse_terms(c, s);
@@ -1963,8 +1978,11 @@ sparse_unquoted_appl(int *c, char **s)
   }
 
   /* Wrap up this function application */
-  sym = ATmakeSymbol(name, ATgetLength(args), ATfalse);
-  free(name);
+  sym = ATmakeSymbol(name ? name : "", ATgetLength(args), ATfalse);
+  if (name != NULL) {
+    free(name);
+  }
+
   return ATmakeApplList(sym, args);
 }
 
@@ -2044,10 +2062,10 @@ sparse_num(int *c, char **s)
  * Parse a term from file.
  */
 
-static          ATerm
+static ATerm
 sparse_term(int *c, char **s)
 {
-  ATerm           t, result = NULL;
+  ATerm t, result = NULL;
 
   switch (*c)
   {
@@ -2076,14 +2094,18 @@ sparse_term(int *c, char **s)
       }
       break;
     default:
-      if (isalpha(*c))
+      if (isalpha(*c) || *c == '(') {
 	result = (ATerm) sparse_unquoted_appl(c, s);
-      else if (isdigit(*c))
+      }
+      else if (isdigit(*c)) {
 	result = sparse_num(c, s);
-      else if (*c == '.' || *c == '-')
+      }
+      else if (*c == '.' || *c == '-') {
 	result = sparse_num(c, s);
-      else
+      }
+      else {
 	result = NULL;
+      }
   }
 
   if(result != NULL) {
