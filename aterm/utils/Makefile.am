@@ -6,7 +6,7 @@
 include ../make_rules
 
 CFLAGS			= -Wall -g -O2
-EXTRA_DIST		= $(bin_SCRIPTS)
+EXTRA_DIST		= $(bin_SCRIPTS) $(noinst_SCRIPTS)
 
 INCLUDES		= -I$(top_srcdir)/aterm
 
@@ -36,3 +36,4 @@ atrmannos_LDADD         =  $(LDLIBS)
 
 bin_SCRIPTS		= baf2trm baf2taf trm2baf trm2taf taf2trm taf2baf \
 			  trmcat
+noinst_SCRIPTS		= genpkg.sh

@@ -1,9 +1,15 @@
 SUBDIRS		= aterm utils test $(JAVA_SUBDIR) doc
 
 DIST_SUBDIRS	= aterm utils test java doc
-EXTRA_DIST	= make_rules reconf
+EXTRA_DIST	= make_rules reconf $(noinst_DATA)
+
+noinst_DATA	= aterm.pkg
+
 DISTFILE	= ${distdir}.tar.gz
 WWWDIR		= /hosts/www/projects/MetaEnv/aterm
+
+aterm.pkg:
+	${srcdir}/utils/genpkg.sh > $@
 
 www-dist: distcheck
 	cp ${DISTFILE} ${WWWDIR}

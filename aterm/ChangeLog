@@ -1,5 +1,9 @@
 $Id$
 
+2001/08/14 (jong@cwi.nl)
+ * Added script utils/genpkg.sh which generates toplevel "aterm.pkg"
+   for package-base from information in configure.in
+
 2001/08/07 (jong@cwi.nl)
  * Changed direct prints to stderr to ATwarning calls in bafio.c
  * ChangeLog entry for ATcompare and ATsort added
