@@ -1,0 +1,6 @@
+#!/bin/sh
+CLASSPATH=..:$CLASSPATH
+export CLASSPATH
+java Test1
+
+
