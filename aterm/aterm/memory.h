@@ -9,6 +9,7 @@
 #include "aterm2.h"
 
 #define MAX_ARITY            256
+#define MIN_TERM_SIZE          2
 #define MAX_TERM_SIZE         32
 #define MAX_BLOCKS_PER_SIZE 1024
 

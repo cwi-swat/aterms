@@ -78,6 +78,11 @@ void mark_phase()
 
 void sweep_phase()
 {
+  int i;
+
+  for(i=MIN_TERM_SIZE; i<MAX_TERM_SIZE; i++) {
+	
+  }
 }
 
 /*}}}  */

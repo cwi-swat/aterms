@@ -72,8 +72,7 @@ static ATerm *hashtable;
 static int destructor_count = 0;
 static ATbool (*destructors[MAX_DESTRUCTORS])(ATermBlob) = { NULL };
 
-static ATerm arg_buffer_prefix[MAX_ARITY+1];
-static ATerm *arg_buffer = arg_buffer_prefix+1;
+static ATerm arg_buffer[MAX_ARITY];
 
 ATermList ATempty;
 
@@ -178,7 +177,7 @@ ATerm AT_allocate(int size)
 				allocate_block(size);
 		} else {
 			AT_collect(size);
-			for(i=2; i<MAX_TERM_SIZE; i++)
+			for(i=MIN_TERM_SIZE; i<MAX_TERM_SIZE; i++)
 				alloc_since_gc[size] = 0;
 		}
 	}
@@ -330,13 +329,8 @@ ATermAppl ATmakeAppl(Symbol sym, ...)
   header = APPL_HEADER(0, arity > MAX_INLINE_ARITY ?
 		MAX_INLINE_ARITY+1 : arity, sym);
 
-	if(arity > MAX_INLINE_ARITY) {
-		arg_buffer_prefix[0] = (ATerm)arity;
-		hnr = hash_number(header, arity+1, arg_buffer_prefix);
-	} else {
-		hnr = hash_number(header, arity, arg_buffer);
-	}
-	cur = hashtable[hnr];
+  hnr = hash_number(header, arity, arg_buffer);
+  cur = hashtable[hnr];
 
   while(cur) {
     if(cur->header == header) {
@@ -355,7 +349,7 @@ ATermAppl ATmakeAppl(Symbol sym, ...)
   }
 
   if(!cur) {
-    cur = AT_allocate(arity + (arity > MAX_INLINE_ARITY ? 3 : 2));
+    cur = AT_allocate(arity + ARG_OFFSET);
     cur->header = header;
     for(i=0; i<arity; i++)
       ATgetArgument(cur, i) = arg_buffer[i];
@@ -387,7 +381,7 @@ ATermAppl ATmakeAppl0(Symbol sym)
     cur = cur->next;
 
   if(!cur) {
-    cur = AT_allocate(2);
+    cur = AT_allocate(ARG_OFFSET);
     cur->header = header;
     cur->next = hashtable[hnr];
     hashtable[hnr] = cur;
@@ -416,7 +410,7 @@ ATermAppl ATmakeAppl1(Symbol sym, ATerm arg0)
     cur = cur->next;
 
   if(!cur) {
-    cur = AT_allocate(3);
+    cur = AT_allocate(ARG_OFFSET+1);
     cur->header = header;
     ATgetArgument(cur, 0) = arg0;
     cur->next = hashtable[hnr];
@@ -448,7 +442,7 @@ ATermAppl ATmakeAppl2(Symbol sym, ATerm arg0, ATerm arg1)
     cur = cur->next;
 
   if(!cur) {
-    cur = AT_allocate(4);
+    cur = AT_allocate(ARG_OFFSET+2);
     cur->header = header;
     ATgetArgument(cur, 0) = arg0;
     ATgetArgument(cur, 1) = arg1;
@@ -482,7 +476,7 @@ ATermAppl ATmakeAppl3(Symbol sym, ATerm arg0, ATerm arg1, ATerm arg2)
     cur = cur->next;
 
   if(!cur) {
-    cur = AT_allocate(5);
+    cur = AT_allocate(ARG_OFFSET+3);
     cur->header = header;
     ATgetArgument(cur, 0) = arg0;
     ATgetArgument(cur, 1) = arg1;
@@ -518,7 +512,7 @@ ATermAppl ATmakeAppl4(Symbol sym, ATerm arg0, ATerm arg1, ATerm arg2, ATerm arg3
     cur = cur->next;
 
   if(!cur) {
-    cur = AT_allocate(6);
+    cur = AT_allocate(ARG_OFFSET+4);
     cur->header = header;
     ATgetArgument(cur, 0) = arg0;
     ATgetArgument(cur, 1) = arg1;
@@ -557,7 +551,7 @@ ATermAppl ATmakeAppl5(Symbol sym, ATerm arg0, ATerm arg1, ATerm arg2,
     cur = cur->next;
 
   if(!cur) {
-    cur = AT_allocate(7);
+    cur = AT_allocate(ARG_OFFSET+5);
     cur->header = header;
     ATgetArgument(cur, 0) = arg0;
     ATgetArgument(cur, 1) = arg1;
@@ -598,7 +592,7 @@ ATermAppl ATmakeAppl6(Symbol sym, ATerm arg0, ATerm arg1, ATerm arg2,
     cur = cur->next;
 
   if(!cur) {
-    cur = AT_allocate(8);
+    cur = AT_allocate(ARG_OFFSET+6);
     cur->header = header;
     ATgetArgument(cur, 0) = arg0;
     ATgetArgument(cur, 1) = arg1;
@@ -636,12 +630,8 @@ ATermAppl ATmakeApplList(Symbol sym, ATermList args)
     arg_buffer[i] = ATgetFirst(args);
     args = ATgetNext(args);
   }
-  if(arity > MAX_INLINE_ARITY) {
-    arg_buffer_prefix[0] = (ATerm)arity;
-    hnr = hash_number(header, arity+1, arg_buffer_prefix);
-  } else {
-    hnr = hash_number(header, arity, arg_buffer);
-  }
+
+	hnr = hash_number(header, arity, arg_buffer);
   cur = hashtable[hnr];
 
   while(cur)
@@ -666,7 +656,7 @@ ATermAppl ATmakeApplList(Symbol sym, ATermList args)
 
   if(!cur)
 	{
-    cur = AT_allocate(arity + (arity > MAX_INLINE_ARITY ? 3 : 2));
+    cur = AT_allocate(ARG_OFFSET + arity);
     cur->header = header;
     for(i=0; i<arity; i++)
       ATgetArgument(cur, i) = arg_buffer[i];
@@ -698,13 +688,8 @@ ATermAppl ATmakeApplArray(Symbol sym, ATerm args[])
     arg_buffer[i] = args[i];
     hnr = (int)arg_buffer[i] << i;
   }
-  if(arity > MAX_INLINE_ARITY) {
-    arg_buffer_prefix[0] = (ATerm)arity;
-    hnr = hash_number(header, arity+1, arg_buffer_prefix);
-  } else {
-    hnr = hash_number(header, arity, arg_buffer);
-  }
 
+	hnr = hash_number(header, arity, arg_buffer);
   cur = hashtable[hnr];
 
   while(cur) {
@@ -712,19 +697,19 @@ ATermAppl ATmakeApplArray(Symbol sym, ATerm args[])
       appl = (ATermAppl)cur;
       found = ATtrue;
       for(i=0; i<arity; i++) {
-	if(!ATisEqual(ATgetArgument(appl, i), arg_buffer[i])) {
-	  found = ATfalse;
-	  break;
-	}
+				if(!ATisEqual(ATgetArgument(appl, i), arg_buffer[i])) {
+					found = ATfalse;
+					break;
+				}
       }
       if(found)
-	break;
+				break;
     }
     cur = cur->next;
   }
 
   if(!cur) {
-    cur = AT_allocate(arity + (arity > MAX_INLINE_ARITY ? 3 : 2));
+    cur = AT_allocate(ARG_OFFSET + arity);
     cur->header = header;
     for(i=0; i<arity; i++)
       ATgetArgument(cur, i) = arg_buffer[i];
@@ -749,7 +734,7 @@ ATermAppl ATsetArgument(ATermAppl appl, ATerm arg, int n)
 
   arity = ATgetArity(sym);
   for(i=0; i<arity; i++)
-	arg_buffer[i] = (i == n ? arg : ATgetArgument(appl, i));
+		arg_buffer[i] = (i == n ? arg : ATgetArgument(appl, i));
 
   return ATmakeApplArray(sym, arg_buffer);
 }

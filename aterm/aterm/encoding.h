@@ -58,6 +58,8 @@
 #define BLOB_HEADER(anno,len)     ((anno) | AT_BLOB << SHIFT_TYPE | \
 				   len << SHIFT_LENGTH)
 
+#define ARG_OFFSET 2
+
 /* This assumes 32 bits int */
 typedef unsigned int header_type;
 
