@@ -196,9 +196,11 @@ conclusions (Section~\ref{sec:conclusions}) and future work
 \subsection{Related Work}
 \label{sec:related}
 
+% {{{  Grammars as Contracts
+
 \medskip 
 \noindent\textbf{Grammars as Contracts}
-In \cite{grammarsAsContracts} a generic framework is presented
+In \cite{gramcon} a generic framework is presented
 that includes the generation of libraries from concrete syntax
 definitions. These libraries can then be used to manipulate both
 parsetrees and abstract syntax trees. Just like our work, the
@@ -209,12 +211,14 @@ including C, Java, Stratego, and Haskell.
 
 The work described in our paper can be seen as a refined
 instantiation of this generic framework. Among the instantiations
-described in \cite{grammarsAsContracts} generation of a C library
+described in \cite{gramcon} generation of a C library
 for concrete syntax manipulation is missing, and our approach remedies
 this situation. We also focus on generating more intuitive and
 readable API's, at the cost of extra annotation effort on the
 original syntax definition.
 
+
+% }}}
 
 % {{{  Zephyr ASDL
 
