@@ -63,6 +63,27 @@ public class SeparatedListTypeImplGenerator extends ListTypeImplGenerator {
         println("}");
     }
 
+    
+    protected void genToTerm() {
+        String factoryName = FactoryGenerator.className(apiName);
+
+        println("  public aterm.ATerm toTerm() {");
+        println("    if (term == null) {");
+        println("      term = get" + factoryName + "().toTerm(this);");
+        println("    }");
+        println("    return term;");
+        println("  }");
+        println();
+    }
+    protected void genOverrideInsertMethod() {
+        println("  public aterm.ATermList insert(aterm.ATerm head) {");
+        println(
+            "    throw new java.lang.UnsupportedOperationException(\"Insert is not supported for separated lists ("
+                + type.getId()
+                + "), please use a make method.\");");
+        println("  }");
+    }
+
     protected void genInitMethod() {
         println(
             "  protected void init (int hashCode, aterm.ATermList annos, aterm.ATerm first, "
@@ -125,17 +146,34 @@ public class SeparatedListTypeImplGenerator extends ListTypeImplGenerator {
         println("    if (!isEmpty() && !isSingle()) {");
         println("      return " + fieldId + ";");
         println("    }");
-        println("    throw new RuntimeException(\"This " + className + " does not have a " + field.getId() + ".\");");
+        println(
+            "    throw new UnsupportedOperationException(\"This "
+                + className
+                + " does not have a "
+                + field.getId()
+                + ":\" + this);"); 
         println("  }");
 
         println(
             "  public " + className + " set" + fieldName + "(" + fieldClass + " arg) {");
         println("    if (!isEmpty() && !isSingle()) {");
         String arglist = buildActualSeparatorArguments(listType);
-        arglist = arglist.replaceAll(fieldId,"arg");
-        println("      return get" + FactoryGenerator.className(apiName) + "().make" + className + "(getHead(), " + arglist +  "getTail());");
+        arglist = arglist.replaceAll(fieldId, "arg");
+        println(
+            "      return get"
+                + FactoryGenerator.className(apiName)
+                + "().make"
+                + className
+                + "(getHead(), "
+                + arglist
+                + "getTail());");
         println("    }");
-        println("    throw new RuntimeException(\"This " + className + " does not have a " + fieldId + ".\");");
+        println(
+            "    throw new RuntimeException(\"This "
+                + className
+                + " does not have a "
+                + fieldId
+                + ".\");");
         println("  }");
     }
 

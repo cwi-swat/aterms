@@ -51,6 +51,18 @@ public class SeparatedListType extends ListType {
     public Iterator manyFieldIterator() {
         return altFieldIterator("many");
     }
+
+    public int countSeparatorFields() {
+        Iterator iter = separatorFieldIterator();
+        int count = 0;
+        
+        while (iter.hasNext()) {
+            Field element = (Field) iter.next();
+            count++;
+        }
+        
+        return count;
+    }
     
 }
 

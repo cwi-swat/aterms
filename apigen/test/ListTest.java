@@ -6,7 +6,9 @@ import test.list.Module;
 import test.list.ModuleList;
 import test.list.Modules;
 import test.list.Modules2;
+import test.list.NineSeps;
 import test.list.Separated;
+import aterm.ATerm;
 
 public class ListTest {
 
@@ -84,34 +86,50 @@ public class ListTest {
      * will occur otherwise
      */
     String example = "[]";
-    aterm.ATerm termExample = factory.parse(example);
+    ATerm termExample = factory.parse(example);
     mods[4] = (Modules) factory.makeModules();
 
     example = "\"amodule\"";
     termExample = factory.parse(example);
     Module amodule = (Module) factory.makeModule_Default(example);
 
-    // From these tests you can see that a lot is still wrong with dealing
-    // with separators. For example, the l1 and l2 and the l3 and l4 are flipped
-    // after the fromTerm method has been called!
-    Separated sep = factory.SeparatedFromTerm(factory.parse("[\"m1\",l(\"l1\"),\"sep\",l(\"l2\"),\"m2\",l(\"l3\"),\"sep\",l(\"l4\"),\"m3\",l(\"l4\"),\"sep\",l(\"l5\"),\"m4\"]"));
-    Module head = sep.getHead();
+    ATerm pattern = factory.parse("[\"m1\",l(\"l1\"),\"sep\",l(\"l2\"),\"m2\",l(\"l3\"),\"sep\",l(\"l4\"),\"m3\",l(\"l4\"),\"sep\",l(\"l5\"),\"m4\"]");
+    Separated sep = factory.SeparatedFromTerm(pattern);
+    testAssert(sep.toTerm().isEqual(pattern), " fromTerm == toTerm separated lists");
+    
+    Module head = sep.getHead();;
     testAssert(head.isEqual(factory.makeModule_Default("m1")), "separator from term test, head");
     Layout l1 = sep.getWsl();
-    testAssert(l1.isEqual(factory.makeLayout_Default("l2")), "getSeparator test l1");
+    testAssert(l1.isEqual(factory.makeLayout_Default("l1")), "getSeparator test l1");
     Layout l2 = sep.getWsr();
-    testAssert(l2.isEqual(factory.makeLayout_Default("l1")), "getSeparator test l2");
+    testAssert(l2.isEqual(factory.makeLayout_Default("l2")), "getSeparator test l2");
     Module second = sep.getTail().getHead();
     testAssert(second.isEqual(factory.makeModule_Default("m2")), "separator from term test, second element");
     Layout l3 = sep.getTail().getWsl();
 
-    testAssert(l3.isEqual(factory.makeLayout_Default("l4")), "getSeparator test l3");
+    testAssert(l3.isEqual(factory.makeLayout_Default("l3")), "getSeparator test l3");
     Layout l4 = sep.getTail().getWsr();
-    testAssert(l4.isEqual(factory.makeLayout_Default("l3")), "getSeparator test l4");
+    testAssert(l4.isEqual(factory.makeLayout_Default("l4")), "getSeparator test l4");
     
     testAssert(sep.getLength() == 4, "separated list length test");
     
-    // System.err.println(sep.toTerm());
+    sep = factory.makeSeparated();
+    testAssert(sep.toTerm().isEqual(factory.makeList()), "empty separated list");
+    
+    m = factory.makeModule_Default("m");
+    sep = factory.makeSeparated(m);
+   
+    testAssert(sep.toTerm().isEqual(factory.makeList(m.toTerm())), "singleton separated list");
+    
+    Module m2 = factory.makeModule_Default("m2");
+    l1 = factory.makeLayout_Default("l1");
+    l2 = factory.makeLayout_Default("l2");
+    sep = factory.makeSeparated(m,l1,l2,factory.makeSeparated(m2));
+
+    testAssert(sep.toTerm().isEqual(factory.parse("[\"m\",l(\"l1\"),\"sep\",l(\"l2\"),\"m2\"]")), "many separated list");
+    
+    NineSeps ns = factory.makeNineSeps(m,factory.makeNineSeps(m2));
+    testAssert(ns.toTerm().isEqual(factory.parse("[\"m\",1,2,3,4,5,6,7,8,9,\"m2\"]")), "many separated toTerm");
   }
 
   public final static void main(String[] args) {
