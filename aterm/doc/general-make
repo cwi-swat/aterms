@@ -3,7 +3,10 @@
 .ltx.dvi:
 	latex $<
 	-@fgrep -s 'LaTeX Warning: Citation' $*.log && bibtex $* && latex $<
-	-@fgrep -s 'Rerun to get cross-references right' $*.log && latex $<
+	@while fgrep -s 'Rerun to get cross-references right' $*.log ;\
+	do \
+		latex $< ;\
+	done
 
 .ltx.bbl:
 	bibtex $*
@@ -23,4 +26,3 @@
 
 .fig.ps:
 	fig2dev -Lps $< $@
-
