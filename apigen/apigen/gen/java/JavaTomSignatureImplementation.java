@@ -139,6 +139,8 @@ public class JavaTomSignatureImplementation implements TomSignatureImplementatio
 		return "((" + arg + " instanceof ATermList)?get"
 			+ StringConversions.makeCapitalizedIdentifier(api_name)
 			+ "Factory"
+			+ "().get"
+			+ "PureFactory"
 			+ "().makeAFun(\"conc\",1,false):null)";
 	}
 
