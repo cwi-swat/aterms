@@ -42,27 +42,31 @@ LFLAGS_DBG	= @LFLAGS_DBG@
 LFLAGS_PROF	= @LFLAGS_PROF@
 LFLAGS_NS	= @LFLAGS_CC@ 
 
-LIB_CC		= ../aterm/libATerm-cc.a ../asfix/libAsFix-cc.a \
-		../toolbus/libATB-cc.a
-LIB_GCC		= ../aterm/libATerm-gcc.a ../asfix/libAsFix-gcc.a \
-		../toolbus/libATB-gcc.a
-LIB_DBG		= ../aterm/libATerm-dbg.a ../asfix/libAsFix-dbg.a \
-		../toolbus/libATB-dbg.a
-LIB_PROF	= ../aterm/libATerm-prof.a ../asfix/libAsFix-prof.a \
-		../toolbus/libATB-prof.a
-LIB_NS		= ../aterm/libATerm-ns.a ../asfix/libAsFix-ns.a \
-		../toolbus/libATB-ns.a
+AT_LIBS		= ATerm
+AF_LIBS		= AsFix
+TB_LIBS		= # ATB
+ALL_LIBS	= ${AT_LIBS} ${AF_LIBS} ${TB_LIBS}
+ATERM_LIBS	= $(addprefix ${top_srcdir}/aterm/lib,  ${AT_LIBS})
+ASFIX_LIBS	= $(addprefix ${top_srcdir}/asfix/lib,  ${AF_LIBS})
+TOOLBUS_LIBS	= $(addprefix ${top_srcdir}/toolbus/lib,${TB_LIBS})
+FULL_LIBS	= ${ATERM_LIBS} ${ASFIX_LIBS} ${TOOLBUS_LIBS}
 
-LIBS_CC		= -L../aterm -L../asfix -L../toolbus \
-			-lATerm-cc -lAsFix-cc -lATB-cc @LIBS@
-LIBS_GCC	= -L../aterm -L../asfix -L../toolbus \
-			-lATerm-gcc -lAsFix-gcc -lATB-gcc @LIBS@
-LIBS_DBG	= -L../aterm -L../asfix -L../toolbus \
-			-lATerm-dbg -lAsFix-dbg -lATB-dbg @LIBS@
-LIBS_PROF	= -L../aterm -L../asfix -L../toolbus \
-			-lATerm-prof -lAsFix-prof -lATB-prof @LIBS@
-LIBS_NS		= -L../aterm -L../asfix -L../toolbus \
-			-lATerm-ns -lAsFix-dbg -lATB-dbg @LIBS@
+LIB_CC		= $(addsuffix -cc.a,   ${FULL_LIBS})
+LIB_GCC		= $(addsuffix -gcc.a,  ${FULL_LIBS})
+LIB_DBG		= $(addsuffix -dbg.a,  ${FULL_LIBS})
+LIB_PROF	= $(addsuffix -prof.a, ${FULL_LIBS})
+LIB_NS		= $(addsuffix -ns.a,   ${FULL_LIBS})
+
+LIBS_CC		= -L${top_srcdir}/aterm -L${top_srcdir}/asfix -L${top_srcdir}/toolbus \
+		  $(addprefix -l, $(addsuffix -cc,   ${ALL_LIBS})) @LIBS@
+LIBS_GCC	= -L${top_srcdir}/aterm -L${top_srcdir}/asfix -L${top_srcdir}/toolbus \
+		  $(addprefix -l, $(addsuffix -gcc,  ${ALL_LIBS})) @LIBS@
+LIBS_DBG	= -L${top_srcdir}/aterm -L${top_srcdir}/asfix -L${top_srcdir}/toolbus \
+		  $(addprefix -l, $(addsuffix -dbg,  ${ALL_LIBS})) @LIBS@
+LIBS_PROF	= -L${top_srcdir}/aterm -L${top_srcdir}/asfix -L${top_srcdir}/toolbus \
+		  $(addprefix -l, $(addsuffix -prof, ${ALL_LIBS})) @LIBS@
+LIBS_NS		= -L${top_srcdir}/aterm -L${top_srcdir}/asfix -L${top_srcdir}/toolbus \
+		  $(addprefix -l, $(addsuffix -ns,   ${ALL_LIBS})) @LIBS@
 
 INSTALL		= @INSTALL@
 INSTALL_PRG	= @INSTALL_PRG@
@@ -71,12 +75,12 @@ INSTALL_DAT	= @INSTALL_DAT@
 TOOLBUS		= @TOOLBUS@
 INCL		= -I../asfix -I../aterm -I../toolbus
 TESTPRGS	= stress-cc stress-gcc primes-cc primes-gcc asfixtest \
-		stress-ns primes-ns test-tool test-tool2 randgen termstats
+		  stress-ns primes-ns test-tool test-tool2 randgen termstats
 TESTSRCS	= stress.c asfixtest.c primes.c test-tool.c test-tool2.c \
-		randgen.c termstats.c
+		  randgen.c termstats.c
 TESTOBJS	= stress.o asfixtest.o primes.o test-tool.o test-tool2.o
 DISTFILES	= test.tb test2.tb Test.asfix test.trms error.trm Makefile.in \
-		test2.tifs ${TESTSRCS} .depend
+		  test2.tifs ${TESTSRCS} .depend
 
 all: $(TESTPRGS) $(TESTS)
 
