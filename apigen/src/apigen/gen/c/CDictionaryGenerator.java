@@ -58,19 +58,21 @@ public class CDictionaryGenerator extends Generator {
 		Iterator types = adt.typeIterator();
 		while (types.hasNext()) {
 			Type type = (Type) types.next();
-			String id = StringConversions.makeIdentifier(type.getId());
 			Iterator alts = type.alternativeIterator();
 			while (alts.hasNext()) {
 				Alternative alt = (Alternative) alts.next();
-				ATerm entry =
-					factory.make(
-						"[<appl>,<term>]",
-						prefix + "pattern" + id + StringConversions.makeCapitalizedIdentifier(alt.getId()),
-						alt.buildMatchPattern());
+				ATerm entry = makeDictEntry(type, alt);
 				term_list = factory.makeList(entry, term_list);
 			}
 		}
 		return term_list;
+	}
+
+	private ATerm makeDictEntry(Type type, Alternative alt) {
+		return factory.make(
+			"[<appl>,<term>]",
+			prefix + "pattern" + StringConversions.makeIdentifier(type.getId()) + StringConversions.makeCapitalizedIdentifier(alt.getId()),
+			alt.buildMatchPattern());
 	}
 
 	private ATermList makeAFunList() {
@@ -79,14 +81,19 @@ public class CDictionaryGenerator extends Generator {
      
        while(afuns.hasNext()) {
 			AFun afun = (AFun) afuns.next();
-            String name = afunRegister.lookup(afun);
-			ATerm[] args = new ATerm[afun.getArity()];
-			for (int j = 0; j < afun.getArity(); j++) {
-				args[j] = factory.parse("x");
-			}
-			ATerm term = factory.makeAppl(afun, args);
-			afun_list = afun_list.insert(factory.make("[" + name + ",<term>]", term));
+			ATerm entry = makeDictEntry(afun);
+			afun_list = afun_list.insert(entry);
        }
 		return afun_list;
+	}
+
+	private ATerm makeDictEntry(AFun afun) {
+		String name = afunRegister.lookup(afun);
+		ATerm[] args = new ATerm[afun.getArity()];
+		for (int j = 0; j < afun.getArity(); j++) {
+			args[j] = factory.parse("x");
+		}
+		ATerm term = factory.makeAppl(afun, args);
+		return factory.make("[" + name + ",<term>]", term);
 	}
 }
