@@ -6,7 +6,10 @@ data_DATA  = ${JARFILE}
 CLEANFILES = ${JARFILE}
 
 ${JARFILE}:
-	find ${top_builddir}/apigen -name '*.class' | xargs jar cf ${JARFILE}
+	find ${top_builddir}/apigen \
+		-name '*.class' \
+		-o -name '*.java' \
+	| xargs jar cf ${JARFILE}
 
 WWWDIR = /hosts/www/projects/MetaEnv/apigen
 
@@ -22,4 +25,3 @@ noinst_SCRIPTS = ${PACKAGE}-${VERSION}.pkg
 ${PACKAGE}-${VERSION}.pkg: ${PACKAGE}.pkg Makefile
 	sed 's#__VERSION__#${VERSION}#g;\
              s#__PACKAGE__#${PACKAGE}#g' < $< > $@
-
