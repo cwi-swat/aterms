@@ -4,8 +4,9 @@
 # $Id$
 #
 
-PARSER          = ${RESEARCH}/bin/sglr
-ASOURCE         = ${RESEARCH}/bin/asource
-APIGEN          = ${RESEARCH}/apigen/spec/c-source/Gen-C-API
+PARSER          = ${SGLRBIN}/sglr
+ASOURCE         = ${ASOURCEBIN}/asource
+
+APIGEN          = ${top_builddir}/spec/c-source/Gen-C-API
 POSTGEN         = tr -d '\n'
-TABLE           = ${RESEARCH}/apigen/spec/Gen-C-API.trm.tbl
+TABLE           = ${top_builddir}/spec/Gen-C-API.trm.tbl

@@ -1,8 +1,27 @@
+dnl
+dnl vim:ts=8:sw=8:sts=0
+dnl
 dnl $Id$
+dnl
 
 dnl Process this file with autoconf to produce a configure script.
 AC_INIT(configure.in)
 AM_INIT_AUTOMAKE(apigen, 0.1.0)
+
+dnl Default locations of used components
+AC_PATH_PROG(SGLR, sglr, no)
+if test "${SGLR}" = "no"; then
+	SGLR='${prefix}'
+else
+	SGLR=`dirname \`dirname ${SGLR}\``
+fi
+
+AC_PATH_PROG(ASOURCE, asource, no)
+if test "${ASOURCE}" = "no"; then
+	ASOURCE='${prefix}'
+else
+	ASROUCE=`dirname \`dirname ${ASOURCE}\``
+fi
 
 dnl Our own version of libdir whose value is set dynamically
 AC_SUBST(INSTLIBDIR)
@@ -13,13 +32,28 @@ AC_REQUIRE([AC_PROG_CC])
 dnl Which compiler to use?
 AC_PROG_CC
 
-dnl If anyone knows why this is used...
-AC_AIX
-
-dnl Where to locate a bourne-compatible shell?
-
 dnl What commands are needed to set the variable MAKE in Makefiles?
 AC_SET_MAKE
+
+dnl Handle --with-sglr arguments to configure
+AC_ARG_WITH(sglr,
+[  --with-sglr=DIR         sglr distribution is in DIR],
+SGLR=${withval},)
+AC_SUBST(SGLR)
+AC_ARG_WITH(sglr-bin,
+[  --with-sglr-bin=DIR     sglr executables are in DIR],
+SGLRBIN=${withval},SGLRBIN=${SGLR}/bin)
+AC_SUBST(SGLRBIN)
+
+dnl Handle --with-asource arguments to configure
+AC_ARG_WITH(asource,
+[  --with-asource=DIR      asource distribution is in DIR],
+ASOURCE=${withval},)
+AC_SUBST(ASOURCE)
+AC_ARG_WITH(asource-bin,
+[ --with-asource-bin=DIR   asource executables are in DIR],
+ASOURCEBIN=${withval},ASOURCEBIN=${ASOURCE}/bin)
+AC_SUBST(ASOURCEBIN)
 
 dnl Checks for header files.
 AC_CHECK_HEADER(getopt.h)
@@ -27,6 +61,7 @@ AC_CHECK_HEADER(getopt.h)
 dnl Which files need updating?
 AC_OUTPUT(
 Makefile
+spec/Makefile
 utils/Makefile
 test/Makefile
 ,
