@@ -1,7 +1,8 @@
+*.class
+*.taf2
+*.test
+*.trm2
 Makefile
 Makefile.in
-*.class
+classcheck.stamp
 classjava.stamp
-*.test
-*.taf2
-*.trm2
