@@ -1,0 +1,47 @@
+#!/bin/sh
+
+PROGRAM=java
+CLASS=
+NAME=
+TBHOST= 
+PORT=
+TID=
+
+VERBOSE=
+
+usage="$0 -TB_TOOL_NAME <name> -TB_HOST <host> -TB_PORT <port> -TB_TOOL_ID <tid> -TB_VERBOSE -class <class> -program <prog>"
+
+while :
+do
+	case "$1" in
+		-TB_TOOL_NAME)	NAME="-TB_TOOL_NAME $2" ;shift;shift
+				;;
+		-TB_HOST)	TBHOST="-TB_HOST $2" ;shift;shift
+				;;
+		-TB_PORT)	PORT="-TB_PORT $2" ;shift;shift
+				;;
+		-TB_TOOL_ID)	TID="-TB_TOOL_ID $2" ;shift;shift
+				;;
+		-TB_VERBOSE)	VERBOSE="-TB_VERBOSE" ;shift
+				;;
+		-program)	PROGRAM=$2 ;shift;shift
+				;;	
+		-class)		CLASS=$2; shift; shift
+				;;
+		-arg)		ARGS="$ARGS $2" ;shift;shift
+				;;
+		-details)	DETAILS=$2; shift;shift
+				;;
+		-java-args)	shift; SCRIPTARGS="-args $@" ;shift;shift;shift;shift;shift;shift;shift;shift;shift;shift;shift;shift;shift
+				;;
+		-*)		$echo "unknown option: $1"
+				$echo "$usage" >&2
+				exit 1
+				;;
+		*) break
+	esac
+done
+
+#echo "exec: $PROGRAM $ARGS $CLASS $NAME $TBHOST $PORT $TID $VERBOSE $TRACE"
+$PROGRAM $ARGS $CLASS $NAME $TBHOST $PORT $TID $VERBOSE $TRACE $SCRIPTARGS
+
