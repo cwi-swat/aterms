@@ -1,5 +1,8 @@
 $Id$
 
+Tue Sep 28 13:50:23 CEST 2004 <jurgenv@cwi.nl>
+ * Brought up-to-date with new glt package layout.
+
 Thu Jun 10 09:53:19 CEST 2004 <jong@cwi.nl>
  * xml2aterm/xml2aterm.c: fix gcc warnings about type punned pointer stuff
 
