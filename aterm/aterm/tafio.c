@@ -384,6 +384,8 @@ char *ATwriteToSharedString(ATerm t, int *len)
 
   assert(length == writer.u.string_data.cur_size);
 
+  writer.u.string_data.buf[length] = '\0';
+
   if (len != NULL) {
     *len = length;
   }

@@ -674,6 +674,10 @@ void testMatch(void)
   test_assert("match", 35, ATisEqual(t[1], t[4]));
   test_assert("match", 36, ATmatch((ATerm)ATempty, "[]"));
 
+  /* These were reported to SEGV, but should work */
+  test_assert("match", 37, ATmatch(ATmake("int(<int>)",1), "<appl(<term>)>", NULL));
+  test_assert("match", 38, ATmatchTerm(ATmake("int(<int>)",1), ATparse("<appl(<term>)>"), NULL));
+
   printf("match tests ok.\n");
 }
 
@@ -681,6 +685,11 @@ void testMatch(void)
 /*{{{  void testPrintf(void) */
 void testPrintf()
 {
+  char buf[BUFSIZ];
+
+  sprintf(buf, "%s", ATwriteToString(ATparse("<appl(<term>)>")));
+  assert(strcmp(buf, "<appl(<term>)>") == 0);
+
   /* Outcommented. Have to find a way to test this w/o spamming
    * stderr. Just print "printf ok"
    int i=14;
@@ -1241,6 +1250,7 @@ int main(int argc, char *argv[])
   ATerm bottomOfStack;
 
   ATinit(argc, argv, &bottomOfStack);
+
   testAlloc();
   testSymbol();
   testAppl();

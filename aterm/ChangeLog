@@ -1,9 +1,15 @@
 $Id$
 
-2002/10/18 <jong@cwi.nl>
+2002/09/23 <jong@cwi.nl>
+ * Fix dates in ChangeLog (October -> September)
+ * Fix in ATwriteToString: print '<' and '>' around placeholders
+ * Fix in writeToSharedString: terminate string buffer
+ * Add to stress.c: assert that some reported failures work correctly
+
+2002/09/18 <jong@cwi.nl>
  * Fix bug in read_term (blob data was not copied) reported by Tijs vd Storm
 
-2002/10/17 <jong,olivierp@cwi.nl>
+2002/09/17 <jong,olivierp@cwi.nl>
 * Fixed two alignment bugs that only manifested themselves on sun:
   - 'data' field in Block was not eight byte aligned, we now moved it
     to the start of the structure to get the default platform alignment.

@@ -1090,11 +1090,15 @@ topWriteToString(ATerm t, char *buf)
     *buf++ = '[';
     buf = writeToString(t, buf);
     *buf++ = ']';
+  } else if (ATgetType(t) == AT_PLACEHOLDER) {
+    *buf++ = '<';
+    buf = writeToString(t, buf);
+    *buf++ = '>';
   } else {
     buf = writeToString(t, buf);
   }
 
-  if(annos) {
+  if (annos) {
     *buf++ = '{';
     buf = writeToString(annos, buf);
     *buf++ = '}';
@@ -1192,9 +1196,11 @@ topTextSize(ATerm t)
   ATerm annos = AT_getAnnotations(t);
   int size = textSize(t);
 
-  if (ATgetType(t) == AT_LIST)
-    size += 2;
-  if(annos) {
+  if (ATgetType(t) == AT_LIST || ATgetType(t) == AT_PLACEHOLDER) {
+    size += 2; /* For markers on both sides of the term */
+  }
+
+  if (annos) {
     size += 2; /* '{' and '}' */
     size += textSize(annos);
   }
