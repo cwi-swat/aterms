@@ -86,8 +86,7 @@ public class Main {
 
 		try {
       ADTFactory factory = new ADTFactory();
-      ATerm raw = factory.readFromFile(input);
-      Entries entries = factory.EntriesFromTerm(raw);      
+      Entries entries = factory.EntriesFromFile(input);      
       
 			adt = new ADT(entries);
             

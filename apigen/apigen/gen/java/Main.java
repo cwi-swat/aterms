@@ -123,8 +123,7 @@ public class Main {
 	static public void run(InputStream input) {
 		try {
 			ADTFactory factory = new ADTFactory();
-			ATerm raw = factory.readFromFile(input);
-			Entries entries = factory.EntriesFromTerm(raw);
+			Entries entries = factory.EntriesFromFile(input);
 			generateAPI(new ADT(entries));
 		} catch (ParseError e) {
 			System.err.println("A parse error occurred in the ADT file:");
