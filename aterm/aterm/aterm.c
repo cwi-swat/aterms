@@ -2103,6 +2103,53 @@ AT_unmarkTerm(ATerm t)
 }
 
 /*}}}  */
+/*{{{  void AT_unmarkIfAllMarked(ATerm t) */
+
+void AT_unmarkIfAllMarked(ATerm t)
+{
+	if(IS_MARKED(t->header)) {
+		CLR_MARK(t->header);
+		switch(ATgetType(t)) {
+			case AT_INT:
+			case AT_REAL:
+			case AT_BLOB:
+				break;
+
+			case AT_PLACEHOLDER:
+				AT_unmarkIfAllMarked(ATgetPlaceholder((ATermPlaceholder)t));
+				break;
+
+			case AT_LIST:
+				{
+					ATermList list = (ATermList)t;
+					while(!ATisEmpty(list) && IS_MARKED(list->header)) {
+						CLR_MARK(list->header);
+						AT_unmarkIfAllMarked(ATgetFirst(list));
+						list = ATgetNext(list);
+					}
+				}
+				break;
+			case AT_APPL:
+				{
+					ATermAppl appl = (ATermAppl)t;
+					int cur_arity, cur_arg;
+					AFun sym;
+
+					sym = ATgetAFun(appl);
+					cur_arity = ATgetArity(sym);
+					for(cur_arg=0; cur_arg<cur_arity; cur_arg++) {
+						AT_unmarkIfAllMarked(ATgetArgument(appl, cur_arg));
+					}
+				}
+				break;
+			default:
+				ATerror("collect_terms: illegal term\n");
+				break;
+		}		
+	}
+}
+
+/*}}}  */
 
 /*{{{  static int calcCoreSize(ATerm t) */
 
@@ -2382,7 +2429,8 @@ int
 AT_calcUniqueSymbols(ATerm t)
 {
     int result = calcUniqueSymbols(t);
-    AT_unmarkTerm(t);
+    /*AT_unmarkIfAllMarked(t);*/
+		AT_unmarkTerm(t);
     return result;
 }
 

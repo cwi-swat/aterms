@@ -17,6 +17,7 @@ extern int at_prot_table_size;
 
 void AT_markTerm(ATerm t);
 void AT_unmarkTerm(ATerm t);
+void AT_unmarkIfAllMarked(ATerm t);
 int  AT_calcTextSize(ATerm t);
 int  AT_calcCoreSize(ATerm t);
 int  AT_calcSubterms(ATerm t);

@@ -703,38 +703,14 @@ static void collect_terms(ATerm t)
 			case AT_LIST:
 				{
 					ATermList list = (ATermList)t;
-					if(ATisEmpty(list))
+					if(ATisEmpty(list)) {
 						sym = AS_EMPTY_LIST;
-					else {
+					} else {
 						sym = AS_LIST;
 						collect_terms(ATgetFirst(list));
 						collect_terms((ATerm)ATgetNext(list));
 					}
 				}
-			#if 0 /* <PO> buggy */
-					while(!ATisEmpty(list) && !IS_MARKED(list->header)) {
-						SET_MARK(list->header);
-						collect_terms(ATgetFirst(list));
-						entry = &sym_entries[at_lookup_table[AS_LIST]->index];
-						assert(entry->id == AS_LIST);
-						add_term(entry, (ATerm)list);						
-						list = ATgetNext(list);
-					}
-					if(!IS_MARKED(ATempty->header)) {
-						entry = &sym_entries[at_lookup_table[AS_EMPTY_LIST]->index];
-						add_term(entry, (ATerm)ATempty);
-					}
-
-					/* handle annotation */
-					annos = AT_getAnnotations(t);
-					if (annos) {
-						entry = &sym_entries[at_lookup_table[AS_ANNOTATION]->index];
-						assert(entry->id == AS_ANNOTATION);
-						collect_terms((ATerm)annos);
-						add_term(entry, t);
-					}
-					return;
-		#endif
 				break;
 			case AT_APPL:
 				{
@@ -1123,6 +1099,7 @@ ATwriteToBinaryFile(ATerm t, FILE *file)
 						nr_unique_symbols, nr_unique_terms);*/
 	
 	collect_terms(t);
+	/*AT_unmarkIfAllMarked(t);*/
 	AT_unmarkTerm(t);
 	
 	/* reset cur_index */
