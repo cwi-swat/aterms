@@ -472,7 +472,7 @@ class ATermListImpl
 
     /* Add the prefix */
     for(--lcv; lcv>=0; lcv--) {
-      cur = cur.insert((ATerm)buffer.get(i));
+      cur = cur.insert((ATerm)buffer.get(lcv));
     }
 
     return cur;
