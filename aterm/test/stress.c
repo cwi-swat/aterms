@@ -578,6 +578,15 @@ testMake(void)
 					   ATparse("[1,2,3]")),
 				    ATparse("[\"f\"([1,2,3])]")));
 
+  test_assert("make", 11, ATisEqual(ATparse("a{[a,a]}"),
+				    ATmake("a{[a,a]}")));
+
+  test_assert("make", 12, ATisEqual(ATparse("[]{[a,a]}"),
+				    ATmake("[]{[a,a]}")));
+
+  test_assert("make", 13, ATisEqual(ATparse("[1]{[a,a]}"),
+				    ATmake("[1]{[a,a]}")));
+
   fprintf(stderr, "The following two tests should generate parse errors.\n");
 #ifdef ABORT_ON_PARSE_ERROR
   ATsetAbortHandler(abort_handler);
@@ -745,6 +754,7 @@ void testAnno(void)
   test_assert("anno", 9, ATisEqual(ATgetAnnotation(t[5],ATparse("label")),
 				   ATparse("unique_anno(42)")));
   test_assert("anno", 10, ATisEqual(ATremoveAllAnnotations(t[0]), term));
+
 
   printf("annotation tests ok.\n");
 }

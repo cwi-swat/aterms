@@ -85,17 +85,21 @@ ATerm AT_getPattern(const char *pat)
 
   bucket = &(pattern_table[hash_val]);
   if (bucket->pat) {
-    if (streq(bucket->pat, pat))
+    if (streq(bucket->pat, pat)) {
       return bucket->term;
-    else
+    }
+    else {
       free(bucket->pat);
+    }
   }
-  else
+  else {
     ATprotect(&(bucket->term));
+  }
 
   bucket->pat = strdup(pat);
-  if (!bucket->pat)
+  if (!bucket->pat) {
     ATerror("ATvmake: no room for pattern.\n");
+  }
 
   bucket->term = ATreadFromString(pat);
   return bucket->term;
@@ -192,6 +196,7 @@ AT_vmakeTerm(ATerm pat)
   ATerm term;
   ATerm type;
   Symbol sym;
+  ATerm annos;
 
   switch (ATgetType(pat))
   {
@@ -201,13 +206,21 @@ AT_vmakeTerm(ATerm pat)
       return pat;
 
     case AT_APPL:
+      annos = ATgetAnnotations(pat);
       appl = (ATermAppl) pat;
       sym = ATgetSymbol(appl);
-      return (ATerm) makeArguments(appl, sym);
+
+      if (annos) {
+	return ATsetAnnotations((ATerm) makeArguments(appl, sym), annos);
+      }
+      else {
+	return (ATerm) makeArguments(appl, sym);
+      }
 
     case AT_LIST:
       /*{{{  Handle list */
 
+      annos = ATgetAnnotations(pat);
       list = (ATermList) pat;
 
       if(ATisEmpty(list))
@@ -241,7 +254,12 @@ AT_vmakeTerm(ATerm pat)
 	arglist = ATgetNext(arglist);
       }
 
-      return (ATerm) list;
+      if (annos) {
+	return ATsetAnnotations((ATerm) list, annos);
+      }
+      else {
+	return (ATerm) list;
+      }
 
       /*}}}  */
 

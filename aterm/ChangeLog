@@ -1,5 +1,13 @@
 $Id$
 
+2003-06-24  Jurgen Vinju	<jurgenv@cwi.nl>
+ * Added a failing test: ATmake("[1]{[a,a]}") results in a "[1]".
+   The annotation is lost, while if you use ATparse, it is ok.
+ * Fixed the bug, ATmake does not throw away annotations anymore.
+   Note that substitution of placeholders in annotations, and matching
+   of annotations seems not to be supported by the current implementation.
+ * Version 2.0.2
+
 Tue Feb 18 15:47:24 CET 2003 <{jong,olivierp}@cwi.nl>
  * Version 2.0.1
  * Fix two bugs in tests 5, 37/38
