@@ -5,73 +5,24 @@ import java.util.Iterator;
 import apigen.adt.*;
 
 public abstract class TomSignatureGenerator extends Generator {
-    protected String api_name = "";
-    protected StringConversions converter;
-    
-    public TomSignatureGenerator() {
-    	converter = new StringConversions();
-    }
-    
-	protected void createTomSignatureStream(String name, String directory) {
-		createFileStream(name, ".t", directory);
+    protected String apiName = "";
+    private TomSignatureImplementation impl;
+    private ADT adt;
+	
+	public TomSignatureGenerator(ADT adt, TomSignatureImplementation impl, 
+	        String directory, String api_name, boolean verbose, boolean folding) {
+	   super(directory, StringConversions.makeIdentifier(api_name), ".t", verbose, folding);
+	   this.adt = adt;
+	   this.impl = impl;
 	}
-
-	public void genTomSignatureFile(
-		String directory,
-		String api_name,
-		ADT api) {
-		String filename = converter.makeIdentifier(api_name);
-		this.api_name = api_name;
-		createTomSignatureStream(filename, directory);
-
+	
+	public void generate() {
 		info("generating " + filename + ".t");
 
 		genTomBuiltinTypes();
-		genTomTypes(api);
+		genTomTypes(adt);
 	}
 
-	protected abstract String StringCmpFunSym(String arg1, String arg2);
-	protected abstract String IntegerCmpFunSym(String arg1, String arg2);
-	protected abstract String DoubleCmpFunSym(String arg1, String arg2);
-	protected abstract String ATermCmpFunSym(String arg1, String arg2);
-
-	protected abstract String StringEquals(String arg1, String arg2);
-	protected abstract String IntegerEquals(String arg1, String arg2);
-	protected abstract String DoubleEquals(String arg1, String arg2);
-	protected abstract String ATermEquals(String arg1, String arg2);
-
-	protected abstract String StringGetFunSym(String arg);
-	protected abstract String IntegerGetFunSym(String arg);
-	protected abstract String DoubleGetFunSym(String arg);
-	protected abstract String ATermGetFunSym(String arg);
-
-	protected abstract String StringGetSubTerm(String arg1, String arg2);
-	protected abstract String IntegerGetSubTerm(String arg1, String arg2);
-	protected abstract String DoubleGetSubTerm(String arg1, String arg2);
-	protected abstract String ATermGetSubTerm(String arg1, String arg2);
-
-	protected abstract String StringImpl();
-	protected abstract String IntegerImpl();
-	protected abstract String DoubleImpl();
-	protected abstract String ATermImpl();
-
-    protected abstract String TypeName(String type); 
-	protected abstract String TypeImpl(String type);
-	protected abstract String TypeGetFunSym(String arg1);
-	protected abstract String TypeCmpFunSym(String arg1, String arg2);
-	protected abstract String TypeGetSubTerm(String term, String n);
-	protected abstract String TypeEquals(String type, String arg1, String arg2);
-
-    protected abstract String OperatorName(String id);
-    protected abstract String OperatorType(String type, String id);
-	protected abstract String OperatorGetSlot(String string, String type, String field_id);
-	protected abstract String OperatorIsFSym(String string, String type,  String alt);
-	protected abstract String OperatorFSym(String type, String alt);
-	protected abstract String OperatorMake(String type, String alt, String args);
-		
-    protected abstract String FieldName(String id);
-    protected abstract String FieldType(String type);
-    
 	private String TypeTermTemplate(
 		String type,
 		String impl,
@@ -93,39 +44,39 @@ public abstract class TomSignatureGenerator extends Generator {
 	private void genTomBuiltinTypes() {
 		println(
 			TypeTermTemplate(
-				"String",
-				StringImpl(),
-				StringGetFunSym("t"),
-				StringCmpFunSym("s1", "s2"),
-				StringGetSubTerm("t", "n"),
-				StringEquals("t1", "t2")));
+				impl.StringName(),
+				impl.StringImpl(),
+				impl.StringGetFunSym("t"),
+				impl.StringCmpFunSym("s1", "s2"),
+		impl.StringGetSubTerm("t", "n"),
+		impl.StringEquals("t1", "t2")));
 		println();
 		println(
 			TypeTermTemplate(
-				"Integer",
-				IntegerImpl(),
-				IntegerGetFunSym("t"),
-				IntegerCmpFunSym("s1", "s2"),
-				IntegerGetSubTerm("t", "n"),
-				IntegerEquals("t1", "t2")));
+		impl.IntegerName(),
+		impl.IntegerImpl(),
+		impl.IntegerGetFunSym("t"),
+		impl.IntegerCmpFunSym("s1", "s2"),
+		impl.IntegerGetSubTerm("t", "n"),
+		impl.IntegerEquals("t1", "t2")));
 		println();
 		println(
 			TypeTermTemplate(
-				"Double",
-				DoubleImpl(),
-				DoubleGetFunSym("t"),
-				DoubleCmpFunSym("s1", "s2"),
-				DoubleGetSubTerm("t", "n"),
-				DoubleEquals("t1", "t2")));
+		impl.DoubleName(),
+		impl.DoubleImpl(),
+		impl.DoubleGetFunSym("t"),
+		impl.DoubleCmpFunSym("s1", "s2"),
+		impl.DoubleGetSubTerm("t", "n"),
+		impl.DoubleEquals("t1", "t2")));
 		println();
 		println(
 			TypeTermTemplate(
-				"ATerm",
-				ATermImpl(),
-				ATermGetFunSym("t"),
-				ATermCmpFunSym("s1", "s2"),
-				ATermGetSubTerm("t", "n"),
-				ATermEquals("t1", "t2")));
+		impl.ATermName(),
+		impl.ATermImpl(),
+		impl.ATermGetFunSym("t"),
+		impl.ATermCmpFunSym("s1", "s2"),
+		impl.ATermGetSubTerm("t", "n"),
+		impl.ATermEquals("t1", "t2")));
 		println();
 	}
 
@@ -141,12 +92,12 @@ public abstract class TomSignatureGenerator extends Generator {
 	private void genTomType(Type type) {
 		println(
 			TypeTermTemplate(
-				TypeName(type.getId()),
-				TypeImpl(type.getId()),
-				TypeGetFunSym("t"),
-				TypeCmpFunSym("s1", "s2"),
-				TypeGetSubTerm("t", "n"),
-				TypeEquals(type.getId(),"t1", "t2"))
+		impl.TypeName(type.getId()),
+		impl.TypeImpl(type.getId()),
+		impl.TypeGetFunSym("t"),
+		impl.TypeCmpFunSym("s1", "s2"),
+		impl.TypeGetSubTerm("t", "n"),
+		impl.TypeEquals(type.getId(),"t1", "t2"))
 			);
 		println();
 
@@ -163,19 +114,19 @@ public abstract class TomSignatureGenerator extends Generator {
 	}
 
 	private void genTomAltOperator(Type type, Alternative alt) {
-		String class_name = TypeName(type.getId());
-		String operator_name = OperatorName(alt.getId());
-		String alt_class_name = OperatorType(type.getId(), alt.getId());
+		String class_name = impl.TypeName(type.getId());
+		String operator_name = impl.OperatorName(alt.getId());
+		String alt_class_name = impl.OperatorType(type.getId(), alt.getId());
 
-		print("%op " + TypeName(type.getId()) + " " + operator_name);
+		print("%op " + impl.TypeName(type.getId()) + " " + operator_name);
 
 		Iterator fields = type.altFieldIterator(alt.getId());
 		if (fields.hasNext()) {
 			print("(");
 			while (fields.hasNext()) {
 				Field field = (Field) fields.next();
-				String field_id = FieldName(field.getId());
-				String field_class = FieldType(field.getType());
+				String field_id = impl.FieldName(field.getId());
+				String field_class = impl.FieldType(field.getType());
 				String field_type = field_class;
 				print(field_id + ":" + field_type);
 
@@ -186,14 +137,14 @@ public abstract class TomSignatureGenerator extends Generator {
 			print(")");
 		}
 		println(" {");
-		println("  fsym {" + OperatorFSym(class_name, operator_name) + "}");
-		println("  is_fsym(t) { " + OperatorIsFSym("t", class_name, operator_name) + "}");
+		println("  fsym {" + impl.OperatorFSym(class_name, operator_name) + "}");
+		println("  is_fsym(t) { " + impl.OperatorIsFSym("t", class_name, operator_name) + "}");
 			
 		fields = type.altFieldIterator(alt.getId());
 		while (fields.hasNext()) {
 			Field field = (Field) fields.next();
-			String field_id = converter.makeIdentifier(field.getId());
-			println("  get_slot("+ field_id + ",t) { " + OperatorGetSlot("t", class_name, field_id) + "}");
+			String field_id = StringConversions.makeIdentifier(field.getId());
+			println("  get_slot("+ field_id + ",t) { " + impl.OperatorGetSlot("t", class_name, field_id) + "}");
 		}
 
 		String arg = "(";
@@ -206,7 +157,7 @@ public abstract class TomSignatureGenerator extends Generator {
 		}
 		arg += ")";
 		
-		println("  make"+ arg+ " { " + OperatorMake(class_name, operator_name, arg)	+ "}");
+		println("  make"+ arg+ " { " + impl.OperatorMake(class_name, operator_name, arg)	+ "}");
 
 		println("}");
 		println();
