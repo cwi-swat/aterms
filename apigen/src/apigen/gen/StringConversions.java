@@ -113,6 +113,9 @@ public class StringConversions {
 		return (String) specialChars.get(new Character(c));
 	}
 
+    /**
+     * Escape all double quotes and backslashes in a string using a leading backslash
+     */
 	static public String escapeQuotes(String s) {
 		StringBuffer buf = new StringBuffer(s.length() * 2);
 		for (int i = 0; i < s.length(); i++) {

@@ -16,7 +16,7 @@ abstract public class CGenerator extends Generator {
      * the abstract code generator and close the two files afterwards
      */
 	public void run() {
-		stream = createStream(filename, ".c", directory);
+		stream = createStream(filename, extension, directory);
 		headerStream = createStream(filename, ".h", directory);
 
 		generate();
