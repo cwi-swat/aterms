@@ -1,6 +1,5 @@
 Both versions:
-* Extend adt formalism with support for lists and implement specific
-  functionality for lists
+* Extend adt formalism with separated lists
 * Extend adt formalism with support for aterm annotations like:
   annotation(posinfo, Area) which declares that the annotation with
   label posinfo has type Area. Normal adt entries can then be used to
