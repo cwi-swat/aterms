@@ -20,6 +20,10 @@ public class JavaTomSignatureImplementation implements TomSignatureImplementatio
 	}
 
 	private String buildAltTypeName(String type, String alt) {
+		if (converter.isReserved(type)) {
+			return type;
+		}
+		
 		return StringConversions.capitalize(type + "_" + StringConversions.capitalize(alt));
 	}
 
