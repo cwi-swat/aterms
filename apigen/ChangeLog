@@ -1,5 +1,7 @@
-2003-02-27    <pem@bach>
+2003-02-28  (jurgenv@cwi.nl)
+ * Big refactoring in C and Java versions to prevent code-cloning
 
+2003-02-27  (pem@bach.loria.fr)
  * Tom Signature generation improved to support C code
 
 2003/02/26 (jurgenv@cwi.nl)
