@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
+#include "memory.h"
 #include "list.h"
 #include "aterm2.h"
 
