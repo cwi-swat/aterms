@@ -1152,7 +1152,7 @@ public class APIGenerator extends CGenerator {
 			return name;
 		}
 		else {
-			return prefix + name;
+			return prefix + StringConversions.makeCapitalizedIdentifier(name);
 		}
 	}
 
