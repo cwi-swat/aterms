@@ -6,7 +6,7 @@
 
 SUBDIRS = . tom c java 
 
-CLASSPATH_ENV	= CLASSPATH=${top_srcdir}:$(JAVA_ATERM):$(SHARED_OBJECTS)
+CLASSPATH_ENV	= CLASSPATH=${top_srcdir}:$(EXTERNAL_JARS)
 
 java_JAVA       = Generator.java StringConversions.java TypeConverter.java TypeConversions.java
 

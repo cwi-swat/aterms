@@ -5,7 +5,7 @@
 #
 
 
-CLASSPATH_ENV	= CLASSPATH=${top_srcdir}:$(JAVA_ATERM):$(SHARED_OBJECTS)
+CLASSPATH_ENV	= CLASSPATH=${top_srcdir}:$(EXTERNAL_JARS)
 
 java_JAVA       = TomSignatureGenerator.java TomSignatureImplementation.java 
 
