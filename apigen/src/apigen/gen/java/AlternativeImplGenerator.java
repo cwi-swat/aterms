@@ -446,8 +446,7 @@ public class AlternativeImplGenerator extends JavaGenerator {
 		println();
 		}
 
-  
-	  // This is not well thought out yet!
+	  // TODO: fix jjtraveler interface here
 	  private void genAltVisitableInterface(Type type, Alternative alt)
 	  {
 		String altClassName = AlternativeGenerator.className( type,alt );
