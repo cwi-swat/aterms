@@ -68,8 +68,9 @@ public class SeparatedListTypeGenerator extends TypeGenerator {
     private void genElementAtMethod() {
         JavaGenerationParameters params = getJavaGenerationParameters();
         String elementName = StringConversions.capitalize(elementType);
+        String converted = getConverter().makeATermToBuiltinConversion(elementType, "elementAt(index)");
         println("  public " + elementTypeName + " get" + elementName + "At(int index) {");
-        println("    return (" + elementTypeName + ") elementAt(index);");
+        println("    return (" + elementTypeName + ") " + converted + ";");
         println("  }");
     }
 
