@@ -245,12 +245,12 @@ makeArguments(ATermAppl appl, char *name, ATbool quoted, va_list *args)
 {
 	Symbol sym = ATgetSymbol(appl);
 	int nr_args = ATgetArity(sym);
-	int cur;
+	int cur = -1;
 	ATerm terms[NR_INLINE_TERMS];
-	ATerm term;
-	ATerm type;
-	ATermList list;
-	ATermList arglist;
+	ATerm term = NULL;
+	ATerm type = NULL;
+	ATermList list = NULL;
+	ATermList arglist = NULL;
 
 	if(nr_args == 0)
     {
