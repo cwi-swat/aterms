@@ -86,3 +86,7 @@ end
 document tprint
 	Print a specific term.
 end
+
+define breaks
+  info breakpoints
+end

@@ -3,6 +3,7 @@ CC_CC		= cc
 CC_GCC		= gcc
 
 CFLAGS_CC	= -O
+#CFLAGS_CC	= -g
 CFLAGS_GCC	= -g -ansi -pedantic -Wall
 
 INCL		= -I../asfix -I../aterm

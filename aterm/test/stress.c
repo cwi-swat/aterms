@@ -265,6 +265,7 @@ void testList(void)
 
   list[10] = (ATermList)ATreadFromString("[1,2,3,4,5]");
   list[11] = ATreplace(list[10], (ATerm)ATmakeInt(0), 2);
+
   test_assert("list-ops", 19, ATisEqual(list[11], 
 				  ATreadFromString("[1, 2, 0, 4, 5]")));
 
@@ -303,25 +304,19 @@ testRead(void)
   fclose(f);
 
   t = ATreadFromString("f(1)");
-  fprintf(stdout, "read from string: ");
-  ATwriteToTextFile(t, stdout);
+  ATfprintf(stdout, "read from string: %t\n", t);
   t = ATreadFromString("f(a,b,<123>,0.456,\"f\")");
-  fprintf(stdout, "\nread from string: ");
-  ATwriteToTextFile(t, stdout);
-  fprintf(stdout, "\nread from string: ");
+  ATfprintf(stdout, "read from string: %t\n", t);
   t = ATreadFromString("f(00000004:1234,xyz,[1,2,3])");
-  ATwriteToTextFile(t, stdout);
-  fprintf(stdout, "\nread from string: ");
+  ATfprintf(stdout, "read from string: %t\n", t);
   t = ATreadFromString("[]");
-  ATwriteToTextFile(t, stdout);
-  fprintf(stdout, "\nread from string: ");
+  ATfprintf(stdout, "read from string: %t\n", t);
   t = ATreadFromString("f{[a,1],[b,ab{[1,2]}]}");
-  ATwriteToTextFile(t, stdout);
-  fprintf(stdout, "\nread from string: ");
+  ATfprintf(stdout, "read from string: %t\n", t);
   t = ATreadFromString("<int>");
-  ATwriteToTextFile(t, stdout);
-
-  fprintf(stdout, "\n");
+  ATfprintf(stdout, "read from string: %t\n", t);
+	t = ATreadFromString("\"quoted: \\\"abc\\\"\"");
+  ATfprintf(stdout, "read from string: %t\n", t);
 
   fprintf(stdout, "Next term should give a parse error at line 0, col 17\n");
   f = fopen("error.trm", "r");
@@ -462,7 +457,7 @@ void testMatch(void)
   test_assert("match", 18, ((char *)data)[1] == 'b');
 
 			  
-  test_assert("match", 19, ATmatch(t[0], "<appl(1,<real>,<term>,<id>,"
+	test_assert("match", 19, ATmatch(t[0], "<appl(1,<real>,<term>,<id>,"
 								 "<appl(<list>)>,<term>)>",
               &name[0], &r, &t[7], &name[1], &name[2], &list, &t[6]));
   test_assert("match", 20, r == 3.14);

@@ -52,6 +52,7 @@ ATermList filter_non_primes(ATermList numbers)
 
     /* Remove all multiples of n, because they cannot be prime! */
 		numbers = filter_multiples(ATgetInt((ATermInt)prime), numbers);
+		/*ATprintf("%d numbers.\n", ATgetLength(numbers));*/
 
 		/* Now add n to the list of primes */
 		primes = ATappend(primes, prime);
@@ -73,7 +74,6 @@ int main(int argc, char *argv[])
 	ATinit(argc, argv, NULL, &bottomOfStack);
 
 	numbers = generate_numbers(max);
-
 	primes  = filter_non_primes(numbers);
 	ATprintf("primes up to %d: %, l\n", max, primes);
 
