@@ -5,6 +5,11 @@
  * Added tool convert-old-adt to convert old-style ADT to new style
    ADT's. WARNING: this tool does not pretty-print the output, you get
    an ATerm one-liner as a result!
+ * Added new type of entry to ADT formalism: list(Sort,ElementSort). It generates
+   two normal constructors:
+    constructor(Sort,empty,[]) and
+    constructor(Sort,many,[<head(ElementSort)>,<[tail(Sort)]>).
+   No specialized code for lists is generated yet, but I will add some soon.
    
 2003-07-07 	(jurgenv@cwi.nl)
  * Added generation of is<type> predicates. You can now ask any term that is build by a generated

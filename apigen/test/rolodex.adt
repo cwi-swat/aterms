@@ -1,6 +1,6 @@
 [
-  constructor( RoloList, multi, [<elem(Rolodex)>,<[tail(RoloList)]>]),
-  constructor( RoloList, empty, []),
+  list(RoloList, Rolodex),
+  
   constructor( Rolodex, Home, home([<name(str)>,<phone(PhoneNumber)>]) ),
   constructor( Rolodex, Work, work([<company(str)>,<phone(PhoneNumber)>]) ),
   constructor( PhoneNumber, Voice, voice(<voice(int)>)),

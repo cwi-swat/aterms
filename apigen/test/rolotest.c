@@ -30,8 +30,8 @@ static void testRolodex()
   rolo[1] = makeRolodexWork(names[1], phone[1]);
 
   list = makeRoloListEmpty();
-  list = makeRoloListMulti(rolo[1], list);
-  list = makeRoloListMulti(rolo[0], list);
+  list = makeRoloListMany(rolo[1], list);
+  list = makeRoloListMany(rolo[0], list);
 
   list = visitRoloList(list, acceptRolodex);
 

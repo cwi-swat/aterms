@@ -5,8 +5,6 @@ import java.util.*;
 import aterm.*;
 
 public class AlternativeList extends LinkedList {
-	//{{{ public void keepByType(int type)
-
 	public void keepByType(int type) {
 		Iterator iter = iterator();
 		while (iter.hasNext()) {
@@ -16,9 +14,6 @@ public class AlternativeList extends LinkedList {
 			}
 		}
 	}
-
-	//}}}
-	//{{{ public void keepByAFun(AFun afun)
 
 	public void keepByAFun(AFun afun) {
 		Iterator iter = iterator();
@@ -37,9 +32,6 @@ public class AlternativeList extends LinkedList {
 		}
 	}
 
-	//}}}
-	//{{{ public void removeEmptyList()
-
 	public void removeEmptyList() {
 		Iterator iter = iterator();
 		while (iter.hasNext()) {
@@ -50,16 +42,10 @@ public class AlternativeList extends LinkedList {
 			}
 		}
 	}
-
-	//}}}
-
-	//{{{ public Object clone()
-
+    
 	public Object clone() {
 		AlternativeList copy = new AlternativeList();
 		copy.addAll(this);
 		return copy;
 	}
-
-	//}}}
 }

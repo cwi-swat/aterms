@@ -10,8 +10,6 @@ public class Type {
 	Map fields;
 	List field_list;
 
-	//{{{ public Type(String id)
-
 	public Type(String id) {
 		this.id = id;
 
@@ -20,25 +18,15 @@ public class Type {
 		field_list = new Vector();
 	}
 
-	//}}}
-	//{{{ public String getId()
-
 	public String getId() {
 		return id;
 	}
 
-	//}}}
-	//{{{ public void addAlternative(Alternative alt)
-
 	public void addAlternative(Alternative alt) {
     alts.add(alt);
-      
-		extractFields(alt.getPattern(), new Location(alt.getId()));
     
+    extractFields(alt.getPattern(), new Location(alt.getId()));  
 	}
-
-	//}}}
-	//{{{ private void extractFields(ATerm t, Location loc)
 
 	private void extractFields(ATerm t, Location loc) {
 		AFun fun;
@@ -106,9 +94,7 @@ public class Type {
 				break;
 		}
 	}
-
-	//}}}
-  
+      
   public boolean hasAlternative(String id) 
   {
     Iterator alts = alternativeIterator();
@@ -124,8 +110,6 @@ public class Type {
     return false;
   }
   
-	//{{{ private void addField(id, type, location)
-
 	private void addField(String id, String type, Location location) {
 		Field field;
 
@@ -144,30 +128,17 @@ public class Type {
 		field.addLocation(location);
 	}
 
-	//}}}
-
-	//{{{ public List getAlternatives()
-
 	public AlternativeList getAlternatives() {
 		return (AlternativeList) alts.clone();
 	}
-
-	//}}}
-	//{{{ public Iterator alternativeIterator()
 
 	public Iterator alternativeIterator() {
 		return alts.iterator();
 	}
 
-	//}}}
-	//{{{ public Iterator fieldIterator()
-
 	public Iterator fieldIterator() {
 		return field_list.iterator();
 	}
-
-	//}}}
-	//{{{ public Iterator altFieldIterator(final String altId)
 
 	public Iterator altFieldIterator(final String altId) {
 		Comparator comp;
@@ -224,8 +195,6 @@ public class Type {
 			}
 		};
 
-		//}}}
-
 		SortedSet sortedAltFields = new TreeSet(comp);
 
 		Iterator iter = fields.values().iterator();
@@ -239,16 +208,9 @@ public class Type {
 		return sortedAltFields.iterator();
 	}
 
-	//}}}
-	//{{{ public int getAlternativeCount()
-
 	public int getAlternativeCount() {
 		return alts.size();
 	}
-
-	//}}}
-
-	//{{{ public String toString()
 
 	public String toString() {
 		return "type["
@@ -259,8 +221,6 @@ public class Type {
 			+ fields.toString()
 			+ "]";
 	}
-
-	//}}}
 	
 	public int getAltArity(Alternative alt) {
 		Iterator fields = altFieldIterator(alt.getId());

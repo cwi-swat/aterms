@@ -1,21 +1,23 @@
 package apigen.adt;
 
-import aterm.*;
+import aterm.AFun;
+import aterm.ATerm;
+import aterm.ATermAppl;
+import aterm.ATermList;
+import aterm.ATermPlaceholder;
 
-public class Alternative {
-	private final static String[] RESERVED_TYPES =
-		{ "int", "real", "str", "term" };
+public abstract class Alternative {
+	
+	protected static final String[] RESERVED_TYPES = { "int", "real", "str", "term" };
 
-	String id;
-	ATerm pattern;
+	protected String id;
+	protected ATerm pattern;
 
-	//{{{ private static boolean containsPlaceholder(ATerm term)
-
-	private static boolean containsPlaceholder(ATerm term) {
+	protected static boolean containsPlaceholder(ATerm term) {
 		switch (term.getType()) {
 			case ATerm.PLACEHOLDER :
 				return true;
-
+	
 			case ATerm.LIST :
 				{
 					ATermList list = (ATermList) term;
@@ -25,7 +27,7 @@ public class Alternative {
 					return containsPlaceholder(list.getFirst())
 						|| containsPlaceholder(list.getNext());
 				}
-
+	
 			case ATerm.APPL :
 				{
 					ATermAppl appl = (ATermAppl) term;
@@ -37,41 +39,23 @@ public class Alternative {
 					}
 					return false;
 				}
-
+	
 			default :
 				return false;
 		}
 	}
 
-	//}}}
-
-	//{{{ public Alternative(String id, ATerm pattern)
-
-	public Alternative(String id, ATerm pattern) {
-		this.id = id;
-		this.pattern = pattern;
-	}
-
-	//}}}
-	//{{{ public String getId()
-
 	public String getId() {
 		return id;
 	}
-
-	//}}}
-	//{{{ public ATerm getPattern()
 
 	public ATerm getPattern() {
 		return pattern;
 	}
 
-	//}}}
-	//{{{ public int getPatternType()
-
 	public int getPatternType() {
 		ATerm match_pattern = buildMatchPattern();
-
+	
 		if (match_pattern.getType() == ATerm.PLACEHOLDER) {
 			ATerm ph = ((ATermPlaceholder) match_pattern).getPlaceholder();
 			if (ph.match("int") != null) {
@@ -98,24 +82,15 @@ public class Alternative {
 		}
 	}
 
-	//}}}
-	//{{{ public boolean containsPlaceholder()
-
 	public boolean containsPlaceholder() {
 		return containsPlaceholder(pattern);
 	}
-
-	//}}}
-	//{{{ public ATerm buildMatchPattern()
 
 	public ATerm buildMatchPattern() {
 		return buildMatchPattern(pattern);
 	}
 
-	//}}}
-	//{{{ private ATerm buildMatchPattern(ATerm t)
-
-	private ATerm buildMatchPattern(ATerm t) {
+	protected ATerm buildMatchPattern(ATerm t) {
 		switch (t.getType()) {
 			case ATerm.APPL :
 				{
@@ -127,7 +102,7 @@ public class Alternative {
 					}
 					return pattern.getFactory().makeAppl(fun, newargs);
 				}
-
+	
 			case ATerm.LIST :
 				{
 					ATermList list = (ATermList) t;
@@ -142,7 +117,7 @@ public class Alternative {
 					}
 					return list;
 				}
-
+	
 			case ATerm.PLACEHOLDER :
 				{
 					ATerm ph = ((ATermPlaceholder) t).getPlaceholder();
@@ -159,32 +134,23 @@ public class Alternative {
 						}
 					}
 				}
-
+	
 			default :
 				return t;
 		}
 	}
 
-	//}}}
-	//{{{ public boolean isReservedType(ATerm t)
-
-	static public boolean isReservedType(String type) {
+	public static boolean isReservedType(String type) {
 		for (int i = 0; i < RESERVED_TYPES.length; i++) {
 			if (RESERVED_TYPES[i].equals(type)) {
 				return true;
 			}
 		}
-
+	
 		return false;
 	}
-
-	//}}}
-
-	//{{{ public String toString()
 
 	public String toString() {
 		return "alt[" + id + ", " + pattern + "]";
 	}
-
-	//}}}
 }
