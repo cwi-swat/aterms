@@ -3080,10 +3080,8 @@ ATbool AT_isEqual(ATerm t1, ATerm t2)
   int type;
   ATbool result = ATtrue;
 
-#if !defined(DEEP_EQUALITY)
   if(t1 == t2)
     return ATtrue;
-#endif
 
   type = ATgetType(t1);
   if(type != ATgetType(t2))
