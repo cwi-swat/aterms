@@ -163,28 +163,96 @@ encoding of the function application (called \appl{} for short).
 \section{Into the Trenches}
 \label{section:trenches}
 
-This section explains how the \gcc{}-compiler translates a \C{}-function
-that uses \aterms\ into its corresponding assembly statements. In
-particular we will show the effect of deactivating the optimization
-called \emph{strength reduction} on generated assembly statements. The
-generated statements are in SPARC assembly language for the Solaris
-operating system, generated using version $2.95.2$ of the \gcc\ compiler.
+This section shows the \gcc{}-compiler in action translating a
+\C{}-function that uses \aterms\ into its corresponding assembly
+statements. In particular, Figure~\ref{fig:asm-diff} shows the difference
+in assembly, depending on whether or not the \emph{strength reduction}
+optimization was enabled during generation. The generated statements
+are in SPARC assembly language for the Solaris operating system, using
+version $2.95.2$ of the \gcc\ compiler.
 
-The sample code is a dressed down snippet from the \aterm{}-ToolBus
+% {{{  \subsection{Understanding the \emph{delay slot}}
+
+\subsection{Understanding the \emph{delay slot}}
+
+Discussing the full richness of the SPARC Assembly Language is out
+of this article's scope. However, to help understand the assembly,
+we now briefly discuss the notion of a \emph{delay slot}.
+
+Branching instructions on a pipelining machine such as the SPARC are
+not resolved until the decoding stage of the pipeline. When the branch
+is resolved, another instruction has already been fetched. Instead of
+discarding this new instruction if the branch is taken, it is executed
+regardless of the branch outcome. From a sequential execution point of
+view, one instruction is executed after the branch, before the branch
+takes effect. This gives the appearance of the branch being delayed. Such
+an instruction is said to be in the \emph{delay slot}.
+
+In other words, keep in mind that the instruction immediately following
+a branch or jump instruction is executed regardless of the branch outcome.
+
+% }}}
+% {{{  \subsection{Understanding \emph{strength reduction}}
+
+\subsection{Understanding \emph{strength reduction}}
+
+The compiler optimization called \emph{strength reduction} tries to
+replace expensive operations such as multiplications and divisions by less
+expensive additions and subtractions. Figure~\ref{fig:strength-reduction}
+shows an example of a code snippet before and after applying strength
+reduction. It shows how a multiplication can be eliminated from inside
+a loop by performing a single addition each iteration instead.
+
+In general, strength reduction finds \emph{induction} variables, assigns
+their initial value outside (before) the loop and then updates the value
+of the induction variable inside the loop using a simpler computation.
+
+% {{{  example of strength-reduction.
+
+\begin{figure}[!htb]
+\begin{footnotesize}
+\begin{verbatim}
+01  before strength reduction       |    after strength reduction
+02                                  >    tmp = 0;
+03  for (i=0; i<100; i++) {              for (i=0; i<100; i++) {
+04    a[i] = j * i;                        a[i] = tmp;
+05                                  >      tmp = tmp + j;
+06  }                                    }
+
+\end{verbatim}
+\end{footnotesize}
+  \caption{
+    \label{fig:strength-reduction}
+    Example of strength reduction in \texttt{diff --side-by-side} output.
+  }
+\end{figure}
+
+% }}}
+
+% }}}
+% {{{  \subsection{A closeup example}
+
+\subsection{A closeup example}
+
+The sample code is a dressed down snippet of the \aterm{}-ToolBus
 library. The code iterates over the arguments of an \appl{} (variable
 \texttt{appl}) in \emph{reverse} order, building up an \atlist{}
-(variable \texttt{list}) by invoking some an arbitrary function (in this
+(variable \texttt{list}) by invoking some arbitrary function (in this
 case \texttt{ATBunpack}) on each of these arguments and inserting the
 result in \texttt{list}. The variable \texttt{arity} holds the arity
 of \texttt{appl}.
 
+\begin{footnotesize}
 \begin{verbatim}
-  ATermList list = ATempty;
-
-  for (i = arity; i >= 0; i--) {
-    list = ATinsert(list, ATBunpack(ATgetArgument(appl, i)));
-  }
+01  ATermList list = ATempty;
+02
+03  for (i = arity; i >= 0; i--) {
+04    list = ATinsert(list, ATBunpack(ATgetArgument(appl, i)));
+05  }
 \end{verbatim}
+\end{footnotesize}
+
+% }}}
 
 \begin{figure}[!htb]
   \begin{footnotesize}
@@ -192,7 +260,7 @@ of \texttt{appl}.
   \end{footnotesize}
   \caption{
     \label{fig:asm-diff}
-    Regular (L) vs. optimized (R) assembly in side-by-side \texttt{diff}.
+    Assembly \emph{before} (L) and \emph{after} (R) strength reduction.
   }
 \end{figure}
 
