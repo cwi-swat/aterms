@@ -113,6 +113,9 @@ which cannot be detected in this way, it is the user's responsibility to
 protect these references from premature erasure. Section~\ref{prot}
 explains how to protect global \aterm\ variables and arrays of \aterms.
 
+The \ATlib\ is capabable of storing \aterms\ in a compact, binary notation.
+Section~\ref{baf} describes this binary \aterm\ format.
+
 %----[ INITIALISING ATERM LIBRARY ]----
 \subsection{Initialising the \ATlib}\label{init}
 To initialise the \ATlib, a call to \ATinit\ must be made from \main,
@@ -135,6 +138,8 @@ The following commandline options can be passed to the \ATlib:
  {\tt -hashinfo} & write hashtable statistics to {\tt hashing.stats}      \\
  {\tt -print-gc-time} & print timing information about garbage collector  \\
  {\tt -print-gc-info} & print verbose information about garbage collector \\
+ {\tt -silent} & Do not print status and version information
+ \\
  \hline
 \end{tabular}
 
@@ -190,6 +195,12 @@ Textual representations could use the extension {\tt .trm}.
 \section{Level One Interface}\label{lvl1}
 This section explains in detail the types and functions that are defined in
 the level one interface. These functions are declared in {\tt aterm1.h}.
+Section~\ref{types1} reveals the types of \aterms\ that are used in the
+\ATlib, as well as the extension to the standard {\tt C}-types introduced
+in the level one interface. To avoid confusion between {\sc baf} and the
+\aterm\ type \emph{blob}, Section~\ref{blob-vs-baf} is dedicated to explain
+the difference between these two notions. Finally, Section~\ref{func1}
+describes all the functions that are available in the level one interface.
 
 \subsection{Level One Types}\label{types1}
 The following {\tt C}-defines are used to represent the different \aterm\
@@ -217,7 +228,7 @@ The following {\tt C}-types are defined in the level one interface:
 \end{itemize}
 \end{small}
 
-\subsection{A note on `blobs' and {\sc baf}}
+\subsection{A note on `blobs' and {\sc baf}}\label{blob-vs-baf}
 Please note that although the word \emph{binary} is used in the
 abbreviations of both ``blob'' and {\sc baf}, these are two very different
 notions.  A \emph{blob} represents an \aterm\ that holds binary data, with
@@ -230,6 +241,11 @@ written in its textual representation, although this does not guarantee
 that the blob will be readable, after all it represents binary data.
 
 \subsection{Level One Functionality}\label{func1}
+In this section, all functions and macros ({\tt \#define}'s in {\tt C}) are
+listed. Although all macros could have been implemented as a function as
+well, the macros listed here were chosen to be macros instead of functions
+for efficiency reasons.
+
 \Function{\tt ATmake}{\ATerm}{\tt const char *pattern, ...}
 {Create an \ATerm from a string pattern and a variable number of arguments}
 \Describe{
@@ -490,8 +506,14 @@ interface also uses the following types:
 \end{itemize}
 
 \subsection{Level Two Functionality}\label{func2}
+Again, just as in section~\ref{func1}, all macros in this section could
+have been implemented as functions, but where chosen to be in a macro for
+efficiency reasons.
 
 \subsubsection{ATermInt}
+The type {\tt ATermInt} is the \ATerm\ representation of an integer. It
+abides by the rules of the {\tt C}-type: {\tt int}.
+
 \Function{\tt ATmakeInt}{\tt ATermInt}{\tt int value}
 {Build an \aterm Int from an integer ({\tt int})}
 
@@ -499,6 +521,9 @@ interface also uses the following types:
 {Get the integer value from an \aterm Int.}
 
 \subsubsection{ATermReal}
+The type {\tt ATermReal} is the \ATerm\ representation of an real. It
+abides by the rules of the {\tt C}-type: {\tt double}.
+
 \Function{\tt ATmakeReal}{\tt ATermReal}{double value}
 {Build an \aterm Real from a real ({\tt double}).}
 
@@ -506,6 +531,29 @@ interface also uses the following types:
 {Macro to get the real value from an \aterm Real.}
 
 \subsubsection{ATermAppl}
+The type {\tt ATermAppl} denotes a function application. In order to build
+a function application, first its function symbol (\Symbol) must be built.
+This symbol holds the name of the function application, its arity (how many
+arguments the function has) and whether the function name is quoted. Below
+are some examples of function applications and the symbols needed to create
+them.
+
+\begin{small}
+\begin{verbatim}
+    true               - a zero arity, unquoted function application
+                         sym = ATmakeSymbol("true", 0, ATfalse);
+
+    "true"             - the same function application, but quoted
+                         sym = ATmakeSymbol("true", 0, ATtrue);
+
+    f(0)               - an unquoted function application of arity 1
+                         sym = ATmakeSymbol("f", 1, ATfalse);
+
+    "prod"(2, b, [])   - a quoted function application of arity 3
+                         sym = ATmakeSymbol("prod", 3, ATtrue);
+\end{verbatim}
+\end{small}
+
 \Function{\tt ATmake\Symbol}{\tt \Symbol}
 {\tt char *name, int arity, ATbool quoted}
 {Create a function symbol (\Symbol)}
@@ -535,7 +583,7 @@ interface also uses the following types:
 {Find out if a \Symbol\ is quoted or not}
 
 \Function{\tt ATmakeAppl}{ATermAppl}{\Symbol\ sym, ...}
-{Build an application from a variable number of arguments.}
+{Build an application from a \Symbol\ and a variable number of arguments.}
 \Describe{
 	The arity is taken from the first argument {\tt sym}, so the other
 	arguments to {\tt ATmakeAppl} should be the arguments for the
