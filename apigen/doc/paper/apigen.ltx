@@ -58,8 +58,10 @@ popular activity, especially to developers of e.g. lexical scanners,
 parsers, rewrite engines and model checkers. Practical experience
 with the \atlib\ in the \metaenv\ has shown that the development and
 maintenance of tools that use handcrafted \aterm-patterns is quite
-involved and very error prone. These issues are fundamental and put
-a burden on any tool developer who uses handcrafted \aterm-patterns.
+involved and very error prone. These issues are fundamental to the use
+of handcrafted \aterm-patterns, and place a development challenge and
+maintenance burden on any tool that uses them.
+
 This paper addresses these issues from the point of view of the \metaenv,
 specifically dealing with the parsetree format called \asfix\ that is
 used in most of its tools. We describe a way to generate an Abstract
@@ -79,15 +81,46 @@ respect to changes in the parsetree format.
 \section{Introduction}
 \label{sec:intro}
 
-Syntax definition languages such as \sdf~\cite{HHKR92} can be used
-to specify the syntax of a (programming) language in a formal way. An
-integrated environment such as the \metaenv~\cite{Kli93} can be used to
-develop syntax definitions and specify rewrite rules. These rules can be
-applied to terms which are parsed over the specified language. The view
-on the language as used in the \metaenv\ is of a formal, high level
-nature, which helps develop applications at the level of the (abstract)
-syntax. Specifications written in this way can be compiled to a target
-machine specific, executable program.
+Since the development of the \atlib~\cite{BJKO2000} in 1999, its use
+for the implementation of tree-like data structures has become quite
+popular amongst developers of scanners, parsers, rewrite engines and
+model checkers. Apart from its inevitable deployment in the tools of
+the \metaenv\ for which it was specifically designed, the \atlib\ is
+used amongst others in: \texttt{todo: complete refs, name more examples}
+Elan, Peter Mosses' action semantics, muCRL toolkit, SIG?
+
+As more and more tools in the \metaenv\ were converted to work with
+the \atlib, it became apparent that the tools had become inflexible with
+respect to changes in the parse tree format (called \asfix), and were hard
+to maintain. Evidence supporting these claims were the frequent use of
+handcrafted \aterm-patterns: literal strings of characters representing
+a matching pattern, characterized by many backslash-escaped quotes,
+illegible sequences of closing parentheses, braces and square brackets,
+and the presence of typed placeholders.
+
+The use of these patterns is not in any way restricted to the realm of
+parse trees. In fact, anyone who has programmed with the \atlib, will
+probably be familiar with patterns such as \texttt{and(<bool>,<bool>)}.
+In this simple form these patterns are quite easy to work with and they
+are to some extent even pleasing to the eye. But as these patterns
+become longer and more intricate with a liberal sprinkling of quoted
+strings containing backslash-escaped quotes, and as they begin to contain
+lists and annotations, the once so simple \emph{make-and-match} paradigm
+becomes a developer's nightmare.
+
+Motivated by the desire to change \asfix\ and to avoid the herculean
+maintenance task this operation would impose on our tools, we decided
+to remove as much ``\aterm-handicraft'' from the tools as possible
+by developing an \api-generator that creates both an interface and an
+implementation of data structures represented by \aterms.
+
+While maintaining the advantages of the \atlib\ (in our case most notably
+its efficiency due to maximal subterm sharing), applications built with
+this generated \api\ benefit from improved simplicity and readability,
+are easier to maintain and are more robust against changes in the
+underlying representation.
+\\ TODO: sectie-layout
+\\ TODO: wat er nu staat introduceert "sdf naar adt" nog niet
 
 % {{{  subsection{\asdf\ in a nutshell}
 
@@ -573,7 +606,6 @@ respectively.
 % }}}
 
 % }}}
-
 % {{{  Deriving the \adt\ from a \sdf\ specification
 
 \section{Deriving the \adt\ from a \sdf\ specification}
