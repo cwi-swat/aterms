@@ -2983,7 +2983,6 @@ ATbool ATdiff(ATerm t1, ATerm t2, ATerm *template, ATerm *diffs)
 /*}}}  */
 
 
-#if defined(NO_SHARING) || defined(DEEP_EQUALITY) || defined(SEMI_DEEP_EQUALITY)
 /*{{{  ATbool AT_isEqual(ATerm t1, ATerm t2) */
 
 /**
@@ -2995,7 +2994,7 @@ ATbool AT_isEqual(ATerm t1, ATerm t2)
   int type;
   ATbool result = ATtrue;
 
-#if defined(NO_SHARING) || defined(SEMI_DEEP_EQUALITY)
+#if !defined(DEEP_EQUALITY)
   if(t1 == t2)
     return ATtrue;
 #endif
@@ -3074,7 +3073,6 @@ ATbool AT_isEqual(ATerm t1, ATerm t2)
 }
 
 /*}}}  */
-#endif
 
 /*{{{  ATerm ATremoveAllAnnotations(ATerm t) */
 
