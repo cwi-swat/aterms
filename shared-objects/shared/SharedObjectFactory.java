@@ -173,11 +173,11 @@ public class SharedObjectFactory {
     s += "#ID Regeneration      = " + nbIdRegeneration + "\n";
 
     double repartition = 0.0;
-    double n = (double) (nbAdd - nbRemoved);
-    double m = (double) tab.length;
+    double n = (nbAdd - nbRemoved);
+    double m = tab.length;
 
     for (int idx = 0; idx < tab.length; idx++) {
-      double bj = (double) tableSize[idx];
+      double bj = tableSize[idx];
       repartition += bj * (1 + bj) / 2;
     }
 
