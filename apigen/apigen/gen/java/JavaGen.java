@@ -376,15 +376,17 @@ extends Generator
 		Iterator types = api.typeIterator();
 		while (types.hasNext()) {
 		  Type type = (Type)types.next();
+      genTypeClassImplFile(type);
 		  genTypeClassFile(type);
 		}
 	}
 
-  private void genTypeClassFile(Type type)
+  private void genTypeClassImplFile(Type type)
     throws IOException
   {
     List extra = new LinkedList();
-    String class_name = buildClassName(type);    
+    String class_name = buildClassImplName(type);    
+
     createClassStream(class_name);
     
     info("generating " + class_name);
@@ -396,12 +398,33 @@ extends Generator
     genImports(extra);
     println();
     
-    genTypeClass(type); 
+    genTypeClassImpl(type); 
     stream.close();
        
     genAlternativesClassesFiles(type);
   }
     
+  private void genTypeClassFile(Type type)
+    throws IOException
+  {
+    List imports = new LinkedList();
+    String class_name = buildClassName(type); 
+    String file = basedir + File.separatorChar + class_name + ".java";
+    
+    if (!new File(file).exists()) {   
+      createClassStream(class_name);
+    
+      info("generating " + class_name);
+
+      genPackageDecl();
+      genTypeClass(type); 
+      stream.close();
+    }
+    else {
+      info("preserving " + class_name);
+    }
+  }
+  
 	private void genPackageDecl() {
 		if (pkg.length() > 0) {
 		  println("package " + pkg + ";");
@@ -414,24 +437,57 @@ extends Generator
 		while (alt_iter.hasNext()) {
 		  println();
 		  Alternative alt = (Alternative)alt_iter.next();
+      genAlternativeClassImplFile(type, alt);
 		  genAlternativeClassFile(type, alt);
 		}
 	}
   
-  private void genAlternativeClassFile(Type type, Alternative alt)
+  private void genAlternativeClassImplFile(Type type, Alternative alt)
   {
-    String class_name = buildAltClassName(type, alt);
+    String class_name = buildAltClassImplName(type, alt);
     createClassStream(class_name);
     
     info("generating " + class_name);
     
     genPackageDecl();
     genImports(imports);
-    genAlternativeClass(type, alt);
+    genAlternativeClassImpl(type, alt);
     
     stream.close();
   }
 
+  private void genAlternativeClassFile(Type type, Alternative alt)
+  {
+    String class_name = buildAltClassName(type,alt);
+    String file = basedir + File.separatorChar + class_name + ".java";
+    
+    if (!new File(file).exists()) {
+      createClassStream(class_name);
+    
+      info("generating " + class_name);
+    
+      genPackageDecl();
+      genAlternativeClass(type, alt);
+    
+      stream.close();
+    }
+    else {
+      info("preserving " + class_name);
+    }
+  }
+
+	private void genAlternativeClass(Type type, Alternative alt) {
+    String alt_class = buildAltClassName(type, alt);
+    String alt_impl_class = buildAltClassImplName(type,alt);
+    
+    println("public class " + alt_class);
+    println("extends " + alt_impl_class);
+    println("{");
+    println();
+    println("}");
+	}
+
+  
   private void createClassStream(String class_name) {
     createFileStream(class_name, ".java"); 
   }
@@ -442,14 +498,36 @@ extends Generator
   
   private void createFileStream(String name, String ext) {
     char sep = File.separatorChar;
+    File base = new File(basedir);
+    
+    if (!base.exists()) {
+      if(!base.mkdirs()) {
+        throw new RuntimeException("could not create output directory " + basedir);
+      }
+    }
+    else if (!base.isDirectory()) {
+      throw new RuntimeException(basedir + " is not a directory");
+    }
+    
     createStream(basedir + sep + name + ext);
   }
 	
-
-	private void genTypeClass(Type type) {
+  private void genTypeClass(Type type) {
+    String class_name = buildClassName(type);
+    String class_impl_name = buildClassImplName(type);
+    
+    println("abstract public class " + class_name);
+    println("extends " + class_impl_name);
+    println("{");
+    println();
+    println("}");
+  }
+  
+	private void genTypeClassImpl(Type type) {
+    String class_impl_name = buildClassImplName(type);
     String class_name = buildClassName(type);
     
-		println("abstract public class " + class_name + " extends " + api_constructor);
+		println("abstract public class " + class_impl_name + " extends " + api_constructor);
 		println("{");
 		println("  private static aterm.ATermFactory factory = null;");
     println();
@@ -606,10 +684,10 @@ extends Generator
     printFoldClose();
   }
   
-  private void genAlternativeClass(Type type, Alternative alt)
+  private void genAlternativeClassImpl(Type type, Alternative alt)
   {
     String type_id = buildId(type.getId());
-    String alt_class = buildAltClassName(type, alt);
+    String alt_class = buildAltClassImplName(type, alt);
     
     println("public class " + alt_class);
     println("extends " + type_id);
@@ -1135,6 +1213,11 @@ extends Generator
 
     return buildClassName(typeId);
   }
+  
+  private String buildClassImplName(Type type)
+  {
+    return buildClassName(type) + "Impl";
+  }
 
 	private String buildClassName(String typeId) {
 		String nativeType = (String)reservedTypes.get(typeId);
@@ -1155,6 +1238,12 @@ extends Generator
   }
 
   //}}}
+  
+  private String buildAltClassImplName(Type type, Alternative alt)
+  {
+    return buildAltClassName(type,alt) + "Impl";
+  }
+  
   //{{{ private String buildTypeId(String typeId)
 
   private String buildTypeId(String typeId)

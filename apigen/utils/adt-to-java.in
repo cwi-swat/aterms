@@ -20,7 +20,7 @@ Parameters:
 
   -i | --input <FILE>     specify input adt                [not specified]
   -f | --folding          folding enabled                  [off]
-  -o | --output <DIR>     specify basedir for output       [.]
+  -o | --output <DIR>     specify output directory         [.]
   -p | --package <STR>    specify package                  [""]
   -m | --import <PKG>     specify extra import package     [see below]
   -t | --visitable        visitable enabled                [off]

@@ -8,7 +8,8 @@ include ${top_srcdir}/make_rules
 
 ADT_TO_C		= ${top_builddir}/utils/adt-to-c
 
-TESTS			= rolotest listtest
+TESTS			= rolotest listtest 
+
 noinst_PROGRAMS		= ${TESTS}
 noinst_LIBRARIES	= librolodex.a liblist.a 
 
@@ -41,3 +42,4 @@ list.c list.h: list.adt list.pro
 		--prologue ${top_srcdir}/test/list.pro \
 		--compat-term \
 		--classpath ${top_builddir}:${JAVA_ATERM}:${SHARED_OBJECTS}
+

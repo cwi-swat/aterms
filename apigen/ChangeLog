@@ -1,3 +1,9 @@
+2002/11/14 (vinju@loria.fr)
+ * adt-to-java generates empty classes for every type and every constructor. These classes
+   can contain user defined methods and are not overwritten if the API is regenerated.
+ * adt-to-java creates the output directory automatically if it does not exist. Exceptions are thrown
+   when that fails and when a file exists with the same name as the output directory.
+   
 2002/11/12 (vinju@loria.fr)
  * adt-to-{c,java} throws runtime exceptions if:
      - the name of an alternative occurs more than once for a certain type
