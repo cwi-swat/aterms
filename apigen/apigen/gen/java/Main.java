@@ -21,8 +21,6 @@ public class Main {
 	private static boolean folding = false;
 	private static boolean verbose = false;
 
-	private static aterm.ATermFactory factory;
-
 	private static String basedir = ".";
 	private static String pkg = "";
 	private static List imports = null;
@@ -44,11 +42,8 @@ public class Main {
 	}
 
 	public static void main(String[] args) {
-		String pkg = "";
 		String input = "-";
-		String basedir = ".";
-		String api_name = "";
-		List imports = new LinkedList();
+		imports = new LinkedList();
 		InputStream inputStream;
 
 		if (args.length == 0) {
@@ -75,7 +70,7 @@ public class Main {
 			} else if ("-jtom".startsWith(args[i])) {
 				jtom = true;
 			} else if ("-name".startsWith(args[i])) {
-				api_name = args[++i];
+				apiName = args[++i];
 			} else {
 				usage();
 			}
@@ -86,12 +81,12 @@ public class Main {
 		} else {
 			try {
 				inputStream = new FileInputStream(input);
-				if (api_name.equals("")) {
+				if (apiName.equals("")) {
 					if (input.equals("-")) {
 						System.err.println("Please give a name to the API");
 						usage();
 					} else {
-						api_name = input.substring(0, input.lastIndexOf((int) '.'));
+						apiName = input.substring(0, input.lastIndexOf((int) '.'));
 					}
 				}
 

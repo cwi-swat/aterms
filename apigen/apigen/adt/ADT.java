@@ -6,25 +6,12 @@ import java.util.List;
 import java.util.ListIterator;
 
 import aterm.ATerm;
-import aterm.ATermFactory;
 import aterm.ATermList;
-import aterm.pure.PureFactory;
 
 public class ADT {
 	List types;
   List bottomTypes;
 
-	//{{{ public final static void main(String[] args)
-
-	public final static void main(String[] args) throws java.io.IOException {
-		ATermFactory factory = new PureFactory();
-
-		ATerm adt = factory.readFromFile(System.in);
-
-		ADT api = new ADT(adt);
-	}
-
-	//}}}
 
 	//{{{ public API(ATerm adt)
 

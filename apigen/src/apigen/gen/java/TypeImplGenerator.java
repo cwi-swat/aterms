@@ -28,6 +28,13 @@ public class TypeImplGenerator extends JavaGenerator {
 	}
 
 	protected void generate() {
+		printPackageDecl();
+	    imports.add("java.io.InputStream");
+	    imports.add("java.io.IOException");
+	   
+	    printImports();
+	    println();
+    
 		genTypeClassImpl(type);
 	}
 
@@ -77,7 +84,6 @@ public class TypeImplGenerator extends JavaGenerator {
 
 	private void genFromTermCalls(Type type)
 		{
-		  String class_name = getClassName(type.getId());
 		  Iterator alts = type.alternativeIterator();
 		  while (alts.hasNext()) {
 			Alternative alt = (Alternative) alts.next();    
@@ -161,18 +167,4 @@ public class TypeImplGenerator extends JavaGenerator {
 		genDefaultIsMethod(alt);
 	  }
 	}
-    
-	private void genTypeClassImplFile(Type type) {
-	   printPackageDecl();
-	   imports.add("java.io.InputStream");
-	   imports.add("java.io.IOException");
-	   
-	   printImports();
-	   println();
-    
-	   genTypeClassImpl(type); 
-	   stream.close();
-       
-	   
-	 }
 }

@@ -31,25 +31,26 @@ public class APIGenerator extends CGenerator {
 		super(".", apiName, verbose, folding);
 		this.adt = adt;
 		this.apiName = apiName;
+		this.prefix = prefix;
 	}
 
 	protected void generate() {
 		info("generating " + apiName + ".[ch]");
 		
-		genPrologue(adt);
+		genPrologue();
 		genTypes(adt);
-		genInitFunction(adt);
+		genInitFunction();
 		genTermConversions(adt);
 		genConstructors(adt);
 		genIsEquals(adt);
 		genAccessors(adt);
 		genSortVisitors(adt);
-		genEpilogue(adt);
+		genEpilogue();
 	}
 
 	//{{{ private void genPrologue(API api)
 
-	private void genPrologue(ADT api)  {
+	private void genPrologue()  {
 		/* Header stuff */
 		macro = "_" + output.toUpperCase() + "_H";
 		StringBuffer buf = new StringBuffer();
@@ -134,7 +135,7 @@ public class APIGenerator extends CGenerator {
 	//}}}
 //	{{{ private void genInitFunction(API api)
 
-	  private void genInitFunction(ADT api) {
+	  private void genInitFunction() {
 		  String decl = "void " + prefix + "init" + StringConversions.makeIdentifier(capOutput) + "Api(void)";
 		  hprintln(decl + ";");
 
@@ -391,7 +392,6 @@ public class APIGenerator extends CGenerator {
 		  printFoldOpen( "constructors");
 		  while (types.hasNext()) {
 			  Type type = (Type) types.next();
-			  String type_id = StringConversions.makeIdentifier(type.getId());
 			  String type_name = buildTypeName(type);
 
 			  Iterator alts = type.alternativeIterator();
@@ -525,8 +525,6 @@ public class APIGenerator extends CGenerator {
 
 	private void genSortVisitorAltImpl(Type type, Alternative alt) {
 		String type_id = StringConversions.makeIdentifier(type.getId());
-		String alt_id = StringConversions.makeIdentifier(alt.getId());
-		String type_name = buildTypeName(type);
 		String cons_name = buildConstructorName(type, alt);
 
 		println("  if (" + buildIsAltName(type, alt) + "(arg)) {");
@@ -569,10 +567,8 @@ public class APIGenerator extends CGenerator {
 	//{{{ private void genGetField(Type type, Field field)
 
 	private void genGetField(Type type, Field field) {
-		String type_id = StringConversions.makeIdentifier(type.getId());
 		String type_name = buildTypeName(type);
 		String field_type_name = buildTypeName(field.getType());
-		String fieldId = StringConversions.makeCapitalizedIdentifier(field.getId());
 		String decl =
 			field_type_name
 				+ " "
@@ -623,7 +619,7 @@ public class APIGenerator extends CGenerator {
 	//}}}
 //	{{{ private void genEpilogue(API api)
 
-	  private void genEpilogue(ADT api) {
+	  private void genEpilogue() {
 		  hprintln();
 		  hprintln("#endif /* " + macro + " */");
 	  }
@@ -825,9 +821,7 @@ public class APIGenerator extends CGenerator {
 	//{{{ private String buildConstructorDecl(Type type, Alternative alt)
 
 	private String buildConstructorDecl(Type type, Alternative alt) {
-		String type_id = StringConversions.makeIdentifier(type.getId());
 		String type_name = buildTypeName(type);
-		String alt_id = StringConversions.makeIdentifier(alt.getId());
 
 		StringBuffer decl = new StringBuffer();
 		decl.append(type_name + " " + buildConstructorName(type, alt) + "(");

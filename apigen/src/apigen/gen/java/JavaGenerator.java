@@ -61,7 +61,7 @@ public abstract class JavaGenerator extends Generator {
 
 	protected void printActualTypedArgumentList(Type type, Alternative alt) {
 		Iterator fields = type.altFieldIterator(alt.getId());
-		int argnr = 0;
+		
 		while (fields.hasNext()) {
 			Field field = (Field) fields.next();
 			String field_id = getFieldId(field.getId());

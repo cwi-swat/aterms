@@ -4,7 +4,7 @@ import java.util.Iterator;
 
 import apigen.adt.*;
 
-public abstract class TomSignatureGenerator extends Generator {
+public class TomSignatureGenerator extends Generator {
     protected String apiName = "";
     private TomSignatureImplementation impl;
     private ADT adt;
@@ -116,8 +116,7 @@ public abstract class TomSignatureGenerator extends Generator {
 	private void genTomAltOperator(Type type, Alternative alt) {
 		String class_name = impl.TypeName(type.getId());
 		String operator_name = impl.OperatorName(alt.getId());
-		String alt_class_name = impl.OperatorType(type.getId(), alt.getId());
-
+	
 		print("%op " + impl.TypeName(type.getId()) + " " + operator_name);
 
 		Iterator fields = type.altFieldIterator(alt.getId());

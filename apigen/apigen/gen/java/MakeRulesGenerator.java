@@ -15,7 +15,8 @@ public class MakeRulesGenerator extends  Generator {
     
     public MakeRulesGenerator(ADT adt, String directory, String api_name, boolean verbose) {
     	super(directory, StringConversions.makeCapitalizedIdentifier(api_name) + "MakeRules","",verbose,false); 
-		name = StringConversions.makeCapitalizedIdentifier(api_name);
+		this.name = StringConversions.makeCapitalizedIdentifier(api_name);
+		this.adt = adt;
     }
     
     private static String getClassFileName(String className) {

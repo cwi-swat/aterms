@@ -55,7 +55,7 @@ public class AlternativeImplGenerator extends JavaGenerator {
 		genAlternativeClassImpl(type, alt);
 	}
 
-	private void genAltInitialize(Type type, Alternative alt) 
+	private void genAltInitialize(Alternative alt) 
 	  {
 		println("  static public void initializePattern()");
 		println("  {");
@@ -82,7 +82,7 @@ public class AlternativeImplGenerator extends JavaGenerator {
 	    genAltFieldIndexMembers(type,alt);
 	    genAltClone(type, alt);
 	    genAltMake(type, alt);
-	    genAltInitialize(type, alt);
+	    genAltInitialize(alt);
 	    genAltFromTerm(type, alt);
 	    genAltToTerm(type,alt);
 	    genOverrideProperties(type,alt);
@@ -261,7 +261,7 @@ public class AlternativeImplGenerator extends JavaGenerator {
 		println("  }");
 	  }
 	  
-	private void genAltGetAndSetMethod(Type type, Alternative alt, Field field) {
+	private void genAltGetAndSetMethod(Field field) {
 		String fieldName = StringConversions.makeCapitalizedIdentifier(field.getId());
 		String fieldId = getFieldId(field.getId());
 		String fieldType = field.getType();
@@ -354,26 +354,26 @@ public class AlternativeImplGenerator extends JavaGenerator {
 	   println();
 	}
   
-    private void genFromTermCalls(Type type)
-	{
-	  String class_name = getClassName(type.getId());
-	  Iterator alts = type.alternativeIterator();
-	  while (alts.hasNext()) {
-		Alternative alt = (Alternative) alts.next();    
-		String alt_class_name = AlternativeGenerator.getAltClassName(type, alt);
-		println("    if ((tmp = " + alt_class_name + ".fromTerm(trm)) != null) {");
-		println("      return tmp;");
-		println("    }");
-		println();
-	  }
-	}
+//    private void genFromTermCalls(Type type)
+//	{
+//	  String class_name = getClassName(type.getId());
+//	  Iterator alts = type.alternativeIterator();
+//	  while (alts.hasNext()) {
+//		Alternative alt = (Alternative) alts.next();    
+//		String alt_class_name = AlternativeGenerator.getAltClassName(type, alt);
+//		println("    if ((tmp = " + alt_class_name + ".fromTerm(trm)) != null) {");
+//		println("      return tmp;");
+//		println("    }");
+//		println();
+//	  }
+//	}
 	
 	private void genAltGetAndSetMethods(Type type, Alternative alt) {
     
 		Iterator fields = type.altFieldIterator( alt.getId());
 		while (fields.hasNext()) {
 		  Field field = (Field) fields.next();
-		  genAltGetAndSetMethod(type, alt, field);
+		  genAltGetAndSetMethod(field);
 		}
     
 		genOverrrideSetArgument(type, alt);
@@ -389,7 +389,6 @@ public class AlternativeImplGenerator extends JavaGenerator {
 			  Iterator fields = type.altFieldIterator(alt.getId());
 			  for (int i = 0; fields.hasNext(); i++) {
 				  Field field = (Field) fields.next();
-				  String field_name = StringConversions.makeCapitalizedIdentifier(field.getId());
 				  String field_type = field.getType();
 				  String field_class = getClassName(field_type);
 			  
