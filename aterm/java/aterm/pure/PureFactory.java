@@ -41,8 +41,6 @@ public class PureFactory
   private int afun_table_size;
   private HashedWeakRef[] afun_table;
 
-  private char lookahead;
-
   //{ public PureFactory()
 
   public PureFactory()
@@ -364,40 +362,184 @@ public class PureFactory
 
   //}
 
-... termReader ...
 
-  //{ private ATerm parseFromReader(Reader reader)
+  //{ private ATerm parseNumber(ATermReader reader)
 
-  synchronized private ATerm parseFromReader(Reader reader)
-  {    
-    ATerm[] list;
+  private ATerm parseNumber(ATermReader reader)
+  {
+    StringBuffer str = new StringBuffer();
+    ATerm result;
 
-    int c = reader.read();
-    if(c == -1) {
-      throw new ParseError("premature EOF encountered.");
+    do {
+      str.append(reader.getLastChar());
+    } while(Character.isDigit((char)reader.read()));
+
+    if(reader.getLastChar() != '.' && 
+       reader.getLastChar() != 'e' && reader.getLastChar() != 'E') {
+      int val;
+      try {
+	val = Integer.parseInt(str.toString());
+      } catch (NumberFormatException e) {
+	throw new ParseError("malformed int");
+      }
+      result = makeInt(val);
+    } else {
+      if(reader.getLastChar() == '.') {
+	str.append('.');
+	reader.read();
+	if(!Character.isDigit((char)reader.getLastChar()))
+	  throw new ParseError("digit expected");
+	do {
+	  str.append(reader.getLastChar());
+	} while(Character.isDigit((char)reader.read()));
+      }
+      if(reader.getLastChar() == 'e' || reader.getLastChar() == 'E') {
+	str.append(reader.getLastChar());
+	reader.read();
+	if(reader.getLastChar() == '-' || reader.getLastChar() == '+') {
+	  str.append(reader.getLastChar());
+	  reader.read();
+	}
+	if(!Character.isDigit((char)reader.getLastChar()))
+	  throw new ParseError("digit expected!");
+	do {
+	  str.append(reader.getLastChar());
+	} while(Character.isDigit((char)reader.read()));
+      }
+      double val;
+      try {
+	val = Double.valueOf(str.toString()).doubleValue();
+      } catch (NumberFormatException e) {
+	throw new ParseError("malformed real");
+      }
+      result = makeReal(val);    
+    }
+    return result;
+  }
+
+  //}
+  //{ private String parseId(ATermReader reader)
+
+  private String parseId(ATermReader reader)
+  {
+    int c = reader.getLastChar();
+    StringBuffer buf = new StringBuffer(32);
+
+    do {
+      buf.append((char)c);
+      c = reader.read();
+    } while (Character.isLetter((char)c) || c == '_');
+
+    return buf.toString();
+  }
+
+  //}
+  //{ private String parseString(ATermReader reader)
+
+  private String parseString(ATermReader reader)
+  {
+    boolean escaped;
+    StringBuffer str = new StringBuffer();
+    
+    do {
+      escaped = false;
+      if(reader.read() == '\\') {
+        reader.read();
+	escaped = true;
+      }
+
+      if(escaped) {
+	switch(reader.getLastChar()) {
+	case 'n':	str.append('\n');	break;
+	case 't':	str.append('\t');	break;
+	case 'b':	str.append('\b');	break;
+	case 'r':	str.append('\r');	break;
+	case 'f':	str.append('\f');	break;
+	case '\\':	str.append('\\');	break;
+	case '\'':	str.append('\'');	break;
+	case '\"':	str.append('\"');	break;
+	case '0':	case '1':	case '2':	case '3':
+	case '4':	case '5':	case '6':	case '7':
+	  str.append(reader.readOct());
+	  break;
+	default:	str.append('\\').append(reader.getLastChar());
+	} 
+      } else if(reader.getLastChar() != '\"')
+	str.append(reader.getLastChar());
+    } while(escaped || reader.getLastChar() != '"');
+
+    return str.toString();
+  }
+
+  //}
+  //{ private ATermList parseATermList(ATermReader reader)
+
+  private ATermList parseATermList(ATermReader reader)
+  {
+    ATerm[] terms = parseATermsArray(reader);
+    ATermList result = ATermListImpl.empty;
+    for (int i=terms.length-1; i>=0; i--) {
+      result = makeList(terms[i], result);
     }
 
-    lookahead = c;
-    switch(lookahead) {
+    return result;
+  }
+
+  //}
+  //{ private ATerm[] parseATermsArray(ATermReader reader)
+
+  private ATerm[] parseATermsArray(ATermReader reader)
+  {
+    List list = new Vector();
+    ATerm term;
+
+    do {
+      term = parseFromReader(reader);
+      list.add(list);
+    } while (reader.getLastChar() == ',');
+
+    ATerm[] array = new ATerm[list.size()];
+    ListIterator iter = list.listIterator();
+    int index = 0;
+    while (iter.hasNext()) {
+      array[index++] = (ATerm)iter.next();
+    }
+    return array;
+  }
+
+  //}
+  //{ private ATerm parseFromReader(ATermReader reader)
+
+  synchronized private ATerm parseFromReader(ATermReader reader)
+  {    
+    ATerm[] list;
+    ATerm result;
+    int c;
+    String funname;
+
+    switch(reader.readSkippingWS()) {
+      case -1:
+	throw new ParseError("permature EOF encountered.");
+
       case '[':
 	//{ Read a list
 
-	c = reader.read();
+	c = reader.readSkippingWS();
 	if (c == -1) {
 	  throw new ParseError("premature EOF encountered.");
 	}
 	
 	if(c == ']') {
-	  c = reader.read();
+	  c = reader.readSkippingWS();
 	  if (c == -1) {
 	    throw new ParseError("premature EOF encountered.");
 	  }
 	  
-	  result = ATermListImpl.empty;
+	  result = (ATerm)ATermListImpl.empty;
 	} else {
-	  list = parseATermArray(reader);
-	  if(lookahead != ']') {
-	    throw new ParseError("expected ']' but got '" + lookahead + "'");
+	  list = parseATermsArray(reader);
+	  if(reader.getLastChar() != ']') {
+	    throw new ParseError("expected ']' but got '" + (char)reader.getLastChar() + "'");
 	  }
 	}
 
@@ -407,11 +549,49 @@ public class PureFactory
       case '<':
 	//{ Read a placeholder
 
+	c = reader.readSkippingWS();
+	ATerm ph = parseFromReader(reader);
+	
+	if (reader.getLastChar() != '>') {
+	  throw new ParseError("expected '>' but got '" + (char)reader.getLastChar() + "'");
+	}
+
+	c = reader.readSkippingWS();
+
+	result = makePlaceholder(ph);
+
 	//}
 	break;
 
       case '"':
 	//{ Read a quoted function
+
+	funname = parseString(reader);
+	
+	c = reader.readSkippingWS();
+	if (reader.getLastChar() == '(') {
+	  c = reader.readSkippingWS();
+	  if (c == -1) {
+	    throw new ParseError("premature EOF encountered.");
+	  }
+	  if (reader.getLastChar() == ')') {
+	    result = makeAppl(makeAFun(funname, 0, true));
+	  } else {
+	    list = parseATermsArray(reader);
+
+	    if(reader.getLastChar() != ')') {
+	      throw new ParseError("expected ')' but got '" + reader.getLastChar() + "'");
+	    }
+	    result = makeAppl(makeAFun(funname, list.length, true));
+	  }
+	  c = reader.readSkippingWS();
+	  if (c == -1) {
+	    throw new ParseError("premature EOF encountered.");
+	  }
+	} else {
+	  result = makeAppl(makeAFun(funname, 0, true));
+	}
+
 
 	//}
 	break;
@@ -419,56 +599,58 @@ public class PureFactory
       case '-':
       case '0':	case '1': case '2': case '3': case '4':
       case '5':	case '6': case '7': case '8': case '9':
-        result = parseNumber(channel);
+        result = parseNumber(reader);
 	break;
 
       default:
-	if (Character.isLetter(lookahead) || lookahead == '_') {
+	c = reader.getLastChar();
+	if (Character.isLetter((char)c)) {
 	  //{ Parse an unquoted function
 					 
-	  fun = parseId(reader);
-	  if (lookahead == '(') {
-	    c = reader.read();
+	  funname = parseId(reader);
+	  if (reader.getLastChar() == '(') {
+	    c = reader.readSkippingWS();
 	    if (c == -1) {
 	      throw new ParseError("premature EOF encountered.");
 	    }
-	    if (lookahead == ')') {
-	      result = makeAppl(makeAFun(fun, 0, false));
+	    if (reader.getLastChar() == ')') {
+	      result = makeAppl(makeAFun(funname, 0, false));
 	    } else {
-	      list = parseATermArray(reader);
+	      list = parseATermsArray(reader);
 
-	      if(lookahead != ')') {
-		throw new ParseError("expected ')' but got '" + lookahead + "'");
+	      if(reader.getLastChar() != ')') {
+		throw new ParseError("expected ')' but got '" + reader.getLastChar() + "'");
 	      }
-	      result = makeAppl(makeAFun(fun, list.length, false));
+	      result = makeAppl(makeAFun(funname, list.length, false));
 	    }
-	    c = reader.read();
+	    c = reader.readSkippingWS();
 	    if (c == -1) {
 	      throw new ParseError("premature EOF encountered.");
 	    }
 	  } else {
-	    result = makeAppl(makeAFun(fun, 0, false));
+	    result = makeAppl(makeAFun(funname, 0, false));
 	  }
 	  
 	  //}
 	} else {
-	  throw new ParseError("illegal character: " + lookahead);
+	  throw new ParseError("illegal character: " + reader.getLastChar());
 	}
     }
 	
-    if(lookahead == '{') {
+    if(reader.getLastChar() == '{') {
       //{ Parse annotation
 
       ATermList annos;
       // Parse annotation
-      if(channel.readNext() == '}') {
-	channel.readNext();
-	annos = empty;
+      if(reader.readSkippingWS() == '}') {
+	reader.readSkippingWS();
+	annos = ATermListImpl.empty;
       } else {
-	annos = parseATermList(channel);
-	if(channel.last() != '}')
-	  throw new ParseError(channel, channel.last(), "'}' expected");
-	channel.readNext();
+	annos = parseATermList(reader);
+	if(reader.getLastChar() != '}') {
+	  throw new ParseError("'}' expected");
+	}
+	reader.readSkippingWS();
       }
       result = result.setAnnotations(annos);	
 
@@ -476,14 +658,14 @@ public class PureFactory
     }
 
     /* Parse some ToolBus anomalies for backwards compatibility */
-    if(channel.last() == ':') {
-      channel.readNext();
-      ATerm anno = parseATerm(channel);
+    if(reader.getLastChar() == ':') {
+      reader.read();
+      ATerm anno = parseFromReader(reader);
       result = result.setAnnotation(ATerm.parse("type"), anno);
     }
 
-    if(channel.last() == '?') {
-      channel.readNext();
+    if(reader.getLastChar() == '?') {
+      reader.readSkippingWS();
       result = result.setAnnotation(ATerm.parse("result"),ATerm.parse("true"));
     }
 
@@ -497,7 +679,7 @@ public class PureFactory
 
   public ATerm parse(String trm)
   {
-    return parseFromReader(new StringReader(trm));
+    return parseFromReader(new ATermReader(new StringReader(trm)));
   }
 
   //}
@@ -559,7 +741,7 @@ public class PureFactory
 
   public ATerm readFromTextFile(InputStream stream)
   {
-    return parseFromReader(new InputStreamReader(stream));
+    return parseFromReader(new ATermReader(new InputStreamReader(stream)));
   }
 
   //}
@@ -617,6 +799,60 @@ class HashedWeakRef extends WeakReference
   {
     super(object);
     this.next = next;
+  }
+}
+
+//}
+//{ class ATermReader
+
+class ATermReader
+{
+  private Reader reader;
+  private int last_char;
+
+  public ATermReader(Reader reader)
+  {
+    this.reader = reader;
+    last_char = -1;
+  }
+
+  public int read()
+  {
+    last_char = reader.read();
+    return last_char;
+  }
+
+  public int readSkippingWS()
+  {
+    do {
+      last_char = reader.read();
+    } while (Character.isWhitespace(last_char));
+
+    return last_char;
+
+  }
+
+  public int readOct()
+  {
+    int val = Character.digit((char)lastChar, 8);
+    val += Character.digit((char)read(), 8);
+
+    if(val < 0) {
+      throw new ParseError("octal must have 3 octdigits.");
+    }
+
+    val += Character.digit((char)read(), 8);
+
+    if(val < 0) {
+      throw new ParseError("octal must have 3 octdigits");
+    }
+
+    return val;
+  }
+  
+  public int getLastChar()
+  {
+    return last_char;
   }
 }
 
