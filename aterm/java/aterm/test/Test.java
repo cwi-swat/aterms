@@ -97,35 +97,53 @@ public class Test
 
   public void testMakeAppl()
   {
-    AFun symmies[4];
-    ATermAppl apples[16];
+    AFun[] symmies = new AFun[4];
+    ATermAppl[] apples = new ATermAppl[16];
 
     symmies[0] = factory.makeAFun("f0", 0, false);
     symmies[1] = factory.makeAFun("f1", 1, false);
     symmies[2] = factory.makeAFun("f6", 6, false);
     symmies[3] = factory.makeAFun("f10", 10, false);
 
-    apples[0] = ATmakeAppl0(symmies[0]);
-    apples[1] = ATmakeAppl1(symmies[1], (ATerm)apples[0]);
-    apples[2] = ATmakeAppl1(symmies[1], (ATerm)apples[1]);
-    apples[3] = ATmakeAppl1(symmies[1], (ATerm)apples[0]);
-    apples[4] = ATmakeAppl6(symmies[2], (ATerm)apples[0], (ATerm)apples[0], 
-			    (ATerm)apples[1], (ATerm)apples[0], 
-			    (ATerm)apples[0], (ATerm)apples[1]);
-    apples[5] = ATmakeAppl(symmies[3], apples[0], apples[1], apples[0],
-			   apples[1], apples[0], apples[1], apples[0],
-			   apples[1], apples[0], apples[1]);
-    apples[6] = ATsetArgument(apples[2], (ATerm)apples[0], 0);
+    apples[0] = factory.makeAppl(symmies[0]);
+    apples[1] = factory.makeAppl(symmies[1], (ATerm)apples[0]);
+    apples[2] = factory.makeAppl(symmies[1], (ATerm)apples[1]);
+    apples[3] = factory.makeAppl(symmies[1], (ATerm)apples[0]);
+    apples[4] = factory.makeAppl(symmies[2], (ATerm)apples[0], (ATerm)apples[0], 
+				 (ATerm)apples[1], (ATerm)apples[0], 
+				 (ATerm)apples[0], (ATerm)apples[1]);
+    ATerm[] args = { apples[0], apples[1], apples[0],
+		     apples[1], apples[0], apples[1], apples[0],
+		     apples[1], apples[0], apples[1] };
+    apples[5] = factory.makeAppl(symmies[3], args);
+    apples[6] = apples[2].setArgument((ATerm)apples[0], 0);
 
-    assert(ATisEqual(apples[6], apples[1]));
-    assert(ATisEqual(apples[1], apples[3]));
-    assert(!ATisEqual(apples[2], apples[1]));
-    assert(!ATisEqual(apples[2], apples[6]));
-    assert(!ATisEqual(apples[1], apples[2]));
-    assert(!ATisEqual(apples[2], apples[3]));
-    assert(!ATisEqual(apples[0], apples[1]));
+    assert(apples[6].equals(apples[1]));
+    assert(apples[1].equals(apples[3]));
+    assert(!apples[2].equals(apples[1]));
+    assert(!apples[2].equals(apples[6]));
+    assert(!apples[1].equals(apples[2]));
+    assert(!apples[2].equals(apples[3]));
+    assert(!apples[0].equals(apples[1]));
 
-    ATprintf("application tests ok.\n");
+    System.out.println("application tests ok.\n");
+  }
+
+  //}
+  //{ public void testParser()
+
+  public void testParser()
+  {
+    ATerm t = factory.parse("f");
+    t = factory.parse("f(1)");
+    t = factory.parse("f(1,2)");
+    t = factory.parse("[]");
+    t = factory.parse("[1]");
+    t = factory.parse("[1,2]");
+    t = factory.parse("<x>");
+    t = factory.parse("3.14");
+    t = factory.parse("f(\"x y z\"(),<abc(31)>,[])");
+    t = factory.parse("home([<name(\"\",String)>,<phone(\"\",PhoneNumber)>])");
   }
 
   //}
@@ -136,6 +154,7 @@ public class Test
     testMakeInt();
     testMakeReal();
     testMakeAppl();
+    testParser();
     /*testMakeList();
     testMakePlaceholder();
     testMakeBlob();

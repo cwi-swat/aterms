@@ -41,15 +41,17 @@ public class PureFactory
   private int afun_table_size;
   private HashedWeakRef[] afun_table;
 
-  //{ public PureFactory()
+  static protected ATermList empty;
+
+  //{{{ public PureFactory()
 
   public PureFactory()
   {
     this(DEFAULT_TERM_TABLE_SIZE, DEFAULT_AFUN_TABLE_SIZE);
   }
 
-  //}
-  //{ public PureFactory(int term_table_size, int afun_table_size)
+  //}}}
+  //{{{ public PureFactory(int term_table_size, int afun_table_size)
 
   public PureFactory(int term_table_size, int afun_table_size)
   {
@@ -58,11 +60,14 @@ public class PureFactory
 
     this.afun_table_size = afun_table_size;
     this.afun_table = new HashedWeakRef[afun_table_size];
+
+    empty = new ATermListImpl(this, null, null);
+    term_table[empty.hashCode() % this.term_table_size] = new HashedWeakRef(empty, null);
   }
 
-  //}
+  //}}}
   
-  //{ public synchronized ATermInt makeInt(int val)
+  //{{{ public synchronized ATermInt makeInt(int val)
 
   public synchronized ATermInt makeInt(int val)
   {
@@ -100,8 +105,8 @@ public class PureFactory
     return (ATermInt)term;
   }
 
-  //}
-  //{ public synchronized ATermReal makeReal(double val)
+  //}}}
+  //{{{ public synchronized ATermReal makeReal(double val)
 
   public synchronized ATermReal makeReal(double val)
   {
@@ -139,8 +144,24 @@ public class PureFactory
     return (ATermReal)term;
   }
 
-  //}
-  //{ public synchronized ATermList makeList(ATerm first, ATermList next)
+  //}}}
+  //{{{ public ATermList makeList()
+
+  public ATermList makeList()
+  {
+    return empty;
+  }
+
+  //}}}
+  //{{{ public ATermList makeList(ATerm singleton)
+
+  public ATermList makeList(ATerm singleton)
+  {
+    return makeList(singleton, empty);
+  }
+
+  //}}}
+  //{{{ public synchronized ATermList makeList(ATerm first, ATermList next)
 
   public synchronized ATermList makeList(ATerm first, ATermList next)
   {
@@ -179,8 +200,8 @@ public class PureFactory
     return (ATermList)term;
   }
 
-  //}
-  //{ public synchronized ATermPlaceholder makePlaceholder(ATerm type)
+  //}}}
+  //{{{ public synchronized ATermPlaceholder makePlaceholder(ATerm type)
 
   public synchronized ATermPlaceholder makePlaceholder(ATerm type)
   {
@@ -219,8 +240,8 @@ public class PureFactory
     return (ATermPlaceholder)term;
   }
 
-  //}
-  //{ public synchronized ATermBlob makeBlob(byte[] data)
+  //}}}
+  //{{{ public synchronized ATermBlob makeBlob(byte[] data)
 
   public synchronized ATermBlob makeBlob(byte[] data)
   {
@@ -259,9 +280,9 @@ public class PureFactory
     return (ATermBlob)term;
   }
 
-  //}
+  //}}}
 
-  //{ public synchronized AFun makeAFun(String name, int arity, boolean isQuoted)
+  //{{{ public synchronized AFun makeAFun(String name, int arity, boolean isQuoted)
 
   public synchronized AFun makeAFun(String name, int arity, boolean isQuoted)
   {
@@ -300,16 +321,8 @@ public class PureFactory
     return fun;
   }
 
-  //}
-  //{ public ATermAppl makeAppl(AFun fun)
-
-  public ATermAppl makeAppl(AFun fun)
-  {
-    return makeAppl(fun, new ATerm[0]);
-  }
-
-  //}
-  //{ public synchronized ATermAppl makeAppl(AFun fun, ATerm[] args)
+  //}}}
+  //{{{ public synchronized ATermAppl makeAppl(AFun fun, ATerm[] args)
 
   public synchronized ATermAppl makeAppl(AFun fun, ATerm[] args)
   {
@@ -318,7 +331,7 @@ public class PureFactory
     int idx;
     HashedWeakRef prev, cur;
 
-    if (args.length != fun.getArity()) {
+    if (fun.getArity() != args.length) {
       throw new IllegalArgumentException("arity does not match argument count: " +
 					 fun.getArity() + " != " + args.length);
     }
@@ -368,29 +381,100 @@ public class PureFactory
     return (ATermAppl)term;
   }
 
-  //}
+  //}}}
+  //{{{ public synchronized ATermAppl makeAppl(AFun fun, ATermList args)
 
-  //{ public ATermAppl makeAppl(AFun fun)
+  public synchronized ATermAppl makeAppl(AFun fun, ATermList args)
+  {
+    ATerm[] arg_array;
+
+    arg_array = new ATerm[args.getLength()];
+
+    int i = 0;
+    while (!args.isEmpty()) {
+      arg_array[i++] = args.getFirst();
+      args = args.getNext();
+    }
+
+    return makeAppl(fun, arg_array);
+  }
+
+  //}}}
+  //{{{ public ATermAppl makeAppl(AFun fun)
 
   public ATermAppl makeAppl(AFun fun)
   {
     return makeAppl(fun, new ATerm[0]);
   }
 
-  //}
-  //{ public ATermAppl makeAppl(AFun fun, ATerm arg)
+  //}}}
+  //{{{ public ATermAppl makeAppl(AFun fun, arg1)
 
   public ATermAppl makeAppl(AFun fun, ATerm arg)
   {
-    ATerm[] args = new ATerm[1];
-    args[0] = arg;
+    ATerm[] args = { arg };
     return makeAppl(fun, args);
   }
 
-  //}
+  //}}}
+  //{{{ public ATermAppl makeAppl(AFun fun, arg1, arg2)
 
+  public ATermAppl makeAppl(AFun fun, ATerm arg1, ATerm arg2)
+  {
+    ATerm[] args = { arg1, arg2 };
+    return makeAppl(fun, args);
+  }
 
-  //{ private ATerm parseNumber(ATermReader reader)
+  //}}}
+  //{{{ public ATermAppl makeAppl(AFun fun, arg1, arg2, arg3)
+
+  public ATermAppl makeAppl(AFun fun, ATerm arg1, ATerm arg2, ATerm arg3)
+  {
+    ATerm[] args = { arg1, arg2, arg3 };
+    return makeAppl(fun, args);
+  }
+
+  //}}}
+  //{{{ public ATermAppl makeAppl(AFun fun, arg1, arg2, arg3, arg4)
+
+  public ATermAppl makeAppl(AFun fun, ATerm arg1, ATerm arg2, ATerm arg3, ATerm arg4)
+  {
+    ATerm[] args = { arg1, arg2, arg3, arg4 };
+    return makeAppl(fun, args);
+  }
+
+  //}}}
+  //{{{ public ATermAppl makeAppl(AFun fun, arg1, arg2, arg3, arg4, arg5)
+
+  public ATermAppl makeAppl(AFun fun, ATerm arg1, ATerm arg2, ATerm arg3,
+			    ATerm arg4, ATerm arg5)
+  {
+    ATerm[] args = { arg1, arg2, arg3, arg4, arg5};
+    return makeAppl(fun, args);
+  }
+
+  //}}}
+  //{{{ public ATermAppl makeAppl(AFun fun, arg1, arg2, arg3, arg4, arg5, arg6)
+
+  public ATermAppl makeAppl(AFun fun, ATerm arg1, ATerm arg2, ATerm arg3,
+			    ATerm arg4, ATerm arg5, ATerm arg6)
+  {
+    ATerm[] args = { arg1, arg2, arg3, arg4, arg5, arg6 };
+    return makeAppl(fun, args);
+  }
+
+  //}}}
+
+  //{{{ public ATermList getEmpty()
+
+  public ATermList getEmpty()
+  {
+    return empty;
+  }
+
+  //}}}
+
+  //{{{ private ATerm parseNumber(ATermReader reader)
 
   private ATerm parseNumber(ATermReader reader)
     throws IOException
@@ -445,8 +529,8 @@ public class PureFactory
     return result;
   }
 
-  //}
-  //{ private String parseId(ATermReader reader)
+  //}}}
+  //{{{ private String parseId(ATermReader reader)
 
   private String parseId(ATermReader reader)
     throws IOException
@@ -462,8 +546,8 @@ public class PureFactory
     return buf.toString();
   }
 
-  //}
-  //{ private String parseString(ATermReader reader)
+  //}}}
+  //{{{ private String parseString(ATermReader reader)
 
   private String parseString(ATermReader reader)
     throws IOException
@@ -501,14 +585,14 @@ public class PureFactory
     return str.toString();
   }
 
-  //}
-  //{ private ATermList parseATerms(ATermReader reader)
+  //}}}
+  //{{{ private ATermList parseATerms(ATermReader reader)
 
   private ATermList parseATerms(ATermReader reader)
     throws IOException
   {
     ATerm[] terms = parseATermsArray(reader);
-    ATermList result = ATermListImpl.empty;
+    ATermList result = empty;
     for (int i=terms.length-1; i>=0; i--) {
       result = makeList(terms[i], result);
     }
@@ -516,8 +600,8 @@ public class PureFactory
     return result;
   }
 
-  //}
-  //{ private ATerm[] parseATermsArray(ATermReader reader)
+  //}}}
+  //{{{ private ATerm[] parseATermsArray(ATermReader reader)
 
   private ATerm[] parseATermsArray(ATermReader reader)
     throws IOException
@@ -525,10 +609,13 @@ public class PureFactory
     List list = new Vector();
     ATerm term;
 
-    do {
+    term = parseFromReader(reader);
+    list.add(term);
+    while (reader.getLastChar() == ',') {
+      reader.readSkippingWS();
       term = parseFromReader(reader);
-      list.add(list);
-    } while (reader.getLastChar() == ',');
+      list.add(term);
+    } 
 
     ATerm[] array = new ATerm[list.size()];
     ListIterator iter = list.listIterator();
@@ -539,8 +626,8 @@ public class PureFactory
     return array;
   }
 
-  //}
-  //{ private ATerm parseFromReader(ATermReader reader)
+  //}}}
+  //{{{ private ATerm parseFromReader(ATermReader reader)
 
   synchronized private ATerm parseFromReader(ATermReader reader)
     throws IOException
@@ -551,10 +638,10 @@ public class PureFactory
 
     switch(reader.getLastChar()) {
       case -1:
-	throw new ParseError("permature EOF encountered.");
+	throw new ParseError("premature EOF encountered.");
 
       case '[':
-	//{ Read a list
+	//{{{ Read a list
 
 	c = reader.readSkippingWS();
 	if (c == -1) {
@@ -563,23 +650,20 @@ public class PureFactory
 	
 	if(c == ']') {
 	  c = reader.readSkippingWS();
-	  if (c == -1) {
-	    throw new ParseError("premature EOF encountered.");
-	  }
-	  
-	  result = (ATerm)ATermListImpl.empty;
+	  result = (ATerm)empty;
 	} else {
 	  result = parseATerms(reader);
 	  if(reader.getLastChar() != ']') {
 	    throw new ParseError("expected ']' but got '" + (char)reader.getLastChar() + "'");
 	  }
+	  c = reader.readSkippingWS();
 	}
 
-	//}
+	//}}}
 	break;
 
       case '<':
-	//{ Read a placeholder
+	//{{{ Read a placeholder
 
 	c = reader.readSkippingWS();
 	ATerm ph = parseFromReader(reader);
@@ -592,11 +676,11 @@ public class PureFactory
 
 	result = makePlaceholder(ph);
 
-	//}
+	//}}}
 	break;
 
       case '"':
-	//{ Read a quoted function
+	//{{{ Read a quoted function
 
 	funname = parseString(reader);
 	
@@ -614,7 +698,7 @@ public class PureFactory
 	    if(reader.getLastChar() != ')') {
 	      throw new ParseError("expected ')' but got '" + reader.getLastChar() + "'");
 	    }
-	    result = makeAppl(makeAFun(funname, list.length, true));
+	    result = makeAppl(makeAFun(funname, list.length, true), list);
 	  }
 	  c = reader.readSkippingWS();
 	  if (c == -1) {
@@ -625,7 +709,7 @@ public class PureFactory
 	}
 
 
-	//}
+	//}}}
 	break;
 
       case '-':
@@ -637,7 +721,7 @@ public class PureFactory
       default:
 	c = reader.getLastChar();
 	if (Character.isLetter((char)c)) {
-	  //{ Parse an unquoted function
+	  //{{{ Parse an unquoted function
 					 
 	  funname = parseId(reader);
 	  if (reader.getLastChar() == '(') {
@@ -653,30 +737,27 @@ public class PureFactory
 	      if(reader.getLastChar() != ')') {
 		throw new ParseError("expected ')' but got '" + reader.getLastChar() + "'");
 	      }
-	      result = makeAppl(makeAFun(funname, list.length, false));
+	      result = makeAppl(makeAFun(funname, list.length, false), list);
 	    }
 	    c = reader.readSkippingWS();
-	    if (c == -1) {
-	      throw new ParseError("premature EOF encountered.");
-	    }
 	  } else {
 	    result = makeAppl(makeAFun(funname, 0, false));
 	  }
 	  
-	  //}
+	  //}}}
 	} else {
 	  throw new ParseError("illegal character: " + reader.getLastChar());
 	}
     }
 	
     if(reader.getLastChar() == '{') {
-      //{ Parse annotation
+      //{{{ Parse annotation
 
       ATermList annos;
       // Parse annotation
       if(reader.readSkippingWS() == '}') {
 	reader.readSkippingWS();
-	annos = ATermListImpl.empty;
+	annos = empty;
       } else {
 	annos = parseATerms(reader);
 	if(reader.getLastChar() != '}') {
@@ -686,7 +767,7 @@ public class PureFactory
       }
       result = result.setAnnotations(annos);	
 
-      //}
+      //}}}
     }
 
     /* Parse some ToolBus anomalies for backwards compatibility */
@@ -701,13 +782,12 @@ public class PureFactory
       result = result.setAnnotation(parse("result"), parse("true"));
     }
 
-
     return result;    
   }
 
-  //}
+  //}}}
 
-  //{ public ATerm parse(String trm)
+  //{{{ public ATerm parse(String trm)
 
   public ATerm parse(String trm)
   {
@@ -715,74 +795,152 @@ public class PureFactory
       ATermReader reader = new ATermReader(new StringReader(trm));
       reader.readSkippingWS();
       ATerm result = parseFromReader(reader);
-      System.out.println("parsing " + trm + " yields " + result);
+      //System.out.println("parsing " + trm + " yields " + result);
       return result;
     } catch (IOException e) {
       throw new ParseError("premature end of string");
     }
   }
 
-  //}
-  //{ public ATerm make(String pattern, List args)
+  //}}}
+  //{{{ public ATerm make(String pattern, List args)
 
   public ATerm make(String pattern, List args)
   {
-    throw new RuntimeException("not yet implemented!");
+    return make(parse(pattern), args);
   }
 
-  //}
-  //{ public ATerm make(ATerm pattern, List args)
+  //}}}
+  //{{{ public ATerm make(String pattern, arg1)
+
+  public ATerm make(String pattern, Object arg1)
+  {
+    List args = new LinkedList();
+    args.add(arg1);
+    return make(pattern, args);
+  }
+
+  //}}}
+  //{{{ public ATerm make(String pattern, arg1, arg2)
+
+  public ATerm make(String pattern, Object arg1, Object arg2)
+  {
+    List args = new LinkedList();
+    args.add(arg1);
+    args.add(arg2);
+    return make(pattern, args);
+  }
+
+  //}}}
+  //{{{ public ATerm make(String pattern, arg1, arg2, arg3)
+
+  public ATerm make(String pattern, Object arg1, Object arg2, Object arg3)
+  {
+    List args = new LinkedList();
+    args.add(arg1);
+    args.add(arg2);
+    args.add(arg3);
+    return make(pattern, args);
+  }
+
+  //}}}
+  //{{{ public ATerm make(String pattern, arg1, arg2, arg3, arg4)
+
+  public ATerm make(String pattern, Object arg1, Object arg2, Object arg3,
+		    Object arg4)
+  {
+    List args = new LinkedList();
+    args.add(arg1);
+    args.add(arg2);
+    args.add(arg3);
+    args.add(arg4);
+    return make(pattern, args);
+  }
+
+  //}}}
+  //{{{ public ATerm make(String pattern, arg1, arg2, arg3, arg4, arg5)
+
+  public ATerm make(String pattern, Object arg1, Object arg2, Object arg3,
+		    Object arg4, Object arg5)
+  {
+    List args = new LinkedList();
+    args.add(arg1);
+    args.add(arg2);
+    args.add(arg3);
+    args.add(arg4);
+    args.add(arg5);
+    return make(pattern, args);
+  }
+
+  //}}}
+  //{{{ public ATerm make(String pattern, arg1, arg2, arg3, arg4, arg5, arg6)
+
+  public ATerm make(String pattern, Object arg1, Object arg2, Object arg3,
+		    Object arg4, Object arg5, Object arg6)
+  {
+    List args = new LinkedList();
+    args.add(arg1);
+    args.add(arg2);
+    args.add(arg3);
+    args.add(arg4);
+    args.add(arg5);
+    args.add(arg6);
+    return make(pattern, args);
+  }
+
+  //}}}
+  //{{{ public ATerm make(ATerm pattern, List args)
 
   public ATerm make(ATerm pattern, List args)
   {
-    throw new RuntimeException("not yet implemented!");
+    return pattern.make(args);
   }
 
-  //}
+  //}}}
 
-  //{ public ATerm setAnnotation(ATerm term, ATerm label, ATerm anno)
+  //{{{ public ATerm setAnnotation(ATerm term, ATerm label, ATerm anno)
 
   public ATerm setAnnotation(ATerm term, ATerm label, ATerm anno)
   {
     throw new RuntimeException("not yet implemented!");
   }
 
-  //}
-  //{ public ATerm removeAnnotation(ATerm term, ATerm label)
+  //}}}
+  //{{{ public ATerm removeAnnotation(ATerm term, ATerm label)
 
   public ATerm removeAnnotation(ATerm term, ATerm label)
   {
     throw new RuntimeException("not yet implemented!");
   }
 
-  //}
-  //{ public ATerm getAnnotation(ATerm term, ATerm label)
+  //}}}
+  //{{{ public ATerm getAnnotation(ATerm term, ATerm label)
 
   public ATerm getAnnotation(ATerm term, ATerm label)
   {
     throw new RuntimeException("not yet implemented!");
   }
 
-  //}
+  //}}}
 
-  //{ public ATerm setAnnotations(ATerm term, ATerm annos)
+  //{{{ public ATerm setAnnotations(ATerm term, ATerm annos)
 
   public ATerm setAnnotations(ATerm term, ATerm annos)
   {
     throw new RuntimeException("not yet implemented!");
   }
 
-  //}
-  //{ public ATerm removeAnnotations(ATerm term)
+  //}}}
+  //{{{ public ATerm removeAnnotations(ATerm term)
 
   public ATerm removeAnnotations(ATerm term)
   {
     throw new RuntimeException("not yet implemented!");
   }
 
-  //}
+  //}}}
 
-  //{ ATerm parsePattern(String pattern)
+  //{{{ ATerm parsePattern(String pattern)
 
   ATerm parsePattern(String pattern)
     throws ParseError
@@ -791,71 +949,58 @@ public class PureFactory
     return parse(pattern);
   }
 
-  //}
+  //}}}
 
-  //{ protected boolean isDeepEqual(ATermImpl t1, ATerm t2)
+  //{{{ protected boolean isDeepEqual(ATermImpl t1, ATerm t2)
 
   protected boolean isDeepEqual(ATermImpl t1, ATerm t2)
   {
     throw new RuntimeException("not yet implemented!");
   }
 
-  //}
+  //}}}
 
-  //{ public ATerm readFromTextFile(InputStream stream)
+  //{{{ public ATerm readFromTextFile(InputStream stream)
 
   public ATerm readFromTextFile(InputStream stream)
     throws IOException
   {
-    return parseFromReader(new ATermReader(new InputStreamReader(stream)));
+    ATermReader reader = new ATermReader(new InputStreamReader(stream));
+    reader.readSkippingWS();
+    return parseFromReader(reader);
   }
 
-  //}
-  //{ public ATerm readFromBinaryFile(InputStream stream)
+  //}}}
+  //{{{ public ATerm readFromBinaryFile(InputStream stream)
 
   public ATerm readFromBinaryFile(InputStream stream)
   {
     throw new RuntimeException("not yet implemented!");
   }
 
-  //}
-  //{ public ATerm readFromFile(InputStream stream)
+  //}}}
+  //{{{ public ATerm readFromFile(InputStream stream)
 
   public ATerm readFromFile(InputStream stream)
+    throws IOException
   {
-    throw new RuntimeException("not yet implemented!");
+    return readFromTextFile(stream);
   }
 
-  //}
-  //{ public void writeToTextFile(OutputStream stream)
+  //}}}
 
-  public void writeToTextFile(OutputStream stream)
-  {
-    throw new RuntimeException("not yet implemented!");
-  }
-
-  //}
-  //{ public void writeToBinaryFile(OutputStream stream)
-
-  public void writeToBinaryFile(OutputStream stream)
-  {
-    throw new RuntimeException("not yet implemented!");
-  }
-
-  //}
-
-  //{ public ATerm importTerm(ATerm term)
+  //{{{ public ATerm importTerm(ATerm term)
 
   public ATerm importTerm(ATerm term)
   {
     throw new RuntimeException("not yet implemented!");
   }
 
-  //}
+  //}}}
 
 }
 
-//{ class HashedWeakRef
+//{{{ class HashedWeakRef
 
 class HashedWeakRef extends WeakReference
 {
@@ -868,8 +1013,8 @@ class HashedWeakRef extends WeakReference
   }
 }
 
-//}
-//{ class ATermReader
+//}}}
+//{{{ class ATermReader
 
 class ATermReader
 {
@@ -879,7 +1024,7 @@ class ATermReader
   public ATermReader(Reader reader)
   {
     this.reader = reader;
-    last_char = -1;
+    last_char   = -1;
   }
 
   public int read()
@@ -925,4 +1070,4 @@ class ATermReader
   }
 }
 
-//}
+//}}}

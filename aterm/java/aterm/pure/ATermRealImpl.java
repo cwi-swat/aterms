@@ -35,7 +35,7 @@ class ATermRealImpl
 
   static int hashFunction(double value)
   {
-    return (new Double(value)).hashCode();
+    return Math.abs((new Double(value)).hashCode());
   }
 
   //}

@@ -25,17 +25,17 @@ package aterm.pure;
 import aterm.*;
 import java.util.List;
 
-class ATermIntImpl
+class ATermBlobImpl
   extends ATermImpl
-  implements ATermInt
+  implements ATermBlob
 {
-  int value;
+  byte[] data;
 
-  //{ static int hashFunction(int value)
+  //{ static int hashFunction(byte[] data)
 
-  static int hashFunction(int value)
+  static int hashFunction(byte[] data)
   {
-    return Math.abs(value);
+    return Math.abs(data.hashCode());
   }
 
   //}
@@ -44,7 +44,7 @@ class ATermIntImpl
 
   public int hashCode()
   {
-    return value;
+    return hashFunction(data);
   }
 
   //}
@@ -52,17 +52,17 @@ class ATermIntImpl
 
   public int getType()
   {
-    return ATerm.INT;
+    return ATerm.BLOB;
   }
 
   //}
 
-  //{ protected ATermIntImpl(PureFactory factory, int value)
+  //{ protected ATermBlobImpl(PureFactory factory, byte[] data)
 
-  protected ATermIntImpl(PureFactory factory, int value)
+  protected ATermBlobImpl(PureFactory factory, byte[] data)
   {
     super(factory);
-    this.value = value;
+    this.data = data;
   }
 
   //}
@@ -71,8 +71,6 @@ class ATermIntImpl
 
   protected boolean match(ATerm pattern, List list)
   {
-    System.out.println("ATermIntImpl.match: " + pattern + "," + list);
-
     if (this.equals(pattern)) {
       return true; 
     }
@@ -82,8 +80,8 @@ class ATermIntImpl
       if (type.getType() == ATerm.APPL) {
 	ATermAppl appl = (ATermAppl)type;
 	AFun  afun = appl.getAFun();
-	if(afun.getName().equals("int") && afun.getArity() == 0 && !afun.isQuoted()) {
-	  list.add(new Integer(value));
+	if(afun.getName().equals("blob") && afun.getArity() == 0 && !afun.isQuoted()) {
+	  list.add(data);
 	  return true;
 	}
       }
@@ -93,19 +91,28 @@ class ATermIntImpl
   }
 
   //}
+
   //{ public String toString()
 
   public String toString()
   {
-    return String.valueOf(value);
+    return String.valueOf(data.length) + "#" + String.valueOf(hashCode());
   }
 
   //}
-  //{ public int getInt()
+  //{ public byte[] getBlobData()
 
-  public int getInt()
+  public byte[] getBlobData()
   {
-    return value;
+    return data;
+  }
+
+  //}
+  //{ public int getBlobSize()
+
+  public int getBlobSize()
+  {
+    return data.length;
   }
 
   //}

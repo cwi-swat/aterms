@@ -79,7 +79,7 @@ public interface ATermAppl extends ATerm {
      *
      * @return a copy of this application with argument i replaced by arg.
      */
-    public ATerm setArgument(ATerm arg, int i);
+    public ATermAppl setArgument(ATerm arg, int i);
 
     /**
      * Checks if this application is quoted. A quoted application looks

@@ -22,6 +22,8 @@
 package aterm;
 
 import java.util.List;
+import java.io.IOException;
+import java.io.OutputStream;
 
 /**
  * This is the base interface for all ATerm interfaces,
@@ -214,6 +216,11 @@ public interface ATerm {
      * @see #isEqual
      */
     public boolean equals(Object obj);
+
+    public void writeToTextFile(OutputStream stream)
+      throws IOException;
+
+    public ATerm make(List args);
 
     /**
      * Gets a string representation of this term.

@@ -24,9 +24,9 @@ package aterm.pure;
 
 import aterm.*;
 
-
 import java.util.List;
 import java.util.LinkedList;
+import java.io.*;
 
 public abstract class ATermImpl
   implements ATerm
@@ -34,74 +34,74 @@ public abstract class ATermImpl
   private ATerm annotations;
   PureFactory factory;
 
-  //{ public ATermImpl(PureFactory factory)
+  //{{{ public ATermImpl(PureFactory factory)
 
   public ATermImpl(PureFactory factory)
   {
     this.factory = factory;
   }
 
-  //}
-  //{ public ATermFactory getFactory()
+  //}}}
+  //{{{ public ATermFactory getFactory()
 
   public ATermFactory getFactory()
   {
     return factory;
   }
 
-  //}
+  //}}}
 
-  //{ public ATerm setAnnotation(ATerm label, ATerm anno)
+  //{{{ public ATerm setAnnotation(ATerm label, ATerm anno)
 
   public ATerm setAnnotation(ATerm label, ATerm anno)
   {
     return factory.setAnnotation(this, label, anno);
   }
 
-  //}
-  //{ public ATerm removeAnnotation(ATerm label)
+  //}}}
+  //{{{ public ATerm removeAnnotation(ATerm label)
 
   public ATerm removeAnnotation(ATerm label)
   {
     return factory.removeAnnotation(this, label);
   }
 
-  //}
-  //{ public ATerm getAnnotation(ATerm label)
+  //}}}
+  //{{{ public ATerm getAnnotation(ATerm label)
 
   public ATerm getAnnotation(ATerm label)
   {
     return factory.getAnnotation(this, label);
   }
 
-  //}
+  //}}}
 
-  //{ public ATerm setAnnotations(ATerm annos)
+  //{{{ public ATerm setAnnotations(ATerm annos)
 
   public ATerm setAnnotations(ATerm annos)
   {
     return factory.setAnnotations(this, annos);
   }
 
-  //}
-  //{ public ATerm removeAnnotations()
+  //}}}
+  //{{{ public ATerm removeAnnotations()
 
   public ATerm removeAnnotations()
   {
     return factory.removeAnnotations(this);
   }
 
-  //}
-  //{ public ATerm getAnnotations()
+  //}}}
+  //{{{ public ATerm getAnnotations()
 
   public ATerm getAnnotations()
   {
     return annotations;
   }
 
-  //}
+  //}}}
 
-  //{ public List match(String pattern)
+  //{{{ public List match(String pattern)
 
   public List match(String pattern) 
     throws ParseError
@@ -110,8 +110,8 @@ public abstract class ATermImpl
   }
 
 
-  //}
-  //{ public List match(ATerm pattern)
+  //}}}
+  //{{{ public List match(ATerm pattern)
 
   public List match(ATerm pattern) 
   {
@@ -124,9 +124,9 @@ public abstract class ATermImpl
   }
 
 
-  //}
+  //}}}
 
-  //{ public boolean isEqual(ATerm term)
+  //{{{ public boolean isEqual(ATerm term)
 
   public boolean isEqual(ATerm term)
   {
@@ -137,8 +137,8 @@ public abstract class ATermImpl
     return factory.isDeepEqual(this, term);
   }
 
-  //}
-  //{ public boolean equals(Object obj)
+  //}}}
+  //{{{ public boolean equals(Object obj)
 
   public boolean equals(Object obj)
   {
@@ -153,9 +153,9 @@ public abstract class ATermImpl
     return false;
   }
 
-  //}
+  //}}}
 
-  //{ boolean match(ATerm pattern, List list)
+  //{{{ boolean match(ATerm pattern, List list)
 
   boolean match(ATerm pattern, List list)
   {
@@ -174,5 +174,25 @@ public abstract class ATermImpl
     return false;
   }
 
-  //}
+  //}}}
+
+  //{{{ public ATerm make(List list)
+
+  public ATerm make(List list)
+  {
+    return this;
+  }
+
+  //}}}
+
+  //{{{ public void writeToTextFile(OutputStream stream)
+
+  public void writeToTextFile(OutputStream stream)
+    throws IOException
+  {
+    PrintStream ps = new PrintStream(stream);
+    ps.println(this.toString());
+  }
+
+  //}}}
 }

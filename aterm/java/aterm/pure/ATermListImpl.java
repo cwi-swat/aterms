@@ -30,63 +30,71 @@ class ATermListImpl
   extends ATermImpl
   implements ATermList
 {
-  static    ATermList empty;
   ATerm     first;
   ATermList next;
   int length;
 
-  //{ static int hashFunction(ATerm first, ATermList next)
+  //{{{ static int hashFunction(ATerm first, ATermList next)
 
   static int hashFunction(ATerm first, ATermList next)
   {
     int hnr;
 
+    if (first == null && next == null) {
+      return 42;
+    }
+
     hnr = next.hashCode();
-    return first.hashCode() ^ (hnr << 1) ^ (hnr >> 1);
+    return Math.abs(first.hashCode() ^ (hnr << 1) ^ (hnr >> 1));
   }
 
-  //}
-  //{ public int hashCode()
+  //}}}
+  //{{{ public int hashCode()
 
   public int hashCode()
   {
     return hashFunction(first, next);
   }
 
-  //}
-  //{ public int getType()
+  //}}}
+  //{{{ public int getType()
 
   public int getType()
   {
     return ATerm.LIST;
   }
 
-  //}
+  //}}}
 
-  //{ protected ATermListImpl(PureFactory factory, ATerm first, ATermList next)
+  //{{{ protected ATermListImpl(PureFactory factory, ATerm first, ATermList next)
 
   protected ATermListImpl(PureFactory factory, ATerm first, ATermList next)
   {
     super(factory);
     this.first  = first;
     this.next   = next;
-    this.length = 1 + next.getLength();
+
+    if (first == null && next == null) {
+      this.length = 0;
+    } else {
+      this.length = 1 + next.getLength();
+    }
   }
 
-  //}
+  //}}}
 
-  //{ public boolean match(ATerm pattern, List list)
+  //{{{ public boolean match(ATerm pattern, List list)
 
   protected boolean match(ATerm pattern, List list)
   {
     if (pattern.getType() == LIST) {
       ATermList l = (ATermList)pattern;
 
-      if (this == empty) {
-	return l == empty;
+      if (this == PureFactory.empty) {
+	return l == PureFactory.empty;
       }
 
-      if (l == empty) {
+      if (l == PureFactory.empty) {
 	return false;
       }
 
@@ -122,81 +130,96 @@ class ATermListImpl
     return super.match(pattern, list);;
   }
 
-  //}
-  //{ public String toString()
+  //}}}
+  //{{{ public ATerm make(List args)
+
+  public ATerm make(List args)
+  {
+    if (first == null) {
+      return this;
+    }
+
+    return factory.makeList(first.make(args), (ATermList)next.make(args));
+  }
+
+  //}}}
+  
+  //{{{ public String toString()
 
   public String toString()
   {
-    String result;
+    StringBuffer result = new StringBuffer();
 
-    if (this == empty) {
-      return "";
+    if (this == PureFactory.empty) {
+      return "[]";
     }
 
-    result = first.toString();
+    result.append("[");
 
-    if (first.getType() == LIST) {
-      result = "[" + result + "]";
+    ATermList list = this;
+    while (!list.isEmpty()) {
+      result.append(list.getFirst().toString());
+      list = list.getNext();
+      if (!list.isEmpty()) {
+	result.append(",");
+      }
     }
-
-    if (next == empty) {
-      return result;
-    } else {
-      return result + "," + next.toString();
-    }
+    
+    result.append("]");
+    return result.toString();
   }
 
-  //}
+  //}}}
   
-  //{ public boolean isEmpty()
+  //{{{ public boolean isEmpty()
 
   public boolean isEmpty()
   {
-    return this == empty;
+    return this == PureFactory.empty;
   }
 
 
-  //}
-  //{ public int getLength()
+  //}}}
+  //{{{ public int getLength()
 
   public int getLength()
   {
     return length;
   }
 
-  //}
-  //{ public ATerm getFirst()
+  //}}}
+  //{{{ public ATerm getFirst()
 
   public ATerm getFirst()
   {
     return first;
   }
 
-  //}
-  //{ public ATermList getNext()
+  //}}}
+  //{{{ public ATermList getNext()
 
   public ATermList getNext()
   {
     return next;
   }
 
-  //}
-  //{ public ATerm getLast()
+  //}}}
+  //{{{ public ATerm getLast()
 
   public ATerm getLast()
   {
     ATermList cur;
 
     cur = this;
-    while (cur.getNext() != empty) {
+    while (cur.getNext() != PureFactory.empty) {
       cur = cur.getNext();
     }
 
     return cur.getFirst();
   }
 
-  //}
-  //{ public int indexOf(ATerm el, int start)
+  //}}}
+  //{{{ public int indexOf(ATerm el, int start)
 
   public int indexOf(ATerm el, int start)
   {
@@ -217,16 +240,16 @@ class ATermListImpl
       cur = cur.getNext();
     }
 
-    while (cur != empty && cur.getFirst() != el) {
+    while (cur != PureFactory.empty && cur.getFirst() != el) {
       cur = cur.getNext();
       ++i;
     }
 
-    return cur == empty ? -1 : i;
+    return cur == PureFactory.empty ? -1 : i;
   }
 
-  //}
-  //{ public int lastIndexOf(ATerm el, int start)
+  //}}}
+  //{{{ public int lastIndexOf(ATerm el, int start)
 
   public int lastIndexOf(ATerm el, int start)
   {
@@ -255,28 +278,28 @@ class ATermListImpl
     }
   }
 
-  //}
-  //{ public ATermList concat(ATermList rhs)
+  //}}}
+  //{{{ public ATermList concat(ATermList rhs)
 
   public ATermList concat(ATermList rhs)
   {
-    if (next == empty) {
+    if (next == PureFactory.empty) {
       return factory.makeList(first, rhs);
     }
 
     return factory.makeList(first, next.concat(rhs));
   }
 
-  //}
-  //{ public ATermList append(ATerm el) 
+  //}}}
+  //{{{ public ATermList append(ATerm el) 
 
   public ATermList append(ATerm el) 
   {
-    return concat(factory.makeList(el, empty));
+    return concat(factory.makeList(el, PureFactory.empty));
   }
 
-  //}
-  //{ public ATerm elementAt(int index)
+  //}}}
+  //{{{ public ATerm elementAt(int index)
 
   public ATerm elementAt(int index)
   {
@@ -292,8 +315,8 @@ class ATermListImpl
     return cur.getFirst();
   }
 
-  //}
-  //{ public ATermList remove(ATerm el)
+  //}}}
+  //{{{ public ATermList remove(ATerm el)
 
   public ATermList remove(ATerm el)
   {
@@ -310,8 +333,8 @@ class ATermListImpl
     return factory.makeList(first, result);
   }
 
-  //}
-  //{ public ATermList removeElementAt(int index)
+  //}}}
+  //{{{ public ATermList removeElementAt(int index)
 
   public ATermList removeElementAt(int index)
   {
@@ -326,8 +349,8 @@ class ATermListImpl
     return factory.makeList(first, next.removeElementAt(index-1));
   }
 
-  //}
-  //{ public ATermList removeAll(ATerm el)
+  //}}}
+  //{{{ public ATermList removeAll(ATerm el)
 
   public ATermList removeAll(ATerm el)
   {
@@ -344,16 +367,16 @@ class ATermListImpl
     return factory.makeList(first, result);
   }
 
-  //}
-  //{ public ATermList insert(ATerm el)
+  //}}}
+  //{{{ public ATermList insert(ATerm el)
 
   public ATermList insert(ATerm el)
   {
     return factory.makeList(el, this);
   }
 
-  //}
-  //{ public ATermList insertAt(ATerm el, int i)
+  //}}}
+  //{{{ public ATermList insertAt(ATerm el, int i)
 
   public ATermList insertAt(ATerm el, int i)
   {
@@ -368,15 +391,15 @@ class ATermListImpl
     return factory.makeList(first, next.insertAt(el, i-1));
   }
 
-  //}
-  //{ public ATermList getPrefix()
+  //}}}
+  //{{{ public ATermList getPrefix()
 
   public ATermList getPrefix()
   {
     ATermList cur, next;
     List elems;
 
-    if(this == empty) {
+    if(this == PureFactory.empty) {
       return this;
     }
     
@@ -386,8 +409,8 @@ class ATermListImpl
     
     while (true) {
       next = cur.getNext();
-      if (next == empty) {
-	cur = empty;
+      if (next == PureFactory.empty) {
+	cur = PureFactory.empty;
 	for (int i=elems.size()-1; i>=0; i--) {
 	  cur = cur.insert((ATerm)elems.get(i));
 	}
@@ -399,13 +422,13 @@ class ATermListImpl
     }
   }
 
-  //}
-  //{ public ATermList getSlice(int start, int end)
+  //}}}
+  //{{{ public ATermList getSlice(int start, int end)
 
   public ATermList getSlice(int start, int end)
   {
     int i, size = end-start;
-    ATermList result = empty;
+    ATermList result = PureFactory.empty;
     ATermList list;
 
     List buffer = new Vector(size);
@@ -427,8 +450,8 @@ class ATermListImpl
     return result;
   }
 
-  //}
-  //{ public ATermList replace(ATerm el, int i)
+  //}}}
+  //{{{ public ATermList replace(ATerm el, int i)
 
   public ATermList replace(ATerm el, int i)
   {
@@ -462,12 +485,12 @@ class ATermListImpl
     return cur;
   }
 
-  //}
-  //{ public ATermList reverse()
+  //}}}
+  //{{{ public ATermList reverse()
 
   public ATermList reverse()
   {
-    if (this == empty) {
+    if (this == PureFactory.empty) {
       return this;
     }
 
