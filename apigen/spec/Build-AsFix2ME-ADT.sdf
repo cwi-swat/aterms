@@ -1,32 +1,34 @@
-module Sdf2-to-AsFix2ME-ADT
+module Build-AsFix2ME-ADT
 
-imports Build-AsFix2ME-ADT Character-Class-Normalization
+imports Build-General-AsFix2ME-ADT
 
 exports
   context-free syntax
-    sdf-to-asfix2me-adt-cons-expand ( SDF ) -> ATerm
-    sdf-to-asfix2me-adt-cons-remove ( SDF ) -> ATerm
+    build-asfix-prod ( AFun, Symbol* , Symbol ,
+                       Attributes, ConsOption)	-> ATerm
+    build-asfix-prod-args ( AFun, Symbol* )		-> ATerms
+    build-asfix-prod-arg ( AFun, Symbol )			-> ATerm
 
-    sdf-to-asfix2me-adt ( SDF, ConsOption )           -> ATerm
-    sdf-to-asfix2me-adt ( Module, ConsOption )        -> ATerm
-    sdf-module-to-asfix2me-adt ( Module, ConsOption ) -> ATerm
+    sdflit-to-lit ( Literal )				-> AT-Literal
+    sort-to-afun ( Sort )				-> AFun
+    sdflit-to-afun ( Literal )				-> AFun
+
+    build-asfix-appl-args (  Symbol* )			-> ATerms
+    build-asfix-appl-arg (   Symbol )			-> ATerm
+    
+    build-asfix-iter-star(AFun, Symbol)			-> ATerm
+    build-asfix-iter-plus(AFun, Symbol)			-> ATerm
+    build-asfix-iter-star-sep(Sort, Literal)		-> ATerm
+    build-asfix-iter-plus-sep(Sort, Literal)		-> ATerm
+
+    build-asfix-charclass(CharClass)                    -> ATerm
+    build-asfix-charranges(CharRanges)                  -> ATermList
 
 hiddens
-  context-free syntax
-    section-to-adt ( Section, ConsOption )		-> ATerms
-    grammar-to-adt ( Grammar, ConsOption )		-> ATerms
-    productions-to-adt ( Production*, ConsOption )	-> ATerms
-    production-to-adt ( Production, ConsOption )	-> ATerms
-    lexicals-to-adt ( Production*, ConsOption  )	-> ATerms
-    lexical-to-adt ( Production, ConsOption  )		-> ATerms
-
-    build-list-entries ( Symbol* )			-> ATerms
-
-
   variables
     "$ADT"[0-9]*	-> ATerm
     "$AFArg"		-> ATerm
-    "$AFArgs"		-> { ATerm "," }*
+    "$AFArgs"[0-9]*	-> { ATerm "," }*
     "$AFAttr"		-> ATerm
     "$AFAttr+"[0-9]*	-> { ATerm "," }+
     "$AFAttr*"[0-9]*	-> { ATerm "," }*
@@ -43,6 +45,9 @@ hiddens
     "$Attr+"		-> { Attribute "," }+
     "$Attributes"	-> Attributes
     "$Char*"[0-9]*	-> CHAR*
+    "$CharClass"[0-9]*  -> CharClass
+    "$CharRange"[0-9]*  -> CharRange
+    "$CharRanges"[0-9]* -> CharRanges
     "$ConsOption"	-> ConsOption
     "$ElemSortName"	-> AFun
     "$ElemType"		-> AFun
@@ -70,6 +75,7 @@ hiddens
     "$Symbol"		-> Symbol
     "$Symbol*"		-> Symbol*
     "$Symbol+"		-> Symbol+
+    "$SymbolType"	-> AFun
     "$TypeId"		-> AFun
     "$UQLit"		-> UQLiteral
     "$QLit"		-> Literal

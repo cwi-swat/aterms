@@ -10,3 +10,180 @@ equations
 
 [equ-sdf-to-adt-definition-empty]
   sdf-to-asfix2me-adt(definition ,$ConsOption) = [ ]
+
+[equ-sdf-to-adt-defintion-divide]
+  sdf-module-to-asfix2me-adt($Module, $ConsOption) = $ADT1,
+  sdf-to-asfix2me-adt(definition $Module*, $ConsOption) = $ADT2,
+  merge-adts($ADT1, $ADT2) = $ADT3
+  ===>
+  sdf-to-asfix2me-adt(definition $Module $Module*, $ConsOption) = $ADT3
+
+[equ-sdf-to-adt-module]
+  sdf-to-asfix2me-adt($Module, $ConsOption) = 
+    sdf-module-to-asfix2me-adt($Module, $ConsOption)
+
+[equ-sdf-module-to-adt-empty]
+  sdf-module-to-asfix2me-adt(module $ModName $ImpSection*, $ConsOption) = [ ]
+
+[equ-sdf-module-to-adt-divide]
+  section-to-adt($Section, $ConsOption) = $Entries1,
+  sdf-module-to-asfix2me-adt(module $ModName $ImpSection* $Section*, 
+                             $ConsOption) = [ $Entries2 ]
+  ===>
+  sdf-module-to-asfix2me-adt(module $ModName $ImpSection* $Section $Section*, 
+                             $ConsOption) = 
+	[ $Entries1, $Entries2 ]
+
+[equ-section-to-adt-exports]
+  section-to-adt(exports $Grammar, $ConsOption) =
+    grammar-to-adt($Grammar, $ConsOption)
+
+[equ-section-to-adt-hiddens]
+  section-to-adt(hiddens $Grammar, $ConsOption) = 
+    grammar-to-adt($Grammar, $ConsOption)
+
+[default-grammar-to-adt]
+  grammar-to-adt($Grammar, $ConsOption) =
+
+[equ-grammar-to-adt-divide]
+  grammar-to-adt($Grammar1, $ConsOption) = $Entries1,
+  grammar-to-adt($Grammar2, $ConsOption) = $Entries2
+  ===>
+  grammar-to-adt($Grammar1 $Grammar2, $ConsOption) =
+    $Entries1, $Entries2
+
+[equ-grammar-to-adt-context-free-syntax]
+  grammar-to-adt(context-free syntax $Production*, $ConsOption) = 
+    productions-to-adt($Production*, $ConsOption)
+
+[equ-grammar-to-adt-lexical-syntax]
+  grammar-to-adt(lexical syntax $Production*, $ConsOption) =
+    lexicals-to-adt($Production*, $ConsOption)
+
+[equ-productions-to-adt-empty]
+  productions-to-adt( , $ConsOption) =
+
+[equ-productions-to-adt-divide]
+  production-to-adt($Production, $ConsOption) = $Entries1,
+  productions-to-adt($Production*, $ConsOption) = $Entries2
+  ===>
+  productions-to-adt($Production $Production*, $ConsOption) =
+    $Entries1, $Entries2
+
+[equ-production-to-adt-cons]
+  $Attributes = { $Attr*1, cons(at-literal(""" $Char* """)), $Attr*2 },
+  $AltId   = afun($Char*),
+  $TypeId  = sort-to-afun($Sort),
+  $AFProd  = build-asfix-prod(cf, $Symbol*, $Sort, $Attributes, $ConsOption),
+  $AFArgs  = build-asfix-appl-args($Symbol*),
+  $Entry   = [ $TypeId, $AltId, appl($AFProd,[$AFArgs]) ],
+  $Entries = build-list-entries($Symbol*)
+  ===>
+  production-to-adt($Symbol* -> $Sort $Attributes, $ConsOption) = 
+    $Entry, $Entries
+
+[equ-production-to-adt-bracket]
+  $Attributes = { bracket },
+  $AltId   = afun("B" "r" "a" "c" "k" "e" "t"),
+  $TypeId  = sort-to-afun($Sort),
+  $AFProd  = build-asfix-prod(cf, $Symbol*, $Sort, $Attributes, $ConsOption),
+  $AFArgs  = build-asfix-appl-args($Symbol*),
+  $Entry   = [ $TypeId, $AltId, appl($AFProd,[$AFArgs]) ],
+  $Entries = build-list-entries($Symbol*)
+  ===>
+  production-to-adt($Symbol* -> $Sort $Attributes, $ConsOption) =
+    $Entry, $Entries
+ 
+[default-production-to-adt]
+  $AltId   = afun("D" "e" "f" "a" "u" "l" "t"),
+  $TypeId  = sort-to-afun($Sort),
+  $AFProd  = build-asfix-prod(cf, $Symbol*, $Sort, $Attributes, $ConsOption),
+  $AFArgs  = build-asfix-appl-args($Symbol*),
+  $Entry   = [ $TypeId, $AltId, appl($AFProd,[$AFArgs]) ],
+  $Entries = build-list-entries($Symbol*)
+  ===>
+  production-to-adt($Symbol* -> $Sort $Attributes, $ConsOption) =
+    $Entry, $Entries
+
+[equ-lexicals-to-adt-empty]
+  lexicals-to-adt(, $ConsOption) =
+
+[equ-lexicals-to-adt-divide]
+  lexical-to-adt($Production, $ConsOption) = $Entries1,
+  lexicals-to-adt($Production*, $ConsOption) = $Entries2
+  ===>
+  lexicals-to-adt($Production $Production*, $ConsOption) = $Entries1, $Entries2
+
+[equ-lexical-to-adt-LAYOUT]
+  lexical-to-adt($Symbol* -> LAYOUT $Attributes, $ConsOption) =
+
+[default-lexical-to-adt]
+  $Attributes = { $Attr*1, cons(at-literal(""" $Char* """)), $Attr*2 },
+  $AltId = afun($Char*),
+  $TypeId  = sort-to-afun($Sort),
+  $AFProd  = build-asfix-prod(lex, $Symbol*, $Sort, $Attributes, $ConsOption)
+  ===>
+  lexical-to-adt($Symbol* -> $Sort $Attributes, $ConsOption) = 
+    [ $TypeId, $AltId, appl($AFProd,<lex(Lexical)>) ]
+
+[equ-build-list-entries-empty]
+  build-list-entries() =
+
+[equ-build-list-entries-divide]
+  build-list-entries($Symbol) = $Entries1,
+  build-list-entries($Symbol+) = $Entries2
+  ===>
+  build-list-entries($Symbol $Symbol+) = $Entries1, $Entries2
+
+[equ-build-list-entries-iter-star]
+  $FieldId = sdflit-to-afun($Label),
+  $ElemType = sort-to-afun($Sort),
+  $ListType = afun-concat($ElemType $FieldId)
+  ===>
+  build-list-entries($Label : $Sort *) = 
+     [$ListType, empty,  []],
+     [$ListType, single, [<head($ElemType)>]],
+     [$ListType, many,   [<head($ElemType)>,
+                          <ws-after-first(Layout)>,
+                          <[tail($ListType)]>]]
+
+[equ-build-list-entries-iter-plus]
+  $FieldId = sdflit-to-afun($Label),
+  $ElemType = sort-to-afun($Sort),
+  $ListType = afun-concat($ElemType $FieldId)
+  ===>
+  build-list-entries($Label : $Sort +) = 
+     [$ListType, single, [<head($ElemType)>]],
+     [$ListType, many,   [<head($ElemType)>,
+                          <ws-after-first(Layout)>,
+                          <[tail($ListType)]>]]
+
+[equ-build-list-entries-iter-sep-star]
+  $FieldId = sdflit-to-afun($Label),
+  $ElemType = sort-to-afun($Sort),
+  $ListType = afun-concat($ElemType $FieldId)
+  ===>
+  build-list-entries($Label : { $Sort $Sep } *) = 
+     [$ListType, empty,[]],
+     [$ListType, single, [<head($ElemType)>]],
+     [$ListType, many,[<head($ElemType)>,
+                       <ws-after-first(Layout)>,
+                       lit(<sep(str)>),
+                       <ws-after-sep(Layout)>,
+                       <[tail($ListType)]>]]
+
+[equ-build-list-entries-iter-sep-plus]
+  $FieldId = sdflit-to-afun($Label),
+  $ElemType = sort-to-afun($Sort),
+  $ListType = afun-concat($ElemType $FieldId)
+  ===>
+  build-list-entries($Label : { $Sort $Sep } +) = 
+     [$ListType, single, [<head($ElemType)>]],     
+     [$ListType, many,[<head($ElemType)>,
+                       <ws-after-first(Layout)>,
+                       lit(<sep(str)>),
+                       <ws-after-sep(Layout)>,
+                       <[tail($ListType)]>]]
+
+[default-equ-build-list-entries]
+  build-list-entries($Symbol) =

@@ -1,0 +1,207 @@
+equations
+
+  [equ-build-asfix-prod]
+  $AFArgs    = build-asfix-prod-args($SymbolType, $Symbol*),
+  $AFSort    = sort-to-lit($Sort),
+  $AFAttrs   = build-asfix-attrs($Attributes, $ConsOption)
+  ===>
+  build-asfix-prod($SymbolType, $Symbol*, $Sort, $Attributes, $ConsOption) =
+    prod([$AFArgs],$SymbolType(sort($AFSort)),$AFAttrs)
+
+[equ-sort-to-afun]
+  sort-to-afun(sort($Char*)) = afun($Char*)
+
+[equ-build-asfix-prod-args-empty]
+  build-asfix-prod-args($SymbolType, ) =
+
+[equ-build-asfix-prod-args-single]
+  build-asfix-prod-args($SymbolType, $Symbol) = 
+    build-asfix-prod-arg($SymbolType, $Symbol)
+
+[equ-build-asfix-cf-prod-args-divide]
+  build-asfix-prod-arg(cf, $Symbol) = $AFArg,
+  build-asfix-prod-args(cf, $Symbol+) = $AFArgs
+  ===>
+  build-asfix-prod-args(cf, $Symbol $Symbol+) = 
+    $AFArg,cf(opt(layout)),$AFArgs
+
+[equ-build-asfix-lex-prod-args-divide]
+  build-asfix-prod-arg(lex, $Symbol) = $AFArg,
+  build-asfix-prod-args(lex, $Symbol+) = $AFArgs
+  ===>
+  build-asfix-prod-args(lex, $Symbol $Symbol+) = 
+    $AFArg,$AFArgs
+
+[equ-build-asfix-prod-arg-strip-label]
+  build-asfix-prod-arg($SymbolType, $Label : $Symbol) = 
+    build-asfix-prod-arg($SymbolType, $Symbol)
+
+[equ-build-asfix-prod-arg-sort]
+  build-asfix-prod-arg($SymbolType, $Sort) = 
+    $SymbolType(sort(sort-to-lit($Sort)))
+
+[equ-build-asfix-prod-arg-qlit]
+  build-asfix-prod-arg($SymbolType, $QLit) = lit(sdflit-to-lit($QLit))
+
+[equ-build-asfix-prod-arg-uqlit]
+  build-asfix-prod-arg($SymbolType, $UQLit) = lit(sdflit-to-lit($UQLit))
+
+[equ-build-asfix-prod-arg-charclass]
+  build-asfix-prod-arg(lex, $CharClass) = 
+    build-asfix-charclass($CharClass)
+
+[equ-build-asfix-prod-arg-iter-star]
+  build-asfix-prod-arg($SymbolType, $Label : $Symbol *) = 
+	build-asfix-iter-star($SymbolType, $Symbol)
+
+[equ-build-asfix-prod-arg-iter-plus]
+  build-asfix-prod-arg(lex, $Symbol +) = 
+	build-asfix-iter-plus(lex, $Symbol)
+
+[equ-build-asfix-prod-arg-iter-star]
+  build-asfix-prod-arg(lex, $Symbol *) = 
+	build-asfix-iter-star(lex, $Symbol)
+
+[equ-build-asfix-prod-arg-iter-plus]
+  build-asfix-prod-arg($SymbolType, $Label : $Symbol +) = 
+	build-asfix-iter-plus($SymbolType, $Symbol)
+
+[equ-build-asfix-prod-arg-iter-sep-star]
+  build-asfix-prod-arg(cf, $Label : { $Sort $Sep } *) = 
+	build-asfix-iter-star-sep($Sort, $Sep)
+
+[equ-build-asfix-prod-arg-iter-sep-plus]
+  build-asfix-prod-arg(cf, $Label : { $Sort $Sep } +) = 
+	build-asfix-iter-plus-sep($Sort, $Sep)
+
+[equ-build-asfix-charclass]
+  build-asfix-charclass([$CharRanges]) = 
+    charclass(build-asfix-charranges($CharRanges))
+
+[equ-build-asfix-singlechar-charrange]
+  build-asfix-charranges(numchar("\" $Char*)) = 
+    [natcon($Char*)]
+
+[equ-build-asfix-multiplechars-charrange]
+  build-asfix-charranges(numchar("\" $Char*1)-numchar("\" $Char*2)) = 
+    [range(natcon($Char*1),natcon($Char*2))]
+
+[equ-build-asfix-multiple-charrange]
+  build-asfix-charranges($CharRanges1) = [$AFArgs1],
+  build-asfix-charranges($CharRanges2) = [$AFArgs2]
+  ===>
+  build-asfix-charranges($CharRanges1 $CharRanges2) = [$AFArgs1,$AFArgs2]
+
+% Unify unquoted and quoted literals, note that this is a bug in AsFix1/pgen! %
+[equ-sdflit-to-lit-quoted]
+  sdflit-to-lit(literal($Char*)) = at-literal($Char*)
+
+[equ-sdflit-to-lit-unquoted]
+  sdflit-to-lit(uqliteral($Char*)) = at-literal(""" $Char* """)
+
+[equ-sdflit-to-afun-quoted]
+  sdflit-to-afun(literal(""" $Char* """)) = afun($Char*)
+
+[equ-sdflit-to-afun-unquoted]
+  sdflit-to-afun(uqliteral($Char*)) = afun($Char*)
+
+[equ-build-asfix-appl-args-empty]
+  build-asfix-appl-args() =
+
+[equ-build-asfix-appl-args-single]
+  build-asfix-appl-args($Symbol) = build-asfix-appl-arg($Symbol)
+
+[equ-build-asfix-appl-args-divide-explicit-label]
+  build-asfix-appl-arg($Label:$Symbol) = $AFArg,
+  build-asfix-appl-args($Symbol+) = $AFArgs,
+  afun-concat(ws after sdflit-to-afun($Label)) = $FieldId,
+  <$FieldId(Layout)> = $FieldWs
+  ===>
+  build-asfix-appl-args($Label:$Symbol $Symbol+) = 
+    $AFArg, $FieldWs, $AFArgs
+
+[default-build-asfix-appl-args-divide-implicit-label]
+  build-asfix-appl-arg($Literal) = $AFArg,
+  build-asfix-appl-args($Symbol+) = $AFArgs,
+  afun-concat(ws after sdflit-to-lit($Literal)) = $FieldId,
+  <$FieldId(Layout)> = $FieldWs
+  ===>
+  build-asfix-appl-args($Literal $Symbol+) = $AFArg, $FieldWs, $AFArgs
+
+[equ-build-asfix-appl-arg-labeled-literal]
+  build-asfix-appl-arg($Label:$Literal) = lit(sdflit-to-lit($Literal))
+
+[equ-build-asfix-appl-arg-unlabeled-literal]
+  build-asfix-appl-arg($Literal) = lit(sdflit-to-lit($Literal))
+
+[equ-build-asfix-appl-arg-sort]
+  $FieldId = sdflit-to-afun($Label),
+  $FieldType = sort-to-afun($Sort)
+  ===>
+  build-asfix-appl-arg($Label:$Sort) = <$FieldId($FieldType)>
+
+[equ-build-asfix-appl-arg-iter-star]
+  $FieldId = sdflit-to-afun($Label),
+  $FieldType = afun-concat(sort-to-afun($Sort) $FieldId)
+  ===>
+  build-asfix-appl-arg($Label:$Sort *) = 
+    <$FieldId($FieldType)>
+
+% Plus-list transformed into star-list because AsFix1 demands this! %
+[equ-build-asfix-appl-arg-iter-plus]
+  $FieldId = sdflit-to-afun($Label),
+  $FieldType = afun-concat(sort-to-afun($Sort) $FieldId)
+  ===>
+  build-asfix-appl-arg($Label:$Sort +) = 
+    <$FieldId($FieldType)>
+
+[equ-build-asfix-appl-arg-iter-sep-star]
+  $FieldId = sdflit-to-afun($Label),
+  $FieldType = afun-concat(sort-to-afun($Sort) $FieldId)
+  ===>
+  build-asfix-appl-arg($Label:{ $Sort $Sep }*) =
+    <$FieldId($FieldType)>
+
+% Plus-list transformed into star-list because AsFix1 demands this! %
+[equ-build-asfix-appl-arg-iter-sep-plus]
+  $FieldId = sdflit-to-afun($Label),
+  $FieldType = afun-concat(sort-to-afun($Sort) $FieldId)
+  ===>
+  build-asfix-appl-arg($Label:{ $Sort $Sep }+) = 
+    <$FieldId($FieldType)>
+
+[equ-build-asfix-iter-star]
+  $ElemSortName = sort-to-lit($Sort)
+  ===>  
+  build-asfix-iter-star($SymbolType, $Sort) = 
+    $SymbolType(iter-star(sort($ElemSortName)))
+
+[equ-build-asfix-iter-star]
+  $ElemSortName = sort-to-lit($Sort)
+  ===>  
+  build-asfix-iter-plus($SymbolType, $Sort) = 
+    $SymbolType(iter(sort($ElemSortName)))
+
+[equ-build-asfix-iter-star]
+  build-asfix-iter-star(lex, $CharClass) = 
+    lex(iter-star(build-asfix-charclass($CharClass)))
+
+[equ-build-asfix-iter-star]
+  build-asfix-iter-plus($SymbolType, $CharClass) = 
+    lex(iter(build-asfix-charclass($CharClass)))
+
+[equ-build-asfix-iter-sep]
+  $Sort = sort($Char*),
+  $ElemSortName = at-literal(""" $Char* """),
+  $AFSep = sdflit-to-lit($Sep)
+  ===>  
+  build-asfix-iter-star-sep($Sort, $Sep) = 
+	cf(iter-star-sep(sort($ElemSortName),lit($AFSep)))
+
+[equ-build-asfix-iter-sep]
+  $Sort = sort($Char*),
+  $ElemSortName = at-literal(""" $Char* """),
+  $AFSep = sdflit-to-lit($Sep)
+  ===>  
+  build-asfix-iter-plus-sep($Sort, $Sep) = 
+	cf(iter-sep(sort($ElemSortName),lit($AFSep)))

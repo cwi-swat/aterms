@@ -323,10 +323,12 @@ equations
 [equ-build-asfix-attrs-not-empty]
   build-asfix-attr-list($Attr+, $ConsOption) = $AFAttr+
   ===>
-  build-asfix-attrs({$Attr+}, $ConsOption) = attrs(l("{"),w(""),[$AFAttr+],w(""),l("}"))
+  build-asfix-attrs({$Attr+}, $ConsOption) = 
+    attrs(l("{"),w(""),[$AFAttr+],w(""),l("}"))
 
 [equ-build-asfix-attr-list-single]
-  build-asfix-attr-list($Attr, $ConsOption) = build-asfix-attr($Attr, $ConsOption)
+  build-asfix-attr-list($Attr, $ConsOption) = 
+    build-asfix-attr($Attr, $ConsOption)
 
 [equ-build-asfix-attr-list-divide]
   build-asfix-attr($Attr, $ConsOption) = $AFAttr+1,

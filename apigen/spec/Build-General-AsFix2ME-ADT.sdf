@@ -1,28 +1,16 @@
-module Sdf2-to-AsFix2ME-ADT
+module Build-General-AsFix2ME-ADT
 
-imports Build-AsFix2ME-ADT Character-Class-Normalization
+imports ATerm-Utils Sdf2 Cons-Options
 
 exports
   context-free syntax
-    sdf-to-asfix2me-adt-cons-expand ( SDF ) -> ATerm
-    sdf-to-asfix2me-adt-cons-remove ( SDF ) -> ATerm
+    sort-to-lit ( Sort )				-> AT-Literal
 
-    sdf-to-asfix2me-adt ( SDF, ConsOption )           -> ATerm
-    sdf-to-asfix2me-adt ( Module, ConsOption )        -> ATerm
-    sdf-module-to-asfix2me-adt ( Module, ConsOption ) -> ATerm
+    build-asfix-attrs ( Attributes, ConsOption )		-> ATerm
+    build-asfix-attr-list ( { Attribute "," }+, ConsOption )	-> ATerms
+    build-asfix-attr ( Attribute, ConsOption )			-> ATerms
 
 hiddens
-  context-free syntax
-    section-to-adt ( Section, ConsOption )		-> ATerms
-    grammar-to-adt ( Grammar, ConsOption )		-> ATerms
-    productions-to-adt ( Production*, ConsOption )	-> ATerms
-    production-to-adt ( Production, ConsOption )	-> ATerms
-    lexicals-to-adt ( Production*, ConsOption  )	-> ATerms
-    lexical-to-adt ( Production, ConsOption  )		-> ATerms
-
-    build-list-entries ( Symbol* )			-> ATerms
-
-
   variables
     "$ADT"[0-9]*	-> ATerm
     "$AFArg"		-> ATerm
