@@ -95,10 +95,21 @@ ATerm  ATsetAnnotation(ATerm t, ATerm label, ATerm anno);
 ATerm  ATgetAnnotation(ATerm t, ATerm label);
 ATerm  ATremoveAnnotation(ATerm t, ATerm label);
 
+
 void ATprotect(ATerm *atp);
 void ATunprotect(ATerm *atp);
 void ATprotectArray(ATerm *start, int size);
 void ATunprotectArray(ATerm *start);
+
+/* Convenience macro's to circumvent gcc's (correct) warning:
+ *   "dereferencing type-punned pointer will break strict-aliasing rules"
+ * example usage: ATprotectList(&ATempty);
+ */
+#define ATprotectList(p) ATprotect((ATerm *)(void *)(p))
+#define ATprotectAppl(p) ATprotect((ATerm *)(void *)(p))
+#define ATprotectPlaceholder(p) ATprotect((ATerm *)(void *)(p))
+#define ATprotectInt(p) ATprotect((ATerm *)(void *)(p))
+#define ATprotectReal(p) ATprotect((ATerm *)(void *)(p))
 
 /**
   * We also define some functions that are specific

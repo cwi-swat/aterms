@@ -1,5 +1,11 @@
 $Id$
 
+Wed Jun  9 10:51:21 CEST 2004 <jong@cwi.nl>
+ * aterm/aterm1.h: add convenience macros to circumvent gcc valid warning
+    "dereferencing type-punned pointer will break strict-aliasing rules"
+   ATprotectList, ATprotectAppl, ...
+ * aterm/memory.c: use ATprotectList to protect ATempty
+
 Tue Jun  1 10:24:20 CEST 2004 <jurgenv@cwi.nl>
  * Removed broken NO_SHARING variant from C source and header files.
  * Bumped to 2.2

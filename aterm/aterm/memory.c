@@ -559,7 +559,7 @@ void AT_initMemory(int argc, char *argv[])
   hnr = hash_number((ATerm)ATempty, TERM_SIZE_LIST);
   hashtable[hnr & table_mask] = (ATerm)ATempty;
 
-  ATprotect((ATerm *)&ATempty);
+  ATprotectList(&ATempty);
 
   /*}}}  */
   /*{{{  Initialize info structures */
