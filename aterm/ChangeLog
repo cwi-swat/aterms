@@ -1,5 +1,8 @@
 $Id$
 
+2003-06-26  Jurgen Vinju	<jurgenv@cwi.nl>
+ * Removed visitor-pkg configuration option.
+
 2003-06-24  Jurgen Vinju	<jurgenv@cwi.nl>
  * Added a failing test: ATmake("[1]{[a,a]}") results in a "[1]".
    The annotation is lost, while if you use ATparse, it is ok.

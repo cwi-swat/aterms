@@ -106,12 +106,6 @@ AC_ARG_WITH(64bit,
     LDFLAGS=${LDFLAGS_CC64}
     INCL=${INCL_CC64},)
 
-VISITOR_PKG=aterm.visitor
-AC_ARG_WITH(visitor-pkg,
-   [  --with-visitor-pkg       change visitor package (default: aterm.visitor)],
-  VISITOR_PKG=${withval},)
-AC_SUBST(VISITOR_PKG)
-
 AC_SUBST(ATERM_LIB_GCC)
 AC_SUBST(ATERM_LIB_CC)
 AC_SUBST(ATERM_LIB_DBG)
