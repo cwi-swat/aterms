@@ -175,7 +175,7 @@ extends Generator
 	}
   
   private void genFactoryClass(ADT api) throws IOException {  
-    println("class " + class_name + " extends PureFactory");
+    println("public class " + class_name + " extends PureFactory");
     println("{");
     println("  public " + class_name + "()");
     println("  {");
@@ -477,7 +477,7 @@ extends Generator
     String type_id = buildId(type.getId());
     String alt_class = buildAltClassName(type, alt);
     
-    println("class " + alt_class);
+    println("public class " + alt_class);
     println("extends " + type_id);
     if (visitable) {
       println("implements Visitable");
