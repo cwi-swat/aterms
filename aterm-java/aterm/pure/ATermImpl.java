@@ -219,11 +219,11 @@ public abstract class ATermImpl extends ATermVisitableImpl implements ATerm, Sha
     throw new RuntimeException("no children!");
   }
 
-  public int getId() {
+  public int getUniqueIdentifier() {
     return uniqueId;
   }
   
-  public void setId(int uniqueId) {
+  public void setUniqueIdentifier(int uniqueId) {
     this.uniqueId = uniqueId;
   }
   

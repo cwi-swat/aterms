@@ -21,5 +21,5 @@
 package aterm;
 
 public interface Identifiable {
-  public int getId();
+  public int getUniqueIdentifier();
 }
