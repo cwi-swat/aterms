@@ -164,13 +164,26 @@ public class Type
 	  }
 	  Step step1 = (Step)path1.next();
 	  Step step2 = (Step)path2.next();
-	  if (step1.getType() != step2.getType()) {
+	  int type1 = step1.getType();
+	  int type2 = step2.getType();
+
+	  if (type1 == Step.TAIL && type2 == Step.ELEM) {
+	    return 1;
+	  }
+	      
+	  if (type1 == Step.ELEM && type2 == Step.TAIL) {
+	    return -1;
+	  }
+	      
+	  if (type1 != type2) {
 	    throw new RuntimeException("incompatible paths: "
 				       + field1 + "," + field2);
 	  }
+
 	  if (step1.getIndex() < step2.getIndex()) {
 	    return -1;
 	  }
+
 	  if (step1.getIndex() > step2.getIndex()) {
 	    return 1;
 	  }
