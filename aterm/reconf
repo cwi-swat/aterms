@@ -1,0 +1,10 @@
+#!/bin/sh
+#
+# -Make sure you have libtool installed, which is required to generate
+#  Makefile.in's suitable for the generation of shared libraries.
+# -Also make sure you have installed automake version 1.4 or above.
+
+aclocal
+autoconf
+autoheader
+automake -a

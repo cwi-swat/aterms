@@ -1,0 +1,6 @@
+$Id$
+
+version 0.22
+   released: February 23, 2000
+
+   ATerm library configuration/building using autoconf/automake/libtool

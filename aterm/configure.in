@@ -1,27 +1,16 @@
 dnl Process this file with autoconf to produce a configure script.
-AC_INIT
 
-PRODUCT=aterm
-VERSION=0.22
+AC_INIT(Makefile.in)
+AM_INIT_AUTOMAKE(aterm, 0.22)
+AM_PROG_LIBTOOL
+
 CURDATE=`date`
-
-AC_SUBST(PRODUCT)
-AC_SUBST(VERSION)
-
-AC_PREFIX_DEFAULT('/usr/local')
-
-INSTALL='${top_srcdir}/install-sh -c'
-INSTALL_PRG='${top_srcdir}/install-sh -c'
-INSTALL_DAT='${top_srcdir}/install-sh -c -m 644'
-
-AC_SUBST(INSTALL)
-AC_SUBST(INSTALL_PRG)
-AC_SUBST(INSTALL_DAT)
 
 AC_PROG_RANLIB
 AR=ar
 AC_SUBST(AR)
 
+AC_PROG_CC
 AC_AIX
 
 AC_SET_MAKE
@@ -31,57 +20,54 @@ AC_CHECK_PROG(CC_GCC,gcc,gcc,true)
 AC_CHECK_PROG(CC_CC,cc,cc,true)
 AC_CHECK_PROG(CC_DBG,gcc,gcc,true)
 AC_CHECK_PROG(CC_PROF,gcc,gcc,true)
+AC_CHECK_PROG(CC_NS,cc,cc,true)
 
 CFLAGS_GCC="-Wall -O4"
 CFLAGS_CC="-O"
-DEFS='-DCURDATE="\"${CURDATE}\"" -DVERSION="\"${VERSION}\""'
 
-DEFS_GCC="${DEFS} -DNDEBUG"
-DEFS_CC="${DEFS} -DNDEBUG"
+DEFS_GCC="\$(DEFS) -DNDEBUG"
+DEFS_CC="\$(DEFS) -DNDEBUG"
+
+DEFS_NS="${DEFS_CC} -DNO_SHARING"
 
 if test ${CC_DBG} = gcc; then
 	CFLAGS_DBG="-Wall -g"
-	DEFS_DBG="${DEFS} -DDEBUG_ALL"
+	DEFS_DBG="\$(DEFS) -DDEBUG_ALL"
 	INCL_DBG=
 	LFLAGS_DBG=-g
 elif test ${CC_DBG} = cc; then
 	CFLAGS_DBG="-g"
-	DEFS_DBG="${DEFS} -DDEBUG_ALL"
+	DEFS_DBG="$\(DEFS) -DDEBUG_ALL"
 	INCL_DBG=
 	LFLAGS_DBG=-g
 fi
 
 if test ${CC_PROF} = gcc; then
 	CFLAGS_PROF="-Wall -pg"
-	DEFS_PROF="${DEFS}"
+	DEFS_PROF="\$(DEFS)"
 	INCL_PROF=
 	LFLAGS_PROF=-pg
 elif test ${CC_PROF} = cc; then
 	CFLAGS_PROF="-xpg"
-	DEFS_PROF="${DEFS}"
+	DEFS_PROF="\$(DEFS)"
 	INCL_PROF=
 	LFLAGS_PROF=-xpg
 fi
 
 AC_ARG_WITH(java,
 [  --with-java    with Java support. Note that only jdk-1.2 (Java-2) is supported!],
-SUBDIR_JAVA=java1.2,
-)
-
-AC_ARG_WITH(shared,
-[  --with-shared  create a shared library version (libATerm.so)],
-LIB_SHARED=libATerm.so,
+JAVA_SUBDIR=java1.2,
 )
 
 AC_ARG_WITH(64bit,
 [  --with-64bit   create 64 bit cc version of the library (libATerm-cc64.a)],
-LIB_CC64=libATerm-cc64.a,
+LIB_CC64=libATerm-cc64.la,
 )
-CC_CC64=${CC}
+CC_CC64="${CC_CC}"
 CFLAGS_CC64="${CFLAGS_CC} -64"
 LFLAGS_CC64="${LFLAGS_CC} -64"
 DEFS_CC64="${DEFS_CC}"
-INCL_CC64="${INCL_CC}",
+INCL_CC64="${INCL_CC}"
 
 AC_SUBST(LIB_SHARED)
 AC_SUBST(LIB_CC64)
@@ -90,16 +76,20 @@ AC_SUBST(CC_CC)
 AC_SUBST(CC_CC64)
 AC_SUBST(CC_DBG)
 AC_SUBST(CC_PROF)
+AC_SUBST(CC_NS)
 AC_SUBST(CFLAGS_CC)
 AC_SUBST(CFLAGS_CC64)
 AC_SUBST(CFLAGS_GCC)
 AC_SUBST(CFLAGS_DBG)
 AC_SUBST(CFLAGS_PROF)
+
 AC_SUBST(DEFS_CC)
 AC_SUBST(DEFS_CC64)
 AC_SUBST(DEFS_GCC)
 AC_SUBST(DEFS_DBG)
 AC_SUBST(DEFS_PROF)
+AC_SUBST(DEFS_NS)
+
 AC_SUBST(INCL_CC)
 AC_SUBST(INCL_CC64)
 AC_SUBST(INCL_GCC)
@@ -110,10 +100,7 @@ AC_SUBST(LFLAGS_CC64)
 AC_SUBST(LFLAGS_GCC)
 AC_SUBST(LFLAGS_DBG)
 AC_SUBST(LFLAGS_PROF)
-AC_SUBST(SUBDIR_JAVA)
-
-CLEAN="rm -f *~ a.out core *.o *.dvi *.log *.aux lib*.a"
-AC_SUBST(CLEAN)
+AC_SUBST(JAVA_SUBDIR)
 
 AC_HAVE_FUNCS(strdup)
 
@@ -145,5 +132,8 @@ AC_OUTPUT( \
 	toolbus/Makefile \
 	java1.2/Makefile java1.2/aterm/Makefile \
 	java1.2/aterm/tool/Makefile java1.2/aterm/util/Makefile \
+        doc/Makefile \
+        doc/examples/Makefile \
+        doc/spec/Makefile \
 	, )
 

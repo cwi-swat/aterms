@@ -1,0 +1,63 @@
+#
+# $Id:
+#
+# Common make rules for compiling the ATerm and related static/dynamic
+# libraries.
+#
+
+# Common defines for all libraries
+DEFS += -DVERSION="\"$(VERSION)\"" -DCURDATE="\"`date`\""
+DEFS += $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
+
+## Library specific compiler flags
+CC_COMPILE     = $(CC_CC)   $(CFLAGS_CC)   $(DEFS_CC) 
+CC64_COMPILE   = $(CC_CC64) $(CFLAGS_CC64) $(DEFS_CC64)
+GCC_COMPILE    = $(CC_GCC)  $(CFLAGS_GCC)  $(DEFS_GCC)
+DBG_COMPILE    = $(CC_DBG)  $(CFLAGS_DBG)  $(DEFS_DBG)
+PROF_COMPILE   = $(CC_PROF) $(CFLAGS_PROF) $(DEFS_PROF)
+NS_COMPILE     = $(CC_NS)   $(CFLAGS_NS)   $(DEFS_NS)
+CC_DBG_COMPILE = $(CC_DBG)  $(CFLAGS_GCC)  -fpic
+
+## Rules for compiling C files to include in static libraries
+%-cc.o   : %.c $(ALLINCLUDES)
+	$(CC_COMPILE) $(INCLUDE) -c $< -o $@
+
+%-cc64.o : %.c $(ALLINCLUDES)
+	$(CC64_COMPILE) $(INCLUDES) -c $< -o $@
+
+%-gcc.o  : %.c $(ALLINCLUDES)
+	$(GCC_COMPILE) $(INCLUDES) -c $< -o $@
+
+%-dbg.o  : %.c $(ALLINCLUDES)
+	$(DBG_COMPILE) $(INCLUDES) -c $< -o $@
+
+%-prof.o : %.c $(ALLINCLUDES)
+	$(PROF_COMPILE) $(INCLUDES) -c $< -o $@
+
+%-ns.o   : %.c $(ALLINCLUDES)
+	$(NS_COMPILE) $(INCLUDES) -c $< -o $@
+
+## Rules for compiling C files to include in dynamic libraries
+
+## Currently only compilation using gcc works because of the inability of
+## libtool version 1.3.4 to be used in combination with different compilers
+## simultaneously. This means that only the rules for %-gcc.lo, %-dbg.lo,
+## and %-prof.lo are currently used.
+
+%-cc.lo   : %.c $(ALLINCLUDES)
+	$(LIBTOOL) --mode=compile $(CC_COMPILE) -c $< -o $@
+
+%-cc64.lo   : %.c $(ALLINCLUDES)
+	$(LIBTOOL) --mode=compile $(CC64_COMPILE) -c $< -o $@
+
+%-gcc.lo   : %.c $(ALLINCLUDES)
+	$(LIBTOOL) --mode=compile $(GCC_COMPILE) -c $< -o $@
+
+%-dbg.lo   : %.c $(ALLINCLUDES)
+	$(LIBTOOL) --mode=compile $(DBG_COMPILE) -c $< -o $@
+
+%-prof.lo   : %.c $(ALLINCLUDES)
+	$(LIBTOOL) --mode=compile $(PROF_COMPILE) -c $< -o $@
+
+%-ns.lo   : %.c $(ALLINCLUDES)
+	$(LIBTOOL) --mode=compile $(NS_COMPILE) -c $< -o $@

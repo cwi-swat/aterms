@@ -4,10 +4,13 @@
 	dvips -o $@ $<
 
 .ltx.dvi:
-	latex $<
-	-@fgrep -s 'LaTeX Warning: Citation' $*.log && bibtex $* && latex $<
-	@while fgrep -s 'Rerun to get cross-references right' $*.log ;\
+	TEXINPUTS=$$TEXINPUTS:${srcdir} ;\
+	export TEXINPUTS ;\
+	latex $< ;\
+	fgrep -s 'LaTeX Warning: Citation' $*.log && bibtex $* && latex $< ;\
+	while fgrep -s 'Rerun to get cross-references right' $*.log ;\
 	do \
+		TEXINPUTS=$$TEXINPUTS:${srcdir} ;\
 		latex $< ;\
 	done
 
