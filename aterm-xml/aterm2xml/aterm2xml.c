@@ -1,11 +1,17 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-
+#include <unistd.h>
 #include <aterm2.h>
 
 #include "aterm2xml.h"
 #include <globals.h>
+
+static char myname [] = "aterm2xml";
+static char myversion[] = "0.1";
+static char myarguments[] = "hi:o:evVt";
+
+/*{{{  void axXMLStringSafeConcat(char* str, int type) */
 
 void axXMLStringSafeConcat(char* str, int type)
 {
@@ -48,12 +54,19 @@ void axXMLStringSafeConcat(char* str, int type)
   return;
 }
 
+/*}}}  */
+/*{{{  void axXMLStringConcat(char* str) */
+
 void axXMLStringConcat(char* str)
 {
   fprintf(xmlfp, str);
 
   return;
 }
+
+/*}}}  */
+
+/*{{{  int axParseTerm(ATerm at) */
 
 int axParseTerm(ATerm at)
 {
@@ -91,6 +104,9 @@ int axParseTerm(ATerm at)
   return(ret);
 }
 
+/*}}}  */
+/*{{{  int axParseInt(ATermInt ai) */
+
 int axParseInt(ATermInt ai)
 {
   if(verbose) { ATprintf("[INT ] %t\n", ai); }
@@ -98,12 +114,18 @@ int axParseInt(ATermInt ai)
   return(SUCCESS);
 }
 
+/*}}}  */
+/*{{{  int axParseReal(ATermReal ar) */
+
 int axParseReal(ATermReal ar)
 {
   if(verbose) { ATprintf("[REAL] %t\n", ar); }
   axXMLStringConcat(ATwriteToString((ATerm) ar));
   return(SUCCESS);
 }
+
+/*}}}  */
+/*{{{  int axParsePlaceholder(ATermPlaceholder ap) */
 
 int axParsePlaceholder(ATermPlaceholder ap)
 {
@@ -131,6 +153,9 @@ int axParsePlaceholder(ATermPlaceholder ap)
 
   return(axPrintErrorMsg(ret));
 }
+
+/*}}}  */
+/*{{{  int axParseList(ATermList al) */
 
 int axParseList(ATermList al)
 {
@@ -164,6 +189,9 @@ int axParseList(ATermList al)
   return(ret);
 }
 
+/*}}}  */
+/*{{{  int axParseBLOB(ATermBlob ab) */
+
 int axParseBLOB(ATermBlob ab)
 {
   if(verbose) { ATprintf("[BLOB] %t\n", ab); }
@@ -190,6 +218,9 @@ int axParseBLOB(ATermBlob ab)
 
   return(SUCCESS);
 }
+
+/*}}}  */
+/*{{{  int axParseAppl(ATermAppl aa) */
 
 int axParseAppl(ATermAppl aa)
 {
@@ -293,6 +324,9 @@ int axParseAppl(ATermAppl aa)
   return(ret);
 }
 
+/*}}}  */
+/*{{{  int axParseAttributes(ATerm at) */
+
 int axParseAttributes(ATerm at)
 {
   int i;
@@ -353,6 +387,10 @@ int axParseAttributes(ATerm at)
   return(SUCCESS);
 }
 
+/*}}}  */
+
+/*{{{  int axPrintErrorMsg(int msg) */
+
 int axPrintErrorMsg(int msg)
 {
   switch(msg)
@@ -375,18 +413,26 @@ int axPrintErrorMsg(int msg)
   return(msg);
 }
 
+/*}}}  */
+
+/*{{{  int aterm2xml(ATerm at, char *filename) */
+
 int aterm2xml(ATerm at, char *filename)
 {
   FILE *tmpfp;
   int error = 0;
 
 
-  tmpfp = fopen(filename, "w");
+  if (strcmp(filename,"-") == 0) {
+    tmpfp = stdout;
+  }
+  else {
+    tmpfp = fopen(filename, "w");
+  }
 
-  if(tmpfp)
-    {
-      xmlfp = tmpfp;
-    }
+  if(tmpfp) {
+    xmlfp = tmpfp;
+  }
 
   error = axPrintErrorMsg(axParseTerm(at));
 
@@ -402,92 +448,80 @@ int aterm2xml(ATerm at, char *filename)
   return(error);
 }
 
+/*}}}  */
+
+/*{{{  void usage(void) */
+
+void usage(void)
+{
+  fprintf(stderr,
+	  "Usage: %s -[etvV] -i arg -o arg\n"
+	  "Options:\n"
+	  "\t-e             Enable expand option (default off)\n"
+	  "\t-h             Display usage information\n"
+	  "\t-i filename    Read ATerm from filename (default stdin)\n"
+	  "\t-t             Enable text option (default off)\n"
+	  "\t-o filename    Write XML to filename (default stdout)\n"
+	  "\t-V             Reveal version (i.e. %s)\n",
+	  myname, myversion);
+}
+
+/*}}}  */
+
+/*{{{  int main(int argc,char *argv[]) */
+
 int main(int argc,char *argv[])
 {
   ATerm aterm;
-  char *infile  = NULL;
-  char *outfile = NULL;
-  FILE *in  = NULL;
+  char *infile  = "-";
+  char *outfile = "-";
   int error = 0;
+  int c;
 
   /* init */
   ATerm bottomOfStack;
   ATinit(argc, argv, &bottomOfStack);
 
-  if(argc < 3 || argc > 6)
-    {
-      printf("Usage: ./aterm2xml <inputfile> <outputfile> [-e(xpand)] [-v(erbose)] [-t(extmode)]\n");
-      return(0);
-    }
-  
-  if(argc >= 4) {
-    
-    if(!strcmp(argv[3],"-expand") || !strcmp(argv[3],"-e")) {
-      expand = true;
-    }
-    
-    if(!strcmp(argv[3],"-verbose") || !strcmp(argv[3],"-v")) {
-      verbose = true;
-    }
-    
-    if(!strcmp(argv[3],"-textmode") || !strcmp(argv[3],"-t")) {
-      textmode = true;
-    }
-    
-    if(argc >= 5) {
-      if(!strcmp(argv[4],"-expand") || !strcmp(argv[4],"-e")) {
+  while ((c = getopt(argc, argv, myarguments)) != EOF) {
+    switch (c) {
+      case 'e':
 	expand = true;
-      }
-      
-      if(!strcmp(argv[4],"-verbose") || !strcmp(argv[4],"-v")) {
-	verbose = true;
-      }
-    
-      if(!strcmp(argv[4],"-textmode") || !strcmp(argv[4],"-t")) {
-	textmode = true;
-      }
-
-      if(argc == 6) {
-	if(!strcmp(argv[5],"-expand") || !strcmp(argv[5],"-e")) {
-	  expand = true;
-	}
-	
-	if(!strcmp(argv[5],"-verbose") || !strcmp(argv[5],"-v")) {
-	  verbose = true;
-	}
-	
-	if(!strcmp(argv[5],"-textmode") || !strcmp(argv[5],"-t")) {
-	  textmode = true;
-	}
-      }
+	break;
+      case 'h':
+	usage(); 
+	exit(0);
+      case 'i':
+	infile = strdup(optarg); 
+	break;
+      case 'o':
+	outfile = strdup(optarg);
+	break;
+      case 'V':
+	fprintf(stderr,"%s v%s\n", myname, myversion);
+	exit(0);
+      default:
+	usage();
+	exit(1);
     }
   }
 
   /* load the aterm to be parsed from the inputfile */
-  infile = strdup(argv[1]);  
-  in     = fopen(infile, "r");
 
-  if(!in)
-    {
-      return(axPrintErrorMsg(FILENOTFOUND));
-    }
-
-  aterm = ATreadFromFile(in);
+  aterm = ATreadFromNamedFile(infile);
+  
   if(verbose) { printf("ATerm read from %s\n", infile); }
-
-  outfile = strdup(argv[2]);
 
   /* parse the aterm */
   error = aterm2xml(aterm, outfile);
 
-  if(verbose)
-    {
-      printf("done\n");
-    }
-
+  if(verbose) {
+    printf("done\n");
+  }
 
   return(error);
 }
+
+/*}}}  */
 
 /* return codes
 ***************
