@@ -65,9 +65,8 @@ void ATunprotect(ATerm *atp);
   * of the level 1 interface nevertheless.
   */
 
-void ATinit(int argc, char *argv[],
-            void (*error)(const char *format, va_list args),
-			ATerm *bottomOfStack);
+void ATinit(int argc, char *argv[], ATerm *bottomOfStack);
+void ATsetErrorHandler(void (*handler)(const char *format, va_list args));
 void ATerror(const char *format, ...);
 int  ATprintf(const char *format, ...);
 int  ATfprintf(FILE *stream, const char *format, ...);

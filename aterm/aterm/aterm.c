@@ -60,22 +60,24 @@ static ATerm sparse_term(int *c, char **s);
 
 /*}}}  */
 
-/*{{{  void ATinit(int argc, char *argv[], error, int *bottomOfStack) */
+/*{{{  void ATinit(int argc, char *argv[], ATerm *bottomOfStack) */
 
 /**
   * Initialize the ATerm library.
   */
 
-void ATinit(int argc, char *argv[], 
-	   void (*error)(const char *format, va_list args), ATerm *bottomOfStack)
+void ATinit(int argc, char *argv[], ATerm *bottomOfStack)
 {
+	static ATbool initialized = ATfalse;
+
+	if(initialized)
+		return;
+
   /* Check for reasonably sized ATerm (32 bits, 4 bytes)     */
   /* This check might break on perfectly valid architectures */
   /* that have char == 2 bytes, and sizeof(header_type) == 2 */
   assert(sizeof(header_type) == sizeof(ATerm *));
   assert(sizeof(header_type) >= 4);
-
-  error_handler = error;
 
   buffer_size = DEFAULT_BUFFER_SIZE;
   buffer = (char *)malloc(DEFAULT_BUFFER_SIZE);
@@ -96,6 +98,20 @@ void ATinit(int argc, char *argv[],
   AT_initList(argc, argv);
   AT_initMake(argc, argv);
   AT_initGC(argc, argv, bottomOfStack);
+
+	initialized = ATtrue;
+}
+
+/*}}}  */
+/*{{{  void ATsetErrorHandler(handler) */
+
+/**
+	* Change the error handler.
+	*/
+
+void ATsetErrorHandler(void (*handler)(const char *format, va_list args))
+{
+  error_handler = handler;
 }
 
 /*}}}  */
@@ -719,7 +735,7 @@ static int textSize(ATerm t)
   return size;
 }
 
-int topTextSize(ATerm t)
+static int topTextSize(ATerm t)
 {
   int size = textSize(t);
 
@@ -727,6 +743,11 @@ int topTextSize(ATerm t)
     size += 2;
 
   return size;
+}
+
+int AT_calcTextSize(ATerm t)
+{
+	return topTextSize(t);
 }
 
 /*}}}  */
@@ -1093,8 +1114,9 @@ ATerm ATreadFromTextFile(FILE *file)
 
   term = fparse_term(&c, file);
 
-  if (!term)
-  {
+  if (term) {
+	ungetc(c, file);
+  } else {
 	  int i;
 	  fprintf(stderr, "ATreadFromTextFile: parse error at line %d, col %d:\n",
 			line, col);
@@ -1107,6 +1129,7 @@ ATerm ATreadFromTextFile(FILE *file)
 	  fprintf(stderr, "\n");
 	  fflush(stderr);
   }
+
   return term;
 }
 
@@ -1415,7 +1438,8 @@ ATerm ATreadFromString(const char *string)
 	for (i = 1; i < string-orig; ++i)
 		fprintf(stderr, " ");
 	fprintf(stderr, "^\n");
-  }
+  } else
+	string--;
 
   return term;
 }

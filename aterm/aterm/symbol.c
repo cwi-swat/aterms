@@ -232,8 +232,6 @@ ATbool AT_isValidSymbol(Symbol sym)
 
 void AT_markSymbol(Symbol s)
 {
-	if(s == 57)
-		fprintf(stderr, "symbol 57 is now marked: %p.\n", lookup_table[s]);
   lookup_table[s]->header |= MASK_MARK;
 }
 

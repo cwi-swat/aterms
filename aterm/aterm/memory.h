@@ -16,7 +16,7 @@
 #define MAX_INLINE_ARITY       6
 
 /* To change the block size, modify BLOCK_SHIFT only! */
-#define BLOCK_SHIFT      8
+#define BLOCK_SHIFT      16
 #define BLOCK_SIZE       (1<<BLOCK_SHIFT)
 #define BLOCK_TABLE_SIZE 4099     /* nextprime(4096) */
 
