@@ -17,29 +17,33 @@ CC_DBG		= @CC_DBG@
 CC_PROF		= @CC_PROF@
 
 CFLAGS_CC	= @CFLAGS_CC@
-CFLAGS_DBG	= @CFLAGS_DBG@
+CFLAGS_GCC	= @CFLAGS_GCC@
 CFLAGS_DBG	= @CFLAGS_DBG@
 CFLAGS_PROF	= @CFLAGS_PROF@
 
 DEFS_CC		= @DEFS_CC@
-DEFS_DBG	= @DEFS_DBG@
+DEFS_GCC	= @DEFS_GCC@
 DEFS_DBG	= @DEFS_DBG@
 DEFS_PROF	= @DEFS_PROF@
 
 INCL_CC		= @INCL_CC@
-INCL_DBG	= @INCL_DBG@
+INCL_GCC	= @INCL_GCC@
 INCL_DBG	= @INCL_DBG@
 INCL_PROF	= @INCL_PROF@
 
 LFLAGS_CC	= @LFLAGS_CC@
+LFLAGS_GCC	= @LFLAGS_GCC@
 LFLAGS_DBG	= @LFLAGS_DBG@
-LFLAGS_DBG	= @LFLAGS_DBG@
-LFLAGS_PROF	= @LFLAGS_PROF@
+LFLAGS_PROF	= @LFLAGS_PROF@ 
 
 LIBS_CC		= -L../aterm -L../asfix -L../toolbus \
-			-lATerm-cc -lAsFix-cc -lATB-cc
+			-lATerm-cc -lAsFix-cc -lATB-cc @LIBS@
+LIBS_GCC	= -L../aterm -L../asfix -L../toolbus \
+			-lATerm-gcc -lAsFix-gcc -lATB-gcc @LIBS@
 LIBS_DBG	= -L../aterm -L../asfix -L../toolbus \
-			-lATerm-dbg -lAsFix-dbg -lATB-dbg
+			-lATerm-dbg -lAsFix-dbg -lATB-dbg @LIBS@
+LIBS_PROF	= -L../aterm -L../asfix -L../toolbus \
+			-lATerm-prof -lAsFix-prof -lATB-prof @LIBS@
 
 INSTALL		= @INSTALL@
 INSTALL_PRG	= @INSTALL_PRG@
