@@ -30,7 +30,7 @@ exports
     Symbol "*"                       -> Symbol
     "{" Symbol Symbol "}" "+"        -> Symbol
     "{" Symbol Symbol "}" "*"        -> Symbol
-    "{" Symbol "}" NatCon "+"               -> Symbol
+    Symbol NatCon "+"                -> Symbol
     "{" Symbol Symbol "}" NatCon "+" -> Symbol
     "Set" "[" Symbol "]"             -> Symbol
     Symbol "#" Symbol                -> Symbol {right}
