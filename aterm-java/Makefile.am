@@ -1,5 +1,7 @@
 SUBDIRS = aterm test config .
 
+EXTRA_DIST=$(wildcard *.pkg)
+
 noinst_DATA = ${JAVADOCDIR}.tar.gz
 data_DATA = ${JARFILE} 
 
