@@ -1,13 +1,14 @@
 dnl $Id$
 
-AC_INIT(configure.in)
+AC_INIT
+AC_CONFIG_SRCDIR([configure.in])
 AM_INIT_AUTOMAKE(aterm-java, 1.6)
-AC_PREREQ(2.13)
+AC_PREREQ(2.53)
 
 dnl Let aclocal use macros in ./config directory
 ACLOCAL="${ACLOCAL} -I ./config"
 
-AC_SET_MAKE
+AC_PROG_MAKE_SET([])
 
 AC_PACKAGE_REQUIRE(shared-objects, shared-objects-config,
    [ --with-shared-objects=DIR       installation directory of shared-objects])
@@ -21,10 +22,10 @@ EXTERNAL_JARS=${SHARED_OBJECTS}:${JJTRAVELER}
 
 AC_SUBST(EXTERNAL_JARS)
 
-AC_OUTPUT(
-  Makefile
+AC_CONFIG_FILES([Makefile
   aterm/Makefile
   aterm/pure/Makefile
   test/Makefile
   config/Makefile
-)
+])
+AC_OUTPUT
