@@ -1,3 +1,11 @@
+2004-05-19  pem  <pem@polly.loria.fr>
+
+  * apigen/gen/java/ListTypeGenerator.java: renamed factory into
+	    localFactory and atermFactory
+
+  * apigen/gen/java/AbstractTypeGenerator.java: renamed local
+    factory into abstractTypeFactory to remove warnings reported by Jikes  
+
 2004-05-07  pem  <pem@polly.loria.fr>
 
  * apigen/gen/tom/TomSignatureGenerator.java: implementation of %typeterm and %typelist 

@@ -88,11 +88,10 @@ public class FactoryGenerator extends JavaGenerator {
         println("  public aterm.ATerm stringToChars(String str) {");
         println("    int len = str.length();");
         println("    byte chars[] = str.getBytes();");
-        println("    aterm.ATermFactory factory = getPureFactory();");
-        println("    aterm.ATermList result = factory.makeList();");
+        println("    aterm.ATermList result = getPureFactory().makeList();");
         println();
         println("    for (int i = len - 1; i >= 0; i--) {");
-        println("      result = result.insert(factory.makeInt(chars[i]));");
+        println("      result = result.insert(getPureFactory().makeInt(chars[i]));");
         println("    }");
         println();
         println("    return (aterm.ATerm) result;");

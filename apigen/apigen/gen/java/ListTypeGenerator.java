@@ -154,21 +154,21 @@ public class ListTypeGenerator extends TypeGenerator {
 
 	private void genGetFactoryMethod() {
 		println("  public " + factory + " " + buildFactoryGetter() + " {");
-		println("    return factory;");
+		println("    return localFactory;");
 		println("}");
 		println();
 	}
 
 	protected void genConstructor(String className) {
-		println("  public " + className + "(" + factory + " factory) {");
-		println("     super(factory.getPureFactory());");
-		println("     this.factory = factory;");
+		println("  public " + className + "(" + factory + " localFactory) {");
+		println("     super(localFactory.getPureFactory());");
+		println("     this.localFactory = localFactory;");
 		println("  }");
 		println();
 	}
 
 	private void genFactoryField() {
-		println("  private " + factory + " factory = null;");
+		println("  private " + factory + " localFactory = null;");
 	}
 
 	private void genInsertMethod() {
@@ -227,7 +227,7 @@ public class ListTypeGenerator extends TypeGenerator {
 	private void genDuplicateMethod() {
 		String className = TypeGenerator.className(type);
 		println("  public shared.SharedObject duplicate() {");
-		println("    " + className + " clone = new " + className + "(factory);");
+		println("    " + className + " clone = new " + className + "(localFactory);");
 		println("    clone.init(hashCode(), getAnnotations(), getFirst(), getNext());");
 		println("    return clone;");
 		println("  }");
@@ -307,10 +307,10 @@ public class ListTypeGenerator extends TypeGenerator {
 		String className = TypeGenerator.className(type);
 
 		println("  public aterm.ATerm toTerm() {");
-		println("    aterm.ATermFactory factory = " + getFactoryMethodName + ".getPureFactory();");
+		println("    aterm.ATermFactory atermFactory = " + getFactoryMethodName + ".getPureFactory();");
 		println("    if (this.term == null) {");
 		println("      " + className + " reversed = (" + className + ")this.reverse();");
-		println("      aterm.ATermList tmp = factory.makeList();");
+		println("      aterm.ATermList tmp = atermFactory.makeList();");
 		println("      for (; !reversed.isEmpty(); reversed = reversed.getTail()) {");
 
 		String head = "reversed.getHead()";
@@ -323,7 +323,7 @@ public class ListTypeGenerator extends TypeGenerator {
 		}
 		println("        aterm.ATerm elem = " + termHead + ";");
 
-		println("        tmp = factory.makeList(elem, tmp);");
+		println("        tmp = atermFactory.makeList(elem, tmp);");
 		println("      }");
 		println("      this.term = tmp;");
 		println("    }");

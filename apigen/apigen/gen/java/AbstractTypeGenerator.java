@@ -73,14 +73,14 @@ public class AbstractTypeGenerator extends JavaGenerator {
     private void genClassVariables() {
         println("  protected aterm.ATerm term;");
         println();
-        println("  " + factoryClassName + " factory;");
+        println("  private " + factoryClassName + " abstractTypeFactory;");
         println();
     }
 
     private void genConstructor() {
-        println("  public " + getClassName() + "(" + factoryClassName + " factory) {");
-        println("    super(factory.getPureFactory());");
-        println("    this.factory = factory;");
+        println("  public " + getClassName() + "(" + factoryClassName + " abstractTypeFactory) {");
+        println("    super(abstractTypeFactory.getPureFactory());");
+        println("    this.abstractTypeFactory = abstractTypeFactory;");
         println("  }");
         println();
     }
@@ -103,7 +103,7 @@ public class AbstractTypeGenerator extends JavaGenerator {
         GenerationParameters params = getGenerationParameters();
         println(
             "  public " + factoryClassName + ' ' + getFactoryMethodName(params) + "() {");
-        println("    return factory;");
+        println("    return abstractTypeFactory;");
         println("  }");
         println();
     }
