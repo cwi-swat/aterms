@@ -57,17 +57,24 @@ error() {
 
 cleanup() {
   if [ ${CLEANUP} -gt 0 ]; then
-    info "Cleaning up intermediate files"
-    for n in 1 2 3 4 5; do
+    info "- Cleaning up intermediate files"
+    for n in 1 2 3 4; do
       filename=".api_${n}_$$"
       rm -f ${filename}
     done
   else
-    info "No cleanup, here are your intermediate files:"
+    info "- No cleanup, here are your intermediate files:"
     if [ ${VERBOSE} -gt 0 ]; then
       ls -l .api_[0-5]_$$
     fi
   fi
+}
+
+# }}}
+# {{{  err()
+
+err() {
+  error "Bailing out!"
 }
 
 # }}}
@@ -153,22 +160,20 @@ ADTFILE="${MODULE}.adt"
 
 trap cleanup EXIT
 
-info "Generating ${ADTFILE} from ${SDFFILE}"
+#set -x
 
-info "Parsing ${SDFFILE} using ${APITABLE}"
-${SGLR} -1 -p ${APITABLE} -s SDF -i ${SDFFILE} -o .api_1_$$
+info "Generating ${ADTFILE} from ${SDFFILE}:"
 
-info "Adding labels to parsed ${SDFFILE}"
-${APPLYFUNC} -f add-labels -s SDF -m AddLabels -i .api_1_$$ -o .api_2_$$
-${EVALUATOR} -w on -e ${ADDLABELS} -i .api_2_$$ | ${ASOURCE} > .api_3_$$
+info " - Parsing ${SDFFILE} (${APITABLE})"
+${SGLR} -1 -p ${APITABLE} -s SDF -i ${SDFFILE} -o .api_1_$$ || err
 
-info "Preparing to call ${SDF2TOADT} with option ${CONSOPT}"
-(echo "sdf-to-adt(`cat`, ${CONSOPT})") < .api_3_$$ > .api_4_$$
+info " - Labeling ${SDFFILE} (parsed)"
+${APPLYFUNC} -f add-labels -s SDF -m AddLabels -i .api_1_$$ -o .api_2_$$ || err
+${EVALUATOR} -w on -e ${ADDLABELS} -i .api_2_$$ -o .api_3_$$ || err
 
-info "Parsing"
-${SGLR} -1 -p ${APITABLE} -s ATerm -i .api_4_$$ -o .api_5_$$
-
-info "Invoking ${SDF2TOADT} to generate ${ADTFILE}"
-${SDF2TOADT} < .api_5_$$ | ${ASOURCE} > ${ADTFILE}
+info " - Generating ADT (${SDF2TOADT})"
+func="sdf-to-adt-${CONSOPT}"
+${APPLYFUNC} -f ${func} -s ATerm -m Sdf2-to-ADT < .api_3_$$ > .api_4_$$ || err
+${SDF2TOADT} < .api_4_$$ | ${ASOURCE} > ${ADTFILE} || err
 
 # }}}

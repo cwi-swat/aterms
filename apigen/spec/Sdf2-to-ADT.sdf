@@ -9,12 +9,12 @@ exports
     cons-remove					-> ConsOption
 
   context-free syntax
-    sdf-to-adt ( SDF, ConsOption )		-> ATerm
-    sdf-to-adt ( Module, ConsOption )		-> ATerm
-    sdf-module-to-adt ( Module, ConsOption )	-> ATerm
+    sdf-to-adt-cons-expand ( SDF ) -> ATerm
+    sdf-to-adt-cons-remove ( SDF ) -> ATerm
 
-%%context-free syntax
-%%  "build-asfix-attr"	-> UQLiteral {reject}
+    sdf-to-adt ( SDF, ConsOption )           -> ATerm
+    sdf-to-adt ( Module, ConsOption )        -> ATerm
+    sdf-module-to-adt ( Module, ConsOption ) -> ATerm
 
 hiddens
   context-free syntax
@@ -85,6 +85,7 @@ hiddens
     "$Module*"		-> Module*
     "$Production"	-> Production
     "$Production*"	-> Production*
+    "$SDF"		-> SDF
     "$Section"		-> Section
     "$Section*"		-> Section*
     "$Sep"		-> Literal

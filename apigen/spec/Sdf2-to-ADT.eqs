@@ -1,5 +1,11 @@
 equations
 
+[equ-sdf-to-adt-cons-expand]
+  sdf-to-adt-cons-expand($SDF) = sdf-to-adt($SDF, cons-expand)
+
+[equ-sdf-to-adt-cons-remove]
+  sdf-to-adt-cons-remove($SDF) = sdf-to-adt($SDF, cons-remove)
+
 [equ-sdf-to-adt-definition-empty]
   sdf-to-adt(definition ,$ConsOption) = [ ]
 

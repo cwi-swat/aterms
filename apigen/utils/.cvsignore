@@ -5,3 +5,8 @@ extract-api-files
 extract-api-files.o
 adt-to-c
 sdf2-to-adt
+ADT.h
+ADT.c
+ADT.dict
+ADT_dict.c
+ADT_dict.h

@@ -50,15 +50,16 @@ SPEC_SRCS1=\
    AUX-Sdf2-Syntax1.c AUX-ATerm-Utils8.c AUX-ATerm-Utils7.c\
    AUX-ATerm-Utils6.c AUX-ATerm-Utils5.c AUX-ATerm-Utils4.c\
    AUX-ATerm-Utils3.c AUX-ATerm-Utils2.c AUX-ATerm-Utils1.c AUX-Sdf21.c\
-   AUX-Sdf2-to-ADT27.c AUX-Sdf2-to-ADT26.c AUX-Sdf2-to-ADT25.c\
-   AUX-Sdf2-to-ADT24.c AUX-Sdf2-to-ADT23.c AUX-Sdf2-to-ADT22.c\
-   AUX-Sdf2-to-ADT21.c AUX-Sdf2-to-ADT20.c AUX-Sdf2-to-ADT19.c\
-   AUX-Sdf2-to-ADT18.c AUX-Sdf2-to-ADT17.c AUX-Sdf2-to-ADT16.c\
-   AUX-Sdf2-to-ADT15.c AUX-Sdf2-to-ADT14.c AUX-Sdf2-to-ADT13.c\
-   AUX-Sdf2-to-ADT12.c AUX-Sdf2-to-ADT11.c AUX-Sdf2-to-ADT10.c\
-   AUX-Sdf2-to-ADT9.c AUX-Sdf2-to-ADT8.c AUX-Sdf2-to-ADT7.c\
-   AUX-Sdf2-to-ADT6.c AUX-Sdf2-to-ADT5.c AUX-Sdf2-to-ADT4.c\
-   AUX-Sdf2-to-ADT3.c AUX-Sdf2-to-ADT2.c AUX-Sdf2-to-ADT1.c
+   AUX-Sdf2-to-ADT29.c AUX-Sdf2-to-ADT28.c AUX-Sdf2-to-ADT27.c\
+   AUX-Sdf2-to-ADT26.c AUX-Sdf2-to-ADT25.c AUX-Sdf2-to-ADT24.c\
+   AUX-Sdf2-to-ADT23.c AUX-Sdf2-to-ADT22.c AUX-Sdf2-to-ADT21.c\
+   AUX-Sdf2-to-ADT20.c AUX-Sdf2-to-ADT19.c AUX-Sdf2-to-ADT18.c\
+   AUX-Sdf2-to-ADT17.c AUX-Sdf2-to-ADT16.c AUX-Sdf2-to-ADT15.c\
+   AUX-Sdf2-to-ADT14.c AUX-Sdf2-to-ADT13.c AUX-Sdf2-to-ADT12.c\
+   AUX-Sdf2-to-ADT11.c AUX-Sdf2-to-ADT10.c AUX-Sdf2-to-ADT9.c\
+   AUX-Sdf2-to-ADT8.c AUX-Sdf2-to-ADT7.c AUX-Sdf2-to-ADT6.c\
+   AUX-Sdf2-to-ADT5.c AUX-Sdf2-to-ADT4.c AUX-Sdf2-to-ADT3.c\
+   AUX-Sdf2-to-ADT2.c AUX-Sdf2-to-ADT1.c
 
 SPEC_SRCS = $(SPEC_SRCS1)
 

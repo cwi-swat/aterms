@@ -2,6 +2,10 @@
   * utils/sdf2-to-adt rewritten: uses temporary files and does proper cleanup
     upon exit. Several flags added, amongst which is -t to specify location
     of the parsetable used by the script.
+  * utils/sdf2-to-adt is now more robust: the exit code of each substep is
+    checked and the script refuses to continue after encountering errors
+    Replaced the redundant "unparse-'hack function symbol'-reparse" fase
+    by adding more support in the specification.
 
 2001/02/08 (jong@cwi.nl)
   * Added reflexive ADT to access adt's (creates: libADT.a)
