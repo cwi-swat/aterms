@@ -24,6 +24,9 @@ exports
     build-asfix-charclass(CharClass)                    -> ATerm
     build-asfix-charranges(CharRanges)                  -> ATermList
 
+  context-free syntax
+    "no-module-name" -> ModuleId
+
 hiddens
   variables
     "$ADT"[0-9]*	-> ATerm

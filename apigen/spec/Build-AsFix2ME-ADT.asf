@@ -3,6 +3,16 @@ equations
   [equ-build-asfix-prod]
   $AFArgs    = build-asfix-prod-args($SymbolType, $Symbol*),
   $AFSort    = sort-to-lit($Sort),
+  $AFAttrs   = build-asfix-attrs($Attributes, $ConsOption)
+  ===>
+  build-asfix-prod($SymbolType, no-module-name, $Symbol*, $Sort, $Attributes, 
+                   $ConsOption) =
+    prod([$AFArgs],$SymbolType(sort($AFSort)),$AFAttrs)
+
+  [equ-build-asfix-prod]
+  $ModName  != no-module-name,
+  $AFArgs    = build-asfix-prod-args($SymbolType, $Symbol*),
+  $AFSort    = sort-to-lit($Sort),
   $AFAttrs   = build-asfix-attrs($ModName, $Attributes, $ConsOption)
   ===>
   build-asfix-prod($SymbolType, $ModName, $Symbol*, $Sort, $Attributes, 

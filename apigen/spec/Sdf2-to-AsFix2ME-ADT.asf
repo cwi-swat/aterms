@@ -37,7 +37,7 @@ equations
 
 [equ-section-to-adt-exports]
   section-to-adt($ModName, exports $Grammar, $ConsOption) =
-    grammar-to-adt($ModName, $Grammar, $ConsOption)
+    grammar-to-adt(no-module-name, $Grammar, $ConsOption)
 
 [equ-section-to-adt-hiddens]
   section-to-adt($ModName, hiddens $Grammar, $ConsOption) = 
