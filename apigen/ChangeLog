@@ -1,5 +1,7 @@
 2004-08-06  Antoine Reilles  <tonio@bonzai>
 
+	* try to fix --visitable with modules
+
 	* generates singletons for java factories
 
 2004-08-05 pem

@@ -4,7 +4,7 @@ ADTTOC = ${top_builddir}/scripts/adt-to-c-test
 
 ADTTOJAVA = ${top_builddir}/scripts/adt-to-java-test
 
-JAVATESTS = peano list rolodex builtins
+JAVATESTS = cyclic peano list rolodex builtins
 
 TESTS = listtest rolotest builtinstest \
             $(foreach j, ${JAVATESTS}, ${j}.java.sh)
@@ -15,6 +15,7 @@ peano_Main = PeanoTest
 list_Main  = ListTest
 rolodex_Main = RoloTest
 builtins_Main = BuiltinsTest
+cyclic_Main = CyclicTest
 
 INCLUDES = \
 	-I$(ATERM)/include 

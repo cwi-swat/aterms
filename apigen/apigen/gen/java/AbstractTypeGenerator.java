@@ -1,6 +1,8 @@
 package apigen.gen.java;
 
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 
 import apigen.adt.ADT;
 import apigen.adt.Type;
@@ -139,13 +141,19 @@ public class AbstractTypeGenerator extends JavaGenerator {
     }
 
     private void genAccept() {
+    		Set moduleToGen = new HashSet();
+       	moduleToGen = adt.getImportsClosureForModule(module.getModulename().getName());
+       	Iterator moduleIt = moduleToGen.iterator();
+       	while(moduleIt.hasNext()) {
+       	    String moduleName = (String) moduleIt.next();
         String visitorPackage =
-            VisitorGenerator.qualifiedClassName(getJavaGenerationParameters());
+            VisitorGenerator.qualifiedClassName(getJavaGenerationParameters(),moduleName);
         println(
             "  abstract public void accept("
                 + visitorPackage
-                + ".Visitor v) throws jjtraveler.VisitFailure;");
+                + " v) throws jjtraveler.VisitFailure;");
         println();
+       	}
     }
 
     private void genDefaultTypePredicates() {

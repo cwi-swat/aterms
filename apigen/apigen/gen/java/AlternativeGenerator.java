@@ -1,7 +1,10 @@
 package apigen.gen.java;
 
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 
+import apigen.adt.ADT;
 import apigen.adt.Alternative;
 import apigen.adt.Field;
 import apigen.adt.Type;
@@ -13,12 +16,15 @@ public class AlternativeGenerator extends JavaGenerator {
     private Alternative alt;
     private String className;
     private String superClassName;
+    private ADT adt;
 
     protected AlternativeGenerator(
+        ADT adt, 
         JavaGenerationParameters params,
         Type type,
         Alternative alt) {
         super(params);
+        this.adt = adt;
         this.type = type;
         this.alt = alt;
         this.className = buildClassName(alt.getId());
@@ -477,17 +483,23 @@ public class AlternativeGenerator extends JavaGenerator {
     }
 
     private void genAltVisitableInterface(Type type, Alternative alt) {
-        String visitorPackage =
-            VisitorGenerator.qualifiedClassName(getJavaGenerationParameters());
-        String altClassName = FactoryGenerator.concatTypeAlt(type, alt);
+   		Set moduleToGen = new HashSet();
+       	moduleToGen = adt.getImportsClosureForModule(type.getModuleName());
+       	Iterator moduleIt = moduleToGen.iterator();
+       	while(moduleIt.hasNext()) {
+       	    String moduleName = (String) moduleIt.next();
+       	    String visitorPackage =
+       	        VisitorGenerator.qualifiedClassName(getJavaGenerationParameters(),moduleName);
+       	    String altClassName = FactoryGenerator.concatTypeAlt(type, alt);
 
-        println(
-            "  public void accept("
-                + visitorPackage
-                + ".Visitor v) throws jjtraveler.VisitFailure {");
-        println("    v.visit_" + altClassName + "(this);");
-        println("  }");
-        println();
+       	    println(
+       	            "  public void accept("
+       	            + visitorPackage
+       	            + " v) throws jjtraveler.VisitFailure {");
+       	    println("    v.visit_" + altClassName + "(this);");
+       	    println("  }");
+       	    println();
+       	}
     }
 
     private int computeAltArityNotReserved(Type type, Alternative alt) {

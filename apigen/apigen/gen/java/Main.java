@@ -155,19 +155,20 @@ public class Main {
                 }
             } else if (!typeConverter.isReserved(type.getId())) {
                     run(new TypeGenerator(params, type), observer);
-                    generateAlternativeClasses(params, type, observer);
+                    generateAlternativeClasses(adt, params, type, observer);
             }
         }
     }
 
     private static void generateAlternativeClasses(
+        ADT adt,
         JavaGenerationParameters params,
         Type type,
         GenerationObserver l) {
         Iterator altIterator = type.alternativeIterator();
         while (altIterator.hasNext()) {
             Alternative alt = (Alternative) altIterator.next();
-            run(new AlternativeGenerator(params, type, alt), l);
+            run(new AlternativeGenerator(adt, params, type, alt), l);
         }
     }
  

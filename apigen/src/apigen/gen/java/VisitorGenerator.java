@@ -10,7 +10,7 @@ import apigen.adt.api.types.Module;
 import apigen.gen.GenerationParameters;
 
 public class VisitorGenerator extends JavaGenerator {
-    private static final String CLASS_NAME = "Visitor";
+    public static final String CLASS_NAME = "Visitor";
     private Module module;
 
     private ADT adt;
@@ -22,7 +22,11 @@ public class VisitorGenerator extends JavaGenerator {
     }
 
     public String getClassName() {
-        return module.getModulename().getName() + CLASS_NAME;
+        return VisitorGenerator.className(module.getModulename().getName());
+    }
+    
+    public static String className(String moduleName) {
+        return moduleName + CLASS_NAME;
     }
 
     protected void generate() {
@@ -85,7 +89,9 @@ public class VisitorGenerator extends JavaGenerator {
         return params.getApiName().toLowerCase();
     }
 
-    public static String qualifiedClassName(JavaGenerationParameters params) {
+    public static String qualifiedClassName(
+            JavaGenerationParameters params, 
+            String moduleName) {
         StringBuffer buf = new StringBuffer();
         String pkg = params.getPackageName();
 
@@ -93,7 +99,9 @@ public class VisitorGenerator extends JavaGenerator {
             buf.append(pkg);
             buf.append('.');
         }
-        buf.append(packageName(params));
+        buf.append(params.getApiExtName(moduleName).toLowerCase());
+        buf.append('.');
+        buf.append(VisitorGenerator.className(moduleName));
         return buf.toString();
     }
 

@@ -16,7 +16,7 @@ import aterm.ATermList;
 import aterm.ATermPlaceholder;
 
 public class Type {
-	  private String moduleName;
+	private String moduleName;
     private String id;
     private AlternativeList alts;
     private Map fields;

@@ -41,7 +41,7 @@ public class FactoryGenerator extends JavaGenerator {
     }
 
     public String qualifiedClassName(JavaGenerationParameters params) {
-    	return FactoryGenerator.qualifiedClassName(params,module.getName());
+    		return FactoryGenerator.qualifiedClassName(params,module.getName());
     }
 
     public static String qualifiedClassName(

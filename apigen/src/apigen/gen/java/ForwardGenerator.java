@@ -26,6 +26,10 @@ public class ForwardGenerator extends JavaGenerator {
 	public String getClassName() {
 		return module.getModulename().getName() + CLASS_NAME;
 	}
+	
+	public String getVisitorName() {
+	    return module.getModulename().getName() + VisitorGenerator.CLASS_NAME;
+	}
 
 	protected void genVisits(ADT adt) {
 		Iterator types = adt.typeIterator();
@@ -67,7 +71,7 @@ public class ForwardGenerator extends JavaGenerator {
 	protected void generate() {
 		printPackageDecl();
 
-		println("public class Fwd extends Visitor implements jjtraveler.Visitor {");
+		println("public class " + getClassName() + " extends " + getVisitorName() + " implements jjtraveler.Visitor {");
 		genConstructor();
 		genVoidVisit();
 		genVisits(adt);
@@ -77,7 +81,7 @@ public class ForwardGenerator extends JavaGenerator {
 	private void genConstructor() {
 		println("  private jjtraveler.Visitor any;");
 		println();
-		println("  public Fwd(jjtraveler.Visitor v) {");
+		println("  public " + getClassName() + "(jjtraveler.Visitor v) {");
 		println("    this.any = v;");
 		println("  }");
 		println();
