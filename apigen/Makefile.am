@@ -5,7 +5,7 @@ ACLOCAL_FLAGS = -I .
 JARFILE    = apigen-${VERSION}.jar
 DISTFILE = ${distdir}.tar.gz
 data_DATA  = ${JARFILE}
-CLEANFILES = ${JARFILE}
+CLEANFILES = ${JARFILE} ${PACKAGE}-*.pkg
 
 ${JARFILE}:
 	find ${top_builddir}/apigen \

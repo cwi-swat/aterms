@@ -6,6 +6,8 @@ Sat Apr 17 09:42:12 CEST 2004 <jurgenv@cwi.nl>
  * Fiddled around with java -d ${top_builddir}, and other occurrences
    of ${top_srcdir} and ${top_builddir} to get test directory
    distcheck-compliant.
+ * Added special distclean target in test directory to let distcheck
+   succeed. 
 
 Fri Mar 26 10:12:10 CET 2004 <{jong,kooiker}@cwi.nl>
  * apigen/apigen/gen/c/APIGenerator.java:

@@ -42,6 +42,8 @@ builtinstest_SOURCES = builtinstest.c
 builtinstest_LDADD = -L. -lbuiltins -lATerm
 builtinstest_DEPENDENCIES = libbuiltins.a
 
+distclean: clean
+
 clean:
 	rm -rf $(JAVATESTS)
 
@@ -50,7 +52,7 @@ CLEANFILES = \
 	rolodex.[ch] rolodex_dict.[ch] \
 	list.[ch] list_dict.[ch] \
 	builtins.[ch] builtins_dict.[ch] \
-	*.java.sh *.class *.jar
+	*.java.sh *.class *.jar *.dict
 
 BUILT_SOURCES = \
 	rolodex.c \
