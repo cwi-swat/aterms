@@ -48,11 +48,17 @@ public class ADT {
 
 			iter.remove();
 			while (iter.hasNext()) {
-				ATermList entry = (ATermList) iter.next();
-				if (entry.getFirst().equals(typeId)) {
-					alts.add(entry);
-					iter.remove();
-				}
+        try {
+				  ATermList entry = (ATermList) iter.next();
+				  if (entry.getFirst().equals(typeId)) {
+				  	alts.add(entry);
+				  	iter.remove();
+				  }
+        }
+        catch (ClassCastException exc) {
+          System.err.println("unexpected entry found:" + iter.previous());
+          System.exit(1);
+        }
 			}
 
 			processAlternatives(typeId.toString(), alts);
