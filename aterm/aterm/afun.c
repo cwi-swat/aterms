@@ -38,10 +38,11 @@
 /*}}}  */
 /*{{{  defines */
 
+#define INITIAL_AFUN_TABLE_CLASS 14
+
 #define SYMBOL_HASH_SIZE	65353	/* nextprime(65335) */
 #define SYMBOL_HASH_OPT		"-at-symboltable"
-
-#define SYM_ARITY	16
+#define AFUN_TABLE_OPT		"-at-afuntable"
 
 #define SHIFT_INDEX 1
 #define SYM_GET_NEXT_FREE(sym)    ((MachineWord)(sym) >> SHIFT_INDEX)
@@ -55,8 +56,11 @@
 
 char afun_id[] = "$Id$";
 
-static unsigned int table_size = 0;
-static SymEntry *hash_table = NULL;
+static unsigned int table_class = INITIAL_AFUN_TABLE_CLASS;
+static unsigned int table_size  = TABLE_SIZE(INITIAL_AFUN_TABLE_CLASS);
+static unsigned int table_mask  = TABLE_MASK(INITIAL_AFUN_TABLE_CLASS);
+
+static SymEntry *hash_table     = NULL;
 
 static Symbol first_free = -1;
 
@@ -75,10 +79,14 @@ ATerm    *at_lookup_table_alias = NULL;
 
 /*}}}  */
 
+/*{{{  unsigned int AT_symbolTableSize() */
+
 unsigned int AT_symbolTableSize()
 {
   return table_size;
 }
+
+/*}}}  */
 
 /*{{{  void AT_initSymbol(int argc, char *argv[]) */
 void AT_initSymbol(int argc, char *argv[])
@@ -86,37 +94,46 @@ void AT_initSymbol(int argc, char *argv[])
   int i;
   AFun sym;
 
-  table_size = SYMBOL_HASH_SIZE;
-
   for (i = 1; i < argc; i++) {
-    if (streq(argv[i], SYMBOL_HASH_OPT))
-      table_size = atoi(argv[++i]);
-    else if(strcmp(argv[i], "-at-help") == 0) {
-      fprintf(stderr, "    %-20s: initial symboltable size " 
-	      "(default=%d)\n",	SYMBOL_HASH_OPT " <size>", table_size);
+    if (streq(argv[i], SYMBOL_HASH_OPT)) {
+      ATerror("Option %s is depcrecated, use %s instead!\n"
+	      "Note that %s uses 2^<arg> as the actual table size.\n",
+	      SYMBOL_HASH_OPT, AFUN_TABLE_OPT, AFUN_TABLE_OPT);
+    } else if (streq(argv[i], AFUN_TABLE_OPT)) {
+      table_class = atoi(argv[++i]);
+      table_size  = TABLE_SIZE(table_class);
+      table_mask  = TABLE_MASK(table_class);
+      fprintf(stderr, "table_size=%d, table_mask=%d\n", table_size, table_mask);
+    } else if(streq(argv[i], "-at-help")) {
+      fprintf(stderr, "    %-20s: initial afun table class " 
+	      "(default=%d)\n",	AFUN_TABLE_OPT " <class>", table_class);
     }
   }
 
   hash_table = (SymEntry *) calloc(table_size, sizeof(SymEntry));
-  if (hash_table == NULL)
+  if (hash_table == NULL) {
     ATerror("AT_initSymbol: cannot allocate %d hash-entries.\n",
 	    table_size);
+  }
 
   at_lookup_table = (SymEntry *) calloc(table_size, sizeof(SymEntry));
   at_lookup_table_alias = (ATerm *)at_lookup_table;
-  if (at_lookup_table == NULL)
+  if (at_lookup_table == NULL) {
     ATerror("AT_initSymbol: cannot allocate %d lookup-entries.\n",
 	    table_size);
+  }
 
-  for (i = first_free = 0; i < table_size; i++)
+  for (i = first_free = 0; i < table_size; i++) {
     at_lookup_table[i] = (SymEntry) SYM_SET_NEXT_FREE(i+1);
+  }
 
   at_lookup_table[i-1] = (SymEntry) SYM_SET_NEXT_FREE(-1);		/* Sentinel */
 
   protected_symbols = (Symbol *)calloc(INITIAL_PROTECTED_SYMBOLS, 
 				       sizeof(Symbol));
-  if(!protected_symbols)
+  if(!protected_symbols) {
     ATerror("AT_initSymbol: cannot allocate initial protection buffer.\n");
+  }
 	
   sym = ATmakeAFun("<int>", 0, ATfalse);
   assert(sym == AS_INT);
@@ -263,8 +280,8 @@ int AT_writeAFun(AFun fun, byte_writer *writer)
 /*{{{  ShortHashNumber AT_hashSymbol(char *name, int arity) */
 
 /**
-	* Calculate the hash value of a symbol.
-	*/
+ * Calculate the hash value of a symbol.
+ */
 
 ShortHashNumber AT_hashSymbol(char *name, int arity)
 {
@@ -285,17 +302,19 @@ ShortHashNumber AT_hashSymbol(char *name, int arity)
 Symbol ATmakeSymbol(char *name, int arity, ATbool quoted)
 {
   header_type header = SYMBOL_HEADER(arity, quoted);
-  ShortHashNumber hnr = AT_hashSymbol(name, arity) % table_size;
+  ShortHashNumber hnr = AT_hashSymbol(name, arity) & table_mask;
   SymEntry cur;
   
-  if(arity >= MAX_ARITY)
+  if(arity >= MAX_ARITY) {
     ATabort("cannot handle symbols with arity %d (max=%d)\n",
 	    arity, MAX_ARITY);
+  }
 
   /* Find symbol in table */
   cur = hash_table[hnr];
-  while (cur && (cur->header != header || !streq(cur->name, name)))
+  while (cur && (cur->header != header || !streq(cur->name, name))) {
     cur = cur->next;
+  }
   
   if (cur == NULL) {
     Symbol free_entry;
@@ -304,9 +323,10 @@ Symbol ATmakeSymbol(char *name, int arity, ATbool quoted)
     cur->header = header;
     cur->next = hash_table[hnr];
     cur->name = strdup(name);
-    if (cur->name == NULL)
+    if (cur->name == NULL) {
       ATerror("ATmakeSymbol: no room for name of length %d\n",
 	      strlen(name));
+    }
 
     cur->count = 0;
     cur->index = -1;
@@ -314,8 +334,9 @@ Symbol ATmakeSymbol(char *name, int arity, ATbool quoted)
     hash_table[hnr] = cur;
 
     free_entry = first_free;
-    if(free_entry == -1)
+    if(free_entry == -1) {
       ATerror("AT_initSymbol: out of symbol slots!\n");
+    }
 
     first_free = SYM_GET_NEXT_FREE(at_lookup_table[first_free]);
     at_lookup_table[free_entry] = cur;
@@ -344,19 +365,19 @@ void AT_freeSymbol(SymEntry sym)
   /* Calculate hashnumber */
   for(hnr = GET_LENGTH(sym->header)*3; *walk; walk++)
     hnr = 251 * hnr + *walk;
-  hnr %= table_size;
+  hnr &= table_mask;
   
   /* Update hashtable */
-  if (hash_table[hnr] == sym)
+  if (hash_table[hnr] == sym) {
     hash_table[hnr] = sym->next;
-  else
-    {
-      SymEntry cur, prev;
-      prev = hash_table[hnr]; 
-      for (cur = prev->next; cur != sym; prev = cur, cur = cur->next)
-	assert(cur != NULL);
-      prev->next = cur->next;
+  } else {
+    SymEntry cur, prev;
+    prev = hash_table[hnr]; 
+    for (cur = prev->next; cur != sym; prev = cur, cur = cur->next) {
+      assert(cur != NULL);
     }
+    prev->next = cur->next;
+  }
   
   /* Free symbol name */
   free(sym->name);
@@ -381,7 +402,7 @@ void AT_freeSymbol(SymEntry sym)
 ATbool AT_findSymbol(char *name, int arity, ATbool quoted)
 {
   header_type header = SYMBOL_HEADER(arity, quoted);
-  ShortHashNumber hnr = AT_hashSymbol(name, arity) % table_size;
+  ShortHashNumber hnr = AT_hashSymbol(name, arity) & table_mask;
   SymEntry cur;
   
   if(arity >= MAX_ARITY)
@@ -398,22 +419,6 @@ ATbool AT_findSymbol(char *name, int arity, ATbool quoted)
 
 /*}}}  */
 
-#if 0
-Replaced by ATgetArity macro
-/*{{{  int ATgetArity(Symbol sym) */
-
-/**
-  * Retrieve the arity of a symbol
-  */
-
-int ATgetArity(Symbol sym)
-{
-  return GET_LENGTH(at_lookup_table[sym]->header);
-}
-
-/*}}}  */
-#endif
-
 /*{{{  ATbool AT_isValidSymbol(Symbol sym) */
 
 /**
@@ -425,20 +430,6 @@ ATbool AT_isValidSymbol(Symbol sym)
   return (sym >= 0 && sym < table_size
 	  && !SYM_IS_FREE(at_lookup_table[sym])) ?  ATtrue : ATfalse;
 }
-
-/*}}}  */
-/*{{{  void AT_markSymbol(Symbol s) */
-
-/**
-  * Mark a symbol by setting its mark bit.
-  */
-
-/* <PO> This is now a macro
-void AT_markSymbol(Symbol s)
-{
-  at_lookup_table[s]->header |= MASK_MARK;
-}
-*/
 
 /*}}}  */
 /*{{{  void AT_unmarkSymbol(Symbol s) */

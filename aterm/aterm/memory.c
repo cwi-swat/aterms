@@ -40,6 +40,8 @@
 /*}}}  */
 /*{{{  defines */
 
+#define INITIAL_TERM_TABLE_CLASS      17
+
 /* when less than GC_THRESHOLD percent of the terms has been freed by
    the previous garbage collect, a new block will be allocated.
    Otherwise a new garbage collect is started. */
@@ -95,9 +97,9 @@ BlockBucket block_table[BLOCK_TABLE_SIZE] = { { NULL, NULL } };
 MachineWord total_nodes = 0;
 
 static MachineWord alloc_since_gc[MAX_TERM_SIZE] = { 0 };
-static unsigned int table_class = 14;
-static HashNumber table_size;
-static HashNumber table_mask;
+static unsigned int table_class = INITIAL_TERM_TABLE_CLASS;
+static HashNumber table_size    = TABLE_SIZE(INITIAL_TERM_TABLE_CLASS);
+static HashNumber table_mask    = TABLE_MASK(INITIAL_TERM_TABLE_CLASS);
 #ifndef NO_SHARING
 static int maxload = 80;
 #endif
@@ -349,8 +351,6 @@ void AT_initMemory(int argc, char *argv[])
   HashNumber hnr;
 #endif
   
-  table_class = 17;
-  
   protoTerm  = (MachineWord *) calloc(MAX_TERM_SIZE, sizeof(MachineWord));
   arg_buffer = (ATerm *) (protoTerm + 2);
   
@@ -359,6 +359,8 @@ void AT_initMemory(int argc, char *argv[])
   for (i = 1; i < argc; i++) {
     if (streq(argv[i], TERM_HASH_OPT)) {
       table_class = atoi(argv[++i]);
+      table_size  = TABLE_SIZE(table_class);
+      table_mask  = TABLE_MASK(table_class);
     } else if(streq(argv[i], HASH_INFO_OPT)) {
       infoflags |= INFO_HASHING;
     } else if(strcmp(argv[i], TERM_CHECK_OPT) == 0) {
@@ -379,10 +381,6 @@ void AT_initMemory(int argc, char *argv[])
   }
   
   /*}}}  */
-  
-  table_size  = 1<<table_class;
-  table_mask  = table_size-1;
-  
   
   /*{{{  Initialize blocks */
 

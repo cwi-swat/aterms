@@ -41,7 +41,7 @@
 /*}}}  */
 /*{{{  defines */
 
-#define TABLE_SIZE	4099	/* nextprime(4096) */
+#define PATTERN_CACHE_SIZE	4099	/* nextprime(4096) */
 #define NR_INLINE_TERMS 6
 
 /*}}}  */
@@ -66,7 +66,7 @@ static Symbol symbol_list;
 static Symbol symbol_blob;
 static Symbol symbol_placeholder;
 static Symbol symbol_term;
-static at_entry pattern_table[TABLE_SIZE];
+static at_entry pattern_table[PATTERN_CACHE_SIZE];
 
 static va_list theargs;
 static va_list *args = (va_list *) &theargs;
@@ -109,7 +109,7 @@ ATerm AT_getPattern(const char *pat)
   
   for(hash_val = 0; *walk; walk++)
 		hash_val = 251 * hash_val + *walk;
-  hash_val %= TABLE_SIZE;
+  hash_val %= PATTERN_CACHE_SIZE;
   
   bucket = &(pattern_table[hash_val]);
   if (bucket->pat) {
@@ -135,7 +135,7 @@ ATerm AT_getPattern(const char *pat)
 void AT_initMake(int argc, char *argv[])
 {
 	int	lcv;
-	for (lcv=0; lcv < TABLE_SIZE; lcv++)
+	for (lcv=0; lcv < PATTERN_CACHE_SIZE; lcv++)
 	{
 		pattern_table[lcv].pat  = NULL;
 		pattern_table[lcv].term = NULL;

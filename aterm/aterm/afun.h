@@ -56,6 +56,12 @@ typedef struct SymEntry
 /* defined on SymEntry */
 #define SYM_IS_FREE(sym)          (((MachineWord)(sym) & 1) == 1)
 
+/* void AT_markSymbol(Symbol sym); */
+#define AT_markSymbol(s)   (at_lookup_table[(s)]->header |= MASK_MARK)
+
+/* void AT_unmarkSymbol(Symbol sym); */
+#define AT_unmarkSymbol(s) (at_lookup_table[(s)]->header &= ~MASK_MARK)
+
 struct ATerm;
 extern struct ATerm **at_lookup_table_alias;
 extern SymEntry *at_lookup_table;
@@ -64,10 +70,7 @@ unsigned int AT_symbolTableSize();
 void AT_initSymbol(int argc, char *argv[]);
 int AT_printSymbol(Symbol sym, FILE *f);
 ATbool AT_isValidSymbol(Symbol sym);
-/*void AT_markSymbol(Symbol sym);*/
-#define AT_markSymbol(s)   (at_lookup_table[(s)]->header |= MASK_MARK)
-/*void AT_unmarkSymbol(Symbol sym);*/
-#define AT_unmarkSymbol(s) (at_lookup_table[(s)]->header &= ~MASK_MARK)
+
 ATbool AT_isMarkedSymbol(Symbol sym);
 void  AT_freeSymbol(SymEntry sym);
 void AT_markProtectedSymbols();
