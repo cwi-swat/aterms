@@ -29,7 +29,7 @@ LDFLAGS			= -L$(top_builddir)/aterm/
 
 LDLIBS			= -lATerm
 
-bin_PROGRAMS		= termsize baffle dicttoc atsum atdiff atremove-annotation
+bin_PROGRAMS		= termsize baffle dicttoc atsum atdiff atrmannos
 
 termsize_SOURCES	= termsize.c
 termsize_LDADD		= $(LDLIBS)
@@ -46,8 +46,8 @@ atsum_LDADD		= $(LDLIBS)
 atdiff_SOURCES		= atdiff.c
 atdiff_LDADD		= $(LDLIBS)
 
-atremove_annotation_SOURCES = atremove-annotation.c
-atremove_annotation_LDADD =  $(LDLIBS)
+atrmannos_SOURCES       = atrmannos.c
+atrmannos_LDADD         =  $(LDLIBS)
 
 bin_SCRIPTS		= baf2trm baf2taf trm2baf trm2taf taf2trm taf2baf \
 			  trmcat
