@@ -5,13 +5,14 @@
 
 void termsize(FILE *file)
 {
-	int core_size, text_size;
+	int core_size, text_size, term_depth;
 
 	ATerm t = ATreadFromFile(file);
 	core_size = AT_calcCoreSize(t);
 	text_size = AT_calcTextSize(t);
-	printf("internal size: %d bytes, text size: %d bytes\n", 
-				 core_size, text_size);
+	term_depth = AT_calcTermDepth(t);
+	printf("internal size: %d bytes, text size: %d bytes, depth: %d\n", 
+				 core_size, text_size, term_depth);
 }
 
 int main(int argc, char *argv[])

@@ -506,51 +506,49 @@ writeToTextFile(ATerm t, FILE * f)
 
     switch (ATgetType(t))
     {
-    case AT_INT:
-	fprintf(f, "%d", ((ATermInt) t)->value);
-	break;
-    case AT_REAL:
-	fprintf(f, "%f", ((ATermReal) t)->value);
-	break;
-    case AT_APPL:
-	/*{{{  Print application */
+			case AT_INT:
+				fprintf(f, "%d", ((ATermInt) t)->value);
+				break;
+			case AT_REAL:
+				fprintf(f, "%f", ((ATermReal) t)->value);
+				break;
+			case AT_APPL:
+				/*{{{  Print application */
 
-	appl = (ATermAppl) t;
+				appl = (ATermAppl) t;
+				
+				sym = ATgetSymbol(appl);
+				AT_printSymbol(sym, f);
+				arity = ATgetArity(sym);
+				if (arity > 0) {
+					fputc('(', f);
+					for (i = 0; i < arity; i++) {
+						if (i != 0)
+							fputc(',', f);
+						arg = ATgetArgument(appl, i);
+						ATwriteToTextFile(arg, f);
+					}
+					fputc(')', f);
+				}
+			
+				/*}}}  */
+				break;
+			case AT_LIST:
+				/*{{{  Print list */
+				
+				list = (ATermList) t;
+				if(!ATisEmpty(list)) {
+					ATwriteToTextFile(ATgetFirst(list), f);
+					list = ATgetNext(list);
+				}
+				while(!ATisEmpty(list)) {
+					fputc(',', f);				
+					ATwriteToTextFile(ATgetFirst(list), f);
+					list = ATgetNext(list);
+				}
 
-	sym = ATgetSymbol(appl);
-	AT_printSymbol(sym, f);
-	arity = ATgetArity(sym);
-	if (arity > 0)
-	{
-	    fputc('(', f);
-	    for (i = 0; i < arity; i++)
-	    {
-		if (i != 0)
-		    fputc(',', f);
-		arg = ATgetArgument(appl, i);
-		ATwriteToTextFile(arg, f);
-	    }
-	    fputc(')', f);
-	}
-
-	/*}}}  */
-	break;
-    case AT_LIST:
-			/*{{{  Print list */
-
-			list = (ATermList) t;
-			if(!ATisEmpty(list)) {
-				ATwriteToTextFile(ATgetFirst(list), f);
-				list = ATgetNext(list);
-			}
-			while(!ATisEmpty(list)) {
-				fputc(',', f);				
-				ATwriteToTextFile(ATgetFirst(list), f);
-				list = ATgetNext(list);
-			}
-
-			/*}}}  */
-			break;
+				/*}}}  */
+				break;
 			case AT_PLACEHOLDER:
 				/*{{{  Print placeholder */
 
@@ -570,24 +568,23 @@ writeToTextFile(ATerm t, FILE * f)
 	/*}}}  */
 				break;
 
-    case AT_FREE:
-			if(AT_inAnyFreeList(t))
-				ATerror("ATwriteToTextFile: printing free term at %p!\n", t);
-			else
-				ATerror("ATwriteToTextFile: free term %p not in freelist?\n", t);
-			return ATfalse;
+			case AT_FREE:
+				if(AT_inAnyFreeList(t))
+					ATerror("ATwriteToTextFile: printing free term at %p!\n", t);
+				else
+					ATerror("ATwriteToTextFile: free term %p not in freelist?\n", t);
+				return ATfalse;
 
-	case AT_SYMBOL:
-		ATerror("ATwriteToTextFile: not a term but a symbol: %y\n", t);
-		return ATfalse;
+			case AT_SYMBOL:
+				ATerror("ATwriteToTextFile: not a term but a symbol: %y\n", t);
+				return ATfalse;
     }
     trm = (ATerm) AT_getAnnotations(t);
-    if (trm)
-    {
-	fputc('{', f);
-	writeToTextFile(trm, f);
-	fputc('}', f);
-    }
+    if (trm) {
+			fputc('{', f);
+			writeToTextFile(trm, f);
+			fputc('}', f);
+		}
     return ATtrue;
 }
 
@@ -775,9 +772,9 @@ writeToString(ATerm t, char *buf)
 	    list = ATgetNext(list);
 	    while (!ATisEmpty(list))
 	    {
-		*buf++ = ',';
-		buf = topWriteToString(ATgetFirst(list), buf);
-		list = ATgetNext(list);
+				*buf++ = ',';
+				buf = topWriteToString(ATgetFirst(list), buf);
+				list = ATgetNext(list);
 	    }
 	}
 
@@ -2139,6 +2136,57 @@ void AT_assertMarked(ATerm t)
 		case AT_PLACEHOLDER:
 			AT_assertMarked(ATgetPlaceholder((ATermPlaceholder)t));
 			break;
+	}
+}
+
+/*}}}  */
+
+/*{{{  int AT_calcTermDepth(ATerm t) */
+
+/**
+	* Calculate the maximum depth of a term.
+	*/
+
+int AT_calcTermDepth(ATerm t)
+{
+	int arity, i, maxdepth, depth;
+	ATermAppl appl;
+	ATermList list;
+
+  switch(ATgetType(t)) {
+		case AT_INT:
+		case AT_REAL:
+		case AT_BLOB:
+			return 1;
+
+		case AT_APPL:
+			maxdepth = 0;
+			appl = (ATermAppl)t;
+			arity = ATgetArity(ATgetSymbol(appl));
+			for(i=0; i<arity; i++) {
+				depth = AT_calcTermDepth(ATgetArgument(appl, i));
+				if(depth > maxdepth)
+					maxdepth = depth;
+			}
+			return maxdepth+1;
+
+		case AT_LIST:
+			maxdepth = 0;
+			list = (ATermList)t;
+			while(!ATisEmpty(list)) {
+				depth = AT_calcTermDepth(ATgetFirst(list));
+				if(depth > maxdepth)
+					maxdepth = depth;
+				list = ATgetNext(list);
+			}
+			return maxdepth+1;
+
+		case AT_PLACEHOLDER:
+			return 1+AT_calcTermDepth(ATgetPlaceholder((ATermPlaceholder)t));
+
+		default:
+			ATerror("Trying to calculate the depth of a free term.\n");
+			return 0;
 	}
 }
 
