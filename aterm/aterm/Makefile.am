@@ -5,7 +5,7 @@ include ../make_rules
 # The following libraries are compiled to static libraries.
 #
 lib_LIBRARIES		= libATerm.a @ATERM_LIB_GCC@ @ATERM_LIB_CC@ \
-			@ATERM_LIB_DBG@ @ATERM_LIB_PROF@ @ATERM_LIB_SHARED@
+			@ATERM_LIB_DBG@ @ATERM_LIB_PROF@
 EXTRA_LIBRARIES		= libATerm-gcc.a libATerm-cc.a libATerm-dbg.a \
 			libATerm-prof.a
 
