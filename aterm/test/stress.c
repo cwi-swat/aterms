@@ -282,7 +282,7 @@ void testList(void)
   test_assert("list-ops",17, ATlastIndexOf(list[4], 
 					   (ATerm)ATmakeInt(2),0) == -1);
 
-  test_assert("list-ops",18, ATisEqual(ATgetArguments(ATmakeAppl(ATmakeSymbol("f",2,0),
+  test_assert("list-ops",18, ATisEqual(ATgetArguments(ATmakeAppl(ATmakeSymbol("f",2,ATfalse),
 								 (ATerm)ATmakeInt(1),
 								 (ATerm)ATmakeInt(2))),
 				       list[2]));
@@ -577,6 +577,7 @@ void testAnno(void)
 	AT_collect(2);
 	test_assert("anno", 8, ATisEqual(ATgetAnnotation(t[5],ATparse("label")),
 																	 ATparse("unique_anno(42)")));
+	test_assert("anno", 9, ATisEqual(ATremoveAllAnnotations(t[0]), term));
 
   printf("annotation tests ok.\n");
 }

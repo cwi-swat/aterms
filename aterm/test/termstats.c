@@ -63,7 +63,7 @@ int main(int argc, char *argv[])
 	if(dobafsize) {
 		struct stat stats;
 		clock_t bafread, bafwrite;
-		FILE *file = tmpfile();
+		FILE *file = fopen("/tmp/test.baf", "w+");
 		int fd = fileno(file);
 		
 		times(&start);
