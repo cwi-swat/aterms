@@ -1058,7 +1058,7 @@ void minor_sweep_phase_young()
 #ifndef NDEBUG
     if(at_freelist[size]) {
       ATerm data;
-      fprintf(stderr,"minor_sweep_phase_young: ensure empty freelist[%d]\n",size);
+      /*fprintf(stderr,"minor_sweep_phase_young: ensure empty freelist[%d]\n",size);*/
       for(data = at_freelist[size] ; data ; data=data->next) {
         if(!EQUAL_HEADER(data->header,FREE_HEADER)) {
           fprintf(stderr,"data = %x header = %x\n",(unsigned int)data,data->header);

@@ -1,5 +1,8 @@
 $Id$
 
+Wed Feb 11 15:36:36 CET 2004 <kooiker@cwi.nl>
+ * aterm/gc.c: remove verbose print: minor_sweep_phase_young 
+
 Tue Feb 10 15:04:08 CET 2004 <m336@cwi.nl>
  * upgrade auto* to: autoconf 2.59, automake 1.7.9, libtool 1.5.2
 
