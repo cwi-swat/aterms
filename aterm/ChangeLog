@@ -19,6 +19,9 @@
 
 $Id$
 
+2000/01/22 (jong@cwi.nl)
+ * Version 1.4.7b released for testing.
+
 2000/01/16 (jong@cwi.nl)
  * contracted separate isLetter() and isDigit() to Java's isLetterOrDigit()
 

@@ -19,6 +19,15 @@
 
 $Id$
 
+version 1.4.7b
+  released: Tue Jan 23 12:57:14 CET 2001
+  * Java implementation ready for testing third party testing.
+    not yet implemented, c.q. tested: blobs, BAF, annotations
+  * C implementation stable
+
+===
+  old stuff
+
 version 0.22
    released: February 23, 2000
 
