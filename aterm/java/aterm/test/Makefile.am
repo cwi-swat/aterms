@@ -2,6 +2,8 @@ javadir		= ${prefix}/classes/aterm/test
 
 java_JAVA	= Test.java VisitorBenchmark.java
 
+noinst_SCRIPTS	= aterm-test.sh
+
 JAVAROOT	= ${top_builddir}/java/
 
 TESTS		= aterm-test.sh
