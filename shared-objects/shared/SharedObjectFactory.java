@@ -62,6 +62,7 @@ public class SharedObjectFactory {
 
   public SharedObjectFactory(int initialLogSize) {
 
+    
     this.logSize = initialLogSize;
     this.hashMask = hashMask();
     this.table = new Entry[hashSize()];
@@ -70,7 +71,7 @@ public class SharedObjectFactory {
     this.tableSize = new int[hashSize()];
     this.initialCapacity = hashSize();
     this.loadFactor = 3.0f; //0.75f;
-    //this.loadFactor = 0.75f;
+      //this.loadFactor = 0.75f;
 
     this.maxThreshold = (int) (hashSize() * loadFactor);
     this.minThreshold = 0;
@@ -234,13 +235,14 @@ public class SharedObjectFactory {
         emptyEntry++;
       }
 
-      if (tableSize[idx] > 2 * loadFactor) {
-        System.out.println(idx + " --> " + tableSize[idx] + " elements (usedSlot = " + usedSlot + ")");
-          /*
-                  for(Entry e = tab[idx] ; e != null ; e = e.next) {
-                    System.out.println("\t" + e.get());
-                  }
-          */
+      if(false) {
+        if (tableSize[idx] > 2 * loadFactor) {
+          System.out.println(idx + " --> " + tableSize[idx] + " elements (usedSlot = " + usedSlot + ")");
+          
+          for(Entry e = tab[idx] ; e != null ; e = e.next) {
+            System.out.println("\t" + e.get());
+          }
+        }
       }
     }
     //s += "maxThreshold = " + maxThreshold + "\n";
@@ -463,7 +465,7 @@ public class SharedObjectFactory {
     
     c = mix(a,b,c);
 
-    //System.out.println("static doobs_hashFuntionAFun = " + c + ": " + name);
+      //System.out.println("static doobs_hashFuntionAFun = " + c + ": " + s);
     return c;
   }
 
@@ -580,7 +582,6 @@ public class SharedObjectFactory {
         tab = table;
         index = hashKey(hash);
       }
-
     }
 
     foundObj = (SharedObject) prototype.clone();
