@@ -7,11 +7,11 @@ equations
     merge-adts([$Entry*1, $Entry, $Entry*2], [$Entry, $Entry*3]) =
 	merge-adts([$Entry*1, $Entry, $Entry*2], [$Entry*3])
 
-  [equ-merge-adts-double-collission]
+  [equ-merge-adts-double-collision]
     $Entry1 = [$TypeId, $AltId, $Pattern1],
     $Entry2 = [$TypeId, $AltId, $Pattern2],
     $Pattern1 != $Pattern2,
-    merge-adts([$Entry*1, $Entry1, collission($Entry1, $Entry2),
+    merge-adts([$Entry*1, $Entry1, collision($Entry1, $Entry2),
 	$Entry*2], [$Entry*3]) = $ADT
     ===>
     merge-adts([$Entry*1, $Entry1, $Entry*2], [$Entry2, $Entry*3]) = $ADT
