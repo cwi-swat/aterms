@@ -1,4 +1,9 @@
 
+Wed Jan 29 09:44:48 CET 2003 <jong@cwi.nl>
+ * Remove generated binary libraries in test/ from CVS
+ * Add generated binary libraries in test/ to .cvsignore
+ * Remove COPYING from .cvsignore
+
 2003/01/22 (jurgenv@cwi.nl)
  * Release 1.5
  * LGPL license
