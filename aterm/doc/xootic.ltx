@@ -83,7 +83,7 @@
 How do distributed applications exchange tree-like data structures?  We
 introduce the abstract data type of \emph{Annotated Terms} (\emph{ATerms})
 and discuss their design, implementation and application.  A comprehensive
-procedural interface enables creation and manipulation of ATerms in C
+procedural interface enables creation and manipulation of Ate-RMS in C
 or Java.  The ATerm implementation is based on maximal subterm sharing and
 automatic garbage collection.  A binary exchange format for the concise
 representation of ATerms (sharing preserved) allows the fast exchange of
@@ -195,6 +195,12 @@ without first converting it to an application-specific representation.
 % issues (Section~\ref{measurements}).  An overview of applications
 % (Section~\ref{applications}) and an overview of related work and a
 % discussion (Section~\ref{discussion}) conclude this paper.
+
+In this paper, we give an overview of the \ATerm\ data type and its
+operations and discuss implementation issues. We briefly sketch some
+applications and discuss related approaches.  For a full account of
+\ATerms, including detailed performance measurements, we refer
+the reader to ~\cite{BJKO00}.
 
 %}}}
 %{{{ ATerms at a Glance
@@ -341,7 +347,7 @@ an integer is expected as argument and a new integer ATerm is constructed.
 Match term $t$ against
 pattern $p$, and bind subterms that match with placeholders in
 $p$ with the result variables $a_1$ through $a_n$.
-Again, the type of the result variables depend on the placeholders
+Again, the type of the result variables depend on the place holders
 used.
 If the parse of pattern $p$ fails, a message is printed and the program 
 is aborted.
@@ -351,7 +357,7 @@ The function returns {\tt true} when the match succeeds,
 {\tt false} otherwise.
 \end{sloppypar}
 
-\item {\tt Boolean ATisEqual(ATerm $t_1$, ATerm $t_2$)}: 
+\item {\tt ATbool ATisEqual(ATerm $t_1$, ATerm $t_2$)}: 
 Check whether two \ATerms\ are 
 equal. The annotations of $t_1$ and $t_2$ must be equal as well.
 
@@ -367,7 +373,7 @@ take place in two forms: text and binary.
 The text format uses the textual representation discussed
 earlier.  This format is human-readable,
 space-inefficient\footnote{We also support a textual format in which 
-the unnecessary size explosion is using a mechanism for
+the unnecessary size explosion is avoided using a mechanism for
 implicit labeling and referring to terms.  Instead of \texttt{f(g(a),g(a))},
 one could then write \texttt{f(g(a),\#A)}. The first occurrence of
 \texttt{g(a)} is implicitly labeled with ``\texttt{A}'', and the second
@@ -396,11 +402,11 @@ binary representation from file $f$.
 \item {\tt String ATwriteToString(ATerm $t$)}: Return the text representation
 of term $t$ as a string.
 
-\item {\tt Boolean ATwriteToTextFile(ATerm $t$, File $f$)}: Write the text
+\item {\tt ATbool ATwriteToTextFile(ATerm $t$, File $f$)}: Write the text
 representation of term $t$ to file $f$. Returns {\tt true} for
 success and {\tt false} for failure.
 
-\item {\tt Boolean ATwriteToBinaryFile(ATerm $t$, File $f$)}: Write a 
+\item {\tt ATbool ATwriteToBinaryFile(ATerm $t$, File $f$)}: Write a 
 binary representation of term $t$ to file $f$. Returns
 {\tt true} for success, and {\tt false} for failure.
 
@@ -814,7 +820,7 @@ in encoded using the Base64 Alphabet.
 Each term whose unparsed representation would take up more bytes
 than the textual representation of the next available abbreviation
 is assigned such an abbreviation \emph{after} it has been written.
-Subsequent occurences of this term are then written by emitting the
+Subsequent occurrences of this term are then written by emitting the
 abbreviation instead of the term itself. 
 
 %}}}
@@ -921,7 +927,7 @@ The main difference between the two is that XML is more verbose and
 does not provide a simple mechanism to represent sharing, whereas
 \ATerms\ provide the \baf\ format. This may
 not be a problem for Web documents like catalogs and database
-records, but is does present a major obstacle in our case when we need
+records, but it does present a major obstacle in our case when we need
 to exchange huge terms between tools. We are currently considering
 whether some link between \ATerms\ and XML may be advantageous.
 
@@ -960,6 +966,10 @@ interface based on the \emph{make-and-match} paradigm, term
 annotations, maximal subterm sharing, and the concise binary encoding
 of terms that is completely hidden behind high-level read and write
 operations.
+
+For a more detailed account of \ATerms, including performance
+measurements, we refer the reader to ~\cite{BJKO00}.
+
 
 %}}}
 % {{{  \section{Availability}
