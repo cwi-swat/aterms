@@ -1,6 +1,6 @@
 SUBDIRS		= aterm utils test doc
 
-DIST_SUBDIRS	= aterm utils test java doc
+DIST_SUBDIRS	= aterm utils test doc
 EXTRA_DIST	= make_rules LICENSE $(noinst_DATA)
 
 noinst_DATA	= aterm.pkg
