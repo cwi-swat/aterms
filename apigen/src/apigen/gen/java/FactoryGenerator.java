@@ -200,11 +200,27 @@ public class FactoryGenerator extends JavaGenerator {
 					genMakeManyTermList(returnTypeName, methodName, proto);
 					genMakeFixedSizedList(returnTypeName, methodName, listType);
 					genReverseLists(listType, methodName);
-					//					genConcatLists(listType, methodName);
+					genConcatLists(listType, methodName);
 					//					genAppendLists(listType, methodName);
 				}
 			}
 		}
+	}
+
+	private void genConcatLists(ListType type, String makeMethodName) {
+		JavaGenerationParameters params = getJavaGenerationParameters();
+		String className = TypeGenerator.qualifiedClassName(params, type);
+
+		println("  public " + className + " concat(" + className + " arg0, " + className + " arg1) {");
+		println("    " + className + " result = arg1;");
+		println();
+		println("    for (" + className + " list = reverse(arg0); !list.isEmpty(); list = list.getTail()) {");
+		println("      result = " + makeMethodName + "(list.getHead(), result);");
+		println("    }");
+		println();
+		println("    return result;");
+		println("  }");
+		println();
 	}
 
 	private void genReverseLists(ListType type, String makeMethodName) {

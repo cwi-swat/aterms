@@ -54,7 +54,27 @@ public class ListTypeGenerator extends TypeGenerator {
 		genGetEmptyMethod();
 		genInsertMethods();
 		genReverseMethods();
+		genConcatMethods();
 		println("}");
+	}
+
+	private void genConcatMethods() {
+		genConcatMethod();
+		genOverrideConcatMethod();
+	}
+
+	private void genOverrideConcatMethod() {
+		println("  public aterm.ATermList concat(aterm.ATermList peer) {");
+		println("    return concat((" + typeName + ") peer);");
+		println("  }");
+		println();
+	}
+
+	private void genConcatMethod() {
+		println("  public " + typeName + " concat(" + typeName + " peer) {");
+		println("    return " + buildFactoryGetter() + ".concat(this, peer);");
+		println("  }");
+		println();
 	}
 
 	private void genReverseMethods() {

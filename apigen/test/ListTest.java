@@ -147,13 +147,25 @@ public class ListTest {
 		testElementAt();
 		testMakeLists();
 		testReverse();
+		testConcat();
 		testMakeSeparatedLists();
 		testNineSeps();
 	}
 
+	private void testConcat() {
+		Module m[] = new Module[3];
+		for (int i = 0; i < m.length; i++) {
+			m[i] = factory.makeModule_Default("m" + i);
+		}
+
+		Modules list = factory.makeModules(m[0], m[1], m[2]);
+		Modules concatenated = list.concat(list);
+		testAssert(concatenated.getLength() == 2 * list.getLength(), "length concatenated lists");
+		testAssert(concatenated.equals(factory.makeModules(m[0], m[1], m[2], m[0], m[1], m[2])), "concatenated lists");
+	}
+
 	private void testReverse() {
 		Module m[] = new Module[3];
-
 		for (int i = 0; i < m.length; i++) {
 			m[i] = factory.makeModule_Default("m" + i);
 		}
