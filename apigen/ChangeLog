@@ -1,4 +1,9 @@
 2001/02/08 (jong@cwi.nl)
+  * utils/sdf2-to-adt rewritten: uses temporary files and does proper cleanup
+    upon exit. Several flags added, amongst which is -t to specify location
+    of the parsetable used by the script.
+
+2001/02/08 (jong@cwi.nl)
   * Added reflexive ADT to access adt's (creates: libADT.a)
   * sdf directory removed entirely
   * configuration improved (using AC_PACKAGE_REQUIRE)

@@ -1,17 +1,17 @@
 #! /bin/sh
 
-PRG=`basename $0`
-DATE=`date`
-# {{{ autoconf variables
+# {{{ variables
 
-prefix=@prefix@
+     prefix=@prefix@
 exec_prefix=@exec_prefix@
-bindir=@bindir@
-datadir=@datadir@
-SGLRBIN=@SGLRBIN@
-EVALBIN=@EVALBIN@
-ASOURCEBIN=@ASOURCEBIN@
-PKGDATA=${datadir}/@PACKAGE@
+     bindir=@bindir@
+    datadir=@datadir@
+    SGLRBIN=@SGLRBIN@
+    EVALBIN=@EVALBIN@
+ ASOURCEBIN=@ASOURCEBIN@
+    PKGDATA=${datadir}/@PACKAGE@
+        PRG=`basename $0`
+       DATE=`date`
 
 # }}}
 
@@ -19,82 +19,156 @@ PKGDATA=${datadir}/@PACKAGE@
 
 usage() {
 cat << ENDCAT >&2
-Usage: $PRG [--expand-cons | --remove-cons] <SDF2-module>
+Usage: $PRG [options] <SDF2-Module>
 
-  --expand-cons: propagate  cons-annotations into generated term-patterns
-  --remove-cons: do not put cons-annotations into generated term-patterns
+Options:
+  
+  -e | --expand-cons     put cons-annotations in term patterns  [default]
+  -r | --remove-cons     remove cons-annotations from term patterns
+  -m | --module <MOD>    explicitly name the SDF2-module to use
+  -t | --table <TBL>     explicitly name the APIGEN-table to use
+  -v | --verbose         be verbose during generation
+  -s | --skip-cleanup    skip cleanup fase (useful for debugging)
+  -h | --help            display this information
 
 Example: $PRG --remove-cons Booleans.sdf
-
-Default: --expand-cons
 ENDCAT
 }
 
 # }}}
+# {{{  info()
 
-# {{{  Commandline argument parsing
-
-if test $# -lt 1 -o $# -gt 2
-then
-  usage
-  exit 1
-fi
-
-CONSOPT='cons-expand'
-case $1 in
-  --remove-cons)
-    CONSOPT='cons-remove'
-    shift;;
-  --expand-cons)
-    CONSOPT='cons-expand'
-    shift;;
-esac
+info () {
+  if [ $VERBOSE -gt 0 ]; then
+    echo $* >&2
+   fi
+}
 
 # }}}
-# {{{ Variable section
+# {{{  error()
 
-MODULE=$1
-MODULE=`basename $MODULE .sdf`
-MODULE=`basename $MODULE .sdf2`
-SDFFILE="$1"
-ADTFILE="${MODULE}.adt"
+error() {
+  echo $* >&2
+  exit 1
+}
 
-SGLR=${SGLRBIN}/sglr
-ASOURCE=${ASOURCEBIN}/asource
+# }}}
+# {{{  cleanup()
 
+cleanup() {
+  if [ ${CLEANUP} -gt 0 ]; then
+    info "Cleaning up intermediate files"
+    for n in 1 2 3 4 5; do
+      filename=".api_${n}_$$"
+      rm -f ${filename}
+    done
+  else
+    info "No cleanup, here are your intermediate files:"
+    if [ ${VERBOSE} -gt 0 ]; then
+      ls -l .api_[0-5]_$$
+    fi
+  fi
+}
+
+# }}}
+
+# {{{  default settings
+
+# settings/options
+VERBOSE=0
+CLEANUP=1
+CONSOPT='cons-expand'
+
+# data needed
+ APITABLE=${PKGDATA}/Sdf2-to-ADT.trm.tbl
+ADDLABELS=${PKGDATA}/AddLabels.asf
+
+# binaries
+     SGLR=${SGLRBIN}/sglr
+  ASOURCE=${ASOURCEBIN}/asource
 SDF2TOADT=${bindir}/Sdf2-to-ADT
 EVALUATOR=${EVALBIN}/asfe
 APPLYFUNC=${EVALBIN}/apply-function
 
-APITABLE=${PKGDATA}/Sdf2-to-ADT.trm.tbl
-ADDLABELS=${PKGDATA}/AddLabels.asf
-
 # }}}
 
-# {{{ Sanity checks
+# {{{ check command line
 
-if test ! -f ${SDFFILE}
-then
-  echo "could not open sdf-file: ${SDFFILE}" >&2
+if [ $# -eq 0 ]; then
+  usage
   exit 1
 fi
 
 # }}}
+# {{{  handle command line options
 
-# Now here's a candidate for improvement!
+while [ $# -gt 0 ]
+do
+  case $1 in
+    -e | --expand-cons)
+      CONSOPT='cons-expand' ;;
 
-(${SGLR} -1 -p ${APITABLE} -s SDF \
-  | ${APPLYFUNC} -f add-labels -s SDF -m AddLabels \
-  | ${EVALUATOR} -w on -e ${ADDLABELS} \
-  | ${ASOURCE}) \
-  < ${SDFFILE} \
-  > ${SDFFILE}.lbl.tmp
+    -r | --remove-cons)
+      CONSOPT='cons-remove' ;;
 
-(echo "sdf-to-adt(`cat`, $CONSOPT)" \
-  | ${SGLR} -1 -p ${APITABLE} -s ATerm \
-  | ${SDF2TOADT} \
-  | ${ASOURCE}) \
-  < ${SDFFILE}.lbl.tmp \
-  > ${ADTFILE}
+    -m | --module)
+      shift; MODULE=$1 ;;
 
-/bin/rm -f ${SDFFILE}.lbl.tmp
+    -t | --table)
+      shift; APITABLE=$1 ;;
+
+    -v | --VERBOSE)
+      VERBOSE=1 ;;
+
+    -s | --skip-cleanup)
+      CLEANUP=0 ;;
+
+    -h | --help)
+      usage; exit 0 ;;
+
+    *)
+      MODULE=$1
+  esac
+  shift
+done
+
+# }}}
+
+# {{{ Sanity checks and variable setup
+
+[ -f ${APITABLE} ] || error "No such file: ${APITABLE}"
+[ -f ${SDFFILE} ] || error "No such file: ${SDFFILE}"
+
+[ "a${MODULE}" == "a" ] && error "No module given!"
+SDFFILE=${MODULE}
+
+MODULE=`basename $MODULE .sdf`
+MODULE=`basename $MODULE .sdf2`
+
+ADTFILE="${MODULE}.adt"
+
+# }}}
+
+# {{{  Generate API
+
+trap cleanup EXIT
+
+info "Generating ${ADTFILE} from ${SDFFILE}"
+
+info "Parsing ${SDFFILE} using ${APITABLE}"
+${SGLR} -1 -p ${APITABLE} -s SDF -i ${SDFFILE} -o .api_1_$$
+
+info "Adding labels to parsed ${SDFFILE}"
+${APPLYFUNC} -f add-labels -s SDF -m AddLabels -i .api_1_$$ -o .api_2_$$
+${EVALUATOR} -w on -e ${ADDLABELS} -i .api_2_$$ | ${ASOURCE} > .api_3_$$
+
+info "Preparing to call ${SDF2TOADT} with option ${CONSOPT}"
+(echo "sdf-to-adt(`cat`, ${CONSOPT})") < .api_3_$$ > .api_4_$$
+
+info "Parsing"
+${SGLR} -1 -p ${APITABLE} -s ATerm -i .api_4_$$ -o .api_5_$$
+
+info "Invoking ${SDF2TOADT} to generate ${ADTFILE}"
+${SDF2TOADT} < .api_5_$$ | ${ASOURCE} > ${ADTFILE}
+
+# }}}
