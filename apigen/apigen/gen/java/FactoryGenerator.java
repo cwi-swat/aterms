@@ -15,9 +15,9 @@ import apigen.adt.api.types.Separators;
 import apigen.gen.StringConversions;
 
 public class FactoryGenerator extends JavaGenerator {
+	private static final String CLASS_NAME = "Factory";
     private ADT adt;
     private String apiName;
-    private String className;
     private Module module;
     
     public FactoryGenerator(ADT adt, JavaGenerationParameters params, Module module) {
@@ -25,19 +25,14 @@ public class FactoryGenerator extends JavaGenerator {
         this.adt = adt;
         this.apiName = params.getApiExtName(module);
         this.module = module;
-        this.className = className();
-    }
+      }
 
     public String getClassName() {
-        return className;
-    }
-    
-    public String className() {
-        return FactoryGenerator.className(module.getModulename().getName());
+    		return FactoryGenerator.className(module.getModulename().getName());
     }
     
     public static String className(String moduleName) {
-    	return moduleName + "Factory";
+    		return moduleName + CLASS_NAME;
     }
 
     public String qualifiedClassName(JavaGenerationParameters params) {
@@ -45,7 +40,7 @@ public class FactoryGenerator extends JavaGenerator {
     }
 
     public static String qualifiedClassName(
-    		JavaGenerationParameters params,
+    				JavaGenerationParameters params,
 				String moduleName) {
       StringBuffer buf = new StringBuffer();
       String pkg = params.getPackageName();

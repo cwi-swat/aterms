@@ -12,21 +12,20 @@ public class ForwardVisitableGenerator extends JavaGenerator {
 	private static final String CLASS_NAME = "VisitableFwd";
 
 	private ADT adt;
-	private String constructor;
-
+	private String apiName;
     private Module module;
 
 	public ForwardVisitableGenerator(ADT adt, JavaGenerationParameters params, Module module) {
 		super(params);
 		this.adt = adt;
 		this.module = module;
-		this.constructor = AbstractTypeGenerator.qualifiedClassName(params,module.getModulename().getName());
+		this.apiName = params.getApiExtName(module);
 	}
 
 	public String getClassName() {
 		return module.getModulename().getName() + CLASS_NAME;
 	}
-	
+
 	public String getVisitorName() {
 	    return module.getModulename().getName() + VisitorGenerator.CLASS_NAME;
 	}
@@ -34,7 +33,7 @@ public class ForwardVisitableGenerator extends JavaGenerator {
 	protected void generate() {
 		printPackageDecl();
 
-		println("public class " + getClassName() + " extends Fwd implements jjtraveler.reflective.VisitableVisitor {");
+		println("public class " + getClassName() + " extends " + module.getModulename().getName() + "Fwd implements jjtraveler.reflective.VisitableVisitor {");
 		println("public int getChildCount() {");
 		println("    return 1;");
 		println("  }");
@@ -53,7 +52,7 @@ public class ForwardVisitableGenerator extends JavaGenerator {
 		println("    }");
 		println("  }");
 		println();
-		println("  public VisitableFwd(jjtraveler.reflective.VisitableVisitor any) {");
+		println("  public " + getClassName() + "(jjtraveler.reflective.VisitableVisitor any) {");
 		println("    super(any);");
 		println("  }");
 		println("}");
@@ -61,7 +60,7 @@ public class ForwardVisitableGenerator extends JavaGenerator {
 
 
 	public String getPackageName() {
-		return getGenerationParameters().getApiName().toLowerCase();
+		return apiName.toLowerCase();
 	}
 
 	public String getQualifiedClassName() {

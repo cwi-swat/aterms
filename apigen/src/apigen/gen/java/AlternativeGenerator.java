@@ -483,8 +483,7 @@ public class AlternativeGenerator extends JavaGenerator {
     }
 
     private void genAltVisitableInterface(Type type, Alternative alt) {
-   		Set moduleToGen = new HashSet();
-       	moduleToGen = adt.getImportsClosureForModule(type.getModuleName());
+   		Set moduleToGen = adt.getImportsClosureForModule(type.getModuleName());
        	Iterator moduleIt = moduleToGen.iterator();
        	while(moduleIt.hasNext()) {
        	    String moduleName = (String) moduleIt.next();

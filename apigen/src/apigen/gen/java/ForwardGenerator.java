@@ -13,15 +13,14 @@ public class ForwardGenerator extends JavaGenerator {
 	private static final String CLASS_NAME = "Fwd";
 
 	private ADT adt;
-	private String constructor;
-
+	private String apiName;
     private Module module;
 
 	public ForwardGenerator(ADT adt, JavaGenerationParameters params, Module module) {
 		super(params);
 		this.adt = adt;
 		this.module = module;
-		this.constructor = AbstractTypeGenerator.qualifiedClassName(params,module.getModulename().getName());
+		this.apiName = params.getApiExtName(module);
 	}
 
 	public String getClassName() {
@@ -120,7 +119,7 @@ public class ForwardGenerator extends JavaGenerator {
 	}
 
 	public String getPackageName() {
-		return getGenerationParameters().getApiName().toLowerCase();
+		return apiName.toLowerCase();
 	}
 
 	public String getQualifiedClassName() {

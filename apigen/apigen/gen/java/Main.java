@@ -77,7 +77,7 @@ public class Main {
             generateForward(adt, params, l);
             generateForwardVisitable(adt, params, l);
             generateForwardVoid(adt, params, l);
-        }
+        } 
 
         generateTypeClasses(adt, params, l);
         showGeneratedFiles(params, l.getGeneratedFiles());
@@ -116,7 +116,7 @@ public class Main {
     }
 
     private static void generateFactories(
-    		ADT adt,
+    				ADT adt,
 				JavaGenerationParameters params,
 				GenerationObserver observer) {
     	Iterator moduleIterator = adt.moduleIterator();

@@ -11,17 +11,20 @@ import apigen.gen.GenerationParameters;
 
 public class VisitorGenerator extends JavaGenerator {
     public static final String CLASS_NAME = "Visitor";
-    private Module module;
+    
 
     private ADT adt;
-
+    private String apiName;
+    private Module module;
+    
     public VisitorGenerator(ADT adt, JavaGenerationParameters params, Module module) {
         super(params);
         this.adt = adt;
         this.module = module;
+        this.apiName = params.getApiExtName(module);
     }
 
-    public String getClassName() {
+      public String getClassName() {
         return VisitorGenerator.className(module.getModulename().getName());
     }
     
@@ -87,11 +90,7 @@ public class VisitorGenerator extends JavaGenerator {
                 + " arg) throws jjtraveler.VisitFailure;");
     }
 
-    public static String packageName(GenerationParameters params) {
-        return params.getApiName().toLowerCase();
-    }
-
-    public static String qualifiedClassName(
+     public static String qualifiedClassName(
             JavaGenerationParameters params, 
             String moduleName) {
         StringBuffer buf = new StringBuffer();
@@ -108,7 +107,7 @@ public class VisitorGenerator extends JavaGenerator {
     }
 
     public String getPackageName() {
-        return packageName(getGenerationParameters());
+    		return apiName.toLowerCase();
     }
 
     public String getQualifiedClassName() {

@@ -13,21 +13,20 @@ public class ForwardVoidGenerator extends JavaGenerator {
 	private static final String CLASS_NAME = "FwdVoid";
 
 	private ADT adt;
-	private String constructor;
-
+	private String apiName;
     private Module module;
 
 	public ForwardVoidGenerator(ADT adt, JavaGenerationParameters params, Module module) {
 		super(params);
 		this.adt = adt;
 		this.module = module;
-		this.constructor = AbstractTypeGenerator.qualifiedClassName(params,module.getModulename().getName());
+		this.apiName = params.getApiExtName(module);
 	}
 
 	public String getClassName() {
 		return module.getModulename().getName() + CLASS_NAME;
 	}
-	
+
 	public String getVisitorName() {
 	    return module.getModulename().getName() + VisitorGenerator.CLASS_NAME;
 	}
@@ -112,7 +111,7 @@ public class ForwardVoidGenerator extends JavaGenerator {
 	}
 
 	public String getPackageName() {
-		return getGenerationParameters().getApiName().toLowerCase();
+		return apiName.toLowerCase();
 	}
 
 	public String getQualifiedClassName() {
