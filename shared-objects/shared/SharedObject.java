@@ -5,7 +5,7 @@
  * published by the Free Software Foundation; either version 2, or 
  * (at your option) any later version.
  */
-  
+
 package shared;
 
 public interface SharedObject {

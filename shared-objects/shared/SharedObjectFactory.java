@@ -9,6 +9,8 @@
 package shared;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class SharedObjectFactory {
   protected int logSize; // tableSize = 2^logSize
@@ -20,7 +22,12 @@ public class SharedObjectFactory {
   private int minThreshold;
   private int maxThreshold;
   private float loadFactor;
-
+  private int[] usedId;
+  private int maxId;
+  private int minId;
+  private int indexId;
+  private int currentId;
+  
   private int nbCall = 0;
   private int nbFoundReference = 0;
   private int nbFoundExactReference = 0;
@@ -29,6 +36,8 @@ public class SharedObjectFactory {
   private int nbProjectionCollision = 0;
   private int nbHashingCollision = 0;
   private int nbSwapEntry = 0;
+  private int nbIdRegeneration =0;
+
 
   public SharedObjectFactory() {
     this(10);
@@ -49,6 +58,15 @@ public class SharedObjectFactory {
 
     this.maxThreshold = (int) (hashSize() * loadFactor);
     this.minThreshold = 0;
+
+    this.maxId = (1<<31) -1;
+    this.minId = -(1<<31);
+    this.currentId = this.minId;
+      //System.out.println("MAXID="+this.maxId);
+      //System.out.println("MINID="+this.currentId);
+    this.indexId = 0;
+    this.usedId = new int[1];
+    this.usedId[0] = this.maxId;
   }
 
   private int hashSize(int n) {
@@ -173,7 +191,8 @@ public class SharedObjectFactory {
     s += "nbFoundExactReference = " + nbFoundExactReference + "\n";
     s += "#BuiltObject          = " + nbAdd + "\n";
     s += "#RemovedReference     = " + nbRemoved + "\n";
-
+    s += "#ID Regeneration      = " + nbIdRegeneration + "\n";
+    
     double repartition = 0.0;
     double n = (double) (nbAdd - nbRemoved);
     double m = (double) tab.length;
@@ -233,17 +252,17 @@ public class SharedObjectFactory {
 
   public SharedObject build(SharedObject prototype) {
     nbCall++;
-
+    
     SharedObject foundObj;
     Entry tab[] = table;
     int hash = prototype.hashCode();
     int index = hashKey(hash);
-
+    
     for (Entry e = tab[index], prev = null; e != null; e = e.next) {
       foundObj = (SharedObject) e.get();
       if (foundObj == null) {
-        // Found a reference to a garbage collected term
-        // remove it to speed up lookups.
+          // Found a reference to a garbage collected term
+          // remove it to speed up lookups.
         if (prev != null) {
           prev.next = e.next;
           e.clear();
@@ -254,12 +273,12 @@ public class SharedObjectFactory {
         nbRemoved++;
         tableSize[index]--;
       } else {
-        // Found a reference
+          // Found a reference
         nbFoundReference++;
         if (prototype.equivalent(foundObj)) {
           nbFoundExactReference++;
-
-          // swap the found object
+          
+            // swap the found object
           if (prev != null && (e.value - tab[index].value > 5)) {
             nbSwapEntry++;
             prev.next = e.next;
@@ -269,7 +288,7 @@ public class SharedObjectFactory {
           e.value++;
           return foundObj;
         } else {
-          // create or lookup collision
+            // create or lookup collision
           nbProjectionCollision++;
           if (foundObj.hashCode() == hash) {
             nbHashingCollision++;
@@ -278,12 +297,12 @@ public class SharedObjectFactory {
               //System.out.println(" found = " + foundObj);
           }
         }
-
+        
         prev = e;
       }
     }
-
-    // No similar SharedObject found, so build a new one
+    
+      // No similar SharedObject found, so build a new one
     int count = nbAdd - nbRemoved;
     if (false && count < minThreshold) {
       System.out.println("count = " + count + " < tminThreshold = " + minThreshold);
@@ -291,11 +310,11 @@ public class SharedObjectFactory {
       tab = table;
       index = hashKey(hash);
     } else if (count >= maxThreshold) {
-      /*
-       * Very simple strategy:
-       *  - try a cleanup
-       *  - rehash next time
-       */
+        /*
+         * Very simple strategy:
+         *  - try a cleanup
+         *  - rehash next time
+         */
       if (!cleanupDone) {
         cleanupDone = true;
         System.gc();
@@ -307,14 +326,70 @@ public class SharedObjectFactory {
         index = hashKey(hash);
       }
     }
-
+    
     foundObj = prototype.duplicate();
+    if(prototype instanceof SharedObjectWithID) {
+      ((SharedObjectWithID)foundObj).setId(getFreshId());
+    }    
     tab[index] = new Entry(foundObj, tab[index]);
     nbAdd++;
     tableSize[index]++;
     return foundObj;
   }
 
+  private int getFreshId() {
+      //System.out.println("CurrentId: "+currentId+" vs "+usedId[indexId]);
+    if (currentId < usedId[indexId]) {
+        //System.out.println("ID"+currentId);
+      return currentId++; 
+    } else {
+        // We try the next index in the usedId array
+      do {
+        indexId++;
+        if ( indexId < usedId.length ) {
+            //System.out.println("loop CurrentId: "+(currentId+1)+" vs "+usedId[indexId]);
+          if(++currentId < usedId[indexId]) {
+              //System.out.println("ID"+currentId);
+            return currentId++;
+          }
+        } else {
+          regenerate();
+          return getFreshId();
+        }
+      }
+      while(true);
+    }
+  }
+  
+  private void regenerate() {
+    nbIdRegeneration++;
+    System.out.println("Regeneration of fresh unique IDs");
+    ArrayList list = new ArrayList();
+      // Collect all used Ids
+    for (int i=0 ;i<table.length; i++) {
+      for (Entry e = table[i]; e != null; e = e.next) {
+        
+        if (e.get() instanceof SharedObjectWithID)
+          list.add(new Integer(((SharedObjectWithID)e.get()).getId()));
+      }
+    }
+    list.add(new Integer(maxId));
+    int newSize = list.size();
+    if (newSize >= (maxId-minId)) {
+      System.out.println("No more unique identifier");
+      System.exit(1);
+    }
+    usedId = new int[newSize];
+    for (int i=0; i<newSize;i++) {
+      usedId[i] = ((Integer)list.get(i)).intValue();
+    }
+      // Sort array and reinitialize every thing
+    Arrays.sort(usedId);
+    System.out.println("New Array with size "+newSize+" from "+usedId[0]+" to "+usedId[newSize-2]);
+    indexId = 0;
+    currentId=minId;
+  }
+  
   private static class Entry extends WeakReference {
     protected Entry next;
     protected int value = 0;
