@@ -178,7 +178,7 @@ equations
     }
 
 [equ-gen-valid-body-empty]
-  gen-valid-body($TypeId, ) = return ATfalse;
+  gen-valid-body($TypeId, ) = { return ATfalse; }
 
 [equ-gen-valid-body-divide]
   gen-valid-body($TypeId, $Alt*) = $Stat
@@ -258,7 +258,7 @@ equations
   gen-has-impl($TypeId, field [$FieldId, $FieldType, $Loc+]) = $FunDecl { $FunBody }
 
 [equ-gen-has-body-empty]
-  gen-has-body($TypeId, $FieldType, ) = return ATfalse;
+  gen-has-body($TypeId, $FieldType, ) = { return ATfalse; }
 
 [equ-gen-has-body-divide]
   $Loc = loc [ $AltId, $Path ],
@@ -477,7 +477,9 @@ equations
   replace-holes([$Elems1]) = [$Elems2]
 
 [equ-replace-holes-placeholder]
-  replace-holes(<$ATerm>) = <term>
+  replace-placeholder(<$ATerm1>) = $ATerm2
+  ===>
+  replace-holes(<$ATerm1>) = $ATerm2
 
 [equ-replace-holes-terms-empty]
   replace-holes-terms() =
@@ -487,3 +489,9 @@ equations
   replace-holes-terms($ATerms1) = $ATerms2
   ===>
   replace-holes-terms($ATerm1,$ATerms1) = $ATerm2,$ATerms2
+
+[default-replace-placeholder]
+  replace-placeholder(<$ATerm>) = <term>
+
+[equ-replace-placeholder]
+  replace-placeholder(<[$ATerm]>) = <list>

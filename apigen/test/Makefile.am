@@ -7,20 +7,22 @@
 SGLR			= ${SGLRBIN}/sglr
 SDF2TABLE		= ${PGENBIN}/sdf2table
 
-PROGS			= rolotest booltest
+PROGS			= rolotest booltest listtest
 
-TESTS			= rolotest booltest
+TESTS			= rolotest booltest listtest
 
-CLEANFILES		= librolodex.a libBooleans.a booltest.af1 Booleans.trm.tbl \
-			 Booleans.adt ${PROGS}
+CLEANFILES		= librolodex.a libBooleans.a booltest.af1 \
+			Booleans.trm.tbl Booleans.adt ${PROGS}
 
-INCLUDES		= -I${ATERMINC} -Irolodex -IBooleans
+INCLUDES		= -I${ATERMINC} -Irolodex -IBooleans -Ilist
 LDFLAGS			= -L${ATERMLIB}
 LDADD			= -lATerm
 
-EXTRA_DIST		= rolodex.adt rolodex.pro Booleans.sdf Booleans.pro
+EXTRA_DIST		= rolodex.adt rolodex.pro Booleans.sdf Booleans.pro \
+			list.adt list.pro
 
 noinst_PROGRAMS		= ${PROGS}
+
 rolotest_SOURCES	= rolotest.c
 rolotest_LDADD		= librolodex.a ${LDADD}
 rolotest_DEPENDENCIES	= librolodex.a
@@ -29,9 +31,14 @@ booltest_SOURCES	= booltest.c
 booltest_LDADD		= libBooleans.a ${LDADD}
 booltest_DEPENDENCIES	= booltest.af1 libBooleans.a
 
+listtest_SOURCES	= listtest.c
+listtest_LDADD		= liblist.a ${LDADD}
+listtest_DEPENDENCIES	= liblist.a
+
 # Needed for first time making (when no .deps dir exists)
 rolotest.o: rolodex/rolodex.h
 booltest.o: Booleans/Booleans.h
+listtest.o: list/list.h
 
 librolodex.a rolodex/rolodex.h: rolodex.adt rolodex.pro
 	${top_srcdir}/utils/gen-c-api rolodex 1.0
@@ -49,10 +56,16 @@ libBooleans.a Booleans/Booleans.h: Booleans.sdf Booleans.pro
 	${MAKE}
 	@cp Booleans/libBooleans.a .
 
+liblist.a list/list.h: list.adt list.pro
+	${top_srcdir}/utils/gen-c-api list 1.0
+	@cd list; \
+	./reconf; \
+	./configure --with-aterm-inc=${ATERMINC}; \
+	${MAKE}
+	@cp list/liblist.a .
+
 Booleans.trm.tbl: Booleans.sdf.unlabeled
 	${SDF2TABLE} -i $< -o $@
 
 booltest.af1: Booleans.trm.tbl booltest.trm
 	${SGLR} -1 -p Booleans.trm.tbl -i booltest.trm -o $@
-
-

@@ -79,6 +79,7 @@ module Gen-C-API
 
       replace-holes ( ATerm )				-> ATerm
       replace-holes-terms ( ATerms )			-> ATerms
+      replace-placeholder( ATerm )			-> ATerm
 
     variables
       "$ADT"			-> ATerm

@@ -1,3 +1,6 @@
+2000/08/31 (jong@cwi.nl)
+  * Initiated list-support, including tentative testcase.
+
 2000/08/29 (jong@cwi.nl)
   * "===" changed to "===>" in specifications
 

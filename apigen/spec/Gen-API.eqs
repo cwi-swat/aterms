@@ -9,11 +9,11 @@ equations
 [equ-gen-api-divide] 
   gen-api([ $Entry* ]) = api [ $Type* ]
   ===>
-  gen-api([ $Entry, $Entry*]) = api [ gen-type($Entry) $Type*]
+  gen-api([ $Entry, $Entry* ]) = api [ gen-type($Entry) $Type* ]
 
 
 [equ-gen-type]
-  gen-fields($AltId, , $Pattern) = $Field*,
+  gen-fields($AltId, ,$Pattern) = $Field*,
   alt [ $AltId, $Pattern ] = $Alt
   ===>
   gen-type([$TypeId,$AltId,$Pattern]) = type [ $TypeId, $Alt, $Field* ]
@@ -29,8 +29,12 @@ equations
   gen-fields($AltId, $Path, [$Elem*]) = 
 	gen-fields-terms($AltId, $Path -> elem:zero, $Elem*)
 
-[equ-gen-fields-placeholder]
+[equ-gen-fields-placeholder-normal]
   gen-fields($AltId, $Path, <$FieldId($FieldType)>) = 
+	field [ $FieldId, $FieldType, loc [ $AltId, $Path ] ]
+
+[equ-gen-fields-placeholder-list]
+  gen-fields($AltId, $Path, <[$FieldId($FieldType)]>) = 
 	field [ $FieldId, $FieldType, loc [ $AltId, $Path ] ]
 
 [equ-gen-fields-terms-divide]
