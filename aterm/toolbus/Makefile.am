@@ -7,7 +7,7 @@ bin_PROGRAMS           = tifstoc
 
 tifstoc_SOURCES        = tifstoc.c atb-tool.h
 tifstoc_LDADD          = libATB-cc.a \
-                         -L ${top_builddir}/aterm/ -lATerm-cc
+                         -L${top_builddir}/aterm/ -lATerm-cc
 tifstoc_LDFLAGS        = -static
 
 INCLUDES               = -I$(top_srcdir)/aterm
