@@ -13,12 +13,13 @@
 #include "abool.h"
 
 #define	AT_FREE         0
-#define AT_INT          (AT_FREE+1)
-#define AT_REAL         (AT_INT+1)
-#define AT_APPL         (AT_REAL+1)
-#define AT_LIST         (AT_APPL+1)
-#define AT_PLACEHOLDER  (AT_LIST+1)
-#define AT_BLOB         (AT_PLACEHOLDER+1)
+#define AT_INT          1 
+#define AT_REAL         2
+#define AT_APPL         3
+#define AT_ILLEGAL      4   /* The lowest two bits may not be zero! */
+#define AT_LIST         5
+#define AT_PLACEHOLDER  6
+#define AT_BLOB         7
 
 typedef struct ATerm
 {

@@ -17,9 +17,6 @@
 #define SHIFT_LENGTH  8
 #define SHIFT_SYMBOL  SHIFT_LENGTH
 
-#define	MAGIC_NUMBER  0x9AB1FF00		/* Honour Biff */
-#define MAGIC_MASK    0xFFFFFF00		/* Honour Mask */
-
 #define TERM_SIZE_INT         3
 #define TERM_SIZE_REAL        4
 #define TERM_SIZE_BLOB        4

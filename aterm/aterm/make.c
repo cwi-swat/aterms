@@ -284,6 +284,13 @@ makeArguments(ATermAppl appl, char *name, ATbool quoted, va_list *args)
 		sym = ATmakeSymbol(name, ATgetArity(sym), quoted);
 		return ATmakeApplArray(sym, terms);
 	}
+
+	arglist = ATmakeList0();
+	for (cur = 0; cur < nr_args; cur++) {
+		arglist = ATinsert(arglist, AT_vmakeTerm(
+					ATgetArgument(appl, cur), args));
+	}
+
 	term = ATgetArgument(appl, nr_args);
 	if (ATgetType(term) == AT_PLACEHOLDER)
 	{
@@ -297,10 +304,7 @@ makeArguments(ATermAppl appl, char *name, ATbool quoted, va_list *args)
 	if (list == NULL)
 		list = ATmakeList1(AT_vmakeTerm(term, args));
 
-	arglist = ATmakeList0();
-	for (cur = nr_args-1; cur >= 0; --cur)
-		arglist = ATinsert(arglist, AT_vmakeTerm(
-					ATgetArgument(appl, cur), args));
+
 	while (!ATisEmpty(arglist))
 	{
 		list = ATinsert(list, ATgetFirst(arglist));
@@ -309,7 +313,6 @@ makeArguments(ATermAppl appl, char *name, ATbool quoted, va_list *args)
 
 	sym = ATmakeSymbol(name, ATgetLength(list), quoted);
 	return ATmakeApplList(sym, list);
-
 }
 /*}}}  */
 /*{{{  static ATerm makePlaceholder(ATermPlaceholder pat, va_list *args) */
@@ -319,7 +322,6 @@ makePlaceholder(ATermPlaceholder pat, va_list *args)
 {
     ATerm type = ATgetPlaceholder(pat);
 	
-	ATprintf("makePlaceholder: %t\n", pat);
     if (ATgetType(type) == AT_APPL) 
 	{
 	    ATermAppl appl = (ATermAppl) type;

@@ -22,8 +22,4 @@ ATerm AT_setAnnotations(ATerm t, ATerm annos);
 ATerm AT_removeAnnotations(ATerm t);
 ATbool AT_isValidTerm(ATerm term);
 
-extern ATerm at_blocks[MAX_TERM_SIZE][MAX_BLOCKS_PER_SIZE];
-extern int at_nrblocks[MAX_TERM_SIZE];
-extern ATerm at_freelist[MAX_TERM_SIZE];
-
 #endif

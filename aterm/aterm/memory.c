@@ -17,7 +17,10 @@
 /*}}}  */
 /*{{{  defines */
 
-#define BLOCK_SIZE (1<<16)
+/* To change the block size, modify BLOCK_SHIFT only! */
+#define BLOCK_SHIFT      16
+#define BLOCK_SIZE       (1<<BLOCK_SHIFT)
+#define BLOCK_TABLE_SIZE 4099     /* nextprime(4096) */
 
 /* when less than GC_THRESHOLD percent of the terms has been freed by
    the previous garbage collect, a new block will be allocated.
@@ -35,11 +38,30 @@
 
 
 /*}}}  */
+/*{{{  types */
+
+typedef struct block
+{
+	int size;
+  struct block *next_by_size;
+  struct block *next_before;
+  struct block *next_after;
+  header_type data[BLOCK_SIZE];
+} block;
+
+typedef struct block_bucket
+{
+  struct block *first_before;
+  struct block *first_after;
+} block_bucket;
+
+/*}}}  */
 /*{{{  globals */
 
-ATerm at_blocks[MAX_TERM_SIZE][MAX_BLOCKS_PER_SIZE];
-int at_nrblocks[MAX_TERM_SIZE];
-ATerm at_freelist[MAX_TERM_SIZE];
+block *at_blocks[MAX_TERM_SIZE]  = { NULL };
+int at_nrblocks[MAX_TERM_SIZE]   = { 0 };
+ATerm at_freelist[MAX_TERM_SIZE] = { NULL };
+block_bucket block_table[BLOCK_TABLE_SIZE] = { { NULL, NULL } };
 
 static int alloc_since_gc[MAX_TERM_SIZE] = { 0 };
 static int table_size;
@@ -83,6 +105,11 @@ void AT_initMemory(int argc, char *argv[])
 	    table_size);
   }
 
+  for(i=0; i<BLOCK_TABLE_SIZE; i++) {
+	block_table[i].first_before = NULL;
+	block_table[i].first_after  = NULL;
+  }
+
   ATempty = (ATermList)AT_allocate(TERM_SIZE_LIST);
   ATempty->header = EMPTY_HEADER(0);
   ATempty->next = NULL;
@@ -99,21 +126,35 @@ void AT_initMemory(int argc, char *argv[])
 static void allocate_block(int size)
 {
 	int idx, last;
-	int block_nr = at_nrblocks[size];
-	at_blocks[size][block_nr] = (ATerm) calloc(BLOCK_SIZE, sizeof(header_type));
+	block *newblock = (block *)calloc(1, sizeof(block));
+	ATerm data;
 
-	if (at_blocks[size][block_nr] == NULL)
+	if (newblock == NULL)
 		ATerror("allocate_block: out of memory!\n");
+	at_nrblocks[size]++;
+
+	newblock->size = size;
+	newblock->next_by_size = at_blocks[size];
+	at_blocks[size] = newblock;
+	data = (ATerm)newblock->data;
 
 	/* subtract garbage, and 1xsize */
 	last = BLOCK_SIZE - (BLOCK_SIZE % size) - size;
-	at_freelist[size] = at_blocks[size][block_nr];
+	at_freelist[size] = data;
 	for (idx=0; idx < last; idx += size)
 	{
-		((ATerm )(((header_type *)at_blocks[size][block_nr])+idx))->next =
-			(ATerm )(((header_type *)at_blocks[size][block_nr])+idx+size);
+		((ATerm)(((header_type *)data)+idx))->next =
+			(ATerm)(((header_type *)data)+idx+size);
 	}
-	((ATerm )(((header_type *)at_blocks[size][block_nr])+idx))->next = NULL;
+	((ATerm)(((header_type *)data)+idx))->next = NULL;
+
+	/* Place the new block in the block_table */
+	idx = (((int)newblock) >> BLOCK_SHIFT) % BLOCK_TABLE_SIZE;
+	newblock->next_after = block_table[idx].first_after;
+	block_table[idx].first_after = newblock;
+	idx = (idx+1) % BLOCK_TABLE_SIZE;
+	newblock->next_before = block_table[idx].first_before;
+	block_table[idx].first_before = newblock;
 }
 
 /*}}}  */
@@ -274,34 +315,39 @@ ATermAppl ATmakeAppl(Symbol sym, ...)
   ATermAppl appl;
   header_type header;
 
-  unsigned int hnr = (((unsigned int)sym) >> 2);
+  unsigned int hnr;
 
   va_list args;
 
   va_start(args, sym);
 
-  for(i=0; i<arity; i++) {
+  for(i=0; i<arity; i++)
     arg_buffer[i] = va_arg(args, ATerm);
-    hnr = (int)arg_buffer[i] << i;
-  }
-  hnr %= table_size;
   va_end(args);
 
   header = APPL_HEADER(0, arity > MAX_INLINE_ARITY ?
 		MAX_INLINE_ARITY+1 : arity, sym);
+
+	if(arity > MAX_INLINE_ARITY) {
+		arg_buffer_prefix[0] = (ATerm)arity;
+		hnr = hash_number(header, arity+1, arg_buffer_prefix);
+	} else {
+		hnr = hash_number(header, arity, arg_buffer);
+	}
+	cur = hashtable[hnr];
 
   while(cur) {
     if(cur->header == header) {
       appl = (ATermAppl)cur;
       found = ATtrue;
       for(i=0; i<arity; i++) {
-	if(!ATisEqual(ATgetArgument(appl, i), arg_buffer[i])) {
-	  found = ATfalse;
-	  break;
-	}
+				if(!ATisEqual(ATgetArgument(appl, i), arg_buffer[i])) {
+					found = ATfalse;
+					break;
+				}
       }
       if(found)
-	break;
+				break;
     }
     cur = cur->next;
   }
@@ -1207,32 +1253,6 @@ ATerm ATremoveAnnotation(ATerm t, ATerm label)
 }
 
 /*}}}  */
-/*{{{  static ATbool isInBlock(ATerm term, int size) */
-
-/**
- * Determine if a given term is maintained by us.
- */
-
-static ATbool isInBlock(ATerm term, int size)
-{
-	int    nr = at_nrblocks[size];
-	int    lcv;
-	ATerm *blocks = at_blocks[size];
-
-	for (lcv=0; lcv < nr; lcv++)
-	{
-		char *start = (char *) blocks[lcv];
-		int offset  = ((char *)term) - start;
-		if (offset >= 0
-			&& offset < (BLOCK_SIZE * sizeof(header_type))
-			&& offset % (size * sizeof(header_type)) == 0)
-			return ATtrue;
-	}
-
-	return ATfalse;
-}
-
-/*}}}  */
 /*{{{  ATbool ATisValidTerm(ATerm term) */
 
 /**
@@ -1241,61 +1261,59 @@ static ATbool isInBlock(ATerm term, int size)
 
 ATbool AT_isValidTerm(ATerm term)
 {
-	header_type header = term->header;
-	int         type = GET_TYPE(header);
-	Symbol      sym;
+	block *cur;
+	int idx = (((int)term)>>BLOCK_SHIFT) % BLOCK_TABLE_SIZE;
+  header_type header;
+  int         type;
+	ATbool inblock = ATfalse;
 
-	if (type == AT_FREE)
-		return ATfalse;
-	switch (type)
+	for(cur=block_table[idx].first_after; cur; cur=cur->next_after) 
 	{
-		case AT_INT:
-			return ((header & MAGIC_MASK) == MAGIC_NUMBER
-				&& GET_ARITY(header) == 0
-				&& isInBlock(term, TERM_SIZE_INT)) ? ATtrue : ATfalse;
-		break;
-
-		case AT_REAL:
-			return ((header & MAGIC_MASK) == MAGIC_NUMBER
-				&& GET_ARITY(header) == 0
-				&& isInBlock(term, TERM_SIZE_REAL)) ? ATtrue : ATfalse;
-		break;
-
-		case AT_BLOB:
-			return (GET_ARITY(header) == 0
-				&& isInBlock(term, TERM_SIZE_BLOB)) ? ATtrue : ATfalse;
-		break;
-
-		case AT_PLACEHOLDER:
-			return ((header & MAGIC_MASK) == MAGIC_NUMBER
-				&& GET_ARITY(header) == 1
-				&& isInBlock(term, TERM_SIZE_BLOB)) ? ATtrue : ATfalse;
-		break;
-
-		case AT_LIST:
-			if (GET_ARITY(header) == 0)   /* empty list */
-				return (GET_LENGTH(header) == 0) ? ATtrue : ATfalse;
-			else                          /* non-empty list */
-				return (GET_ARITY(header) == 2
-					&& isInBlock(term, TERM_SIZE_LIST)) ? ATtrue : ATfalse;
-		break;
-
-		case AT_APPL:
-			sym = GET_SYMBOL(header);
-			if (AT_isValidSymbol(sym))
-			{
-				int arity = ATgetArity(sym);
-				if (GET_ARITY(header) == arity || 
-						(GET_ARITY(header) == MAX_INLINE_ARITY+1 &&
-						 arity > MAX_INLINE_ARITY))
-					return ATtrue;
-			}
-			return ATfalse;
-		break;
-
-		default:	/* Illegal type cannot be a valid term */
-			return ATfalse;
-		break;
+		int offset  = ((char *)term) - ((char *)cur->data);
+		if (offset >= 0	&& offset < (BLOCK_SIZE * sizeof(header_type))) {
+			inblock = ATtrue;
+			break;
+		}
 	}
+
+	if(!inblock)
+  {
+		for(cur=block_table[idx].first_before; cur; cur=cur->next_before) 
+		{
+			int offset  = ((char *)term) - ((char *)cur->data);
+			if (offset >= 0 && offset < (BLOCK_SIZE * sizeof(header_type))) {
+				inblock = ATtrue;
+				break;
+			}
+		}
+	}
+
+	if(!inblock)
+		return ATfalse;
+
+  header = term->header;
+  type = GET_TYPE(header);
+
+	/* We still have two possibilities for invalid terms:
+     1 - We point to the start of a term that is free
+     2 - We point inside a term
+		 The first case is easy to detect, because the type must be AT_FREE.
+     The second case means that we point to a word which may contain a pointer
+		 to a term, in which case the lowest two bits are zero for which we
+     have defined the type AT_ILLEGAL.
+	*/
+	if (type == AT_FREE || type == AT_ILLEGAL)
+		return ATfalse;
+
+	/* Now the only possibility for an invalid term is that
+     we point inside an int or real term.
+		 To make sure, we check on the alignment.
+	 */
+  if((((header_type)cur->data - (header_type)term) % cur->size) != 0)
+		return ATfalse;
+	
+	return ATtrue;
 }
-/* }}}  */
+
+/*}}}  */
+
