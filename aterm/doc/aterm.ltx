@@ -1035,12 +1035,22 @@ the total number of lines of Casl code is 2506.
 For more details on Casl and the abstract syntax tree representation
 in \aterm\ we refer to Section \ref{casfix}. 
 
-\item[lcc Parse Forest:] a mapping from the internal format used by
-the lcc compiler \cite{} to the \aterm\ format was developed.
-The internal format represents the parse trees of C programs, so XXX.
-Given this mapping a collection of XXX C programs consisting of
-XXX lines of code has been processed.
+\item[lcc Parse Forest:] a new back-end similar to the ASDL back-end
+\cite{Wan97} has been added to the lcc compiler \cite{Han99}.
+This back-end produces a mapping from the internal format used by
+the lcc compiler to the \aterm\ format.
+The internal format represents the equivalent information of an C program
+as the ASDL representation of that C program.
 
+Given this back-end the C sources of the lcc compiler itself are mapped
+to \aterms. 
+The lcc compiler consists of XXX programs, all these programs
+together consist of XXX lines of code.
+
+\item[emacs Parse Forest:] given the \aterm\ back-end of the
+lcc compiler the C sources of emacs \cite{} has been processed as
+well.
+The emacs source consists of XXX programs, and XXX lines of code.
 \end{description}
 
 \noindent Measurements were performed on an ULTRA SPARC-5 (270 MHz) with 256 Mb
@@ -1076,8 +1086,7 @@ Casl Specifications     &    34526 &     11699 &   66.12 &   235655 &  6.83   \\
 lcc Parse Forest        &   360829 &     86589 &   76.00 &  1547713 &  4.29   \\ \hline
 emacs Parse Forest	&  2288928 &    520473 &   77.26 &  9346680 &  4.08   \\ \hline
 \hline
-Real Case Averages      &          &           &   94.82 &          &  1.29   \\ \hline
-with Casl               &          &           &   89.23 &          &  2.40   \\ \hline
+Real Case Averages      &          &           &   85.65 &          &  2.90   \\ \hline
 \end{tabular}
 \caption{Memory usage of \ATerms} \label{measurements-in-memory}
 \end{center}
@@ -1092,8 +1101,14 @@ sharing percentage, the amount of memory (in bytes) used for the storage of
 the term, and the average number of bytes needed per node. As can be seen
 in these figures, at least in our applications sharing \emph{does} make a
 difference. By fully exploiting the redundancies in the input terms, we can
-store a node using on the average 1.3 bytes, and still perform operations
+store a node using on the average 2.9 bytes, and still perform operations
 on them efficiently.  The worst case behaviour is 15 bytes per node.
+The amount of sharing is clearly less high in case of abstract syntax
+trees than in case of parse trees represented as \asfix\ terms.
+The amount of sharing in the abstract syntax trees for CASL is
+even lower, but this is due to the fact that the set of
+CASL specifications is small and each specification tests another
+feature of the CASL language, so not much sharing was to be expected.
 
 \begin{figure}
 \centerline{\epsfig{file=sharing.eps}}
@@ -1282,7 +1297,7 @@ better than that of \baf\ (12\%).
 \begin{tabular}{|l||r|r|r|} \hline
 
                         & \multicolumn{1}{c|}{Memory}   & \multicolumn{1}{c|}{\ascii}   & \multicolumn{1}{c|}{\baf}\\ \hline \hline
-Size per node (bytes)   & 1.3           & 4.4   &  0.2  \\
+Size per node (bytes)   & 2.9           & 4.4   &  0.2  \\
 
 Read node ($\mu$s)      &               & 7.4   & 0.3 \\
 Write node ($\mu$s)     &               & 2.5   & 1.2\\ \hline
@@ -1294,7 +1309,7 @@ Write node ($\mu$s)     &               & 2.5   & 1.2\\ \hline
 \subsection{Summary of Measurements}
 
 These measurements are summarized in Table~\ref{summary}.
-For in-memory storage, 1.3 byte is needed per node.
+For in-memory storage, 2.9 byte is needed per node.
 In the case of \baf, only 0.2 byte (1.6 bit!) is needed to represent a node.
 Also observe that reading \baf\ is an order of magnitude faster than
 reading terms in textual form.
