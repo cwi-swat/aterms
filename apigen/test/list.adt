@@ -4,5 +4,6 @@
     list(Modules2, Module),
     constructor(ModuleList, Modules, list(<modules(Modules)>)),
     separated-list(Separated,Module,[l(<wsl(Layout)>),"sep",l(<wsr(Layout)>)]),
-    constructor(Layout, Default, <string(str)>)
+    constructor(Layout, Default, <string(str)>),
+    separated-list(NineSeps,Module,[1,2,3,4,5,6,7,8,9])
   ]

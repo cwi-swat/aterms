@@ -8,6 +8,7 @@ static void testList()
   Module mod[2];
   Modules mods[3];
   Separated sep[7];
+  NineSeps nine;
 
   Layout l1 = makeLayoutDefault("l1");
   Layout l2 = makeLayoutDefault("l2");
@@ -44,6 +45,45 @@ static void testList()
   assert(isEqualSeparated(reverseSeparated(sep[5]),sep[6])); 
   assert(getSeparatedLength(sep[6]) == 4);
   assert(isEqualSeparated(SeparatedFromTerm(ATparse("[\"m2\",l(\"l2\"),\"sep\",l(\"l1\"),\"m1\",l(\"l2\"),\"sep\",l(\"l1\"),\"m2\",l(\"l2\"),\"sep\",l(\"l1\"),\"m1\"]")),sep[6]));
+
+  /* Someone did not trust the proof of the length calculation
+   * with separated lists. These tests should trigger any 
+   * possible bug in it.
+   */
+  nine = makeNineSepsSingle(m);
+  assert(getNineSepsLength(nine) == 1); 
+  nine = concatNineSeps(nine,nine);  
+  assert(getNineSepsLength(nine) == 2); 
+  nine = concatNineSeps(nine,nine); 
+  assert(getNineSepsLength(nine) == 4); 
+  nine = makeNineSepsMany(m,nine);
+  assert(getNineSepsLength(nine) == 5); 
+  nine = concatNineSeps(nine,nine); 
+  assert(getNineSepsLength(nine) == 10); 
+  nine = concatNineSeps(nine,nine); 
+  assert(getNineSepsLength(nine) == 20); 
+  nine = concatNineSeps(nine,nine); 
+  assert(getNineSepsLength(nine) == 40); 
+  nine = makeNineSepsMany(m,nine);
+  assert(getNineSepsLength(nine) == 41); 
+  nine = makeNineSepsMany(m,nine);
+  assert(getNineSepsLength(nine) == 42); 
+  nine = makeNineSepsMany(m,nine);
+  assert(getNineSepsLength(nine) == 43); 
+  nine = makeNineSepsMany(m,nine);
+  assert(getNineSepsLength(nine) == 44); 
+  nine = makeNineSepsMany(m,nine);
+  assert(getNineSepsLength(nine) == 45); 
+  nine = makeNineSepsMany(m,nine);
+  assert(getNineSepsLength(nine) == 46); 
+  nine = makeNineSepsMany(m,nine);
+  assert(getNineSepsLength(nine) == 47); 
+  nine = makeNineSepsMany(m,nine);
+  assert(getNineSepsLength(nine) == 48); 
+  nine = makeNineSepsMany(m,nine);
+  assert(getNineSepsLength(nine) == 49); 
+  nine = makeNineSepsMany(m,nine);
+  assert(getNineSepsLength(nine) == 50); 
 }
 
 
