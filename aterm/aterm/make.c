@@ -52,8 +52,7 @@ static at_entry pattern_table[TABLE_SIZE];
 
 extern char *strdup(const char *s);
 static ATerm makePlaceholder(ATermPlaceholder pat, va_list *args);
-static ATermAppl makeArguments(ATermAppl appl, char *name, ATbool quoted,
-							   va_list *args);
+static ATermAppl makeArguments(ATermAppl appl, Symbol name, va_list *args);
 static ATerm AT_vmakeTerm(ATerm pat, va_list *args);
 
 static ATbool AT_vmatchTerm(ATerm t, ATerm pat, va_list *args);
@@ -191,8 +190,7 @@ AT_vmakeTerm(ATerm pat, va_list *args)
 		case AT_APPL:
 			appl = (ATermAppl) pat;
 			sym = ATgetSymbol(appl);
-			return (ATerm) makeArguments(appl, ATgetName(sym), ATisQuoted(sym),
-										 args);
+			return (ATerm) makeArguments(appl, sym, args);
 		break;
 
 		case AT_LIST:
@@ -248,9 +246,10 @@ AT_vmakeTerm(ATerm pat, va_list *args)
 }
 
 /*}}}  */
-/*{{{  static ATermAppl makeArguments(ATermAppl appl, name, quoted, *args) */
+/*{{{  static ATermAppl makeArguments(ATermAppl appl, name, *args) */
+
 static ATermAppl
-makeArguments(ATermAppl appl, char *name, ATbool quoted, va_list *args)
+makeArguments(ATermAppl appl, Symbol name, va_list *args)
 {
 	Symbol sym = ATgetSymbol(appl);
 	int nr_args = ATgetArity(sym);
@@ -261,47 +260,51 @@ makeArguments(ATermAppl appl, char *name, ATbool quoted, va_list *args)
 	ATermList list = NULL;
 	ATermList arglist = NULL;
 
-	if(nr_args == 0)
-    {
-	    sym = ATmakeSymbol(name, 0, quoted);
+	if(nr_args == 0) {
+		if(ATgetArity(name) == 0)
+			sym = name;
+		else
+			sym = ATmakeSymbol(ATgetName(name), 0, ATisQuoted(name));
 		return ATmakeAppl0(sym);
-	} else if (nr_args-- <= NR_INLINE_TERMS)
-	{
+	} else if (nr_args-- <= NR_INLINE_TERMS) {
 		for (cur = 0; cur < nr_args; cur++)
 			terms[cur] = AT_vmakeTerm(ATgetArgument(appl, cur), args);
 		terms[nr_args] = ATgetArgument(appl, nr_args);
-		if (ATgetType(terms[nr_args]) == AT_PLACEHOLDER)
-		{
+		if (ATgetType(terms[nr_args]) == AT_PLACEHOLDER) {
 			type = ATgetPlaceholder((ATermPlaceholder)terms[nr_args]);
 			if (ATgetType(type) == AT_APPL &&
-				ATgetSymbol((ATermAppl)type) == symbol_list)
-			{
+					ATgetSymbol((ATermAppl)type) == symbol_list) {
 				list = va_arg(*args, ATermList);
 				for (--cur; cur >= 0; cur--)
 					list = ATinsert(list, terms[cur]);
-				sym = ATmakeSymbol(name, ATgetLength(list), quoted);
+				if(ATgetArity(name) == ATgetLength(list))
+					sym = name;
+				else
+					sym = ATmakeSymbol(ATgetName(name), ATgetLength(list), 
+														 ATisQuoted(name));
 				return ATmakeApplList(sym, list);
 			}
 		}
 		terms[nr_args] = AT_vmakeTerm(terms[nr_args], args);
-		sym = ATmakeSymbol(name, ATgetArity(sym), quoted);
+		if(ATgetArity(name) == ATgetArity(sym))
+			sym = name;
+		else
+			sym = ATmakeSymbol(ATgetName(name), ATgetArity(sym), ATisQuoted(name));
 		return ATmakeApplArray(sym, terms);
 	}
-
+	
 	arglist = ATmakeList0();
-	for (cur = 0; cur < nr_args; cur++) {
-		arglist = ATinsert(arglist, AT_vmakeTerm(
-					ATgetArgument(appl, cur), args));
-	}
+	for (cur = 0; cur < nr_args; cur++)
+		arglist = ATinsert(arglist, AT_vmakeTerm(ATgetArgument(appl,cur), args));
 
 	term = ATgetArgument(appl, nr_args);
 	if (ATgetType(term) == AT_PLACEHOLDER)
 	{
 		type = ATgetPlaceholder((ATermPlaceholder)term);
 		if (ATgetType(type) == AT_APPL &&
-			ATgetSymbol((ATermAppl)type) == symbol_list)
-		{
-			list = va_arg(*args, ATermList);
+				ATgetSymbol((ATermAppl)type) == symbol_list)
+			{
+				list = va_arg(*args, ATermList);
 		}
 	}
 	if (list == NULL)
@@ -314,9 +317,13 @@ makeArguments(ATermAppl appl, char *name, ATbool quoted, va_list *args)
 		arglist = ATgetNext(arglist);
 	}
 
-	sym = ATmakeSymbol(name, ATgetLength(list), quoted);
+	if(ATgetArity(name) == ATgetLength(list))
+		sym = name;
+	else
+		sym = ATmakeSymbol(ATgetName(name), ATgetLength(list), ATisQuoted(name));
 	return ATmakeApplList(sym, list);
 }
+
 /*}}}  */
 /*{{{  static ATerm makePlaceholder(ATermPlaceholder pat, va_list *args) */
 
@@ -345,16 +352,15 @@ makePlaceholder(ATermPlaceholder pat, va_list *args)
 		  ATbool makeAppl = ATfalse, quoted = ATfalse;
 		  char *name = ATgetName(sym);
 		  
-
 		  if(streq(name, "appl") || streq(name, "id"))
-			makeAppl = ATtrue;
+				makeAppl = ATtrue;
 		  else if(streq(name, "str")) {
-			makeAppl = ATtrue;
-			quoted = ATtrue;
+				makeAppl = ATtrue;
+				quoted = ATtrue;
 		  }
 		  if(makeAppl) {
-			char *name = va_arg(*args, char *);
-			return (ATerm) makeArguments(appl, name, quoted, args);
+				sym = ATmakeSymbol(va_arg(*args, char *), 0, quoted);
+				return (ATerm) makeArguments(appl, sym, args);
 		  }
 		}
 	}

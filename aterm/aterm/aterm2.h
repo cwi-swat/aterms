@@ -175,14 +175,25 @@ void    ATregisterBlobDestructor(ATbool (*destructor)(ATermBlob));
 void    ATunregisterBlobDestructor(ATbool (*destructor)(ATermBlob));
 
 /* The Symbol type */
-Symbol  ATmakeSymbol(char *name, int arity, ATbool quoted);
-char   *ATgetName(Symbol sym);
-/*int     ATgetArity(Symbol sym);*/
+typedef struct SymEntry
+{
+  header_type header;
+  struct SymEntry *next;
+  Symbol  id;
+  char   *name;
+} *SymEntry;
 
 extern ATerm *lookup_table_alias;
-#define ATgetArity(sym) GET_LENGTH(lookup_table_alias[(sym)]->header)
+extern SymEntry *lookup_table;
 
-ATbool  ATisQuoted(Symbol sym);
+Symbol  ATmakeSymbol(char *name, int arity, ATbool quoted);
+/*char   *ATgetName(Symbol sym);*/
+#define ATgetName(sym) (lookup_table[(sym)]->name)
+/*int     ATgetArity(Symbol sym);*/
+#define ATgetArity(sym) GET_LENGTH(lookup_table_alias[(sym)]->header)
+/*ATbool  ATisQuoted(Symbol sym);*/
+#define ATisQuoted(sym) IS_QUOTED(lookup_table_alias[(sym)]->header)
+
 void    ATprotectSymbol(Symbol sym);
 void    ATunprotectSymbol(Symbol sym);
 

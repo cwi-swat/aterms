@@ -28,17 +28,6 @@
 #define SYM_IS_FREE(sym)          (((sym) & 1) == 1)
 
 /*}}}  */
-/*{{{  types */
-
-typedef struct SymEntry
-{
-  header_type header;
-  struct SymEntry *next;
-  Symbol  id;
-  char   *name;
-} *SymEntry;
-
-/*}}}  */
 /*{{{  globals */
 
 char symbol_id[] = "$Id$";
@@ -179,18 +168,6 @@ Symbol ATmakeSymbol(char *name, int arity, ATbool quoted)
 }
 
 /*}}}  */
-/*{{{  char *ATgetName(Symbol sym) */
-
-/**
-  * Retrieve the name of a symbol
-  */
-
-char *ATgetName(Symbol sym)
-{
-  return lookup_table[sym]->name;
-}
-
-/*}}}  */
 
 #if 0
 Replaced by ATgetArity macro
@@ -208,18 +185,6 @@ int ATgetArity(Symbol sym)
 /*}}}  */
 #endif
 
-/*{{{  ATbool ATisQuoted(Symbol sym) */
-
-/**
-  * Check if a symbol needs quotes.
-  */
-
-ATbool ATisQuoted(Symbol sym)
-{
-  return IS_QUOTED(lookup_table[sym]->header);
-}
-
-/*}}}  */
 /*{{{  ATbool AT_isValidSymbol(Symbol sym) */
 
 /**

@@ -254,7 +254,7 @@ void AT_cleanupGC()
 							register_symbols[IDX_MIN], 
 							register_symbols[IDX_TOTAL]/gc_count,
 							register_symbols[IDX_MAX]);
-			fprintf(stderr, "\n  reclaimation percentage: %d/%d/%d\n",
+			fprintf(stderr, "\n  reclamation percentage: %d/%d/%d\n",
 							reclaim_perc[IDX_MIN],
 							reclaim_perc[IDX_TOTAL]/gc_count,
 							reclaim_perc[IDX_MAX]);
