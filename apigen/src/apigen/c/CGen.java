@@ -26,6 +26,12 @@ public class CGen
     "=Equals",	    "#Hash",
     "/Slash",	    "\\Backslash",
   };
+  private final static String[][] RESERVED_TYPES =
+  { { "int",  "int"    },
+    { "real", "double" },
+    { "str",  "char *" }
+  };
+
   public static boolean verbose = false;
 
   private ATermFactory factory;
@@ -41,6 +47,7 @@ public class CGen
   private PrintStream header;
 
   private Map specialChars;
+  private Map reservedTypes;
   private char last_special_char;
   private String last_special_char_word;
 
@@ -128,10 +135,15 @@ public class CGen
     this.prefix    = prefix;
     this.prologue  = prologue;
     specialChars   = new HashMap();
+    reservedTypes  = new HashMap();
 
     for (int i=0; i<SPECIAL_CHAR_WORDS.length; i++) {
       String word = SPECIAL_CHAR_WORDS[i];
       specialChars.put(new Character(word.charAt(0)), word.substring(1));
+    }
+
+    for (int i=0; i<RESERVED_TYPES.length; i++) {
+      reservedTypes.put(RESERVED_TYPES[i][0], RESERVED_TYPES[i][1]);
     }
 
     factory = new PureFactory();
@@ -587,14 +599,17 @@ public class CGen
 		     + capitalize(buildId(loc.getAltId())) + "(arg)) {");
       source.print("    return (" + field_type_name + ")");
       Iterator steps = loc.stepIterator();
+      String[] type_getter = genReservedTypeGetter(field.getType());
+      source.print(type_getter[0]);
       genGetterSteps(steps, "arg");
+      source.print(type_getter[1]);
       source.println(";");
       source.println("  }");
     }
     source.println();
     source.println("  ATabort(\"" + type_id + " has no " + fieldId
 		   + ": %t\\n\", arg);");
-    source.println("  return NULL;");
+    source.println("  return (" + field_type_name + ")NULL;");
 
     source.println("}");
     printFoldClose(source);
@@ -671,14 +686,16 @@ public class CGen
 		     + capitalize(buildId(loc.getAltId())) + "(arg)) {");
       source.print("    return (" + type_name + ")");
       Iterator steps = loc.stepIterator();
-      genSetterSteps(steps, new LinkedList(), buildId(field.getId()));
+      String arg = genReservedTypeSetterArg(field.getType(),
+					    buildId(field.getId()));
+      genSetterSteps(steps, new LinkedList(), arg);
       source.println(";");
       source.println("  }");
     }
     source.println();
     source.println("  ATabort(\"" + type_id + " has no "
 		   + capitalize(field_id) + ": %t\\n\", arg);");
-    source.println("  return NULL;");
+    source.println("  return (" + type_name + ")NULL;");
 
     source.println("}");
     printFoldClose(source);
@@ -741,7 +758,7 @@ public class CGen
 
   private String buildTypeName(Type type)
   {
-    return prefix + buildId(type.getId());
+    return buildTypeName(type.getId());
   }
 
   //}}}
@@ -749,7 +766,13 @@ public class CGen
 
   private String buildTypeName(String typeId)
   {
-    return prefix + buildId(typeId);
+    String nativeType = (String)reservedTypes.get(typeId);
+
+    if (nativeType != null) {
+      return nativeType;
+    } else {
+      return prefix + buildId(typeId);
+    }
   }
 
   //}}}
@@ -871,13 +894,67 @@ public class CGen
 	  ATerm ph = ((ATermPlaceholder)t).getPlaceholder();
 	  if (ph.getType() == ATerm.LIST) {
 	    return factory.parse("<list>");
-	  } else {
-	    return factory.parse("<term>");
+	  } else { 
+	    ATerm type = ((ATermAppl)ph).getArgument(0);
+	    if (isReservedType(type)) {
+	      return factory.makePlaceholder(type);
+	    } else {
+	      return factory.parse("<term>");
+	    }
 	  }
 	}
 
       default:
 	return t;
+    }
+  }
+
+  //}}}
+  //{{{ private boolean isReservedType(ATerm t)
+
+  private boolean isReservedType(ATerm t)
+  {
+    return reservedTypes.containsKey(t.toString());
+  }
+
+  //}}}
+  //{{{ private String[] genReservedTypeGetter(String type)
+
+  private String[] genReservedTypeGetter(String type)
+  {
+    String pre = "";
+    String post = "";
+
+    if (type.equals("int")) {
+      pre = "ATgetInt((ATermInt)";
+      post = ")";
+    }
+    else if (type.equals("real")) {
+      pre = "ATgetReal((ATermReal)";
+      post = ")";
+    }
+    else if (type.equals("str")) {
+      pre = "ATgetName(ATgetAFun((ATermAppl)";
+      post = "))";
+    }
+      
+    String[] result = { pre, post };
+    return result;
+  }
+
+  //}}}
+  //{{{ private String genReservedTypeSetterArg(String type, String id)
+
+  private String genReservedTypeSetterArg(String type, String id)
+  {
+    if (type.equals("int")) {
+      return "ATmakeInt(" + id + ")";
+    } else if (type.equals("real")) {
+      return "ATmakeReal(" + id + ")";
+    } else if (type.equals("str")) {
+      return "ATmakeAppl0(ATmakeAFun(" + id + ", 0, ATtrue))";
+    } else {
+      return id;
     }
   }
 

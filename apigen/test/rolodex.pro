@@ -1,1 +1,0 @@
-typedef ATerm String;

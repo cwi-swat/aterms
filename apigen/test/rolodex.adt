@@ -1,6 +1,6 @@
 [
-  [ Rolodex, Home, home([<name(String)>,<phone(PhoneNumber)>]) ],
-  [ Rolodex, Work, work([<company(String)>,<phone(PhoneNumber)>]) ],
-  [ PhoneNumber, Voice, voice(<voice(String)>)],
-  [ PhoneNumber, Fax,   fax(<fax(String)>)]
+  [ Rolodex, Home, home([<name(str)>,<phone(PhoneNumber)>]) ],
+  [ Rolodex, Work, work([<company(str)>,<phone(PhoneNumber)>]) ],
+  [ PhoneNumber, Voice, voice(<voice(int)>)],
+  [ PhoneNumber, Fax,   fax(<fax(int)>)]
 ]

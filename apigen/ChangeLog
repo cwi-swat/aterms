@@ -1,3 +1,6 @@
+2001/02/15 ({jong,olivierp}@cwi.nl)
+  * Added support for basic types: int (int), real (double), str (char *)
+
 2001/02/15 (jong@cwi.nl)
   * Version 0.7.1
   * --verbose in sdf2-to-adt was called --VERBOSE (fixed)
