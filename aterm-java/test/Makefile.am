@@ -16,7 +16,7 @@ TESTS = $(foreach t, ${java_JAVA}, $t.test)
 %.java.test : %.java Makefile
 	@(echo '#! /bin/sh';\
 	 echo 'set -e';\
-	 echo 'export CLASSPATH=\"${top_builddir}:..:${SHARED_OBJECTS}:${CLASSPATH}\"';\
+	 echo 'export CLASSPATH="${top_builddir}:..:${SHARED_OBJECTS}:${CLASSPATH}"';\
 	 echo "java test/$* ${srcdir}";\
 	 echo "rm $*.java.test";\
 	) > $@ && chmod +x $@
