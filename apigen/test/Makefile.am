@@ -39,7 +39,8 @@ ListTestAPI =  ListFactory.java ListConstructor.java ModulesImpl.java \
                Modules_ListImpl.java Modules_List.java Modules_BodyImpl.java \
                Modules_Body.java Modules.java ModuleListImpl.java \
 	       ModuleList_ModulesImpl.java ModuleList_Modules.java \
-	       ModuleList.java
+	       ModuleList.java Module.java ModuleImpl.java \
+	       Module_DefaultImpl.java Module_Default.java
 
 check_JAVA = ${PeanoTestAPI} PeanoTest.java \
 	     ${ListTestAPI} ListTest.java
