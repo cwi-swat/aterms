@@ -87,6 +87,10 @@ class ATermListImpl
           return false;
         }
       }
+      
+      if (l == PureFactory.empty) {
+        return false;
+      }
 
       List submatches = first.match(l.getFirst());
       if (submatches == null) {
