@@ -12,7 +12,7 @@ ADT_TO_C		= ${top_builddir}/utils/adt-to-c
 SDF2_TO_ADT		= ${top_builddir}/utils/sdf2-to-adt
 GENERATOR		= ${top_builddir}/spec/sdf2-to-adt/Sdf2-to-ADT
 PARSETABLE		= ${top_srcdir}/spec/Sdf2-to-ADT.trm.tbl 
-LABEL_EQS		= ${top_srcdir}/spec/add-labels/AddLabels.asf 
+LABEL_EQS		= ${top_srcdir}/spec/add-labels/AddLabels.eqs 
 
 TESTS			= rolotest booltest listtest
 noinst_PROGRAMS		= ${TESTS}

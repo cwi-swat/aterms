@@ -1,4 +1,7 @@
 2001/05/07 (jong@cwi.nl)
+ * version 0.8.4
+ * rehabilitated "test" directory (got accidentally deleted)
+ * LABEL_EQS in test now uses spec/add-labels/AddLabels.asf
  * Renamed AddLabels to new-style naming scheme
  * added meta.conf to make AddLabels.{sdf,asf} meta-env readable
 
