@@ -65,7 +65,7 @@ public class ListTypeImplGenerator extends TypeImplGenerator {
 	}
 	
 	private void genReverseMethod() {
-		String className = ListTypeGenerator.className(type);
+		String className = TypeGenerator.className(type);
 		
 	    println("  public aterm.ATermList reverse() {");
 		println("  	 " + typeName + " cur = this;");
@@ -79,7 +79,7 @@ public class ListTypeImplGenerator extends TypeImplGenerator {
 	}
 
 	private void genInsertMethod() {
-		String className = ListTypeGenerator.className(type);
+		String className = TypeGenerator.className(type);
 		println("  public aterm.ATermList insert(aterm.ATerm head) {");
 		println("    return (aterm.ATermList)" + staticFactoryGetter() + ".make" + className + "((" + elementTypeName + ") head, (" + className + ") this);");
 		println("  }");
@@ -90,7 +90,7 @@ public class ListTypeImplGenerator extends TypeImplGenerator {
 	}
 	
 	private void genGetEmptyMethod() {
-			String className = ListTypeGenerator.className(type);
+			String className = TypeGenerator.className(type);
 			println("  public aterm.ATermList getEmpty() {");
 			println("    return (aterm.ATermList)" + staticFactoryGetter() + ".make" + className + "();");
 			println("  }");
@@ -126,7 +126,7 @@ public class ListTypeImplGenerator extends TypeImplGenerator {
 	}
 
 	private void genDuplicateMethod() {
-		String className = ListTypeGenerator.className(type);
+		String className = TypeGenerator.className(type);
 		println("  public shared.SharedObject duplicate() {");
 		println("	 " + className + " clone = new " + className + "();");
 		println("	 clone.init(hashCode(), getAnnotations(), getFirst(), getNext());");
@@ -135,7 +135,7 @@ public class ListTypeImplGenerator extends TypeImplGenerator {
 	}
 
 	private void genEquivalentMethod() {
-		String className = ListTypeGenerator.className(type);
+		String className = TypeGenerator.className(type);
 		
 		println("  public boolean equivalent(shared.SharedObject peer) {");
 		println("	 if (peer instanceof " + className + ") {");
@@ -169,7 +169,7 @@ public class ListTypeImplGenerator extends TypeImplGenerator {
 	}
 
 	private void genGetTail() {
-		String className = ListTypeGenerator.className(type);
+		String className = TypeGenerator.className(type);
 		
 		println("  public " + className + " getTail() {");
 		println("    return (" + className + ") getNext();");
@@ -183,7 +183,7 @@ public class ListTypeImplGenerator extends TypeImplGenerator {
 	}
 
 	private void genIsAlternativeMethods() {
-		String className = ListTypeGenerator.className(type);
+		String className = TypeGenerator.className(type);
 		println("  public boolean isEmpty() {");
 		println("    return this == " + FactoryGenerator.className(apiName) + ".empty" + className + ";");
 		println("  }");
@@ -194,7 +194,7 @@ public class ListTypeImplGenerator extends TypeImplGenerator {
 
 	private void genFromTerm() {
 		String get_factory = staticFactoryGetter();
-		String className = ListTypeGenerator.className(type);
+		String className = TypeGenerator.className(type);
 
 		println("  public static " + className + " fromTerm(aterm.ATerm trm)");
 		println("  {");
@@ -222,7 +222,7 @@ public class ListTypeImplGenerator extends TypeImplGenerator {
 
 	private void genToTerm() {
 		String get_factory = staticFactoryGetter();
-		String className = ListTypeGenerator.className(type);
+		String className = TypeGenerator.className(type);
 
 		println("  public aterm.ATerm toTerm()");
 		println("  {");

@@ -50,7 +50,7 @@ public class ForwardGenerator extends JavaGenerator {
 	}
 
 	private void genListVisit(Type type) {
-		String className = ListTypeGenerator.className(type);
+		String className = TypeGenerator.className(type);
 		String classImplName = ListTypeImplGenerator.className(type);
 		genVisitMethod(className, classImplName);
 	}

@@ -82,7 +82,7 @@ public class FactoryGenerator extends JavaGenerator {
 		while (types.hasNext()) {
 			Type type = (Type) types.next();
 			if (type instanceof ListType) {
-				String className = ListTypeGenerator.className(type);
+				String className = TypeGenerator.className(type);
 				println("  static protected " + className + " empty" + className + ";");
 			}
 		}
@@ -95,7 +95,7 @@ public class FactoryGenerator extends JavaGenerator {
 		while (types.hasNext()) {
 			Type type = (Type) types.next();
 			if (type instanceof ListType) {
-				String className = ListTypeGenerator.className(type);
+				String className = TypeGenerator.className(type);
 				String elementClassName = TypeGenerator.className(((ListType) type).getElementType());
 				String empty = "empty" + className;
 				
@@ -197,7 +197,7 @@ public class FactoryGenerator extends JavaGenerator {
 
 			if (type instanceof ListType) {
 				String emptyHashCode = new Integer(42 * (2 + listTypesCount)).toString();
-				String className = ListTypeGenerator.className(type);
+				String className = TypeGenerator.className(type);
 				println("    proto" + className + " = new " + className + "();");
 				println("    proto" + className + ".init(" + emptyHashCode + ", null, null, null);");
 				println("    empty" + className + " = (" + className + ") build(proto" + className + ");");

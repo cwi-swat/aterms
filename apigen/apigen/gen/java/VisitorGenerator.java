@@ -60,7 +60,7 @@ public class VisitorGenerator extends JavaGenerator {
 	}
 
 	private void genListVisit(Type type) {
-		String className = ListTypeGenerator.className(type);
+		String className = TypeGenerator.className(type);
 		String classImplName = ListTypeImplGenerator.className(type);
 		genVisitDecl(classImplName, className);
 	}
