@@ -118,7 +118,7 @@ public class AlternativeImplGenerator extends JavaGenerator {
 		  println("  protected int hashFunction() {");
 		  println("    int c = " + initval + " + (getAnnotations().hashCode()<<8);");
 		  println("    int a = " + goldenratio + ";");
-		  println("    int b = " + goldenratio + ";");
+		  println("    int b = (getAFun().hashCode()<<8);");
       
           /* This piece of code generates a number of shifts following the 
            * algorithm of the Doobs hash functions (Google: Doobs), you can find 
