@@ -118,6 +118,7 @@ testSymbol(void)
 void
 testOther(void)
 {
+	ATerm t[4];
 	ATermInt  aint[8];
 	ATermReal real[8];
 	ATermPlaceholder ph[8];
@@ -146,6 +147,13 @@ testOther(void)
 	fprintf(stdout, "\n");
 
 	test_assert("text-size", 1,  AT_calcTextSize(ATparse("[]")) == 2);
+
+	t[0] = ATparse("f(1,[2,3],<[a,b]>,1.243,g(h(i(a,a),a),a,a))");
+	t[1] = ATparse("1");
+	t[2] = ATparse("f(1,2)");
+	ATprintf("ATinternalSize(%t) = %d\n", t[0], ATinternalSize(t[0]));
+	ATprintf("ATinternalSize(%t) = %d\n", t[1], ATinternalSize(t[1]));
+	ATprintf("ATinternalSize(%t) = %d\n", t[2], ATinternalSize(t[2]));
 }
 
 /*}}}  */
