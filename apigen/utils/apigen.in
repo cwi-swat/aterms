@@ -166,9 +166,9 @@ DICTTOC=dicttoc
 INDENT=indent
 RM="rm -f"
 
-GENCAPI=/ufs/olivierp/Research/apigen/spec/c-source/Gen-C-API
+GENCAPI=@top_srcdir@/spec/c-source/Gen-C-API
 EXTRACT=extract-api-files
-TABLE=/ufs/olivierp/Research/apigen/spec/Gen-C-API.trm.tbl
+TABLE=@top_srcdir@/spec/Gen-C-API.trm.tbl
 
 # }}}
 

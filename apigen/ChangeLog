@@ -1,5 +1,7 @@
 
 2000/08/07 (jong@cwi.nl)
+  * repository: removed apigen, added apigen.in
+  * tables are now found using @top_srcdir@, rather than /ufs/olivierp/...
   * apigen now generates sensible AUTHORS, NEWS, README, ChangeLog as well.
   * Added date+timestamp to generated {configure.in, Makefile.am, reconf} files
 

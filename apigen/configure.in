@@ -69,6 +69,7 @@ AC_OUTPUT(
 Makefile
 spec/Makefile
 utils/Makefile
+utils/apigen
 test/Makefile
 ,
 )
