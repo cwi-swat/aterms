@@ -1554,7 +1554,9 @@ higher level of maintainability of the code. We are now able to implement
 changes in the term representation, which was one of our major goals.
 Moreover the higher level of abstraction allows us to implement new
 functionality which would otherwise be much more time consuming and
-error prone.
+error prone. For example, it allowed us to quickly write an \asf-checker
+which traverses \asf-equations looking for occurences of uninstantiated
+variables.
 
 In accordance with these subjective observations that the code has
 improved, is the Lines of Code (LOC) metric. Comparing versions just
@@ -1562,15 +1564,24 @@ before and immediately after \emph{apification}, we found out that
 we had been able to eliminate almost half of the (manually written)
 code. The LOC metrics have been summarized in Figure~\ref{fig:reduction}.
 
+The components are: the runtime environment of the \asdf\ compiler
+(\texttt{asc-runtime}), the parse tree library (\texttt{libasfix})
+and utilities (\texttt{asfix-tools}), the actual \asdf\ compiler
+(\texttt{asf+sdf compiler}), a collection of \asf\ manipulation utilities
+(\texttt{asf-tools}), a \texttt{structure editor} for editing \asdf\
+specifications, an \texttt{evaluator} for evaluating (rather than
+compiling) \asf\ equations, and finally a repository for parse tables
+and parsed \asdf\ specifications (\texttt{module-db}).
+
 \begin{figure}[htb]
 \begin{tabular}{|l|r|r|r|}
 \hline
 Component     & Before (LOC)  & After (LOC) & Reduction (\%) \\
 \hline
-asc-support   &		2207  &	      1752  &	21	\\
+asc-runtime   &		2207  &	      1752  &	21	\\
 libasfix      &	       10419  &	      2077  &	80	\\
 asfix-tools   &		 466  &	       603  &  -29	\\
-asfix2c compiler &	1866  &	      1138  &	39	\\
+asf+sdf compiler &	1866  &	      1138  &	39	\\
 asf-tools     &		1303  &	       589  &	55	\\
 structure editor &	2861  &	      1946  &	32	\\
 evaluator     &		4241  &	      4009  &	 5	\\
