@@ -24,7 +24,7 @@ int main(int argc, char **argv)
   mod = ATreadFromTextFile(input);
   fclose(input);
   fname = "Test.asfix.asfix";
-  expmod = AFexpandModuleToAsFix(mod,fname);
+  expmod = AFexpandModuleToAsFix(mod,fname, "Naam");
   ATprintf("Writing: %s\n", fname);
   output = fopen(fname,"w");
   if(!output)
