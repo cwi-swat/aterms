@@ -1,7 +1,7 @@
 package
 identification
-  name=shared-objects
-  version=1.2
+  name=__PACKAGE__
+  version=__VERSION__
   location=http://www.cwi.nl/projects/MetaEnv/daily-dist
   info=http://www.cwi.nl/projects/MetaEnv/aterm
   description='A Java Class implementing a core factory for maximal sharing
