@@ -1,12 +1,13 @@
 dnl $Id$
 
-AC_INIT(configure.in)
+AC_INIT
+AC_CONFIG_SRCDIR([configure.in])
 AM_INIT_AUTOMAKE(shared-objects, 1.4)
 
-AC_SET_MAKE
+AC_PROG_MAKE_SET([])
 
-AC_OUTPUT(
-  Makefile
+AC_CONFIG_FILES([Makefile
   shared/Makefile
   config/Makefile
-)
+])
+AC_OUTPUT
