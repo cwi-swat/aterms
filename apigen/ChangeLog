@@ -1,5 +1,6 @@
 2002/11/26 (vinju@loria.fr)
  * Added a tool for concatenating adts: concat-adt
+ * fix a problem related to capitalize and Tom
 
 2002-11-21 (pem@bach)
  * apigen/gen/java/JavaGen.java: remove casts in genTomAltOperator

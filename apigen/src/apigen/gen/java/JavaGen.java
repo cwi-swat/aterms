@@ -216,9 +216,7 @@ extends Generator
     }
        
     closeStream();
-	}
-
-
+  }
 	
 
   private void genFactoryClassFile(ADT api) throws IOException {
@@ -1269,7 +1267,7 @@ extends Generator
 
   private void genTomAltOperator(Type type, Alternative alt) {
     String class_name = buildClassName(type);
-    String operator_name = capitalize(buildId(alt.getId()));
+    String operator_name = buildId(alt.getId());
     String alt_class_name = buildAltClassName(type,alt);
       
     print  ("%op " + class_name + " " + operator_name); // operator_name if Tom can deal with it
@@ -1293,16 +1291,8 @@ extends Generator
     println(" {");
     println("  fsym { }");
 
-      /*
-       * The following cast is not necessary.
-       * It could be replaced by subject = "t"
-       * This is to be compatible when the strictType option is not set
-       */
-      String subject = "t";
-      println("  is_fsym(t) { (" + subject + "!=null) && " + subject + ".is" + operator_name + "() }");
-      // to be compatible with --lazyType
-      //String subject = "((" + class_name + ")t)";
-      //println("  is_fsym(t) { (t instanceof " + class_name  + ")?" + subject + ".is" + operator_name + "():false }");
+    String subject = "t";
+    println("  is_fsym(t) { (" + subject + "!=null) && " + subject + ".is" + capitalize(operator_name) + "() }");
 
     fields = type.altFieldIterator(alt.getId());
     while (fields.hasNext()) {
