@@ -7,7 +7,7 @@ data_DATA = ${JARFILE}
 
 JARFILE = aterm-${VERSION}.jar
 JAVADOCDIR = aterm-javadoc
-CLEANFILES = ${JARFILE} ${JAVADOC}.tar.gz
+CLEANFILES = ${JARFILE} ${JAVADOCDIR}.tar.gz $(wildcard *.pkg)
 
 JAVA_CLASSES = \
 	AFun \

@@ -6,7 +6,7 @@ JAVAROOT = ${top_builddir}
 
 CLASSPATH_ENV = CLASSPATH=${JAVAROOT}:${EXTERNAL_JARS}
 
-java_JAVA = \
+JAVASOURCES = \
 	AFun.java \
 	ATerm.java \
 	ATermAppl.java \
@@ -21,3 +21,6 @@ java_JAVA = \
 	Identifiable.java \
 	Visitor.java \
 	ParseError.java
+
+java_JAVA       = $(JAVASOURCES)
+EXTRA_DIST      = $(JAVASOURCES)

@@ -4,7 +4,7 @@ JAVAROOT = ${top_builddir}
 
 CLASSPATH_ENV = CLASSPATH=${JAVAROOT}:${EXTERNAL_JARS}
 
-java_JAVA = \
+JAVASOURCES = \
 	AFunImpl.java \
 	ATermApplImpl.java \
 	ATermBlobImpl.java \
@@ -16,3 +16,6 @@ java_JAVA = \
 	ATermVisitableImpl.java \
 	PureFactory.java\
 	ATermWriter.java
+
+java_JAVA       = $(JAVASOURCES)
+EXTRA_DIST      = $(JAVASOURCES)
