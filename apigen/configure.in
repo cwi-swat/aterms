@@ -4,7 +4,7 @@ dnl
 
 dnl Process this file with autoconf to produce a configure script.
 AC_INIT(configure.in)
-AM_INIT_AUTOMAKE(apigen, 1.5)
+AM_INIT_AUTOMAKE(apigen, 1.6beta)
 AC_PREREQ(2.13)
 
 dnl Add current dir to searchpath
