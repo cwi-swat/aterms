@@ -4,7 +4,8 @@ CHAPS	= at.ltx
 PICS	= header.ps encoding.ps
 
 EXAMPLEDIR		= examples
-EXAMPLEFILES	= init.c make.c match.c prot.c
+EXAMPLEFILES	= init.c make.c match.c prot.c app1.c app2.c app3.c \
+				  plac.c
 EXAMPLES		= $(patsubst %,$(EXAMPLEDIR)/%,$(EXAMPLEFILES))
 
 all: at.ps manual.ps

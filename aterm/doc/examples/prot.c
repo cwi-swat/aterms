@@ -6,8 +6,7 @@ static ATerm global_aterm;                 /* global ATerm */
 #define NR_ENTRIES 42                      /* arbitrary number for this example. */
 static ATerm global_arr[NR_ENTRIES];       /* global ATerm array. */
 
-int
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
     ATerm bottomOfStack;                    /* Used in initialisation of library    */
 

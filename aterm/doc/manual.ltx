@@ -1,7 +1,8 @@
 % vim:ts=4:sw=4:tw=75
 \documentclass[a4paper,twoside]{article}
 
-\usepackage{fullpage}
+%\usepackage{fullpage}
+\usepackage{a4wide}
 \usepackage{verbatim}
 \usepackage{makeidx}
 
@@ -23,7 +24,8 @@
 
 % \example{init.c} will input file "examples/init.c" in verbatim mode.
 \newcommand{\example}[1]{
-	\noindent\hrulefill
+	\noindent
+	\hrulefill
 	\begin{small}
 	\verbatiminput{examples/#1}
 	\end{small}
@@ -39,6 +41,7 @@
 	\noindent
 	\framebox[12.6cm][l]{{\bf function:} {\tt #1}} \vspace{0.1cm}\newline
 	\label{#1}
+	\noindent
 	{\bf Summary:\hspace{0.2cm}} #4\newline
 	{\bf Declaration:}
 		{\tt #2} {\tt #1}({\tt #3});
@@ -51,6 +54,7 @@
 	\noindent
 	\framebox[12.6cm][l]{{\bf macro:} {\tt #1}} \vspace{0.1cm}\newline
 	\label{#1}
+	\noindent
 	{\bf Summary:\hspace{0.2cm}} #4\newline
 	{\bf Declaration:}
 		{\tt #2} {\tt #1}({\tt #3})
@@ -67,15 +71,27 @@
 \def\aterm{\mbox{ATerm}}
 \def\asfix{\mbox{\sc AsFix}}
 
-\title{\ATlib\ User Manual}
-\author{\small H.A. de Jong, {\tt jong@wins.uva.nl} \\
-		\small P.A. Olivier, {\tt olivierp@wins.uva.nl}}
+%----[ TITLE PAGE ]----
 
+\title{\ATlib\ User Manual}
+\author{Hayco de Jong \hspace{1cm} Pieter Olivier\\\\
+{\small\sl University of Amsterdam,}\\
+{\small\sl Programming Research Group,}\\
+{\small\sl Kruislaan 403, 1098 SJ Amsterdam, The Netherlands}\\\\
+{\small\sl E-mail: \tt jong@wins.uva.nl - olivierp@wins.uva.nl}}
+
+\date{}
 \begin{document}
 \maketitle
 
-%----[ TABLE OF CONTENTS ]----
+\begin{abstract}
+This report is a manual describing the functionality provided by the
+\ATlib, a high performance implementation of the \ATerm\ datatype using
+maximal sharing and automatic garbage collection.
+\end{abstract}
+
 \tableofcontents
+\newpage
 
 %----[ INTRODUCTION ]----
 \section{Introduction}\label{intro}
@@ -96,21 +112,20 @@ manipulate (abstract syntax) trees or terms, and those that are related to
 the new {\sc Asf+Sdf} Meta-Environment \cite{BKMO97} or the new {\sc
 Asf+Sdf} compiler~\cite{BOHK98}.
 
-This manual intended to be a comprehensive text on how to use the \ATlib.
-Readers who are interested in the design details of the \ATlib, can find
-these in~\cite{BJO98}.
+This manual is intended to be a comprehensive text on how to use the
+\ATlib.  Readers who are interested in the design details of the \ATlib,
+can find these in~\cite{BJO98}.
 
 Section~\ref{usage} explains the basic steps that must be taken to
 initialise and work with the \ATlib.
 
-The level one interface described in Section~\ref{lvl1} offers a
-set of operations on \aterms\ that is sufficiently powerful
-for most users, yet is simple enough to comprehend in a relatively short
-period of time.
+The level one interface described in Section~\ref{lvl1} offers a set of
+operations on \aterms\ that is sufficiently powerful for most users, yet is
+concise enough to be mastered in a relatively short period of time.
 
 Section~\ref{lvl2} describes the level two interface which is intented for
-\aterm\ `power users', providing a more extensive set of datastructures and
-functions.
+experienced \aterm\ users, providing a more extensive set of datastructures
+and functions.
 
 The \ATlib{} comes with a number of utility programs. A description of
 these programs can be found in Section~\ref{utils}.
@@ -148,11 +163,11 @@ Although explaining the design details of the \ATlib\ is beyond the scope
 of this manual, it is important that users realise that the \ATlib\ is
 implemented using maximally shared \ATerms. This means that before a new
 \ATerm\ is created, a lookup is done to see if that term already exists. If
-so, that term is resued and no new term is created, resulting in maximally
+so, that term is reused and no new term is created, resulting in maximally
 shared terms. This has the advantage that equality of terms can be
-expressed as being physically the same term, i.e. both terms must have the
+expressed as being physically the same term, i.e., both terms must have the
 same memory address. It also means that, as terms can be shared without the
-user knowing it, they can not be modified without creating unwanted side
+user knowing it, they cannot be modified without creating unwanted side
 effects. Thus, users should not tamper with \ATerms. Rather, they should
 use the functionality provided in the level one and level two interfaces.
 
@@ -162,7 +177,7 @@ The \ATlib\ uses garbage collection to find and delete unused \ATerms. This
 relieves users of the burden of explicitly allocating and freeing every
 \ATerm\ used in an application. Each time a new \ATerm\ is allocated the
 garbage collector decides whether time has come to free resources claimed
-by unsed \ATerms\ or whether there still is enough space to create the
+by unused \ATerms\ or whether there still is enough space to create the
 requested term. Details on the design and implementation of this garbage
 collection can be found in~\cite{BJO98}.
 
@@ -204,10 +219,10 @@ During a garbage collect, the \ATlib\ searches the stack and registers for
 function (\emph{automatic} variables). All \aterm\ variables which were
 \emph{not} created locally, must be protected by a call to \ATprotect. For
 entire arrays of \aterms, \ATprotectArray\ should be used. Note that not
-the \aterm\ variable itself, but its address is passed to \ATprotect. 
+the \aterm\ variable itself, but its address is passed to \ATprotect.
 Users of the level two interface who create a function application by
 building the function symbol (\Symbol) can also keep global references to
-them. These references should be protected through a call to {\tt
+these symbols. Such references should be protected through a call to {\tt
 ATprotect\Symbol}.
 
 The following code demonstrates the protection of a global \aterm\ and a
@@ -217,7 +232,7 @@ global array of \aterms.
 
 \subsection{Unprotecting protected \aterms}\label{unprot}
 When the lifetime of an \aterm\ that was protected as described in
-Section~\ref{prot} has expired, it should be unprotected to free any
+Section~\ref{prot} has expired, the \aterm\ should be unprotected to free any
 internal resources it holds. Note that these resources are not released
 immediately. Instead, they are no longer marked as protected to the garbage
 collector and as such may be freed at the next garbage collection. For each
@@ -237,20 +252,20 @@ possible had the \ATerm's textual counterpart been used. This is due to the
 fact that textual representations have to be (re-)parsed each time they are
 read from file, whereas {\sc baf} directly describes how to rebuild the
 internal representation of an \ATerm, thus skipping the parsing phase.
-Moreover, the maximal sharing of \ATerms\ is exploited when writing
-its {\sc baf}-representation, making them take up much less space than
-their textual representations would have needed.
+Moreover, the maximal sharing of \ATerms\ is exploited when writing {\sc
+baf}-representations, making them take up much less space than their
+textual representations would have needed.
 
-Users of the \ATlib\ are encouraged to use {\sc baf} versions when saving
-\aterms\ to file.  {\sc baf} was designed to be platform independent, which
-facilitates the exchange of \ATerms. The \ATlib\ comes with a utility that
-is able to convert an \ATerm's textual representation into its {\sc baf}
-counterpart and vice versa (see Section~\ref{util-baffle}). This conversion
-makes it possible to always work with {\sc baf} representations, while
-still being able to look at the textual representation any time an error is
-suspected. It also allows conversion of textual \ATerms\ written by
-programs unable to write {\sc baf} which is especially convenient when
-these \ATerms\ are bulky.
+Users of the \ATlib\ are encouraged to use {\sc baf} representations when
+saving \aterms\ to file.  {\sc baf} was designed to be platform
+independent, which facilitates the exchange of \ATerms. The \ATlib\ comes
+with a utility that is able to convert an \ATerm's textual representation
+into its {\sc baf} counterpart and vice versa (see
+Section~\ref{util-baffle}). This conversion makes it possible to always
+work with {\sc baf} representations, while still being able to look at the
+textual representation any time an error is suspected. It also allows
+conversion of textual \ATerms\ written by programs unable to write {\sc
+baf} which is especially convenient when these \ATerms\ are bulky.
 
 Although the \ATlib\ does not put any constraints on the names of \aterm-files,
 users are encouraged to use the extension {\tt .baf} for {\sc baf} files.
@@ -265,9 +280,10 @@ the level one interface. These functions are declared in {\tt aterm1.h}.
 Section~\ref{types1} reveals the types of \aterms\ that are used in the
 \ATlib, as well as the extension to the standard {\tt C}-types introduced
 in the level one interface. To avoid confusion between {\sc baf} and the
-\aterm\ type \emph{blob}, Section~\ref{blob-vs-baf} is dedicated to explain
-the difference between these two notions. Finally, Section~\ref{func1}
-describes all the functions that are available in the level one interface.
+\aterm\ type \emph{blob}, Section~\ref{blob-vs-baf} is dedicated to
+explaining the difference between these two notions. Finally,
+Section~\ref{func1} describes all the functions that are available in the
+level one interface.
 
 \subsection{Level One Types}\label{types1}
 The following {\tt C}-defines are used to represent the different \aterm\
@@ -311,7 +327,8 @@ that the blob will be readable, after all it represents binary data.
 In this section, all functions and macros ({\tt \#define}'s in {\tt C}) are
 listed. Although all macros could have been implemented as a function as
 well, the macros listed here were chosen to be macros instead of functions
-for efficiency reasons.
+for efficiency reasons. To obtain access to the level one interface, your
+application should {\tt \#include <aterm1.h>}.
 
 \Function{ATmake}{\ATerm}{const char *pattern, ...}
 {Create an \ATerm\ from a string pattern and a variable number of arguments}
@@ -326,27 +343,27 @@ for efficiency reasons.
 	\hline
 	Type & Pattern & Argument \\
 	\hline
-	Application & {\tt appl}        & {\tt char *pattern}, arguments \\
-	Blob        & {\tt blob}        & {\tt int length}, {\tt void *data}\\
-	Integer     & {\tt int}         & {\tt int value}\\
-	List        & {\tt list}        & {\tt ATerm} \\
-	Placeholder & {\tt placeholder} & {\tt char *type} \\
-	Real        & {\tt real}        & {\tt double value}\\
-	String      & {\tt str}         & {\tt char *pattern}, arguments \\
-	Term        & {\tt term}        & {\tt ATerm} \\
+	Application & {\tt <appl>}        & {\tt char *pattern}, arguments \\
+	Blob        & {\tt <blob>}        & {\tt int length}, {\tt void *data}\\
+	Integer     & {\tt <int>}         & {\tt int value}\\
+	List        & {\tt <list>}        & {\tt ATerm} \\
+	Placeholder & {\tt <placeholder>} & {\tt char *type} \\
+	Real        & {\tt <real>}        & {\tt double value}\\
+	String      & {\tt <str>}         & {\tt char *pattern}, arguments \\
+	Term        & {\tt <term>}        & {\tt ATerm} \\
 	\hline
 	\end{tabular}
 	\end{small}
 
 	\medskip\noindent
 	Types {\tt <appl>} and {\tt <str>} should contain a pattern consisting
-	of the function symbol to be used and the types of the arguments.  It
-	must be followed by exactly the number of arguments that are used in
-	the pattern. The types of the arguments must match the respective types
-	used in the pattern. Both {\tt <appl>} and {\tt <str>} create function
-	applications. The difference is that {\tt <appl>} creates one with an
-	\emph{unquoted} function symbol, whereas {\tt <str>} yields a quoted
-	version.
+	of the function symbol to be used and the types of the arguments.  This
+	pattern must be followed by exactly the number of arguments that are
+	used in the pattern. The types of the arguments must match the
+	respective types used in the pattern. Both {\tt <appl>} and {\tt <str>}
+	create function applications. The difference is that {\tt <appl>}
+	creates one with an \emph{unquoted} function symbol, whereas {\tt
+	<str>} yields a \emph{quoted} version.
 
 	\smallskip\noindent
 	Here are some examples of {\tt ATmake}:
@@ -377,7 +394,7 @@ arguments}
 
 	The {\tt <list>} pattern can be used to match the tail of a list as
 	well as a variable number of arguments in a function application. Thus
-	the first few arguments may be matched explicitly while ``the rest'' of
+	the first few arguments may be matched explicitly while the tail of
 	the arguments is directed to a list.
 
 
@@ -390,7 +407,7 @@ arguments}
 \Function{ATreadFromString}{\ATerm}{const char *string}
 {Read an \aterm\ from string}
 \Describe{
-	This function parses an character string into an \aterm.
+	This function parses a character string into an \aterm.
 	A convenience macro {\tt ATparse} is included in {\tt aterm1.h}.
 }
 
@@ -407,11 +424,11 @@ arguments}
 }
 
 \Function{ATreadFromFile}{\ATerm}{FILE *file}
-{Read an \aterm\ from binary or textfile}
+{Read an \aterm\ from binary or text file}
 \Describe{
-	This function reads an \aterm\ from a file. A magic number detection is
-	done to see if the file is in {\sc baf}. If so, the binary term will
-	be read, otherwise the textual term will be parsed.
+	This function reads an \aterm\ from a file. A test is performed
+	to see if the file is in {\sc baf}. If so, the binary term will
+	be read, otherwise the textual representation will be parsed.
 }
 
 \Macro{ATparse}{\ATerm}{const char *str}
@@ -431,9 +448,9 @@ arguments}
 \Macro{ATisEqual}{int}{\ATerm\ t1, \ATerm\ t2}
 {A macro that tests equality of \aterms\ {\tt t1} and {\tt t2}}
 \Describe{
-	As \ATerms\ are shared, testing equality can be done by comparing the
-	addresses of {\tt t1} and {\tt t2}, which is exactly what this macro does.
-}
+	As \ATerms\ are created using \emph{maximal sharing} (see
+	Section~\ref{sharing}), testing equality is performed in constant time
+	by comparing the addresses of {\tt t1} and {\tt t2}}
 
 \Function{ATwriteToTextFile}{ATbool}{\aterm\ t, FILE *f}
 {Writes term {\tt t} to file {\tt f} in textual format}
@@ -452,7 +469,7 @@ arguments}
 \Function{ATwriteToString}{char *}{\aterm\ t}
 {Writes term {\tt t} to a string}
 \Describe{
-	Writes term {\tt t} to an internal string buffer. The beginning of this
+	Writes term {\tt t} to an internal string buffer. The start of this
 	buffer is returned. Note that the contents of this buffer are volatile
 	and may be overwritten by any call to the \ATlib.
 }
@@ -482,15 +499,16 @@ arguments}
 
 \Function{ATinit}{void}
 {\tt int argc, char *argv[], \aterm\ *bottomOfStack}
-{Initialise the \ATlib. See Section~\ref{init}}
+{Initialise the \ATlib.}
+\Describe{See Section~\ref{init}.}
 
 \Function{ATprintf}{int}{const char *format, ...}
 {\ATerm\ version of {\tt printf}}
-\Describe{See ATvfprintf}
+\Describe{See ATvfprintf.}
 
 \Function{ATfprintf}{int}{FILE *stream, const char *format, ...}
 {\ATerm\ version of {\tt fprintf}}
-\Describe{See ATvfprintf}
+\Describe{See ATvfprintf.}
 
 \Function{ATvfprintf}{int}{FILE *stream, const char *format, va\_list args}
 {\ATerm\ version of {\tt vfprintf}}
@@ -522,10 +540,9 @@ arguments}
 {Specify an errorhandler for the \ATlib.}
 \Describe{
 	This function can be used to set up an errorhandler for the \ATlib.
-	This handler will be called when an errormessage is sent to {\tt ATerror}.
-	If no handler is set, the message is printed to {\tt stderr} through
-	{\tt ATfprintf} and the \ATlib\ then calls {\tt abort()}. 
-}
+	This handler will be called when an error message is sent to {\tt
+	ATerror}.  If no handler is set, the message is printed to {\tt stderr}
+	through {\tt ATfprintf} and the \ATlib\ then calls {\tt abort()}.  }
 
 \Function{ATerror}{void}{(const char *format, ...)}
 {Dump an errormessage and abort the \ATlib}
@@ -546,7 +563,7 @@ arguments}
 \label{at-unprot}
 \Describe{
 	Releases protection of an \aterm\ which has previously been protected
-	through a call to {\tt ATprotect}.
+	through a call to {\tt ATprotect}. See Section~\ref{unprot}.
 }
 
 \Function{ATprotectArray}{void}{\aterm\ *start, int size)}
@@ -583,9 +600,14 @@ interface also uses the following types:
 \end{itemize}
 
 \subsection{Level Two Functionality}\label{func2}
-Again, just as in section~\ref{func1}, all macros in this section could
-have been implemented as functions, but where chosen to be in a macro for
-efficiency reasons.
+This section describes all functions and macros that are available in the
+level two interface. To obtain access to this functionality you need to
+{\tt \#include <aterm2.h>} instead of {\tt <aterm1.h>} in your application.
+
+In Section~\ref{func1} we explained that the macros used in the level one
+interface could just as well have been implemented as functions, but were
+chosen to be implemented as macros for efficiency reasons. The same goes
+for all macros described in this section.
 
 \subsubsection{ATermInt}
 The type {\tt ATermInt} is the \ATerm\ representation of an integer. It
@@ -618,16 +640,16 @@ them.
 \begin{small}
 \begin{verbatim}
     true               - a zero arity, unquoted function application
-                         sym = ATmakeSymbol("true", 0, ATfalse);
+                         sym = ATmakeAFun("true", 0, ATfalse);
 
     "true"             - the same function application, but quoted
-                         sym = ATmakeSymbol("true", 0, ATtrue);
+                         sym = ATmakeAFun("true", 0, ATtrue);
 
     f(0)               - an unquoted function application of arity 1
-                         sym = ATmakeSymbol("f", 1, ATfalse);
+                         sym = ATmakeAFun("f", 1, ATfalse);
 
     "prod"(2, b, [])   - a quoted function application of arity 3
-                         sym = ATmakeSymbol("prod", 3, ATtrue);
+                         sym = ATmakeAFun("prod", 3, ATtrue);
 \end{verbatim}
 \end{small}
 
@@ -635,9 +657,9 @@ them.
 {\tt char *name, int arity, ATbool quoted}
 {Create a function symbol (\Symbol)}
 \Describe{
-	Creates a \Symbol, representing a function symbol with name {\tt name}
-	and arity {\tt arity}. Quotedness is passed through the argument
-	{\tt quoted}.
+	Creates an \Symbol, representing a function symbol with name {\tt name}
+	and arity {\tt arity}. Quotedness is passed through the {\tt quoted}
+	argument.
 }
 
 \Function{ATprotect\Symbol}{void}{\Symbol\ sym}
@@ -649,25 +671,24 @@ them.
 }
 
 \Function{ATunprotect\Symbol}{void}{\Symbol\ sym}
-{Release a \Symbol's protection.}
+{Release an \Symbol's protection.}
 
 \Macro{ATgetName}{char *}{\Symbol\ sym}
-{Return the name of a \Symbol}
+{Return the name of an \Symbol}.
 
 \Macro{ATgetArity}{int}{\Symbol sym}
 {Return the arity (number of arguments) of a function symbol (\Symbol)}
 
 \Macro{ATisQuoted}{ATbool}{\Symbol\ sym}
-{Find out if a function symbol (\Symbol) is quoted or not}
+{Determine if a function symbol (\Symbol) is quoted or not}
 
 \Function{ATmakeAppl}{ATermAppl}{\Symbol\ sym, ...}
-{Build an application from a \Symbol\ and a variable number of arguments.}
+{Build an application from an \Symbol\ and a variable number of arguments.}
 \Describe{
-	The arity is taken from the first argument {\tt sym}, so the other
+	The arity is taken from the first argument {\tt sym}, the other
 	arguments to {\tt ATmakeAppl} should be the arguments for the
-	application. For arity $0\ldots 6$ the appropriate {\tt ATmakeAppl<N>} 
-	can be used instead for better efficiency.
-}
+	application. For arity $0\ldots 6$ the corresponding {\tt ATmakeAppl<N>}
+	can be used instead for greater efficiency.  }
 
 \Function{ATmakeAppl0}{ATermAppl}{\Symbol\ s}
 {Make a function application with zero arguments}
@@ -707,7 +728,7 @@ them.
 \Function{ATsetArgument}{ATermAppl}{ATermAppl appl, ATerm arg, int n}
 {Set the {\tt nr}-th argument of an application to {\tt arg}}
 \Describe{
-	This function return a copy of {\tt appl} with argument {\tt n}
+	This function returns a copy of {\tt appl} with argument {\tt n}
 	replaced by {\tt arg}.
 }
 
@@ -720,15 +741,15 @@ them.
 }
 
 \Function{ATmakeApplList}{ATermAppl}{\Symbol\ sym, ATermList args}
-{Build an application given a \Symbol\ and list of arguments}
+{Build an application given an \Symbol\ and a list of arguments}
 \Describe{
-	Build an application from {\tt sym} and the argumentlist {\tt args}.
+	Build an application from {\tt sym} and the argument list {\tt args}.
 	Note: unless the arguments are already in an {\tt ATermList}, it is
 	probably more efficient to use the appropriate {\tt ATmakeAppl<N>}.
 }
 
 \Function{ATmakeApplArray}{ATermAppl}{\Symbol\ sym, ATerm args[]}
-{Build an application given a \Symbol\ and array of arguments}
+{Build an application given an \Symbol\ and an array of arguments}
 
 \subsubsection{ATermList}
 \Function{ATmakeList}{ATermList}{int n, ...}
@@ -793,31 +814,40 @@ them.
 \Function{ATinsert}{ATermlist}{ATermList list, \ATerm\ el}
 {Return {\tt list} with {\tt el} inserted.}
 \Describe{
-  The complexity of {\tt ATinsert} is $O(1)$. That is, the behaviour of
-  {\tt ATinsert} does not degrade as the length of {\tt list} increases.
-}
+  The behaviour of {\tt ATinsert} is of constant complexity.  That is, the
+  behaviour of {\tt ATinsert} does not degrade as the length of {\tt list}
+  increases.  }
 
 \Function{ATinsertAt}{ATermList}
 {(ATermList list, \ATerm\ el, int index}
   {Return {\tt list} with {\tt el} inserted at position {\tt index}}
 
 \Function{ATappend}{ATermList}{ATermList list, ATerm el}
-{Return {\tt list} with {\tt el} appended}
+{Return {\tt list} with {\tt el} appended to it}
 \Describe{
   Note that {\tt ATappend} is implemented in terms of {\tt ATinsert} by
   making a new list with {\tt el} as the first element and then {\tt
   ATinsert}ing all elements from {\tt list}. As such, the complexity of
   {\tt ATappend} is linear in the number of elements in {\tt list}.
 
-  When {\tt ATappend} is needed inside a loop that traverses a list,
-  behaviour of the loop will demonstrate quadratic complexity. To avoid
-  this behaviour, the inner loop could use {\tt ATinsert} instead of {\tt
-  ATappend} to make the new list. This will result in the target list being
-  in reverse order. A single {\tt ATreverse} must therefore be performed,
-  but this can be done once, after the loop has terminated, bringing the
-  behaviour down from quadratic to linear complexity, but at the cost of
-  two {\tt ATinsert}s per element (one for each {\tt ATinsert} in the loop,
-  and an implicit one for each element through the use of {\tt ATreverse}).
+  When {\tt ATappend} is needed inside a loop that traverses a list (see
+  {\tt parse\_list1} below), behaviour of the loop will demonstrate
+  quadratic complexity.
+
+  \example{app1.c}\smallskip
+
+  To avoid this behaviour, the inner loop could use {\tt ATinsert} instead
+  of {\tt ATappend} to make the new list. This will cause the resulting
+  list to be in reverse order. A single {\tt ATreverse} must therefore be
+  performed, but this can be done after the loop has terminated, bringing
+  the behaviour down from quadratic to linear complexity, but at the cost
+  of two {\tt ATinsert}s per element (one for each {\tt ATinsert} in the
+  loop, and an implicit one for each element through the use of {\tt
+  ATreverse}).  An example is shown here in the implementation of {\tt
+  parse\_list2}.
+
+  \example{app2.c}\smallskip
+
   An even further optimisation could make use of a locally allocated
   buffer.  While traversing the list, all elements that would normally be
   {\tt ATappend}ed, are now placed in this buffer. Finally, the result is
@@ -825,7 +855,10 @@ them.
   elements from this buffer in reverse order. As the cost of allocating and
   freeing a local buffer is by no means marginal, this solution should
   probably only be applied when the loop appends more than just a few
-  elements.
+  elements. The following example shows such an implementation in {\tt
+  parse\_list3}.
+
+  \example{app3.c}
 }
 
 \Function{ATconcat}{ATermList}{ATermList list1, ATermList list2}
@@ -876,19 +909,28 @@ them.
 {ATermList list, ATbool (*predicate)(ATerm)}
 {Filter entries from a list using a predicate}
 \Describe{
- This function can be used to filter entries from a list that satisfy a
- given predicate. Each item in {\tt list} is judged through a call to
- {\tt predicate}. If {\tt predicate} returns {\tt ATtrue} the entry is
- added to a list, otherwise it is skipped. The function returns the list
- containing exactly those items that satisfy {\tt predicate}.
+ This function can be used to filter entries that satisfy a given predicate
+ from a list. Each item in {\tt list} is judged through a call to {\tt
+ predicate}. If {\tt predicate} returns {\tt ATtrue} the entry is added to
+ a list, otherwise it is skipped. The function returns the list containing
+ exactly those items that satisfy {\tt predicate}.
 }
 
 \subsubsection{ATermPlaceholder}
-\Function{ATmakePlaceholder}{ATermPlaceholder}{\ATerm\ type}
-{Build an \aterm Placeholder of {\tt type}}
+A placeholder is a special subtype used to indicate a typed hole in an
+\ATerm. This can be used to create a term of a specific type, even though
+its actual contents are not filled in.
 
-\Macro{ATgetPlaceholder}{\ATerm}{ATermPlaceholder ph}
+\Function{ATmakePlaceholder}{ATermPlaceholder}{\ATerm\ type}
+{
+  Build an \aterm Placeholder of a specific type. The type is taken from
+  the {\tt type} parameter. See {\tt demo\_placeholder} below.
+}
+
+\Macro{ATgetPlaceholder}{\ATerm}{\ATerm Placeholder ph}
 {Get the type of an \aterm Placeholder}
+
+\example{plac.c}
 
 \subsubsection{ATermBlob}
 \Function{ATmakeBlob}{ATermBlob}{int size, void *data)}
@@ -906,7 +948,7 @@ them.
 \Macro{ATgetBlobData}{void *}{ATermBlob blob}
 {Get the data section of {\tt blob}}
 
-\Macro{ATgetBloBSize}{int}{ATermBlob blob}
+\Macro{ATgetBlobSize}{int}{ATermBlob blob}
 {Get the size (in bytes) of {\tt blob}}
 
 \Function{ATregisterBlobDestructor}{void}
@@ -916,24 +958,28 @@ them.
  When a blob-destructor function has been registered, it will be called
  whenever the garbage collector deletes an ATermBlob. The destructor
  function can then handle the deletion of the data area of the blob. At
- most 16 blob destructor functions can be registered.
+ most 16 blob destructor functions can be registered in the current
+ implementation.
 }
 
 \Function{ATunregisterBlobDestructor}{void}
 {ATbool (*destructor)(ATermBlob)}
 {Unregister a previously registered blob-destructor function}
 \Describe{
-	This removes the blob-destructor that has been previously installed
+	This removes a blob-destructor that has been previously installed
 	through a call to {\tt ATregisterBlobDestructor}.
 }
 
 \subsection{Dictionaries}\label{dicts}
 Dictionaries are datastructures which allow looking up a certain \ATerm\
 given another \ATerm. The dictionary itself is also an \aterm\ and as such
-is subject to the normal \ATlib\ rules of garbage collection. Each
-dictionary consists of its own list of \ATerms.  For each lookup in the
-dictionary, the list is traversed to see if the current element's key
-matches the one that is being looked up. For a more efficient
+is subject to the \ATlib\ rules of garbage collection. Each dictionary
+consists of its own list of \ATerms. For each lookup in the dictionary,
+the list is traversed to see if the current element's key matches the one
+being looked up. A lookup in a dictionary demonstrates behaviour linear in
+the number of elements the dictionary contains. On average fifty percent of
+the number of elements in the dictionary are examined before a match is
+found (if the element is present at all). For a more efficient
 \ATerm-to-\ATerm\ mapping, see Tables in section~\ref{tables}.
 
 \Function{ATdictCreate}{\ATerm}{}{Create a new dictionary}
@@ -1060,10 +1106,10 @@ and redirects {\tt stdin} and {\tt stdout} accordingly.
 \label{util-termsize}
 This utility can be used to calculate three things:
 \begin{itemize}
-  \item coresize: the amount of memory a given \aterm\ needs;
-  \item textsize: the amount of memory needed to hold a textual
+  \item core size: the amount of memory a given \aterm\ needs;
+  \item text size: the amount of memory needed to hold a textual
   representation of an \aterm;
-  \item treedepth: the maximum depth of a term.
+  \item tree depth: the maximum depth of a term.
 \end{itemize}
 The results are written to {\tt stdout}. As {\tt termsize} uses {\tt
 ATreadFromFile}, it can calculate the size of both textual and {\sc baf}
