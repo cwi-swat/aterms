@@ -8,8 +8,8 @@ include ${top_srcdir}/make_rules
 include PeanoMakeRules.am
 include ListMakeRules.am
 
-ADTC		= ${top_builddir}/utils/adt-to-c --verbose --jtom
-ADTJAVA         = ${top_builddir}/utils/adt-to-java --verbose --jtom
+ADTC		= ${top_builddir}/utils/adt-to-c --verbose --jtom --visitable
+ADTJAVA         = ${top_builddir}/utils/adt-to-java --verbose --jtom --visitable
 
 JAVATESTS = PeanoTest ListTest
 TESTS		= rolotest listtest \

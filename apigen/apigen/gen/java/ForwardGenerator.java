@@ -6,6 +6,7 @@ import java.util.List;
 
 import apigen.adt.ADT;
 import apigen.adt.Type;
+import apigen.gen.StringConversions;
 
 public class ForwardGenerator extends JavaGenerator {
     private ADT adt;
@@ -13,17 +14,17 @@ public class ForwardGenerator extends JavaGenerator {
 	public ForwardGenerator(
 	    ADT adt,
 		String directory,
-		String filename,
+		String apiName,
 		String pkg,
 		List standardImports,
 		boolean verbose,
 		boolean folding) {
-		super(directory, filename, pkg, standardImports, verbose, folding);
+		super(directory, className(apiName), pkg, standardImports, verbose, folding);
 		this.adt = adt;
 	}
 
 	public static String className(String apiName) {
-		  return apiName + "Fwd";
+		  return StringConversions.capitalize(apiName) + "Fwd";
 	}
 	 
 	protected void foreachType(ADT adt) {

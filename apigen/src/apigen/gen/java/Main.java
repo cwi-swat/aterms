@@ -116,10 +116,15 @@ public class Main {
 		new GenericConstructorGenerator(basedir, apiName, pkg, verbose, folding).run();
 		new MakeRulesGenerator(adt, basedir, apiName, verbose).run();
 
+        if (visitable) {
+        	new VisitorGenerator(adt,basedir,apiName,pkg,imports,verbose,folding).run();
+        	new ForwardGenerator(adt,basedir,apiName,pkg,imports,verbose,folding).run();
+        }
+        
 		if (jtom) {
 			JavaTomSignatureImplementation sigImpl = new JavaTomSignatureImplementation(apiName);
 			new TomSignatureGenerator(adt, sigImpl, basedir, apiName, verbose, folding).run();
-		}
+        }
 
 		foreachType(adt);
 	}
