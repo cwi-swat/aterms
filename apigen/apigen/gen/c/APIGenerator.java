@@ -1182,7 +1182,12 @@ public class APIGenerator extends CGenerator {
 			else {
 				args += ", ";
 			}
-			args += buildTypeName(field.getType()) + " " + StringConversions.makeIdentifier(field.getId());
+			String fieldType = field.getType();
+			String typeName = buildTypeName(fieldType);
+			if (fieldType.equals(TypeConverter.CHARS_TYPE) || fieldType.equals(TypeConverter.STR_TYPE)) {
+				typeName = "const " + typeName;
+			}
+			args +=  typeName + " " + StringConversions.makeIdentifier(field.getId());
 		}
 
 		return args;
