@@ -541,7 +541,10 @@ public class PureFactory
     do {
       buf.append((char)c);
       c = reader.read();
-    } while (Character.isLetter((char)c) || c == '_' || c == '-');
+    } while (Character.isLetter((char)c)
+             || Character.isDigit((char)c)
+             || c == '_'
+             || c == '-');
 
     return buf.toString();
   }
