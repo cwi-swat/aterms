@@ -82,9 +82,12 @@ public class Main {
 			ATermFactory factory = new PureFactory();
 			
 			adt = new ADT(factory.readFromFile(input));
-			new APIGenerator(adt, output, prefix, prologue, verbose, true).run();
+			APIGenerator apigen = 
+			new APIGenerator(adt, output, prefix, prologue, verbose, true);
+			apigen.run();
 			new TomSignatureGenerator(adt,new CTomSignatureImplementation(),".",output,verbose,true).run();
-			new CDictionaryGenerator(factory, adt, ".", output, prefix, verbose, true).run();
+			new CDictionaryGenerator(factory, adt, ".", output, prefix, 
+			apigen.afuns_by_name, apigen.afuns_by_afun, apigen.nextAFun, verbose, true).run();
 
 		} catch (IOException e) {
 			System.out.println("Failed to read ADT from file");

@@ -22,9 +22,13 @@ public class APIGenerator extends CGenerator {
 	private String prologue;
 	private String macro;
 
-	private int nextAFun;
-	private Map afuns_by_name;
-	private Map afuns_by_afun;
+    /* A side-effect of generating the C code is building up these Maps
+     * They are used by the dictionary generator using public field access
+     * A refactoring is needed to fix this hack!!!
+     */
+	public int nextAFun;
+	public Map afuns_by_name;
+	public Map afuns_by_afun;
 	
 	public APIGenerator(ADT adt, String apiName, String prefix, String prologue, boolean verbose, boolean folding) {
 		super(".", apiName, verbose, folding);

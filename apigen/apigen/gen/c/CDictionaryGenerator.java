@@ -1,7 +1,6 @@
 package apigen.gen.c;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -27,15 +26,16 @@ public class CDictionaryGenerator extends Generator {
 		String directory,
 		String apiName,
 		String prefix,
-		boolean verbose, boolean folding) {
+		Map afuns_by_name, Map afuns_by_afun, int lastAFun, boolean verbose, boolean folding) {
 		super(directory, apiName, ".dict", verbose, folding);
 		this.adt = adt;
 		this.apiName = apiName;
 		this.prefix = prefix;
 		this.factory = factory;
 		
-		afuns_by_name = new HashMap();
-		afuns_by_afun = new HashMap();
+		this.afuns_by_name = afuns_by_name;
+		this.afuns_by_afun = afuns_by_afun;
+		nextAFun = lastAFun;
 	}
 
 	protected void generate() {
@@ -51,6 +51,7 @@ public class CDictionaryGenerator extends Generator {
 
 	private ATerm buildDictionary(ADT adt) {
 		ATermList afun_list = factory.makeList();
+		
 		for (int i = nextAFun - 1; i >= 0; i--) {
 			String name = prefix + "afun" + i;
 			AFun afun = (AFun) afuns_by_name.get(name);
@@ -59,8 +60,7 @@ public class CDictionaryGenerator extends Generator {
 				args[j] = factory.parse("x");
 			}
 			ATerm term = factory.makeAppl(afun, args);
-			afun_list =
-				afun_list.insert(factory.make("[" + name + ",<term>]", term));
+			afun_list =afun_list.insert(factory.make("[" + name + ",<term>]", term));
 		}
 
 		ATermList term_list = factory.makeList();
