@@ -719,12 +719,21 @@ extends Generator
 
 	private void genAltHashFunction(Type type, Alternative alt) 
   {
-    int arity = computeAltArity(type, alt);
-    String goldenratio = "0x9e3779b9";
-    int magicinit = 0;
-    String initval = new String(new Integer(magicinit + arity).toString());
+    
         
     if (!hasReservedTypeFields(type,alt)) {
+      int arity = computeAltArity(type, alt);
+      String goldenratio = "0x9e3779b9";
+      int changingArg = guessChangingArgument(type,alt);
+      String initval;
+    
+      if (changingArg > 0) {
+        initval = "getArgument(" + changingArg + ").hashCode()";
+      }
+      else {
+        initval = "0";
+      }
+    
       println("  protected int hashFunction() {");
       println("    int c = " + initval + " + (getAnnotations().hashCode()<<8);");
       println("    int a = " + goldenratio + ";");
@@ -752,6 +761,27 @@ extends Generator
       println("  }");
     }
 	}
+
+	private int guessChangingArgument(Type type, Alternative alt) {
+    Iterator fields = type.altFieldIterator(alt.getId());
+    
+    /* if an argument has the same type as the result type, there
+     * exists a chance of building a tower of this constructor where
+     * only this argument changes. Therefore, this argument must be
+     * very important in the computation of the hash code in order to
+     * avoid collissions
+     */
+    for(int i = 0; fields.hasNext(); i++) {
+      Field field = (Field) fields.next();
+      
+      if (field.getType().equals(type.getId())) {
+        return i;
+      }
+    }
+    
+		return -1;
+	}
+
 
 
 	private void genAltToTerm(Type type, Alternative alt) {
