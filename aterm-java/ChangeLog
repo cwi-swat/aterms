@@ -1,3 +1,9 @@
+2002-11-06  Pierre-Etienne Moreau  <pem@escher.loria.fr>
+
+  * aterm/pure/ATermApplImpl.java:
+    - small modifitions in the hashing function
+    - make(AFun,ATerm[],ATermList) is now a protected function 
+
 2002-11-04    <pem@bach>
 
   * aterm/pure/PureFactory.java: 
