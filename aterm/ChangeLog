@@ -1,7 +1,10 @@
 $Id$
 
+2001/07/11 (jong@cwi.nl)
+ * toolbus support and tests moved from ATerm-pkg to TB-pkg
+
 2001/07/09 (olivierp@cwi.nl)
- * Version is now 1.6.2
+ * version is now 1.6.2
  * Added some functions to ToolBus layer in order to support the
    new toolbus adapter
 
