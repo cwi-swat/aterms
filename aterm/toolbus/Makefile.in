@@ -55,7 +55,8 @@ INSTALL		= @INSTALL@
 INSTALL_PRG	= @INSTALL_PRG@
 INSTALL_DAT	= @INSTALL_DAT@
 
-ATBSRCS		= atb-tool.c tifstoc.c
+LIBSRCS		= atb-tool.c
+ATBSRCS		= ${LIBSRCS} tifstoc.c
 ATBLIBS		= libATB-gcc.a libATB-cc.a libATB-dbg.a libATB-prof.a \
 		libATB-ns.a
 PROGS		= tifstoc
@@ -64,11 +65,11 @@ PRIVATE_INCL	=
 ATBINCL		= ${PUBLIC_INCL} ${PRIVATE_INCL}
 DISTFILES	= .depend Makefile.in ${ATBSRCS} ${ATBINCL}
 
-OBJ_CC		= $(patsubst %.c,%-cc.o,$(ATBSRCS))
-OBJ_GCC		= $(patsubst %.c,%-gcc.o,$(ATBSRCS))
-OBJ_DBG		= $(patsubst %.c,%-dbg.o,$(ATBSRCS))
-OBJ_PROF	= $(patsubst %.c,%-prof.o,$(ATBSRCS))
-OBJ_NS		= $(patsubst %.c,%-ns.o,$(ATBSRCS))
+OBJ_CC		= $(patsubst %.c,%-cc.o,$(LIBSRCS))
+OBJ_GCC		= $(patsubst %.c,%-gcc.o,$(LIBSRCS))
+OBJ_DBG		= $(patsubst %.c,%-dbg.o,$(LIBSRCS))
+OBJ_PROF	= $(patsubst %.c,%-prof.o,$(LIBSRCS))
+OBJ_NS		= $(patsubst %.c,%-ns.o,$(LIBSRCS))
 
 all: $(ATBLIBS) $(PROGS)
 

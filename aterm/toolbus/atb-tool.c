@@ -235,6 +235,7 @@ ATBdisconnect(int fd)
 
 /*}}}  */
 
+/*{{{  void ATBpostEvent(int fd, ATerm event) */
 
 void ATBpostEvent(int fd, ATerm event)
 {
@@ -258,8 +259,11 @@ void ATBpostEvent(int fd, ATerm event)
 			ATerror("Maximum number of eventqueues exceeded.\n");
 		i = free_index;		/* occupy free slot */
 		event_queues[i].afun  = afun;
+		ATprotectAFun(afun);
 		event_queues[i].first = 0;
 		event_queues[i].last  = 0;
+		memset(event_queues[i].data, sizeof(event_queues[i].data), 0);
+		ATprotectArray(event_queues[i].data, MAX_QUEUE_LEN);
 		event_queues[i].ack_pending = ATfalse;
 		nr_event_queues++;
 	}
@@ -275,6 +279,9 @@ void ATBpostEvent(int fd, ATerm event)
 		event_queues[i].last = (event_queues[i].last + 1) % MAX_QUEUE_LEN;
 	}
 }
+
+/*}}}  */
+/*{{{  static void handle_ack_event(int fd, AFun afun) */
 
 static void handle_ack_event(int fd, AFun afun)
 {
@@ -298,6 +305,7 @@ static void handle_ack_event(int fd, AFun afun)
 	}
 }
 
+/*}}}  */
 
 /*{{{  int ATBeventloop(void) */
 
