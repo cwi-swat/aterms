@@ -90,7 +90,7 @@ public class Main {
 			new APIGenerator(adt, output, prefix, prologue, verbose, true, make_term_compatibility);
 			apigen.run();
                         if (jtom) {
-                          new TomSignatureGenerator(adt,new CTomSignatureImplementation(),".",output,prefix,verbose,true,jtype).run();
+                          new TomSignatureGenerator(adt,new CTomSignatureImplementation(prefix),".",output,prefix,verbose,true,jtype).run();
                         }
 			new CDictionaryGenerator(factory, adt, ".", output, prefix,  apigen.getAFunRegister(), verbose, true).run();
 

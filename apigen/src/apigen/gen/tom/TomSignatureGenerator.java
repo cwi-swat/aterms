@@ -148,7 +148,7 @@ public class TomSignatureGenerator extends Generator {
 		}
 		println(" {");
 		println("  fsym {" + impl.OperatorFSym(class_name, operator_name) + "}");
-		println("  is_fsym(t) { " + impl.OperatorIsFSym("t", class_name, operator_name) + "}");
+		println("  is_fsym(t) { " + prefix + impl.OperatorIsFSym("t", class_name, operator_name) + "}");
 			
 		fields = type.altFieldIterator(alt.getId());
 		while (fields.hasNext()) {
