@@ -23,9 +23,15 @@ done
 if [ "a${JAVAGEN}" != "a" ]; then
   PARAMS=apigen.env
   . ${PARAMS}
-  CLASSES=`echo ${FILES} | sed -e 's/.java/.class/g'`
-  JARFILE=${APINAME}-${VERSION}.jar
   javac -classpath ${DIRECTORY}:${CLASSPATH} ${FILES}
+  JARFILE=${APINAME}-${VERSION}.jar
+
+  CLASSES=""
+  for f in `echo ${FILES}`
+  do
+    CLASS=`echo $f | sed -e 's/.java/.class/g'`
+    CLASSES="${CLASSES} ${CLASS}"
+  done
   jar cf ${JARFILE} ${CLASSES}
   rm -f ${PARAMS}
 fi
