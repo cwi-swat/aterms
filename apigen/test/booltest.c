@@ -13,7 +13,7 @@ static void testBooleans(SDFBoolList l)
 
   /*ATfprintf(stderr, "l=%t\n", l);*/
 
-  true = SDFmakeBoolTrue("\"true\"");
+  true = SDFmakeBoolTrue("true");
 
   assert(SDFisValidBoolList(l));
   assert(SDFhasBoolListElems(l));
