@@ -76,23 +76,24 @@ class ATermListImpl
       ATermList l = (ATermList)pattern;
 
       if (this == PureFactory.empty) {
-	return l == PureFactory.empty;
-      }
-
-      if (l == PureFactory.empty) {
-	return false;
+	      if (l == PureFactory.empty) {
+          return true;
+        }
       }
 
       // match("[1,2,3],[<list>]")
       if (l.getFirst().getType() == PLACEHOLDER) {
-	ATerm ph_type = ((ATermPlaceholder)l.getFirst()).getPlaceholder();
-	if (ph_type.getType() == APPL) {
-	  ATermAppl appl = (ATermAppl)ph_type;
-	  if (appl.getName().equals("list") && appl.getArguments().isEmpty()) {
-	    list.add(this);
-	    return true;
-	  }
-	} 
+      	ATerm ph_type = ((ATermPlaceholder)l.getFirst()).getPlaceholder();
+	      if (ph_type.getType() == APPL) {
+	        ATermAppl appl = (ATermAppl)ph_type;
+	        if (appl.getName().equals("list") && appl.getArguments().isEmpty()) {
+	          list.add(this);
+	          return true;
+	        }
+	      } 
+      } 
+      else if (l == PureFactory.empty) {
+        return false;
       }
 
       List submatches = first.match(l.getFirst());
@@ -123,8 +124,12 @@ class ATermListImpl
     if (first == null) {
       return this;
     }
-
-    return factory.makeList(first.make(args), (ATermList)next.make(args));
+    System.out.println("first: " + first);
+    System.out.println("next: " + next);
+    ATerm head = first.make(args);
+    ATermList tail = (ATermList) next.make(args);
+System.out.println("head: " + head + " tail: " + tail);
+    return factory.makeList(head, tail);
   }
 
   //}}}
