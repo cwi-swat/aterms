@@ -1,6 +1,7 @@
 $Id$
 
 2003-03-14 <jurgenv@cwi.nl>
+ * Bumped to 1.2beta
  * Removed specialized visitor package from aterm implementation
  * Made aterm implementation depend on and use jjtraveler-1.3.jar
  * TODO: make real dependency on jjtraveler package instead of jar inclusion

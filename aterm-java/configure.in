@@ -1,7 +1,7 @@
 dnl $Id$
 
 AC_INIT(configure.in)
-AM_INIT_AUTOMAKE(aterm-java, 1.1)
+AM_INIT_AUTOMAKE(aterm-java, 1.2beta)
 AC_PREREQ(2.13)
 
 dnl Let aclocal use macros in ./config directory
@@ -18,7 +18,6 @@ AC_OUTPUT(
   Makefile
   aterm/Makefile
   aterm/pure/Makefile
-  aterm/visitor/Makefile
   test/Makefile
   config/Makefile
 )
