@@ -9,10 +9,9 @@ include ${top_srcdir}/make_rules
 ADTC		= ${top_builddir}/utils/adt-to-c
 ADTJAVA         = ${top_builddir}/utils/adt-to-java
 
-JAVATESTS = PeanoTest
+JAVATESTS = PeanoTest ListTest
 TESTS		= rolotest listtest \
 	          $(foreach j, ${JAVATESTS}, ${j}.java.sh)
-CLEANFILES+=*.java.sh
 
 check_PROGRAMS	= rolotest listtest
 check_LIBRARIES	= librolodex.a liblist.a 
@@ -36,14 +35,20 @@ PeanoTestAPI = Nat.java Nat_SucImpl.java  PeanoConstructor.java \
                NatImpl.java  Nat_Zero.java PeanoFactory.java \
                Nat_Suc.java  Nat_ZeroImpl.java
 
-check_JAVA = ${PeanoTestAPI} PeanoTest.java
-BUILT_SOURCES = ${PeanoTestAPI}
+ListTestAPI =  ListFactory.java ListConstructor.java ModulesImpl.java \
+               Modules_ListImpl.java Modules_List.java Modules_BodyImpl.java \
+               Modules_Body.java Modules.java ModuleListImpl.java \
+	       ModuleList_ModulesImpl.java ModuleList_Modules.java \
+	       ModuleList.java
+
+check_JAVA = ${PeanoTestAPI} PeanoTest.java \
+	     ${ListTestAPI} ListTest.java
 
 CLEANFILES		= ${check_PROGRAMS} ${check_LIBRARIES} \
 			rolodex*.[ch] rolodex_dict.[ch] \
 			list.[ch] list_dict.[ch] \
-			PeanoFactory.java PeanoConstructor.java \
-			Nat*.java
+			${PeanoTestAPI} ${ListTestAPI} \
+			*.java.sh
 
 EXTRA_DIST		= rolodex.adt list.adt list.pro peano.adt
 
@@ -71,4 +76,11 @@ ${PeanoTestAPI}: peano.adt
 	           --output ${top_builddir}/test \
 		   --package test \
 		   --name peano \
+		   --classpath ${top_builddir}
+
+${ListTestAPI}: list.adt
+	${ADTJAVA} --input ${top_srcdir}/test/list.adt \
+	           --output ${top_builddir}/test \
+		   --package test \
+		   --name list \
 		   --classpath ${top_builddir}
