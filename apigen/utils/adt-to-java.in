@@ -19,6 +19,7 @@ Usage: $PRG -i <adt-file> [options]
 Parameters:
 
   -i | --input <FILE>     specify input adt                [not specified]
+  -c | --classpath <PATH> set classpath                    [see below]
   -f | --folding          folding enabled                  [off]
   -o | --output <DIR>     specify output directory         [.]
   -p | --package <STR>    specify package                  [""]
@@ -30,7 +31,7 @@ Parameters:
   -h | --help             display this information
 
 Default locations:
-  classes = ${CLASSES}
+  classes = ${CLASSES}:${SHARED_OBJECTS}:${JAVA_ATERM}
 
 Example: $PRG -i Booleans.adt --package sdf -m 'java.util.*'
 
@@ -75,7 +76,7 @@ require() {
    NAME=""
 
 # data needed
-CLASSES=${prefix}/classes:${JAVA_ATERM}:${SHARED_OBJECTS}
+CLASSES=${prefix}/classes
 
 # }}}
 
@@ -91,6 +92,9 @@ do
   case $1 in
     -i | --input)
       shift; INPUT=$1 ;;
+ 
+    -c | --classpath)
+      shift; CLASSES=$1;;
 
     -o | --output)
       shift; OUTPUT=$1 ;;
@@ -179,7 +183,8 @@ fi
 # }}}
 
 # {{{  generate Java code from ADT
-java  -classpath ${CLASSES} apigen.gen.java.JavaGen \
+java  -classpath ${CLASSES}:${SHARED_OBJECTS}:${JAVA_ATERM} \
+          apigen.gen.java.JavaGen \
 	  -input ${INPUT}	\
 	  -basedir ${OUTPUT}	\
 	  ${OPT_IMPORTS}	\
