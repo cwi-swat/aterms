@@ -1,7 +1,3 @@
 #! /bin/sh
-#
-# $Id$
 
-aclocal -I .
-autoconf
-automake -a
+autoreconf --install --symlink $*

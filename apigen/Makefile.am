@@ -1,5 +1,7 @@
 SUBDIRS = apigen scripts lib-1.0 lib-2.0 utils test doc
 
+ACLOCAL_FLAGS = -I .
+
 JARFILE    = apigen-${VERSION}.jar
 DISTFILE = ${distdir}.tar.gz
 data_DATA  = ${JARFILE}

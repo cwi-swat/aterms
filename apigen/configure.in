@@ -1,12 +1,10 @@
 dnl $Id$
 
 dnl Process this file with autoconf to produce a configure script.
-AC_INIT(configure.in)
+AC_INIT
+AC_CONFIG_SRCDIR([configure.in])
 AM_INIT_AUTOMAKE(apigen, 2.0)
-AC_PREREQ(2.13)
-
-dnl Add current dir to searchpath
-ACLOCAL="${ACLOCAL} -I ."
+AC_PREREQ(2.59)
 
 dnl Our own version of libdir whose value is set dynamically
 AC_SUBST(INSTLIBDIR)
@@ -15,7 +13,7 @@ INSTLIBDIR="$libdir"
 AC_PROG_CC
 
 dnl What commands are needed to set the variable MAKE in Makefiles?
-AC_SET_MAKE
+AC_PROG_MAKE_SET([])
 
 dnl {{{ Ranlib stuff
 
@@ -66,8 +64,7 @@ AC_SUBST(EXTERNAL_JARS)
 dnl {{{ Output files
 
 dnl Which files need updating?
-AC_OUTPUT(
-Makefile
+AC_CONFIG_FILES([Makefile
 utils/Makefile
 scripts/Makefile
 lib-1.0/Makefile
@@ -84,6 +81,7 @@ apigen/gen/tom/c/Makefile
 apigen/gen/tom/java/Makefile
 test/Makefile
 doc/Makefile
-)
+])
+AC_OUTPUT
 
 dnl }}}
