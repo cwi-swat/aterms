@@ -50,7 +50,6 @@ public class Main {
 		JavaGenerationParameters params = new JavaGenerationParameters();
 		params.setOutputDirectory(".");
 		params.setVerbose(false);
-		params.setFolding(false);
 		params.setVisitable(false);
 		return params;
 	}

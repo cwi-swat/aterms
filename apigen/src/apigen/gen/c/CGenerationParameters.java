@@ -8,6 +8,7 @@ import apigen.gen.GenerationParameters;
 public class CGenerationParameters extends GenerationParameters {
 	private String prologue;
 	private boolean termCompatibility;
+	private boolean folding;
 
 	public void parseArguments(List args) {
 		Iterator iter = args.iterator();
@@ -16,6 +17,10 @@ public class CGenerationParameters extends GenerationParameters {
 			if ("-prefix".startsWith(arg)) {
 				shift(iter);
 				setPrefix(shiftArgument(iter));
+			}
+			else if ("--folding".startsWith(arg) || "-f".startsWith(arg)) {
+				shift(iter);
+				setFolding(true);
 			}
 			else if ("-prologue".startsWith(arg)) {
 				shift(iter);
@@ -31,9 +36,10 @@ public class CGenerationParameters extends GenerationParameters {
 	
 	public String usage() {
 		StringBuffer buf = new StringBuffer();
-		buf.append("\t-prefix <prefix>          [\"\"]");
-		buf.append("\t-prologue <file>          include prologue <file>");
-		buf.append("\t-compatible:term          use backwards compatible toTerm names");
+		buf.append("\t-prefix <prefix>          [\"\"]\n");
+		buf.append("\t-f | --folding                 [off]\n");
+		buf.append("\t-prologue <file>          include prologue <file>\n");
+		buf.append("\t-compatible:term          use backwards compatible toTerm names\n");
 		return buf.toString();
 	}
 
@@ -51,6 +57,14 @@ public class CGenerationParameters extends GenerationParameters {
 
 	public void setTermCompatibility(boolean termCompatibility) {
 		this.termCompatibility = termCompatibility;
+	}
+
+	public boolean isFolding() {
+		return folding;
+	}
+
+	public void setFolding(boolean folding) {
+		this.folding = folding;
 	}
 
 }

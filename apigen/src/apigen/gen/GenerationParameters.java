@@ -9,7 +9,6 @@ public class GenerationParameters {
 	private String apiName;
 	private String prefix;
 	private boolean verbose;
-	private boolean folding;
 	private List inputFiles;
 
 	public GenerationParameters() {
@@ -23,10 +22,6 @@ public class GenerationParameters {
 			if ("--input".startsWith(arg) || "-i".startsWith(arg)) {
 				shift(iter);
 				addInputFile(shiftArgument(iter));
-			}
-			else if ("--folding".startsWith(arg) || "-f".startsWith(arg)) {
-				shift(iter);
-				setFolding(true);
 			}
 			else if ("--output".startsWith(arg) || "-o".startsWith(arg)) {
 				shift(iter);
@@ -52,7 +47,6 @@ public class GenerationParameters {
 	public String usage() {
 		StringBuffer buf = new StringBuffer();
 		buf.append("\t-i | --input <in>              <multiple allowed>\n");
-		buf.append("\t-f | --folding                 [off]\n");
 		buf.append("\t-o | --output <outputdir>      [\".\"]\n");
 		buf.append("\t-n | --name <api name>         <obligatory>\n");
 		buf.append("\t-v | --verbose                 [off]\n");
@@ -67,14 +61,6 @@ public class GenerationParameters {
 
 	protected void shift(Iterator args) {
 		args.remove();
-	}
-
-	public boolean isFolding() {
-		return folding;
-	}
-
-	public void setFolding(boolean folding) {
-		this.folding = folding;
 	}
 
 	public List getInputFiles() {
