@@ -105,9 +105,9 @@ ATerm ATmakeTerm(ATerm pat, ...)
 /*{{{  ATerm ATvmake(const char *pat, va_list args) */
 ATerm ATvmake(const char *pat, va_list args)
 {
-	int       hash_val;
-	char     *walk = (char *) pat;
-	at_entry *bucket;
+	unsigned int hash_val;
+	char        *walk = (char *) pat;
+	at_entry    *bucket;
 
 	for(hash_val = 0; *walk; walk++)
 		hash_val = 251 * hash_val + *walk;
