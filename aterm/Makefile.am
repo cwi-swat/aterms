@@ -12,12 +12,10 @@ aterm.pkg: configure.in ${srcdir}/utils/genpkg.sh
 	${srcdir}/utils/genpkg.sh > $@
 
 www-dist: distcheck
-	cp ${DISTFILE} ${WWWDIR}
-	chmod g+w ${WWWDIR}/${DISTFILE}
-	gzip --best < doc/at.ps > ${WWWDIR}/doc/at.ps.gz
-	chmod g+w ${WWWDIR}/doc/at.ps.gz
-	gzip --best < doc/manual.ps > ${WWWDIR}/doc/manual.ps.gz
-	chmod g+w ${WWWDIR}/doc/manual.ps.gz
-	cp java/aterm-javadoc.tar.gz ${WWWDIR}/doc
-	chmod g+w ${WWWDIR}/doc/aterm-javadoc.tar.gz
+	install --mode=0664 --group=sen ${DISTFILE} ${WWWDIR}
+	gzip --best < doc/at.ps > doc/at.ps.gz
+	install --mode=0664 --group=sen doc/at.ps.gz ${WWWDIR}/doc
+	gzip --best < doc/manual.ps > doc/manual.ps.gz
+	install --mode=0664 --group=sen doc/manual.ps.gz ${WWWDIR}/doc
+	install --mode=0664 --group=sen java/aterm-javadoc.tar.gz ${WWWDIR}/doc
 	cd ${WWWDIR}; make
