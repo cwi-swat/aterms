@@ -396,7 +396,9 @@ static long keyPut(ATermIndexedSet hashset, ATerm key,
     m = hashset->nr_entries; 
     n = hashPut(hashset,key,m);
     if (n != m)  { 
-      *isnew = ATfalse;
+      if (isnew != NULL) {
+	*isnew = ATfalse;
+      }
       if(value != NULL) { 
 	assert(hashset->values!=NULL);
 	hashset->values[ divELEMENTS_PER_TABLE(n)]
@@ -411,7 +413,9 @@ static long keyPut(ATermIndexedSet hashset, ATerm key,
       [modELEMENTS_PER_TABLE(hashset->first_free_position-1)]; 
     n = hashPut(hashset, key, m);
     if (n != m) { 
-      *isnew = ATfalse;
+      if (isnew != NULL) {
+	*isnew = ATfalse;
+      }
       if(value != NULL) { 
 	assert(hashset->values != NULL);
 	hashset->values[ divELEMENTS_PER_TABLE(n)]
@@ -422,7 +426,9 @@ static long keyPut(ATermIndexedSet hashset, ATerm key,
     hashset->first_free_position--;
   }
 
-  *isnew = ATtrue;
+  if (isnew != NULL) {
+    *isnew = ATtrue;
+  }
   insertKeyValue(hashset, n, key, value);
   if(hashset->nr_entries >= hashset->max_entries) {
     hashResizeSet(hashset); /* repaired by Jan Friso Groote, 25/7/00 */
