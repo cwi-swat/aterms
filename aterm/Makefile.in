@@ -12,7 +12,7 @@ bindir      = $(exec_prefix)/bin
 libdir      = $(exec_prefix)/lib
 includedir  = $(prefix)/include
 
-DIRS		= aterm toolbus asfix test
+DIRS		= aterm toolbus asfix test doc
 DISTDIR		= ${PRODUCT}-${VERSION}
 DISTFILE	= ${DISTDIR}.tar.gz
 TMPDIR		= /tmp
