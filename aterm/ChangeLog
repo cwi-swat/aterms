@@ -1,5 +1,8 @@
 $Id$
 
+2001/05/15 ({jong,olivierp}@cwi.nl)
+ * Optimized ATremoveAllAnnotations
+
 2001/05/04 ({jong,olivierp}@cwi.nl)
  * Removed debug spam in AbstractTool.java
  * Added support for javadoc generation

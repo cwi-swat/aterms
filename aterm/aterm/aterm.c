@@ -3040,17 +3040,46 @@ ATerm ATremoveAllAnnotations(ATerm t)
 	  return AT_removeAnnotations(t);
 	} else {
 	  ATermList l = (ATermList)t;
-	  return (ATerm)ATinsert((ATermList)ATremoveAllAnnotations((ATerm)ATgetNext(l)),
-				 ATremoveAllAnnotations(ATgetFirst(l)));
+	  ATerm     new_head, head = ATgetFirst(l);
+	  ATermList new_tail, tail = ATgetNext(l);
+	  new_head = ATremoveAllAnnotations(head);
+	  new_tail = (ATermList)ATremoveAllAnnotations((ATerm)tail);
+	  if (new_head == head && new_tail == tail) {
+	    return AT_removeAnnotations(t);
+	  }
+	  return (ATerm)ATinsert(new_tail, new_head);
 	}
       }
 
     case AT_APPL:
       {
 	ATermAppl appl = (ATermAppl)t;
-	ATermList args = ATgetArguments(appl);
 	AFun fun = ATgetAFun(appl);
-	return (ATerm)ATmakeApplList(fun, (ATermList)ATremoveAllAnnotations((ATerm)args));
+	int arity = ATgetArity(fun);
+	if (arity <= MAX_INLINE_ARITY) {
+	  ATerm arg, args[MAX_INLINE_ARITY];
+	  int i;
+	  ATbool changed = ATfalse;
+	  for (i=0; i<arity; i++) {
+	    arg = ATgetArgument(appl, i);
+	    args[i] = ATremoveAllAnnotations(arg);
+	    if (args[i] != arg) {
+	      changed = ATtrue;
+	    }
+	  }
+	  if (changed) {
+	    return (ATerm)ATmakeApplArray(fun, args);
+	  } else {
+	    return AT_removeAnnotations(t);
+	  }
+	} else {
+	  ATermList args = ATgetArguments(appl);
+	  ATermList new_args = (ATermList)ATremoveAllAnnotations((ATerm)args);
+	  if (args == new_args) {
+	    return AT_removeAnnotations(t);
+	  }
+	  return (ATerm)ATmakeApplList(fun, new_args);
+	}
       }
 
     case AT_PLACEHOLDER:
