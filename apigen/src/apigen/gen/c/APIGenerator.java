@@ -1171,7 +1171,11 @@ public class APIGenerator extends CGenerator {
 		StringBuffer decl = new StringBuffer();
 		decl.append(type_name + " " + buildConstructorName(type, alt) + "(");
 
-		decl.append(buildFieldArgumentList(type, alt));
+		String fieldArgumentList = buildFieldArgumentList(type, alt);
+		if (fieldArgumentList.equals("")) {
+		  fieldArgumentList = "void";
+		}
+		decl.append(fieldArgumentList);
 
 		decl.append(")");
 		return decl.toString();

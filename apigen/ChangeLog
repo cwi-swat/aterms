@@ -1,5 +1,11 @@
 # $Id$
 
+Fri Mar 26 10:12:10 CET 2004 <{jong,kooiker}@cwi.nl>
+ * apigen/apigen/gen/c/APIGenerator.java:
+   - generate makeXYZ(void) instead of makeXYZ() when there are no
+     parameters. Explicitly saying a function is (void) forces gcc
+     to check the parameters.
+
 Mon Mar  8 13:57:37 CET 2004 <{jong,kooiker}@cwi.nl>
  * disable generation of bottom types in C
  * generate 'const' for all 'char *' parameters in constructor and setXXX
