@@ -46,7 +46,12 @@ public class ATermListImpl extends ATermImpl implements ATermList {
 		return ATerm.LIST;
 	}
 
-	public void init(
+    /**
+     * init is used internally by the PureFactory to initialize a prototype of
+     * an ATermList without using the new operator all the time
+     * 
+     */
+	protected void init(
 		int hashCode,
 		ATermList annos,
 		ATerm first,
@@ -62,7 +67,7 @@ public class ATermListImpl extends ATermImpl implements ATermList {
 		}
 	}
 
-	public void initHashCode(ATermList annos, ATerm first, ATermList next) {
+    protected void initHashCode(ATermList annos, ATerm first, ATermList next) {
 		this.first = first;
 		this.next = next;
 		this.internSetAnnotations(annos);

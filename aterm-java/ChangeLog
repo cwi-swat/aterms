@@ -2,6 +2,7 @@ $Id$
 
 2003/08/14 <jurgenv@cwi.nl>
  * Made all constructors of ATerm implementations protected.
+ * Made init and initHashCode methods also protected.
  
 2003/08/13 <jurgenv@cwi.nl>
  * Removed getStaticFactory methods and static references to factories to make

@@ -46,7 +46,7 @@ class AFunImpl extends ATermImpl implements AFun {
 		this.isQuoted = isQuoted;
 	}
 
-	public void initHashCode(String name, int arity, boolean isQuoted) {
+	protected void initHashCode(String name, int arity, boolean isQuoted) {
 		this.name = name.intern();
 		this.arity = arity;
 		this.isQuoted = isQuoted;
@@ -268,7 +268,7 @@ class AFunImpl extends ATermImpl implements AFun {
 		return c;
 	}
 
-	public int hashFunction2() {
+	private int hashFunction2() {
 		int offset = 0;
 		int count = name.length();
 		char[] source = new char[count];

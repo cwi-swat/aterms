@@ -50,7 +50,7 @@ public class ATermApplImpl extends ATermImpl implements ATermAppl {
     }
   }
 
-  public void initHashCode(ATermList annos, AFun fun, ATerm[] i_args) {
+  protected void initHashCode(ATermList annos, AFun fun, ATerm[] i_args) {
     this.fun  = fun;
     this.args = i_args;
     this.internSetAnnotations(annos);
@@ -288,7 +288,7 @@ public class ATermApplImpl extends ATermImpl implements ATermAppl {
     return c;
   }
 
-  static public int staticDoobs_hashFuntion(Object[] o) {
+  static private int staticDoobs_hashFuntion(Object[] o) {
       //System.out.println("static doobs_hashFuntion");
     
     int initval = 0; /* the previous hash value */
