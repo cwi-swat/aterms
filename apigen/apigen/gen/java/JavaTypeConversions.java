@@ -32,6 +32,10 @@ public class JavaTypeConversions implements TypeConversions {
     public String getCharsType() {
         return "String";
     }
+
+    public String getCharType() {
+        return "char";
+    }
     
     
     public String makeIntegerToATermConversion(String expression) {
@@ -55,6 +59,10 @@ public class JavaTypeConversions implements TypeConversions {
     public String makeCharsToATermConversion(String expression) {
         return "stringToChars(" + expression + ")";
     }
+
+    public String makeCharToATermConversion(String expression) {
+        return "byteToChar(" + expression + ")";
+    }
     
     public String makeATermToIntegerConversion(String expression) {
         return "((aterm.ATermInt) " + expression + ").getInt()";
@@ -74,5 +82,9 @@ public class JavaTypeConversions implements TypeConversions {
 
     public String makeATermToCharsConversion(String expression) {
         return "charsToString(" + expression + ")";
+    }
+
+    public String makeATermToCharConversion(String expression) {
+        return "charToByte(" + expression + ")";
     }
 }

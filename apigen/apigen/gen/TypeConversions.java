@@ -30,6 +30,11 @@ public interface TypeConversions {
      * @return The target implementation type of the builtin Chars type
      */
     public String getCharsType();
+
+    /**
+     * @return The target implementation type of the builtin Char type
+     */
+    public String getCharType();
     
     /**
      * Build a conversion from a Integer to ATerm
@@ -79,6 +84,18 @@ public interface TypeConversions {
      *
      */
     public String makeCharsToATermConversion(String expression);
+
+    /**
+     * Build a conversion from a Char to an ATerm. A Char is an
+     * integer representing a character value (0-255).
+     * 
+     * @see makeATermToCharConversion 
+     * 
+     * @param expr The expression that is input to the conversion
+     * @return An implementation of a conversion from a Char to ATerm
+     *
+     */
+    public String makeCharToATermConversion(String expression);
    
     
     /**
@@ -130,4 +147,16 @@ public interface TypeConversions {
      *
      */
     public String makeATermToCharsConversion(String expression);
+
+    /**
+     * Build a conversion from an ATerm to a Char. A Char is
+     * an integer (0-255) that represent a character value.
+     * 
+     * @see makeATermToCharConversion 
+     * 
+     * @param expr The expression that is input to the conversion
+     * @return An implementation of a conversion from a ATerm  to a Char
+     *
+     */
+    public String makeATermToCharConversion(String expression);
 }

@@ -97,8 +97,19 @@ public class FactoryGenerator extends JavaGenerator {
     
   	private void genConversions() {
         genCharsToString();
+	genCharToByte();
         genStringToChars();
+	genByteToChar();
     }
+
+    private void genCharToByte() {
+        println("  public static char charToByte(aterm.ATerm arg) {");
+        println();
+        println("      return((char) ((aterm.ATermInt) arg).getInt());");
+        println("  }");
+        println();
+    }
+
     private void genCharsToString() {
         println("  public static String charsToString(aterm.ATerm arg) {");
         println("    aterm.ATermList list = (aterm.ATermList) arg;");
@@ -109,6 +120,13 @@ public class FactoryGenerator extends JavaGenerator {
         println("    }");
         println();
         println("    return str.toString();");
+        println("  }");
+        println();
+    }
+
+    private void genByteToChar() {
+        println("  public aterm.ATerm byteToChar(char ch) {");
+        println("      return getPureFactory().makeInt((int) ch);");
         println("  }");
         println();
     }
@@ -1130,6 +1148,11 @@ public class FactoryGenerator extends JavaGenerator {
                     "    args.add((aterm.ATerm) stringToChars("
                         + getArgumentCall
                         + "));");
+            } else if (field_type.equals("char")) {
+                println(
+                    "    args.add(new Integer((char) "
+                        + getArgumentCall
+                        + "));");
             } else {
                 println("    args.add(" + getArgumentCall + ".toTerm());");
             }
@@ -1376,6 +1399,8 @@ public class FactoryGenerator extends JavaGenerator {
             result = "(aterm.ATermList) children.get(" + argnr + ")";
         } else if (fieldType.equals("chars")) {
             result = "(String) charsToString((aterm.ATerm) children.get(" + argnr + "))";
+        } else if (fieldType.equals("char")) {
+            result = "(char) charToByte((aterm.ATerm) children.get(" + argnr + "))";
         } else {
             result = fieldClass + "FromTerm((aterm.ATerm) children.get(" + argnr + "))";
         }

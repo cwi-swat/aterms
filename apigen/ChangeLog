@@ -1,5 +1,11 @@
 # $Id$
 
+Thu Dec 16 10:59:44 CET 2004 <jurgenv@cwi.nl>
+ * Added new builtin type 'char', which leads to arguments of type
+   char in both C and Java, but constructs a corresponding ATermInt
+   in ASCII value underneath the API. This is needed to implement
+   structured lexicals (sdf-to-adt).
+
 2004-11-22  pem  <pem@becky.local>
  * added a --traveler option to parameterize the jjtraveler package.
  * set to 'jjtraveler' by default

@@ -85,8 +85,18 @@ public class APIGenerator extends CGenerator {
     private void genStaticConversions() {
 		printFoldOpen("conversion functions");
 		genStaticStringToChars();
+		genStaticByteToChar();
 		genStaticCharsToString();
+		genStaticCharToByte();
 		printFoldClose();
+		println();
+	}
+
+	private void genStaticCharToByte() {
+		println("char " + prefix + "charToByte(ATerm arg)");
+		println("{");
+		println("    return (char) ATgetInt((ATermInt) arg);");
+		println("}");
 		println();
 	}
 
@@ -125,6 +135,14 @@ public class APIGenerator extends CGenerator {
 		println("  }");
 		println();
 		println("  return (ATerm) result;");
+		println("}");
+		println();
+	}
+
+	private void genStaticByteToChar() {
+		println("ATerm " + prefix + "byteToChar(char ch)");
+		println("{");
+		println("    return (ATerm) ATmakeInt(ch);");
 		println("}");
 		println();
 	}

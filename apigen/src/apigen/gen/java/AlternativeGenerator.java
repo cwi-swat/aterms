@@ -283,6 +283,8 @@ public class AlternativeGenerator extends JavaGenerator {
             print("getFactory().makeReal(" + fieldId + ")");
         } else if (fieldType.equals("chars")) {
             print(buildFactoryGetter() + ".stringToChars(" + fieldId + ")");
+        } else if (fieldType.equals("char")) {
+            print(buildFactoryGetter() + ".byteToChar(" + fieldId + ")");
         } else {
             print(fieldId);
         }
@@ -326,6 +328,15 @@ public class AlternativeGenerator extends JavaGenerator {
                 "   return "
                     + factoryClass
                     + ".charsToString(getArgument("
+                    + fieldIndex
+                    + "));");
+        } else if (fieldType.equals("char")) {
+            JavaGenerationParameters params = getJavaGenerationParameters();
+            String factoryClass = FactoryGenerator.qualifiedClassName(params,type.getModuleName());
+            println(
+                "   return "
+                    + factoryClass
+                    + ".charToByte(getArgument("
                     + fieldIndex
                     + "));");
         } else {
@@ -408,6 +419,8 @@ public class AlternativeGenerator extends JavaGenerator {
                     instance_of = "aterm.ATerm";
                 } else if (fieldType.equals("chars")) {
                     instance_of = "aterm.ATermList";
+                } else if (fieldType.equals("char")) {
+                    instance_of = "aterm.ATermInt";
                 } else {
                     instance_of = fieldClass;
                 }

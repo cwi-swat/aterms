@@ -36,8 +36,11 @@ int main(int argc, char *argv[])
 
   data[5] = (ATerm) makeLexicalDefault("hello");
   assert(data[5] && ATisEqual(data[5], ATparse("string([104,101,108,108,111])")));
-
   assert(strcmp(getLexicalString((Lexical) data[5]), "hello") == 0);
+
+  data[6] = (ATerm) makeCharacterDefault('A');
+  assert(data[6] && ATisEqual(data[6], ATparse("character(65)")));
+  assert(getCharacterCh((Character) data[6]) == 'A' );
 
   return 0;
 }

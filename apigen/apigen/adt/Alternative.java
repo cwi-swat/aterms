@@ -82,6 +82,9 @@ public class Alternative {
 			else if (ph.match("chars") != null) {
 				return ATerm.LIST;
 			}
+			else if (ph.match("char") != null) {
+				return ATerm.INT;
+			}
 			else {
 				throw new RuntimeException("strange root pattern: " + match_pattern);
 			}
@@ -132,6 +135,9 @@ public class Alternative {
 
 					if (typeName.equals("chars")) {
 						return pattern.getFactory().parse("[<list>]");
+					}
+					else if (typeName.equals("char")) {
+						return pattern.getFactory().parse("<int>");
 					}
 					else if (isBasicATermType(typeName)) {
 						return pattern.getFactory().makePlaceholder(type);

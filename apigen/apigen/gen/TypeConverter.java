@@ -10,6 +10,8 @@ public class TypeConverter implements TypeConversions {
     public static final String REAL_TYPE = "real";
     public static final String INT_TYPE = "int";
     public static final String CHARS_TYPE = "chars";
+    public static final String CHAR_TYPE = "char";
+
     private Map reservedTypes;
     private TypeConversions converter;
 
@@ -28,6 +30,7 @@ public class TypeConverter implements TypeConversions {
         reservedTypes.put(TERM_TYPE, conv.getTermType());
         reservedTypes.put(LIST_TYPE, conv.getListType());
         reservedTypes.put(CHARS_TYPE, conv.getCharsType());
+        reservedTypes.put(CHAR_TYPE, conv.getCharType());
 
         this.converter = conv;
     }
@@ -92,6 +95,10 @@ public class TypeConverter implements TypeConversions {
         return (String) reservedTypes.get(CHARS_TYPE);
     }
 
+    public String getCharType() {
+        return (String) reservedTypes.get(CHAR_TYPE);
+    }
+
     /**
 	 * Builds conversion code from builtin types to ATerms
 	 * 
@@ -112,6 +119,8 @@ public class TypeConverter implements TypeConversions {
             return makeListToATermConversion(expression);
         } else if (CHARS_TYPE.equals(type)) {
             return makeCharsToATermConversion(expression);
+        } else if (CHAR_TYPE.equals(type)) {
+            return makeCharToATermConversion(expression);
         } else if (TERM_TYPE.equals(type)) {
             return expression;
         } else {
@@ -121,6 +130,10 @@ public class TypeConverter implements TypeConversions {
 
     public String makeCharsToATermConversion(String expression) {
         return converter.makeCharsToATermConversion(expression);
+    }
+
+    public String makeCharToATermConversion(String expression) {
+        return converter.makeCharToATermConversion(expression);
     }
 
     public String makeListToATermConversion(String expression) {
@@ -155,6 +168,10 @@ public class TypeConverter implements TypeConversions {
         return converter.makeATermToCharsConversion(expression);
     }
 
+    public String makeATermToCharConversion(String expression) {
+        return converter.makeATermToCharConversion(expression);
+    }
+
     public String makeATermToListConversion(String expression) {
         return converter.makeATermToListConversion(expression);
     }
@@ -179,6 +196,8 @@ public class TypeConverter implements TypeConversions {
             return makeATermToListConversion(expression);
         } else if (CHARS_TYPE.equals(type)) {
             return makeATermToCharsConversion(expression);
+        } else if (CHAR_TYPE.equals(type)) {
+            return makeATermToCharConversion(expression);
         } else if (TERM_TYPE.equals(type)) {
             return expression;
         } else {
@@ -199,6 +218,8 @@ public class TypeConverter implements TypeConversions {
             return makeListToATermConversion(expression);
         } else if (CHARS_TYPE.equals(type)) {
             return makeCharsToATermConversion(expression);
+        } else if (CHAR_TYPE.equals(type)) {
+            return makeCharToATermConversion(expression);
         } else if (TERM_TYPE.equals(type)) {
             return expression;
         } else {

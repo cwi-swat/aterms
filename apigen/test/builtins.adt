@@ -13,5 +13,6 @@
   separated-list(SepTermList, term,[<sep(str)>,","]),
   separated-list(SepStringList, str,[<sep(str)>,","]),
   
-  constructor(Lexical, default, string(<string(chars)>))
+  constructor(Lexical, default, string(<string(chars)>)),
+  constructor(Character, default, character(<ch(char)>))
 ]

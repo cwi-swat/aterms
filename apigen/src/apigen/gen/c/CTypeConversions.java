@@ -33,6 +33,10 @@ public class CTypeConversions implements TypeConversions {
         return "char*";
     }
 
+    public String getCharType() {
+        return "char";
+    }
+
     public String makeIntegerToATermConversion(String expression) {
         return "(ATerm) ATmakeInt(" + expression + ")";
     }
@@ -53,6 +57,10 @@ public class CTypeConversions implements TypeConversions {
         return "((ATerm) " + prefix + "stringToChars(" + expression + "))";
     }
 
+    public String makeCharToATermConversion(String expression) {
+        return "((ATerm) " + prefix + "byteToChar(" + expression + "))";
+    }
+
     public String makeATermToIntegerConversion(String expression) {
         return "ATgetInt((ATermInt) " + expression + ")";
     }
@@ -71,5 +79,9 @@ public class CTypeConversions implements TypeConversions {
 
     public String makeATermToCharsConversion(String expression) {
         return prefix + "charsToString((ATerm)" + expression + ")";
+    }
+
+    public String makeATermToCharConversion(String expression) {
+        return prefix + "charToByte((ATerm)" + expression + ")";
     }
 }
