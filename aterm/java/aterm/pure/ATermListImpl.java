@@ -82,17 +82,11 @@ class ATermListImpl
       }
 
       // match("[1,2,3],[<list>]")
-      if (l.getFirst().getType() == PLACEHOLDER) {
-      	ATerm ph_type = ((ATermPlaceholder)l.getFirst()).getPlaceholder();
-	      if (ph_type.getType() == APPL) {
-	        ATermAppl appl = (ATermAppl)ph_type;
-	        if (appl.getName().equals("list") && appl.getArguments().isEmpty()) {
-	          list.add(this);
-	          return true;
-	        }
-	      } 
-      } 
-      else if (l == PureFactory.empty) {
+      if (isListPlaceHolder(l.getFirst())) {
+	      list.add(this);
+	      return true;
+	    }
+	    else if (l == PureFactory.empty) {
         return false;
       }
 
@@ -117,19 +111,35 @@ class ATermListImpl
   }
 
   //}}}
+  
+  private boolean isListPlaceHolder(ATerm trm) 
+  {
+    ATerm ph_type = ((ATermPlaceholder) trm).getPlaceholder();
+   
+    if (ph_type.getType() == APPL) {
+      ATermAppl appl = (ATermAppl)ph_type;
+      if (appl.getName().equals("list") && appl.getArguments().isEmpty()) {
+        return true;
+      }
+    } 
+   
+    return false; 
+  }
+  
   //{{{ public ATerm make(List args)
 
   public ATerm make(List args)
   {
-    if (first == null) {
-      return this;
+    if (this == factory.empty) {
+      return factory.empty;
     }
-    System.out.println("first: " + first);
-    System.out.println("next: " + next);
-    ATerm head = first.make(args);
-    ATermList tail = (ATermList) next.make(args);
-System.out.println("head: " + head + " tail: " + tail);
-    return factory.makeList(head, tail);
+    
+    if (isListPlaceHolder(first) && next == factory.empty) {
+      return next.make(args);
+    }
+    else {
+      return factory.makeList(first.make(args), (ATermList) next.make(args)); 
+    }
   }
 
   //}}}
