@@ -1472,7 +1472,17 @@ ATermList ATmakeList1(ATerm el)
 ATermList ATinsert(ATermList tail, ATerm el)
 {
   ATerm cur;
-  header_type header = LIST_HEADER(0, (GET_LENGTH(tail->header)+1));
+  int length;
+  header_type header;
+  
+  length = GET_LENGTH(tail->header);
+
+  if (length >= MAX_LENGTH-1) {
+    ATabort("ATinsert: attempt to insert beyond max # elements: (%d >= %d)\n",
+	    length, MAX_LENGTH-1);
+  }
+
+  header = LIST_HEADER(0, length+1);
 
   CHECK_TERM((ATerm)tail);
   CHECK_TERM(el);
@@ -2568,6 +2578,10 @@ ATermBlob ATmakeBlob(int size, void *data)
   ATerm cur;
   header_type header = BLOB_HEADER(0, size);
   HashNumber hnr;
+
+  if (size > MAX_LENGTH) {
+    ATabort("Attempt to create blob > MAX_SIZE (%d > %d)\n", size, MAX_LENGTH);
+  }
 
   protoBlob = (ATermBlob) protoTerm;
   protoBlob->header = header;

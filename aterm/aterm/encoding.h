@@ -7,7 +7,6 @@
 #ifndef ENCODING_H
 #define ENCODING_H
 
-#ifndef PO
 /*
  |--------------------------------|
  |info|type |arity|quoted|mark|age|
@@ -31,10 +30,16 @@
 
 #if AT_64BIT
 #define SHIFT_LENGTH  34
+#define HEADER_BITS 64
+typedef unsigned long header_type;
 #else
 #define SHIFT_LENGTH  10
+#define HEADER_BITS 32
+typedef unsigned int header_type;
 #endif /* AT_64BIT */
 
+#define LENGTH_BITS (HEADER_BITS - SHIFT_LENGTH)
+#define MAX_LENGTH (1 << LENGTH_BITS)
 
 #define GET_AGE(h)     ((unsigned int)(((h) & MASK_AGE) >> SHIFT_AGE))
 #define SET_AGE(h, a)  ((h) = (((h) & ~MASK_AGE) | ((a) << SHIFT_AGE)))
@@ -51,30 +56,6 @@
 #define HIDE_AGE_MARK(h)    ((h) & ~MASK_AGE_MARK)
 /* #define EQUAL_HEADER(h1,h2) (HIDE_AGE_MARK(h1)==HIDE_AGE_MARK(h2)) */
 #define EQUAL_HEADER(h1,h2) (HIDE_AGE_MARK(h1^h2) == 0)
-#else /* PO */
-/*
- |----------------------------|
- |info|type |arity|mark|quoted|
- |----------------------------|
-  31   7 6 5 4 3 2   1    0
-  */
-#define	MASK_QUOTED	(1<<0)
-#define	MASK_ANNO	MASK_QUOTED
-#define MASK_MARK	(1<<1)
-#define MASK_ARITY	((1<<2) | (1<<3) | (1<<4))
-#define MASK_TYPE	((1<<5) | (1<<6) | (1<<7))
-
-#define SHIFT_ARITY   2
-#define SHIFT_TYPE    5
-
-#if AT_64BIT
-#define SHIFT_LENGTH  32
-#else
-#define SHIFT_LENGTH  8
-#endif /* AT_64BIT */
-
-#define EQUAL_HEADER(h1,h2) ((h1)==(h2))
-#endif /* PO */
 
 #define SHIFT_SYMBOL  SHIFT_LENGTH
 #define SHIFT_SYM_ARITY SHIFT_LENGTH
@@ -143,17 +124,6 @@
 #define ARG_OFFSET 2
 
 
-
-#ifdef AT_64BIT
-
-typedef unsigned long header_type;
-#define HEADER_BITS 64
-#else
-
-typedef unsigned int header_type;
-#define HEADER_BITS 32
-
-#endif /* AT_64BIT */
 
 #define MAX_HEADER_BITS 64
 
