@@ -73,11 +73,13 @@ EXTRA_DIST = \
 	BuiltinsTest.java \
 	GenericTraversal.java \
 	ListTest.java \
+	CyclicTest.java \
 	PeanoTest.java \
 	Replace.java \
 	RoloTest.java \
 	builtins.adt \
 	list.adt \
+	cyclic.adt \
 	list.pro \
 	peano.adt \
 	rolodex.adt \

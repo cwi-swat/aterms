@@ -1,3 +1,9 @@
+
+
+Wed Sep 22 12:24:44 CEST 2004 <jurgenv@cwi.nl>
+ * Fixed some distcheck problems in apigen/adt/api
+ * Added cyclic.adt to EXTRA_DIST
+
 2004-09-16  pem  <pem@becky.local>
 
   * apigen/gen/tom/TomSignatureGenerator.java: generate stamps for

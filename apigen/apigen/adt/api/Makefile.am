@@ -7,7 +7,7 @@ EXTRA_DIST = ${java_JAVA}
 JAVAROOT = ${top_builddir}
 javadir = ${prefix}/classes/apigen/adt/api
 
-CLASSPATH_ENV=CLASSPATH=${JAVAROOT}:${EXTERNAL_JARS}
+CLASSPATH_ENV=CLASSPATH=${JAVAROOT}:${top_srcdir}:${EXTERNAL_JARS}
 
 java_JAVA = \
 	AbstractType.java \
