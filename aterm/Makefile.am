@@ -17,9 +17,8 @@
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 #
-SUBDIRS=aterm utils toolbus test $(JAVA_SUBDIRS) doc
+SUBDIRS=aterm utils toolbus test $(JAVA_SUBDIR) doc
 
-# deprecated java1.2 removed from distribution
 DIST_SUBDIRS=aterm utils toolbus test doc java
 
 EXTRA_DIST=make_rules

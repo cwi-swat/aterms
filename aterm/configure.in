@@ -22,7 +22,7 @@ dnl
 dnl $Id$
 
 AC_INIT(Makefile.in)
-AM_INIT_AUTOMAKE(aterm, 1.5)
+AM_INIT_AUTOMAKE(aterm, 1.5.1)
 
 dnl Default values
 CC_GCC=gcc
@@ -130,10 +130,12 @@ AC_ARG_WITH(64bit,
     LDFLAGS=${LDFLAGS_CC64}
     INCL=${INCL_CC64},)
 
-JAVA_SUBDIRS=
+JAVA_SUBDIR=
 AC_ARG_WITH(java,
    [  --with-java              create Java "library" (jdk-1.2 and up).],
-      JAVA_SUBDIRS="${JAVA_SUBDIRS} java",)
+      JAVA_SUBDIR="java",)
+AC_SUBST(JAVA_SUBDIR)
+
 
 AC_SUBST(ATERM_LIB_GCC)
 AC_SUBST(ATERM_LIB_CC)
@@ -178,8 +180,6 @@ AC_SUBST(LFLAGS_GCC)
 AC_SUBST(LFLAGS_DBG)
 AC_SUBST(LFLAGS_PROF)
 AC_SUBST(LFLAGS_SHARED)
-
-AC_SUBST(JAVA_SUBDIRS)
 
 AC_HAVE_FUNCS(strdup)
 
