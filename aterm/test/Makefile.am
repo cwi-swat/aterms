@@ -20,13 +20,10 @@ INCLUDES = \
 	-I$(top_srcdir)/aterm \
 	-DSRCDIR="\"$(top_srcdir)/test/\""
 
-LDFLAGS = -L$(top_builddir)/aterm/
+LDFLAGS = -L$(top_builddir)/aterm
 LDLIBS = -lATerm
 
 noinst_PROGRAMS = stress primes randgen termstats fib
-
-LDFLAGS = -L$(top_builddir)/aterm/
-LDLIBS = -lATerm
 
 stress_SOURCES = stress_dict.c stress_dict.h stress.c
 stress_LDADD = $(LDLIBS)

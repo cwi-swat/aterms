@@ -42,14 +42,14 @@ int suc2int(ATerm t) {
     res++;
     sub = ATgetArgument(t,0);
 
-      //fprintf(stderr,"t = %x\tres= %d\tsub = %x\n",(unsigned int)t,res,(unsigned int)sub);
+      /*fprintf(stderr,"t = %x\tres= %d\tsub = %x\n",(unsigned int)t,res,(unsigned int)sub);*/
 #ifdef PEM
     assert( GET_AGE(t->header) <= GET_AGE(sub->header)  );
 #endif
     
     t = sub;
     f = ATgetAFun(t);
-      //printf("t = %x\n",(unsigned int)t);
+      /*printf("t = %x\n",(unsigned int)t);*/
   }
   
   if(f != f_zero) {
@@ -57,7 +57,7 @@ int suc2int(ATerm t) {
     ATprintf("%t\n",t);
     error("suc2int: no rule applicable");
   }
-    //printf("res = %d\n",res);
+    /*printf("res = %d\n",res);*/
   return res;
 }
 
@@ -108,7 +108,7 @@ ATerm normalizePlus(ATerm t) {
     while(1) {
       start:
       v0 = ATgetArgument(res,0);
-        // plus(s(s(s(s(s(x))))),y) => plus(x,s(s(s(s(s(y))))))
+        /* plus(s(s(s(s(s(x))))),y) => plus(x,s(s(s(s(s(y)))))) */
       if(ATgetAFun(v0) == f_suc) {
         v1 = ATgetArgument(v0,0);
         if(ATgetAFun(v1) == f_suc) {
@@ -126,7 +126,7 @@ ATerm normalizePlus(ATerm t) {
                                   (ATerm)ATmakeAppl1(f_suc,
                                   (ATerm)ATmakeAppl1(f_suc,
                                   (ATerm)ATgetArgument(res,1)))))));
-                  //continue;
+                  /*continue;*/
                 goto start;
               }
             }
@@ -134,13 +134,13 @@ ATerm normalizePlus(ATerm t) {
         }
       }
 
-        // plus(0,x) = x
+        /* plus(0,x) = x */
       if(ATgetAFun(v0) == f_zero) {
         res = ATgetArgument(res,1);
         goto stop;
       }
 
-        // plus(s(x),y) => plus(x,s(y))
+        /* plus(s(x),y) => plus(x,s(y)) */
       if(ATgetAFun(v0) == f_suc) {
         res = (ATerm)ATmakeAppl2(f_plus,
                           ATgetArgument(v0,0),
@@ -158,17 +158,17 @@ ATerm normalizeFib(ATerm t) {
   ATerm v0, v1, v2, fib1, fib2;
 
     while(1) {
-        // fib(0) = suc(0)
+        /* fib(0) = suc(0) */
       v0 = ATgetArgument(res,0);
-        //fprintf(stderr,"***\n");
-        //fprintf(stderr,"fib( %d )\n",suc2int(v0));
+        /*fprintf(stderr,"***\n");
+          fprintf(stderr,"fib( %d )\n",suc2int(v0)); */
 
       
       if(ATgetAFun(v0) == f_zero) {
         res = (ATerm)ATmakeAppl1(f_suc,v0);
         break;
       }
-        // fib(suc(0)) => suc(0)
+        /* fib(suc(0)) => suc(0) */
       if(ATgetAFun(v0) == f_suc) {
         v1 = ATgetArgument(v0,0);
         if(ATgetAFun(v1) == f_zero) {
@@ -176,15 +176,15 @@ ATerm normalizeFib(ATerm t) {
           break;
         }
       }
-        //  fib(s(s(x))) => plus(fib(x),fib(s(x)))
-        //     v0 v1
+        /*  fib(s(s(x))) => plus(fib(x),fib(s(x)))
+               v0 v1 */
       if(ATgetAFun(v0) == f_suc) {
         v1 = ATgetArgument(v0,0);
         if(ATgetAFun(v1) == f_suc) {
           v2 = ATgetArgument(v1,0);
           fib2 = normalizeFib((ATerm)ATmakeAppl1(f_fib,v1));
           fib1 = normalizeFib((ATerm)ATmakeAppl1(f_fib,v2));
-            //System.out.println("adding");
+            /* System.out.println("adding"); */
           res = normalizePlus((ATerm)ATmakeAppl2(f_plus,fib1,fib2));
           break;
         }
@@ -204,7 +204,7 @@ ATerm normalize(ATerm t)
   ATermList subs;
   ATerm     res;
 
-  //ATprintf("normalizing == %t\n", t) ;
+  /* ATprintf("normalizing == %t\n", t) ; */
   h = ATgetAFun(t);
   if (h == f_plus) {
     res = plus(normalize(ATgetArgument(t,0)),normalize(ATgetArgument(t,1)));
@@ -218,7 +218,7 @@ ATerm normalize(ATerm t)
     }
     res = (ATerm)ATmakeApplList(h, subs);
   }
-  //ATprintf("normal form == %t (of %t)\n", res, t) ;
+  /* ATprintf("normal form == %t (of %t)\n", res, t) ; */
   return(res);
 }
 
@@ -242,19 +242,19 @@ int mmain(int argc, char **argv) {
   ATprotectAFun(f_fib);
   ATprotectAFun(f_plus);
 
-    //printf("enter n: "); scanf("%d",&n);
+    /* printf("enter n: "); scanf("%d",&n); */
   n = 32;
-    // construct the term representation of the n value
+    /* construct the term representation of the n value */
   query = zero();
   for(i=0;i<n;i++) {
     query = suc(query);
   }
-    // write the original number and its 'fib'
+    /*  write the original number and its 'fib' */
   for(i=0; i<1; i++) {
-      //res = fib(query);
+      /* res = fib(query); */
     res = normalizeFib(mkfib(query));
   }
-    //ATprintf("fib(%t) == %t\n", query, res) ;
+    /* ATprintf("fib(%t) == %t\n", query, res) ; */
     printf("fib(%d) == %d\n", suc2int(query), suc2int(res)) ;
 
 

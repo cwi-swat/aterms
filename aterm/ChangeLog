@@ -1,14 +1,17 @@
 $Id$
 
-2003-06-27  Jurgen Vinju	<jurgenv@cwi.nl>
+Mon Jul  7 10:54:59 CEST 2003 <jong@cwi.nl>
+ * applied Armijn Hemels patches to make ATerm compile on a 64bit arch.
+
+2003-06-27  Jurgen Vinju <jurgenv@cwi.nl>
  * aterm.pkg is no longer generated from configure.in ;(
  * added aterm.pkg to repository
  * aterm-@VERSION@.pkg is now generated from aterm.pkg
 
-2003-06-26  Jurgen Vinju	<jurgenv@cwi.nl>
+2003-06-26  Jurgen Vinju <jurgenv@cwi.nl>
  * Removed visitor-pkg configuration option.
 
-2003-06-24  Jurgen Vinju	<jurgenv@cwi.nl>
+2003-06-24  Jurgen Vinju <jurgenv@cwi.nl>
  * Added a failing test: ATmake("[1]{[a,a]}") results in a "[1]".
    The annotation is lost, while if you use ATparse, it is ok.
  * Fixed the bug, ATmake does not throw away annotations anymore.
@@ -20,7 +23,7 @@ Tue Feb 18 15:47:24 CET 2003 <{jong,olivierp}@cwi.nl>
  * Version 2.0.1
  * Fix two bugs in tests 5, 37/38
 
-2003-01-22  Jurgen Vinju	<jurgenv@cwi.nl>
+2003-01-22  Jurgen Vinju <jurgenv@cwi.nl>
  * Release 2.0
 
 2002-12-09  Pierre-Etienne Moreau  <pem@escher.loria.fr>
