@@ -1,13 +1,8 @@
 module Sdf2-to-ADT
-  imports ATerm-Utils Sdf2
+  
+imports ATerm-Utils Cons-Options Sdf2
 
 exports
-  sorts ConsOption
-
-  context-free syntax
-    cons-expand					-> ConsOption
-    cons-remove					-> ConsOption
-
   context-free syntax
     sdf-to-adt-cons-expand ( SDF ) -> ATerm
     sdf-to-adt-cons-remove ( SDF ) -> ATerm

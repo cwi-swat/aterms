@@ -1,0 +1,10 @@
+module Cons-Options
+
+imports Layout
+
+exports
+  sorts ConsOption
+
+  context-free syntax
+    cons-expand					-> ConsOption
+    cons-remove					-> ConsOption

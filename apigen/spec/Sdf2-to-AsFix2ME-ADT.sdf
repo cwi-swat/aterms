@@ -1,0 +1,64 @@
+module Sdf2-to-AsFix2ME-ADT
+
+imports ATerm-Utils Cons-Options Sdf2
+
+exports
+  context-free syntax
+    sdf-to-asfix2me-adt-cons-expand ( SDF ) -> ATerm
+    sdf-to-asfix2me-adt-cons-remove ( SDF ) -> ATerm
+
+    sdf-to-asfix2me-adt ( SDF, ConsOption )           -> ATerm
+    sdf-to-asfix2me-adt ( Module, ConsOption )        -> ATerm
+    sdf-module-to-asfix2me-adt ( Module, ConsOption ) -> ATerm
+
+hiddens
+  variables
+    "$ADT"[0-9]*	-> ATerm
+    "$AFArg"		-> ATerm
+    "$AFArgs"		-> { ATerm "," }*
+    "$AFAttr"		-> ATerm
+    "$AFAttr+"[0-9]*	-> { ATerm "," }+
+    "$AFAttr*"[0-9]*	-> { ATerm "," }*
+    "$AFAttrs"		-> ATerm
+    "$AFIter"		-> ATerm
+    "$AFModName"	-> AT-Literal
+    "$AFProd"		-> ATerm
+    "$AFSep"		-> ATerm
+    "$AFSort"		-> AT-Literal
+    "$AltId"		-> AFun
+    "$ATerm"		-> ATerm
+    "$Attr"		-> Attribute
+    "$Attr*"[0-9]*	-> { Attribute "," }*
+    "$Attr+"		-> { Attribute "," }+
+    "$Attributes"	-> Attributes
+    "$Char*"[0-9]*	-> CHAR*
+    "$ConsOption"	-> ConsOption
+    "$ElemSortName"	-> AFun
+    "$ElemType"		-> AFun
+    "$Entries"[0-9]*	-> { ATerm "," }*
+    "$Entry"		-> ATerm
+    "$FieldName"	-> AT-Literal
+    "$FieldId"		-> AFun
+    "$FieldType"	-> AFun
+    "$FieldWs"		-> ATerm
+    "$Grammar"[0-9]*	-> Grammar
+    "$ImpSection*"	-> ImpSection*
+    "$Label"		-> Literal
+    "$ListType"		-> AFun
+    "$Literal"		-> Literal
+    "$ModName"		-> ModuleName
+    "$Module"		-> Module
+    "$Module*"		-> Module*
+    "$Production"	-> Production
+    "$Production*"	-> Production*
+    "$SDF"		-> SDF
+    "$Section"		-> Section
+    "$Section*"		-> Section*
+    "$Sep"		-> Literal
+    "$Sort"		-> Sort
+    "$Symbol"		-> Symbol
+    "$Symbol*"		-> Symbol*
+    "$Symbol+"		-> Symbol+
+    "$TypeId"		-> AFun
+    "$UQLit"		-> UQLiteral
+    "$QLit"		-> Literal

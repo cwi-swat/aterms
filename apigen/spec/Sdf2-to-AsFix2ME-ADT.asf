@@ -1,0 +1,12 @@
+equations
+
+[equ-sdf-to-adt-cons-expand]
+  sdf-to-asfix2me-adt-cons-expand($SDF) = 
+    sdf-to-asfix2me-adt($SDF, cons-expand)
+
+[equ-sdf-to-adt-cons-remove]
+  sdf-to-asfix2me-adt-cons-remove($SDF) = 
+    sdf-to-asfix2me-adt($SDF, cons-remove)
+
+[equ-sdf-to-adt-definition-empty]
+  sdf-to-asfix2me-adt(definition ,$ConsOption) = [ ]
