@@ -26,8 +26,8 @@
 #define MAX_DESTRUCTORS     16
 #define MAX_BLOCKS_PER_SIZE 1024
 
-#define TERM_HASH_OPT       "-termtable"
-#define HASH_INFO_OPT       "-hashinfo"
+#define TERM_HASH_OPT       "-at-termtable"
+#define HASH_INFO_OPT       "-at-hashinfo"
 
 #define CHECK_ARITY(ari1,ari2) DBG_ARITY(assert((ari1) == (ari2)))
 
@@ -325,7 +325,7 @@ void AT_initMemory(int argc, char *argv[])
       table_class = atoi(argv[++i]);
 		else if(streq(argv[i], HASH_INFO_OPT))
 			infoflags |= INFO_HASHING;
-		else if(strcmp(argv[i], "-help") == 0) {
+		else if(strcmp(argv[i], "-at-help") == 0) {
 			fprintf(stderr, "    %-20s: initial termtable size " 
 						"(2^size, default=%d)\n",	TERM_HASH_OPT " <size>", table_class);
 			fprintf(stderr, "    %-20s: write information to 'hashing.stats'\n",
@@ -2176,6 +2176,76 @@ void AT_printAllTerms(FILE *file)
 			ATfprintf(file, "%t\n", cur);
 			cur = cur->next;
 		}
+	}
+}
+
+/*}}}  */
+/*{{{  void AT_printAllAFunCounts(FILE *file) */
+
+static int compare_afuns(const void *l, const void *r)
+{
+	AFun left, right;
+	int left_count, right_count;
+
+	left = *((AFun *)l);
+	right = *((AFun *)r);
+
+	if(left == -1)
+		return 1;
+	if(right == -1)
+		return -1;
+
+	left_count = at_lookup_table[left]->count;
+	right_count = at_lookup_table[right]->count;
+
+	if(left_count < right_count)
+		return 1;
+
+	if(left_count > right_count)
+		return -1;
+
+	return 0;
+}
+
+void AT_printAllAFunCounts(FILE *file)
+{
+	int i, nr_syms;
+	AFun *afuns;
+
+	nr_syms = AT_symbolTableSize();
+
+	for(i=0; i<nr_syms; i++) {
+		if(!SYM_IS_FREE(at_lookup_table[i]))
+			at_lookup_table[i]->count = 0;
+	}
+
+	for(i=0; i<table_size; i++) {
+		ATerm cur = hashtable[i];
+		while(cur) {
+			if(ATgetType(cur) == AT_APPL) {
+				ATermAppl appl = (ATermAppl)cur;
+				AFun fun = ATgetAFun(appl);
+				at_lookup_table[fun]->count++;
+			}
+			cur = cur->next;
+		}
+	}
+
+	afuns = (AFun *)calloc(nr_syms, sizeof(AFun));
+	assert(afuns);
+
+	for(i=0; i<nr_syms; i++) {
+		if(SYM_IS_FREE(at_lookup_table[i]))
+			afuns[i] = -1;
+		else
+			afuns[i] = i;
+	}
+
+	qsort(afuns, nr_syms, sizeof(AFun), compare_afuns);
+
+	for(i=0; i<nr_syms; i++) {
+		if(afuns[i] != -1)
+			ATfprintf(stderr, "%y: %d\n", afuns[i], at_lookup_table[afuns[i]]->count);
 	}
 }
 

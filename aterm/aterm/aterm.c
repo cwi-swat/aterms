@@ -24,7 +24,8 @@
 /*}}}  */
 /*{{{  defines */
 
-#define SILENT_FLAG	"-silent"
+#define SILENT_FLAG	"-at-silent"
+#define VERBOSE_FLAG "-at-verbose"
 
 #define DEFAULT_BUFFER_SIZE 4096
 #define RESIZE_BUFFER(n) if(n > buffer_size) resize_buffer(n)
@@ -45,7 +46,7 @@
 char            aterm_id[] = "$Id$";
 
 /* Flag to tell whether to keep quiet or not. */
-ATbool silent	= ATfalse;
+ATbool silent	= ATtrue;
 
 /* error_handler is called when a fatal error is detected */
 static void     (*error_handler) (const char *format, va_list args) = NULL;
@@ -97,6 +98,7 @@ AT_cleanup()
 }
 
 /*}}}  */
+
 /*{{{  void ATinit(int argc, char *argv[], ATerm *bottomOfStack) */
 
 /**
@@ -116,8 +118,11 @@ ATinit(int argc, char *argv[], ATerm * bottomOfStack)
 	for (lcv=1; lcv < argc; lcv++) {
 		if (streq(argv[lcv], SILENT_FLAG)) {
 			silent = ATtrue;
-		} else if(strcmp(argv[lcv], "-help") == 0)
+		} else if(streq(argv[lcv], VERBOSE_FLAG)) {
+			silent = ATfalse;
+		} else if(streq(argv[lcv], "-at-help")) {
 			help = ATtrue;
+		}
 	}
 
 	if (!silent)
@@ -2084,6 +2089,50 @@ AT_calcCoreSize(ATerm t)
 
 
 /*}}}  */
+/*{{{  int AT_calcSubterms(ATerm t) */
+
+/**
+	* Calculate the number of subterms of a term.
+	*/
+
+int AT_calcSubterms(ATerm t)
+{
+	int    i, arity, nr_subterms = 0;
+	Symbol sym;
+	ATermList list;
+	
+	switch (ATgetType(t)) {
+		case AT_INT:
+		case AT_REAL:
+		case AT_BLOB:
+		case AT_PLACEHOLDER:
+			nr_subterms = 1;
+			break;
+			
+		case AT_APPL:
+			nr_subterms = 1;
+			sym = ATgetSymbol((ATermAppl) t);
+			arity = ATgetArity(sym);
+			for (i = 0; i < arity; i++)
+				nr_subterms += AT_calcSubterms(ATgetArgument((ATermAppl)t, i));
+			break;
+			
+		case AT_LIST:
+			list = (ATermList)t;
+			while(!ATisEmpty(list)) {
+			  nr_subterms += AT_calcSubterms(ATgetFirst(list)) + 1;
+			  list = ATgetNext(list);
+			}
+		  break;
+	}
+	
+	if(HAS_ANNO(t->header))
+		nr_subterms += AT_calcSubterms(AT_getAnnotations(t));
+
+	return nr_subterms;
+}
+
+/*}}}  */
 /*{{{  static int calcUniqueSubterms(ATerm t) */
 
 /**
@@ -2152,7 +2201,6 @@ AT_calcUniqueSubterms(ATerm t)
     AT_unmarkTerm(t);
     return result;
 }
-
 
 /*}}}  */
 /*{{{  static int calcUniqueSymbols(ATerm t) */

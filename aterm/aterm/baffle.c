@@ -18,6 +18,7 @@
 
 #include <stdio.h>
 #include <assert.h>
+#include <time.h>
 
 #include "bafio.h"
 #include "util.h"
@@ -54,6 +55,7 @@ main(int argc, char *argv[])
 	ATerm term = NULL;
 	FILE *input  = stdin;
 	FILE *output = stdout;
+	time_t curtime;
 
 	/* Initialize ATerm-library */
 	ATerm bottomOfStack;
@@ -124,6 +126,7 @@ main(int argc, char *argv[])
 		exit(0);
 	}
 
+    curtime = time(NULL);
 	if (binary_input)
 		term = ATreadFromBinaryFile(input);
 	else
@@ -134,12 +137,14 @@ main(int argc, char *argv[])
 	
 	if (!check)
 	{
+        curtime = time(NULL);
 		if (binary_output)
 			result = ATwriteToBinaryFile(term, output);
 		else {
 			result = ATwriteToTextFile(term, output);
 			fprintf(output, "\n");
 		}
+        curtime = time(NULL);
 
 		if (!result)
 			ATerror("%s: write failed!\n", argv[0]);

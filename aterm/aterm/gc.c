@@ -56,11 +56,11 @@ void AT_initGC(int argc, char *argv[], ATerm *bottomOfStack)
   stackBot = bottomOfStack;
 
 	for(i=1; i<argc; i++) {
-		if(streq(argv[i], "-print-gc-time"))
+		if(streq(argv[i], "-at-print-gc-time"))
 			flags |= PRINT_GC_TIME;
-		else if(streq(argv[i], "-print-gc-info"))
+		else if(streq(argv[i], "-at-print-gc-info"))
 			flags |= (PRINT_GC_TIME | PRINT_GC_STATS);
-		else if(strcmp(argv[i], "-help") == 0) {
+		else if(strcmp(argv[i], "-at-help") == 0) {
 			fprintf(stderr, "    %-20s: print non-intrusive gc information "
 							"after execution\n", "-print-gc-time");
 			fprintf(stderr, "    %-20s: print elaborate gc information "

@@ -20,6 +20,7 @@ void AT_markTerm(ATerm t);
 void AT_unmarkTerm(ATerm t);
 int  AT_calcTextSize(ATerm t);
 int  AT_calcCoreSize(ATerm t);
+int  AT_calcSubterms(ATerm t);
 int  AT_calcUniqueSubterms(ATerm t);
 int  AT_calcUniqueSymbols(ATerm t);
 int  AT_calcTermDepth(ATerm t);

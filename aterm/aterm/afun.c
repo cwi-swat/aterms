@@ -18,7 +18,7 @@
 /*{{{  defines */
 
 #define SYMBOL_HASH_SIZE	65353	/* nextprime(65335) */
-#define SYMBOL_HASH_OPT		"-symboltable"
+#define SYMBOL_HASH_OPT		"-at-symboltable"
 
 #define SYM_ARITY	16
 
@@ -70,7 +70,7 @@ void AT_initSymbol(int argc, char *argv[])
 	for (i = 1; i < argc; i++) {
 		if (streq(argv[i], SYMBOL_HASH_OPT))
 			table_size = atoi(argv[++i]);
-		else if(strcmp(argv[i], "-help") == 0) {
+		else if(strcmp(argv[i], "-at-help") == 0) {
 			fprintf(stderr, "    %-20s: initial symboltable size " 
 					"(default=%d)\n",	SYMBOL_HASH_OPT " <size>", table_size);
 		}

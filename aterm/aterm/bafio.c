@@ -1039,6 +1039,10 @@ ATwriteToBinaryFile(ATerm t, FILE *file)
 	bit_buffer     = '\0';
 	bits_in_buffer = 0; /* how many bits in bit_buffer are used */
 
+	for(lcv=0; lcv<nr_symbols; lcv++) {
+		if(!SYM_IS_FREE(at_lookup_table[lcv]))
+			at_lookup_table[lcv]->count = 0;
+	}
 	nr_unique_symbols = AT_calcUniqueSymbols(t);
 
 	sym_entries = (sym_entry *) calloc(nr_unique_symbols, sizeof(sym_entry));
