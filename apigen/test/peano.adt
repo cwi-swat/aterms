@@ -1,3 +1,5 @@
 [ constructor( Nat , zero , zero ) , 
-  constructor( Nat , suc , suc ( < pred ( Nat ) > ) )
+  constructor( Nat , suc , suc ( < pred ( Nat ) > ) ),
+  constructor( Nat , plus , plus ( <arg1( Nat )>, <arg2(Nat)> ) ),
+  constructor( Nat , fib , fib ( <arg1( Nat )>) )
 ]
