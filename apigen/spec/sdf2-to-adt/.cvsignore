@@ -1,8 +1,0 @@
-Makefile.in
-Makefile
-Sdf2-to-ADT
-Sdf2-to-ADT.module-list
-init.c
-*.asfix
-*.o
-.deps
