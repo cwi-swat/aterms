@@ -17,4 +17,5 @@ bench: all
 	java -cp VisitorBenchmark.zip aterm.test.VisitorBenchmark 27 2
 
 %: %.src
-	sed 's@__BUILDDIR__@$(top_builddir)@g;' < $< > $@ && chmod +x $@
+	sed 's@__BUILDDIR__@$(top_builddir)@g;\
+             s@__SRCDIR__@$(srcdir)@g' < $< > $@ && chmod +x $@

@@ -1,5 +1,9 @@
 #! /bin/sh
 
+if [ ! -f ./test.trm ]; then
+  cp -f __SRCDIR__/test.trm .
+fi
+
 __BUILDDIR__/utils/baffle -rt -ws -silent < test.trm > test.taf
 
 java -classpath __BUILDDIR__/java:$CLASSPATH aterm.test.Test || exit 1
