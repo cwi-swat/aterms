@@ -7,7 +7,7 @@ void foo()
     double rval;
     int    ival;
 
-    /* Sets result to ATtrue and rval to 16. */
+    /* Sets result to ATtrue and ival to 16. */
     result = ATmatch(ATmake("f(16)"), "f(<int>)", &ival);
 
     /* Sets result to ATtrue and rval to 3.14. */
