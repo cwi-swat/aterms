@@ -249,3 +249,28 @@ ATbool AT_isMarkedSymbol(Symbol s)
 
 /*}}}  */
 
+/*{{{  void ATprotectSymbol(Symbol sym) */
+
+/**
+	* Protect a symbol.
+	*/
+
+void ATprotectSymbol(Symbol sym)
+{
+	ATprotect((ATerm *)&lookup_table[sym]);
+}
+
+/*}}}  */
+/*{{{  void ATunprotectSymbol(Symbol sym) */
+
+/**
+	* Protect a symbol.
+	*/
+
+void ATunprotectSymbol(Symbol sym)
+{
+	ATunprotect((ATerm *)&lookup_table[sym]);
+}
+
+/*}}}  */
+

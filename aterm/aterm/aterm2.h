@@ -175,6 +175,8 @@ Symbol  ATmakeSymbol(char *name, int arity, ATbool quoted);
 char   *ATgetName(Symbol sym);
 int     ATgetArity(Symbol sym);
 ATbool  ATisQuoted(Symbol sym);
+void    ATprotectSymbol(Symbol sym);
+void    ATunprotectSymbol(Symbol sym);
 
 /* C specific version of ATmake */
 ATerm ATvmake(const char *pat, va_list args);

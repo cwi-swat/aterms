@@ -502,15 +502,15 @@ static int symbolTextSize(Symbol sym)
     while(*id) {
       /* We need to escape special characters */
       switch(*id) {
-	case '\\':
-	case '"':
-	case '\n':
-	case '\t':
-	case '\r':
-	  len += 2;
-	  break;
-	default:
-	  len++;
+				case '\\':
+				case '"':
+				case '\n':
+				case '\t':
+				case '\r':
+					len += 2;
+					break;
+				default:
+					len++;
       }
       id++;
     }
@@ -535,25 +535,25 @@ static char *writeSymbolToString(Symbol sym, char *buf)
     while(*id) {
       /* We need to escape special characters */
       switch(*id) {
-	case '\\':
-	case '"':
-	  *buf++ = '\\';
-	  *buf++ = *id;
-	  break;
-	case '\n':
-	  *buf++ = '\\';
-	  *buf++ = 'n';
-	  break;
-	case '\t':
-	  *buf++ = '\\';
-	  *buf++ = 't';
-	  break;
-	case '\r':
-	  *buf++ = '\\';
-	  *buf++ = 'r';
-	  break;
-	default:
-	  *buf++ = *id;
+				case '\\':
+				case '"':
+					*buf++ = '\\';
+					*buf++ = *id;
+					break;
+				case '\n':
+					*buf++ = '\\';
+					*buf++ = 'n';
+					break;
+				case '\t':
+					*buf++ = '\\';
+					*buf++ = 't';
+					break;
+				case '\r':
+					*buf++ = '\\';
+					*buf++ = 'r';
+					break;
+				default:
+					*buf++ = *id;
       }
       id++;
     }
@@ -705,16 +705,22 @@ static int textSize(ATerm t)
       arity = ATgetArity(sym);
       size = symbolTextSize(sym);
       for(i=0; i<arity; i++)
-	size += topTextSize(ATgetArgument(appl, i));
-      size += arity-1; /* Add space for the ',' characters */
+				size += topTextSize(ATgetArgument(appl, i));
+			if(arity > 0) {
+				/* Add space for the ',' characters */
+				if(arity > 1)
+					size += arity-1; 
+				/* and for the '(' and ')' characters */
+				size += 2;
+			}
       break;
 
     case AT_LIST:
       list = (ATermList)t;
       size = ATgetLength(list)-1; /* Add space for the ',' characters */
       while(!ATisEmpty(list)) {
-	size += topTextSize(ATgetFirst(list));
-	list = ATgetNext(list);
+				size += topTextSize(ATgetFirst(list));
+				list = ATgetNext(list);
       }
       break;
 
@@ -765,8 +771,20 @@ char *ATwriteToString(ATerm t)
 
   end = topWriteToString(t, buffer);
   *end = '\0';
-  
+
+  assert(end-buffer == size);
+
   return buffer;
+}
+
+
+/**
+	* Write the text representation of a term into a buffer.
+	*/
+
+void AT_writeToStringBuffer(ATerm t, char *buffer)
+{
+	topWriteToString(t, buffer);
 }
 
 /*}}}  */
