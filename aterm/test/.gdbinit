@@ -68,3 +68,20 @@ end
 document termsymbol
   Print the symbol of a term.
 end
+
+define termarg
+	set $arg = ((ATerm *)$arg0)[2 + $arg1]
+	call ATprintf("%t\n", $arg)
+end
+
+document termarg
+	Print a specific argument of a term.
+end
+
+define tprint
+	call ATprintf("%t\n", $arg0)
+end
+
+document tprint
+	Print a specific term.
+end

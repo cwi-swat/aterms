@@ -5,7 +5,7 @@
 
 #include "aterm2.h"
 
-char primes_id[] = "$Id";
+char primes_id[] = "$Id$";
 
 ATermList generate_numbers(int max)
 {
@@ -13,7 +13,7 @@ ATermList generate_numbers(int max)
 	ATermList numbers = ATmakeList0();
 
 	for(i=max; i>0; i--)
-		numbers = ATinsert(numbers, (ATerm)ATmakeInt(i));
+		numbers = ATinsert(numbers, (ATerm) ATmakeInt(i));
 
 	return numbers;
 }
@@ -49,8 +49,10 @@ ATermList filter_non_primes(ATermList numbers)
 	while(!ATisEmpty(numbers)) {
     /* The first number must be prime. remove it from numbers. */
 		ATerm prime = ATgetFirst(numbers);
+
     /* Remove all multiples of n, because they cannot be prime! */
 		numbers = filter_multiples(ATgetInt((ATermInt)prime), numbers);
+
 		/* Now add n to the list of primes */
 		primes = ATappend(primes, prime);
 	}
@@ -69,9 +71,10 @@ int main(int argc, char *argv[])
 			max = atoi(argv[++i]);
 
 	ATinit(argc, argv, NULL, &bottomOfStack);
-	numbers = generate_numbers(max);
-	primes  = filter_non_primes(numbers);
 
+	numbers = generate_numbers(max);
+
+	primes  = filter_non_primes(numbers);
 	ATprintf("primes up to %d: %, l\n", max, primes);
 
 	return 0;
