@@ -153,7 +153,7 @@ collection can be found in~\cite{BJO98}.
 \subsection{Initialising the \ATlib}\label{init}
 To initialise the \ATlib, a call to \ATinit\ must be made from \main,
 passing the commandline arguments stored in {\tt argc} and {\tt argv}.
-Also, the address of a locally created ATerm variable must be passed.  This
+The address of a locally created ATerm variable must also be passed.  This
 address is used by the garbage collector to determine the bottom of the stack
 to be inspected for \aterms.
 The following code demonstrates a typical initialisation of the \ATlib.
@@ -220,9 +220,9 @@ possible had the \ATerm's textual counterpart been used. This is due to the
 fact that textual representations have to be (re-)parsed each time they are
 read from file, whereas {\sc baf} directly describes how to rebuild the
 internal representation of an \ATerm, thus skipping the parsing phase.
-Also, the internal sharing within an \ATerm\ is exploited when writing its
-{\sc baf}-representation, making it take up much less space than its
-textual representation would have needed.
+Moreover, the maximal sharing of \ATerms\ is exploited when writing
+its {\sc baf}-representation, making them take up much less space than
+their textual representations would have needed.
 
 Users of the \ATlib\ are encouraged to use {\sc baf} versions when saving
 \aterms\ to file.  {\sc baf} was designed to be platform independent, which
@@ -324,12 +324,12 @@ for efficiency reasons.
 	\medskip\noindent
 	Types {\tt <appl>} and {\tt <str>} should contain a pattern consisting
 	of the function symbol to be used and the types of the arguments.  It
-	must be followed by exactly the number of arguments that are used in the
-	pattern. Also, the types of the arguments must match the respective
-	types used in the pattern. Both {\tt <appl>} and {\tt <str>} create
-	function applications. The difference is that {\tt <appl>} creates one
-	with an \emph{unquoted} function symbol, whereas {\tt <str>} yields a
-	quoted version.
+	must be followed by exactly the number of arguments that are used in
+	the pattern. The types of the arguments must match the respective types
+	used in the pattern. Both {\tt <appl>} and {\tt <str>} create function
+	applications. The difference is that {\tt <appl>} creates one with an
+	\emph{unquoted} function symbol, whereas {\tt <str>} yields a quoted
+	version.
 
 	\smallskip\noindent
 	Here are some examples of {\tt ATmake}:
