@@ -1,7 +1,7 @@
 dnl $Id$
 
 AC_INIT(configure.in)
-AM_INIT_AUTOMAKE(aterm-java, 1.1beta)
+AM_INIT_AUTOMAKE(aterm-java, 1.1)
 AC_PREREQ(2.13)
 
 dnl Let aclocal use macros in ./config directory
@@ -16,7 +16,7 @@ dnl AC_SUBST(SHARED_OBJECTS)
 
 AC_PACKAGE_REQUIRE(shared-objects, shared-objects-config,
    [ --with-shared-objects=DIR       installation directory of shared-objects])
-SHARED_OBJECTS="${SHARED_OBJECTS}/share/shared-objects-1.1beta.jar"
+SHARED_OBJECTS="${SHARED_OBJECTS}/share/shared-objects-1.1.jar"
 AC_SUBST(SHARED_OBJECTS)
 
 AC_OUTPUT(
