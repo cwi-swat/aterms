@@ -669,6 +669,8 @@ interface also uses the following types:
 	\item {\tt ATermPlaceholder}: a placeholder;
 	\item {\tt ATermBlob}: a Binary Large OBject;
 	\item {\tt ATermTable}: a hashtable of \aterms;
+	\item {\tt ATermIndexedSet}: a set of \aterms where each
+		element has a unique index.
 \end{itemize}
 
 \subsection{Level Two Functionality}\label{func2}
@@ -1077,18 +1079,21 @@ found (if the element is present at all). For a more efficient
 	the (unmodified) dictionary itself is returned.
 }
 
+% Veranderingen vanaf hier. JFG
 \subsection{Tables}\label{tables} The dictionaries described in
 Section~\ref{dicts} are in essence nothing more than linked lists, which
 makes them less suitable for large \aterm-to-\aterm\ mappings. To this end,
-\ATerm\ tables were created. These are implemented as hashtables of
-\aterms, with each hashbucket implemented as a dictionary.
+\ATerm\ tables were created. These are efficiently implemented using
+a hash table
+requiring approximately 16 bytes per stored entry, assuming that
+the hash table is filled for 50\%.
 
 \Function{ATtableCreate}{ATermTable}{int initial\_size, int max\_load\_pct}
 {Create an ATermTable}
 \Describe{
  This function creates an ATermTable given an initial size and a maximum
  load percentage. Whenever this percentage is exceeded (which is detected
- when a new entry is added through {\tt ATtablePut}), the table is
+ when a new entry is added using {\tt ATtablePut}), the table is
  automatically expanded and all existing entries are rehashed into the new
  table.  If you know in advance approximately how many items will be in the
  table, you may set it up in such a way that no resizing (and thus no
@@ -1096,7 +1101,7 @@ makes them less suitable for large \aterm-to-\aterm\ mappings. To this end,
  the table, you can create it with its initial size set to $1333$ and a
  maximum load percentage of $75\%$. You are not required to do this, it
  merely saves a runtime expansion and rehashing of the table which
- increases efficiency.
+ increases efficiency. 
 }
 
 \Function{ATtableDestroy}{void}{ATermTable table}
@@ -1109,6 +1114,18 @@ makes them less suitable for large \aterm-to-\aterm\ mappings. To this end,
  table by calling {\tt ATtableDestroy}. All references the table has to
  \aterms\ will then also be removed, so that those may be freed by the
  garbage collector (if no other references to them exist of course).
+}
+
+\Function{ATtableReset}{void}{ATermTable table}
+{Reset an ATermTable}
+\Describe{This function resets an \ATerm table, without freeing the
+memory it occupies. Its effect is the same as the subsequent execution
+of a destroy and a create of a table, but as no memory is released
+and obtained from the  C memeory management system this function is
+generally cheaper. but if subsequent tables differ very much 
+in size, the use of {\tt ATtableDestroy} and {\tt ATtableCreate}
+may be prefered, because in such a way the sizes of the table
+adapt automatically to the requirements of the application.
 }
 
 \Function{ATtablePut}{void}{ATermTable table, ATerm key, ATerm value}
@@ -1134,6 +1151,106 @@ makes them less suitable for large \aterm-to-\aterm\ mappings. To this end,
  corresponding values of each key you are interested in can then be
  retrieved through respective calls to {\tt ATtableGet}.
 }
+
+\subsection{Indexed sets}\label{IndexedSets}
+The data type {\tt ATermIndexedSet} provides a mapping or table from {\tt
+ATerm}s to numbers, where it attempts to assign the numbers from 
+one upwards subsequently to each entered term. If a number is assigned
+to a term, the term will remain assigned until the term is removed from
+the table. When assigning numbers to newly entered elements, numbers 
+previously assigned to elements that have been removed are used first. 
+
+This datatype can be used for different purposes. In the first place
+one can make a mapping from {\tt ATerm}s to elements in any arbitrary
+domain $D$ with it. By entering the {\tt ATerm}s in an {\tt
+ATermIndexedSet} each {\tt ATerm} gets a subsequent number. These
+numbers can be used as entries in a table to obtain the element of sort
+$D$ belonging to the {\tt ATerm}.
+
+Another type of application is the use as a set. Suppose that
+a sequence of {\tt ATerm}s must be dealt with. Suppose that the sequence
+can contain identical {\tt ATerm}s, and that each unique {\tt ATerm} needs
+to be treated only once. Then each treated {\tt ATerm} can be entered
+in the indexed set. For each to be investigated {\tt ATerm} one
+inspection of the indexed set suffices to know whether this {\tt ATerm}
+has already been considered. 
+A particular instance of this kind of application is
+the exploration of state spaces, where each state is represented by
+an {\tt ATerm}.
+
+The implementation {\tt ATermIndexedSet}s and {\tt ATermTable}s are 
+strongly connected. The implementation is quite efficient both
+in time and space, only requiring 12 bytes for each entry in
+an indexed set, if the hash table, which forms it core, is half full. 
+
+\Function{ATindexedSetCreate}{ATermIndexedSet}{long initial\_size, 
+	int max\_load\_pct}
+\Describe{This function creates an {\tt ATermIndexedSet} with
+approximately the size {\tt initial\_size}, where it guarantees that
+the internal hash table, will be filled up to 
+{\tt max\_load\_pct} percent. If
+needed, the size of the hash table is dynamically extended to hold the
+entries inserted into it. If 
+extension of the hash table fails due to lack of memory. 
+it is attempted to fill the hash table up to 100\%. 
+All keys entered
+into the indexed set are automatically protected. Note that for
+each {\tt ATindexedSetCreate} an {\tt ATindexedSetDestroy} must be 
+carried out to free memory, and to allow inserted keys to be released by
+the automatic garbage system of the {\tt ATerm} library. Carrying out
+a {\tt ATindexedSetReset} does not free the memory, but allows inserted
+keys to be garbage collected.
+}
+
+\Function{ATindexedSetDestroy}{void}{ATermIndexedSet set}
+\Describe{This function releases all memory occupied by the 
+{\tt ATermIndexedSet}.
+}
+
+\Function{ATindexedSetReset}{void}{ATermIndexedSet set}
+\Describe{This function clears the hash table in the
+set, but does not release the memory. Using {\tt ATindexedSetReset}
+above {\tt ATindexedSetDestroy} is preferable when iteratively
+indexed sets of approximately the same size are being used.
+}
+
+\Function{ATindexedSetPut}{long}{ATermIndexedSet set, ATerm key, ATbool *new}
+\Describe{This function enters {\tt key} into the set. If {\tt key} was
+already in the set the previously assigned index of {\tt key}
+is returned, and {\tt new} is set to false. If {\tt key} did not
+yet occur in {\tt set} a new number is assigned, and {\tt new} is
+set to true. This number can either be the number of an element
+that has been removed, or, if such a number is not available, 
+the lowest non used number is assigned to {\tt key} and returned. 
+The lowest number that is used is $0$.
+}
+
+\Function{ATindexedSetGet}{long}{ATermIndexedSet set, ATerm key}
+\Describe{The index assigned to {\tt key} is returned, except
+when {\tt key} is not in the set, in which case the return value
+is a negative number.
+}
+
+\Function{ATindexedSetRemove}{void}{ATermIndexedSet set, ATerm key}
+\Describe{The {\tt key} is removed from the indexed set, and if a number
+was assigned to {\tt key},
+it is freed to be reassigned to a key, that may be put into the set at
+some later instance.
+}
+
+\Function{ATindexedSetKeys}{ATermList}{ATermIndexedSet set}
+\Describe{A list with all valid keys stored in the 
+indexed set is returned. The list is ordered from key 0 onwards.
+}
+
+\Function{ATgetKeyAtIndex}{ATerm}{ATermIndexedSet set, long index}
+\Describe{This function must be invoked with a valid index and
+it returns the {\tt key} assigned to this index. If it is invoked
+with an invalid index, effects are not predictable.
+
+}
+
+% Veranderingen tot hier JFG
 
 %}}}
 %{{{ Utilities
