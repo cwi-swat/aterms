@@ -9,6 +9,8 @@ asymbol-cc.o: asymbol.c aterm2.h aterm1.h encoding.h abool.h asymbol.h \
  memory.h util.h debug.h
 gc-cc.o: gc.c _aterm.h aterm2.h aterm1.h encoding.h abool.h asymbol.h \
  memory.h util.h gc.h
+bafio-cc.o: bafio.c _aterm.h aterm2.h aterm1.h encoding.h abool.h \
+ asymbol.h memory.h
 aterm-gcc.o: aterm.c _aterm.h aterm2.h aterm1.h encoding.h abool.h \
  asymbol.h memory.h list.h make.h gc.h util.h
 list-gcc.o: list.c list.h aterm2.h aterm1.h encoding.h abool.h asymbol.h
@@ -20,6 +22,8 @@ asymbol-gcc.o: asymbol.c aterm2.h aterm1.h encoding.h abool.h asymbol.h \
  memory.h util.h debug.h
 gc-gcc.o: gc.c _aterm.h aterm2.h aterm1.h encoding.h abool.h asymbol.h \
  memory.h util.h gc.h
+bafio-gcc.o: bafio.c _aterm.h aterm2.h aterm1.h encoding.h abool.h \
+ asymbol.h memory.h
 aterm-dbg.o: aterm.c _aterm.h aterm2.h aterm1.h encoding.h abool.h \
  asymbol.h memory.h list.h make.h gc.h util.h
 list-dbg.o: list.c list.h aterm2.h aterm1.h encoding.h abool.h asymbol.h
@@ -31,6 +35,8 @@ asymbol-dbg.o: asymbol.c aterm2.h aterm1.h encoding.h abool.h asymbol.h \
  memory.h util.h debug.h
 gc-dbg.o: gc.c _aterm.h aterm2.h aterm1.h encoding.h abool.h asymbol.h \
  memory.h util.h gc.h
+bafio-dbg.o: bafio.c _aterm.h aterm2.h aterm1.h encoding.h abool.h \
+ asymbol.h memory.h
 aterm-prof.o: aterm.c _aterm.h aterm2.h aterm1.h encoding.h abool.h \
  asymbol.h memory.h list.h make.h gc.h util.h
 list-prof.o: list.c list.h aterm2.h aterm1.h encoding.h abool.h asymbol.h
@@ -42,3 +48,5 @@ asymbol-prof.o: asymbol.c aterm2.h aterm1.h encoding.h abool.h asymbol.h \
  memory.h util.h debug.h
 gc-prof.o: gc.c _aterm.h aterm2.h aterm1.h encoding.h abool.h asymbol.h \
  memory.h util.h gc.h
+bafio-prof.o: bafio.c _aterm.h aterm2.h aterm1.h encoding.h abool.h \
+ asymbol.h memory.h

@@ -614,19 +614,6 @@ ATwriteToTextFile(ATerm t, FILE * f)
 }
 
 /*}}}  */
-/*{{{  ATbool ATwriteToBinaryFile(ATerm t, FILE *f) */
-
-/**
-  * Write a term to file in a compact binary format (using gel)
-  */
-
-ATbool
-ATwriteToBinaryFile(ATerm t, FILE * f)
-{
-    return ATfalse;
-}
-
-/*}}}  */
 /*{{{  char *ATwriteToString(ATerm t) */
 
 /**
