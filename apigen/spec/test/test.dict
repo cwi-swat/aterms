@@ -1,4 +1,0 @@
-gen-api(
-[[ SDFModule,module(prod("mod"),[<name(SDFModuleName)>,
-<nameWs(SDFWhiteSpace)>]) ]]
-)

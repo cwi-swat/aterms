@@ -1,1 +1,0 @@
-build-formal-args-list(field [ move , Int , loc [ Paladin , arg : zero ] ] field [ strength , Int , loc [ Paladin , arg : succ ( zero ) ] ])

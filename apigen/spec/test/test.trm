@@ -1,1 +1,0 @@
-gen-constructor-decl(Player, Paladin, field [ strength , Int , loc [ Paladin , arg : succ ( zero ) ] ] field [ move , Int , loc [ Paladin , arg : zero ] ])

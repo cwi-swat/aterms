@@ -1,7 +1,0 @@
-gen-c-api(
-api [ type [ SDFModule , module ( prod ( "mod" ) ,
-[ < name ( SDFModuleName ) > ,
-< nameWs ( SDFWhiteSpace ) > ] ) , attr [ name , SDFModuleName , arg : succ ( zero ) ->
-elem : zero ] attr [ nameWs , SDFWhiteSpace , arg : succ ( zero ) ->
-elem : succ ( zero ) ] ] ]
-)
