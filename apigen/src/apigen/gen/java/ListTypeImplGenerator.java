@@ -82,8 +82,8 @@ public class ListTypeImplGenerator extends TypeImplGenerator {
 
 	protected void genConstructor(String class_impl_name) {
 		println("  protected " + FactoryGenerator.className(apiName) + " factory = null;");
-		println("  " + class_impl_name + "(" + FactoryGenerator.className(apiName) + " factory) {");
-		println("     super(factory);");
+		println(" " + class_impl_name + "(" + FactoryGenerator.className(apiName) + " factory) {");
+		println("     super(factory.getPureFactory());");
 		println("     this.factory = factory;");
 		println("  }");
 	}
@@ -218,10 +218,10 @@ public class ListTypeImplGenerator extends TypeImplGenerator {
 		println("  {");
 		println("    if (this.term == null) {");
 		println("      " + className + " reversed = (" + className + ")this.reverse();");
-		println("      aterm.ATermList tmp = " + get_factory + ".makeList();");
+		println("      aterm.ATermList tmp = " + get_factory + ".getPureFactory().makeList();");
 		println("      for (; !reversed.isEmpty(); reversed = reversed.getTail()) {");
 		println("         aterm.ATerm elem = reversed.getHead().toTerm();");
-		println("         tmp = " + get_factory + ".makeList(elem, tmp);");
+		println("         tmp = " + get_factory + ".getPureFactory().makeList(elem, tmp);");
 		println("      }");
 		println("      this.term = tmp;");
 		println("    }");

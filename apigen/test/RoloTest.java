@@ -1,6 +1,7 @@
 package test;
 
 import test.rolodex.*;
+import aterm.pure.PureFactory;
 
 public class RoloTest {
 
@@ -13,7 +14,7 @@ public class RoloTest {
 
     public void run() throws jjtraveler.VisitFailure, java.io.IOException {
         RoloList list =
-            factory.RoloListFromTerm(factory.readFromFile(directory + "/rolodex.trm"));
+            factory.RoloListFromTerm(factory.getPureFactory().readFromFile(directory + "/rolodex.trm"));
 
         Collector c = new Collector();
         jjtraveler.Visitor tester = new jjtraveler.BottomUp(c);
@@ -24,7 +25,7 @@ public class RoloTest {
 
     public final static void main(String[] args)
         throws jjtraveler.VisitFailure, java.io.IOException {
-        RoloTest test = new RoloTest(new RolodexFactory());
+        RoloTest test = new RoloTest(new RolodexFactory(new PureFactory()));
         directory = args[0];
 
         test.run();

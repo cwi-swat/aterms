@@ -10,6 +10,7 @@ import test.list.NineSeps;
 import test.list.Separated;
 import aterm.ATerm;
 import aterm.ATermList;
+import aterm.pure.PureFactory;
 
 public class ListTest {
 
@@ -29,7 +30,7 @@ public class ListTest {
     
     try {
       mods[0] = factory.ModulesFromTerm(
-        factory.parse("meuk([\"m1\",\"m2\",\"m3\",\"m4\"])"));
+        factory.getPureFactory().parse("meuk([\"m1\",\"m2\",\"m3\",\"m4\"])"));
     }
     catch (RuntimeException e) {
       exceptionThrown = true;	
@@ -38,7 +39,7 @@ public class ListTest {
     testAssert(exceptionThrown, "negative fromTermTest");
     exceptionThrown = false;
     
-    mods[0]= factory.ModulesFromTerm(factory.parse("[\"m1\",\"m2\",\"m3\",\"m4\"]"));
+    mods[0]= factory.ModulesFromTerm(factory.getPureFactory().parse("[\"m1\",\"m2\",\"m3\",\"m4\"]"));
     
     mod[0] = mods[0].getHead();
     testAssert("\"m1\"".equals(mod[0].toString()), "getFirstTest");
@@ -87,20 +88,20 @@ public class ListTest {
      * will occur otherwise
      */
     String example = "[]";
-    ATerm termExample = factory.parse(example);
+    ATerm termExample = factory.getPureFactory().parse(example);
     mods[4] = (Modules) factory.makeModules();
 
     example = "\"amodule\"";
-    termExample = factory.parse(example);
+    termExample = factory.getPureFactory().parse(example);
     Module amodule = (Module) factory.makeModule_Default(example);
 
-    ATerm pattern = factory.parse("[\"m1\",l(\"l1\"),\"sep\",l(\"l2\"),\"m2\",l(\"l3\"),\"sep\",l(\"l4\"),\"m3\",l(\"l5\"),\"sep\",l(\"l6\"),\"m4\"]");
+    ATerm pattern = factory.getPureFactory().parse("[\"m1\",l(\"l1\"),\"sep\",l(\"l2\"),\"m2\",l(\"l3\"),\"sep\",l(\"l4\"),\"m3\",l(\"l5\"),\"sep\",l(\"l6\"),\"m4\"]");
 
     Separated sep = factory.SeparatedFromTerm(pattern);
     testAssert(sep.toTerm().isEqual(pattern), " fromTerm == toTerm separated lists");
 
 
-    ATerm patternReversed = factory.parse("[\"m4\",l(\"l5\"),\"sep\",l(\"l6\"),\"m3\",l(\"l3\"),\"sep\",l(\"l4\"),\"m2\",l(\"l1\"),\"sep\",l(\"l2\"),\"m1\"]");
+    ATerm patternReversed = factory.getPureFactory().parse("[\"m4\",l(\"l5\"),\"sep\",l(\"l6\"),\"m3\",l(\"l3\"),\"sep\",l(\"l4\"),\"m2\",l(\"l1\"),\"sep\",l(\"l2\"),\"m1\"]");
     Separated sepReversed = factory.SeparatedFromTerm(patternReversed);
     testAssert(sep.reverse().isEqual(sepReversed)," separated reverse test");
     testAssert(sep.reverseSeparated().toTerm().isEqual(patternReversed),"separated reverse toTerm test");
@@ -122,25 +123,25 @@ public class ListTest {
     testAssert(sep.getLength() == 4, "separated list length test");
     
     sep = factory.makeSeparated();
-    testAssert(sep.toTerm().isEqual(factory.makeList()), "empty separated list");
+    testAssert(sep.toTerm().isEqual(factory.getPureFactory().makeList()), "empty separated list");
     
     m = factory.makeModule_Default("m");
     sep = factory.makeSeparated(m);
    
-    testAssert(sep.toTerm().isEqual(factory.makeList(m.toTerm())), "singleton separated list");
+    testAssert(sep.toTerm().isEqual(factory.getPureFactory().makeList(m.toTerm())), "singleton separated list");
     
     Module m2 = factory.makeModule_Default("m2");
     l1 = factory.makeLayout_Default("l1");
     l2 = factory.makeLayout_Default("l2");
     sep = factory.makeSeparated(m,l1,l2,factory.makeSeparated(m2));
 
-    ATerm p = factory.parse("[\"m\",l(\"l1\"),\"sep\",l(\"l2\"),\"m2\"]");
+    ATerm p = factory.getPureFactory().parse("[\"m\",l(\"l1\"),\"sep\",l(\"l2\"),\"m2\"]");
     testAssert(sep.toTerm().isEqual(p), "many separated list");
     
-    ATerm pc = ((ATermList) p).concat((ATermList) factory.parse("[l(\"l1\"),\"sep\",l(\"l2\")]")).concat((ATermList) p);
+    ATerm pc = ((ATermList) p).concat((ATermList) factory.getPureFactory().parse("[l(\"l1\"),\"sep\",l(\"l2\")]")).concat((ATermList) p);
     testAssert(factory.concat(sep,l1,l2,sep).toTerm().isEqual(pc), "concat test");
     NineSeps ns = factory.makeNineSeps(m,factory.makeNineSeps(m2));
-    testAssert(ns.toTerm().isEqual(factory.parse("[\"m\",1,2,3,4,5,6,7,8,9,\"m2\"]")), "many separated toTerm");
+    testAssert(ns.toTerm().isEqual(factory.getPureFactory().parse("[\"m\",1,2,3,4,5,6,7,8,9,\"m2\"]")), "many separated toTerm");
     testAssert(ns.reverse().isEqual(factory.makeNineSeps(m2, factory.makeNineSeps(m))), "many separated reverse");
     testAssert(ns.reverse().reverse().isEqual(ns), "reverse separated list test");
     
@@ -148,7 +149,7 @@ public class ListTest {
   }
 
   public final static void main(String[] args) {
-    ListTest test = new ListTest(new ListFactory());
+    ListTest test = new ListTest(new ListFactory(new PureFactory()));
    
     test.run();
     return;

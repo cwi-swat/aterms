@@ -238,7 +238,7 @@ public class FactoryGenerator extends JavaGenerator {
 				+ "(aterm.ATerm head, aterm.ATermList tail, aterm.ATermList annos) {");
 		println("    synchronized (proto" + className + ") {");
 		println("      proto" + className + ".initHashCode(annos,head,tail);");
-		println("      return (" + className + ") build(proto" + className + ");");
+		println("      return (" + className + ") factory.build(proto" + className + ");");
 		println("    }");
 		println("  }");
 	}
@@ -259,7 +259,7 @@ public class FactoryGenerator extends JavaGenerator {
 				+ className
 				+ ") make"
 				+ className
-				+ "((aterm.ATerm) head, (aterm.ATermList) tail, getEmpty());");
+				+ "((aterm.ATerm) head, (aterm.ATermList) tail, factory.getEmpty());");
 		println("  }");
 	}
 
@@ -289,7 +289,7 @@ public class FactoryGenerator extends JavaGenerator {
 				+ className
 				+ "((aterm.ATerm) head, "
 				+ actualSeps
-				+ "(aterm.ATermList) tail, getEmpty());");
+				+ "(aterm.ATermList) tail, factory.getEmpty());");
 		println("  }");
 	}
 
@@ -311,7 +311,7 @@ public class FactoryGenerator extends JavaGenerator {
 				+ "aterm.ATermList tail, aterm.ATermList annos) {");
 		println("    synchronized (proto" + className + ") {");
 		println("      proto" + className + ".initHashCode(annos, head, " + actualSeps + "tail);");
-		println("      return (" + className + ") build(proto" + className + ");");
+		println("      return (" + className + ") factory.build(proto" + className + ");");
 		println("    }");
 		println("  }");
 	}
@@ -557,7 +557,7 @@ public class FactoryGenerator extends JavaGenerator {
 			"    pattern"
 				+ TypeGenerator.className(type)
 				+ "Many"
-				+ " = parse(\""
+				+ " = factory.parse(\""
 				+ StringConversions.escapeQuotes(alt.buildMatchPattern().toString())
 				+ "\");");
 	}
@@ -572,7 +572,7 @@ public class FactoryGenerator extends JavaGenerator {
 				+ ", null, null, "
 				+ buildAmountOfSeparatorsNullExpressions(type)
 				+ "null);");
-		println("    empty" + className + " = (" + className + ") build(proto" + className + ");");
+		println("    empty" + className + " = (" + className + ") factory.build(proto" + className + ");");
 		println(
 			"    empty"
 				+ className
@@ -598,7 +598,7 @@ public class FactoryGenerator extends JavaGenerator {
 	private void genInitializeEmptyList(int listTypesCount, String className) {
 		String emptyHashCode = buildInitialEmptyListHashcode(listTypesCount).toString();
 		println("    proto" + className + ".init(" + emptyHashCode + ", null, null, null);");
-		println("    empty" + className + " = (" + className + ") build(proto" + className + ");");
+		println("    empty" + className + " = (" + className + ") factory.build(proto" + className + ");");
 		println("    empty" + className + ".init(" + emptyHashCode + ", empty" + className + ", null, null);");
 	}
 
@@ -827,11 +827,11 @@ public class FactoryGenerator extends JavaGenerator {
 
 		println("  public aterm.ATerm toTerm(" + classImplName + " arg) {");
 		println("   if (arg.isEmpty()) {");
-		println("      return getEmpty();");
+		println("      return factory.getEmpty();");
 		println("    }");
 		println();
 		println("    if (arg.isSingle()) {");
-		println("      return makeList(arg.getHead().toTerm());");
+		println("      return factory.makeList(arg.getHead().toTerm());");
 		println("    }");
 		println();
 		println("    int length = arg.getLength();");
@@ -842,7 +842,7 @@ public class FactoryGenerator extends JavaGenerator {
 		println("        arg = arg.getTail();");
 		println("    }");
 		println();
-		println("    aterm.ATermList result = makeList(nodes[0].getHead().toTerm());");
+		println("    aterm.ATermList result = factory.makeList(nodes[0].getHead().toTerm());");
 		println("    for (int i = 1; i < length; i++) {");
 		println("      java.util.List args = new java.util.LinkedList();");
 		println("      args.add(nodes[i].getHead().toTerm());");

@@ -1,5 +1,9 @@
 # $Id$
 
+2003/09/01 <kooiker@cwi.nl>
+ * updated tests to use delegate instance factory
+ * fixed factory calls to PureFactory calls in non-generated code
+
 2003/08/29 <kooiker@cwi.nl>
  * generated api factories no longer extend aterm.pure.PureFactory, but
    contain a delegate instance factory instead.

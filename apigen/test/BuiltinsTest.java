@@ -1,6 +1,7 @@
 package test;
 
 import test.builtins.*;
+import aterm.pure.PureFactory;
 
 public class BuiltinsTest
 {
@@ -14,7 +15,7 @@ public class BuiltinsTest
 
   public void run() throws java.io.IOException {
   
-      D t = factory.makeD_Trm(factory.parse("one"));
+      D t = factory.makeD_Trm(factory.getPureFactory().parse("one"));
       testAssert(t.toString().equals("term(one)"), "make term test");
       
       D d = factory.makeD_Double(1.0);
@@ -27,7 +28,7 @@ public class BuiltinsTest
       testAssert(i.getInteger() == 1, "get integer test");
       testAssert(i.setInteger(2).getInteger() == 2, "set integer test");
       
-      D l = factory.makeD_Lst((aterm.ATermList) factory.parse("[one]"));
+      D l = factory.makeD_Lst((aterm.ATermList) factory.getPureFactory().parse("[one]"));
       testAssert(l.toString().equals("list([one])"), "make list test");
       
       D s = factory.makeD_String("one");
@@ -37,7 +38,7 @@ public class BuiltinsTest
   public final static void main(String[] args) throws jjtraveler.VisitFailure,
   java.io.IOException
   {
-    BuiltinsTest test = new BuiltinsTest (new BuiltinsFactory()); 
+    BuiltinsTest test = new BuiltinsTest (new BuiltinsFactory(new PureFactory())); 
     directory = args[0];
 
     test.run();
