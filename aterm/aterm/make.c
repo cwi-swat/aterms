@@ -274,6 +274,7 @@ makeArguments(ATermAppl appl, char *name, ATbool quoted, va_list *args)
 				return ATmakeApplList(sym, list);
 			}
 		}
+		terms[nr_args] = AT_vmakeTerm(terms[nr_args], args);
 		sym = ATmakeSymbol(name, ATgetArity(sym), quoted);
 		return ATmakeApplArray(sym, terms);
 	}
@@ -312,6 +313,7 @@ makePlaceholder(ATermPlaceholder pat, va_list *args)
 {
     ATerm type = ATgetPlaceholder(pat);
 	
+	ATprintf("makePlaceholder: %t\n", pat);
     if (ATgetType(type) == AT_APPL) 
 	{
 	    ATermAppl appl = (ATermAppl) type;
