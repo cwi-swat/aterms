@@ -1,6 +1,5 @@
 package apigen.gen.tom;
 
-import apigen.adt.Type;
 
 public interface TomSignatureImplementation {
 	String StringName();

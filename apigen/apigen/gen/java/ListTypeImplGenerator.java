@@ -1,13 +1,10 @@
 package apigen.gen.java;
 
-import java.util.Iterator;
 import java.util.List;
 
-import apigen.adt.Alternative;
 import apigen.adt.ListType;
 import apigen.adt.Type;
 import apigen.gen.StringConversions;
-import aterm.ATermFactory;
 
 public class ListTypeImplGenerator extends TypeImplGenerator {
 	protected String typeId;
@@ -61,8 +58,9 @@ public class ListTypeImplGenerator extends TypeImplGenerator {
 		genPredicates();
 		genGetStaticFactory();
 		genSharedObjectInterface();
+		genGetEmptyMethod();
 		genInsertMethod();
-		genReverseMethod();
+		//genReverseMethod();
 		println("}");
 	}
 	
@@ -84,12 +82,20 @@ public class ListTypeImplGenerator extends TypeImplGenerator {
 		String className = ListTypeGenerator.className(type);
 		println("  public aterm.ATermList insert(aterm.ATerm head) {");
 		println("    return (aterm.ATermList)" + staticFactoryGetter() + ".make" + className + "((" + elementTypeName + ") head, (" + className + ") this);");
-		//println("  public " + className + " insert(" + elementTypeName + " head) {");
-		//println("    return " + staticFactoryGetter() + ".make" + className + "(head, (" + className + ") this);");
 		println("  }");
-		
+		println("");
+		println("  public " + className + " insert(" + elementTypeName + " head) {");
+		println("    return " + staticFactoryGetter() + ".make" + className + "(head, (" + className + ") this);");
+		println("  }");
 	}
-
+	
+	private void genGetEmptyMethod() {
+			String className = ListTypeGenerator.className(type);
+			println("  public aterm.ATermList getEmpty() {");
+			println("    return (aterm.ATermList)" + staticFactoryGetter() + ".make" + className + "();");
+			println("  }");
+		    println("");
+	}
 	private void genPredicates() {
 		genIsTypeMethod(type);
 		genIsAlternativeMethods();
