@@ -34,9 +34,9 @@ listtest_LDADD		= -L. -llist -lATerm
 listtest_DEPENDENCIES	= liblist.a
 
 CLEANFILES		= ${check_PROGRAMS} ${check_LIBRARIES} \
-			rolodex*.[ch] rolodex_dict.[ch] \
-			list.[ch] list_dict.[ch] \
-			*.java.sh peano/* list/* *.class
+			rolodex.[ch] rolodex_dict.[ch] rolodex.dict\
+			list.[ch] list_dict.[ch] list.dict\
+			*.java.sh peano/* list/* rolodex/* *.class
 
 EXTRA_DIST = rolodex.adt list.adt list.pro peano.adt \
              PeanoTest.java ListTest.java  RoloTest.java rolodex.trm
