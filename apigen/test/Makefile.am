@@ -11,7 +11,7 @@ ADTJAVA         = ${top_builddir}/utils/adt-to-java
 
 TESTS			= rolotest listtest peanotest.sh
 
-noinst_PROGRAMS		= ${TESTS}
+noinst_PROGRAMS		= rolotest listtest
 noinst_LIBRARIES	= librolodex.a liblist.a 
 
 librolodex_a_SOURCES	= rolodex.c rolodex_dict.c
