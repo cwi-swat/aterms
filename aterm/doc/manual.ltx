@@ -35,21 +35,25 @@
 \newcommand{\NULL}{{\tt NULL}}
 
 % Function definition
-\newcommand{\Function}[4]{\vspace{0.3cm}
+\newcommand{\Function}[4]{
+	\vspace{0.3cm}
 	\noindent
 	\framebox[12.6cm][l]{{\bf function:} #1} \vspace{0.1cm}\newline
 	{\bf Summary:\hspace{0.2cm}} #4\newline
 	{\bf Declaration:}
-		{#2} {#1}({#3});
+		{\tt #2} {#1}({\tt #3});
 	\index{#1}
 %        \write 15 {\string\FuncEntry{#1}{#2}{#3}{#4}{\thepage}}
 }
 
 % Macro definition
-\newcommand{\Macro}[4]{\vspace{0.3cm}
+\newcommand{\Macro}[4]{
+	\vspace{0.3cm}
 	\noindent
-	\framebox[12.6cm][l]{{\bf macro:} {#2} {#1}({#3})} \vspace{0.1cm}\newline
-	{\bf Summary:\hspace{0.2cm}} #4
+	\framebox[12.6cm][l]{{\bf macro:} {#1}} \vspace{0.1cm}\newline
+	{\bf Summary:\hspace{0.2cm}} #4\newline
+	{\bf Declaration:}
+		{\tt #2} {#1}({\tt #3})
 	\index{#1}
 %	\write 14 {\string\MacroEntry{#1}{#2}{#3}{#4}{\thepage}}
 }
@@ -76,17 +80,38 @@
 
 %----[ INTRODUCTION ]----
 \section{Introduction}\label{intro}
-This manual describes the functionality provided in the \ATlib.
-Section~\ref{usage} explains in general the steps that must be taken to
+This manual describes the functionality provided by the \ATlib.
+Section~\ref{usage} explains the basic steps that must be taken to
 initialise and work with the \ATlib.
-Section~\ref{lvl1} describes the level one interface.
-Section~\ref{lvl2} describes the level two interface.
+
+The level one interface described in Section~\ref{lvl1} offers a set of
+operations on \aterms\ that is sufficiently powerful for most users, yet is
+simple enough to be learned in a relatively short period of time.
+
+Section~\ref{lvl2} describes the level two interface which is intented for
+\aterm\ `power users', providing a more extensive set of datastructures and
+functions.
+
+The \ATlib{} comes with a number of utility programs. A description of
+these programs can be found in Section~\ref{utils}.
 
 %----[ USAGE ]----
 \section{Using the \ATlib}\label{usage}
-This section explains the basics of using the \ATlib.  Section~\ref{init}
-demonstrates initialisation of the \ATlib.  Section~\ref{prot} explains how
-to protect global \aterm\ variables and arrays of \aterms.
+This section explains the basics of using the \ATlib.
+
+First, the library must be initialised.  This ensures that the garbage
+collector is activated and that all necessary internal structures are set
+up. Section~\ref{init} demonstrates initialisation of the \ATlib\ and shows
+all possible commandline options which alter the behaviour of the \ATlib\
+in any way.
+
+From time to time the \ATlib\ will engage in garbage collection activities
+to clean up \aterms\ that are no longer in use. The garbage collector
+detects references to \aterms\ that are on the stack and in any of the
+registers.  As it is also possible to have global references to \aterms\
+which cannot be detected in this way, it is the user's responsibility to
+protect these references from premature erasure. Section~\ref{prot}
+explains how to protect global \aterm\ variables and arrays of \aterms.
 
 %----[ INITIALISING ATERM LIBRARY ]----
 \subsection{Initialising the \ATlib}\label{init}
@@ -99,7 +124,19 @@ The following code demonstrates a typical initialisation of the \ATlib.
 
 \example{init.c}
 
-Note that \NULL\ is \emph{not} a valid bottom of stack argument!
+\smallskip\noindent
+The following commandline options can be passed to the \ATlib:
+
+\begin{tabular}{|l|l|}
+ \hline
+ {\tt -symboltable <nr\_symbols>} & Initial size of symboltable           \\
+ {\tt -termtable <table\_class>}  & Start with termtable of
+                                    $2^\textrm{table\_class}$ entries     \\
+ {\tt -hashinfo} & write hashtable statistics to {\tt hashing.stats}      \\
+ {\tt -print-gc-time} & print timing information about garbage collector  \\
+ {\tt -print-gc-info} & print verbose information about garbage collector \\
+ \hline
+\end{tabular}
 
 %----[ PROTECTING ATERMS]----
 \subsection{Protecting global \aterms\ and arrays of \aterms}\label{prot}
@@ -721,9 +758,10 @@ interface also uses the following types:
 {\tt ATbool (*destructor)(ATermBlob)}
 {Register a blob-destructor function}
 \Describe{
-	When a blob-destructor function has been registered, it will be called
-	whenever the garbage collector deletes the corresponding ATermBlob.
-	Note that only \emph{one} such blob-destructor function can be installed.
+ When a blob-destructor function has been registered, it will be called
+ whenever the garbage collector deletes the corresponding ATermBlob. The
+ destructor function can then handle the deletion of the data area of the
+ blob. At most 16 blob destructor functions can be registered.
 }
 
 \Function{\tt ATunregisterBlobDestructor}{\tt void}
