@@ -278,3 +278,28 @@ ATerm ATelementAt(ATermList list, int index)
 }
 
 /*}}}  */
+
+/*{{{  ATermList ATgetArguments(ATermAppl appl) */
+
+/**
+  * Retrieve the list of arguments of a function application.
+  * This function facilitates porting of old aterm-lib or ToolBus code.
+  */
+
+ATermList ATgetArguments(ATermAppl appl)
+{
+  Symbol s = ATgetSymbol(appl);
+  int i, len = ATgetArity(s);
+  ATermList result = ATempty;
+
+  RESIZE_BUFFER(len);
+  for(i=0; i<len; i++)
+    buffer[i] = ATgetArgument(appl, i);
+
+  for(--i; i>=0; i--)
+    result = ATinsert(result, buffer[i]);
+
+  return result;
+}
+
+/*}}}  */

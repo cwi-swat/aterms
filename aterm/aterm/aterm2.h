@@ -93,10 +93,12 @@ ATermAppl ATmakeAppl6(Symbol sym, ATerm arg0, ATerm arg1, ATerm arg2,
 #define ATgetSymbol(appl) GET_SYMBOL((appl)->header)
 
 /* ATerm     ATgetArgument(ATermAppl appl, int arg); */
-#define ATgetArgument(appl,arg) (*((ATerm *)(appl)+2+(arg)))
+#define ATgetArgument(appl,arg) (*((ATerm *)(appl)+(arg<=6 ? 2:3) + (arg)))
+				              
 
 /* Portability */
 ATermList ATgetArguments(ATermAppl appl);
+ATermAppl ATmakeApplList(Symbol sym, ATermList args);
 
 /* The ATermList type */
 extern ATermList ATempty;

@@ -21,10 +21,11 @@
 #define BLOCK_SIZE (1<<16)
 #define GC_THRESHOLD BLOCK_SIZE/4
 
-#define MAX_DESTRUCTORS 16
+#define MAX_DESTRUCTORS     16
 #define MAX_BLOCKS_PER_SIZE 1024
 
-#define TERM_HASH_OPT      "-termtable"
+#define TERM_HASH_OPT       "-termtable"
+#define MAX_ARITY           256
 
 #define CHECK_ARITY(ari1,ari2) DBG_ARITY(assert((ari1) == (ari2)))
 
@@ -41,10 +42,13 @@ static ATerm freelist[MAX_SIZE];
 static int table_size;
 static ATerm *hashtable;
 
+static int destructor_count = 0;
+static ATbool (*destructors[MAX_DESTRUCTORS])(ATermBlob) = { NULL };
+
+static ATerm arg_buffer[MAX_ARITY];
+
 ATermList ATempty;
 
-int destructor_count = 0;
-ATbool (*destructors[MAX_DESTRUCTORS])(ATermBlob) = { NULL };
 
 /*}}}  */
 
@@ -152,36 +156,53 @@ ATerm AT_allocate(int size)
 
 ATermAppl ATmakeAppl(Symbol sym, ...)
 {
-  int arity = ATgetArity(sym);
+  int i, arity = ATgetArity(sym);
+  ATbool found;
+  ATerm cur;
+  ATermAppl appl;
+  header_type header;
+
+  unsigned int hnr = (((unsigned int)sym) >> 2);
+
   va_list args;
 
   va_start(args, sym);
 
-  #define NEXTARG va_arg(args, ATerm )
-  switch(arity) {
-    case 0:  return ATmakeAppl0(sym);
-      break;
-    case 1:  return ATmakeAppl1(sym, NEXTARG);
-      break;
-    case 2:  return ATmakeAppl2(sym, NEXTARG, NEXTARG);
-      break;
-    case 3:  return ATmakeAppl3(sym, NEXTARG, NEXTARG, NEXTARG);
-      break;
-    case 4:  return ATmakeAppl4(sym, NEXTARG, NEXTARG, NEXTARG, NEXTARG);
-      break;
-    case 5:  return ATmakeAppl5(sym, NEXTARG, NEXTARG, NEXTARG, NEXTARG, 
-				NEXTARG);
-      break;
-    case 6:  return ATmakeAppl6(sym, NEXTARG, NEXTARG, NEXTARG, NEXTARG, 
-				NEXTARG, NEXTARG);
-      break;
+  for(i=0; i<arity; i++) {
+    arg_buffer[i] = va_arg(args, ATerm);
+    hnr = (int)arg_buffer[i] << i;
+  }
+  hnr %= table_size;
+  va_end(args);
 
-    default:
-      ATerror("makeAppl with > 6 args not implemented yet.");
-      return NULL;
+  header = APPL_HEADER(0, arity > 6 ? 7 : arity, sym);
+
+  while(cur) {
+    if(cur->header == header) {
+      appl = (ATermAppl)cur;
+      found = ATtrue;
+      for(i=0; i<arity; i++) {
+	if(!ATisEqual(ATgetArgument(appl, i), arg_buffer[i])) {
+	  found = ATfalse;
+	  break;
+	}
+      }
+      if(found)
+	break;
+    }
+    cur = cur->next;
   }
 
-  va_end(args);
+  if(!cur) {
+    cur = AT_allocate(arity + (arity > 6 ? 3:2));
+    cur->header = header;
+    for(i=0; i<arity; i++)
+      ATgetArgument(cur, i) = arg_buffer[i];
+    cur->next = hashtable[hnr];
+    hashtable[hnr] = cur;
+  }
+  
+  return (ATermAppl)cur;
 }
 
 /*}}}  */
@@ -453,6 +474,17 @@ ATermAppl ATmakeAppl6(Symbol sym, ATerm arg0, ATerm arg1, ATerm arg2,
   }
 
   return (ATermAppl)cur;  
+}
+
+/*}}}  */
+/*{{{  ATermAppl ATmakeApplList(Symbol sym, ATermList args) */
+
+/**
+  * Build a function application from a symbol and a list of arguments.
+  */
+
+ATermAppl ATmakeApplList(Symbol sym, ATermList args)
+{
 }
 
 /*}}}  */
