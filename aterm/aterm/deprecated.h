@@ -4,5 +4,8 @@
 
 ATerm ATmakeTerm(ATerm pat, ...);
 ATbool ATmatchTerm(ATerm t, ATerm pat, ...);
+ATerm ATvmake(char *pat);
+ATerm ATvmakeTerm(ATerm pat);
+void AT_vmakeSetArgs(va_list args);
 
 #endif
