@@ -2,13 +2,10 @@
 *.class
 *.jar
 *.java.sh
+*.o
 .deps
 Makefile
 Makefile.in
-Module*.java
-Nat*.java
-PeanoConstructor.java
-PeanoFactory.java
 builtins
 builtins.adt
 builtins.c
