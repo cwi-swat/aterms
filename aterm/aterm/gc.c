@@ -229,7 +229,7 @@ VOIDCDECL mark_phase()
 
   unsigned int r_eax, r_ebx, r_ecx, r_edx, \
     r_esi, r_edi, r_esp, r_ebp;
-  ATerm reg[8];
+  ATerm reg[8], *real_term;
 
   __asm {
       /* Get the registers into local variables to check them
@@ -357,7 +357,7 @@ VOIDCDECL mark_phase_young() {
 
   unsigned int r_eax, r_ebx, r_ecx, r_edx, \
     r_esi, r_edi, r_esp, r_ebp;
-  ATerm reg[8];
+  ATerm reg[8], *real_term;
 
   __asm {
       /* Get the registers into local variables to check them
@@ -1319,7 +1319,9 @@ void AT_collect_minor()
     fflush(file);
   }
   start = clock();
-  minor_mark_phase_young();
+
+  /* was minor_mark_phase_young(); this should be verified! */
+  mark_phase_young();
   mark = clock();
   user = mark - start;
   STATS(mark_time, user);
