@@ -1000,15 +1000,17 @@ to \aterms.
 The lcc compiler consists of 34 source files, consisting of a total of
 13,588 lines of source code.
 
-\item[emacs Parse Forest:] given the \aterm\ back-end of the
-lcc compiler the C sources of emacs have been processed as
-well.
-The emacs source consists of 169 source files, consisting of a total of
-216,766 lines of source code.
+\item[S-expressions:] a simple translator has been developed which
+transforms an S-expression into an \ATerm. This translator has been
+used to process an arbitrary collection of ``.el'' files
+containing S-expressions found within the emacs source tree
+under Linux.
+The total number of ``.el'' files was 738, these files together contained 
+286,973 lines of code.
 \end{description}
 
 \noindent In the cases of the COBOL System, Casl Specifications, lcc Parse
-Forest, and emacs Parse Forest the set of \aterms\ are combined into and
+Forest, and S-Expressions the set of \aterms\ are combined into and
 processed as {\em one} \aterm.
 Measurements were performed on an ULTRA SPARC-5 (270 MHz) with 256 Mb
 of memory. All times measured are the user CPU time for that particular job. 
@@ -1029,20 +1031,20 @@ Term                    & \multicolumn{1}{c|}{\# nodes}
                         & \multicolumn{1}{c|}{(bytes)}      
                         & \multicolumn{1}{c|}{Node}    \\ \hline \hline
 \multicolumn{6}{|c|}{Artificial Cases}\\ \hline
-Random-unique           &  1,000,000 &   1,00,0000 &    0.00 & 15,198,694 & 15.20   \\ \hline 
-Random                  &  1,000,000 &     92,246 &   90.81 &  2,997,120 &  3.00   \\ \hline \hline
+Random-unique           &  1,000,000 &   1,000,000 &  0.00 & 15,198,694 & 15.20   \\ \hline 
+Random                  &  1,000,000 &     92,246 &  90.81 &  2,997,120 &  3.00   \\ \hline \hline
 
 \multicolumn{6}{|c|}{Real Cases}\\ \hline
 
-COBOL Parse Table       &   961,070 &     97,516 &   89.85 &  2,836,529 &  2.95   \\ \hline
-COBOL System            & 31,332,871 &    470,872 &   98.50 & 12,896,609 &  0.41   \\ \hline
-Risla Library           &   708,838 &     40,073 &   94.35 &   960,170 &  1.35   \\ \hline
-LPO                     &  8,894,391 &    225,229 &   97.47 &  3,701,438 &  0.42   \\ \hline
-Casl Specifications     &    34,526 &     11,699 &   66.12 &   235,655 &  6.83   \\ \hline
+COBOL Parse Table       &   961,070 &     97,516 &    89.85 & 2,836,529 &  2.95   \\ \hline
+COBOL System            & 31,332,871 &    470,872 &   98.50 & 12,896,609 & 0.41   \\ \hline
+Risla Library           &   708,838 &     40,073 &    94.35 &  960,170 &   1.35   \\ \hline
+LPO                     &  8,894,391 &    225,229 &   97.47 &  3,701,438 & 0.42   \\ \hline
+Casl Specifications     &    34,526 &     11,699 &   66.12 &   235,655 &   6.83   \\ \hline
 lcc Parse Forest        &   360,829 &     86,589 &   76.00 &  1,547,713 &  4.29   \\ \hline
-emacs Parse Forest	&  2,288,928 &    520,473 &   77.26 &  9,346,680 &  4.08   \\ \hline
+S-expressions		&   593,874 &    283,891 &   52.20 &  9,111,863 & 15.34  \\ \hline
 \hline
-Real Case Averages      &          &           &   85.65 &          &  2.90   \\ \hline
+Real Case Averages      &           &            &   82.07 &            &  4.51   \\ \hline
 \end{tabular}
 \caption{Memory usage of \ATerms} \label{measurements-in-memory}
 \end{center}
@@ -1057,7 +1059,7 @@ sharing percentage, the amount of memory (in bytes) used for the storage of
 the term, and the average number of bytes needed per node. As can be seen
 in these figures, at least in our applications sharing \emph{does} make a
 difference. By fully exploiting the redundancies in the input terms, we can
-store a node using on the average 2.9 bytes, and still perform operations
+store a node using on the average 4.5 bytes, and still perform operations
 on them efficiently.  The worst case behaviour is 15 bytes per node.
 The amount of sharing is clearly less high in case of abstract syntax
 trees than in case of parse trees represented as \asfix\ terms.
@@ -1067,6 +1069,9 @@ The amount of sharing in the abstract syntax trees for Casl is
 lower, but this is due to the fact that the set of
 Casl specifications is small and each specification tests another
 feature of the Casl language, so not much sharing was to be expected.
+The S-expressions have the lowest ratio of sharing, but this was to
+be expected because these S-expressions represent concrete {\em hand-written}
+Lisp programs.
 
 \begin{figure}
 \centerline{\epsfig{file=sharing.eps}}
@@ -1111,15 +1116,15 @@ Random-unique           &6,888,889 & 6.89 & 34.76 & 34.76 &  4.06 & 4.06  \\ \hl
 Random                  &6,200,251 & 6.20 & 15.90 & 15.90 &  3.67 & 3.67  \\ \hline \hline
 
 \multicolumn{7}{|c|}{Real Cases}\\ \hline
-COBOL Parse Table       &4,211,366 & 4.38 &  6.33 &  6.95 &  2.30 & 2.29  \\ \hline
-COBOL System          &135,350,005 & 4.32 &199.43 &  6.36 & 65.02 & 2.08  \\ \hline
-Risla Library           &2,955,964 & 4.17 &  4.25 &  6.00 &  1.40 & 1.98  \\ \hline
-LPO                     &41,227,481& 4.64 & 81.90 &  9.21 & 29.16 & 3.28  \\ \hline 
-Casl Specifications     & 217,958 & 6.31 &  0.36 & 10.43 &  0.08 & 2.32  \\ \hline
-lcc Parse Forest	&2,132,245 & 6.22 &  3.13 &  9.14 &  0.86 & 2.51  \\ \hline
-emacs Parse Forest     &15,793,029 & 6.90 & 25.98 & 11.35 &  6.40 & 2.80  \\ \hline
+COBOL Parse Table   &  4,211,366 & 4.38 &  6.33 &  6.95 &  2.30 & 2.29  \\ \hline
+COBOL System        &135,350,005 & 4.32 &199.43 &  6.36 & 65.02 & 2.08  \\ \hline
+Risla Library       &  2,955,964 & 4.17 &  4.25 &  6.00 &  1.40 & 1.98  \\ \hline
+LPO                 & 41,227,481 & 4.64 & 81.90 &  9.21 & 29.16 & 3.28  \\ \hline 
+Casl Specifications &    217,958 & 6.31 &  0.36 & 10.43 &  0.08 & 2.32  \\ \hline
+lcc Parse Fores     &  2,132,245 & 6.22 &  3.13 &  9.14 &  0.86 & 2.51  \\ \hline
+S-expressions       &  7,954,550 &13.39 &15.09 & 25.41 &  2.49 & 4.19  \\ \hline
 \hline
-Real Case Averages      &        & 5.27 &       &  8.49 &       & 2.47 \\ \hline
+Real Case Averages      &        & 6.20 &       & 10.50 &       & 2.66 \\ \hline
 \end{tabular}
 \caption{Reading and writing \ATerms\ as \ascii\ text} \label{measurements-text}
 \end{center}
@@ -1132,7 +1137,7 @@ representation of the test term in bytes, the average number of bytes per node,
 the time needed to read the text file, the average time needed to read a node,
 the time needed to write the text file, and the average time needed to write a node.
 On the average, a node requires 5.3 bytes and reading and writing requires
-8.5 $\mu$s and 2.5 $\mu$s, respectively.
+10.5 $\mu$s and 2.7 $\mu$s, respectively.
 
 
 \begin{table}[tb]
@@ -1164,15 +1169,15 @@ Random-unique           &6,073,795& 6.07  & 8.85  & 8.85  & 11.57 & 11.57 \\ \hl
 Random                  &567,419 & 0.57  & 2.06  & 2.06  & 2.76  & 2.76  \\ \hline \hline
 
 \multicolumn{7}{|c|}{Real Cases}\\ \hline
-COBOL Parse Table       &370,450 & 0.39  & 0.63  & 0.66  & 1.75  & 1.82  \\ \hline
-COBOL System            &2,279,066& 0.07  & 4.88  & 0.16  &20.76  & 0.66  \\ \hline
-Risla Library           & 141,946& 0.20  & 0.22  & 0.31  & 0.75  & 1.06  \\ \hline
-LPO                     &1,106,661& 0.12  & 1.86  & 0.21  & 9.40  & 1.06  \\ \hline
-Casl Specifications 	& 32,083 & 0.93  & 0.05  & 1.45  & 0.15  & 4.34  \\ \hline
-lcc Parse Forest	&358,318 & 0.99  & 0.71  & 1.97  & 1.50  & 4.16  \\ \hline
-emacs Parse Forest      &2,493,457& 1.09  &10.25  & 4.48  & 10.43 & 4.56  \\ \hline  
+COBOL Parse Table   &  370,450 & 0.39  & 0.63  & 0.66  & 1.75  & 1.82  \\ \hline
+COBOL System        &2,279,066& 0.07  & 4.88  & 0.16  &20.76  & 0.66  \\ \hline
+Risla Library       &  141,946& 0.20  & 0.22  & 0.31  & 0.75  & 1.06  \\ \hline
+LPO                 &1,106,661& 0.12  & 1.86  & 0.21  & 9.40  & 1.06  \\ \hline
+Casl Specifications &   32,083 & 0.93  & 0.05  & 1.45  & 0.15  & 4.34  \\ \hline
+lcc Parse Forest    &  358,318 & 0.99  & 0.71  & 1.97  & 1.50  & 4.16  \\ \hline
+S-expressions       & 4,438,229 & 7.47  & 105.32  & 177.34  & 544.33 & 916.57  \\ \hline  
 \hline
-Real Case Averages      &       & 0.54  &       & 1.32  &       & 2.38  \\ \hline
+Real Case Averages      &       & ?.??  &       & ?.??  &       & ?.??  \\ \hline
 \end{tabular}
 \caption{Reading and writing \ATerms\ as \baf} \label{measurements-baf}
 \end{center}
@@ -1219,15 +1224,15 @@ Random-unique           & 6,888,889       & 6,073,795       & 11.8          & 2,
 Random                  & 6,199,981       & 567,419        & 90.9          & 439,293        & 92.9  \\ \hline \hline
 
 \multicolumn{6}{|c|}{Real Cases}\\ \hline
-COBOL Parse Table       & 4,211,366       &  370,450       & 91.2          & 230,297        & 94.5  \\ \hline
-COBOL System            &135,350,005      & 2,279,066       & 98.3          & 3,072,774       & 97.7  \\ \hline
-Risla Library           & 2,955,964       &  141,946       & 95.2          &  80,009        & 97.3  \\ \hline
-LPO                     &41,227,481       & 1,106,661       & 97.3          & 804,521        & 98.0  \\ \hline
-Casl Specifications     &  217,958	&   32,083 	& 85.3          &  20,767        & 90.5  \\ \hline
-lcc Parse Forest        & 2,244,691       &  358,318       & 84.0          & 244,502        & 89.1  \\ \hline
-emacs Parse Forest      &15,793,029	& 2,493,457       & 84.2          &1,633,754        & 89.7  \\ \hline
+COBOL Parse Table       & 4,211,366  &   370,450  & 91.2 &   230,297 & 94.5  \\ \hline
+COBOL System            &135,350,005 & 2,279,066  & 98.3 & 3,072,774 & 97.7  \\ \hline
+Risla Library           & 2,955,964  &   141,946  & 95.2 &    80,009 & 97.3  \\ \hline
+LPO                     &41,227,481  & 1,106,661  & 97.3 &   804,521 & 98.0  \\ \hline
+Casl Specifications     &  217,958   &    32,083  & 85.3 &    20,767 & 90.5  \\ \hline
+lcc Parse Forest        & 2,244,691  &   358,318  & 84.0 &   244,502 & 89.1  \\ \hline
+S-expressions           & 7,954,550  & 4,438,229  & 44.2 & 1,858,366 & 76.6  \\ \hline
 \hline
-Real Case Averages      &               &               & 90.8         &                & 93.8  \\ \hline
+Real Case Averages      &            &            & 85.1 &           & 92.0  \\ \hline
 \end{tabular}
 \caption{\baf\ \emph{versus} {\tt gzip}} \label{measurements-baf-gzip}
 \end{center}
