@@ -22,7 +22,7 @@ extends Entry
   }
   static public void initializePattern()
   {
-    pattern = getStaticFactory().parse("constructor(<str>,<str>,<term>)");
+    pattern = getStaticFactory().parse("[<str>,<str>,<term>]");
   }
 
   static public Entry fromTerm(aterm.ATerm trm)

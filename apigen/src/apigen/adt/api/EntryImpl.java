@@ -27,20 +27,11 @@ abstract public class EntryImpl extends ADTConstructor
       return tmp;
     }
 
-    if ((tmp = Entry_List.fromTerm(trm)) != null) {
-      return tmp;
-    }
-
 
     throw new RuntimeException("This is not a Entry: " + trm);
   }
 
   public boolean isConstructor()
-  {
-    return false;
-  }
-
-  public boolean isList()
   {
     return false;
   }
@@ -56,11 +47,6 @@ abstract public class EntryImpl extends ADTConstructor
   }
 
   public boolean hasPat()
-  {
-    return false;
-  }
-
-  public boolean hasElementSort()
   {
     return false;
   }
@@ -93,16 +79,6 @@ abstract public class EntryImpl extends ADTConstructor
   public Entry setPat(ATerm _pat)
   {
      throw new RuntimeException("This Entry has no Pat");
-  }
-
-  public String getElementSort()
-  {
-     throw new RuntimeException("This Entry has no ElementSort");
-  }
-
-  public Entry setElementSort(String _elementSort)
-  {
-     throw new RuntimeException("This Entry has no ElementSort");
   }
 
 
