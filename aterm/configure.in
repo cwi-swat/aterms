@@ -31,10 +31,13 @@ AC_CHECK_PROG(CC_CC,cc,cc,true)
 AC_CHECK_PROG(CC_DBG,gcc,gcc,true)
 AC_CHECK_PROG(CC_PROF,gcc,gcc,true)
 
-CFLAGS_GCC="-Wall -pedantic -O4 -DNDEBUG"
-CFLAGS_CC="-O -DNDEBUG"
-
+CFLAGS_GCC="-Wall -pedantic -O4"
+CFLAGS_CC="-O"
 DEFS='-DVERSION="\"$(VERSION)\""'
+
+DEFS_GCC="$(DEFS) -DNDEBUG"
+DEFS_CC="$(DEFS) -DNDEBUG"
+
 if test ${CC_DBG} = gcc; then
 	CFLAGS_DBG="-Wall -pedantic -g"
 	DEFS_DBG="$(DEFS) -DDEBUG_ALL"
