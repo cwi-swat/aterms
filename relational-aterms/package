@@ -1,0 +1,15 @@
+package 
+identification
+   name=aterm-relations
+   version=0.1
+   location=http://www.cwi.nl/~storm
+   info=http://www.cwi.nl/~storm
+   description='Relations with binary balanced trees."
+
+   keywords=meta-environment, aterm, relations calculus
+
+configuration interface
+
+requires
+  aterm 2.3.1
+
