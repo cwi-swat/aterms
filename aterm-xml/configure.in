@@ -32,12 +32,12 @@ AC_PACKAGE_REQUIRE(libxml2, xml2-config,
    [  --with-libxml2=DIR          XML library is in DIR])
 XML="${LIBXML2}"
 XMLCFG="${XML}/bin/xml2-config"
-XMLLIB=`${XMLCFG} --libs`
-XMLINCLUDE=`${XMLCFG} --cflags`/libxml
-XMLINCLUDE="${XMLINCLUDE} `${XMLCFG} --cflags`"
+XMLLIB='`${XMLCFG} --libs`'
+XMLINCLUDE='`${XMLCFG} --cflags`/libxml `${XMLCFG} --cflags`'
 AC_SUBST(LIBXML2)
 AC_SUBST(XML)
 AC_SUBST(XMLLIB)
+AC_SUBST(XMLCFG)
 AC_SUBST(XMLINCLUDE)
 
 dnl Is ranlib needed on this system?
