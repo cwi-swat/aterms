@@ -7,8 +7,8 @@ exports
   context-free syntax
     AFun                   -> ATermAppl
     AFun "(" ATerms ")"    -> ATermAppl
-    "[" ATerms "]"         -> ATermList
     "<" ATerm ">"          -> ATermPlaceholder
+    "[" ATerms "]"         -> ATermList
     "{" ATerms "}"         -> Anno
 
     ATermInt Anno?         -> ATerm
@@ -18,4 +18,4 @@ exports
     ATermPlaceholder Anno? -> ATerm
 
   aliases
-    {ATerm ","}*           -> ATerms
+    {ATerm ","}* -> ATerms

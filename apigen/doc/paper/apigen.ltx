@@ -31,36 +31,21 @@
 % }}}
 
 \begin{document}
+
+% {{{  Frontmatter
+
 \begin{frontmatter}
-% {{{  Title page
 
 \title{Generation of Abstract Programming Interfaces \\
   from Syntax Definitions}
 
-\author{H.A. de Jong},
-\author{P.A. Olivier}
+\author{H.A. de Jong \and P.A. Olivier}
 \address{
   CWI, Department of Software Engineering, \\
   Kruislaan 413,
   1098 SJ Amsterdam,
   The Netherlands
 }
-
-%%\author{
-%%  H.A. de Jong$^{^1}$\\
-%%  P.A. Olivier$^{^1}$\\
-%%  \vspace{.1cm}\\
-%%  {\small\sl $^1$CWI,
-%%  Department of Software Engineering\vspace{-.2cm}}\\
-%%  {\small\sl Kruislaan 413, 1098 SJ Amsterdam, The Netherlands}
-%%  \vspace{.1cm}\\
-%%  {\small\sl\tt Hayco.de.Jong@cwi.nl, Pieter.Olivierp@cwi.nl}
-%%}
-%%
-%%\maketitle
-
-% }}}
-% {{{  Abstract
 
 \begin{abstract}
 \label{abstract}
@@ -86,9 +71,9 @@ respect to changes in the parsetree format.
 
 \end{abstract}
 
-% }}}
 \end{frontmatter}
 
+% }}}
 % {{{  Introduction
 
 
@@ -252,24 +237,42 @@ likewise omitted\footnote{The official definition allows a much richer
 
 \begin{figure}
 \hrulefill
-\begin{footnotesize}
+\begin{scriptsize}
 \verbatiminput{aterm.sdf}
 \caption{
   \label{fig:aterm-syntax}
   Abbreviated \aterm\ syntax in \sdf.
 }
-\end{footnotesize}
+\end{scriptsize}
 \hrulefill
 \end{figure}
 
 % }}}
 
-Examples of valid \aterms{} thus include:
-\begin{quote}
-  \texttt{42, 3.14, and(true, not(false)), rolodex(<name(String)>), [a,b,c]},
-\end{quote}
-and (with annotation):
-  \texttt{42\{answer\}, [a,b,c]\{chars\}, <string>\{sort\}}.
+Here are a number of examples to show some of the features of the textual representation of \aterms:
+
+\begin{itemize}
+
+\item Integer and real constants are written conventionally: \texttt{1},
+\texttt{3.14}, and \texttt{-0.7E34} are all valid \aterms.
+
+\item Function applications are represented by a function name followed
+by an open parenthesis, a slist of arguments separated by commas, and a
+closing parenthesis. When there are no arguments, the parentheses may be
+omitted. Examples are: \texttt{f(a,b)} and \texttt{"test!"(1,2.1,"Hello
+world!")}. These examples show that double quotes can be used to delimite
+function names that are not identifiers.
+
+\item Lists are represented by an opening square bracket, a number
+of list elements separated by commas and a closing square bracket:
+\texttt{[1,2,"abc"]}, \texttt{[]}, and \texttt{[f,g([1,2],x)]} are
+examples.
+
+\item A placeholder is represented by an opening angular bracket followed
+by a subterm and a closing angular bracket. Examples are: \texttt{<int>},
+\texttt{<[3]>}, and \texttt{<f(<int>,<real>)>}.
+
+\end{itemize}
 
 % }}}
 % {{{  \subsection{\asdf\ Parse Trees: the \asfix\ syntax}
