@@ -92,7 +92,7 @@ public abstract class ATermImpl extends ATermVisitableImpl implements ATerm, Sha
   }
 
   public ATerm removeAnnotations() {
-    return setAnnotations(factory.empty);
+    return setAnnotations(PureFactory.empty);
   }
 
   public ATermList getAnnotations() {
