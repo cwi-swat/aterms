@@ -1,58 +1,62 @@
 $Id$
 
-2000/03/21 (olivierp@cwi.nl)
- * Version 1.5
+2001/03/26 ({jong,markvdb,olivierp}@cwi.nl)
+ * Version 1.5.4
+ * Fixed bug in ATisEmpty: the annotated empty list was not considered empty!
+
+2001/03/21 (olivierp@cwi.nl)
+ * Version 1.5.3
  * added object locking in java ToolBus support.
  * fixed tifstojava to generate correct tifs for methods taking complex args
  * fixed error propagation in java ToolBus support
 
-2000/03/06 ({jong,olivierp@cwi.nl})
+2001/03/06 ({jong,olivierp@cwi.nl})
  * Version 1.5.3beta
  * deprecated.h is now empty (and deprecated)
  * moved ATmatchTerm and friends to aterm1.h
  * added ATcalcUniqueSubterms/Symbols (alias for AT_calcUniqueXxx)
  * Introduced buffered input/output streams in Java ToolBus support
 
-2000/03/05 (jong@cwi.nl)
+2001/03/05 (jong@cwi.nl)
  * Version 1.5.2beta
  * Arne de Bruijn goes on a killing spree :-) Yet another three fixes
    were submitted: ATermReals are now represented in strings using the
    %.15e format. Arne also fixed a possible buffer-overflow and a missing
    '\0' termination in ATermReal handling.
 
-2000/03/02 (jong@cwi.nl)
+2001/03/02 (jong@cwi.nl)
  * The ATermLibrary is now distributed under LGPL.
  * All remaining references to GPL removed
  * LGPL license added (See toplevel file: COPYING)
  * brushed up README, NEWS, AUTHORS somewhat
 
-2000/03/01 (jong@cwi.nl)
+2001/03/01 (jong@cwi.nl)
  * Version 1.5.1
  * deprecated java support removed entirely
  * some GPL headers removed as we are in transition to LGPL
 
-2000/02/28 ({jong,olivierp}@cwi.nl)
+2001/02/28 ({jong,olivierp}@cwi.nl)
  * Version 1.5
  * Fixed several bugs in JFG's hash code reported by Arne de Bruijn
  * Implemented annotations in Java ATerm code
 
-2000/02/27 (jong@cwi.nl)
+2001/02/27 (jong@cwi.nl)
  * Added switch "-no-date" to prevent outputting timestamp in utils/dicttoc.c
 
-2000/02/23 ({jong,olivierp}@cwi.nl)
+2001/02/23 ({jong,olivierp}@cwi.nl)
  * Fixed garbage collection bug reported by Arne de Bruijn <arne@knoware.nl>
  * JavaTif now generates xxxTif.java interface, xxxTool.java class, and
    xxxBridge.java class
  * Version is now 1.5beta
 
-2000/02/20 (jong@cwi.nl)
+2001/02/20 (jong@cwi.nl)
  In utils/atrmannos.c:
  * Folding added
  * Superfluous #includes removed (aterm1.h, stdlib.h, unistd.h)
  * CVS-id added to header
  * Copyright extended to 2001
 
-2000/02/20 (jurgenv@cwi.nl)
+2001/02/20 (jurgenv@cwi.nl)
  * Added utility atrmannos. This utility can be used to remove a number
    of specific annotations or all annotations from a term.
 

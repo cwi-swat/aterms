@@ -137,7 +137,8 @@ ATermList ATmakeList1(ATerm el0);
 #define   ATgetNext(l)  ((l)->tail)
 
 /*ATbool ATisEmpty(ATermList list);*/
-#define ATisEmpty(list) ((ATbool)((list) == ATempty))
+#define ATisEmpty(list) ((ATbool)(((ATermList)(list))->head == NULL \
+				 && ((ATermList)(list))->tail == NULL))
 
 ATermList ATgetTail(ATermList list, int start);
 ATermList ATreplaceTail(ATermList list, ATermList newtail, int start);

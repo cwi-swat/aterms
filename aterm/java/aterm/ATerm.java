@@ -203,6 +203,14 @@ public interface ATerm {
     public ATerm make(List args);
 
     /**
+     * Retrieves the factory responsible for creating this ATerm.
+     *
+     * @return the factory that created this ATerm object.
+     */
+
+    public ATermFactory getFactory();
+
+    /**
      * Gets a string representation of this term.
      * 
      * 

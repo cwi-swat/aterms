@@ -632,6 +632,10 @@ void testAnno(void)
 {
 	ATerm t[8];
 	ATerm term, label, value, value2;
+	ATerm emptylist;
+
+	emptylist = AT_setAnnotations((ATerm)ATempty, ATparse("[[1,2]]"));
+	test_assert("anno", 0, ATisEmpty(emptylist));
 
 	term  = ATreadFromString("f(a)");
 	label = ATreadFromString("label");
