@@ -202,6 +202,10 @@ int ATvfprintf(FILE *stream, const char *format, va_list args)
 	    case 'y':
 		AT_printSymbol(va_arg(args, Symbol), stream);
 	    break;
+
+		default:
+			fputc(*p, stream);
+		break;
 	}
     }
     return result;

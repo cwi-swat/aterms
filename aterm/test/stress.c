@@ -397,7 +397,15 @@ void testMatch(void)
 /*{{{  void testPrintf(void) */
 void testPrintf()
 {
-/*	ATfprintf(stderr, "Test: %3.4d\n", 3);*/
+	/* Outcommented. Have to find a way to test this w/o spamming
+	 * stderr. Just print "printf ok"
+	int i=14;
+	ATfprintf(stderr, "Test: %3.4f\n", 2.345);
+	ATfprintf(stderr, "%c%c%%%c%c\n", 't', 'e', 's', 't');
+	ATfprintf(stderr, "%c%%%10s\n", 'T', "def");
+	ATfprintf(stderr, "%10s %+5.3d\n", "abc", i);
+	ATfprintf(stderr, "Pointer: %p (HexUpper: %X)\n", &i, (int)&i);
+	*/
 }
 /*}}}  */
 /*{{{  void testAnno(void) */
