@@ -2,154 +2,166 @@ package apigen.gen.c;
 
 import java.io.PrintStream;
 
+import apigen.gen.GenerationParameters;
 import apigen.gen.Generator;
 
 abstract public class CGenerator extends Generator {
-	protected PrintStream headerStream;
+	private static final String SOURCE_FILE_EXTENSION = ".c";
+	private static final String HEADER_FILE_EXTENSION = ".h";
+	
+	private PrintStream headerStream;
 
-	public CGenerator(String directory, String filename, boolean verbose, boolean folding) {
-		super(directory, filename, ".c", verbose, folding);
+	public CGenerator(GenerationParameters params, String directory, String filename) {
+		super(params);
+		setDirectory(directory);
+		setExtension(SOURCE_FILE_EXTENSION);
+		setFileName(filename);
 	}
 
-    /**
-     * Create an empty header file and an empty source file, then run
-     * the abstract code generator and close the two files afterwards
-     */
+	/**
+	 * Create an empty header file and an empty source file, then run the
+	 * abstract code generator and close the two files afterwards
+	 */
 	public void run() {
-		stream = createStream(filename, extension, directory);
-		headerStream = createStream(filename, ".h", directory);
-
+		headerStream = createStream(getDirectory(), getFileName(), HEADER_FILE_EXTENSION);
 		generate();
-
-		closeStream(stream);
 		closeStream(headerStream);
 	}
 
-    /**
-     * Print an empty line in the header file
-     *
-     */
+	/**
+	 * Print an empty line in the header file
+	 *  
+	 */
 	public void hprintln() {
 		headerStream.println();
 	}
 
-    /**
-     * Print a line to the header file
-     * @param msg
-     */
+	/**
+	 * Print a line to the header file
+	 * 
+	 * @param msg
+	 */
 	public void hprintln(String msg) {
 		headerStream.println(msg);
 	}
 
-    /**
-     * Print a message to the header file
-     * @param msg
-     */
+	/**
+	 * Print a message to the header file
+	 * 
+	 * @param msg
+	 */
 	public void hprint(String msg) {
 		headerStream.print(msg);
 	}
 
-    /**
-     * Write a byte to the header file
-     * @param b
-     */
-    public void hwrite(int b) {
-			headerStream.write(b);
-    }
-    
-    /**
-     * Print an open fold comment to a stream
-     * @param out
-     * @param comment
-     */
+	/**
+	 * Write a byte to the header file
+	 * 
+	 * @param b
+	 */
+	public void hwrite(int b) {
+		headerStream.write(b);
+	}
+
+	/**
+	 * Print an open fold comment to a stream
+	 * 
+	 * @param out
+	 * @param comment
+	 */
 	protected void printFoldOpen(PrintStream out, String comment) {
 		out.println("/*{{" + "{  " + comment + " */");
 		out.println();
 	}
 
-    /**
-     * Print a close fold comment to a stream
-     */
+	/**
+	 * Print a close fold comment to a stream
+	 */
 	protected void printFoldClose(PrintStream out) {
 		out.println();
 		out.println("/*}}" + "}  */");
 	}
 
-    /**
-     * Print an open fold comment to the header file
-     * @param comment
-     */
+	/**
+	 * Print an open fold comment to the header file
+	 * 
+	 * @param comment
+	 */
 	protected void hprintFoldOpen(String comment) {
-			printFoldOpen(headerStream,comment);
+		printFoldOpen(headerStream, comment);
 	}
 
-    /**
-     * Print a close fold comment to the header file
-     *
-     */
+	/**
+	 * Print a close fold comment to the header file
+	 *  
+	 */
 	protected void hprintFoldClose() {
 		printFoldClose(headerStream);
 	}
-	
+
 	/**
 	 * Print an open fold coment to the source code
+	 * 
 	 * @param comment
 	 */
 	protected void printFoldOpen(String comment) {
-		printFoldOpen(stream,comment);
+		printFoldOpen(getStream(), comment);
 	}
 
-    /**
-     * Print a close fold comment to the source code
-     *
-     */
+	/**
+	 * Print a close fold comment to the source code
+	 *  
+	 */
 	protected void printFoldClose() {
-		printFoldClose(stream);
+		printFoldClose(getStream());
 	}
-	
+
 	/**
 	 * Print an open fold comment to both the header and the source code
+	 * 
 	 * @param comment
 	 */
 	protected void bothPrintFoldOpen(String comment) {
 		printFoldOpen(comment);
 		hprintFoldOpen(comment);
 	}
-	
+
 	/**
 	 * Print a closing fold comment to both the header and the source code
-	 *
+	 *  
 	 */
 	protected void bothPrintFoldClose() {
 		printFoldClose();
 		hprintFoldClose();
 	}
-	
+
 	/**
 	 * Print a line to both the source code and the header file
+	 * 
 	 * @param msg
 	 */
 	protected void bothPrintln(String msg) {
 		println(msg);
 		hprintln(msg);
 	}
-	
-	/** 
+
+	/**
 	 * Print an empty line to both the source code and the header file
-	 *
+	 *  
 	 */
 	protected void bothPrintln() {
 		println();
 		hprintln();
 	}
-	
-	/** 
+
+	/**
 	 * Print a message to both the source code and the header file
+	 * 
 	 * @param msg
 	 */
 	protected void bothPrint(String msg) {
 		print(msg);
 		hprint(msg);
 	}
-			
+
 }

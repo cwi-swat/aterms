@@ -18,6 +18,7 @@ import apigen.adt.SeparatedListType;
 import apigen.adt.Step;
 import apigen.adt.Type;
 import apigen.adt.api.Separators;
+import apigen.gen.GenerationParameters;
 import apigen.gen.StringConversions;
 import apigen.gen.TypeConverter;
 import aterm.AFun;
@@ -32,7 +33,7 @@ public class APIGenerator extends CGenerator {
 	private ADT adt;
 	private String apiName;
 
-	private boolean make_term_compatibility = false;
+	private boolean termCompatibility = false;
 
 	private String prefix;
 	private String prologue;
@@ -42,18 +43,14 @@ public class APIGenerator extends CGenerator {
 
 	public APIGenerator(
 		ADT adt,
-		String apiName,
-		String prefix,
+		GenerationParameters params,
+		String fileName,
 		String prologue,
-		boolean verbose,
-		boolean folding,
-		boolean make_term_compatibility) {
-		super(".", apiName, verbose, folding);
+		boolean termCompatibility) {
+		super(params, ".", fileName);
 		this.adt = adt;
-		this.apiName = apiName;
-		this.prefix = prefix;
 		this.prologue = prologue;
-		this.make_term_compatibility = make_term_compatibility;
+		this.termCompatibility = termCompatibility;
 
 		afunRegister = new AFunRegister();
 	}
@@ -246,11 +243,7 @@ public class APIGenerator extends CGenerator {
 		println("}");
 	}
 
-	private void genSeparatedConcat(
-		SeparatedListType type,
-		String typeId,
-		String typeName,
-		String elementTypeName) {
+	private void genSeparatedConcat(SeparatedListType type, String typeId, String typeName, String elementTypeName) {
 		String decl =
 			typeName
 				+ " "
@@ -268,7 +261,8 @@ public class APIGenerator extends CGenerator {
 		println("  if (ATisEmpty((ATermList) arg0)) {");
 		println("    return arg1;");
 		println("  }");
-		// First we 'fake' a new list insertion using the first element of arg0 as a dummy value
+		// First we 'fake' a new list insertion using the first element of arg0
+		// as a dummy value
 		println(
 			"  arg1 = "
 				+ prefix
@@ -279,18 +273,15 @@ public class APIGenerator extends CGenerator {
 				+ ")ATgetFirst((ATermList) arg0), "
 				+ buildListManyActualArgsWithoutHeadAndTail(type)
 				+ " arg1);");
-		// Then we remove the dummy value in type unsafe mode to get a list that starts with the expected separators
+		// Then we remove the dummy value in type unsafe mode to get a list
+		// that starts with the expected separators
 		println("  arg1 = (" + typeName + ") ATgetNext((ATermList) arg1);");
 		// Now we can concatenate
 		println("  return (" + typeName + ") ATconcat((ATermList) arg0, (ATermList) arg1);");
 		println("}");
 	}
 
-	private void genSeparatedAppend(
-		SeparatedListType type,
-		String typeId,
-		String typeName,
-		String elementTypeName) {
+	private void genSeparatedAppend(SeparatedListType type, String typeId, String typeName, String elementTypeName) {
 		String decl =
 			typeName
 				+ " "
@@ -311,8 +302,8 @@ public class APIGenerator extends CGenerator {
 				+ "concat"
 				+ typeId
 				+ "(arg0, "
-				+ buildListManyActualArgsWithoutHeadAndTail(type) 
-				+ prefix 
+				+ buildListManyActualArgsWithoutHeadAndTail(type)
+				+ prefix
 				+ "make"
 				+ typeId
 				+ "Single(arg1));");
@@ -480,7 +471,7 @@ public class APIGenerator extends CGenerator {
 	private void genToTerm(String type_id, String type_name) {
 		String decl;
 
-		if (make_term_compatibility) {
+		if (termCompatibility) {
 			String old_macro =
 				"#define " + prefix + "makeTermFrom" + type_id + "(t)" + " (" + prefix + type_id + "ToTerm(t))";
 			hprintln(old_macro);
@@ -496,7 +487,7 @@ public class APIGenerator extends CGenerator {
 	}
 
 	private void genFromTerm(String type_id, String type_name) {
-		if (make_term_compatibility) {
+		if (termCompatibility) {
 			String old_macro =
 				"#define " + prefix + "make" + type_id + "FromTerm(t)" + " (" + prefix + type_id + "FromTerm(t))";
 			hprintln(old_macro);
@@ -935,7 +926,8 @@ public class APIGenerator extends CGenerator {
 	}
 
 	//}}}
-	//{{{ private void genSetterSteps(Iterator steps, List parentPath, String arg)
+	//{{{ private void genSetterSteps(Iterator steps, List parentPath, String
+	// arg)
 
 	private void genSetterSteps(Iterator steps, List parentPath, String arg) {
 		if (steps.hasNext()) {

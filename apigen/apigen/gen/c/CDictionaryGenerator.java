@@ -3,43 +3,40 @@ package apigen.gen.c;
 import java.io.IOException;
 import java.util.Iterator;
 import apigen.adt.*;
+import apigen.gen.GenerationParameters;
 import apigen.gen.Generator;
 import apigen.gen.StringConversions;
 import aterm.*;
 
 public class CDictionaryGenerator extends Generator {
 	private ADT adt;
-	private String prefix;
-	private String apiName;
-
-    private AFunRegister afunRegister;
-
+	private AFunRegister afunRegister;
 	private ATermFactory factory;
 
 	public CDictionaryGenerator(
-		ATermFactory factory,
 		ADT adt,
+		GenerationParameters params,
+		ATermFactory factory,
 		String directory,
-		String apiName,
-		String prefix,
-		AFunRegister afunRegister,
-		boolean verbose,
-		boolean folding) {
-		super(directory, apiName, ".dict", verbose, folding);
+		String fileName,
+		AFunRegister afunRegister) {
+		super(params);
 		this.adt = adt;
-		this.apiName = apiName;
-		this.prefix = prefix;
 		this.factory = factory;
-
 		this.afunRegister = afunRegister;
+		setDirectory(directory);
+		setExtension(".dict");
+		setFileName(fileName);
 	}
 
 	protected void generate() {
+		String apiName = getGenerationParameters().getApiName();
 		info("generating " + apiName + ".dict");
 
 		try {
-			buildDictionary(adt).writeToTextFile(stream);
-		} catch (IOException e) {
+			buildDictionary(adt).writeToTextFile(getStream());
+		}
+		catch (IOException e) {
 			System.out.println("Could not write to dictionary file.");
 			System.exit(1);
 		}
@@ -69,25 +66,30 @@ public class CDictionaryGenerator extends Generator {
 	}
 
 	private ATerm makeDictEntry(Type type, Alternative alt) {
+		String prefix = getGenerationParameters().getPrefix();
 		return factory.make(
 			"[<appl>,<term>]",
-			prefix + "pattern" + StringConversions.makeIdentifier(type.getId()) + StringConversions.makeCapitalizedIdentifier(alt.getId()),
+			prefix
+				+ "pattern"
+				+ StringConversions.makeIdentifier(type.getId())
+				+ StringConversions.makeCapitalizedIdentifier(alt.getId()),
 			alt.buildMatchPattern());
 	}
 
 	private ATermList makeAFunList() {
 		ATermList afun_list = factory.makeList();
-        Iterator afuns = afunRegister.aFunIterator();
-     
-       while(afuns.hasNext()) {
+		Iterator afuns = afunRegister.aFunIterator();
+
+		while (afuns.hasNext()) {
 			AFun afun = (AFun) afuns.next();
 			ATerm entry = makeDictEntry(afun);
 			afun_list = afun_list.insert(entry);
-       }
+		}
 		return afun_list;
 	}
 
 	private ATerm makeDictEntry(AFun afun) {
+		String prefix = getGenerationParameters().getPrefix();
 		String name = afunRegister.lookup(afun);
 		ATerm[] args = new ATerm[afun.getArity()];
 		for (int j = 0; j < afun.getArity(); j++) {

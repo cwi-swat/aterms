@@ -7,15 +7,17 @@ import java.io.InputStream;
 import apigen.adt.ADT;
 import apigen.adt.api.ADTFactory;
 import apigen.adt.api.Entries;
+import apigen.gen.GenerationParameters;
 import apigen.gen.tom.TomSignatureGenerator;
 
 public class Main {
-	private static boolean verbose = false;
-	private static boolean jtom = false;
-	private static boolean jtype = false;
-	private static boolean make_term_compatibility = false;
-	private static String output = null;
-	private static String prologue = null;
+	private static GenerationParameters params = new GenerationParameters();
+
+	private static boolean jtom;
+	private static boolean jtype;
+	private static boolean termCompatibility;
+	private static String output;
+	private static String prologue;
 	private static String prefix = "";
 
 	private static void usage() {
@@ -45,10 +47,10 @@ public class Main {
 				usage();
 			}
 			else if ("-verbose".startsWith(args[i])) {
-				verbose = true;
+				params.setVerbose(true);
 			}
 			else if ("-prefix".startsWith(args[i])) {
-				prefix = args[++i];
+				params.setPrefix(args[++i]);
 			}
 			else if ("-output".startsWith(args[i])) {
 				output = args[++i];
@@ -60,7 +62,7 @@ public class Main {
 				input = args[++i];
 			}
 			else if ("-compatible:term".equals(args[i])) {
-				make_term_compatibility = true;
+				termCompatibility = true;
 			}
 			else if ("-jtom".startsWith(args[i])) {
 				jtom = true;
@@ -82,7 +84,7 @@ public class Main {
 		else {
 			inputStream = new FileInputStream(input);
 			if (output == null) {
-				int extIndex = input.lastIndexOf((int) '.');
+				int extIndex = input.lastIndexOf('.');
 				output = input.substring(0, extIndex);
 			}
 
@@ -100,20 +102,12 @@ public class Main {
 			adt = new ADT(entries);
 
 			APIGenerator apigen =
-				new APIGenerator(adt, output, prefix, prologue, verbose, true, make_term_compatibility);
+				new APIGenerator(adt, params, output, prologue, termCompatibility);
 			apigen.run();
 			if (jtom) {
-				new TomSignatureGenerator(
-					adt,
-					new CTomSignatureImplementation(prefix, jtype),
-					".",
-					output,
-					prefix,
-					verbose,
-					true)
-					.run();
+				new TomSignatureGenerator(adt, new CTomSignatureImplementation(prefix, jtype), params).run();
 			}
-			new CDictionaryGenerator(factory, adt, ".", output, prefix, apigen.getAFunRegister(), verbose, true).run();
+			new CDictionaryGenerator(adt, params, factory, ".", output, apigen.getAFunRegister()).run();
 
 		}
 		catch (IOException e) {
