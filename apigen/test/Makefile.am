@@ -1,8 +1,8 @@
 # $Id$
 
-ADTC = ${top_builddir}/utils/adt-to-c --verbose
+ADTTOC = ${top_builddir}/utils/adt-to-c --verbose
 
-ADTJAVA = ${top_builddir}/utils/adt-to-java --verbose --visitable
+ADTTOJAVA = ${top_builddir}/utils/adt-to-java-test
 
 JAVATESTS = peano list rolodex builtins
 
@@ -69,14 +69,14 @@ EXTRA_DIST = \
 	rolodex.trm
 
 rolodex.c rolodex.h: rolodex.adt
-	${ADTC} \
+	$(ADTTOC) \
 		--input ${top_srcdir}/test/rolodex.adt \
 		--name rolodex \
 		--compat-term \
 		--classpath ${top_builddir}:${JAVA_ATERM}
 
 list.c list.h: list.adt list.pro
-	${ADTC} \
+	$(ADTTOC) \
 		--input ${top_srcdir}/test/list.adt \
 		--name list \
 		--prologue ${top_srcdir}/test/list.pro \
@@ -84,20 +84,21 @@ list.c list.h: list.adt list.pro
 		--classpath ${top_builddir}:${JAVA_ATERM}
 
 builtins.c builtins.h: builtins.adt 
-	${ADTC} \
+	$(ADTTOC) \
 		--input ${top_srcdir}/test/builtins.adt \
 		--name builtins \
 		--classpath ${top_builddir}:${JAVA_ATERM}
 
 %.java.sh: Makefile
-	${ADTJAVA} --input ${top_srcdir}/test/$*.adt \
-	           --output ${top_srcdir} \
-		   --package test \
-		   --name $* \
-		   --classpath ${top_builddir}
-	(cd ${top_srcdir}; \
-         CLASSPATH=.:${top_srcdir}:${JAVA_ATERM} \
-         ${JAVAC} test/$($*_Main).java)
+	$(ADTTOJAVA) \
+		--input ${top_srcdir}/test/$*.adt \
+		--name $* \
+		--output ${top_srcdir} \
+		--package test \
+		--visitable
+	$(JAVAC) \
+		-classpath ${top_srcdir}:${JAVA_ATERM} \
+		${top_srcdir}/test/$($*_Main).java
 	@(echo "#! /bin/sh"; \
 	  echo "CLASSPATH=.:${top_srcdir}:${JAVA_ATERM}"; \
 	  echo "export CLASSPATH"; \

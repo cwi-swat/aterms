@@ -1,0 +1,10 @@
+#! /bin/sh
+
+APIGEN=apigen.gen.java.Main
+CLASSPATH=__APIGEN_CLASSES__:__JAVA_ATERM__
+
+set -x
+
+java -classpath ${CLASSPATH} ${APIGEN} $* || exit 1
+#javac ${CLASSPATH} `find . -name '*.java'` || exit 1
+#jar cf api.jar `find ${OUTPUT} -name '*.java' -o -name '*.class'` || exit 1

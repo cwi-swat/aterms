@@ -1,6 +1,8 @@
 # $Id$
 
 Wed Nov 26 10:15:32 CET 2003 <jong@cwi.nl>
+ * generate separate adt-to-java{,-test} to account for different paths
+   to apigen during check/distcheck and final installed version.
  * several Makefile.am fixes to get distcheck working
  * removed all functionality to check command line arguments
    as this is now done in the GenerationParameters mechanism

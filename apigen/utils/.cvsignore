@@ -3,6 +3,7 @@ Makefile
 Makefile.in
 adt-to-c
 adt-to-java
+adt-to-java-test
 concat-adt
 upgrade-adt
 *.o

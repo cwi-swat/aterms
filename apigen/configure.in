@@ -71,7 +71,6 @@ AC_OUTPUT(
 Makefile
 utils/Makefile
 utils/adt-to-c
-utils/adt-to-java
 lib-1.0/Makefile
 lib-2.0/Makefile
 apigen/Makefile
@@ -87,7 +86,7 @@ apigen/gen/tom/java/Makefile
 test/Makefile
 doc/Makefile
 ,
-chmod +x utils/adt-to-c utils/adt-to-java
+chmod +x utils/adt-to-c
 )
 
 dnl }}}
