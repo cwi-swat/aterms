@@ -1,6 +1,9 @@
-2001/03/27 (jong@cwi.nl)
+2001/03/27 ({jong,olivierp}@cwi.nl)
+ * version 0.8.2
  * added generation of isXXX() methods to java Apigen.
  * added generation of hasXXX() methods to java Apigen.
+ * added generation of get-, set-, equals-, isEqual- methods
+ * added generation of toTerm() and static makeXXX() methods
 
 2001/03/26 ({jong,olivierp}@cwi.nl)
  * added initial adt-to-java support
