@@ -131,7 +131,7 @@ testOther(void)
 	ATwriteToTextFile((ATerm)ph[0], stdout);
 	fprintf(stdout, "\n");
 
-	blob[0] = ATmakeBlob((void *)data, 9);
+	blob[0] = ATmakeBlob(9, (void *)data);
 	assert(ATgetBlobSize(blob[0]) == 9);
 	assert(ATgetBlobData(blob[0]) == data);
 	ATwriteToTextFile((ATerm)blob[0], stdout);
@@ -346,6 +346,26 @@ void testDict(void)
 void
 testMake(void)
 {
+	int len = 8;
+	char data[8] = "ABCDEFG";
+	Symbol sym[8];
+
+	test_assert("make", 1, ATisEqual(ATmake("<int>", 3), ATmakeInt(3)));
+	test_assert("make", 2, ATisEqual(ATmake("<real>", 3.8), ATmakeReal(3.8)));
+	test_assert("make", 3, ATisEqual(ATmake("<blob>", len, data),
+									 ATmakeBlob(len, data)));
+	sym[0] = ATmakeSymbol("abc", 0, ATfalse);
+	test_assert("make", 4, ATisEqual(ATmake("<appl>", "abc"),
+									 ATmakeAppl0(sym[0])));
+	sym[1] = ATmakeSymbol("def", 0, ATtrue);
+	test_assert("make", 5, ATisEqual(ATmake("<str>", "def"),
+									 ATmakeAppl0(sym[1])));
+	sym[2] = ATmakeSymbol("echt", 3, ATfalse);
+	test_assert("make", 6, ATisEqual(ATmake("<appl(<int>, <list>)>",
+		"echt", 123, ATmakeList2((ATerm)ATmakeInt(7), (ATerm)ATmakeReal(7.01))),
+		ATreadFromString("echt(123, 7, 7.01)")));
+	test_assert("make", 7, ATisEqual(ATmake("<placeholder>", ATmakeInt(7)),
+		ATmakePlaceholder((ATerm)ATmakeInt(7))));
 }
 
 /*}}}  */
@@ -423,6 +443,7 @@ int main(int argc, char *argv[])
   testDict();
   testPrintf();
   testAnno();
+  testMake();
 
   return 0;
 }
