@@ -72,6 +72,8 @@ class ATermListImpl
 
   protected boolean match(ATerm pattern, List list)
   {
+    System.err.println("match pattern: " + pattern + " against : " + list);
+    
     if (pattern.getType() == LIST) {
       ATermList l = (ATermList)pattern;
 
@@ -79,20 +81,18 @@ class ATermListImpl
 	      if (l == PureFactory.empty) {
           return true;
         }
-      }
-
-      // match("[1,2,3],[<list>]")
-      if (isListPlaceHolder(l.getFirst())) {
-	      list.add(this);
-	      return true;
-	    }
-	    else if (l == PureFactory.empty) {
-        return false;
+        else if (isListPlaceHolder(l.getFirst())) {
+          list.add(this);
+          return true;
+        }
+        else {
+          return false;
+        }
       }
 
       List submatches = first.match(l.getFirst());
       if (submatches == null) {
-	return false;
+	      return false;
       }
 
       list.addAll(submatches);
@@ -100,7 +100,7 @@ class ATermListImpl
       submatches = next.match(l.getNext());
 
       if (submatches == null) {
-	return false;
+	      return false;
       }
 
       list.addAll(submatches);
