@@ -1,5 +1,11 @@
 $Id$
 
+Mon Feb  9 11:36:34 CET 2004 <jurgenv@cwi.nl>
+ * Used autoupdated to upgrade configure.in, and as a consequence:
+   - removed double AC_PROG_CC calls
+   - moved the now untangled call to AC_CANONICAL_TARGET to a place
+     that does not trigger a warning
+
 Mon Feb  2 14:21:55 CET 2004 <jong@cwi.nl>
  * configure.in: bumped version to 2.1
  * doc/Makefile.am: add generated files to CLEANFILES
@@ -10,6 +16,11 @@ Mon Feb  2 14:22:41 CET 2004 <jurgenv@cwi.nl>
  * aterm package is now up-to-date with automake-1.6.3
  * Removed all unused '#ifndef PO ... #else ... #endif' code and
    all commented out code from the ATerm implementation.
+
+Mon Feb  2 12:20:01 CET 2004 <jurgenv@cwi.nl>
+ * Removed all unused '#ifndef PO code' and all commented out code
+   from the aterm library.
+ * ATerm library is now up-to-date with automake-1.6.3
 
 Tue Dec 16 10:01:13 CET 2003 <{jong,jurgenv}@cwi.nl>
  * Added const attributes to ATmakeAFun and ATmakeSymbol and AT_hashSymbol

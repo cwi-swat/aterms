@@ -3,10 +3,10 @@
 #
 # $Id$
 
-AC_INIT(configure)
+AC_INIT
+AC_CONFIG_SRCDIR([configure])
+AC_CANONICAL_TARGET([])
 AM_INIT_AUTOMAKE(aterm, 2.1)
-
-AC_PROG_CC
 
 AC_PROG_CC
 
@@ -49,11 +49,10 @@ AC_SUBST(AR)
 
 AC_AIX
 
-AC_SET_MAKE
+AC_PROG_MAKE_SET([])
 
 # This evokes a warning: AC_ARG_PROGRAM was called before AC_CANONICAL_TARGET
 # if you know a fix, please apply...
-AC_CANONICAL_SYSTEM
 if test "${with_64bit+set}" = set; then
 case "$target_cpu" in
    i*86)
@@ -173,17 +172,17 @@ AC_SUBST(LFLAGS_DBG)
 AC_SUBST(LFLAGS_PROF)
 AC_SUBST(LFLAGS_NS)
 
-AC_HAVE_FUNCS(strdup)
+AC_CHECK_FUNCS([strdup])
 
 # Find out if we have rand48 suite
 AC_CHECK_FUNCS(lrand48 srand48)
 
-AC_OUTPUT(
-  Makefile
+AC_CONFIG_FILES([Makefile
   aterm/Makefile
   utils/Makefile
   test/Makefile
   doc/Makefile
   doc/examples/Makefile
   doc/spec/Makefile
-)
+])
+AC_OUTPUT
