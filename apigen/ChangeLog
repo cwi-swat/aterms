@@ -1,3 +1,6 @@
+2001/04/04 ({jong,olivierp}@cwi.nl)
+ * Fixed some bugs in native type support of JavaGen
+
 2001/03/30 ({jong,olivierp}@cwi.nl)
  * version 0.8.3
  * improved capitalization of generated alt-factory-methodnames
