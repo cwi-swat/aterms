@@ -87,7 +87,7 @@ of access functions that manipulate the parse trees of terms over this
 syntax. Application of this technique in the \metaenv\ has resulted in
 a spectacular elimination of 47\% of the handwritten code, thus greatly
 improving both maintainability of the tools and their flexibility with
-respect to changes in the parsetree format.
+respect to changes in the parse tree format.
 
 \end{abstract}
 
@@ -100,11 +100,12 @@ respect to changes in the parsetree format.
 \section{Introduction}
 \label{sec:intro}
 
-Since the development of the \atlib~\cite{BJKO2000} in 1999, its
-use for the implementation of tree-like data structures has become
-quite popular amongst developers of scanners, parsers, rewrite
-engines and model checkers. Apart from its inevitable deployment in
-the tools of the \metaenv\ for which it was specifically designed,
+\begin{sloppypar}
+Since the development of the \atlib~\cite{BJKO2000} in 1999, its use
+for the implementation of tree-like data structures has become quite
+popular amongst developers of scanners, parsers, rewrite engines and
+model checkers. Apart from its inevitable deployment in the tools of the
+\metaenv~\cite{Kli93,BKMO97} for which it was specifically designed,
 the \atlib\ is used amongst others in: the ELAN system~\cite{BR01},
 The XT Program Transformation Tools~\cite{xt} which are based on the
 Stratego Language~\cite{Stratego}, The CoFI Algebraic Specification
@@ -114,6 +115,7 @@ nice features: they are easy to manipulate yet very efficient; they
 come with a built-in garbage collector (in the \C\ library), and they
 have persistency support in the form of a compact, sharing preserving
 serialization in both textual and binary representations.
+\end{sloppypar}
 
 As more and more tools in the \metaenv\ were converted to work with
 the \atlib, it became apparent that the tools had become inflexible with
@@ -208,7 +210,7 @@ formalism.
 In \cite{gramcon} a generic framework is presented
 that includes the generation of libraries from concrete syntax
 definitions. These libraries can then be used to manipulate both
-parsetrees and abstract syntax trees. Just like our work, the
+parse trees and abstract syntax trees. Just like our work, the
 instantiations are based on \sdf\ as syntax definition formalism,
 in combination with tool support from the \metaenv. Instantiations
 are described for generating libraries in different languages
@@ -318,11 +320,11 @@ generators~\cite{genprog}. At first glance this ``high level'' view on
 generating software components seems to be far removed from the low
 level view on source code generation we have taken in this paper. If
 we take a closer look, the two approaches are not as disjunct as one
-might think. We believe any succesful generic approach to generative
+might think. We believe any successful generic approach to generative
 programming must be based on some abstract data type definition augmented
 with domain specific knowledge. In our case, the data type definitions
 are written in SDF, and the domain specific knowledge consists of the
-mapping of such datatypes to concrete \asfix\ representations.
+mapping of such data types to concrete \asfix\ representations.
 
 % }}}
 % {{{  JJForester
@@ -349,7 +351,7 @@ The specification formalism \asdf~\cite{BHK89,HHKR92,tool.demo} is a
 combination of the algebraic specification formalism \asf\ and the syntax
 definition formalism \sdf. An overview can be found in~\cite{DHK96}. As
 an illustration, Figure~\ref{fig:bool-example} presents the definition of
-the Boolean datatype in \asdf. \asdf\ specifications consist of modules,
+the Boolean data type in \asdf. \asdf\ specifications consist of modules,
 where each module has an \sdf-part (defining lexical and context-free
 syntax) and an \asf-part (defining equations).
 
@@ -405,12 +407,11 @@ have failed, either because the arguments did not match or because one
 of the conditions failed.
 
 The development of \asdf\ specifications is supported by an interactive
-programming environment, the \metaenv~\cite{Kli93,BKMO97}. In this environment
-specifications can be developed and tested. It provides syntax-directed
-editors, a parser generator, and a rewrite engine. Given this rewrite
-engine terms can be reduced by interpreting the equations as rewrite
-rules. For instance, the term
-\begin{quote}
+programming environment, the \metaenv. In this environment specifications
+can be developed and tested. It provides syntax-directed editors, a parser
+generator, and a rewrite engine. Given this rewrite engine terms can be
+reduced by interpreting the equations as rewrite rules. For instance,
+the term \begin{quote}
   {\tt true \& ( false | true )}
 \end{quote}
 
@@ -437,7 +438,7 @@ representation of \aterms:
 by an open parenthesis, a list of arguments separated by commas, and a
 closing parenthesis. When there are no arguments, the parentheses may be
 omitted. Examples are: \texttt{f(a,b)} and \texttt{"test!"(1,2.1,"Hello
-world!")}. These examples show that double quotes can be used to delimite
+world!")}. These examples show that double quotes can be used to delimit
 function names that are not identifiers.
 
 \item Lists are represented by an opening square bracket, a number
@@ -461,7 +462,7 @@ From a \sdf-specification, a parse table can be generated using the
 \texttt{pgen} tool from the \metaenv. This parse table can subsequently
 be used by \texttt{sglr}\cite{sglr}: the scannerless, generalized LR parser to
 parse input terms over the syntax described by the \sdf-specification.
-The result of a succesful parse is a parse tree. The data structure used
+The result of a successful parse is a parse tree. The data structure used
 to represent parse trees is called \asfix, and is implemented using the
 \atlib\ to exploit the maximal subterm sharing that is commonly present
 in parse trees.
@@ -493,12 +494,12 @@ is:
 \medskip
 The \texttt{prod} symbol declares this to be a grammar production. It
 has three arguments: the first is a list of sorts of the elements of
-the lefthand side of the production, the second argument is the sort
+the left-hand side of the production, the second argument is the sort
 of the righthand side, and the third argument contains the attributes
 (e.g. left associativity) of the production.
 
 In this example, the literal (denoted by the symbol \texttt{lit})
-\texttt{true} is the only element in the lefthand side of the
+\texttt{true} is the only element in the left-hand side of the
 production. It is injected into the context-free (denoted by the symbol
 \texttt{cf}) sort \texttt{Bool}. The production has no specific attributes
 (\texttt{no-attrs}).
@@ -529,7 +530,7 @@ looks like this:
 \begin{itemize}
 
 \item Line 1 declares this to be a grammar production (\texttt{prod}),
-containing all the elements of the lefthand side of the production. The
+containing all the elements of the left-hand side of the production. The
 \sdf-normalizer has inserted the context-free sort \texttt{opt(layout)}
 subterms at every location where optional layout in the input term
 is allowed.
@@ -1008,7 +1009,7 @@ sortname of the production is \texttt{Bool}, the alternative is called
 \texttt{and}.  There are two operands, \texttt{lhs} and \texttt{rhs},
 both of type \texttt{Bool}. In the pattern we put typed placeholders
 \texttt{<lhs(Bool)>} and \texttt{<rhs(Bool)>} at the location of
-the corresponding nonterminals. Also, because this is a parse tree
+the corresponding non-terminals. Also, because this is a parse tree
 pattern, we have to allow layout (whitespace), which in this case can
 occur both after the non-terminal \texttt{lhs}, and after the literal
 \texttt{and}. The \adt\ entry thus becomes:
@@ -1062,7 +1063,7 @@ This leaves us with the issue of coming up with a decent name for each
 figure out a way to give \emph{descriptive} names to the non-terminals
 in the grammar rule.
 
-\noindent\textbf{Naming the nonterminals}
+\noindent\textbf{Naming the non-terminals}
 
 Given our \sdf\ rule for the boolean \texttt{and}, can we derive a
 sensible name for each of the \texttt{Bool} non-terminals? The only
@@ -1566,7 +1567,7 @@ when some of the tools demonstrated a need for speed, parts of the now
 grown-but-not-restructured tools were rewritten to use the more efficient
 level two interface instead of the matching interface, mostly in the
 form of ad hoc restructuring, driven by the output of the \texttt{gprof}
-profiler. When prompted to implement changes in our parsetree format,
+profiler. When prompted to implement changes in our parse tree format,
 we realized the era of direct \aterm\ manipulation had to end, and we
 had to find a structural solution to representing data types by \aterms,
 or we would be unable to maintain our toolset. Fortunately, the road of
