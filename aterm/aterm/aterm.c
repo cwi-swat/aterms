@@ -115,7 +115,7 @@ ATinit(int argc, char *argv[], ATerm * bottomOfStack)
 	for (lcv=1; lcv < argc; lcv++) {
 		if (streq(argv[lcv], SILENT_FLAG)) {
 			silent = ATtrue;
-		} else if(strncmp(argv[lcv], "-help", strlen(argv[lcv])) == 0)
+		} else if(strcmp(argv[lcv], "-help") == 0)
 			help = ATtrue;
 	}
 
@@ -124,6 +124,7 @@ ATinit(int argc, char *argv[], ATerm * bottomOfStack)
 							VERSION, CURDATE);
 
 	if(help) {
+		fprintf(stderr, "usage: %s [options]\n", argv[0]);
 		fprintf(stderr, "    %-20s: print this help info\n", "-help");
 		fprintf(stderr, "    %-20s: suppress runtime gc information.\n",
 						"-silent");

@@ -299,7 +299,7 @@ void AT_initMemory(int argc, char *argv[])
       table_class = atoi(argv[++i]);
 		else if(streq(argv[i], HASH_INFO_OPT))
 			infoflags |= INFO_HASHING;
-		else if(strncmp(argv[i], "-help", strlen(argv[i])) == 0) {
+		else if(strcmp(argv[i], "-help") == 0) {
 			fprintf(stderr, "    %-20s: initial termtable size (2^size)\n",
 							TERM_HASH_OPT " <size>");
 			fprintf(stderr, "    %-20s: write information to 'hashing.stats'\n",
