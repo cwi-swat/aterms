@@ -956,43 +956,78 @@ We have used the parse tree for a XXX-line CASL specification.
 
 \end{description}
 
-
 \begin{figure}[tb]
 \begin{center}
-\begin{tabular}{|l||c|c|c|} \hline
-Term			&	\# nodes& Bytes	& Bytes/Node	\\ \hline \hline
-Random10		&	1000000	&2997120& 3.00		\\ \hline
-Random5			&	1000000	&3343670& 3.34 		\\ \hline
-COBOL Parse Table 	&	x	& x	& x		\\ \hline
-COBOL Program 		&	x	& x	& x		\\ \hline
-CASL Specification	&	x	& x	& x		\\ \hline
+\begin{tabular}{|l||c|c|c|c|c|} \hline
+Term			& \# nodes & \# unique & Sharing &   Bytes  & Bytes/  \\
+                        &          &   nodes   &   (\%)  &          & Node    \\ \hline \hline
+Random10		&  1000000 &	 92246 &   90.81 &  2997120 & 3.00    \\ \hline
+Random5			&  1000000 &    169014 &   83.11 &  3343670 & 3.34    \\ \hline
+COBOL Parse Table 	&   733237 &     81115 &   88.94 &  2174662 & 2.97    \\ \hline
+COBOL Program 		&	   &           &         &          &         \\ \hline
+CASL Specification	&	   &           &         &          &         \\ \hline
 \end{tabular}
 \caption{Memory usage for \ATerms} \label{measurements-in-memory}
 \end{center}
 \end{figure}
 
 In Figure~\ref{measurements-in-memory}, we give results for the memory usage
-for our sample terms. The three columns give the number of nodes in each term,
+for our sample terms. The five columns give the total number of nodes in each term,
+the number of unique nodes in each term, the sharing percentage,
 the amount of memory (in bytes) used for the storage of the term,
-and the average number of bytes needed per node.
+and the average number of bytes needed per node. As can be seen from these figures,
+at least in our applications sharing \emph{does} make a difference. By fully exploiting
+the reduncies in the input terms, we can store a node using an average of only three
+bytes, and still perform operations o them efficiently. 
 
 \begin{figure}[tb]
 \begin{center}
-\begin{tabular}{|l||c|c|c|c|c|c|c|} \hline
+\begin{tabular}{|l||c|c|c|c|c|c|} \hline
+Term			&Text	 & Bytes/& Read	& Read/ & Write	& Write/\\
+			&Bytes   & Node	&       & Node 	& 	& Node	\\
+			& 	 &      & (s)   & (us) 	& (s)	& (us)	\\ \hline \hline
 
-Term			& Read   &BAF	& Bytes/& Read	& Read/ & Write	& Write/	\\
-			& Text   &Bytes  & Node	&       & Node 	& 	& Node		\\
-			& (s)    & 	&       & (s)   & (us) 	& (s)	& (us)			\\ \hline \hline
+Random10		&6200251 & 6.20	& 15.90	& 15.90	& 3.67	& 3.67	\\ \hline
+Random5			&6400342 & 6.40	& 14.91	& 14.91	& 3.42	& 3.42	\\ \hline
+COBOL Parse Table	&3161908 & 4.31	&  5.83	&  7.95	& 1.89	& 2.58	\\ \hline
+COBOL Program		& x	 & x	& x	& x	& x	& x	\\ \hline
+CASL Specification	& x	 & x	& x	& x	& x	& x	\\ \hline
+\end{tabular}
+\caption{Reading and writing text} \label{measurements-text}
+\end{center}
+\end{figure}
 
-Random10		& 15.9   &567419& 0.57	&2.06	& 2.06	& 2.76	& 2.76		\\ \hline
-Random5			& 14.9   &748015& 0.75	&1.30	& 1.30	& 3.27	& 3.27		\\ \hline
-COBOL Parse Table	& x      & x	& x	& x	& x	& x	& x		\\ \hline
-COBOL Program		& x      & x	& x	& x	& x	& x	& x		\\ \hline
-CASL Specification	& x      & x	& x	& x	& x	& x	& x		\\ \hline
+In Figure~\ref{measurements-text} we give results for reading and writing
+our sample terms as text files. The six columns give the size of the text
+representation of the test term in bytes, the average number of bytes per node,
+the time needed to read the text file, average time needed to read a node,
+the time needed to write the text file and the average time needed to write a node.
+
+\begin{figure}[tb]
+\begin{center}
+\begin{tabular}{|l||c|c|c|c|c|c|} \hline
+Term			&BAF	& Bytes/& Read	& Read/ & Write	& Write/\\
+			&Bytes  & Node	&       & Node 	& 	& Node	\\
+			& 	&       & (s)   & (us) 	& (s)	& (us)	\\ \hline \hline
+
+Random10		&567419 & 0.57	& 2.06	& 2.06	& 2.76	& 2.76 \\ \hline
+Random5			&748015 & 0.75	& 1.34 	& 1.34	& 3.25	& 3.25 \\ \hline
+COBOL Parse Table	&303621 & 0.41	& 0.50	& 0.68	& 1.36	& 1.85 \\ \hline
+COBOL Program		& x	& x	& x	& x	& x	& x	\\ \hline
+CASL Specification	& x	& x	& x	& x	& x	& x	\\ \hline
 \end{tabular}
 \caption{Reading and writing \baf} \label{measurements-baf}
 \end{center}
 \end{figure}
+
+In Figure~\ref{measurements-baf} we give results for reading and writing \baf\ files
+for the same set of sample terms.
+The columns give in order: the size of the \baf\ files in bytes,
+the average number of bytes needed per node,
+the time to read the \baf\ representation,
+the average read time per node,
+the time to write the \baf\ representation,
+and the average write time per node.
 
 \begin{figure}[tb]
 \begin{center}
@@ -1001,9 +1036,9 @@ CASL Specification	& x      & x	& x	& x	& x	& x	& x		\\ \hline
 Term			& Ascii		& \baf		& Compression	& {\tt gzip} 	& Compression\\
 			& (bytes)  	& (bytes)	&	(\%)	& (bytes)	& (\%)\\ \hline \hline
 
-Random10		& 6199981	& 567419	& 90.85		& 439293	& 92.9	\\ \hline
+Random10		& 6199981	& 567419	& 90.9		& 439293	& 92.9	\\ \hline
 Random5			& 6400040	& 748015	& 88.3		& 548784	& 91.4	\\ \hline
-COBOL Parse Table	& x		& x		& x		& x		& x	\\ \hline
+COBOL Parse Table	& 3161908	& 303621	& 90.4		& 243990	& 92.3	\\ \hline
 COBOL Program		& x		& x		& x		& x		& x	\\ \hline
 CASL Specification	& x		& x		& x		& x		& x	\\ \hline
 \end{tabular}
@@ -1012,14 +1047,6 @@ CASL Specification	& x		& x		& x		& x		& x	\\ \hline
 \end{figure}
 
 
-In Figure~\ref{measurements-baf} we give results for reading and writing \baf\ files
-for the same set of sample terms.
-The column give in order: the size of the \baf\ files in bytes,
-the average number of bytes needed per node,
-the time to read the \baf\ representation,
-the average read time per node,
-the time to write the \baf\ representation,
-and the average write time per node.
 
 In Figure~\ref{measurements-baf-gzip} we show how the compression in \baf\ files
 compares to the compression of the standard Unix utility {\tt gzip}.
@@ -1029,16 +1056,9 @@ the size of the \baf\ version of the same term (column 2)
 and percentage of compression achieved (column 3).
 Next, we give the results of compressing the Ascii version of each term
 with {\tt gzip} (column 4), and compression achieved (column 5).
-As can seen from these measurements, ...
 
-(****) The compression ratio that can be reached using the techniques discussed
-in this section depend on characteristics of the term being written,
-like the amount of sharing, the number of different symbols, and the
-distribution of terms over these symbols. In practice we reach a compression
-ratio between two and twelve compared to the textual representation
-of the term. Reading \baf\ terms is about a factor two to four faster
-than reading their textual representation. Writing of \baf\ terms is
-only a fraction slower than writing their textual representation.
+
+As can seen from these measurements, ...
 
 %}}}
 
@@ -1297,6 +1317,8 @@ states as possible. (** ref? **)
 
 \section{Discussion} \label{discussion}
 
+\subsection{History}
+
 \subsection{Related Work}
 
 \paragraph{Intermediate representations in compiler frameworks}
@@ -1427,5 +1449,5 @@ operations.
 %}}}
 
 \section*{Acknowledgments}
-
 ?????
+
