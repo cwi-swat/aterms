@@ -1,0 +1,35 @@
+#
+# $Id$
+#
+
+INCLUDES = -I$(ATERM)/include -I$(PT_SUPPORT)/include
+LDFLAGS = -L$(ATERM)/lib -I$(PT_SUPPORT)/lib
+
+SUFFIXES = .pic .ltx .dvi .bbl .ind .idx .xwd .ps .tex .fig
+
+%.ps: %.dvi
+	dvips -o $@ $<
+
+%.dvi: %.ltx
+	TEXINPUTS=$$TEXINPUTS:${srcdir} ;\
+	export TEXINPUTS ;\
+	latex $< ;\
+	fgrep -s 'LaTeX Warning: Citation' $*.log && bibtex $* && latex $< ;\
+	while fgrep -s 'Rerun to get cross-references right' $*.log ;\
+	do \
+		TEXINPUTS=$$TEXINPUTS:${srcdir} ;\
+		latex $< ;\
+	done
+
+%.bbl: %.bib
+	TEXINPUTS=$$TEXINPUTS:${srcdir} ;\
+	export TEXINPUTS ;\
+	bibtex $*
+
+%.ind: %.idx
+	TEXINPUTS=$$TEXINPUTS:${srcdir} ;\
+	export TEXINPUTS ;\
+	makeindex $<
+
+%.eps: %.fig
+	fig2dev -Leps $< $@

@@ -1,6 +1,6 @@
 # $Id$
 
-include ${top_srcdir}/make_rules
+include ${top_srcdir}/doc/paper/make_rules
 
 SPECS = ATerms.sdf Symbol.sdf Tree.sdf Attributes.sdf
 FIGS = old-new.eps gen.eps names.eps

@@ -84,6 +84,7 @@ apigen/gen/java/Makefile
 apigen/gen/tom/Makefile
 test/Makefile
 doc/Makefile
+doc/paper/Makefile
 ,
 chmod +x utils/adt-to-c utils/adt-to-java
 )
