@@ -75,7 +75,7 @@ public class ForwardGenerator extends JavaGenerator {
 		println("    return (" + typeName + ") any.visit(arg);");
 		println("  }");
 		println();
-		//genVisitMethod(methodName, paramType, returnType);
+		
 	}
 	
 	protected void generate() {
@@ -89,7 +89,7 @@ public class ForwardGenerator extends JavaGenerator {
 	}
 
 	private void genConstructor() {
-		println("  private jjtraveler.Visitor any;");
+		println("  protected jjtraveler.Visitor any;");
 		println();
 		println("  public " + getClassName() + "(jjtraveler.Visitor v) {");
 		println("    this.any = v;");
@@ -116,6 +116,7 @@ public class ForwardGenerator extends JavaGenerator {
 		println("    }");
 		println("  }");
 		println();
+		
 	}
 
 	public String getPackageName() {

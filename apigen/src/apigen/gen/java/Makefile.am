@@ -12,6 +12,8 @@ java_JAVA = \
 	AlternativeGenerator.java \
 	FactoryGenerator.java \
 	ForwardGenerator.java \
+	ForwardVisitableGenerator.java \
+	ForwardVoidGenerator.java \
 	GeneratedJavaFileCollector.java \
 	JavaGenerationParameters.java \
 	JavaGenerator.java \
