@@ -1,6 +1,7 @@
 2003/08/21 ({jong,jurgenv}@cwi.nl)
  * Reimplemented fromTerm and toTerm for separated lists. They are correct now!
-
+ * Reimplemented reverse in C and Java for separated lists.
+ 
 2003/08/20 (jurgenv@cwi.nl)
  * isEqual implementation changed from term.isEqual(peer.toTerm()) to
    super.isEqual(peer). This should be much faster. Also, somehow the toTerm
