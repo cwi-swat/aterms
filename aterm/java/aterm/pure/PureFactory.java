@@ -831,6 +831,32 @@ public class PureFactory
 	//}}}
 	break;
 
+      case '(':
+	//{{{ Nameless tuple
+
+	c = reader.readSkippingWS();
+	if (c == -1) {
+	  throw new ParseError("premature EOF encountered.");
+	}
+	if (reader.getLastChar() == ')') {
+	  result = makeAppl(makeAFun("", 0, false));
+	} else {
+	  ATerm[] list = parseATermsArray(reader);
+
+	  if(reader.getLastChar() != ')') {
+	    throw new ParseError("expected ')' but got '"
+				 + reader.getLastChar() + "'");
+	  }
+	  result = makeAppl(makeAFun("", list.length, false), list);
+	}
+	c = reader.readSkippingWS();
+	if (c == -1) {
+	  throw new ParseError("premature EOF encountered.");
+	}
+
+	//}}}
+	break;
+
       case '-':
       case '0':	case '1': case '2': case '3': case '4':
       case '5':	case '6': case '7': case '8': case '9':

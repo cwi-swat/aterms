@@ -190,6 +190,8 @@ public class Test
     t = factory.parse("home([<name(\"\",String)>,<phone(\"\",PhoneNumber)>])");
     t = factory.parse("[ a , b ]");
     t = factory.parse("f(a){[x,y],[1,2]}");
+    t = factory.parse("[(),(a)]");
+    System.out.println("parser tests ok.");
   }
 
   //}}}

@@ -375,7 +375,7 @@ class ATermWriter
     String name = fun.toString();
     stream.print(name);
     position += name.length();
-    if (fun.getArity() > 0) {
+    if (fun.getArity() > 0 || name.equals("")) {
       stream.print('(');
       position++;
       for (int i=0; i<fun.getArity(); i++) {
