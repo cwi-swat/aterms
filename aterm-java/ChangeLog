@@ -1,3 +1,8 @@
+2004-12-17  pem
+
+	* improved isEmpty() implementation
+	* maintain annotations when tranforming an ATerm
+
 2004-08-06  Antoine Reilles  <tonio@bonzai>
 
 	* aterm/pure/SingletonFactory.java: if you need a singleton PureFactory...

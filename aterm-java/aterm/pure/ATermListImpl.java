@@ -54,11 +54,9 @@ public class ATermListImpl extends ATermImpl implements ATermList {
 		super.init(hashCode, annos);
 		this.first = first;
 		this.next = next;
-
 		if (first == null && next == null) {
 			this.length = 0;
-		}
-		else {
+		} else {
 			this.length = 1 + next.getLength();
 		}
 	}
@@ -67,13 +65,11 @@ public class ATermListImpl extends ATermImpl implements ATermList {
 		this.first = first;
 		this.next = next;
 		this.internSetAnnotations(annos);
-		this.setHashCode(this.hashFunction());
+    this.setHashCode(this.hashFunction());
 		//super.init(hashCode, annos);
-
 		if (first == null && next == null) {
 			this.length = 0;
-		}
-		else {
+		} else {
 			this.length = 1 + next.getLength();
 		}
 	}
@@ -87,8 +83,8 @@ public class ATermListImpl extends ATermImpl implements ATermList {
 	public boolean equivalent(SharedObject obj) {
 		if (super.equivalent(obj)) {
 			ATermList peer = (ATermList) obj;
-			if (peer.getLength() == length) {
-				return peer.getFirst().equals(first) && peer.getNext().equals(next);
+			if(peer.getLength() == length) {
+        return peer.getFirst() == first && peer.getNext() == next;
 			}
 		}
 
@@ -99,12 +95,23 @@ public class ATermListImpl extends ATermImpl implements ATermList {
 		return getPureFactory().makeList(el, this);
 	}
 
+  
+	protected ATermList make(ATerm head, ATermList tail) {
+		return make(head, tail, getPureFactory().makeList());
+	}
+  
+	protected ATermList make(ATerm head, ATermList tail, ATermList annos) {
+		return getPureFactory().makeList(head, tail, annos);
+	}
+
 	public ATermList getEmpty() {
 		return getPureFactory().makeList();
 	}
 
 	public ATerm setAnnotations(ATermList annos) {
-		return getPureFactory().makeList(first, next, annos);
+		//return getPureFactory().makeList(first, next, annos);
+    // to be sure that the overloaded function is called
+    return make(first,next,annos); 
 	}
 
 	protected boolean match(ATerm pattern, List list) {
@@ -187,7 +194,11 @@ public class ATermListImpl extends ATermImpl implements ATermList {
 	}
 
 	public boolean isEmpty() {
-		return this == ((PureFactory) getFactory()).getEmpty();
+    ATermListImpl empty = (ATermListImpl) getEmpty();
+    if(first==empty.first && next==empty.next) {
+      return true;
+    }
+    return false;
 	}
 
 	public int getLength() {
@@ -512,8 +523,10 @@ public class ATermListImpl extends ATermImpl implements ATermList {
 
 		/*------------------------------------- handle the last 11 bytes */
 		a += (getAnnotations().hashCode() << 16);
-		a += (next.hashCode() << 8);
-		a += (first.hashCode());
+    if(next!=null && first!=null) {
+      a += (next.hashCode() << 8);
+      a += (first.hashCode());
+    }
 
 		a -= b;
 		a -= c;

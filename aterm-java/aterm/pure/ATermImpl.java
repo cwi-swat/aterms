@@ -49,7 +49,7 @@ public abstract class ATermImpl extends ATermVisitableImpl implements ATerm, Sha
   	this.factory = factory;
   }
 
-  public int hashCode() {
+  public final int hashCode() {
     return this.hashCode;
   }
   
@@ -124,7 +124,7 @@ public abstract class ATermImpl extends ATermVisitableImpl implements ATerm, Sha
     }
   }
 
-  public boolean isEqual(ATerm term) {
+  public  boolean isEqual(ATerm term) {
     if (term instanceof ATermImpl) {
       return this == term;
     }
