@@ -216,4 +216,34 @@ public class CTomSignatureImplementation implements TomSignatureImplementation {
 	public String FieldType(String type) {
 		return buildTypeName(type);
 	}
+
+	public String ListHead(String type) {
+		return prefix + "get" + StringConversions.capitalize(buildTypeName(type)) +
+		       "Head(l)"; 
+	}
+
+	public String ListTail(String type) {
+		return prefix + "get" + StringConversions.capitalize(buildTypeName(type)) +
+			   "Tail(l)"; 
+	}
+
+	public String ListEmpty(String type) {
+		return prefix + "is" + StringConversions.capitalize(buildTypeName(type)) +
+		       "Empty(l)";
+	}
+
+	public String IsList(String type) {
+		// TODO Auto-generated method stub
+		return "not yet implemented";
+	}
+
+	public String makeEmpty(String type) {
+		// TODO Auto-generated method stub
+		return "not yet implemented";
+	}
+
+	public String makeInsert(String type, String eltType) {
+		// TODO Auto-generated method stub
+		return "not yet implemented";
+	}
 }

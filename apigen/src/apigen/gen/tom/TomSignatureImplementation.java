@@ -1,5 +1,7 @@
 package apigen.gen.tom;
 
+import apigen.adt.Type;
+
 public interface TomSignatureImplementation {
 	String StringName();
 	String StringImpl();
@@ -51,4 +53,11 @@ public interface TomSignatureImplementation {
 
 	String FieldName(String id);
 	String FieldType(String type);
+	
+	String ListHead(String type);
+	String ListTail(String type);
+	String ListEmpty(String type);
+	String IsList(String type);
+	String makeEmpty(String type);
+	String makeInsert(String type, String eltType);
 }

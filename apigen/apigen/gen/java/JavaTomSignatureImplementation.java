@@ -21,7 +21,7 @@ public class JavaTomSignatureImplementation implements TomSignatureImplementatio
 
 	private String buildAltTypeName(String type, String alt) {
 		if (converter.isReserved(type)) {
-			return type;
+			return converter.getType(type);
 		}
 		
 		return StringConversions.capitalize(type + "_" + StringConversions.capitalize(alt));
@@ -149,7 +149,7 @@ public class JavaTomSignatureImplementation implements TomSignatureImplementatio
 
 	public String TypeName(String type) {
 		if (converter.isReserved(type)) {
-			return type;
+			return converter.getType(type);
 		}
 		
 		return StringConversions.makeCapitalizedIdentifier(converter.getType(type));
@@ -175,9 +175,6 @@ public class JavaTomSignatureImplementation implements TomSignatureImplementatio
 		return arg1 + ".equals(" + arg2 + ")";
 	}
 
-
-
-  
 	public String OperatorName(String type, String id) {
         if (jtype) {
             return StringConversions.makeIdentifier(type) + "_" +
@@ -219,5 +216,33 @@ public class JavaTomSignatureImplementation implements TomSignatureImplementatio
 
 	public String FieldType(String type) {
 		return TypeName(type);
+	}
+
+	public String ListHead(String type) {
+		return "l.getHead()";
+	}
+
+	public String ListTail(String type) {
+		return "l.getTail()";
+	}
+
+	public String ListEmpty(String type) {
+		return "l.isEmpty()";
+	}
+
+	public String IsList(String type) {
+		return "true";
+	}
+
+	public String makeEmpty(String type) {
+		return "get" + StringConversions.makeCapitalizedIdentifier(api_name)
+		+ "Factory().make" + StringConversions.makeCapitalizedIdentifier(type) 
+		+ "()";		 
+	}
+
+	public String makeInsert(String type, String eltType) {
+		return "get" + StringConversions.makeCapitalizedIdentifier(api_name)
+				+ "Factory().make" + StringConversions.makeCapitalizedIdentifier(type) 
+				+ "(e,l)";
 	}
 }

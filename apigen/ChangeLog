@@ -10,7 +10,8 @@
  * Added an error message when within a type a field name is used more times but
    for different types of fields. For the same type of field (for example the 'lhs'
    of the Boolean and and or) it is still allowed.
-   
+ * Added basic generation of Tom list constructions from list data-types.
+ 
 2003-08-08  (jurgenv@cwi.nl)
  * Set dependency on aterm-java 1.4 because of visibility of ATermListImpl
  * Added implementation of lists for Java. Lists inherit from ATermListImpl.
