@@ -15,7 +15,7 @@
 #include "util.h"
 #include "gc.h"
 
-#include "stress_dict.h"
+#include "terms.h"
 
 /*}}}  */
 /*{{{  defines */
@@ -1077,7 +1077,7 @@ void testIndexedSet()
 
 void testDictToC()
 {
-  init_stress_dict_dict();
+  init_terms_dict();
   test_assert("dicttoc", 1, ATisEqual(patternA, 
 				      ATparse("patroon(\"a\",<term>)")));
   test_assert("dicttoc", 2, ATisEqual(patternB, ATparse("patroon(\"b\")")));

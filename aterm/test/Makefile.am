@@ -6,16 +6,16 @@ TESTS = stress
 
 EXTRA_DIST = \
 	error.trm \
-	stress_dict.dict \
+	terms.dict \
 	termstats.sh \
 	test.trms \
 	vararg1.c \
 	vararg2.c \
 	vararg3.c
 
-CLEANFILES = test.taf test.blob stress_dict.c stress_dict.h
+CLEANFILES = test.taf test.blob terms.c terms.h
 
-BUILTSOURCES = stress_dict.c stress_dict.h
+BUILTSOURCES = terms.c terms.h
 
 INCLUDES = \
 	-I$(top_srcdir) \
@@ -27,7 +27,7 @@ LDLIBS = -lATerm
 
 noinst_PROGRAMS = stress primes randgen termstats fib
 
-stress_SOURCES = stress_dict.c stress_dict.h stress.c
+stress_SOURCES = terms.c terms.h stress.c
 stress_LDADD = $(LDLIBS)
 
 primes_SOURCES = primes.c
