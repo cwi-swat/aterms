@@ -36,15 +36,7 @@ public class Main {
 		
 		ADT adt = ADTReader.readADT(params);
 		JavaTomSignatureImplementation signature = new JavaTomSignatureImplementation(params);
-		
-		if(params.isJavaGen() && params.getPackageName() != null) {
-			// in that case we chenge output to output/package
-			duplicatedParams = (JavaTomGenerationParameters) params.clone();
-			duplicatedParams.setOutputDirectory(concat(params.getOutputDirectory(), params.getPackageName()));
-			new TomSignatureGenerator(adt, signature, duplicatedParams).run();
-		} else {
-			new TomSignatureGenerator(adt, signature, params).run();
-		}
+		new TomSignatureGenerator(adt, signature, params).run();
 		
 		if(params.isJavaGen()) { // generate Java Stuff
 			params.check();
