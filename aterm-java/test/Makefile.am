@@ -3,6 +3,7 @@ JAVAROOT        = ${top_builddir}/test
 CLASSPATH_ENV   = CLASSPATH=$(SHARED_OBJECTS):${top_builddir}:$(JAVAROOT):$(srcdir)/$(JAVAROOT):$$CLASSPATH
 
 java_JAVA       = Test1.java \
+		  Test2.java \
 		  TestFib.java \
 		  TestFibInterpreted.java \
 		  TestPrimes.java
@@ -16,3 +17,5 @@ TESTS = $(foreach t, ${java_JAVA}, $t.test)
 	 echo "java $*";\
 	 echo "rm $*.java.test";\
 	) > $@ && chmod +x $@
+
+CLEANFILES+=*.test

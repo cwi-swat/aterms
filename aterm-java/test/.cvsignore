@@ -3,3 +3,5 @@ Makefile.in
 *.class
 classjava.stamp
 *.test
+*.taf2
+*.trm2
