@@ -1,2 +1,28 @@
 $Id$
 
+aterm-xml 
+---------
+
+This package contains the source code for aterm2xml and xml2aterm.
+
+requirements
+------------
+
+You need to download and install libxml2 from:
+http://www.xmlsoft.org
+
+Also a recent version of the ATerm library is needed:
+http://www.cwi.nl/projects/MetaEnv/aterm
+
+configuration
+-------------
+
+./configure --prefix=<prefix> --with-libxml2=`xml2-config --prefix`
+
+building and installing
+-----------------------
+
+> gmake all 
+> gmake install 
+> gmake check
+
