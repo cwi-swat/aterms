@@ -1,5 +1,9 @@
 $Id$
 
+2004/01/30 <jurgenv@cwi.nl>
+ * Bumped to 1.6
+ * Compliant with automake-1.6
+
 2003/09/26 <jurgenv@cwi.nl>
  * Release 1.5
 
