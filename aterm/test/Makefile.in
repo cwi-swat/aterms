@@ -70,8 +70,9 @@ INSTALL_DAT	= @INSTALL_DAT@
 TOOLBUS		= @TOOLBUS@
 INCL		= -I../asfix -I../aterm -I../toolbus
 TESTPRGS	= stress-cc stress-gcc primes-cc primes-gcc asfixtest \
-		stress-ns primes-ns test-tool test-tool2
-TESTSRCS	= stress.c asfixtest.c primes.c test-tool.c test-tool2.c
+		stress-ns primes-ns test-tool test-tool2 randgen termstats
+TESTSRCS	= stress.c asfixtest.c primes.c test-tool.c test-tool2.c \
+		randgen.c termstats.c
 TESTOBJS	= stress.o asfixtest.o primes.o test-tool.o test-tool2.o
 DISTFILES	= test.tb test2.tb Test.asfix test.trms error.trm Makefile.in \
 		test2.tifs ${TESTSRCS} .depend
@@ -108,6 +109,12 @@ primes-ns: primes.c ${LIB_NS}
 
 primes-gcc: primes.c ${LIB_DBG}
 	$(CC_DBG) $(CFLAGS_DBG) $(INCL) $(LFLAGS) -o primes-gcc primes.c $(LIBS_DBG)
+
+randgen: randgen.c ${LIB_CC}
+	${CC_CC} $(CFLAGS_CC) $(DEFS_CC) $(INCL) $(LFLAGS) -o randgen randgen.c $(LIBS_CC) 
+
+termstats: termstats.c ${LIB_CC}
+	${CC_CC} $(CFLAGS_CC) $(DEFS_CC) $(INCL) $(LFLAGS) -o termstats termstats.c $(LIBS_CC) 
 
 vararg1: vararg1.c ${LIB_DBG}
 	${CC_DBG} ${CFLAGS_DBG} ${INCL} ${LFLAGS} -o vararg1 vararg1.c ${LIBS_DBG}
