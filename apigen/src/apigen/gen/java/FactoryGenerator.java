@@ -108,7 +108,7 @@ public class FactoryGenerator extends JavaGenerator {
 				println("  public " + className + " make" + className + "(" + elementClassName + " head, " + className + " tail) {");
 				println("    return (" + className + ") make" + className + "((aterm.ATerm) head, (aterm.ATermList) tail, empty);");
 				println("  }");
-				println("  public " + className + " make" + className + "(aterm.ATerm head, aterm.ATermList tail, aterm.ATermList annos) {");
+				println("  protected " + className + " make" + className + "(aterm.ATerm head, aterm.ATermList tail, aterm.ATermList annos) {");
 				println("    synchronized (proto" + className +") {");
 				println("      proto" + className + ".initHashCode(annos,head,tail);");
 				println("      return (" + className +") build(proto" + className + ");");

@@ -1,8 +1,6 @@
   [
     constructor(Module, Default, <string(str)>),
-    constructor(Modules, List, modules([<first(Module)>,<[next(Modules)]>])),
-    constructor(Modules, Body, [<first(Module)>,<[next(Modules)]>]),
-    constructor(Modules, Empty, []),
-    constructor(Modules2, Empty, []),
+    list(Modules, Module),
+    list(Modules2, Module),
     constructor(ModuleList, Modules, list(<modules(Modules)>))
   ]

@@ -11,13 +11,13 @@ static void testList()
   mods[0] = makeModulesFromTerm(ATparse("modules([\"m1\",\"m2\",\"m3\",\"m4\"])"));
   assert(isValidModules(mods[0]));
 
-  mod[0] = getModulesFirst(mods[0]);
+  mod[0] = getModulesHead(mods[0]);
 
-  assert(hasModulesNext(mods[0]));
-  mods[1] = getModulesNext(mods[0]);
+  assert(hasModulesTail(mods[0]));
+  mods[1] = getModulesTail(mods[0]);
   assert(isValidModules(mods[1]));
 
-  mods[2] = getModulesNext(mods[1]);
+  mods[2] = getModulesTail(mods[1]);
 }
 
 

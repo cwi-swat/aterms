@@ -53,14 +53,37 @@ public class ListTypeImplGenerator extends TypeImplGenerator {
 		println("{");
 		genFromString(typeName);
 		genFromTextFile(typeName);
-		genIsTypeMethod(type);
 		genFromTerm();
-		genIsAlternativeMethods();
 		genGetters();
+		genPredicates();
 		genGetStaticFactory();
 		genSharedObjectInterface();
 		println("}");
 	}
+
+	private void genPredicates() {
+		genIsTypeMethod(type);
+		genIsAlternativeMethods();
+		genHasPredicates();
+	}
+
+	private void genHasPredicates() {
+		genHasHeadMethod();
+		genHasTailMethod();
+	}
+	
+	private void genHasTailMethod() {
+		println("  public boolean hasTail() {");
+		println("    return !isEmpty();");
+		println("  }");
+	}
+
+	private void genHasHeadMethod() {
+		println("  public boolean hasHead() {");
+		println("    return !isEmpty();");
+		println("  }");
+	}
+
 
 	private void genSharedObjectInterface() {
 		genEquivalentMethod();
@@ -111,8 +134,10 @@ public class ListTypeImplGenerator extends TypeImplGenerator {
 	}
 
 	private void genGetTail() {
-		println("  public " + typeName + " getTail() {");
-		println("    return (" + typeName + ") getNext();");
+		String className = ListTypeGenerator.className(type);
+		
+		println("  public " + className + " getTail() {");
+		println("    return (" + className + ") getNext();");
 		println("  }");
 	}
 
@@ -143,13 +168,13 @@ public class ListTypeImplGenerator extends TypeImplGenerator {
 		println("             tmp = " + get_factory + ".make" + className + "(elem, tmp);");
 		println("           }");
 		println("           else {");
-		println("             throw new RuntimeException(\"Invalid element in " + typeName + ":\" + elem);");
+		println("             throw new RuntimeException(\"Invalid element in " + className + ":\" + tmp);");
 		println("           }");
 		println("        }");
 		println("        return tmp;");
 		println("     }");
 		println("     else {");
-		println("       throw new RuntimeException(\"This is not a " + typeName + ":\" + trm);");
+		println("       throw new RuntimeException(\"This is not a " + className + ":\" + trm);");
 		println("     }");
 		println("  }");
 		ATermFactory f;
