@@ -1,5 +1,9 @@
 $Id$
 
+2002/10/29 <vinju@loria.fr>
+ * Removed old java ATerm library from this package.
+   The java version is now located in the 'aterm-java' package.
+
 2002/10/29 <jong@cwi.nl,olivierp@cwi.nl>
  * Added tests in ATmakeBlob and ATinsert to ensure blobs/lists stay
    within max. bounds

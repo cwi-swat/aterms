@@ -106,26 +106,11 @@ AC_ARG_WITH(64bit,
     LDFLAGS=${LDFLAGS_CC64}
     INCL=${INCL_CC64},)
 
-JAVA_SUBDIR=
-AC_ARG_WITH(java,
-   [  --with-java              create Java "library" (jdk-1.2 and up).],
-      JAVA_SUBDIR="java",)
-AC_SUBST(JAVA_SUBDIR)
-
 VISITOR_PKG=aterm.visitor
 AC_ARG_WITH(visitor-pkg,
    [  --with-visitor-pkg       change visitor package (default: aterm.visitor)],
   VISITOR_PKG=${withval},)
 AC_SUBST(VISITOR_PKG)
-
-TEX_DOCLET=
-JAVA_API_PS=
-AC_ARG_WITH(texdoclet,
-   [  --with-texdoclet         specify location of TexDoclet (default: unused)],
-  TEX_DOCLET=${withval}
-  JAVA_API_PS="java-api.ps",)
-AC_SUBST(TEX_DOCLET)
-AC_SUBST(JAVA_API_PS)
 
 AC_SUBST(ATERM_LIB_GCC)
 AC_SUBST(ATERM_LIB_CC)
@@ -175,17 +160,6 @@ AC_OUTPUT(
   aterm/Makefile
   utils/Makefile
   test/Makefile
-  java/Makefile
-  java/aterm/Makefile
-  java/aterm/ATermVisitable.java
-  java/aterm/ATermVisitor.java
-  java/aterm/ATermVisitFailure.java
-  java/aterm/ATermForward.java
-  java/aterm/pure/Makefile
-  java/aterm/pure/ATermVisitableImpl.java
-  java/aterm/visitor/Makefile
-  java/aterm/test/Makefile
-  java/aterm/test/VisitorBenchmark.java
   doc/Makefile
   doc/examples/Makefile
   doc/spec/Makefile

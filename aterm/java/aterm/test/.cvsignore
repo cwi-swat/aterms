@@ -1,9 +1,0 @@
-Makefile.in
-Makefile
-*.class
-*.stamp
-test.trm2
-test.taf
-test.taf2
-aterm-test.sh
-VisitorBenchmark.java
