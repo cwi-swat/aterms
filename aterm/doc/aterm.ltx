@@ -5,10 +5,10 @@ Cut and paste operations on complex data structures are standard in
 most desktop software environments: one can easily clip a part of a
 spreadsheet and paste it into  a text document.  The exchange of complex
 data is also common in distributed applications: complex queries,
-transaction records and more complex data are exchanged between
+transaction records, and more complex data are exchanged between
 different parts of a distributed application.  Compilers and
 programming environments consist of tools such as editors, parsers,
-optimizers and code generators that exchange syntax trees,
+optimizers, and code generators that exchange syntax trees,
 intermediate code, and the like.
 
 \begin{sloppypar}
@@ -46,7 +46,7 @@ should be as small as possible by using compact representations and by
 exploiting sharing. Between applications the transmission of data
 structures should be fast by using a compressed representation with
 fast encoding and decoding.  Transmission should preserve any
-implicit or explicit sharing in the data structures.
+sharing of in-memory representation in the data structures.
 
 \item{\emph{Language-independent\/}:} data structures can be created and
 manipulated in any suitable programming language.
@@ -99,7 +99,7 @@ discussion (Section~\ref{discussion}) conclude this paper.
 
 \section{ATerms at a Glance} \label{aterms-at-a-glance}
 
-Without further fanfare we describe now the constructors of the
+We now describe the constructors of the
 \ATerm\ data type (Section~\ref{aterm-datatype}) and
 the operations defined on it (Section~\ref{aterm-operations}).
 
@@ -114,7 +114,7 @@ The data type of \ATerms\ ({\tt ATerm}) is defined as follows:
 \begin{itemize}
 \item  {\tt INT}: An integer constant (32-bits integer) is an \ATerm.\footnote{
 We are currently upgrading the \aterm\ library
-to support 64-bits architectures as well.}
+to support 64-bit architectures as well.}
 
 \item {\tt REAL}: A real constant (64-bits real) is an \ATerm.
 
@@ -162,7 +162,7 @@ for processing by machine.  We will now give a number of examples to
 show some of the features of the textual representation of \ATerms.
 
 \begin{itemize}
-\item Integer and real constants are written as is:
+\item Integer and real constants are written conventionally:
       {\tt 1}, {\tt 3.14}, and {\tt -0.7E34} are all valid \ATerms.
 
 \item Function applications are represented by a function name followed
@@ -191,7 +191,7 @@ show some of the features of the textual representation of \ATerms.
 
 The operations on \ATerms\ fall into three categories: making and
 matching \ATerms\ (Section~\ref{making}), 
-reading and writing  \ATerms\ (Section~\ref{reading}) 
+reading and writing  \ATerms\ (Section~\ref{reading}),
 and annotating \ATerms\ (Section~\ref{annotating}). The total
 of only 13 functions provide enough functionality for most users to
 build simple applications with \ATerms.  We refer to this interface as
@@ -200,10 +200,10 @@ the \emph{level one} interface of the \ATerm\ data type.
 To accommodate ``power'' users of \ATerms\ we also provide a
 \emph{level two} interface, which contains a more sophisticated set of
 data types and functions. It is typically used in generated C code
-that calls \ATerm\ primitives, or in efficiency critical applications.
+that calls \ATerm\ primitives, or in efficiency-critical applications.
 These extensions are useful only when more control over the underlying
 implementation is needed or in situations where some operations that
-can be implemented using level one constructs, can be expressed more
+can be implemented using level one constructs can be expressed more
 concisely and implemented more efficiently using level two constructs.
 The level two interface is a strict superset of the level one
 interface (see Appendix \ref{level2} for further details).
@@ -274,9 +274,10 @@ Section~\ref{aterm-datatype}.
 \subsubsection{Reading and Writing \ATerms} \label{reading}
 
 For reasons of efficiency and conciseness, reading and writing can
-take place in two forms: using ordinary text files and using special
-binary files.  In the first form, files are read and written in a
-format that is identical to the textual representation discussed
+take place in two forms: text and binary.  
+%%In the first form, files are read and written in a
+%%format that is identical to 
+The text format uses the textual representation discussed
 earlier in Section~\ref{aterm-datatype} and Appendix
 \ref{concrete-syntax}.  This format is human-readable,
 space-inefficient\footnote{ The unnecessary size explosion could be
@@ -285,12 +286,14 @@ labeling and referring to terms.  Instead of \texttt{f(g(a),g(a))},
 one could then write \texttt{f(1:g(a), \#1)}. The first occurrence of
 \texttt{g(a)} is labeled with ``\texttt{1}'', and the second
 occurrence refers to this label (``\texttt{\#1}'').},
-and any implicit sharing in terms is lost since
-this cannot be expressed in a pure textual representation.  
+%%and any implicit sharing in terms is lost since
+%%this cannot be expressed in a pure textual representation.  
+and any sharing in the in-memory representation in terms is lost.
 
-In the second form, a dedicated binary format is used (Binary ATerm
-Format, see Section~\ref{baf}). This portable format is
-machine-readable, very compact, and preserves all implicit sharing.
+%%In the second form, a dedicated binary format is used 
+The binary format (Binary ATerm Format, see Section~\ref{baf}) is
+portable format, machine-readable, very compact, 
+and preserves all in-memory sharing.
 The operations are:
 
 \begin{itemize}
@@ -320,7 +323,7 @@ of term $t$ as a string.
 
 \end{itemize}
 
-Note that the file operations can also be used to read from or write
+The file operations can also be used to read from or write
 to a network connection like a socket or pipe.
 
 \subsubsection{Annotating \ATerms} \label{annotating}
@@ -392,7 +395,7 @@ that make this a fairly unique problem:
       increases.
 
 \item In typical applications less than 0.1 percent of all terms have
-      an arity that is higher than 5.
+      an arity higher than 5.
 
 \item Many applications will use annotations only sparingly. 
       The implementation should not impose a penalty on applications
@@ -422,7 +425,7 @@ the Binary ATerm Format (Section~\ref{baf}).
 
 Our strategy to minimize memory usage is simple but effective: we only
 create terms that are \emph{new}, i.e., that do not exist already.  If
-a term to be constructed already exists, that term is reused thus
+a term to be constructed already exists, that term is reused,
 ensuring maximal sharing.  This strategy fully exploits the redundancy
 that is typically present in the terms to be built and leads to
 maximal sharing of subterms. The library functions that construct terms
@@ -433,8 +436,8 @@ terms is thus invisible to the library user.
 
 Maximal sharing of terms can only be maintained when we check at every
 term creation whether a particular term already exists or not. This
-check implies a search through all existing terms but must nonetheless
-be executed {\em extremely fast} in order not to impose an
+check implies a search through all existing terms but must
+be {\em extremely fast} in order not to impose an
 unacceptable penalty on term creation.  Using a hash function that
 depends on the internal code of the function symbol and the addresses
 of its arguments, we can quickly search for a function application
@@ -446,7 +449,7 @@ ensures that all entries in the table are of equal size. Hence the
 hash table lookup.
 
 Fortunately, we get two returns on this investment.  First, the
-considerably reduced memory usage also leads to reduced (real-time)
+considerably reduced memory usage also leads to reduced
 execution time.  Second, we gain substantially as the equality
 check on terms ({\tt ATisEqual}) becomes very cheap: it reduces from
 an operation that is linear in the number of subterms to be compared
@@ -778,7 +781,7 @@ Each list operation must ensure that the list is ``normalized'' again.
 This makes it very easy to perform the most commonly used operations
 on list, namely adding or removing the first element of a list.
 
-Other operations are more expensive, due to the fact that we cannot
+Other operations are more expensive, since we do not
 allow destructive updates. Adding an element to the tail of a list
 for instance, requires $n$ list creation operations, where $n$ is
 the number of elements in the newly created list.
@@ -807,10 +810,10 @@ with type {\tt LIST}, which represents the list of annotations.
 
 \subsection{The Binary \ATerm\ Format (BAF)} \label{baf}
 
-As discussed in the introduction, the efficient exchange of \ATerms\ 
-between processes is very important. The simplest form of exchange 
+The efficient exchange of \ATerms\ 
+between tools is very important. The simplest form of exchange 
 is based on the concrete syntax presented in Appendix \ref{concrete-syntax}.
-This would involve pretty printing the term on one side, and parsing it
+This would involve printing the term on one side and parsing it
 on the other. The concrete syntax is not a very efficient exchange format
 however, because the sharing of function symbols and subterms cannot 
 be expressed in this way.
@@ -850,7 +853,7 @@ these indices when we take into account some of the regularities in
 the structure of terms. Empirical study shows that the set of function
 symbols that can actually occur at each of the argument positions of a
 function application with a given function symbol is often very small.
-A rationale for this is that although \ATerm\ applications themselves
+A explanation for this is that although \ATerm\ applications themselves
 are not typed, the data types they represent often are. In this case,
 function applications represent objects and the type of the object is
 represented by the function symbol. The type hierarchy determines
@@ -1110,10 +1113,10 @@ The amount of sharing is clearly less high in case of abstract syntax
 trees than in case of parse trees represented as \asfix\ terms.
 The \asfix\ terms contain much redundant information which can
 be optimally shared.
-The amount of sharing in the abstract syntax trees for CASL is
-even lower, but this is due to the fact that the set of
-CASL specifications is small and each specification tests another
-feature of the CASL language, so not much sharing was to be expected.
+The amount of sharing in the abstract syntax trees for Casl is
+lower, but this is due to the fact that the set of
+Casl specifications is small and each specification tests another
+feature of the Casl language, so not much sharing was to be expected.
 
 \begin{figure}
 \centerline{\epsfig{file=sharing.eps}}
@@ -1857,18 +1860,6 @@ http://www.wins.uva.nl/pub/programming-research/software/aterm/
 \noindent The current version of the library is available for Unix (including Linux)
 and Windows/NT.  We are currently working on a 64-bits implementation
 of the library.
+ 
 
-
-\section*{Acknowledgments}
-
-We want to thank all current users of the \ATerm\ library.
-Special thanks to Jan-Friso Groote (for his input and sometimes
-severe requirements) and to Merijn de Jonge and Jeroen Scheerder
-(for detecting a large number of intricate bugs).
-We thank Alexander van den Bergh for porting the \ATerm\ library
-to Windows/NT as part of his Master thesis project, and
-Joost Visser for providing us with useful information on ASDL and
-for writing a tool to pickle \aterms.
-Finally, we want to thank Pierre-Etienne Moreau for the fruitful
-discussions on this subject during his stay in Amsterdam.
 
