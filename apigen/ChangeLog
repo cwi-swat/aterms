@@ -1,6 +1,7 @@
 # $Id$
 
 Mon Mar  8 13:57:37 CET 2004 <{jong,kooiker}@cwi.nl>
+ * disable generation of bottom types in C
  * generate 'const' for all 'char *' parameters in constructor and setXXX
  * relax typechecking on builtin types
 
