@@ -44,17 +44,19 @@
 
 \begin{frontmatter}
 
-\title{Generation of \\
+\title{
+  Generation of \\
   Abstract Programming Interfaces \\
-  from Syntax Definitions \\
-  $Revision$}
+  from Syntax Definitions
+}
 
 \author{H.A. de Jong \and P.A. Olivier}
 \address{
   CWI, Department of Software Engineering, \\
   Kruislaan 413,
   1098 SJ Amsterdam,
-  The Netherlands
+  The Netherlands \\
+  \texttt{\{jong,olivierp\}@cwi.nl}
 }
 
 \begin{abstract}
@@ -64,13 +66,13 @@ Using the \atlib\ to represent tree-like datastructures has become a
 popular activity, especially amongst developers of e.g. lexical scanners,
 parsers, rewrite engines and model checkers. Practical experience with the
 \atlib\ in the \metaenv\ has shown that the development and maintenance
-of tools that access \aterms\ using handcrafted code is involved and
-very error prone. Both the \emph{make and match} paradigm and the
-\emph{direct manipulation} of \aterms\ suffer from the fact that the
-programmer uses knowledge about the underlying structure (a.k.a. the signature)
-of the \aterm\ that represents the data type being accessed. Hardwiring this knowledge
-in various tools makes it difficult to maintain the tools with respect
-to changes in the datastructure.
+of tools that access \aterms\ using handcrafted code is involved and very
+error prone. Both the \emph{make and match} paradigm and the \emph{direct
+manipulation} of \aterms\ suffer from the fact that the programmer uses
+knowledge about the underlying structure (a.k.a. the signature) of the
+\aterm\ that represents the data type being accessed. Hardwiring this
+knowledge in various tools makes it difficult to maintain the tools with
+respect to changes in the datastructure.
 
 By lifting the data definition and its mapping to an \aterm\
 representation away from the level of tool implementation, it becomes
