@@ -24,10 +24,19 @@
 %{{{ Title page
 
 \title{Efficient Annotated Terms}
-\author{\small M. van den Brand, {\tt markvdb@cwi.nl} \\
-	\small P.A. Olivier, {\tt olivierp@wins.uva.nl} \\
-        \small H.A. de Jong, {\tt jong@wins.uva.nl}
-}
+\author{M.G.J. van den Brand$^{^1}$\\
+        H.A. de Jong$^{^2}$\\
+        P.A. Olivier$^{^2}$\\
+        \vspace{.1cm}\\
+        {\small\sl $^1$CWI,
+        Department of Software Engineering\vspace{-.2cm}}\\
+        {\small\sl Kruislaan 413, 1098 SJ Amsterdam, The Netherlands}
+        \vspace{.1cm}\\
+        {\small\sl $^1$University of Amsterdam,
+        Programming Research Group\vspace{-.2cm}}\\
+        {\small\sl Kruislaan 403, 1098 SJ Amsterdam, The Netherlands}
+        \vspace{.1cm}\\
+        {\small \sl\tt Mark.van.den.Brand@cwi.nl,jong@wins.uva.nl,olivierp@wins.uva.nl}} 
 
 \begin{document}
 \maketitle
@@ -78,8 +87,8 @@ datatype, both in time and space requirements.
 We will start by describing the intended application domain of
 the \ATerm\ datatype in Section \ref{app_domain}. 
 After a definition of both the abstract syntax
-and concrete syntax of \ATerms and a description of the most
-important operations defined on \ATerms in Section \ref{aterm}, 
+and concrete syntax of \ATerms\ and a description of the most
+important operations defined on \ATerms, 
 we will present a number of requirements on the
 implementation of this datatype in Section \ref{requirements}.
 In Section \ref{design} we will discuss the design of our implementation
@@ -156,7 +165,7 @@ to completely ignore annotations. Typical examples of the use of annotations
 includes annotating parse trees with positional or typesetting information, 
 and annotating abstract syntax trees with the result of typechecking.}.
 
-\subsection{Concrete syntax}
+\subsection{Concrete Syntax}
 \label{concrete-syntax}
 
 Besides the abstract syntax described above, we also define a
@@ -199,7 +208,9 @@ Two functions {\tt make} and {\tt match} to construct a term
 and to take a terms apart, respectively.
 Both functions use a string pattern containing placeholders or holes.
 These holes determine the places where terms should occur,
-for example ``{\tt and(<term>,<term>)}''.
+an example of a pattern is ``{\tt and(<term>,<term>)}''.
+Patterns are in fact comparable to the strings in the print statements
+in C.
 Furthermore there are three functions to manipulate the annotations.
 Finally there exists one function to obtain the (sub)type of a term.
 
@@ -245,7 +256,7 @@ operation returns one of the constants mentioned above.
 \end{itemize}
 Although this may seem a rather restricted set of functions, this set
 is sufficiently powerful for most users to build simple applications
-with the \ATerm\ library, such as XXX voorbeelden XXX
+with the \ATerm\ library.
 Yet the set of operations is simple enough to learn in a relatively
 short period of time. We refer to this interface as the \emph{level one}
 interface of the \ATerm\ datatype.
@@ -343,7 +354,7 @@ all of which are based on the requirements presented in the
 previous section. These decisions involve the mechanics behind maximal sharing,
 the garbage collection strategy, and the representation of lists.
 
-\subsection{Maximal sharing}
+\subsection{Maximal Sharing}
 \label{hashing}
 Probably the most important design decision is to base our implementation
 of the \ATerm\ datatype on \emph{maximal sharing}. In order to fully exploit
@@ -385,7 +396,7 @@ binary tree chaining), or the CPU requirements for insertions
 or deletions (open addressing, see \cite{Knuth73}).
 We therefore use linear hash chaining in our implementation. 
 
-\subsubsection{Direct or indirect hashing}
+\subsubsection{Direct or Indirect Hashing}
 Another issue is whether to store all terms directly in
 the hashtable, or store only references in the hashtable.
 Storing the objects directly in the hashtable has the advantage
@@ -415,13 +426,13 @@ old table in the new one.
 
 %{{{ Garbage collection
 
-\subsection{Garbage collection}
+\subsection{Garbage Collection}
 The most common strategies for automatic recycling of unused space
 are reference counting, mark-compact collection, and 
 mark-sweep collection. We will discuss these three strategies 
 in turn, and explain why we base our design on mark-sweep garbage collection.
 
-\subsubsection{Reference counting}
+\subsubsection{Reference Counting}
 Reference counting in its simplest form works by keeping track of the 
 number of references to an object. If this number drops to zero, 
 there are no more references to this object and it can be reclaimed.
@@ -449,7 +460,7 @@ using only a couple of machine words\footnote{We assume a word size
 of 4 bytes in this paper.} per object. Adding a whole word
 for keeping track of the reference count is therefore unacceptable.
 
-\subsubsection{Mark-compact garbage collection}
+\subsubsection{Mark-compact Garbage Collection}
 
 Mark-compact garbage collection works by periodically copying all
 \emph{live} objects to a fresh empty memory space, and freeing the
@@ -462,7 +473,7 @@ But when using C as implementation language, we cannot be sure to
 positively identify \emph{all} references to an object without 
 support from the programmer.
 
-\subsubsection{Mark-sweep garbage collection}
+\subsubsection{Mark-sweep Garbage Collection}
 
 Mark-sweep garbage collection works using three (sometimes two) phases.
 In the first phase, all the objects on the heap are marked as `dead'.
@@ -478,7 +489,7 @@ both in time and space than reference counting \cite{JL96}.
 The typical space overhead for a mark-sweep garbage collection algorithm is
 only 1 bit per object.
 
-\subsubsection{Reusing an existing garbage collector}
+\subsubsection{Reusing an Existing Garbage Collector}
 A number of excellent generic garbage collectors for C are 
 freely available, so a legitimate question is why not reuse an
 existing implementation instead of implementing our own collector?
@@ -520,7 +531,7 @@ These observations allow us to gain efficiency on several
 levels, using everything from low level system 'hacks' to high-level 
 algorithm optimizations.
 
-\subsubsection{The mark-sweep algorithm}
+\subsubsection{The Mark-sweep Algorithm}
 Given these facts, we opted for a straightforward version of mark-sweep 
 garbage collection to reclaim unused terms because this gives us very good
 performance in combination with a high level of maintainability of the
@@ -562,7 +573,7 @@ from the appropriate free-list, which is an extremely cheap operation.
 
 %{{{ Representation of lists
 
-\subsection{Representation of lists}
+\subsection{Representation of Lists}
 After the function application, the list construct is the second most 
 used \ATerm\ construct. A (memory) efficient representation of lists is 
 therefore very important. 
@@ -593,20 +604,20 @@ the number of elements in the newly created list.
 In this section, we will describe some of the more interesting
 implementation aspects of the C implementation of the \ATerm\
 datatype. We will first present the memory efficient encoding
-of \ATerms\ we have chosen. We will explain how term sharing and
+of \ATerms\ that we have chosen. We will explain how term sharing and
 garbage collection can be implemented efficiently using this encoding.
-We will describe how the different
+Furthermore, we will describe how the different
 operations on \ATerms\ described in Section \ref{aterm}
-can also be implemented efficiently.
+can be implemented efficiently.
 
 %}}}
 %{{{ Term encoding
 
-\subsection{Term encoding}
+\subsection{Term Encoding}
 
 After discussing the requirements of the library (Section \ref{requirements}),
 and the design (Section \ref{design}), we will now describe the implementation
-of the \ATerm\ datatype in C\cite{KR88}
+of the \ATerm\ datatype in C \cite{KR88}
 
 {\tt <PO> need a reference to ANSI-C!}.
 
@@ -619,7 +630,7 @@ operations efficiently, including term sharing and garbage collection.
 
 We assume that one machine word consists
 of 4 bytes, which is typical for modern architectures.
-Every \ATerm\ object is stored in one or more machine words.
+Every \ATerm\ object is stored in two or more machine words.
 The first byte of the first word is called the \emph{header}
 of the object, and consists of three fields (see Figure \ref{header}):
 
@@ -629,22 +640,29 @@ of the object, and consists of three fields (see Figure \ref{header}):
 \end{figure}
  
 \begin{itemize}
-\item A field consisting of 1 bit indicating whether or not this term
-      has an annotation or not.
 \item A field consisting of 1 bit used as a mark flag by the garbage
       collector.
+\item A field consisting of 1 bit indicating whether or not this term
+      has an annotation or not.
+\item A field consisting of 3 bits that indicate the type of the term.
 \item A field consisting of 3 bits representing the arity (number of
       pointers to other terms) of this object. When this field
       contains the maximum value of 7, the term must be a function application
       and the actual arity can be found retrieving the arity of the
       function symbol, which will be discussed later.
-\item A field consisting of 3 bits that indicate the type of the term.
 \end{itemize}
-
-The second word is used for hashing, and links together all terms in the same
+The rest of this word contains either the function symbol, length, or
+nothing depending on the type of the node.
+This will be discussed in more detail below.
+The second word is always used for hashing, 
+and links together all terms in the same
 hashbucket.
 
-Figure \ref{encoding} shows the encoding of the different term types.
+The type of the \ATerm\ determines the exact layout and contents of
+the node.
+Figure \ref{encoding} shows the encoding of the different term types.\
+In the following paragraphs the encodings for the term types 
+are described in more detail.
 
 \begin{figure}[!htb]
   \centerline{\epsfig{file=encoding.ps,scale=0.6}}
@@ -653,8 +671,7 @@ Figure \ref{encoding} shows the encoding of the different term types.
 
 \paragraph{APPL encoding}
 The remaining 3 bytes following the header in the first word are used to
-represent the function symbol. The second word contains a linkfield to
-facilitate bucket hashing.  The words following the second word hold
+represent the function symbol. The words following the second word contain
 references to the function arguments.
 In this way, function applications can be encoded in
 $2+n$ machine words, with $n$ the arity of the function application.
@@ -690,14 +707,20 @@ The length of the data contained in a BLOB term is stored in
 the three bytes after the header. A pointer to the actual data
 is stored in the third word.
 
+\subsection{Implementation of Term Sharing}
+
+\subsection{Implementation of Garbage Collector}
+
+\subsection{Implementation of Level 1 Operators}
+
 %}}}
 %{{{ The Binary ATerm Format (BAF)
 
-\subsection{The Binary \ATerm Format (BAF)}
+\subsection{The Binary \ATerm\ Format (BAF)}
 \label{baf}
 As discussed in the introduction, the efficient exchange of \ATerms\ 
-between processes is very important. The simplest form of exchange would
-be to use the concrete syntax presented in Section \ref{concrete-syntax}.
+between processes is very important. The simplest form of exchange 
+is the concrete syntax presented in Section \ref{concrete-syntax}.
 This would involve pretty printing the term on one side, and parsing it
 on the other. There are a number of efficiency problems with this approach:
 \begin{itemize}
@@ -709,13 +732,13 @@ on the other. There are a number of efficiency problems with this approach:
       the sharing of subterms needs to be rebuild.
 \end{itemize}
 
-A much nicer solution would be to just send the abstract syntax tree
-(including sharing information) of the term that is to be exchanged. 
-Just sending a
-dump of the memory used by the term is not a solution, because such
+A better solution would be to exchange a representation
+of the term that includes sharing. 
+A simple solution would be to exchange the memory dump containing the term,
+however,  this is not a solution, because such
 a dump contains addresses in the memory space of the sending process
 that have no meaning for the receiving process.
-We have devised an exchange format called BAF (Binary ATerm Format)
+We have designed an exchange format called BAF (Binary ATerm Format)
 that preserves the sharing information in a compact and portable way, 
 and is easy to encode and decode. Another important characteristic of
 BAF is that it is \emph{compositional}. You can take two or more terms
@@ -723,8 +746,11 @@ in BAF format, simply concatenate them and add a function symbol to build
 a more complex term in BAF format. Because the BAF representation of the
 argument terms need not be interpreted, this operation can be done very
 efficiently even if the argument terms are very large.
+The BAF format is readable both by the C implementation as well as
+the JAVA implementation of the term library, so it is in fact implementation
+independent.
 
-\subsubsection{The BAF virtual machine}
+\subsubsection{The BAF Virtual Machine}
 A term in BAF format consists of a stream of bytes representing instructions
 for a very simple virtual machine. The BAF virtual machine consists of
 three stacks, the term stack, the symbol stack, and the argument stack,
@@ -848,7 +874,7 @@ are:
 \end{itemize}
 
 Strings are encoded by their length indicator followed by their contents.
-The lenght indicator is of course encoded as described above.
+The length indicator is of course encoded as described above.
 
 \subsubsection{The example again}
 Using this mechanism the example described above can be encoded
@@ -879,9 +905,40 @@ terms when the term size increases:
 
 %}}}
 
+\section{Major Application: the ASF+SDF Meta-Environment}
+
+\section{Related Work}
+
+\begin{itemize}
+\item IDL
+\item SGML
+\item GEL
+\end{itemize}
+
 \section{Conclusions}
 
+\begin{itemize}
+\item The average garbage collection time for the applications we developed
+using the \ATerm\ library is 5 percent.
+\item The \ATerm\ library is powerful enough to develop both memory
+and computational applications, e.g., the {\sc Asf+Sdf} compiler \cite{BHKO98}
+is entirely based on this library and the application developed by
+JanFriso Groote.
+\item The current implementation is running on SGI, Solaris, and UNIX.
+\item The \ATerm\ library gave rise to an unexpected application,
+a tool for detecting code clones in COBOL programs.
+\item The using BAF reduces the term size by a factor XXX and reduces the
+processing time by a factor XXX.
+\end{itemize}
+
 \section{Future work}
+
+\begin{itemize}
+\item Generational garbage collector.
+\item BAF for JAVA.
+\item More compact BAF format.
+\item Porting to Windows platform.
+\end{itemize}
 
 \bibliographystyle{alpha}
 \bibliography{thesis}
