@@ -1453,12 +1453,12 @@ flow patterns:
 
 \Function{ATBpeekOne}{ATbool}{int fd}
 {Check if there is input waiting on a \toolbus\ connection}
-\Describe{When there is input waiting on the specified connection,
+\Describe{If there is input waiting on the specified connection,
 {\tt ATtrue} is returned. Otherwise, {\tt ATfalse} is returned.}
 
 \Function{ATBpeekAny}{int}{}
 {Check if there is input waiting on any \toolbus\ connection}
-\Describe{When there is input waiting on one of the \toolbus\ 
+\Describe{If there is input waiting on one of the \toolbus\ 
 connections, the appropriate file-descriptor is returned. Otherwise,
 {\tt -1} is returned. This function provides for some 'fairness' by
 using a round-robin scheme in traversing the connections between
@@ -1587,10 +1587,10 @@ through {\tt argn}.}
   methods, one for each number of {\tt arg} arguments from zero to five.
   When you need to use a pattern with more than five placeholders, you
   must use the more general {\tt make} method described next.
-  When the number of placeholders in {\tt pattern} is larger than the
+  If the number of placeholders in {\tt pattern} is larger than the
   number of actual {\tt arg} arguments, a {\tt RuntimeException} is
-  thrown. When the number of placeholders is less than the number of
-  arguments, the excess arguments are ignored. When the type of one
+  thrown. If the number of placeholders is less than the number of
+  arguments, the excess arguments are ignored. If the type of one
   of the arguments does not match the placeholder type as shown
   in the following table, a {\tt ClassCastException} is thrown.
 }
@@ -1641,9 +1641,9 @@ matching with placeholders.}
 \Throws{ParseError}{when {\tt pattern} does not represent a valid term.}
 \Describe{
 The pattern is parsed as an \ATerm, and the result is matched against
-the object this method is called on. When the match succeeds, a {\tt Vector}
+the object this method is called on. If the match succeeds, a {\tt Vector}
 is returned containing a list of objects resulting from matches of subterms
-with placeholders in the pattern. When the match fails, {\tt null} is 
+with placeholders in the pattern. If the match fails, {\tt null} is 
 returned.
 }
 
@@ -1652,9 +1652,9 @@ returned.
 subterms matching with placeholders.}
 \Describe{
 {\tt pattern} is matched against
-the object this method is called on. When the match succeeds, a {\tt Vector}
+the object this method is called on. If the match succeeds, a {\tt Vector}
 is returned containing a list of objects resulting from matches of subterms
-with placeholders in the pattern. When the match fails, {\tt null} is 
+with placeholders in the pattern. If the match fails, {\tt null} is 
 returned.
 }
 
@@ -1803,7 +1803,7 @@ useful method:
 \subsection{The class {\tt World}}
 
 This class represents a term database containing a set of
-terms that is maximally shared. Normally a single applications
+terms that is maximally shared. Normally a single application
 only uses one instance of this class. In this case, there is no
 need to call any of the methods in this class, because the {\tt ATerm}
 class and its subclasses provide a much cleaner interface to the
@@ -1867,7 +1867,7 @@ Suppose we take the same simple \toolbus\ script {\tt "test.tb"}
 as it was used in the C version:
 
 \begin{verbatim}
-  tool testing is { command = "java-adapter -class TestingTool" }
+  tool testing is { command = "java2-adapter -class TestingTool" }
 
   process TEST is
   let
