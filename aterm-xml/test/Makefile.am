@@ -1,5 +1,5 @@
 # set location of tested tools:
-XML2ATERM=${top_builddir}/xml2aterm/xml2aterm
+XML2ATERM=${top_builddir}/xml2aterm/xml2aterm.test
 ATERM2XML=${top_builddir}/aterm2xml/aterm2xml
 ATDIFF=${ATERM}/bin/atdiff
 
@@ -8,7 +8,7 @@ EXTRA_DIST=$(wildcard *.trm) $(wildcard *.xml) $(wildcard *.ref)
 
 # which files are tested
 #TEST_FILES=slashdot pi title eve aterm wap wml
-TEST_FILES=
+TEST_FILES=aterm
 
 # TESTS is a special automake variable. It enumarates the
 # scripts that it should call when 'gmake check' is done:
@@ -21,12 +21,12 @@ CLEANFILES = *.out *.sh
 # by gmake check:
 %.x2a.sh: Makefile
 	@(echo 'set -e';\
-          echo '${XML2ATERM} $*.xml -e > $*.xml.out';\
+          echo '${XML2ATERM} -i $*.xml -e -o $*.xml.out';\
           echo '${ATDIFF} $*.trm $*.xml.out';\
           echo 'rm $*.xml.out') > $@ && chmod +x $@
           
 %.a2x.sh: Makefile
 	@(echo 'set -e';\
-          echo '${ATERM2XML} $*.trm $*.trm.out -e -t';\
+          echo '${ATERM2XML} -i $*.trm -o $*.trm.out -e -t';\
           echo 'diff $*.trm.ref $*.trm.out';\
           echo 'rm $*.trm.out') > $@ && chmod +x $@
