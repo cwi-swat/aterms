@@ -188,7 +188,7 @@ public abstract class TomSignatureGenerator extends Generator {
 		while (fields.hasNext()) {
 			Field field = (Field) fields.next();
 			String field_id = buildId(field.getId());
-			println("  get_slot("+ field_id + ",t) { " + OperatorGetSlot("t", field_id));
+			println("  get_slot("+ field_id + ",t) { " + OperatorGetSlot("t", field_id) + "}");
 		}
 
 		String arg = "(";
@@ -206,7 +206,4 @@ public abstract class TomSignatureGenerator extends Generator {
 		println("}");
 		println();
 	}
-
-	
-	
 }

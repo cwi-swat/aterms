@@ -177,7 +177,7 @@ extends Generator
 private void genMakeIncludeFile(ADT api) {
     char sep = File.separatorChar;
     String cap_api_name = capitalize(buildId(api_name));
-      //createFileStream(basedir + sep + cap_api_name + "MakeRules","");
+  
     createFileStream(cap_api_name + "MakeRules","", basedir);
     String prefix = cap_api_name + "API";
     

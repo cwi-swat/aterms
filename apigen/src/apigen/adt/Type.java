@@ -261,4 +261,15 @@ public class Type {
 	}
 
 	//}}}
+	
+	public int getAltArity(Alternative alt) {
+		Iterator fields = altFieldIterator(alt.getId());
+	    int arity = 0;
+    
+	    for(arity = 0; fields.hasNext(); fields.next()) {
+	      arity++;
+	    }
+    
+	    return arity;
+    }
 }

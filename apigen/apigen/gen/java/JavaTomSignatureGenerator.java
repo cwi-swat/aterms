@@ -3,8 +3,6 @@ package apigen.gen.java;
 import apigen.gen.TomSignatureGenerator;
 
 public class JavaTomSignatureGenerator extends TomSignatureGenerator {
-	private String api_name = "";
-
 	private String buildTypeName(String type) {
 		return capitalize(buildId(type));
 	}
@@ -80,7 +78,7 @@ public class JavaTomSignatureGenerator extends TomSignatureGenerator {
 	protected String ATermGetFunSym(String arg) {
 		return "(("
 			+ arg
-			+ "instanceof ATermAppl)?((ATermAppl)"
+			+ " instanceof ATermAppl)?((ATermAppl)"
 			+ arg
 			+ ").getAFun():null)";
 	}
