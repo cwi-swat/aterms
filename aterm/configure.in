@@ -120,7 +120,7 @@ AC_SUBST(JAVA_SUBDIR)
 
 VISITOR_PKG=aterm.visitor
 AC_ARG_WITH(visitor-pkg,
-  [  --with-visitor-pkg        change visitor package (default: aterm.visitor)],
+   [  --with-visitor-pkg       change visitor package (default: aterm.visitor)],
   VISITOR_PKG=${withval},)
 AC_SUBST(VISITOR_PKG)
 
