@@ -214,9 +214,16 @@ void    ATprotectAFun(AFun sym);
 void    ATunprotectAFun(AFun sym);
 #define ATunprotectSymbol ATunprotectAFun
 
+/* convenience macro's for previously private functions */
+#define ATgetAnnotations(t) AT_getAnnotations( (t) )
+#define ATsetAnnotations(t,a) AT_setAnnotations( (t), (a) )
+#define ATremoveAnnotations(t) AT_removeAnnotations( (t) )
+
 ATerm AT_getAnnotations(ATerm t);
 ATerm AT_setAnnotations(ATerm t, ATerm annos);
 ATerm AT_removeAnnotations(ATerm t);
+
+/* Deep strip */
 ATerm ATremoveAllAnnotations(ATerm t);
 
 /* Calculate checksum using the

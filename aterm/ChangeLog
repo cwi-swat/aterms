@@ -1,5 +1,10 @@
 $Id$
 
+2001/05/03 (jong@cwi.nl)
+ * version 1.5.6
+ * Added convenience macros AT{get,set,remove}Annotatations for their
+   "AT_XX" counterparts
+
 2001/04/24 ({jong,olivierp}@cwi.nl)
  * Added java-api documentation in LaTeX
  * Adapted manual.ltx to conform to the specs of the new Java Library.
