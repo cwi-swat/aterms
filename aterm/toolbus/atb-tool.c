@@ -25,6 +25,8 @@ typedef struct
 } Connection;
 
 /* Globals */
+static char atb_tool_id[] = "$Id$";
+
 static char  this_host[MAXHOSTNAMELEN + 1] = "";
 static char *default_host = this_host;
 
