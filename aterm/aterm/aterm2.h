@@ -13,7 +13,7 @@
   */
 
 #include "aterm1.h"
-#include "symbol.h"
+#include "asymbol.h"
 #include "abool.h"
 
 /**

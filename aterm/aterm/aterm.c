@@ -13,7 +13,7 @@
 
 #include "_aterm.h"
 #include "memory.h"
-#include "symbol.h"
+#include "asymbol.h"
 #include "list.h"
 #include "make.h"
 #include "gc.h"

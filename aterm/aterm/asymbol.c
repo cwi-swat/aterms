@@ -9,7 +9,7 @@
 #include <stdlib.h>
 #include <assert.h>
 #include "aterm2.h"
-#include "symbol.h"
+#include "asymbol.h"
 #include "memory.h"
 #include "util.h"
 #include "debug.h"

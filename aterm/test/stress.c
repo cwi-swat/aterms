@@ -9,7 +9,7 @@
 #include <assert.h>
 #include "_aterm.h"
 #include "memory.h"
-#include "symbol.h"
+#include "asymbol.h"
 #include "util.h"
 #include "gc.h"
 

@@ -1,10 +1,10 @@
 
 /**
-  * symbol.h
+  * asymbol.h
   */
 
-#ifndef SYMBOL_H
-#define SYMBOL_H
+#ifndef ASYMBOL_H
+#define ASYMBOL_H
 
 #include "abool.h"
 

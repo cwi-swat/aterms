@@ -9,7 +9,7 @@
 #include <setjmp.h>
 
 #include "_aterm.h"
-#include "symbol.h"
+#include "asymbol.h"
 #include "memory.h"
 #include "util.h"
 #include "gc.h"

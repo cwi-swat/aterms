@@ -42,12 +42,13 @@ INSTALL_PRG	= @INSTALL_PRG@
 INSTALL_DAT	= @INSTALL_DAT@
 
 PROGS		= termsize
-ATERMSRCS	= aterm.c list.c make.c memory.c symbol.c gc.c
+PROGSRCS	= termsize.c
+ATERMSRCS	= aterm.c list.c make.c memory.c asymbol.c gc.c
 ATERMLIBS	= libATerm-gcc.a libATerm-cc.a libATerm-dbg.a libATerm-prof.a
-PUBLIC_INCL	= abool.h aterm1.h aterm2.h deprecated.h encoding.h symbol.h
+PUBLIC_INCL	= abool.h aterm1.h aterm2.h deprecated.h encoding.h asymbol.h
 PRIVATE_INCL	= _aterm.h debug.h gc.h list.h make.h memory.h util.h
 ATERMINCL	= ${PUBLIC_INCL} ${PRIVATE_INCL}
-DISTFILES	= Makefile.in ${ATERMSRCS} ${ATERMINCL}
+DISTFILES	= Makefile.in ${PROGSRCS} ${ATERMSRCS} ${ATERMINCL}
 
 OBJ_CC		= $(patsubst %.c,%-cc.o,$(ATERMSRCS))
 OBJ_GCC		= $(patsubst %.c,%-gcc.o,$(ATERMSRCS))
