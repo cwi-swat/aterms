@@ -4,7 +4,7 @@ include ../make_rules
 
 lib_LIBRARIES = \
 	libATerm.a \
-	@ATERM_LIB_CC64@
+	@ATERM_LIB_CC64@ \
 	@ATERM_LIB_CC@ \
 	@ATERM_LIB_DBG@ \
 	@ATERM_LIB_GCC@ \
