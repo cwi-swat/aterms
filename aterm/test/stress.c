@@ -627,7 +627,6 @@ void testMark()
 	ATerm one  = ATparse("one");
   ATerm t1 = zero;
 	ATerm t2 = one;
-	ATerm t14;
 	ATerm result;
 
 	for(i=0; i<100000; i++) {
