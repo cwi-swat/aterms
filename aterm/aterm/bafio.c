@@ -547,10 +547,14 @@ static void build_arg_tables()
 		int arity = cur_entry->arity;
 
 		assert(arity == ATgetArity(cur_entry->id));
-
-		cur_entry->top_symbols = (top_symbols *)calloc(arity, sizeof(top_symbols));
-		if(!cur_entry->top_symbols)
-			ATerror("build_arg_tables: out of memory (arity: %d)\n", arity);
+		
+		if(arity == 0)
+			cur_entry->top_symbols = NULL;
+		else {
+			cur_entry->top_symbols = (top_symbols *)calloc(arity, sizeof(top_symbols));
+			if(!cur_entry->top_symbols)
+				ATerror("build_arg_tables: out of memory (arity: %d)\n", arity);
+		}
 
 		for(cur_arg=0; cur_arg<arity; cur_arg++) {
 			int total_top_symbols = 0;
@@ -992,16 +996,27 @@ static void free_write_space()
 		sym_entry *entry = &sym_entries[i];
 
 		free(entry->terms);
+		entry->terms = NULL;
 		free(entry->termtable);
+		entry->termtable = NULL;
 
 		for(j=0; j<entry->arity; j++) {
 			top_symbols *topsyms = &entry->top_symbols[j];
-			free(topsyms->symbols);
-			free(topsyms->toptable);
-			free(topsyms);
+			if(topsyms->symbols) {
+				free(topsyms->symbols);
+				topsyms->symbols = NULL;
+			}
+			if(topsyms->toptable) {
+				free(topsyms->toptable);
+				topsyms->toptable = NULL;
+			}
+			/*free(topsyms);*/
 		}
 
-		free(entry->top_symbols);
+		if(entry->top_symbols) {
+			free(entry->top_symbols);
+			entry->top_symbols = NULL;
+		}
 	}
 	free(sym_entries);
 
@@ -1020,6 +1035,10 @@ ATwriteToBinaryFile(ATerm t, FILE *file)
 	int nr_bits;
 	AFun sym;
 	
+	/* Initialize bit buffer */
+	bit_buffer     = '\0';
+	bits_in_buffer = 0; /* how many bits in bit_buffer are used */
+
 	nr_unique_symbols = AT_calcUniqueSymbols(t);
 
 	sym_entries = (sym_entry *) calloc(nr_unique_symbols, sizeof(sym_entry));
@@ -1177,7 +1196,10 @@ ATbool read_all_symbols(FILE *file)
 			return ATfalse;
 		read_symbols[i].nr_terms = val;
 		read_symbols[i].term_width = bit_width(val);
-		read_symbols[i].terms = (ATerm *)calloc(val, sizeof(ATerm));
+		if(val == 0)
+			read_symbols[i].terms = NULL;
+		else
+			read_symbols[i].terms = (ATerm *)calloc(val, sizeof(ATerm));
 		if(!read_symbols[i].terms)
 			ATerror("read_symbols: could not allocate space for %d terms.\n", val);
 		ATprotectArray(read_symbols[i].terms, val);
@@ -1186,20 +1208,26 @@ ATbool read_all_symbols(FILE *file)
 		
 		/*{{{  Allocate space for topsymbol information */
 
-		read_symbols[i].nr_topsyms = (int *)calloc(arity, sizeof(int));
-		if(!read_symbols[i].nr_topsyms)
-			ATerror("read_all_symbols: out of memory trying to allocate "
-							"space for %d arguments.\n", arity);
+   if(arity == 0) {
+		 read_symbols[i].nr_topsyms = NULL;
+		 read_symbols[i].sym_width = NULL;
+		 read_symbols[i].topsyms = NULL;
+	 } else {
+		 read_symbols[i].nr_topsyms = (int *)calloc(arity, sizeof(int));
+		 if(!read_symbols[i].nr_topsyms)
+			 ATerror("read_all_symbols: out of memory trying to allocate "
+							 "space for %d arguments.\n", arity);
 
-		read_symbols[i].sym_width = (int *)calloc(arity, sizeof(int));
-		if(!read_symbols[i].sym_width)
-			ATerror("read_all_symbols: out of memory trying to allocate "
-							"space for %d arguments .\n", arity);
+		 read_symbols[i].sym_width = (int *)calloc(arity, sizeof(int));
+		 if(!read_symbols[i].sym_width)
+			 ATerror("read_all_symbols: out of memory trying to allocate "
+							 "space for %d arguments .\n", arity);
 
-		read_symbols[i].topsyms = (int **)calloc(arity, sizeof(int *));
-		if(!read_symbols[i].topsyms)
-			ATerror("read_all_symbols: out of memory trying to allocate "
-							"space for %d arguments.\n", arity);
+		 read_symbols[i].topsyms = (int **)calloc(arity, sizeof(int *));
+		 if(!read_symbols[i].topsyms)
+			 ATerror("read_all_symbols: out of memory trying to allocate "
+							 "space for %d arguments.\n", arity);
+	 }
 
 		/*}}}  */
 
@@ -1373,13 +1401,17 @@ static void free_read_space()
 		sym_read_entry *entry = &read_symbols[i];
 
 		ATunprotectArray(entry->terms);
-		free(entry->terms);
-		free(entry->nr_topsyms);
-		free(entry->sym_width);
+		if(entry->terms)
+			free(entry->terms);
+		if(entry->nr_topsyms)
+			free(entry->nr_topsyms);
+		if(entry->sym_width)
+			free(entry->sym_width);
 
 		for(j=0; j<entry->arity; j++)
 			free(entry->topsyms[j]);
-		free(entry->topsyms);
+		if(entry->topsyms)
+			free(entry->topsyms);
 	}
 }
 
@@ -1396,6 +1428,10 @@ ATreadFromBinaryFile(FILE *file)
 {
 	unsigned int val, nr_unique_terms;
 	ATerm result = NULL;
+
+	/* Initialize bit buffer */
+	bit_buffer     = '\0';
+	bits_in_buffer = 0; /* how many bits in bit_buffer are used */
 
 	/*{{{  Read header */
 

@@ -4,10 +4,12 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <values.h>
+#include <time.h>
 #include <sys/times.h>
 #include <limits.h>
 #include <assert.h>
 #include <setjmp.h>
+
 
 #include "_aterm.h"
 #include "afun.h"
