@@ -55,6 +55,8 @@ public class ListTest {
      */
     Modules mempty = factory.makeModules_Empty();
     Modules2 mempty2 = factory.makeModules2_Empty();
+
+    ListFactory f = mempty.getListFactory();
     
   }
 
