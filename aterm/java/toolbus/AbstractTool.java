@@ -85,7 +85,7 @@ abstract public class AbstractTool
   }
 
   //}}}
-  //{{{ public void setLockObject(Object obj)
+  //{{{ public Object getLockObject()
 
   public Object getLockObject()
   {
@@ -257,60 +257,68 @@ abstract public class AbstractTool
   }
 
   //}}}
-  //{{{ public synchronized void sendTerm(ATerm term)
+  //{{{ public void sendTerm(ATerm term)
 
-  public synchronized void sendTerm(ATerm term)
+  public void sendTerm(ATerm term)
     throws IOException
     {
-      String unparsedTerm = term.toString();
-      int size = unparsedTerm.length();
-      String lenspec = "00000000" + (size+LENSPEC) + ":";
-      int len = lenspec.length();
-      byte[] ls = new byte[LENSPEC];
+      synchronized (getLockObject()) {
+	String unparsedTerm = term.toString();
+	int size = unparsedTerm.length();
+	String lenspec = "00000000" + (size+LENSPEC) + ":";
+	int len = lenspec.length();
+	byte[] ls = new byte[LENSPEC];
 
-      for (int i=0; i<LENSPEC; i++) {
-	ls[i] = (byte)lenspec.charAt(len+i-LENSPEC);
-      }
+	for (int i=0; i<LENSPEC; i++) {
+	  ls[i] = (byte)lenspec.charAt(len+i-LENSPEC);
+	}
 
-      if (verbose) {
-	System.out.print("tool " + toolname + " writes term:\n");
-	System.out.print(new String(ls));
-	System.out.println(term);
+	if (verbose) {
+	  System.out.print("tool " + toolname + " writes term:\n");
+	  System.out.print(new String(ls));
+	  System.out.println(term);
+	}
+	outputStream.write(ls);
+	term.writeToTextFile(outputStream);
+	if (LENSPEC+size < MIN_MSG_SIZE) {
+	  info("padding with " + (MIN_MSG_SIZE-(LENSPEC+size)) + " zero bytes.");
+	}
+	for (int i=LENSPEC+size; i<MIN_MSG_SIZE; i++) {
+	  outputStream.write(0);
+	}
+	outputStream.flush();
       }
-      outputStream.write(ls);
-      term.writeToTextFile(outputStream);
-      if (LENSPEC+size < MIN_MSG_SIZE) {
-	info("padding with " + (MIN_MSG_SIZE-(LENSPEC+size)) + " zero bytes.");
-      }
-      for (int i=LENSPEC+size; i<MIN_MSG_SIZE; i++) {
-	outputStream.write(0);
-      }
-      outputStream.flush();
     }
 
   //}}}
-  //{{{ public static ATerm readTerm(InputStream inputStream, ATermFactory factory)
+  //{{{ public static ATerm readTerm(inputStream, factory, lock)
 
-  public static ATerm readTerm(InputStream inputStream, ATermFactory factory)
+  public static ATerm readTerm(InputStream inputStream,
+			       ATermFactory factory, Object lock)
     throws IOException
   {
+    ATerm result;
     byte[] lspecBuf = new byte[LENSPEC];
     inputStream.read(lspecBuf);
-    String lspec = new String(lspecBuf);
 
-    int bytesLeft = Integer.parseInt(lspec.substring(0, LENSPEC-1));
-    if (bytesLeft < MIN_MSG_SIZE) {
-      bytesLeft = MIN_MSG_SIZE;
+    synchronized (lock) {
+      String lspec = new String(lspecBuf);
+
+      int bytesLeft = Integer.parseInt(lspec.substring(0, LENSPEC-1));
+      if (bytesLeft < MIN_MSG_SIZE) {
+	bytesLeft = MIN_MSG_SIZE;
+      }
+      bytesLeft -= LENSPEC;
+
+      byte[] data = new byte[bytesLeft];
+      inputStream.read(data);
+      String stringdata = new String(data);
+
+      //info("data read (" + bytesLeft + " bytes): '" + stringdata + "'");
+
+      result = factory.parse(stringdata);
     }
-    bytesLeft -= LENSPEC;
-
-    byte[] data = new byte[bytesLeft];
-    inputStream.read(data);
-    String stringdata = new String(data);
-
-    //info("data read (" + bytesLeft + " bytes): '" + stringdata + "'");
- 
-    return factory.parse(stringdata);
+    return result;
   }
 
   //}}}
@@ -319,13 +327,13 @@ abstract public class AbstractTool
   public ATerm readTerm(InputStream inputStream)
     throws IOException
   {
-    return readTerm(inputStream, factory);
+    return readTerm(inputStream, factory, getLockObject());
   }
 
   //}}}
-  //{{{ public synchronized ATerm readTerm()
+  //{{{ public ATerm readTerm()
 
-  public synchronized ATerm readTerm()
+  public ATerm readTerm()
     throws IOException
   {
     return readTerm(inputStream);
