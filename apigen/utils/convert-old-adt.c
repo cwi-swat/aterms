@@ -18,7 +18,7 @@ static ATbool checkForListIdioms = ATfalse;
 void usage(void)
 {
     fprintf(stderr,
-	"\n%s concatenates lists of adt entries to form a single adt\n"
+	"\n%s Converts ADT files in old style to new style ADT files
         "Usage: %s -V -o <output> -h <file-1> ... <file-n>"
         "Options:\n"
         "\t-h              display help information (usage)\n"
