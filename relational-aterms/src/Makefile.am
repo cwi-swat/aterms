@@ -4,7 +4,7 @@ lib_LIBRARIES = librelational-aterms.a
 include_HEADERS = \
 	relational-aterms.h
 
-librelationa;_aterms_a_SOURCES = \
+librelational_aterms_a_SOURCES = \
 	relational-aterms.c
 
 AM_CFLAGS = -Wall -pedantic -g -O2

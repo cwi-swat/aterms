@@ -1,5 +1,5 @@
 
-#include <aterm-relations.h>
+#include <relational-aterms.h>
 #include "assert-equals.h"
 
 void test() {

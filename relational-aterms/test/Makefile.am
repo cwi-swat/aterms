@@ -13,7 +13,7 @@ AM_LDFLAGS = \
 	-L$(BALANCED_BINARY_ATERMS)/lib \
 	-L$(ATERM)/lib
 
-LDLIBS = -lATerm-dbg -lATerm-relations -lbbtree
+LDLIBS = -lATerm-dbg -lrelational-aterms -lbbtree
 
 noinst_PROGRAMS = test
 
