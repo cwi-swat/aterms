@@ -126,7 +126,7 @@ public class FactoryGenerator extends JavaGenerator {
 		   println();        
 		   println("    " + altClassName + ".initializePattern();");
 		   println("    " + funVar + " = makeAFun(\"" + 
-				   afunName + "\", " + type.getAltArity(alt) + ", false);");
+				   "_" + afunName + "\", " + type.getAltArity(alt) + ", false);");
 		   println("    " + protoVar + " = new " + altClassName + "();");      
 		 }
 		 println();
