@@ -14,6 +14,16 @@ import aterm.util.*;
 
 public class JavaTif
 {
+  //{ static void usage()
+
+  static void usage()
+  {
+    System.err.println("usage: javatif -tool <tool> -tifs <tifs> " +
+		       "[-class <class>] [-package <package>]");
+    System.exit(0);
+  }
+
+  //}
   //{ public static void main(String[] args)
 
   public static void main(String[] args)
@@ -24,20 +34,22 @@ public class JavaTif
     String output = null;
 
     for(int i=0; i<args.length; i++) {
-      if(args[i].equals("-tool"))
-				tool = args[++i];
-      if(args[i].equals("-tifs"))
-				tifsfile = args[++i];
-      if(args[i].equals("-package"))
-				pkg = args[++i];
-      if(args[i].equals("-class"))
-				javaclass = args[++i];
+      if(args[i].equals("-h")) {
+	usage();
+      } else if(args[i].equals("-tool")) {
+	tool = args[++i];
+      } else if(args[i].equals("-tifs")) {
+	tifsfile = args[++i];
+      } else if(args[i].equals("-package")) {
+	pkg = args[++i];
+      } else if(args[i].equals("-class")) {
+	javaclass = args[++i];
+      }
     }
 
-    if(tool == null || tifsfile == null)
-      System.err.println("usage: javatif -tool <tool> -tifs <tifs> " +
-			 "[-class <class>] [-package <package>]");
-    else {
+    if(tool == null || tifsfile == null) {
+      usage();
+    } else {
       if(javaclass == null)
         javaclass = TifGenerator.capitalize(tool, true) + "Tif";
       TifGenerator gen = new TifGenerator();
