@@ -1,0 +1,14 @@
+package
+identification
+  name=__PACKAGE__
+  version=__VERSION__
+  location=http://www.cwi.nl/projects/MetaEnv/aterm-xml
+  info=http://www.cwi.nl/projects/MetaEnv/aterm-xml
+  description='A package containing aterm2xml and xml2aterm'
+  keywords=ATerm, XML, translation
+
+configuration interface
+  
+requires
+  aterm   2.0.2
+  libxml2 2.4.22
