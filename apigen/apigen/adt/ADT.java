@@ -111,7 +111,14 @@ public class ADT {
 			ATerm pattern = (ATerm) matches.get(2);
 
 			Alternative alt = new Alternative(altId, pattern);
-			type.addAlternative(alt);
+      
+      if (!type.hasAlternative(altId)) {
+			  type.addAlternative(alt);
+      }
+      else {
+        throw new RuntimeException(altId + " is defined more than once for " +
+                                   typeId);
+      }
 		}
 
 		types.add(type);

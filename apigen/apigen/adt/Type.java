@@ -31,9 +31,10 @@ public class Type {
 	//{{{ public void addAlternative(Alternative alt)
 
 	public void addAlternative(Alternative alt) {
-		alts.add(alt);
-
+    alts.add(alt);
+      
 		extractFields(alt.getPattern(), new Location(alt.getId()));
+    
 	}
 
 	//}}}
@@ -107,6 +108,22 @@ public class Type {
 	}
 
 	//}}}
+  
+  public boolean hasAlternative(String id) 
+  {
+    Iterator alts = alternativeIterator();
+    
+    while (alts.hasNext()) {
+      Alternative alt = (Alternative) alts.next();
+      
+      if (alt.getId().equals(id)) {
+        return true;
+      }
+    }
+    
+    return false;
+  }
+  
 	//{{{ private void addField(id, type, location)
 
 	private void addField(String id, String type, Location location) {
@@ -117,7 +134,12 @@ public class Type {
 			field = new Field(id, type);
 			fields.put(id, field);
 			field_list.add(field);
-		}
+		} 
+    else if (field.getLocation(location.getAltId()) != null) {
+      throw new RuntimeException("\"" + id + "\" occurs more than once in alternative \"" +
+                                 location.getAltId() + "\"");
+    }
+    
 
 		field.addLocation(location);
 	}
