@@ -22,6 +22,10 @@ public abstract class ATermImpl extends ATermVisitableImpl implements ATerm, Sha
     this.hashCode = hashcode;
   }
 
+  protected void internSetAnnotations(ATermList annos) {
+    this.annotations = annos;
+  }
+
   protected ATermImpl(PureFactory factory) {
     this.factory = factory;
   }

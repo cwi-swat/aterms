@@ -33,9 +33,25 @@ class ATermApplImpl extends ATermImpl implements ATermAppl {
     }
   }
 
+  protected void initTest(ATermList annos, AFun fun, ATerm[] i_args) {
+    this.fun  = fun;
+    this.args = i_args;
+    this.internSetAnnotations(annos);
+    this.setHashCode(this.doobs_hashFunction());
+      //super.init(this.doobs_hashFunction(), annos);
+
+      /*
+        System.out.println("term = " + this + "\thash = " + hashCode());
+        if(getArity()>0) {
+        ATerm sub = getArgument(0);
+        System.out.println("\tsubterm = " + sub + "\thash = " + sub.hashCode());
+        }
+      */
+  }
+
   public Object clone() {
     ATermApplImpl clone = new ATermApplImpl(getPureFactory());
-    clone.init(hashCode(), getAnnotations(), fun, args);
+    clone.initCopy(hashCode(), getAnnotations(), fun, args);
     return clone;
   }
   
@@ -197,4 +213,63 @@ class ATermApplImpl extends ATermImpl implements ATermAppl {
     return setArgument(t, index);
   }
 
+  protected Object[] serialize() {
+    int arity = getArity();
+    Object[] o = new Object[arity+2];
+    for(int i=0; i<arity ; i++) {
+      o[i] = getArgument(i);
+    }
+    o[o.length-2] = getAnnotations();
+    o[o.length-1] = getAFun();
+    return o;
+  }
+
+  private int doobs_hashFunction() {
+    int initval = 0; /* the previous hash value */
+    int a, b, c, len;
+
+    /* Set up the internal state */
+    len = getArity();
+    a = b = 0x9e3779b9; /* the golden ratio; an arbitrary value */
+    c = initval; /* the previous hash value */
+
+    /*---------------------------------------- handle most of the key */
+    //int k = 0;
+    if (len >= 12) { //12) {
+      return shared.SharedObjectFactory.doobs_hashFunction(serialize());
+    }
+
+    /*------------------------------------- handle the last 11 bytes */
+    c += len;
+    c += (getAnnotations().hashCode()<<8);
+    b += (getAFun().hashCode()<<8);
+    
+    switch (len) {
+      case 11 :c += (getArgument(10).hashCode() << 24);
+      case 10 :c += (getArgument(9).hashCode() << 16);
+      case 9 : c += (getArgument(8).hashCode() << 8);
+      case 8 : b += (getArgument(7).hashCode() << 24);
+      case 7 : b += (getArgument(6).hashCode() << 16);
+      case 6 : b += (getArgument(5).hashCode() << 8);
+      case 5 : b += (getArgument(4).hashCode());
+      case 4 : a += (getArgument(3).hashCode() << 24);
+      case 3 : a += (getArgument(2).hashCode() << 16);
+      case 2 : a += (getArgument(1).hashCode() << 8);
+      case 1 : a += getArgument(0).hashCode();
+/* case 0: nothing left to add */
+    }
+      a -= b; a -= c; a ^= (c >> 13);
+      b -= c; b -= a; b ^= (a << 8);
+      c -= a; c -= b; c ^= (b >> 13);
+      a -= b; a -= c; a ^= (c >> 12);
+      b -= c; b -= a; b ^= (a << 16);
+      c -= a; c -= b; c ^= (b >> 5);
+      a -= b; a -= c; a ^= (c >> 3);
+      b -= c; b -= a; b ^= (a << 10);
+      c -= a; c -= b; c ^= (b >> 15);
+
+    /*-------------------------------------------- report the result */
+    return c;
+  }
+  
 }

@@ -10,7 +10,7 @@ import shared.SharedObjectFactory;
 
 public class PureFactory extends SharedObjectFactory implements ATermFactory {
 
-  private static int DEFAULT_TERM_TABLE_SIZE = 16; // means 2^16
+  private static int DEFAULT_TERM_TABLE_SIZE = 16; // means 2^16 entrie
   private static int DEFAULT_PATTERN_CACHE_SIZE = 4321;
   
   private ATermListImpl protoList;
@@ -157,8 +157,8 @@ public class PureFactory extends SharedObjectFactory implements ATermFactory {
     return doobs_hashFunction(new Object[] { annos, first, next });
   }
 
-  private static ATerm[] array1= new ATerm[1+2];
-  private static ATerm[] array2= new ATerm[2+2];
+  private static ATerm[] array1= new ATerm[1+2-2];
+  private static ATerm[] array2= new ATerm[2+2-2];
   private static ATerm[] array3= new ATerm[3+2];
   private static ATerm[] array4= new ATerm[4+2];
 
@@ -179,7 +179,11 @@ public class PureFactory extends SharedObjectFactory implements ATermFactory {
   }
 
   public ATermAppl makeAppl(AFun fun, ATerm[] args) {
-    return makeAppl(fun, args, empty);
+      //return makeAppl(fun, args, empty);
+    protoAppl.initTest(empty, fun,args);
+    return (ATermAppl) build(protoAppl);
+
+    
   }
 
   public ATermAppl makeAppl(AFun fun, ATerm[] args, ATermList annos) {
@@ -225,16 +229,28 @@ public class PureFactory extends SharedObjectFactory implements ATermFactory {
   public ATermAppl makeAppl(AFun fun, ATerm arg) {
       //ATerm[] args = { arg,null,null };
       //return internMakeAppl(fun, args);
-    array1[0] = arg;
-    return internMakeAppl(fun, array1);
+
+      array1[0] = arg;
+      //return internMakeAppl(fun, array1);
+
+      //protoAppl.initTest(empty, fun,new ATerm[] {arg});
+      protoAppl.initTest(empty, fun,array1);
+      return (ATermAppl) build(protoAppl);
+    
   }
 
   public ATermAppl makeAppl(AFun fun, ATerm arg1, ATerm arg2) {
       //ATerm[] args = { arg1, arg2,null,null };
       //return internMakeAppl(fun, args);
-    array2[0] = arg1;
-    array2[1] = arg2;
-    return internMakeAppl(fun, array2);
+
+      array2[0] = arg1;
+      array2[1] = arg2;
+      //return internMakeAppl(fun, array2);
+
+        //protoAppl.initTest(empty, fun,new ATerm[] {arg1,arg2});
+      protoAppl.initTest(empty, fun,array2);
+    return (ATermAppl) build(protoAppl);
+
   }
 
   public ATermAppl makeAppl(AFun fun, ATerm arg1, ATerm arg2, ATerm arg3) {
@@ -912,5 +928,6 @@ class ATermReader {
   public int getPosition() {
     return pos;
   }
+
 
 }
