@@ -15,3 +15,4 @@ apigen-*.pkg
 config.h
 stamp-h
 stamp-h.in
+*.tar.gz
