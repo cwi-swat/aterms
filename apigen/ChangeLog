@@ -1,4 +1,8 @@
 
+2003-03-20  (jurgenv@cwi.nl)
+ * Removed dependency on shared-objects and jjtraveler. This is handled 
+   by aterm-java-config from now on
+
 2003-03-18  (jurgenv@cwi.nl)
  * Use aterm-java-config and shared-objects-config to obtain the names
    of the jar files.

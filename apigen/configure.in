@@ -48,13 +48,6 @@ AC_PACKAGE_REQUIRE(aterm-java, aterm-java-config,
 JAVA_ATERM=`${ATERM_JAVA}/bin/aterm-java-config`
 AC_SUBST(JAVA_ATERM)
 dnl }}}
-dnl {{{ Handle --with-shared-objects
-
-AC_PACKAGE_REQUIRE(shared-objects, shared-objects-config,
-	[  --with-shared-objects=DIR  Shared-Objects-library is in DIR])
-SHARED_OBJECTS=`${SHARED_OBJECTS}/bin/shared-objects-config`
-AC_SUBST(SHARED_OBJECTS)
-dnl }}}
 dnl {{{ Handle --with-cflags
 
 AC_ARG_WITH(cflags,
@@ -69,7 +62,7 @@ AC_SUBST(CFLAGS)
 
 dnl }}}
 
-EXTERNAL_JARS=${SHARED_OBJECTS}:${JAVA_ATERM}:${ATERM_JAVA}/share/jjtraveler-1.3.jar
+EXTERNAL_JARS=${JAVA_ATERM}
 AC_SUBST(EXTERNAL_JARS)
 
 dnl {{{ Output files
