@@ -84,6 +84,7 @@ public class ListTypeImplGenerator extends TypeImplGenerator {
 				+ "("
 				+ FactoryGenerator.className(apiName)
 				+ " factory) {");
+		println("     super(factory);");
 		println("     this.factory = factory;");
 		println("  }");
 	}

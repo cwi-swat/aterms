@@ -9,6 +9,7 @@ implements aterm.ATerm
   ADTFactory factory = null;
 
   public ADTConstructor(ADTFactory factory) {
+  	super(factory);
     this.factory = factory;
   }
 

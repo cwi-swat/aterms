@@ -11,6 +11,10 @@
    super.equivalent. This prevents that the SharedObjectFactory returns an object
    of the wrong type, but with the same hashCode.
  * Bootstrapped ApiGen with new ADT api
+ * aterm-java was changed not to use static references to factories anymore. So
+   now apigen had to be adapted to the new aterm-java implementation. 
+   WARNING: because the ATerm library for Java has changed, it is now imperative
+   to regenerate all Java libraries.
    
 2003-08-13    <pem@bach>
 	* apigen/gen/java/FactoryGenerator.java: fix a major bug in the 
