@@ -3,8 +3,9 @@
   * list.c: implementation of list functions.
   */
 
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <assert.h>
 #include "list.h"
 #include "aterm2.h"
@@ -27,7 +28,7 @@ static ATerm *buffer;
 void AT_initList(int argc, char *argv[])
 {
   buffer_size = DEFAULT_LIST_BUFFER;
-  buffer = (ATerm *)malloc(buffer_size*sizeof(ATerm));
+  buffer = (ATerm *) calloc(buffer_size, sizeof(ATerm));
 
   if(!buffer) {
     ATerror("AT_initLists: cannot allocate list buffer of size %d\n", 
@@ -46,10 +47,13 @@ void AT_initList(int argc, char *argv[])
 
 static void resize_buffer(int n)
 {
+	int old_size = buffer_size;
 	ATunprotectArray(buffer);
 
   buffer_size = n;
   buffer = (ATerm *)realloc(buffer, buffer_size*sizeof(ATerm));
+
+	memset(buffer+old_size, 0, (buffer_size - old_size) * sizeof(ATerm));
 
   if(!buffer) {
     ATerror("resize_buffer: cannot allocate list buffer of size %d\n",

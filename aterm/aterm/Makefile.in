@@ -1,5 +1,8 @@
+# vim:ts=8:sw=8
+
 PRODUCT		= @PRODUCT@
 VERSION		= @VERSION@
+DATE		= `date`
 
 srcdir		= @srcdir@
 top_srcdir	= @top_srcdir@
@@ -19,10 +22,11 @@ CFLAGS_GCC	= @CFLAGS_GCC@
 CFLAGS_DBG	= @CFLAGS_DBG@
 CFLAGS_PROF	= @CFLAGS_PROF@
 
-DEFS_CC		= @DEFS_CC@
-DEFS_GCC	= @DEFS_GCC@
-DEFS_DBG	= @DEFS_DBG@
-DEFS_PROF	= @DEFS_PROF@
+DEFS		= -DDATE="\"${DATE}\"" -DVERSION="\"${VERSION}\""
+DEFS_CC		= ${DEFS} @DEFS_CC@
+DEFS_GCC	= ${DEFS} @DEFS_GCC@
+DEFS_DBG	= ${DEFS} @DEFS_DBG@
+DEFS_PROF	= ${DEFS} @DEFS_PROF@
 
 INCL_CC		= @INCL_CC@
 INCL_GCC	= @INCL_GCC@
@@ -79,16 +83,16 @@ install: all ${PUBLIC_INCL}
 	done
 
 %-cc.o: %.c
-	${CC_CC} ${CFLAGS_CC} -c -o $@ $<
+	${CC_CC} ${CFLAGS_CC} ${DEFS_CC} -c -o $@ $<
 
 %-gcc.o: %.c
-	${CC_GCC} ${CFLAGS_GCC} -c -o $@ $<
+	${CC_GCC} ${CFLAGS_GCC} ${DEFS_GCC} -c -o $@ $<
 
 %-dbg.o: %.c
-	${CC_DBG} ${CFLAGS_DBG} -c -o $@ $<
+	${CC_DBG} ${CFLAGS_DBG} ${DEFS_DBG} -c -o $@ $<
 
 %-prof.o: %.c
-	${CC_PROF} ${CFLAGS_PROF} -c -o $@ $<
+	${CC_PROF} ${CFLAGS_PROF} ${DEFS_PROF} -c -o $@ $<
 
 libATerm-cc.a: ${OBJ_CC}
 	${AR} ${AR_FLAGS} $@ ${OBJ_CC}

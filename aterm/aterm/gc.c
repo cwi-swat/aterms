@@ -232,7 +232,11 @@ void AT_collect(int size)
   clock_t user;
 
 	gc_count++;
-  fprintf(stderr, "collecting garbage...\n");
+	if (!silent)
+	{
+		fprintf(stderr, "collecting garbage..");
+		fflush(stderr);
+	}
   times(&start);
   mark_phase();
   times(&mark);
@@ -242,6 +246,9 @@ void AT_collect(int size)
   times(&sweep);
   user = sweep.tms_utime - mark.tms_utime;
 	STATS(sweep_time, user);
+
+	if (!silent)
+		fprintf(stderr, "..\n");
 }
 
 /*}}}  */

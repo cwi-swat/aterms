@@ -23,6 +23,8 @@
 /*}}}  */
 /*{{{  defines */
 
+#define SILENT_FLAG	"-silent"
+
 #define DEFAULT_BUFFER_SIZE 4096
 #define RESIZE_BUFFER(n) if(n > buffer_size) resize_buffer(n)
 #define ERROR_SIZE 32
@@ -40,6 +42,9 @@
 /*{{{  globals */
 
 char            aterm_id[] = "$Id$";
+
+/* Flag to tell whether to keep quiet or not. */
+ATbool silent	= ATfalse;
 
 /* error_handler is called when a fatal error is detected */
 static void     (*error_handler) (const char *format, va_list args) = NULL;
@@ -100,10 +105,19 @@ AT_cleanup()
 void
 ATinit(int argc, char *argv[], ATerm * bottomOfStack)
 {
+	int lcv;
 	static ATbool   initialized = ATfalse;
 
 	if (initialized)
 		return;
+
+	for (lcv=1; lcv < argc; lcv++)
+		if (streq(argv[lcv], SILENT_FLAG))
+			silent = ATtrue;
+
+	if (!silent)
+		ATfprintf(stderr, "  ATerm Library, version %s, built: %s\n",
+							VERSION, DATE);
 
 	/* Protect novice users that simply pass NULL as bottomOfStack */
 	if (bottomOfStack == NULL)
@@ -156,6 +170,9 @@ ATinit(int argc, char *argv[], ATerm * bottomOfStack)
 	initialized = ATtrue;
 
 	atexit(AT_cleanup);
+
+	if (!silent)
+		ATfprintf(stderr, "\n");
 }
 
 /*}}}  */
@@ -2023,8 +2040,6 @@ calcUniqueSubterms(ATerm t)
     if (IS_MARKED(t->header))
 		return 0;
 
-    SET_MARK(t->header);
-
     switch (ATgetType(t))
     {
 		case AT_INT:
@@ -2043,17 +2058,16 @@ calcUniqueSubterms(ATerm t)
 			break;
 
 		case AT_LIST:
-			nr_unique = 0;
+			nr_unique = 1;
 			list = (ATermList)t;
 			while(!ATisEmpty(list) && !IS_MARKED(list->header)) {
-			  nr_unique++;
 			  nr_unique += calcUniqueSubterms(ATgetFirst(list));
 			  list = ATgetNext(list);
 			}
-			if(!IS_MARKED(list->header))
-			  nr_unique++; /* Empty list is unmarked! */
-			break;
+		  break;
     }
+
+		SET_MARK(t->header);
 
     return nr_unique;
 }
@@ -2191,3 +2205,4 @@ int AT_calcTermDepth(ATerm t)
 }
 
 /*}}}  */
+/* vim:ts=2:sw=2 */

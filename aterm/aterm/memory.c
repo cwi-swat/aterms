@@ -9,6 +9,7 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include <assert.h>
+#include "_aterm.h"
 #include "aterm2.h"
 #include "memory.h"
 #include "util.h"
@@ -80,7 +81,7 @@ static ATerm *hashtable;
 static int destructor_count = 0;
 static ATbool (*destructors[MAX_DESTRUCTORS])(ATermBlob) = { NULL };
 
-static ATerm arg_buffer[MAX_ARITY];
+static ATerm arg_buffer[MAX_ARITY] = { NULL };
 
 ATermList ATempty;
 
@@ -206,7 +207,8 @@ void resize_hashtable()
 	table_class++;
 	table_size = 1<<table_class;
 	table_mask = table_size-1;
-	fprintf(stderr, "resizing hashtable, class = %d\n", table_class);
+	if (!silent)
+		fprintf(stderr, "resizing hashtable, class = %d\n", table_class);
 
 	/*{{{  Create new term table */
 
@@ -395,6 +397,9 @@ static void allocate_block(int size)
 	int idx, last;
 	Block *newblock = (Block *)calloc(1, sizeof(Block));
 	ATerm data;
+
+	assert(size >= MIN_TERM_SIZE && size < MAX_TERM_SIZE);
+
 
 	if (newblock == NULL)
 		ATerror("allocate_block: out of memory!\n");
@@ -1566,7 +1571,7 @@ int AT_inAnyFreeList(ATerm t)
 {
 	int i;
 
-	for(i=0; i<MAX_TERM_SIZE; i++) {
+	for(i=MIN_TERM_SIZE; i<MAX_TERM_SIZE; i++) {
 		ATerm cur = at_freelist[i];
 
 		while(cur) {

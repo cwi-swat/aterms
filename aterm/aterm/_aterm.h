@@ -10,6 +10,7 @@ typedef struct
 	int    size;
 } ProtectedArray;
 
+extern ATbool silent;
 extern ATerm **at_protected;
 extern int at_nrprotected;
 extern ProtectedArray *at_protected_arrays;
