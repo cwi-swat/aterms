@@ -32,6 +32,7 @@ static void testList()
 
   sep[1] = makeSeparatedSingle(m);
   assert(getSeparatedLength(sep[1]) == 1);
+  assert(isSeparatedEmpty(getSeparatedTail(sep[1])));
 
   sep[2] = concatSeparated(sep[0],l1,l2,sep[1]);
   sep[3] = appendSeparated(sep[0],l1,l2,m);

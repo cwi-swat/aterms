@@ -843,22 +843,49 @@ public class APIGenerator extends CGenerator {
 			bothPrintFoldOpen(type_name + " accessors");
 
 			genTypeIsValid(type);
-
-			Iterator alts = type.alternativeIterator();
-			while (alts.hasNext()) {
-				Alternative alt = (Alternative) alts.next();
-				genIsAlt(type, alt);
-			}
-
-			Iterator fields = type.fieldIterator();
-			while (fields.hasNext()) {
-				Field field = (Field) fields.next();
-				genHasField(type, field);
-				genGetField(type, field);
-				genSetField(type, field);
-			}
+			genIsAlts(type);
+			genHasFields(type);
+			genGetFields(type);
+			genSetFields(type);
 
 			bothPrintFoldClose();
+		}
+	}
+
+	private void genSetFields(Type type) {
+		  Iterator fields = type.fieldIterator();
+		  while (fields.hasNext()) {
+			  Field field = (Field) fields.next();
+			  genSetField(type, field);
+		  }
+	}
+
+	private void genGetFields(Type type) {
+		if (type instanceof SeparatedListType) {
+			genSeparatedListGetters((SeparatedListType) type);
+		}
+		else {
+		  Iterator fields = type.fieldIterator();
+		  while (fields.hasNext()) {
+			  Field field = (Field) fields.next();
+			  genGetField(type, field);
+		  }
+		}
+	}
+
+	private void genHasFields(Type type) {
+		Iterator fields = type.fieldIterator();
+		while (fields.hasNext()) {
+			Field field = (Field) fields.next();
+			genHasField(type, field);
+		}
+	}
+
+	private void genIsAlts(Type type) throws GenerationException {
+		Iterator alts = type.alternativeIterator();
+		while (alts.hasNext()) {
+			Alternative alt = (Alternative) alts.next();
+			genIsAlt(type, alt);
 		}
 	}
 
@@ -956,6 +983,43 @@ public class APIGenerator extends CGenerator {
 		println(");");
 		println("  }");
 	}
+	
+	private void genSeparatedListGetters(SeparatedListType type) {
+		genSeparatedListGetTail(type);
+		genGetField(type, type.getManyField(type.getHeadFieldId()));
+		
+		Iterator seps = type.separatorFieldIterator();
+		while (seps.hasNext()) {
+			Field sep = (Field) seps.next();
+			genGetField(type,sep);	
+		}
+	}
+	
+	private void genSeparatedListGetTail(SeparatedListType type) {
+		Alternative alt = type.getManyAlternative();
+		String type_name = buildTypeName(type);
+		String isSingle = buildIsAltName(type, type.getSingleAlternative());
+		String isMany = buildIsAltName(type, type.getManyAlternative());
+		String isEmpty = buildIsAltName(type, type.getEmptyAlternative());
+		
+		String decl = type_name + " " + buildGetterName(type, type.getManyField(type.getTailFieldId())) + "(" + type_name + " arg)";
+		
+		hprintln(decl +";");
+		
+		printFoldOpen(decl);
+		println(decl);
+		println("{");
+		println("  assert(!" + isEmpty + "(arg) && \"getTail on an empty list\");");
+		println("  if (" + isSingle + "(arg)) {");
+		println("    return (" + type_name + ") " + buildConstructorName(type, type.getEmptyAlternative()) +"();"); 
+		println("  }");
+		println("  else {");
+		Field tail = type.getManyField(type.getTailFieldId());
+		genGetFieldBody(type, tail, buildTypeName(tail.getType()));
+		println("  }");
+		println("}");
+		printFoldClose();
+	}
 
 	private void genGetField(Type type, Field field) {
 		String type_name = buildTypeName(type);
@@ -967,8 +1031,21 @@ public class APIGenerator extends CGenerator {
 		printFoldOpen(decl);
 		println(decl);
 		println("{");
+		genGetFieldBody(type, field, field_type_name);
+
+		println("}");
+		printFoldClose();
+	}
+
+	/**
+	 * @param type
+	 * @param field
+	 * @param field_type_name
+	 */
+	private void genGetFieldBody(Type type, Field field, String field_type_name) {
 		Iterator locs = field.locationIterator();
 		boolean first = true;
+		
 		while (locs.hasNext()) {
 			Location loc = (Location) locs.next();
 			print("  ");
@@ -993,9 +1070,6 @@ public class APIGenerator extends CGenerator {
 				println("  }");
 			}
 		}
-
-		println("}");
-		printFoldClose();
 	}
 
 	private void genEpilogue() {

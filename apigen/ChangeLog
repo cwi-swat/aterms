@@ -1,5 +1,12 @@
 # $Id$
 
+Fri Apr 23 09:53:59 CEST 2004 <jurgenv@cwi.nl>
+ * Fixed bug 227; an extra check is generated in the getTail for
+   separated lists. Now you can program a loop over a separated list
+   by checking !isEmpty in the loop condition. The old if (!hasTail) {break;}
+   idiom is now needed anymore after regenerating your API.
+ * Added a test for this behaviour
+
 Sat Apr 17 09:42:12 CEST 2004 <jurgenv@cwi.nl>
  * Fixed a number of Makefile.am problems (automake 1.7.9 related) 
  * Next problem fixed by adding generated source files to BUILT_SOURCES

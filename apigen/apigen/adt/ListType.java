@@ -29,6 +29,14 @@ public class ListType extends Type {
         super.addAlternative(makeManyListConstructor());
     }
 
+    public String getHeadFieldId() {
+    	return HEAD_FIELD_NAME;
+    }
+    
+    public String getTailFieldId() {
+    	return TAIL_FIELD_NAME;
+    }
+    
     public String getElementType() {
         return elementType;
     }
