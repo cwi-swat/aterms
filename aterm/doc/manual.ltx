@@ -1,3 +1,5 @@
+%{{{ LaTeX configuration
+
 % vim:ts=4:sw=4:tw=75
 \documentclass[a4paper,twoside]{article}
 
@@ -5,6 +7,7 @@
 \usepackage{a4wide}
 \usepackage{verbatim}
 \usepackage{makeidx}
+\usepackage{epsfig}
 
 \makeindex
 
@@ -21,6 +24,8 @@
 \newcommand{\ATinit}{\mbox{\tt ATinit}}
 \newcommand{\ATprotect}{\mbox{\tt ATprotect}}
 \newcommand{\ATprotectArray}{\mbox{\tt ATprotectArray}}
+
+\newcommand{\toolbus}{\mbox{\tt ToolBus}}
 
 % \example{init.c} will input file "examples/init.c" in verbatim mode.
 \newcommand{\example}[1]{
@@ -61,7 +66,26 @@
 	\index{#1@{\tt #1}}
 }
 
-% Function/Macro description (optional)
+% Method definition
+\newcommand{\Method}[4]{
+	\vspace{0.3cm}
+	\noindent
+	\framebox[12.6cm][l]{{\bf method:} {\tt #1}} \vspace{0.1cm}\newline
+	\label{#1}
+	\noindent
+	{\bf Summary:\hspace{0.2cm}} #4\newline
+	{\bf Declaration:}
+		{\tt #2} {\tt #1}({\tt #3});
+	\index{#1@{\tt #1}}
+}
+
+% Throws exception (optional)
+\newcommand{\Throws}[2]{
+
+\noindent{\bf Throws:} {\tt #1} #2
+}
+
+% Function/Macro/Method description (optional)
 \newcommand{\Describe}[1]{
 
 	\noindent{\bf Description:} #1
@@ -70,6 +94,9 @@
 \def\aterms{\mbox{ATerms}}
 \def\aterm{\mbox{ATerm}}
 \def\asfix{\mbox{\sc AsFix}}
+
+%}}}
+%{{{ Title page and table of contents
 
 %----[ TITLE PAGE ]----
 
@@ -92,6 +119,9 @@ maximal sharing and automatic garbage collection.
 
 \tableofcontents
 \newpage
+
+%}}}
+%{{{ Introduction
 
 %----[ INTRODUCTION ]----
 \section{Introduction}\label{intro}
@@ -129,6 +159,9 @@ and functions.
 
 The \ATlib{} comes with a number of utility programs. A description of
 these programs can be found in Section~\ref{utils}.
+
+%}}}
+%{{{ Using the ATerm library
 
 %----[ USAGE ]----
 \section{Using the \ATlib}\label{usage}
@@ -198,16 +231,16 @@ The following commandline options can be passed to the \ATlib:
 
 \begin{tabular}{|l|l|}
  \hline
- {\tt -symboltable <nr\_symbols>} & Initial size of symboltable           \\
- {\tt -termtable <table\_class>}  & Start with termtable of
+ {\tt -at-symboltable <nr\_symbols>} & Initial size of symboltable           \\
+ {\tt -at-termtable <table\_class>}  & Start with termtable of
                                     $2^\textrm{table\_class}$ entries     \\
- {\tt -hashinfo} & write hashtable statistics to {\tt hashing.stats}      \\
+ {\tt -at-hashinfo} & write hashtable statistics to {\tt hashing.stats}      \\
 				 & after execution \\
- {\tt -print-gc-time} & print timing information about garbage collector  \\
+ {\tt -at-print-gc-time} & print timing information about garbage collector  \\
 					  & to {\tt stderr} after execution \\
- {\tt -print-gc-info} & print verbose information about garbage collector \\
+ {\tt -at-print-gc-info} & print verbose information about garbage collector \\
 					  & to {\tt stderr} after execution \\
- {\tt -silent} & Do not print status and version information
+ {\tt -at-silent} & Do not print status and version information
  \\
  \hline
 \end{tabular}
@@ -271,6 +304,9 @@ Although the \ATlib\ does not put any constraints on the names of \aterm-files,
 users are encouraged to use the extension {\tt .baf} for {\sc baf} files.
 This will avoid confusion between textual representations and binary ones.
 Textual representations could use the extension {\tt .trm}.
+
+%}}}
+%{{{ Level One Interface
 
 %--------------------[ LEVEL ONE INTERFACE ]--------------------
 
@@ -581,6 +617,9 @@ arguments}
 }
 
 %--------------------[ LEVEL TWO INTERFACE ]--------------------
+
+%}}}
+%{{{ Level Two Interface
 
 \section{Level Two Interface}\label{lvl2}
 This section explains in detail the types and functions that are defined in
@@ -1063,6 +1102,9 @@ makes them less suitable for large \aterm-to-\aterm\ mappings. To this end,
  retrieved through respective calls to {\tt ATtableGet}.
 }
 
+%}}}
+%{{{ Utilities
+
 \section{Utilities}\label{utils}
 This section describes the utilities that come with the \ATlib. These
 utilities are automatically built when the \ATlib\ is compiled and
@@ -1117,14 +1159,659 @@ representations of \aterms.
 
 \smallskip\noindent Usage: {\tt termsize < }\emph{inputfile}.
 
+%}}}
+%{{{ Index
+
 %----[ INDEX ]----
 
 \renewcommand{\indexname}
 	{Index\addcontentsline{toc}{section}{\numberline{}Index}}
 \printindex
- 
+
+%}}}
+%{{{ Bibliography
+
 %----[ BIBLIOGRAPHY ]----
 \bibliographystyle{alpha}
 \bibliography{thesis}
+
+%}}}
+
+\appendix
+
+%{{{ The Java implementation
+
+\section{Java implementation}
+
+Besides the C implementaton discussed upto now, we also developed
+a Java implementation of the ATerm datatype. We have tried to
+keep the interfaces of the C implementation and the Java implementation
+as close together as possible. Unfortunately, constraints imposed by
+both languages prohibit the use of a single interface for both languages.
+In this section we will discuss the Java interface, and highlight the
+differences with the C interface where appropriate.
+
+Most differences are introduced by the fact that Java is a much more
+powerful language than C. Garbage collection for instance is a built-in 
+feature of the Java language, so no {\tt protect} and {\tt unprotect}
+functions are needed in Java.
+
+\emph{Note that the Java version is still experimental, and therefore
+subject to change!}
+
+%{{{ Class hierarchy
+
+\subsection{Class hierarchy}
+
+Because Java is an object oriented language, we have partitioned
+the Java implementation in a number of classes. The resulting class
+hierarchy is shown in Figure \ref{class-hierarchy}.
+
+\begin{figure}[htb]
+\centerline{\epsfig{scale=0.5, file=hierarchy.ps}}
+\caption{\label{class-hierarchy}Simple ATerm class library}
+\end{figure}
+
+Each of the subclasses of the abstract base class {\tt ATerm} represents 
+one of the \aterm\ types. The {\tt ATerm} class also implements the
+Level 1 functionality discussed earlier. This means that users who only need
+to use this Level 1 interface, only need to get familiar with the class
+{\tt ATerm} and its methods!
+
+The class {\tt World} is used to implement maximal sharing, and is 
+normally not used directly by the users of the \aterm\ library.
+
+%}}}
+
+%{{{ The class ATerm
+
+\subsection{The class {\tt ATerm}}
+
+This class implements the basic functionality to create and manipulate
+\aterms. 
+
+%{{{ Creating ATerm objects
+
+\subsubsection{Creating {\tt ATerm} objects}
+Because of the need to maintain maximal sharing, users of the
+\aterm\ library do not create {\tt ATerm} objects directly using one
+of its constructors, but instead use one of the following static methods 
+in the {\tt ATerm} class:
+
+\Method{parse}{\ATerm}{String string}
+{Parse an \aterm\ from its string representation}
+\Throws{ParseError}{when {\tt string} is not a valid term.}
+\Describe{
+	This function takes a String as input and tries to parse
+        it as an ATerm. If {\tt string} represents a valid \aterm,
+        an \ATerm\ object is returned. If the parsing fails, 
+	a ParseError is thrown.
+}
+
+\Method{readFromTextFile}{\ATerm}{InputStream i}
+{Read an \aterm\ from an {\tt InputStream}}
+\Throws{IOException}{when an I/O error occurs.}
+\Throws{ParseError}{when the string read from {tt i} is not a valid term.}
+\Describe{
+  This function takes an InputStream as input and reads one byte at
+  a time. Note that the current implementation can only handle ASCII
+  characters, not full Unicode.}
+
+\Method{make}{\ATerm}{String pattern,Object arg1,Object arg2,...,Object argn}
+{Parse a pattern and fill in the placeholders in it using {\tt arg1}
+through {\tt argn}.}
+\Throws{ParseError}{when {\tt pattern} does not represent a valid term.}
+\Describe{
+  The rules for matching are the same as in the {\tt ATmatch} function in
+  the C library.
+  Note that this is not a single method but rather a set of six different
+  methods, one for each number of {\tt arg} arguments from zero to five.
+  When you need to use a pattern with more than five placeholders, you
+  must use the more general {\tt make} method described next.
+  When the number of placeholders in {\tt pattern} is larger than the
+  number of actual {\tt arg} arguments, a {\tt RuntimeException} is
+  thrown. When the number of placeholders is less than the number of
+  arguments, the excess arguments are ignored. When the type of one
+  of the arguments does not match the placeholder type as shown
+  in the following table, a {\tt ClassCastException} is thrown.
+}
+
+\begin{tabular}{|l|l|}
+\hline
+Placeholder   & Argument type \\
+              &               \\
+\hline
+{\tt <int>}   & Integer       \\
+{\tt <real>}  & Double        \\
+{\tt <str>}   & String        \\
+{\tt <appl>}  & String        \\
+{\tt <term>}  & ATerm         \\
+{\tt <list>}  & ATermList     \\
+\hline
+\end{tabular}
+
+%}}}
+%{{{ Analyzing terms
+
+\subsection{Analyzing terms}
+Besides creating terms, you can also analyze them using the methods
+described here.
+
+\Method{getType}{int}{}
+{Retrieve the type of this \ATerm\ object.}
+\Describe{This method returns one of the following
+possible constants, indicating the type of the \ATerm\ object:
+\begin{itemize}
+\item {\tt ATerm.AT\_INT}: The object is of type {\tt ATermInt}
+\item {\tt ATerm.AT\_REAL}: The object is of type {\tt ATermReal}
+\item {\tt ATerm.AT\_APPL}: The object is of type {\tt ATermAppl}
+\item {\tt ATerm.AT\_LIST}: The object is of type {\tt ATermList}
+\item {\tt ATerm.AT\_PLACEHOLDER}: The object is of type {\tt ATermPlaceholder}
+\item {\tt ATerm.AT\_BLOB}: The object is of type {\tt ATermBlob}
+\end{itemize}
+In principle, the {\tt instanceof} operator can be used to
+retrieve the same information. However, the {\tt getType} method is much
+faster and the resulting integer value can be used in a {\tt switch}
+statement, while the {\tt instanceof} operator is only a boolean
+predicate.
+}
+
+\Method{match}{Vector}{String pattern}
+{Match a term against a String pattern, possibly yielding a list of subterms
+matching with placeholders.}
+\Throws{ParseError}{when {\tt pattern} does not represent a valid term.}
+\Describe{
+The pattern is parsed as an \ATerm, and the result is matched against
+the object this method is called on. When the match succeeds, a {\tt Vector}
+is returned containing a list of objects resulting from matches of subterms
+with placeholders in the pattern. When the match fails, {\tt null} is 
+returned.
+}
+
+\Method{match}{Vector}{ATerm pattern}
+{Match a term against a \ATerm\ pattern, possibly yielding a list of
+subterms matching with placeholders.}
+\Describe{
+{\tt pattern} is matched against
+the object this method is called on. When the match succeeds, a {\tt Vector}
+is returned containing a list of objects resulting from matches of subterms
+with placeholders in the pattern. When the match fails, {\tt null} is 
+returned.
+}
+
+\Method{isEqual}{boolean}{ATerm term}
+{Perform an equality check between two \ATerms}
+\Describe{Because of the maximal sharing, this operation is very cheap
+because no deep equality check is needed.}
+
+%}}}
+%{{{ Output methods
+
+\subsubsection{Output methods}
+Some methods are needed to convert \ATerms\ to {\tt String}s and to
+write \ATerms\ to {\tt OutputStream}s and {\tt PrintWriter}s.
+
+\Method{writeToTextFile}{void}{OutputStream s}
+{Write an \ATerm\ to an {\tt OutputStream}.}
+\Throws{IOException}{When an I/O error occured}
+
+\Method{print}{void}{OutputStream s}
+{Print an \ATerm\ to an {\tt OutputStream}.}
+\Describe{The only difference with the method {\tt writeToTextFile}
+is that this method does not throw an {\tt IOException} when something
+goes wrong, but instead fails silently.}
+
+\Method{writeToString}{String}{}
+{Return the {\tt String} representation of an \ATerm.}
+
+%}}}
+
+%}}}
+%{{{ The class ATermInt
+
+\subsection{The class {\tt ATermInt}}
+
+This class is used to represent integer terms. It has only one
+useful method:
+
+\Method{getInt}{int}{}
+{Retrieve the integer value held by this \ATerm.}
+
+%}}}
+%{{{ The class ATermReal
+
+\subsection{The class {\tt ATermReal}}
+
+This class is used to represent real valued terms. It has only one
+useful method:
+
+\Method{getReal}{double}{}
+{Retrieve the real value held by this \ATerm.}
+
+%}}}
+%{{{ The class ATermAppl
+
+\subsection{The class {\tt ATermAppl}}
+
+This class is used to represent function applications. 
+It adds the following methods to the {\tt ATerm} base class:
+
+\Method{getName}{String}{}
+{Retrieve the function name of this function application.}
+
+\Method{isQuoted}{boolean}{}
+{Ask if this function application has a quoted function name.}
+
+\Method{getArity}{int}{}
+{Retrieve the arity of this function application.}
+
+\Method{getArguments}{ATermList}{}
+{Retrieve the list of function arguments of this function application.}
+
+\Method{getArgument}{ATerm}{int}
+{Retrieve a specific function argument of this function application.}
+
+%}}}
+%{{{ The class ATermList
+
+\subsection{The class {\tt ATermList}}
+
+This class is used to represent lists of terms. 
+It adds the following methods to the {\tt ATerm} base class:
+
+\Method{isEmpty}{boolean}{}
+{Check if we are dealing with the empty list.}
+
+\Method{getFirst}{ATerm}{}
+{Retrieve the first element of this list.}
+
+\Method{getNext}{ATermList}{}
+{Retrieve a list containing all elements except the first one.}
+
+\Method{getLength}{int}{}
+{Retrieve the length of this list.}
+
+\Method{indexOf}{int}{ATerm el, int start}
+{Retrieve the index of the first occurrence of {\tt el} after position
+{\tt start}.}
+\Describe{When {\tt el} does not occur after position {\tt start},
+-1 is returned. When {\tt start} is negative, it is interpreted as an
+offset from the end of the list.}
+
+\Method{lastIndexOf}{int}{ATerm el, int start}
+{Retrieve the index of the last occurrence of {\tt el} before position
+{\tt start}.}
+\Describe{When {\tt el} does not occur before position {\tt start},
+-1 is returned. When {\tt start} is negative, it is interpreted as an
+offset from the end of the list.}
+
+\Method{concat}{ATermList}{ATermList rhs}
+{Concatenate two lists.}
+
+\Method{append}{ATermList}{ATerm el}
+{Append one element to a list.}
+
+\Method{elementAt}{ATerm}{int index}
+{Retrieve a specific indexed element from a list.}
+\Describe{When {\tt index} is larger than the number of elements
+in the list, an {\tt IllegalArgumentException} is thrown.}
+
+\Method{removeElementAt}{ATermList}{int index}
+{Return a list where the element at {\tt index} is removed.}
+\Describe{When {\tt index} is larger than the number of elements
+in the list, a {\tt NullpointerException} is thrown.}
+
+%}}}
+%{{{ The class ATermPlaceholder
+
+\subsection{The class {\tt ATermPlaceholder}}
+
+This class is used to represent placeholder terms. It has only one
+useful method:
+
+\Method{getPlaceholderType}{ATerm}{}
+{Retrieve the type of this placeholder.}
+
+%}}}
+
+%{{{ The class World
+
+\subsection{The class {\tt World}}
+
+This class represents a term database containing a set of
+terms that is maximally shared. Normally a single applications
+only uses one instance of this class. In this case, there is no
+need to call any of the methods in this class, because the {\tt ATerm}
+class and its subclasses provide a much cleaner interface to the
+functionality offered by the {\tt World} class. In some rare cases
+however, an application might need to create more than one 
+{\tt World} instance. This could be the case for instance when
+different Threads need to manipulate diverse terms and the overhead
+of locking and unlocking the same {\tt World} object by both threads
+for every term creation is too big.
+
+A complete discussion of the {\tt World} class falls outside
+the scope of this document.
+
+%}}}
+
+%}}}
+%{{{ The ToolBus layer
+
+\section{The ToolBus layer}
+
+The \ATerm\ library also provides functionality needed to implement
+\toolbus\ tools. This section describes this \toolbus\ layer in detail.
+
+%{{{ Generation of tool interfaces
+
+\subsection{Generation of tool interfaces}
+
+The \ATerm\ library provides a program that takes a standard
+\toolbus\ \emph{tifs} file, which is generated by the toolbus interpreter
+when started with the {\tt -gentifs} option, and generates a
+a tool interface in C for use with the \ATerm\ library.
+
+The generated interface consists of two files, a C source file
+and a C header (include) file. In the header file a number of interface
+functions is declared, one for each element in the input signature of the tool.
+It is up to the writer of the tool to provide an implementation for
+these functions. The generated C file contains a handler function
+that analyzes incoming terms from the \toolbus, and delegates to the
+appropriate interface function.
+
+%}}}
+%{{{ Example
+
+\subsection{Example}
+
+Suppose we take the following simple \toolbus\ script {\tt "test.tb"}:
+
+\begin{verbatim}
+  tool testing is { command = "./testing" }
+
+  process TEST is
+  let
+    T : testing,
+    R : str
+  in
+    execute(testing, T?) .
+    snd-do(T, f1(42)) .
+    snd-eval(T, f2("hello world!")) .
+    rec-value(T, result(R?)) .
+    printf("result: %s\n", R)
+  endlet
+
+  toolbus(TEST)
+\end{verbatim}
+
+Using the command:
+\begin{verbatim}
+  {\tt toolbus -gentifs test.tb}
+\end{verbatim}
+we generate a file called {\tt "test.tifs"}. Using the command:
+\begin{verbatim}
+  {\tt tifstoc -tool testing test.tifs}\newline
+\end{verbatim}
+we generate the header file {\tt "testing.tif.h"} and the source
+file {\tt "testing.tif.c"}.
+
+{\tt "testing.tif.h"} looks like this:
+\begin{verbatim}
+  /**
+   * This file is generated by tifstoc. Do not edit!
+   * Generated from tifs for tool 'testing'
+   * Headerfile generated at Thu Apr 22 11:37:36 1999
+   */
+
+  #ifndef _TESTING_H
+  #define _TESTING_H
+
+  #include <atb-tool.h>
+
+  /* Prototypes for functions called from the event handler */
+  void f1(int conn, int);
+  ATerm f2(int conn, char *);
+  void rec_terminate(int conn, ATerm);
+  extern ATerm testing_handler(int conn, ATerm term);
+  extern ATerm testing_checker(int conn, ATerm sigs);
+
+  #endif
+\end{verbatim}
+
+Only the functions {\tt f1}, {\tt f2}, and {\tt rec\_terminate}
+together with a simple {\tt main} function
+have to be implemented to build a fully functional \toolbus\ tool.
+The implementation of the functions {\tt testing\_handler} and 
+{\tt testing\_checker} has been generated in the file {\tt "testing.tif.c"},
+which looks like this:
+
+\begin{verbatim}
+  /**
+   * This file is generated by tifstoc. Do not edit!
+   * Generated from tifs for tool 'testing'
+   * Implementation generated at Thu Apr 22 11:37:36 1999
+   */
+
+  #include "testing.tif.h"
+
+  #define NR_SIG_ENTRIES  3
+
+  static char *signature[NR_SIG_ENTRIES] = {
+    "rec-terminate(<testing>,<term>)",
+    "rec-eval(<testing>,f2(<str>))",
+    "rec-do(<testing>,f1(<int>))",
+  };
+
+  /* Event handler for tool 'testing' */
+  ATerm testing_handler(int conn, ATerm term)
+  {
+    ATerm in, out;
+    /* We need some temporary variables during matching */
+    int i0;
+    char *s0;
+    ATerm t0;
+
+    if(ATmatch(term, "rec-eval(f2(<str>))", &s0)) {
+      return f2(conn, s0);
+    }
+    if(ATmatch(term, "rec-terminate(<term>)", &t0)) {
+      rec_terminate(conn, t0);
+      return NULL;
+    }
+    if(ATmatch(term, "rec-do(f1(<int>))", &i0)) {
+      f1(conn, i0);
+      return NULL;
+    }
+    if(ATmatch(term, "rec-do(signature(<term>,<term>))", &in, &out)) {
+      ATerm result = testing_checker(conn, in);
+      if(!ATmatch(result, "[]"))
+        ATfprintf(stderr, "warning: not in input signature:\n\t%\n\tl\n", result);
+      return NULL;
+    }
+
+    ATerror("tool testing cannot handle term %t", term);
+    return NULL; /* Silence the compiler */
+  }
+
+  /* Check the signature of the tool 'testing' */
+  ATerm testing_checker(int conn, ATerm siglist)
+  {
+    return ATBcheckSignature(siglist, signature, NR_SIG_ENTRIES);
+  }
+\end{verbatim}
+
+This file contains an array of signature definitions ({\tt signature}), 
+the handler function ({\tt testing\_handler}), and the signature
+checker ({\tt testing\_checker}). The only thing the handler does
+is differentiating between the different possible input terms
+coming from the \toolbus, and delegating the actual work to the
+appropriate function.
+
+As mentioned earlier, the only thing needed to implement the
+actual tool, is the implementation of the three interface
+functions {\tt f1}, {\tt f2}, and {\tt rec\_terminate}, and
+the implementation of {\tt main} to get things going.
+We will first take a look at the initialization stuff that
+the {\tt main} function has to do:
+
+\begin{verbatim}
+  #include "testing.tif.h"
+
+  int main(int argc, char *argv[])
+  {
+    ATerm bottomOfStack;
+
+    ATBinit(argc, argv, &bottomOfStack);
+    if(ATBconnect(NULL, NULL, -1, testing_handler) >= 0) {
+      ATBeventloop();
+    } else {
+      fprintf(stderr, "Could not connect to the ToolBus, giving up!\n");
+      return -1;
+    }
+
+    return 0;
+  }
+\end{verbatim}
+
+The variable {\tt bottomOfStack} is needed by the \aterm\ library
+to determine where to look for the stack. {\tt argc} and {\tt argv}
+are passed unchanged to {\tt ATBinit}, so the \toolbus\ library can 
+look for default values for things like the \toolbus\ socket address 
+and the \toolbus\ host name.
+
+The call to {\tt ATBconnect} connects to a running \toolbus, and
+requires four arguments: a character
+string representing the tool name, a character string representing
+the host name of the \toolbus\ to connect to, the port number of the
+\toolbus\ to connect to, and a handler function. Passing {\tt NULL},
+{\tt NULL}, and {\tt -1} respectively as the tool name, the
+host name, and the port number cause the defaults for these values
+to be used instead.
+
+When all goes well, the call to {\tt ATBeventloop} starts the main 
+\toolbus\ eventloop and the tool will be ready to receive requests
+from the \toolbus.
+
+Now we only need the implementation of the three interface functions:
+\begin{verbatim}
+  void f1(int conn, int value)
+  {
+    printf("f1 called: %d\n", value);
+  }
+
+  ATerm f2(int conn, char *value)
+  {
+    return ATmake("snd-value(result(<str>))", value);
+  }
+
+  void rec_terminate(int conn, ATerm arg)
+  {
+    exit(0);
+  }
+\end{verbatim}
+
+Note that the {\tt conn} argument identifies the \toolbus\ connection,
+making it possible to distinguish which \toolbus\ made the request
+when connected to more than one \toolbus\ at the same time.
+
+%}}}
+%{{{ Functions in the \toolbus\ layer
+
+\subsection{Functions in the \toolbus\ layer}
+
+The \toolbus\ layer offers the following functions:
+
+\Function{ATBinit}{int}{int argc, char *argv[], ATerm *stack\_bottom}
+{Initialize the \toolbus\ layer and the underlying \aterm\ library
+when needed.}
+\Describe{The return value indicates whether or not the \toolbus\
+host could be found. {\tt 0} indicates that all is well, and {\tt -1}
+indicates an error, in which case {\tt errno} is set to indicate
+which error.}
+
+\Function{ATBconnect}{int}{char *toolname, char *host, int port, ATBhandler h}
+{Connect to a running \toolbus.}
+\Describe{When {\tt NULL} is passed as {\tt toolname} or {\tt host}, or
+{\tt -1} is passed as {\tt port}, default values are taken from {\tt argv}
+passed to {\tt ATBinit}. The return value indicates whether or not the
+connection succeeded. {\tt -1} means that the connection failed and a 
+positive number or zero indicates a succesful connection attempt. In this
+case this number is also the file descriptor of the socket connection
+to the \toolbus.}
+
+\Function{ATBdisconnect}{void}{int fd}
+{Disconnect a from a \toolbus.}
+\Describe{This function can be used to terminate a connection that
+has been established earlier using {\tt ATBconnect}}
+
+\Function{ATBeventloop}{int}{void}
+{Start the tool event loop, reading and handling terms until
+a connection is broken.}
+\Describe{This function will not return unless something goes wrong!}
+
+\Function{ATBwriteTerm}{int}{int fd, ATerm term}
+{Send a term to the \toolbus.}
+\Describe{A term is send using the \toolbus\ connection indicated by
+{\tt fd}. This function is typicall used to generate \toolbus\
+events, for instance:
+
+{\tt ATBwriteTerm(fd, ATparse("snd-event(some-event)"));}
+When something goes wrong, {\tt -1} is returned, otherwise {\tt 0} is
+returned.}
+
+\subsection{Control flow without the {\tt ATBeventloop}}
+In some situations, the {\tt ATBeventloop} function does not offer
+the right flow of control for a specific application. In this case,
+the following set of functions can be used to create custom control
+flow patterns:
+
+\Function{ATBpeekOne}{ATbool}{int fd}
+{Check if there is input waiting on a \toolbus\ connection}
+\Describe{When there is input waiting on the specified connection,
+{\tt ATtrue} is returned. Otherwise, {\tt ATfalse} is returned.}
+
+\Function{ATBpeekAny}{int}{}
+{Check if there is input waiting on any \toolbus\ connection}
+\Describe{When there is input waiting on one of the \toolbus\ 
+connections, the appropriate file-descriptor is returned. Otherwise,
+{\tt -1} is returned. This function provides for some 'fairness' by
+using a round-robin scheme in traversing the connections between
+calls.}
+
+\Function{ATBreadTerm}{ATerm}{int fd}
+{Read a term from a \toolbus\ connection.}
+
+\Function{ATBhandleOne}{int}{int fd}
+{Read one term from a \toolbus\ connection, and call the 
+appropriate handler. {\tt -1} is returned when something goes wrong.}
+
+\Function{ATBhandleAny}{int}{}
+{Read a single term from any \toolbus\ connection and call
+the appropriate handler. {\tt -1} is returned when something
+goes wrong.}
+
+\Function{ATBgetDescriptors}{int}{fd\_set *set}
+{Gather all \toolbus\ connection file descriptor in a single
+descriptor set. The return value indicates the maximum
+value of any descriptor in the set.}
+
+Note that the standard {\tt ATBeventloop} can be expressed using
+the following code:
+\begin{verbatim}
+  int ATBeventloop(void)
+  {
+    int fd;
+    while(ATtrue) {
+      fd = ATBhandleAny();
+      if(fd < 0)
+        return -1;
+    }
+  }
+\end{verbatim}
+
+%}}}
+
+%}}}
 
 \end{document}

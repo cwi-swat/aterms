@@ -1,7 +1,10 @@
 include general-make
 
 CHAPS	= at.ltx
-PICS	= header.ps encoding.ps
+PICS	= header.ps encoding.ps hierarchy.ps
+
+# fig2dev-3.2 is essential
+FIG2DEV	= /home/mdejonge/bin/fig2dev-3.2
 
 EXAMPLEDIR		= examples
 EXAMPLEFILES	= init.c make.c match.c prot.c app1.c app2.c app3.c \
@@ -26,13 +29,14 @@ manual.ps: manual.dvi
 	latex manual.ltx
 	dvips -o $@ $<
 
-# You need fig2dev version 3.2 for this.
 header.ps: header.fig
-	/home/mdejonge/bin/fig2dev-3.2 -Lps header.fig header.ps
+	${FIG2DEV} -Lps header.fig header.ps
 
-# You need fig2dev version 3.2 for this.
 encoding.ps: encoding.fig
-	/home/mdejonge/bin/fig2dev-3.2 -Lps encoding.fig encoding.ps
+	${FIG2DEV} -Lps encoding.fig encoding.ps
+
+hierarchy.ps: hierarchy.fig
+	${FIG2DEV} -Lps hierarchy.fig hierarchy.ps
 
 spell: at.ltx
 #	detex at.ltx | spell +words.txt
