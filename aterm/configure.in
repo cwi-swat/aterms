@@ -181,5 +181,6 @@ AC_CONFIG_FILES([Makefile
   doc/Makefile
   doc/examples/Makefile
   doc/spec/Makefile
+  aterm.spec
 ])
 AC_OUTPUT

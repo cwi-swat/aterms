@@ -1,5 +1,8 @@
 $Id$
 
+Thu Apr  1 14:14:57 CEST 2004 <jong@cwi.nl>
+ * patch by Armijn Hemel to add aterm.spec.in (used to generate RPM)
+
 Wed Feb 11 15:36:36 CET 2004 <kooiker@cwi.nl>
  * aterm/gc.c: remove verbose print: minor_sweep_phase_young 
 
