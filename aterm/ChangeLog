@@ -1,5 +1,8 @@
 $Id$
 
+2001/12/20 ({jurgenv,olivierp,jong}@cwi.nl)
+ * Added assert in ATconcat, second argument should be an AT_LIST.
+
 2001/12/11 (mdejonge@cwi.nl)
  * Makefile.am: added LICENSE to EXTRA_DIST variable because this file was
    not distributed yet.

@@ -1911,6 +1911,8 @@ ATermList ATinsert(ATermList tail, ATerm el)
   CHECK_TERM((ATerm)tail);
   CHECK_TERM(el);
 
+  assert(ATgetType(tail) == AT_LIST);
+
   protoList = (ATermList) protoTerm;
   protoList->header = header;
   protoList->head = el;
