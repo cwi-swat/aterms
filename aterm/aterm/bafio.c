@@ -477,9 +477,9 @@ AT_print_sym_entries()
 /*{{{  static sym_entry *get_top_symbol(ATerm t) */
 
 /**
-	* Retrieve the top symbol of a term. Could be a special symbol
-  * (AS_INT, AS_REAL, etc) when the term is not an AT_APPL.
-	*/
+ * Retrieve the top symbol of a term. Could be a special symbol
+ * (AS_INT, AS_REAL, etc) when the term is not an AT_APPL.
+ */
 
 static sym_entry *get_top_symbol(ATerm t, ATbool anno_done)
 {
@@ -677,8 +677,8 @@ static void add_term(sym_entry *entry, ATerm t)
 /*{{{  static void collect_terms(ATerm t) */
 
 /**
-	* Collect all terms in the appropriate symbol table.
-	*/
+ * Collect all terms in the appropriate symbol table.
+ */
 
 static void collect_terms(ATerm t)
 {
@@ -1097,7 +1097,6 @@ write_baf(ATerm t, byte_writer *writer)
   assert(cur == nr_unique_symbols);
 
   /*}}}  */
-	
 	
   /*ATfprintf(stderr, "writing %d symbols, %d terms.\n",
     nr_unique_symbols, nr_unique_terms);*/

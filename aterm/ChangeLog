@@ -2,6 +2,7 @@ $Id$
 
 2002/10/31 <jong,olivierp@cwi.nl>
  * Blob size is now stored in a separate word instead of the header
+ * Added test for writing blobs to binary string
 
 2002/10/29 <vinju@loria.fr>
  * Removed old java ATerm library from this package.

@@ -1102,6 +1102,7 @@ void testBaffle()
   char buf[BUFSIZ], *ptr;
   FILE *file;
   ATerm test2, test1 = ATparse("f(1,a,<abc>,[24,g]{[a,b]})");
+  ATermBlob blob;
   int len = 0;
   test_assert("baffle", 1, AT_calcUniqueSubterms(ATparse("f(a,[1])"))==5);
   sprintf(buf, "baffle-test-%d.baf", (int)getpid());
@@ -1124,6 +1125,11 @@ void testBaffle()
   test2 = ATreadFromBinaryString(ptr, len);
   ATfprintf(stderr, "term read from binary string : %t\n", test2);
   test_assert("baffle", 5, ATisEqual(test1, test2));
+
+  ptr = ATwriteToBinaryString((ATerm)ATmakeBlob(4, "abc"), &len);
+  blob = (ATermBlob)ATreadFromBinaryString(ptr, len);
+  test_assert("baffle", 6, blob);
+  test_assert("baffle", 7, strcmp(ATgetBlobData(blob), "abc") == 0);
 
   printf("baffle tests ok.\n");
 }
