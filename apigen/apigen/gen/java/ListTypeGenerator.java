@@ -249,7 +249,7 @@ public class ListTypeGenerator extends TypeGenerator {
         println("    if (this.term == null) {");
         println("      " + className + " reversed = (" + className + ")this.reverse();");
         println("      aterm.ATermList tmp = factory.makeList();");
-        println("for (; !reversed.isEmpty(); reversed = reversed.getTail()) {");
+        println("      for (; !reversed.isEmpty(); reversed = reversed.getTail()) {");
         
         String head = "reversed.getHead()";
         String termHead;
@@ -258,9 +258,9 @@ public class ListTypeGenerator extends TypeGenerator {
         } else {
             termHead = getConverter().makeBuiltinToATermConversion(elementType, head);
         }
-        println("         aterm.ATerm elem = " + termHead + ";");
+        println("        aterm.ATerm elem = " + termHead + ";");
 
-        println("         tmp = factory.makeList(elem, tmp);");
+        println("        tmp = factory.makeList(elem, tmp);");
         println("      }");
         println("      this.term = tmp;");
         println("    }");

@@ -59,7 +59,60 @@ public class SeparatedListTypeGenerator extends TypeGenerator {
         genOverrideInsertMethod();
         genReverseMethods();
         genConcatMethods();
+        genAppendMethods();
         println("}");
+    }
+
+    private void genAppendMethods() {
+        genAppendMethod();
+        genOverrideAppendMethod();
+    }
+
+    private void genOverrideAppendMethod() {
+        println("  public aterm.ATermList append(aterm.ATerm elem) {");
+        println("    " + buildUnsupportedOperationException("append", "ATerm"));
+        println("  }");
+        println();
+    }
+
+    private String buildUnsupportedOperationException(
+        String operation,
+        String argument) {
+        StringBuffer buf = new StringBuffer();
+        buf.append("throw new java.lang.UnsupportedOperationException(");
+        buf.append(
+            "\"Cannot "
+                + operation
+                + " "
+                + argument
+                + ", use typed "
+                + operation
+                + " instead.\");");
+        return buf.toString();
+    }
+
+    private void genAppendMethod() {
+        String typeName = getTypeName();
+        String formalSeps = buildFormalSeparatorArguments(type);
+        String actualSeps = buildActualSeparatorArguments(type);
+
+        println(
+            "  public "
+                + typeName
+                + " append("
+                + formalSeps
+                + elementTypeName
+                + " elem) {");
+        println(
+            "    return "
+                + buildFactoryGetter()
+                + ".append"
+                + typeName
+                + "(this, "
+                + actualSeps
+                + "elem);");
+        println("  }");
+        println();
     }
 
     protected void genConstructor(String className) {
@@ -138,7 +191,7 @@ public class SeparatedListTypeGenerator extends TypeGenerator {
     private void genGetFactoryMethod() {
         println("  public " + getFactory() + " " + buildFactoryGetter() + " {");
         println("    return factory;");
-        println("}");
+        println("  }");
         println();
     }
 
@@ -185,11 +238,7 @@ public class SeparatedListTypeGenerator extends TypeGenerator {
 
     private void genOverrideConcatMethod() {
         println("  public aterm.ATermList concat(aterm.ATermList peer) {");
-        println("    throw new java.lang.UnsupportedOperationException(");
-        println(
-            "      \"Cannot concat ATermList to "
-                + getTypeName()
-                + ", use typed concat method with separators.\");");
+        println("    " + buildUnsupportedOperationException("concat", "ATermList"));
         println("  }");
         println();
     }
@@ -206,11 +255,7 @@ public class SeparatedListTypeGenerator extends TypeGenerator {
 
     protected void genOverrideInsertMethod() {
         println("  public aterm.ATermList insert(aterm.ATerm head) {");
-        println("    throw new java.lang.UnsupportedOperationException(");
-        println(
-            "      \"Cannot insert ATerm in separated list ("
-                + type.getId()
-                + "), use a factory make method.\");");
+        println("    " + buildUnsupportedOperationException("insert", "ATerm"));
         println("  }");
         println();
     }

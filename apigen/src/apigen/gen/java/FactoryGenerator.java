@@ -165,6 +165,7 @@ public class FactoryGenerator extends JavaGenerator {
                         lType);
                     genReverseSeparatedLists(lType, methodName);
                     genConcatSeparatedLists(lType, methodName);
+                    genAppendSeparatedLists(lType, methodName);
                 } else {
                     genMakeEmptyList(returnTypeName, methodName, empty);
                     genMakeSingletonList(
@@ -183,13 +184,50 @@ public class FactoryGenerator extends JavaGenerator {
         }
     }
 
+    private void genAppendSeparatedLists(SeparatedListType type, String methodName) {
+        JavaGenerationParameters params = getJavaGenerationParameters();
+        String qualifiedClassName = TypeGenerator.qualifiedClassName(params, type);
+        String className = TypeGenerator.className(type);
+        String sepArgs = buildOptionalSeparatorArguments(type);
+        String formalSeps = buildFormalSeparatorArguments(type);
+        String actualSeps = buildActualSeparatorArgumentList(type, false);
+        String elementTypeName =
+            TypeGenerator.qualifiedClassName(params, type.getElementType());
+        
+        if (formalSeps.length() > 0) {
+            formalSeps += ", ";
+            actualSeps += ", ";
+        }
+
+        println(
+            "  public "
+                + qualifiedClassName
+                + " append"
+                + className
+                + "("
+                + qualifiedClassName
+                + " list, "
+                + formalSeps
+                + elementTypeName
+                + " elem) {");
+        println("    return concat(list, " + actualSeps + methodName + "(elem));");
+        println("  }");
+
+    }
+
+    private String buildActualSeparatorArgumentList(SeparatedListType type, boolean convert) {
+        return buildActualTypedAltArgumentList(type.separatorFieldIterator(), convert);
+    }
+
+    private String buildFormalSeparatorArguments(SeparatedListType type) {
+        return buildFormalTypedArgumentList(type.separatorFieldIterator());
+    }
+
     private void genConcatSeparatedLists(SeparatedListType type, String makeMethodName) {
         JavaGenerationParameters params = getJavaGenerationParameters();
         String className = TypeGenerator.qualifiedClassName(params, type);
         String sepArgs = buildOptionalSeparatorArguments(type);
-
-        String formalSepArgs =
-            buildFormalTypedArgumentList(type.separatorFieldIterator());
+        String formalSepArgs = buildFormalSeparatorArguments(type);
         if (formalSepArgs.length() > 0) {
             formalSepArgs += ", ";
         }
@@ -357,7 +395,7 @@ public class FactoryGenerator extends JavaGenerator {
         String methodName,
         String paramTypeName,
         SeparatedListType type) {
-        String formalSeps = buildFormalTypedArgumentList(type.separatorFieldIterator());
+        String formalSeps = buildFormalSeparatorArguments(type);
         String actualSeps =
             buildActualTypedAltArgumentListNoConversion(type.separatorFieldIterator());
         if (formalSeps.length() > 0) {
@@ -408,7 +446,7 @@ public class FactoryGenerator extends JavaGenerator {
         String methodName,
         String proto,
         SeparatedListType type) {
-        String formalSeps = buildFormalTypedArgumentList(type.separatorFieldIterator());
+        String formalSeps = buildFormalSeparatorArguments(type);
         String actualSeps =
             buildActualTypedAltArgumentListNoConversion(type.separatorFieldIterator());
 
