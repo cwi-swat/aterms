@@ -16,7 +16,7 @@ LDLIBS			= -lATerm
 noinst_PROGRAMS		= stress primes randgen termstats vararg1 vararg2 \
 			vararg3
 
-stress_SOURCES		= stress.c stress_dict.c stress_dict.h
+stress_SOURCES		= stress_dict.c stress_dict.h stress.c
 stress_LDADD		= $(LDLIBS)
 
 primes_SOURCES		= primes.c
