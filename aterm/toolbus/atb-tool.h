@@ -38,6 +38,8 @@ int    ATBconnect(char *tool, char *host, int port, ATBhandler h);
 void   ATBdisconnect(int file_desc);
 int    ATBeventloop(void);
 
+ATerm ATBpack(ATerm t);
+
 ATerm  ATBreadTerm(int file_desc);
 int    ATBwriteTerm(int file_desc, ATerm term);
 void   ATBpostEvent(int file_desc, ATerm event);

@@ -60,23 +60,23 @@
 
 typedef struct
 {
-	int         tid;			/* Tool id (assigned by ToolBus)             */
-	int         fd;				/* Filedescriptor of ToolBus connection      */
-    FILE       *stream;         /* The stream associated with fd             */
-	int         port;			/* Well-known ToolBus port (in/out)          */
-	char       *toolname;		/* Tool name (uniquely identifies interface) */
-	char       *host;			/* ToolBus host                              */
-	ATBhandler  handler;		/* Function that handles incoming terms      */
-	ATbool      verbose;		/* Should info be dumped on stderr           */
+  int         tid;			/* Tool id (assigned by ToolBus)             */
+  int         fd;				/* Filedescriptor of ToolBus connection      */
+  FILE       *stream;         /* The stream associated with fd             */
+  int         port;			/* Well-known ToolBus port (in/out)          */
+  char       *toolname;		/* Tool name (uniquely identifies interface) */
+  char       *host;			/* ToolBus host                              */
+  ATBhandler  handler;		/* Function that handles incoming terms      */
+  ATbool      verbose;		/* Should info be dumped on stderr           */
 } Connection;
 
 typedef struct
 {
-	AFun afun;					/* afun -1 => slot is empty            */
-	ATbool ack_pending;			/* ack of event is still pending       */
-	int first;					/* First element in the (cyclic) queue */
-	int last;					/* Last element in the (cyclic) queue  */
-	ATerm data[MAX_QUEUE_LEN];	/* Actual queue elements               */
+  AFun afun;					/* afun -1 => slot is empty            */
+  ATbool ack_pending;			/* ack of event is still pending       */
+  int first;					/* First element in the (cyclic) queue */
+  int last;					/* Last element in the (cyclic) queue  */
+  ATerm data[MAX_QUEUE_LEN];	/* Actual queue elements               */
 } EventQueue;
 
 /*}}}  */
@@ -94,8 +94,9 @@ static int default_tid  = -1;
 
 static Connection *connections[FD_SETSIZE] = { NULL };
 
-static Symbol symbol_rec_do    = (Symbol) NULL;
-static Symbol symbol_ack_event = (Symbol) NULL;
+static AFun symbol_rec_do    = (AFun) NULL;
+static AFun symbol_ack_event = (AFun) NULL;
+static AFun symbol_baf       = (AFun) NULL;  
 static ATerm term_snd_void = NULL;
 
 /* term buffer */
@@ -112,6 +113,7 @@ static void resize_buffer(int size);
 static int mwrite(int fd, char *buf, int len);
 static int mread(int fd, char *buf, int len);
 static void handshake(Connection *connection);
+static ATerm ATBunpack(ATerm t);
 
 /*}}}  */
 
@@ -169,6 +171,8 @@ ATBinit(int argc, char *argv[], ATerm *stack_bottom)
   symbol_ack_event = ATmakeSymbol("rec-ack-event", 1, ATfalse);
   ATprotectSymbol(symbol_ack_event);
 
+  symbol_baf = ATmakeSymbol("_baf-encoded_", 1, ATtrue);
+
   /* Allocate initial buffer */
   buffer = (char *)malloc(INITIAL_BUFFER_SIZE);
   if(!buffer)
@@ -194,52 +198,52 @@ ATBinit(int argc, char *argv[], ATerm *stack_bottom)
 int
 ATBconnect(char *tool, char *host, int port, ATBhandler h)
 {
-	Connection *connection = NULL;
-	int fd;
+  Connection *connection = NULL;
+  int fd;
 
-	int tid = port < 0 ? default_tid : -1;
-	port = port >= 0 ? port : default_port;
+  int tid = port < 0 ? default_tid : -1;
+  port = port >= 0 ? port : default_port;
 
-	/* Make new connection */
-	fd = connect_to_socket(host, port);
+  /* Make new connection */
+  fd = connect_to_socket(host, port);
 
-	assert(fd >= 0 && fd <= FD_SETSIZE);
+  assert(fd >= 0 && fd <= FD_SETSIZE);
 
-	/* There cannot be another connection with this descriptor */
-	if (connections[fd] != NULL)
-		ATerror("ATBconnect: descriptor %d already in use.\n", fd);
+  /* There cannot be another connection with this descriptor */
+  if (connections[fd] != NULL)
+    ATerror("ATBconnect: descriptor %d already in use.\n", fd);
 
-	/* Allocate new connection */
-	connection = (Connection *) malloc(sizeof(Connection));
-	if (connection == NULL)
-		ATerror("ATBconnect: no memory for new connection %d.\n", fd);
+  /* Allocate new connection */
+  connection = (Connection *) malloc(sizeof(Connection));
+  if (connection == NULL)
+    ATerror("ATBconnect: no memory for new connection %d.\n", fd);
 
-	connection->stream = fdopen(fd, "w");
-	if(connection->stream == NULL)
-	  ATerror("couldn't open stream for connection %d\n", fd);
+  connection->stream = fdopen(fd, "w");
+  if(connection->stream == NULL)
+    ATerror("couldn't open stream for connection %d\n", fd);
 
-	/* Initialize connection */
-	connection->toolname = strdup(tool ? tool : default_toolname);
-	if (connection->toolname == NULL)
-		ATerror("ATBconnect: no memory for toolname.\n");
+  /* Initialize connection */
+  connection->toolname = strdup(tool ? tool : default_toolname);
+  if (connection->toolname == NULL)
+    ATerror("ATBconnect: no memory for toolname.\n");
 
-	connection->host = strdup(host ? host : default_host);
-	if (connection->host == NULL)
-		ATerror("ATBconnect: no memory for host.\n");
+  connection->host = strdup(host ? host : default_host);
+  if (connection->host == NULL)
+    ATerror("ATBconnect: no memory for host.\n");
 
-	connection->port     = port;
-	connection->handler  = h;
-	connection->verbose  = ATfalse;
-	connection->tid      = tid;
-	connection->fd       = fd;
+  connection->port     = port;
+  connection->handler  = h;
+  connection->verbose  = ATfalse;
+  connection->tid      = tid;
+  connection->fd       = fd;
 	
-	/* Link connection in array */
-	connections[fd] = connection;
+  /* Link connection in array */
+  connections[fd] = connection;
 
-	/* Perform the ToolBus handshake */
-	handshake(connection);
+  /* Perform the ToolBus handshake */
+  handshake(connection);
 
-	return fd;
+  return fd;
 }
 
 /*}}}  */
@@ -252,25 +256,25 @@ ATBconnect(char *tool, char *host, int port, ATBhandler h)
 void
 ATBdisconnect(int fd)
 {
-	/* Abort on illegal filedescriptors */
-	assert(fd >= 0 && fd < FD_SETSIZE);
+  /* Abort on illegal filedescriptors */
+  assert(fd >= 0 && fd < FD_SETSIZE);
 
 	/* Close the actual filedescriptor */
-	fclose(connections[fd]->stream);
+  fclose(connections[fd]->stream);
 
-	/* If there was a connection-structure associated with this fd,
+  /* If there was a connection-structure associated with this fd,
 	 * then clean it up.
 	 */
-	if (connections[fd] != NULL)
-	{
-		if (connections[fd]->toolname)
-			free(connections[fd]->toolname);
-		if (connections[fd]->host)
-			free(connections[fd]->host);
+  if (connections[fd] != NULL)
+    {
+      if (connections[fd]->toolname)
+	free(connections[fd]->toolname);
+      if (connections[fd]->host)
+	free(connections[fd]->host);
 
-		free(connections[fd]);
-		connections[fd] = NULL;
-	}
+      free(connections[fd]);
+      connections[fd] = NULL;
+    }
 }
 
 /*}}}  */
@@ -279,45 +283,45 @@ ATBdisconnect(int fd)
 
 void ATBpostEvent(int fd, ATerm event)
 {
-	int free_index, i;
-	AFun afun;
+  int free_index, i;
+  AFun afun;
 
-	if (ATgetType(event) != AT_APPL)
-		ATabort("Illegal eventtype (should be appl): %t\n", event);
+  if (ATgetType(event) != AT_APPL)
+    ATabort("Illegal eventtype (should be appl): %t\n", event);
 	
-	afun = ATgetAFun((ATermAppl)event);
+  afun = ATgetAFun((ATermAppl)event);
 	
-	for(i=0, free_index=-1; i<MAX_NR_QUEUES; i++) {
-		if(event_queues[i].afun == afun)
-			break;
-		if(event_queues[i].afun == -1)
-			free_index = i;
-	}
+  for(i=0, free_index=-1; i<MAX_NR_QUEUES; i++) {
+    if(event_queues[i].afun == afun)
+      break;
+    if(event_queues[i].afun == -1)
+      free_index = i;
+  }
 	
-	if (i >= MAX_NR_QUEUES) {
-		if (free_index == -1)
-			ATerror("Maximum number of eventqueues exceeded.\n");
-		i = free_index;		/* occupy free slot */
-		event_queues[i].afun  = afun;
-		ATprotectAFun(afun);
-		event_queues[i].first = 0;
-		event_queues[i].last  = 0;
-		memset(event_queues[i].data, sizeof(event_queues[i].data), 0);
-		ATprotectArray(event_queues[i].data, MAX_QUEUE_LEN);
-		event_queues[i].ack_pending = ATfalse;
-		nr_event_queues++;
-	}
+  if (i >= MAX_NR_QUEUES) {
+    if (free_index == -1)
+      ATerror("Maximum number of eventqueues exceeded.\n");
+    i = free_index;		/* occupy free slot */
+    event_queues[i].afun  = afun;
+    ATprotectAFun(afun);
+    event_queues[i].first = 0;
+    event_queues[i].last  = 0;
+    memset(event_queues[i].data, sizeof(event_queues[i].data), 0);
+    ATprotectArray(event_queues[i].data, MAX_QUEUE_LEN);
+    event_queues[i].ack_pending = ATfalse;
+    nr_event_queues++;
+  }
 	
-	if (event_queues[i].ack_pending == ATfalse) {
-		ATBwriteTerm(fd, ATmake("snd-event(<term>)", event));
-		event_queues[i].ack_pending = ATtrue;
-	} else {
-		if( (event_queues[i].last + 1) % MAX_QUEUE_LEN == event_queues[i].first)
-			ATerror("Maximum number of events in queue %y exceeded.\n", afun);
+  if (event_queues[i].ack_pending == ATfalse) {
+    ATBwriteTerm(fd, ATmake("snd-event(<term>)", event));
+    event_queues[i].ack_pending = ATtrue;
+  } else {
+    if( (event_queues[i].last + 1) % MAX_QUEUE_LEN == event_queues[i].first)
+      ATerror("Maximum number of events in queue %y exceeded.\n", afun);
 
-		event_queues[i].data[event_queues[i].last] = event;
-		event_queues[i].last = (event_queues[i].last + 1) % MAX_QUEUE_LEN;
-	}
+    event_queues[i].data[event_queues[i].last] = event;
+    event_queues[i].last = (event_queues[i].last + 1) % MAX_QUEUE_LEN;
+  }
 }
 
 /*}}}  */
@@ -325,24 +329,24 @@ void ATBpostEvent(int fd, ATerm event)
 
 static void handle_ack_event(int fd, AFun afun)
 {
-	int i;
+  int i;
 	
-	for(i=MAX_NR_QUEUES-1; i>=0; i--) {
-		if(event_queues[i].afun == afun) {
-			ATfprintf(stderr, "found queue: %y\n", afun);
-			if (event_queues[i].first != event_queues[i].last) {
-				ATerm event = event_queues[i].data[event_queues[i].first];
-				ATfprintf(stderr, "reviving queued event: %t\n", event);
-				event_queues[i].first =
-					(event_queues[i].first + 1) % MAX_QUEUE_LEN;
-				ATBwriteTerm(fd, ATmake("snd-event(<term>)", event));
+  for(i=MAX_NR_QUEUES-1; i>=0; i--) {
+    if(event_queues[i].afun == afun) {
+      ATfprintf(stderr, "found queue: %y\n", afun);
+      if (event_queues[i].first != event_queues[i].last) {
+	ATerm event = event_queues[i].data[event_queues[i].first];
+	ATfprintf(stderr, "reviving queued event: %t\n", event);
+	event_queues[i].first =
+	  (event_queues[i].first + 1) % MAX_QUEUE_LEN;
+	ATBwriteTerm(fd, ATmake("snd-event(<term>)", event));
 				/* stil pending */
-			} else {
-				ATfprintf(stderr, "queue empty.\n");
-				event_queues[i].ack_pending = ATfalse;
-			}
-		}
-	}
+      } else {
+	ATfprintf(stderr, "queue empty.\n");
+	event_queues[i].ack_pending = ATfalse;
+      }
+    }
+  }
 }
 
 /*}}}  */
@@ -356,40 +360,41 @@ static void handle_ack_event(int fd, AFun afun)
 
 int ATBeventloop(void)
 {
-	int fd;
-	while(ATtrue) {
-		fd = ATBhandleAny();
-		if(fd < 0)
-			return -1;
-	}
+  int fd;
+  while(ATtrue) {
+    fd = ATBhandleAny();
+    if(fd < 0)
+      return -1;
+  }
 }
 
 /*}}}  */
 /*{{{  int ATBwriteTerm(int fd, ATerm term) */
 
 /**
-	* Send a term to the ToolBus.
-	*/
+ * Send a term to the ToolBus.
+ */
 
 int ATBwriteTerm(int fd, ATerm term)
 {
-  int len = AT_calcTextSize(term) + 8;    /* Add lenspec */
-	int wirelen = MAX(len, MIN_MSG_SIZE);
+  int len, wirelen;
 
-	resize_buffer(wirelen+1);               /* Add '\0' character */
-	sprintf(buffer, "%-.7d:", len);
-	AT_writeToStringBuffer(term, buffer+8);
-	if(mwrite(fd, buffer, wirelen) < 0)
-		ATerror("ATBwriteTerm: connection with ToolBus lost.\n");
-	return 0;
+  len = AT_calcTextSize(term)+8;	  /* Add lenspec */
+  wirelen = MAX(len, MIN_MSG_SIZE);
+  resize_buffer(wirelen+1);               /* Add '\0' character */
+  sprintf(buffer, "%-.7d:", len);
+  AT_writeToStringBuffer(term, buffer+8);
+  if(mwrite(fd, buffer, wirelen) < 0)
+    ATerror("ATBwriteTerm: connection with ToolBus lost.\n");
+  return 0;
 }
 
 /*}}}  */
 /*{{{  ATerm  ATBreadTerm(int fd) */
 
 /**
-	* Receive a term from the ToolBus.
-	*/
+ * Receive a term from the ToolBus.
+ */
 
 ATerm  ATBreadTerm(int fd)
 {
@@ -398,26 +403,28 @@ ATerm  ATBreadTerm(int fd)
 
   /* Read the first batch */
   if(mread(fd, buffer, MIN_MSG_SIZE) <= 0) 
-	ATerror("ATBreadTerm: connection with ToolBus lost.\n");
+    ATerror("ATBreadTerm: connection with ToolBus lost.\n");
   
   /* Retrieve the data length */
   if(sscanf(buffer, "%7d:", &len) != 1)
-	ATerror("ATBreadTerm: error in lenspec: %s\n", buffer);
+    ATerror("ATBreadTerm: error in lenspec: %s\n", buffer);
   
   /* Make sure the buffer is large enough */
   resize_buffer(len+1);
 
   if(len > MIN_MSG_SIZE) {
-		/* Read the rest of the data */
-		if(mread(fd, buffer+MIN_MSG_SIZE, len-MIN_MSG_SIZE) < 0)
-			ATerror("ATBreadTerm: connection with ToolBus lost.\n");
+    /* Read the rest of the data */
+    if(mread(fd, buffer+MIN_MSG_SIZE, len-MIN_MSG_SIZE) < 0)
+      ATerror("ATBreadTerm: connection with ToolBus lost.\n");
   }
-	buffer[len] = '\0';
+  buffer[len] = '\0';
 	
 
   /* Parse the string */
   t = ATparse(buffer+8);
   assert(t);
+
+  t = ATBunpack(t);
 
   return t;
 }
@@ -431,20 +438,20 @@ ATerm  ATBreadTerm(int fd)
 
 ATbool ATBpeekOne(int fd)
 {
-    fd_set set;
-	int count = 0;
-	struct timeval t;
+  fd_set set;
+  int count = 0;
+  struct timeval t;
 
-	FD_ZERO(&set);
-	FD_SET(connections[fd]->fd, &set);
-	t.tv_sec = 0;
-	t.tv_usec = 0;
+  FD_ZERO(&set);
+  FD_SET(connections[fd]->fd, &set);
+  t.tv_sec = 0;
+  t.tv_usec = 0;
 	
-	count = select(FD_SETSIZE, &set, NULL, NULL, &t);
-	if(count)
-	  return ATtrue;
-	else
-	  return ATfalse;   
+  count = select(FD_SETSIZE, &set, NULL, NULL, &t);
+  if(count)
+    return ATtrue;
+  else
+    return ATfalse;   
 }
 
 /*}}}  */
@@ -456,59 +463,59 @@ ATbool ATBpeekOne(int fd)
 
 int ATBpeekAny(void)
 {
-    fd_set set;
-	static int last = -1;
-	int max, cur, count = 0;
-	struct timeval t;
+  fd_set set;
+  static int last = -1;
+  int max, cur, count = 0;
+  struct timeval t;
 
-	t.tv_sec = 0;
-	t.tv_usec = 0;
+  t.tv_sec = 0;
+  t.tv_usec = 0;
 	
-	FD_ZERO(&set);
-	max = ATBgetDescriptors(&set);
+  FD_ZERO(&set);
+  max = ATBgetDescriptors(&set);
 	
-	count = select(max+1, &set, NULL, NULL, &t);
-	if(count <= 0)
-	  return -1;
+  count = select(max+1, &set, NULL, NULL, &t);
+  if(count <= 0)
+    return -1;
 
-	cur = last+1;
-	while(cur != last) {
-	  if(connections[cur] && FD_ISSET(connections[cur]->fd, &set)) {
-		last = cur;
-		return cur;
-	  }
-	  cur = (cur+1) % max;
-	}
-	return -1;
+  cur = last+1;
+  while(cur != last) {
+    if(connections[cur] && FD_ISSET(connections[cur]->fd, &set)) {
+      last = cur;
+      return cur;
+    }
+    cur = (cur+1) % max;
+  }
+  return -1;
 }
 
 /*}}}  */
 /*{{{  int ATBhandleOne(int fd) */
 
 /**
-	* Handle a single term from the ToolBus.
-	*/
+ * Handle a single term from the ToolBus.
+ */
 
 int ATBhandleOne(int fd)
 {
-	ATermAppl appl;
-	ATerm result;
+  ATermAppl appl;
+  ATerm result;
 
-	appl = (ATermAppl)ATBreadTerm(fd);
+  appl = (ATermAppl)ATBreadTerm(fd);
 
-	if(appl == NULL)
-	  return -1;
+  if(appl == NULL)
+    return -1;
 	
-	result = connections[fd]->handler(fd, (ATerm)appl);
+  result = connections[fd]->handler(fd, (ATerm)appl);
 
-	if(result)
-	  return ATBwriteTerm(fd, result);
-	else if(ATgetSymbol(appl) == symbol_rec_do)
-	  return ATBwriteTerm(fd, term_snd_void);
-	else if(ATgetSymbol(appl) == symbol_ack_event)
-		handle_ack_event(fd, ATgetAFun((ATermAppl)ATgetArgument(appl, 0)));
+  if(result)
+    return ATBwriteTerm(fd, result);
+  else if(ATgetSymbol(appl) == symbol_rec_do)
+    return ATBwriteTerm(fd, term_snd_void);
+  else if(ATgetSymbol(appl) == symbol_ack_event)
+    handle_ack_event(fd, ATgetAFun((ATermAppl)ATgetArgument(appl, 0)));
 
-	return 0;
+  return 0;
 }
 
 /*}}}  */
@@ -520,31 +527,31 @@ int ATBhandleOne(int fd)
 
 int ATBhandleAny(void)
 {
-    fd_set set;
-	static int last = -1;
-	int start, max, cur, count = 0;
+  fd_set set;
+  static int last = -1;
+  int start, max, cur, count = 0;
 	
-	FD_ZERO(&set);
-	max = ATBgetDescriptors(&set) + 1;
+  FD_ZERO(&set);
+  max = ATBgetDescriptors(&set) + 1;
 
-	count = select(max, &set, NULL, NULL, NULL);
-	assert(count > 0);
+  count = select(max, &set, NULL, NULL, NULL);
+  assert(count > 0);
 
 
-	start = last+1;	
-	cur = start;
-	do {
-	  if(connections[cur] && FD_ISSET(cur, &set)) {
-		last = cur;
-		if(ATBhandleOne(cur) < 0)
-		  return -1;
-		return cur;
-	  }
-	  cur = (cur+1) % max;
-	} while(cur != start);
-
-	ATerror("ATBhandleAny: bottom\n");
+  start = last+1;	
+  cur = start;
+  do {
+    if(connections[cur] && FD_ISSET(cur, &set)) {
+      last = cur;
+      if(ATBhandleOne(cur) < 0)
 	return -1;
+      return cur;
+    }
+    cur = (cur+1) % max;
+  } while(cur != start);
+
+  ATerror("ATBhandleAny: bottom\n");
+  return -1;
 }
 
 /*}}}  */
@@ -556,16 +563,16 @@ int ATBhandleAny(void)
 
 int ATBgetDescriptors(fd_set *set)
 {
-    int lcv, max = -1;
+  int lcv, max = -1;
 
-	for(lcv=0; lcv<FD_SETSIZE; lcv++) {
-	  if(connections[lcv] != NULL) {
-		max = lcv;
-		assert(connections[lcv]->fd == lcv);
-		FD_SET(lcv, set);
-	  }
-	}
-	return max;
+  for(lcv=0; lcv<FD_SETSIZE; lcv++) {
+    if(connections[lcv] != NULL) {
+      max = lcv;
+      assert(connections[lcv]->fd == lcv);
+      FD_SET(lcv, set);
+    }
+  }
+  return max;
 }
 
 /*}}}  */
@@ -578,24 +585,24 @@ int ATBgetDescriptors(fd_set *set)
 
 ATerm ATBcheckSignature(ATerm signature, char *sigs[], int nrsigs)
 {
-	ATermList list = (ATermList)signature;
-	ATermList errors = ATempty;
-	int i;
+  ATermList list = (ATermList)signature;
+  ATermList errors = ATempty;
+  int i;
 
-	while(!ATisEmpty(list)) {
-		ATerm entry = ATgetFirst(list);
-		list = ATgetNext(list);
+  while(!ATisEmpty(list)) {
+    ATerm entry = ATgetFirst(list);
+    list = ATgetNext(list);
 
-		for(i=0; i<nrsigs; i++) {
-			if(ATisEqual(ATparse(sigs[i]), entry))
-				break;
-		}
+    for(i=0; i<nrsigs; i++) {
+      if(ATisEqual(ATparse(sigs[i]), entry))
+	break;
+    }
 
-		if(i == nrsigs)
-			errors = ATinsert(errors, entry);				
-	}
+    if(i == nrsigs)
+      errors = ATinsert(errors, entry);				
+  }
 
-	return (ATerm)errors;
+  return (ATerm)errors;
 }
 
 /*}}}  */
@@ -617,7 +624,7 @@ static int connect_to_unix_socket(int port)
   sprintf (name, "/var/tmp/%d", port);
   for(attempt=0; attempt<MAX_CONNECT_ATTEMPTS; attempt++) {
     if((sock = socket(AF_UNIX,SOCK_STREAM,0)) < 0)
-			ATerror("cannot open socket\n");
+      ATerror("cannot open socket\n");
 
     /* Initialize the socket address to the server's address. */
     memset((char *) &usin, 0, sizeof(usin));
@@ -630,12 +637,12 @@ static int connect_to_unix_socket(int port)
     } else {
       /* Connection established */
       /*chmod(name, 0777);*/
-			setsockopt(sock, IPPROTO_TCP, TCP_NODELAY, (char *)&sock, sizeof sock);
+      setsockopt(sock, IPPROTO_TCP, TCP_NODELAY, (char *)&sock, sizeof sock);
       return sock;
     }
   }
   ATerror("connect_to_unix_socket: cannot connect to unix socket %s "
-					"after %d attempts, giving up.\n", name, attempt);
+	  "after %d attempts, giving up.\n", name, attempt);
   return -1;
 }
 
@@ -655,7 +662,7 @@ static int connect_to_inet_socket(const char *host, int port)
 
   for(attempt=0; attempt<MAX_CONNECT_ATTEMPTS; attempt++) {
     if((sock = socket(AF_INET,SOCK_STREAM,0)) < 0)
-			ATerror("cannot open socket\n");
+      ATerror("cannot open socket\n");
 
     /* Initialize the socket address to the server's address. */
     memset((char *) &isin, 0, sizeof(isin));
@@ -664,7 +671,7 @@ static int connect_to_inet_socket(const char *host, int port)
     /* to get host address */
     hp = gethostbyname(host);
     if(hp == NULL)
-			ATerror("cannot get hostname\n");
+      ATerror("cannot get hostname\n");
 
     memcpy (&(isin.sin_addr.s_addr), hp->h_addr, hp->h_length);
     isin.sin_port = htons(port);
@@ -677,9 +684,9 @@ static int connect_to_inet_socket(const char *host, int port)
       return sock;
     }
   }
-	ATerror("connect_to_inet_socket: cannot connect after %d attempts, "
-					"giving up.\n", attempt);
-	return -1;
+  ATerror("connect_to_inet_socket: cannot connect after %d attempts, "
+	  "giving up.\n", attempt);
+  return -1;
 }
 
 /*}}}  */
@@ -691,7 +698,7 @@ static int connect_to_inet_socket(const char *host, int port)
 
 static int connect_to_socket (const char *host, int port)
 {
-	if(!host || streq(host, this_host))
+  if(!host || streq(host, this_host))
     return connect_to_unix_socket(port);
   else
     return connect_to_inet_socket(host, port);
@@ -706,12 +713,12 @@ static int connect_to_socket (const char *host, int port)
 
 static void resize_buffer(int size)
 {
-	if(size > buffer_size) {
-		buffer = realloc(buffer, size);
-		if(buffer == NULL)
-			ATerror("resize_buffer: cannot allocate buffer of size %d\n", size);
-		buffer_size = size;
-	}
+  if(size > buffer_size) {
+    buffer = realloc(buffer, size);
+    if(buffer == NULL)
+      ATerror("resize_buffer: cannot allocate buffer of size %d\n", size);
+    buffer_size = size;
+  }
 }
 
 /*}}}  */
@@ -770,27 +777,116 @@ static int mread(int fd, char *buf, int len)
 
 static void handshake(Connection *conn)
 {
-	char buf[TB_HANDSHAKE_LEN];
-	char remote_toolname[TB_HANDSHAKE_LEN];
-	int  remote_tid;
+  char buf[TB_HANDSHAKE_LEN];
+  char remote_toolname[TB_HANDSHAKE_LEN];
+  int  remote_tid;
 
-	sprintf(buf, "%s %s %d", conn->toolname, conn->host, conn->tid);
-	if(mwrite(conn->fd, buf, TB_HANDSHAKE_LEN) < 0)
-	  ATerror("handshake: mwrite failed.\n");
+  sprintf(buf, "%s %s %d", conn->toolname, conn->host, conn->tid);
+  if(mwrite(conn->fd, buf, TB_HANDSHAKE_LEN) < 0)
+    ATerror("handshake: mwrite failed.\n");
 
-	if(mread(conn->fd, buf, TB_HANDSHAKE_LEN) < 0)
-	  ATerror("handshake: cannot get tool-id!\n");
+  if(mread(conn->fd, buf, TB_HANDSHAKE_LEN) < 0)
+    ATerror("handshake: cannot get tool-id!\n");
 
-    if(sscanf(buf, "%s %d", remote_toolname, &remote_tid) != 2)
-	  ATerror("handshake: protocol error, illegal tid spec: %s\n", buf);
+  if(sscanf(buf, "%s %d", remote_toolname, &remote_tid) != 2)
+    ATerror("handshake: protocol error, illegal tid spec: %s\n", buf);
 
-	if(!streq(remote_toolname, conn->toolname))
-	  ATerror("handshake: protocol error, wrong toolname %s != %s\n", 
-			  remote_toolname, conn->toolname);
+  if(!streq(remote_toolname, conn->toolname))
+    ATerror("handshake: protocol error, wrong toolname %s != %s\n", 
+	    remote_toolname, conn->toolname);
 	
-	if(remote_tid < 0 || (conn->tid >= 0 && remote_tid != conn->tid))
-	  ATerror("handshake: illegal tid assigned by ToolBus (%d != %d)\n",
-			  remote_tid, conn->tid);
+  if(remote_tid < 0 || (conn->tid >= 0 && remote_tid != conn->tid))
+    ATerror("handshake: illegal tid assigned by ToolBus (%d != %d)\n",
+	    remote_tid, conn->tid);
+}
+
+/*}}}  */
+
+/*{{{  ATerm ATBpack(ATerm t) */
+
+ATerm ATBpack(ATerm t)
+{
+  int len;
+  char *data;
+  ATermBlob blob;
+  
+  data = ATwriteToBinaryString(t, &len);
+  blob = ATmakeBlob(len, data);
+  
+  return (ATerm)ATmakeAppl(symbol_baf, blob); 
+}
+
+/*}}}  */
+/*{{{  static ATerm ATBunpack(ATerm t) */
+
+static ATerm ATBunpack(ATerm t)
+{
+  int i;
+
+  switch (ATgetType(t)) {
+  case AT_INT:
+  case AT_REAL:
+  case AT_BLOB:
+    return t;
+
+  case AT_PLACEHOLDER:
+    {
+      ATerm type = ATgetPlaceholder((ATermPlaceholder)t);
+      ATerm unpacked_type = ATBunpack(type);
+      if (ATisEqual(unpacked_type, type)) {
+	return t;
+      }
+      return (ATerm)ATmakePlaceholder(unpacked_type);
+    }
+
+  case AT_APPL:
+    {
+      ATermAppl appl = (ATermAppl)t;
+      AFun fun = ATgetAFun(appl);
+      if (fun == symbol_baf) {
+	ATerm unpacked_term, arg;
+	ATermBlob blob;
+	char *data;
+	int size;
+
+	arg = ATgetArgument(appl, 0);
+	assert(ATgetType(arg) == AT_BLOB);
+	blob = (ATermBlob)arg;
+	data = ATgetBlobData(blob);
+	size = ATgetBlobSize(blob);
+	unpacked_term = ATreadFromBinaryString(data, size);
+
+	return unpacked_term;
+      } else {
+	ATermList unpacked_args = ATempty;
+
+	for (i=ATgetArity(fun)-1; i>=0; i--) {
+	  unpacked_args = ATinsert(unpacked_args, ATBunpack(ATgetArgument(appl, i)));
+	}
+
+	return (ATerm)ATmakeApplList(fun, unpacked_args);
+      }
+    }
+
+  case AT_LIST:
+    {
+      ATermList list = (ATermList)t;
+      ATermList unpacked_list = ATempty;
+
+      while (!ATisEmpty(list)) {
+	unpacked_list = ATinsert(unpacked_list, ATBunpack(ATgetFirst(list)));
+	list = ATgetNext(list);
+      }
+      
+      return (ATerm)ATreverse(list);
+    }
+
+  default:
+    abort();
+  }
+
+  return NULL;
+
 }
 
 /*}}}  */
