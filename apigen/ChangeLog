@@ -1,3 +1,9 @@
+2000/09/10 (jong@cwi.nl)
+  * Version 0.5
+  * Added heuristics for translating unlabeled tokens into valid C-ids.
+  * Fields now have a prefix and an id ("wsAfter", "openBracket").
+  * Updated tests to reflect recent changes in specification.
+
 2000/09/08 (jong@cwi.nl)
   * Removed unlabeled sdf-specification now that pgen understands labels.
   * Makefile.am generates parsetables for Sdf2-to-ADT and Gen-C-API.

@@ -5,17 +5,20 @@ exports
   sorts API API-Type API-Alt API-Field API-Fields API-Location
 
   context-free syntax
-    "api" "[" API-Type* "]"				-> API
-    "type" "[" AFun "," API-Alt+ "," API-Field* "]"	-> API-Type
-    "alt" "[" AFun "," ATerm "]"			-> API-Alt
-    "field" "[" AFun "," AFun "," API-Location+ "]"	-> API-Field
-    "loc" "[" AFun "," ATerm-Path "]"			-> API-Location
+    "api" "[" API-Type* "]"					-> API
+    "type" "[" AFun "," API-Alt+ "," API-Field* "]"		-> API-Type
+    "alt" "[" AFun "," ATerm "]"				-> API-Alt
 
-    generate-api ( ATerm )				-> API
+    % Field::= FieldPrefix, FieldId, FieldType, Locations %
+    "field" "[" AFun ","  AFun "," AFun "," API-Location+ "]"	-> API-Field
 
-    API-Field*						-> API-Fields
-    get-fields-for-alt(AFun, API-Field*)		-> API-Fields
-    sort-fields( API-Field* )				-> API-Fields
+    "loc" "[" AFun "," ATerm-Path "]"				-> API-Location
+
+    generate-api ( ATerm )					-> API
+
+    API-Field*							-> API-Fields
+    get-fields-for-alt(AFun, API-Field*)			-> API-Fields
+    sort-fields( API-Field* )					-> API-Fields
 
 
 hiddens
@@ -45,43 +48,44 @@ hiddens
     "gen-attrs-terms"	-> AFun {reject}
 
   variables
-    "$AFun"		-> AFun
-    "$Alias"		-> AFun
-    "$Alt"		-> API-Alt
-    "$Alt+"		-> API-Alt+
-    "$AltId"[0-9]*	-> AFun
-    "$APISpec"		-> ATerm
-    "$Arg"		-> ATerm
-    "$Arg+"		-> { ATerm "," }+
-    "$CollectedType*"	-> API-Type*
-    "$CurAlt+"		-> API-Alt+
-    "$CurField"		-> API-Field
-    "$CurField*"	-> API-Field*
-    "$CurType"		-> API-Type
-    "$CurTypeId"	-> AFun
-    "$Elem"		-> ATerm
-    "$Elem*"		-> { ATerm "," }*
-    "$Entry"		-> ATerm
-    "$Entry*"		-> { ATerm "," }*
-    "$Field"[0-9]*	-> API-Field
-    "$Field*"[0-9]*	-> API-Field*
-    "$FieldId"[0-9]*	-> AFun
-    "$FieldType"[0-9]*	-> AFun
-    "$Index"		-> Nat
-    "$JoinedType"	-> API-Type
-    "$Loc"		-> API-Location
-    "$Loc*"[0-9]	-> API-Location*
-    "$Loc+"		-> API-Location+
-    "$MergedAlt+"	-> API-Alt+
-    "$MergedField"	-> API-Field
-    "$MergedField*"	-> API-Field*
-    "$MergedType*"	-> API-Type*
-    "$NewField"		-> API-Field
-    "$Path"[0-9]*	-> { ATerm-Path-Node "->" }*
-    "$Pattern"		-> ATerm
-    "$RemainingType*"	-> API-Type*
-    "$TodoType*"	-> API-Type*
-    "$TodoType+"	-> API-Type+
-    "$Type*"[0-9]*	-> API-Type*
-    "$TypeId"		-> AFun
+    "$AFun"			-> AFun
+    "$Alias"			-> AFun
+    "$Alt"			-> API-Alt
+    "$Alt+"			-> API-Alt+
+    "$AltId"[0-9]*		-> AFun
+    "$APISpec"			-> ATerm
+    "$Arg"			-> ATerm
+    "$Arg+"			-> { ATerm "," }+
+    "$CollectedType*"		-> API-Type*
+    "$CurAlt+"			-> API-Alt+
+    "$CurField"			-> API-Field
+    "$CurField*"		-> API-Field*
+    "$CurType"			-> API-Type
+    "$CurTypeId"		-> AFun
+    "$Elem"			-> ATerm
+    "$Elem*"			-> { ATerm "," }*
+    "$Entry"			-> ATerm
+    "$Entry*"			-> { ATerm "," }*
+    "$Field"[0-9]*		-> API-Field
+    "$Field*"[0-9]*		-> API-Field*
+    "$FieldId"[0-9]*		-> AFun
+    "$FieldPrefix"[0-9]*	-> AFun
+    "$FieldType"[0-9]*		-> AFun
+    "$Index"			-> Nat
+    "$JoinedType"		-> API-Type
+    "$Loc"			-> API-Location
+    "$Loc*"[0-9]		-> API-Location*
+    "$Loc+"			-> API-Location+
+    "$MergedAlt+"		-> API-Alt+
+    "$MergedField"		-> API-Field
+    "$MergedField*"		-> API-Field*
+    "$MergedType*"		-> API-Type*
+    "$NewField"			-> API-Field
+    "$Path"[0-9]*		-> { ATerm-Path-Node "->" }*
+    "$Pattern"			-> ATerm
+    "$RemainingType*"		-> API-Type*
+    "$TodoType*"		-> API-Type*
+    "$TodoType+"		-> API-Type+
+    "$Type*"[0-9]*		-> API-Type*
+    "$TypeId"			-> AFun
 

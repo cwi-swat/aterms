@@ -5,18 +5,18 @@ exports
 
   lexical syntax
     [\ \t\n]			-> LAYOUT
-    [t][r][u][e]		-> Bool {cons(true)} 
+    [t][r][u][e]		-> Bool {cons("true")} 
 
   context-free restrictions
     LAYOUT? -/- [\ \t\n]
 
   context-free syntax
-    false			-> Bool {cons(false)}
-    lop:Bool and:"&" rop:Bool	-> Bool {cons(and),left}
-    lop:Bool or:"|" rop:Bool	-> Bool {cons(or),left}
+    false			-> Bool {cons("false")}
+    lop:Bool "&" rop:Bool	-> Bool {cons("and"),left}
+    lop:Bool "|" rop:Bool	-> Bool {cons("or"),left}
 
-    open:"[" elems:{ Bool ";" }* close:"]" -> BoolList {cons(list)}
+    "[" elems:{ Bool ";" }* "]" -> BoolList {cons("list")}
 
   context-free priorities
-    lop:Bool and:"&" rop:Bool -> Bool
-  > lop:Bool or:"|" rop:Bool -> Bool
+    lop:Bool "&" rop:Bool -> Bool
+  > lop:Bool "|" rop:Bool -> Bool

@@ -26,9 +26,9 @@ exports
         Section Sections Module Definition ImpSection
   lexical syntax
     [A-Za-z0-9\_\-]+        -> ModuleWord
-    ModuleWord              -> ModuleId
-    "/" ModuleId            -> ModuleId
-    ModuleWord "/" ModuleId -> ModuleId             
+    ModuleWord              -> ModuleId {avoid}
+    "/" ModuleId            -> ModuleId {avoid}
+    ModuleWord "/" ModuleId -> ModuleId {avoid}            
   context-free syntax
     Module*                                  -> Definition
     "module" ModuleName ImpSection* Sections -> Module

@@ -73,7 +73,9 @@ module Gen-C-API
       build-c-id-tail ( AFun+ )                        	-> C-ID
       build-c-id ( AFun+ )                        	-> C-ID
       build-c-int ( Nat )				-> C-NAT-CON
+      build-valid-c-afun( AFun, AFun )			-> AFun
       build-afun ( AFun+ )                        	-> AFun
+      build-valid-afun( AFun )				-> AFun
       build-header-tag ( C-FILE-NAME )			-> C-FILE-TAG
       build-source-tag ( C-FILE-NAME )			-> C-FILE-TAG
       build-dict-tag ( C-FILE-NAME )			-> C-FILE-TAG
@@ -98,12 +100,14 @@ module Gen-C-API
       "$Args"[0-9]*		-> { ATerm "," }+
       "$ATerm"[0-9]*		-> ATerm
       "$ATerms"[0-9]*		-> { ATerm "," }*
+      "$CFieldId"		-> AFun
       "$Dict"[0-9]*		-> { ATerm "," }*
       "$DictHeader"		-> C-INCLUDE-FILE
       "$Elems"[0-9]*		-> { ATerm "," }*
       "$Field"			-> API-Field
       "$Field*"			-> API-Field*
       "$FieldId"		-> AFun
+      "$FieldPrefix"		-> AFun
       "$FieldType"		-> AFun
       "$FunDecl"[0-9]*		-> C-FUNCTION-DECL
       "$FunDeclList"[0-9]*	-> C-CONSTRUCT*
@@ -131,6 +135,7 @@ module Gen-C-API
       "$Type*"			-> API-Type*
       "$Type+"			-> API-Type+
       "$TypeId"			-> AFun
+      "$ValidId"		-> AFun
 
       "$Typedef"		-> C-CONSTRUCT
       "$Typedef*"[0-9]*		-> C-CONSTRUCT*

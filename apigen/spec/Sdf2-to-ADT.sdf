@@ -5,6 +5,9 @@ exports
   context-free syntax
     sdf-module-to-adt ( Module )		-> ATerm
 
+%%context-free syntax
+%%  "build-asfix-attr"	-> UQLiteral {reject}
+
 hiddens
   context-free syntax
     section-to-adt ( ModuleName , Section )		-> ATerms
@@ -56,6 +59,7 @@ hiddens
     "$ElemType"		-> AFun
     "$Entries"[0-9]*	-> { ATerm "," }*
     "$Entry"		-> ATerm
+    "$FieldName"	-> AT-Literal
     "$FieldId"		-> AFun
     "$FieldType"	-> AFun
     "$FieldWs"		-> ATerm

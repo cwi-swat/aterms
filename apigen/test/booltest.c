@@ -11,7 +11,7 @@ static void testBooleans(BoolList l)
   SDFWhiteSpace ws;
   Bool true;
 
-  /*ATfprintf(stderr, "l=%t\n", l);*/
+  /* ATfprintf(stderr, "l=%t\n", l); */
 
   true = makeBoolTrue(ATparse("\"true\""));
 
@@ -47,8 +47,8 @@ static void testBooleans(BoolList l)
   assert(isValidBool(right));
   assert(isBoolFalse(right));
 
-  assert(hasBoolWsAfterAnd(b));
-  ws = getBoolWsAfterAnd(b);
+  assert(hasBoolWsAfterAmpersand(b));
+  ws = getBoolWsAfterAmpersand(b);
   assert(ATmatch(ws, "\" \""));
 
   bool[1] = makeBoolOr(makeBoolAnd(true,ws,ws,makeBoolFalse()),ws,ws,true);

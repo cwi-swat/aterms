@@ -9,19 +9,19 @@ SDF2TABLE	= ${PGENBIN}/sdf2table
 SUBDIRS		= gen-c-api sdf2-to-adt
 
 data_DATA	= Gen-C-API.trm.tbl Sdf2-to-ADT.trm.tbl
+CLEANFILES	= ${data_DATA}
 
 EXTRA_DIST	= ${GEN_C_API_SDF} ${SDF2_TO_ADT_SDF}
 
-CLEAN_FILES	= ${data_DATA}
 
 SDF2_SPEC_SDF  	= $(patsubst %, ./sdf2/%, $(SDF2_SPEC:=.sdf)) 
-SDF2_SPEC	= ATermBooleans ATerms Alias-Sdf-Syntax Basic-Sdf-Syntax \
+SDF2_SPEC	= Alias-Sdf-Syntax Basic-Sdf-Syntax \
 		CC-Sdf-Syntax Character-Class-Syntax Character-Syntax \
-	       	Grammar-Syntax IntCon Kernel-Sdf-Syntax Label-Sdf-Syntax \
-	       	Layout Literals-Sdf-Syntax Literals Modular-Sdf-Syntax \
-		Priority-Sdf-Syntax RealCon Regular-Sdf-Syntax \
-		Renaming-Sdf-Syntax Restrictions-Sdf-Syntax Sdf2-Syntax \
-		Sdf2 Sorts-Sdf-Syntax Symbols
+		Grammar-Syntax Kernel-Sdf-Syntax Label-Sdf-Syntax Layout \
+	       	Literals Literals-Sdf-Syntax Modular-Sdf-Syntax \
+		Priority-Sdf-Syntax Regular-Sdf-Syntax Renaming-Sdf-Syntax \
+		Restrictions-Sdf-Syntax Sdf2 Sdf2-Syntax Sorts-Sdf-Syntax \
+		Symbols
 
 GEN_C_API_SDF	= $(GEN_C_API:=.sdf)
 GEN_C_API	= ATerm-Path ATerm-Syntax ATerm-Utils C-Identifiers \
@@ -29,7 +29,8 @@ GEN_C_API	= ATerm-Path ATerm-Syntax ATerm-Utils C-Identifiers \
 		Integer-Syntax Literal-Syntax Naturals
 
 SDF2_TO_ADT_SDF	= $(SDF2_TO_ADT:=.sdf)
-SDF2_TO_ADT	= ATerm-Utils Sdf2-to-ADT
+SDF2_TO_ADT	= ATerm-Utils ATerm-Syntax Literal-Syntax Integer-Syntax \
+		Sdf2-to-ADT
 
 Gen-C-API.trm.tbl: $(GEN_C_API_SDF)
 	@echo Building parsetable: $@

@@ -105,10 +105,11 @@ equations
   gen-access-decls(type [ $TypeId, $Alt+, ]) =
 
 [equ-gen-access-decls-divide]
-  $Field = field [ $FieldId, $FieldType, $Loc+ ],
-  build-has-decl($TypeId, $FieldType, $FieldId) = $FunDecl1,
-  build-getter-decl($TypeId, $FieldType, $FieldId) = $FunDecl2,
-  build-setter-decl($TypeId, $FieldType, $FieldId) = $FunDecl3,
+  $Field = field [ $FieldPrefix, $FieldId, $FieldType, $Loc+ ],
+  $CFieldId = build-valid-c-afun($FieldPrefix, $FieldId),
+  build-has-decl($TypeId, $FieldType, $CFieldId) = $FunDecl1,
+  build-getter-decl($TypeId, $FieldType, $CFieldId) = $FunDecl2,
+  build-setter-decl($TypeId, $FieldType, $CFieldId) = $FunDecl3,
   gen-access-decls(type [ $TypeId, $Alt+, $Field* ]) = $FunDeclList1,
   extern $FunDecl1; extern $FunDecl2; extern $FunDecl3; $FunDeclList1 = $FunDeclList2
   ===>
@@ -279,10 +280,11 @@ equations
     build-c-id(ATbool) build-c-id(is $TypeId $AltId) ( build-c-id($TypeId) arg )
 
 [equ-gen-has-impl]
-  build-has-decl($TypeId, $FieldType, $FieldId) = $FunDecl,
+  build-valid-c-afun($FieldPrefix, $FieldId) = $CFieldId,
+  build-has-decl($TypeId, $FieldType, $CFieldId) = $FunDecl,
   gen-has-body($TypeId, $FieldType, $Loc+) = $FunBody
   ===>
-  gen-has-impl($TypeId, field [$FieldId, $FieldType, $Loc+]) = $FunDecl { $FunBody }
+  gen-has-impl($TypeId, field [$FieldPrefix, $FieldId, $FieldType, $Loc+]) = $FunDecl { $FunBody }
 
 [equ-gen-has-body-empty]
   gen-has-body($TypeId, $FieldType, ) = { return ATfalse; }
@@ -297,10 +299,11 @@ equations
         } else $Stat
 
 [equ-gen-getter-impl]
-  build-getter-decl($TypeId, $FieldType, $FieldId) = $FunDecl,
+  build-valid-c-afun($FieldPrefix, $FieldId) = $CFieldId,
+  build-getter-decl($TypeId, $FieldType, $CFieldId) = $FunDecl,
   gen-getter-body($TypeId, $FieldType, $Loc+) = $FunBody
   ===>
-  gen-getter-impl($TypeId, field [$FieldId, $FieldType, $Loc+]) = $FunDecl { $FunBody }
+  gen-getter-impl($TypeId, field [$FieldPrefix, $FieldId, $FieldType, $Loc+]) = $FunDecl { $FunBody }
 
 [equ-gen-getter-body-empty]
   gen-getter-body($TypeId, $FieldType, ) = 
@@ -349,10 +352,11 @@ equations
     build-c-id($FieldType) build-c-id(get $TypeId $FieldId) ( build-c-id($TypeId) arg )
 
 [equ-gen-setter-impl]
-  build-setter-decl($TypeId, $FieldType, $FieldId) = $FunDecl,
-  gen-setter-body($TypeId, $FieldType, $FieldId, $Loc+) = $FunBody
+  build-valid-c-afun($FieldPrefix, $FieldId) = $CFieldId,
+  build-setter-decl($TypeId, $FieldType, $CFieldId) = $FunDecl,
+  gen-setter-body($TypeId, $FieldType, $CFieldId, $Loc+) = $FunBody
   ===>
-  gen-setter-impl($TypeId, field [ $FieldId, $FieldType, $Loc+ ]) = $FunDecl { $FunBody }
+  gen-setter-impl($TypeId, field [ $FieldPrefix, $FieldId, $FieldType, $Loc+ ]) = $FunDecl { $FunBody }
 
 [equ-gen-setter-body-empty]
   gen-setter-body($TypeId, $FieldType, $FieldId, ) = 
@@ -406,20 +410,22 @@ equations
   build-formal-args-list( ) =
 
 [equ-build-formal-args-list-divide]
-  build-c-id($FieldType) build-c-id($FieldId) = $FormalArg,
+  build-valid-c-afun($FieldPrefix, $FieldId) = $CFieldId,
+  build-c-id($FieldType) build-c-id($CFieldId) = $FormalArg,
   build-formal-args-list($Field*) = $FormalArg*
   ===>
-  build-formal-args-list(field [ $FieldId, $FieldType, $Loc+ ] $Field*) = 
+  build-formal-args-list(field [ $FieldPrefix, $FieldId, $FieldType, $Loc+ ] $Field*) = 
 	$FormalArg, $FormalArg*
 
 [equ-build-actual-args-list-empty]
   build-actual-args-list( ) =
 
 [equ-build-actual-args-list-divide]
-  build-c-id($FieldId) = $ActualArg,
+  build-valid-c-afun($FieldPrefix, $FieldId) = $CFieldId,
+  build-c-id($CFieldId) = $ActualArg,
   build-actual-args-list($Field*) = $ActualArg*
   ===>
-  build-actual-args-list(field [ $FieldId, $FieldType, $Loc+ ] $Field*) = 
+  build-actual-args-list(field [ $FieldPrefix, $FieldId, $FieldType, $Loc+ ] $Field*) = 
 	$ActualArg, $ActualArg*
 
 [equ-build-null-args-list-empty]
@@ -428,7 +434,7 @@ equations
 [equ-build-null-args-list-divide]
   build-null-args-list($Field*) = $ActualArg*
   ===>
-  build-null-args-list(field [ $FieldId, $FieldType, $Loc+ ] $Field*) = 
+  build-null-args-list(field [ $FieldPrefix, $FieldId, $FieldType, $Loc+ ] $Field*) = 
 	NULL, $ActualArg*
 
 [equ-build-typedef]
@@ -459,6 +465,48 @@ equations
 
 [equ-build-c-int-succ]
   build-c-int(succ($Nat)) = succ(build-c-int($Nat))
+
+[equ-build-valid-c-afun]
+  build-valid-afun($FieldId) = $ValidId,
+  afun-concat($FieldPrefix capitalize($ValidId)) = $AFun
+  ===>
+  build-valid-c-afun($FieldPrefix, $FieldId) = $AFun
+
+[default-build-valid-afun]
+  build-valid-afun($AFun) = $AFun
+
+[equ-build-valid-afun-tilde]         build-valid-afun("~")  = tilde
+[equ-build-valid-afun-backquote]     build-valid-afun("`")  = backquote
+[equ-build-valid-afun-bang]          build-valid-afun("!")  = bang
+[equ-build-valid-afun-at]            build-valid-afun("@")  = at
+[equ-build-valid-afun-hash]          build-valid-afun("#")  = hash
+[equ-build-valid-afun-dollar]        build-valid-afun("$")  = dollar
+[equ-build-valid-afun-percent]       build-valid-afun("%")  = percent
+[equ-build-valid-afun-up]            build-valid-afun("^")  = up
+[equ-build-valid-afun-ampersand]     build-valid-afun("&")  = ampersand
+[equ-build-valid-afun-star]          build-valid-afun("*")  = star
+[equ-build-valid-afun-open-paren]    build-valid-afun("(")  = openParen
+[equ-build-valid-afun-close-paren]   build-valid-afun(")")  = closeParen
+[equ-build-valid-afun-minus]         build-valid-afun("-")  = minus
+[equ-build-valid-afun-plus]          build-valid-afun("+")  = plus
+[equ-build-valid-afun-equal]         build-valid-afun("=")  = equal
+[equ-build-valid-afun-open-brace]    build-valid-afun("{")  = openBrace
+[equ-build-valid-afun-close-brace]   build-valid-afun("}")  = closeBrace
+[equ-build-valid-afun-open-bracket]  build-valid-afun("[")  = openBracket
+[equ-build-valid-afun-close-bracket] build-valid-afun("]")  = closeBracket
+[equ-build-valid-afun-bar]           build-valid-afun("|")  = bar
+[equ-build-valid-afun-backslash]     build-valid-afun("\\") = backslash
+[equ-build-valid-afun-colon]         build-valid-afun(":")  = colon
+[equ-build-valid-afun-quote]         build-valid-afun("'")  = quote
+[equ-build-valid-afun-quotes]        build-valid-afun("\"") = quotes
+[equ-build-valid-afun-semicolon]     build-valid-afun(";")  = semiColon
+[equ-build-valid-afun-open-angle]    build-valid-afun("<")  = openAngle
+[equ-build-valid-afun-close-angle]   build-valid-afun(">")  = closeAngle
+[equ-build-valid-afun-comma]         build-valid-afun(",")  = comma
+[equ-build-valid-afun-period]        build-valid-afun(".")  = period
+[equ-build-valid-afun-question]      build-valid-afun("?")  = question
+[equ-build-valid-afun-slash]         build-valid-afun("/")  = slash
+
 
 [equ-build-afun]
   build-c-id($AFun+) = c-id($Char*)
