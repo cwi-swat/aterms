@@ -10,16 +10,16 @@ format somewhat with the DDT's of XML.
 
 An ADT file is a list of entries. Each entry is a triple:
 
-[<sortname>,<constructorname>,<atermpattern>]
+constructor(<sortname>,<constructorname>,<atermpattern>)
 
 For example, an ADT defining the Booleans could look like this:
 
 [
-  [Bool, true, true],
-  [Bool, false, false],
-  [Bool, and , and(<lhs(Bool)>,<rhs(Bool)>],
-  [Bool, or, or(<lhs(Bool)>,<rhs(Bool)>],
-  [Bool, not, not(<arg(Bool)>)]
+  constructor(Bool, true, true),
+  constructor(Bool, false, false),
+  constructor(Bool, and , and(<lhs(Bool)>,<rhs(Bool)>),
+  constructor(Bool, or, or(<lhs(Bool)>,<rhs(Bool)>),
+  constructor(Bool, not, not(<arg(Bool)>))
 ]
  
 With the information specified in an ADT file, C and Java code can be generated that implements a data structure according to such a signature. 
