@@ -41,7 +41,7 @@ public class ForwardVisitableGenerator extends JavaGenerator {
 		println();
 		println("  public jjtraveler.Visitable getChildAt(int i) {");
 		println("    switch (i) {");
-		println("    case 0: return (jjtraveler.reflective.VisitableVisitor) any;");
+		println("    case 0: return (jjtraveler.Visitable) any;");
 		println("    default: throw new IndexOutOfBoundsException();");
 		println("    }");
 		println("  }");
