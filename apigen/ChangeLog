@@ -1,3 +1,7 @@
+2001/02/20 (markvdb@cwi.nl)
+ * Bug fixed in specification which removes the constructor annotations
+   from the productions.
+
 2001/02/19 (jong@cwi.nl)
  * version 0.7.3
  * The use of prologue files is now optional in adt-to-c. If no prologue

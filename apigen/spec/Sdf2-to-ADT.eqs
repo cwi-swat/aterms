@@ -329,11 +329,17 @@ equations
   build-asfix-attr-list($Attr, $ConsOption) = build-asfix-attr($Attr, $ConsOption)
 
 [equ-build-asfix-attr-list-divide]
+  build-asfix-attr($Attr, $ConsOption) = $AFAttr+1,
+  build-asfix-attr-list($Attr+, $ConsOption) = $AFAttr+2
+  ===>
+  build-asfix-attr-list($Attr, $Attr+, $ConsOption) =
+     $AFAttr+1,w(""),sep(","),w(""),$AFAttr+2
+
+[default-build-asfix-attr-list-divide]
   build-asfix-attr($Attr, $ConsOption) = $AFAttr*1,
   build-asfix-attr-list($Attr+, $ConsOption) = $AFAttr*2
   ===>
-  build-asfix-attr-list($Attr, $Attr+, $ConsOption) =
-     $AFAttr*1,w(""),sep(","),w(""),$AFAttr*2
+  build-asfix-attr-list($Attr, $Attr+, $ConsOption) = $AFAttr*1,$AFAttr*2
 
 [equ-build-asfix-attr-left]        build-asfix-attr(left, $ConsOption)        = l("left")
 [equ-build-asfix-attr-right]       build-asfix-attr(right, $ConsOption)       = l("right")

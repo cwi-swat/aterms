@@ -51,7 +51,7 @@ hiddens
     "$AFArg"		-> ATerm
     "$AFArgs"		-> { ATerm "," }*
     "$AFAttr"		-> ATerm
-    "$AFAttr+"		-> { ATerm "," }+
+    "$AFAttr+"[0-9]*	-> { ATerm "," }+
     "$AFAttr*"[0-9]*	-> { ATerm "," }*
     "$AFAttrs"		-> ATerm
     "$AFIter"		-> ATerm
