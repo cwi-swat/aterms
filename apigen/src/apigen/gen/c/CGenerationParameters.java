@@ -35,7 +35,7 @@ public class CGenerationParameters extends GenerationParameters {
 	}
 	
 	public String usage() {
-		StringBuffer buf = new StringBuffer();
+		StringBuffer buf = new StringBuffer(super.usage());
 		buf.append("\t--prefix <prefix>         [\"\"]\n");
 		buf.append("\t--folding                 [off]\n");
 		buf.append("\t--prologue <file>         include prologue <file>\n");

@@ -1,6 +1,7 @@
 # $Id$
 
-Tue Dec  2 10:54:54 CET 2003 <jurgenv@cwi.nl>
+Tue Dec  2 10:54:54 CET 2003 <{jong,jurgenv}@cwi.nl>
+ * gen/c/CGenerationParameters: also show super.usage()
  * Split of a scripts directory from the utils directory  to prevent
    a circular dependency.
  * Bumped to version 2.0
