@@ -47,22 +47,24 @@ public class VisitorGenerator extends JavaGenerator {
 				Iterator alts = type.alternativeIterator();
 				while (alts.hasNext()) {
 					Alternative alt = (Alternative) alts.next();
-					genVisit(alt);
+					genVisit(type, alt);
 				}
 			}
 		}
 	}
 
 	private void genListVisit(Type type) {
-		genVisitDecl(ListTypeGenerator.className(type));
+		genVisitDecl(ListTypeGenerator.className(type), "");
 	}
 
-	private void genVisit(Alternative alt) {
-		genVisitDecl(AlternativeGenerator.className(alt));
+	private void genVisit(Type type, Alternative alt) {
+		String methodName = FactoryGenerator.concatTypeAlt(type, alt);
+		String paramName = AlternativeGenerator.qualifiedClassName(getGenerationParameters(), type, alt);
+		genVisitDecl(methodName, paramName);
 	}
 
-	private void genVisitDecl(String className) {
-		println("  public abstract void visit_" + className + "(" + className + " arg) throws jjtraveler.VisitFailure;");
+	private void genVisitDecl(String methodName, String paramName) {
+		println("  public abstract void visit_" + methodName + "(" + paramName + " arg) throws jjtraveler.VisitFailure;");
 	}
 	
 	public static String packageName(GenerationParameters params) {

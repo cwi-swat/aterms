@@ -2,11 +2,10 @@
 
 # {{{ variables
 
-     PRG=`basename $0`
-  prefix=@prefix@
-  ATERM=@ATERM@
-  JAVA_ATERM=@JAVA_ATERM@
-  SHARED_OBJECTS=@SHARED_OBJECTS@
+PRG=`basename $0`
+prefix=@prefix@
+ATERM=@ATERM@
+JAVA_ATERM=@JAVA_ATERM@
 ATERMBIN=@ATERMBIN@
 
 # }}}
@@ -34,7 +33,7 @@ Parameters:
   -h | --help             display this information
 
 Default locations:
-  classes = ${CGEN}:${JAVA_ATERM}:${SHARED_OBJECTS}
+  classes = ${CGEN}:${JAVA_ATERM}
   dicttoc = ${DICTTOC}
 
 Example: $PRG -i Booleans.adt --prefix SDF --prologue Booleans.pro
@@ -183,7 +182,7 @@ fi
 # {{{  generate C code from ADT
 
 java \
-  -classpath ${CGEN}:${JAVA_ATERM}:${SHARED_OBJECTS} \
+  -classpath ${CGEN}:${JAVA_ATERM} \
   apigen.gen.c.Main \
   ${INPUT} \
   -output ${OUTPUT} \

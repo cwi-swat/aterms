@@ -2,10 +2,9 @@
 
 # {{{ variables
 
-     PRG=`basename $0`
-  JAVA_ATERM=@JAVA_ATERM@
-  SHARED_OBJECTS=@SHARED_OBJECTS@
-  prefix=@prefix@
+PRG=`basename $0`
+JAVA_ATERM=@JAVA_ATERM@
+prefix=@prefix@
 
 # }}}
 
@@ -30,7 +29,7 @@ Parameters:
   -h | --help             display this information
 
 Default locations:
-  classes = ${CLASSES}:${SHARED_OBJECTS}:${JAVA_ATERM}
+  classes = ${CLASSES}:${JAVA_ATERM}
 
 Example: $PRG -i Booleans.adt --package sdf -m 'java.util.*'
 
@@ -176,7 +175,7 @@ fi
 # }}}
 
 # {{{  generate Java code from ADT
-java  -classpath ${CLASSES}:${SHARED_OBJECTS}:${JAVA_ATERM} \
+java  -classpath ${CLASSES}:${JAVA_ATERM} \
           apigen.gen.java.Main \
 	  ${INPUT} \
 	  --output ${OUTPUT} \

@@ -30,7 +30,7 @@ public class GenericConstructorGenerator extends JavaGenerator {
 	public static String className(String name) {
 		return StringConversions.makeCapitalizedIdentifier(name) + "Constructor";
 	}
-	
+
 	public static String qualifiedClassName(GenerationParameters params) {
 		StringBuffer buf = new StringBuffer();
 		buf.append(params.getPackageName());
@@ -114,7 +114,8 @@ public class GenericConstructorGenerator extends JavaGenerator {
 	}
 
 	private void genAccept() {
-		println("  abstract public void accept(jjtraveler.Visitor v) throws jjtraveler.VisitFailure;");
+		String visitorPackage = VisitorGenerator.qualifiedClassName(getGenerationParameters());
+		println("  abstract public void accept(" + visitorPackage + ".Visitor v) throws jjtraveler.VisitFailure;");
 		println();
 	}
 

@@ -410,7 +410,7 @@ public class AlternativeGenerator extends JavaGenerator {
 
 	private void genAltVisitableInterface(Type type, Alternative alt) {
 		String visitorPackage = VisitorGenerator.qualifiedClassName(getGenerationParameters());
-		String altClassName = className(alt);
+		String altClassName = FactoryGenerator.concatTypeAlt(type, alt);
 
 		println("  public void accept(" + visitorPackage + ".Visitor v) throws jjtraveler.VisitFailure {");
 		println("    v.visit_" + altClassName + "(this);");
