@@ -144,7 +144,7 @@ int ATvfprintf(FILE *stream, const char *format, va_list args)
 {
     const char *p;
     char *s;
-    char buf[16];
+    char fmt[16];
     int result = 0;
 
     for (p = format; *p; p++)
@@ -155,7 +155,7 @@ int ATvfprintf(FILE *stream, const char *format, va_list args)
 	    continue;
 	}
 
-	s = buf;
+	s = fmt;
 	while (!isalpha(*p))	/* parse formats %-20s, etc. */
 	    *s++ = *p++;
 	*s++ = *p;
@@ -164,13 +164,16 @@ int ATvfprintf(FILE *stream, const char *format, va_list args)
 	switch (*p)
 	{
 	    case 'd':
-		fprintf(stream, buf, va_arg(args, int));
+		fprintf(stream, fmt, va_arg(args, int));
 	    break;
 	    case 'f':
-		fprintf(stream, buf, va_arg(args, double));
+		fprintf(stream, fmt, va_arg(args, double));
 	    break;
 	    case 's':
-		fprintf(stream, buf, va_arg(args, char *));
+		fprintf(stream, fmt, va_arg(args, char *));
+	    break;
+	    case 'y':
+		AT_printSymbol(va_arg(args, Symbol), stream);
 	    break;
 	    case 't':
 		ATwriteToTextFile(va_arg(args, ATerm), stream);
