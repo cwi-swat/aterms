@@ -8,7 +8,6 @@
 #include <time.h>
 #include <assert.h>
 
-#include "util.h"
 #include "aterm2.h"
 #include "atb-tool.h"
 
