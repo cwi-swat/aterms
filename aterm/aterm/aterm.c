@@ -1499,6 +1499,27 @@ ATerm ATreadFromFile(FILE *file)
 }
 
 /*}}}  */
+/*{{{  ATerm ATreadFromNamedFile(char *name) */
+
+/**
+	* Read an ATerm from a named file
+	*/
+
+ATerm ATreadFromNamedFile(const char *name)
+{  
+	FILE  *f;
+  ATerm t;
+
+  if(!(f = fopen(name, "r")))
+    return NULL;
+
+  t = ATreadFromFile(f);
+  fclose(f);
+
+  return t;
+}
+
+/*}}}  */
 
 
 #define snext_char(c,s) ((*c) = *(*s)++)

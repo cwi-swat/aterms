@@ -42,6 +42,7 @@ ATerm ATreadFromString(const char *string);
 ATerm ATreadFromTextFile(FILE *file);
 ATerm ATreadFromBinaryFile(FILE *file);
 ATerm ATreadFromFile(FILE *file);
+ATerm ATreadFromNamedFile(const char *name);
 
 /* Abbreviation for ATreadFromString */
 #define ATparse(s)	ATreadFromString((s))
