@@ -562,9 +562,9 @@ int main(int argc, char *argv[])
   ATinit(argc, argv, &bottomOfStack);
 
   /* protect the global variables from garbage collection */
-  ATprotect((ATerm*) &stack);
-  ATprotect((ATerm*) &atermdata);
-  ATprotect((ATerm*) &entities);
+  ATprotectList(&stack);
+  ATprotectAppl(&atermdata);
+  ATprotectList(&entities);
 
   while ((c = getopt(argc, argv, myarguments)) != EOF) {
     switch (c) {
