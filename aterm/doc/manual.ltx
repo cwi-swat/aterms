@@ -1,0 +1,223 @@
+% vim:ts=4:sw=4:tw=75
+\documentclass[a4paper,twoside]{article}
+
+\usepackage{fullpage}
+\usepackage{verbatim}
+
+\newcommand{\ATlib}{ATerm Library}
+\newcommand{\ATerm}{ATerm}
+\newcommand{\ATerms}{ATerms}
+\newcommand{\Symbol}{Symbol}
+\newcommand{\Symbols}{Symbols}
+
+\newcommand{\ATtrue}{\mbox{\tt ATtrue}}
+\newcommand{\ATfalse}{\mbox{\tt ATfalse}}
+\newcommand{\main}{\mbox{\tt main}}
+\newcommand{\ATinit}{\mbox{\tt ATinit}}
+\newcommand{\ATprotect}{\mbox{\tt ATprotect}}
+\newcommand{\ATprotectArray}{\mbox{\tt ATprotectArray}}
+
+% \command{init.c} will input file "examples/init.c" in verbatim mode.
+\newcommand{\example}[1]{
+	\noindent\hrulefill
+	\begin{small}
+	\verbatiminput{examples/#1}
+	\end{small}
+	\hrulefill
+}
+
+\def\aterms{\mbox{ATerms}}
+\def\aterm{\mbox{ATerm}}
+\def\asfix{\mbox{\sc AsFix}}
+
+\title{\ATlib\ User Manual}
+\author{\small H.A. de Jong, {\tt jong@wins.uva.nl} \\
+		\small P.A. Olivier, {\tt olivierp@wins.uva.nl}}
+
+\begin{document}
+\maketitle
+
+%----[ INTRODUCTION ]----
+\section{Introduction}\label{intro}
+This manual describes the functionality provided in the \ATlib.
+Section~\ref{usage} explains in general the steps that must be taken to
+initialize and work with the \ATlib.
+Section~\ref{lvl1} describes the level one interface.
+Section~\ref{lvl2} describes the level two interface.
+
+%----[ USAGE ]----
+\section{Using the \ATlib}\label{usage}
+This section explains the basics of using the \ATlib.  Section~\ref{init}
+demonstrates initialization of the \ATlib.  Section~\ref{prot} explains how
+to protect global \aterm\ variables and arrays of \aterms.
+
+%----[ INITIALIZING ATERM LIBRARY ]----
+\subsection{Initializing the \ATlib}\label{init}
+To initialize the \ATlib, a call to \ATinit\ must be made from \main,
+passing the commandline arguments stored in {\tt argc} and {\tt argv}.
+Also, the address of a locally created ATerm variable must be passed.  This
+address is used by the garbage collector to determine the bottom of the stack
+to be inspected for \aterms.
+The following code demonstrates a typical initialization of the \ATlib.
+
+\example{init.c}
+
+Note that {\tt NULL} is \emph{not} a valid bottom of stack argument!
+
+%----[ PROTECTING ATERMS]----
+\subsection{Protecting global \aterms\ and arrays of \aterms}\label{prot}
+During a garbage collect, the \ATlib\ searches the stack and registers for
+\aterms. Therefore it finds all \aterms\ which were created locally in a
+function (\emph{automatic} variables). All \aterm\ variables which were
+\emph{not} created locally, must be protected by a call to \ATprotect. For
+entire arrays of \aterms, \ATprotectArray\ should be used. Note that not
+the \aterm variable itself, but its address is passed to \ATprotect. 
+
+The following code demonstrates the protection of a global \aterm\ and a
+global array of \aterms.
+
+\example{prot.c}
+
+%----[ BINARY ATERM FORMAT ]----
+\subsection{Binary \aterm\ Format ({\sc BAF})}\label{baf}
+In addition to being able to parse terms in textual format and write
+textual representations of \aterms, the \ATlib\ can also work with a binary
+representation of the terms. This representation is called {\sc baf} which
+is short for ``Binary \ATerm\ Format''. It uses a compact, binary version
+of \aterms\ for reading and writing. An \aterm\ which is in a {\sc baf}
+file can be constructed more efficiently than its textual counterpart.
+Users of the \ATlib\ are urged to use {\tt BAF} versions when exchanging
+\aterms\ between different components. Although the \ATlib\ does not put
+any constraints on names of \aterm-files, the user is encouraged to use the
+extension {\tt .baf} for {\sc BAF} files. This will avoid confusion between
+textual representations and binary ones.  Textual representations could use
+the extention {\tt .trm}.
+
+%--------------------[ LEVEL ONE INTERFACE ]--------------------
+
+\section{Level One Interface}\label{lvl1}
+This section explains in detail the types and functions that are defined in
+the level one interface. These functions are declared in {\tt aterm1.h}.
+
+\subsection{Level One Types}\label{types1}
+The following {\tt C}-defines are used to represent the different \aterm\
+types:
+\begin{small}
+\begin{itemize}
+	\item {\tt AT\_FREE}: An \aterm\ that is marked \emph{free} will be
+	reused when needed. This is not a type users will want to create
+	themselves, but it can be used to detect an \aterm\ that has been freed
+	by the garbage collector.
+	\item {\tt AT\_APPL}:        An \aterm\ of type: function application;
+	\item {\tt AT\_INT}:         An \aterm\ of type: integer;
+	\item {\tt AT\_REAL}:        An \aterm\ of type: real;
+	\item {\tt AT\_LIST}:        An \aterm\ of type: list;
+	\item {\tt AT\_PLACEHOLDER}: An \aterm\ of type: placeholder;
+	\item {\tt AT\_BLOB}:        An \aterm\ of type: binary large object;
+\end{itemize}
+\end{small}
+
+The following {\tt C}-types are defined in the level one interface:
+\begin{small}
+\begin{itemize}
+	\item {\tt ATbool}: a boolean value, either \ATtrue\ or \ATfalse;
+	\item {\tt ATerm}: an annotated term.
+\end{itemize}
+\end{small}
+
+\subsection{Level One Functionality}\label{func1}
+\begin{itemize}
+\item {\tt ATerm ATmake(const char *pattern, ...);}\\
+	Creates an \aterm\ given a pattern and corresponding values.
+
+	\begin{small}
+	\begin{tabular}{|l|l|l|}
+	\hline
+	Type & Pattern & Argument \\
+	\hline
+	Application & {\tt appl}        & {\tt char *pattern}, arguments \\
+	Blob        & {\tt blob}        & {\tt int length}, {\tt void *data}\\
+	Integer     & {\tt int}         & {\tt int value}\\
+	List        & {\tt list}        & {\tt ATerm} \\
+	Placeholder & {\tt placeholder} & {\tt char *type} \\
+	Real        & {\tt real}        & {\tt double value}\\
+	String      & {\tt str}         & {\tt char *pattern}, arguments \\
+	Term        & {\tt term}        & {\tt ATerm} \\
+	\hline
+	\end{tabular}
+	\end{small}
+
+	Types {\tt <appl>} and {\tt <str>} should contain a pattern consisting
+	of the function symbol to be used and the types of the arguments.  It
+	must be followed by exactly the number of arguments that are used in the
+	pattern. Also, the types of the arguments must match the respecitve
+	types used in the pattern.
+
+	\smallskip
+	Here are some examples of {\tt ATmake}:
+
+	\example{make.c}
+\item {\tt {\tt ATbool} ATmatch(\aterm\ t, const char *string);}
+	Matches an \aterm\ against a pattern, attempting to fill the `holes'.
+	If the \aterm\ matches the pattern, \ATtrue\ is returned and the
+	variables will be filled according to the pattern, otherwise \ATfalse\
+	is returned.
+
+	\smallskip
+	Here are a few examples of {\tt ATmatch}:
+
+	\example{match.c}
+\item {\tt ATreadFromString(const char *string);}\\
+	Reads (parses) an \aterm\ from a string. A convenience macro
+	{\tt ATparse} is included in {\tt aterm1.h}.
+\item {\tt ATreadFromTextFile(FILE *file);}\\
+	Reads (parses) an \aterm\ from a \emph{text} file.
+\item {\tt ATreadFromBinaryFile(FILE *file);}\\
+	Reads an \aterm\ from a {\sc BAF} file (See Section~\ref{baf})
+\item {\tt ATreadFromFile(FILE *file);}\\
+	Reads an \aterm from a file. A magic number detection is done to see if
+	the file is in {\tt BAF}. If so, it will read binary, otherwise it will
+	read the text file and parse it to an \aterm.
+\item {\tt ATparse(s)}:\\
+	A convenience macro for {\tt ATreadFromString} (q.v.)
+\item {\tt ATgetType(t)}:\\
+	A macro that returns the type of an \aterm. Result is one of the types
+	mentioned at the beginning of this section.
+\item {\tt ATisEqual(t1, t2)}:\\
+	A macro that tests equality of \aterms\ {\tt t1} and {\tt t2}.
+\item {\tt ATbool ATwriteToTextFile(\aterm\ t, FILE *f);}\\
+	Writes term {\tt t} to file {\tt f} in textual format.
+\item {\tt ATbool ATwriteToBinaryFile(\aterm\ t, FILE *F);}\\
+	Writes term {\tt t} to file {\tt f} in Binary ATerm Format ({\sc baf}).
+\item {\tt char *ATwriteToString(\aterm\ t);}\\
+	Writes term {\tt t} to an internal string buffer. The beginning of this
+	buffer is returned. Note that the contents of this buffer are volatile
+	and may be overwritten by any call to the \ATlib.
+\item {\tt \aterm\ ATsetAnnotation(\aterm\ t, \aterm\ label, \aterm\
+								   anno);}\\
+	Creates a version of {\tt t} that is annotated with label {\tt label}
+	and annotation {\tt anno}.
+\end{itemize}
+
+%--------------------[ LEVEL TWO INTERFACE ]--------------------
+
+\section{Level Two Interface}\label{lvl2}
+This section explains in detail the types and functions that are defined in
+the level two interface. These functions are declared in {\tt aterm2.h}
+
+\subsection{Level Two Types}\label{types2}
+In addition to the types explained in Section~\ref{types1}, the level two
+interface also uses the following types:
+\begin{itemize}
+	\item {\tt ATermInt}: an integer value;
+	\item {\tt ATermReal}: a real value;
+	\item {\tt ATermAppl}: a function application;
+	\item {\tt ATermList}: a list;
+	\item {\tt ATermPlaceholder}: a placeholder;
+	\item {\tt ATermBlob}: a Binary Large OBject;
+	\item {\tt ATermTable}: a hashtable of \aterms;
+\end{itemize}
+
+\subsection{Level Two Functionality}\label{func2}
+
+\end{document}

@@ -3,12 +3,21 @@ include general-make
 CHAPS	= at.ltx
 PICS	= header.ps encoding.ps
 
-all: at.ps
+EXAMPLEDIR		= examples
+EXAMPLEFILES	= init.c prot.c
+EXAMPLES		= $(patsubst %,$(EXAMPLEDIR)/%,$(EXAMPLEFILES))
+
+all: at.ps manual.ps
 
 at.ps: at.dvi $(PICS)
 	dvips at.dvi
 
 at.dvi: at.ltx ATerms.mtx $(CHAPS) $(PICS)
+
+manual.ps: manual.dvi
+	dvips manual.dvi
+
+manual.dvi: manual.ltx $(EXAMPLES)
 
 header.ps: header.fig
 	fig2dev -Lps header.fig header.ps
@@ -24,4 +33,3 @@ clean:
 		encoding.ps header.ps 
 
 # end of Makefile
-
