@@ -15,6 +15,7 @@ builtins_dict.c
 builtins_dict.h
 builtinstest
 classcheck.stamp
+cyclic
 list
 list.[ch]
 list.c
