@@ -1,27 +1,6 @@
 package apigen.gen.tom;
 
 public interface TomSignatureImplementation {
-	String StringName();
-	String StringImpl();
-	String StringCmpFunSym(String arg1, String arg2);
-	String StringGetFunSym(String arg);
-	String StringGetSubTerm(String arg1, String arg2);
-	String StringEquals(String arg1, String arg2);
-
-	String IntegerName();
-	String IntegerImpl();
-	String IntegerGetFunSym(String arg);
-	String IntegerCmpFunSym(String arg1, String arg2);
-	String IntegerGetSubTerm(String arg1, String arg2);
-	String IntegerEquals(String arg1, String arg2);
-
-	String DoubleName();
-	String DoubleImpl();
-	String DoubleGetFunSym(String arg);
-	String DoubleCmpFunSym(String arg1, String arg2);
-	String DoubleGetSubTerm(String arg1, String arg2);
-	String DoubleEquals(String arg1, String arg2);
-
 	String ATermName();
 	String ATermImpl();
 	String ATermGetFunSym(String arg);

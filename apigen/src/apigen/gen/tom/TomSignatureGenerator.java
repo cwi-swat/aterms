@@ -99,35 +99,10 @@ public class TomSignatureGenerator extends Generator {
 	}
 
 	private void genTomBuiltinTypes() {
-		println(
-			TypeTermTemplate(
-				impl.StringName(),
-				impl.StringImpl(),
-				impl.StringGetFunSym("t"),
-				impl.StringCmpFunSym("s1", "s2"),
-				impl.StringGetSubTerm("t", "n"),
-				impl.StringEquals("t1", "t2")));
-		println();
-		println(
-			TypeTermTemplate(
-				impl.IntegerName(),
-				impl.IntegerImpl(),
-				impl.IntegerGetFunSym("t"),
-				impl.IntegerCmpFunSym("s1", "s2"),
-				impl.IntegerGetSubTerm("t", "n"),
-				impl.IntegerEquals("t1", "t2")));
-		println();
-		/*
-		println(
-			TypeTermTemplate(
-				impl.DoubleName(),
-				impl.DoubleImpl(),
-				impl.DoubleGetFunSym("t"),
-				impl.DoubleCmpFunSym("s1", "s2"),
-				impl.DoubleGetSubTerm("t", "n"),
-				impl.DoubleEquals("t1", "t2")));
-		println();
-		*/
+		println("%include { string.tom }");
+		println("%include { int.tom }");
+		println("%include { double.tom }");
+		
 		println(
 			TypeTermTemplate(
 				impl.ATermName(),
