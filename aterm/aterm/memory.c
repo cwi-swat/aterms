@@ -679,6 +679,25 @@ ATermAppl ATmakeApplArray(Symbol sym, ATerm args[])
 }
 
 /*}}}  */
+/*{{{  ATermAppl ATsetArgument(ATermAppl appl, ATerm arg, int n) */
+
+/**
+  * Change one argument of an application.
+  */
+
+ATermAppl ATsetArgument(ATermAppl appl, ATerm arg, int n)
+{
+  int i, arity;
+  Symbol sym = ATgetSymbol(appl);
+
+  arity = ATgetArity(sym);
+  for(i=0; i<arity; i++)
+	arg_buffer[i] = (i == n ? arg : ATgetArgument(appl, i));
+
+  return ATmakeApplArray(sym, arg_buffer);
+}
+
+/*}}}  */
 
 /*{{{  ATermInt ATmakeInt(int val) */
 

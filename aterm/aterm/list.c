@@ -39,9 +39,8 @@ void AT_initList(int argc, char *argv[])
 
 static void resize_buffer(int n)
 {
-  free(buffer);
   buffer_size = n;
-  buffer = (ATerm *)malloc(buffer_size*sizeof(ATerm));
+  buffer = (ATerm *)realloc(buffer, buffer_size*sizeof(ATerm));
   if(!buffer) {
     ATerror("resize_buffer: cannot allocate list buffer of size %d\n",
 	    DEFAULT_LIST_BUFFER);
@@ -338,6 +337,34 @@ ATermList ATremoveElementAt(ATermList list, int idx)
   for(--i; i>=0; i--) {
     list = ATinsert(list, buffer[i]);
   }
+
+  return list;
+}
+
+/*}}}  */
+/*{{{  ATermList ATreplace(ATermList list, ATerm el, int idx) */
+
+/**
+  * Replace one element of a list.
+  */
+
+ATermList ATreplace(ATermList list, ATerm el, int idx)
+{
+  int i;
+
+  RESIZE_BUFFER(idx);
+
+  for(i=0; i<idx; i++) {
+	buffer[i] = ATgetFirst(list);
+	list = ATgetNext(list);
+  }
+  /* Skip the old element */
+  list = ATgetNext(list);
+  /* Add the new element */
+  list = ATinsert(list, el);
+  /* Add the prefix */
+  for(--i; i>=0; i--)
+	list = ATinsert(list, buffer[i]);
 
   return list;
 }
