@@ -58,7 +58,7 @@ public class GenericConstructorGenerator extends JavaGenerator {
 		println("   this.term = term;");
 		println("  }");
 		println();
-		println("  protected " + factoryName + " get" + factoryName + "() {");
+		println("  public " + factoryName + " get" + factoryName + "() {");
 		println("    return (" + factoryName + ") getFactory();");
 		println("  }");
 		println();
