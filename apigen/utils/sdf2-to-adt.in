@@ -103,7 +103,7 @@ ASFIX2ME=0
 
 # data needed
  APITABLE=${PKGDATA}/Sdf2-to-ADT.trm.tbl
-ADDLABELS=${PKGDATA}/AddLabels.asf
+ADDLABELS=${PKGDATA}/AddLabels.eqs
 
 # binaries
      SGLR=${SGLRBIN}/sglr
