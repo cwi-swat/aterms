@@ -19,7 +19,8 @@ Typical data being exchanged between and processed by these applications
 are (abstract) syntax trees.
 The \ATerm\ datatype is very close to this kind of
 datatype and it is therefore very natural to use \ATerms\ for internal 
-representation also. By providing a well-defined set of functions, it is possible
+representation as well. 
+By providing a well-defined set of functions, it is possible
 to perform operations on the \ATerms\ without first converting them to some 
 component specific representation.
 
@@ -114,7 +115,7 @@ to completely ignore annotations. Typical examples of the use of annotations
 include annotating parse trees with positional or typesetting information, 
 and annotating abstract syntax trees with the results of typechecking.}.
 
-Appendix \ref{concrete-syntax} contains a formal definition 
+Appendix \ref{concrete-syntax} contains a definition 
 of the concrete syntax of \ATerms. The primary reason for having a concrete
 syntax is to be able to exchange \ATerms\ in an accessible, humanly 
 readable form. In Section \ref{implementation} we also discuss a compact 
@@ -163,8 +164,8 @@ They take care of reading and writing terms,
 there is a predicate to check the equality of two terms,
 two functions {\tt make} and {\tt match} construct a term
 and to take a term apart, respectively.
-Both functions use a string pattern containing placeholders or gaps.
-These holes determine the places where \ATerms\ may be substituted.
+Both functions use a string pattern containing placeholders.
+These holes determine the places where \ATerms\ must be substituted.
 An example of a pattern is ``{\tt and(<int>,<appl>)}''.
 Patterns are in fact comparable to the format strings in the print statements
 in C.
@@ -200,7 +201,7 @@ term created by taking the string pattern, parsing it as a term and filling
  the gaps in the resulting term with values taken from {\tt args}.
 If the parse fails, a message is printed and the program is aborted.
 
-\item {\tt ATermList match(\emph{term}, \emph{pattern})}: Match \emph{term} against
+\item {\tt ATermList match(\emph{term}, \emph{pattern})}: Matches \emph{term} against
 \emph{pattern}, and return a list of substitutions for the placeholders
 in \emph{pattern}.
 If the parse fails, a message is printed and the program is aborted.
@@ -209,25 +210,25 @@ resulting substitutions.
 If the match fails, a special error value is returned.
 
 \item {\tt ATerm setAnnotation(\emph{term}, \emph{label}, \emph{annotation})}:
-Return a copy of \emph{term} with annotion labeled by \emph{label} changed
+Returns a copy of \emph{term} with annotion labeled by \emph{label} changed
 to \emph{annotation}. If \emph{term} does not have an annotation with
 the specified label, it is added.
 
 \item {\tt ATerm getAnnotation(\emph{term}, \emph{label})}:
-Retrieve the annotation labeled by \emph{label} of \emph{term}.
+Retrieves the annotation labeled by \emph{label} of \emph{term}.
 If \emph{term} does not have an annotation with the specified label,
 a special error value is returned.
 
-\item {\tt ATerm removeAnnotation(\emph{term}, \emph{label})}: Return a copy
+\item {\tt ATerm removeAnnotation(\emph{term}, \emph{label})}: Returns a copy
 of \emph{term} with its annotation labeled by \emph{label} removed.
 If \emph{term} does not have an annotation with the specified label,
 it is returned unchanged.
 
-\item {\tt Integer getType(\emph{term})}: Retrieve the type of a term. This
+\item {\tt Integer getType(\emph{term})}: Retrieves the type of a term. This
 operation returns one of the constants mentioned above.
 \end{itemize}
 Although this may seem a rather restricted set of functions, it
-is sufficiently powerful for most users to build simple applications
+provides enough functionality for most users to build simple applications
 with the \ATerm\ library.
 The set of operations is simple enough to learn in a relatively
 short period of time. We refer to this interface as the \emph{level one}
@@ -274,7 +275,7 @@ should be as small as possible.
 efficiently, both in time and space.
 \item External storage of \ATerms\ should be very cheap.
 \item It should be possible to exchange \ATerms\ between processes
-      (possibly running on different processors or even different machines)
+      (possibly running on different processors or even on different machines)
       without having to transfer large amounts of data, and without 
       needing excessive amounts of CPU time for (de)compression.
 \end{itemize}
@@ -558,6 +559,7 @@ inferior, because adding and deleting elements of a list would become to
 expensive. Consequently, we have opted for the linked list approach.
 Lists are constructed using binary list constructors, containing 
 a reference to the first element in the list and to the tail of the list.
+Each list operation must ensure that the list is ``normalized'' again.
 This makes it very easy to perform the most commonly used operations
 on list, namely adding or removing the first element of a list.
 
@@ -577,7 +579,7 @@ the number of elements in the newly created list.
 In this section, we will describe some of the more interesting
 implementation aspects of the C implementation of the \ATerm\
 datatype. We will first present the memory efficient encoding
-of \ATerms\ that we have chosen. We will explain how term sharing and
+of \ATerms\ that we have chosen. Next, we will explain how term sharing and
 garbage collection can be implemented efficiently using this encoding.
 Furthermore, we will describe how the different
 operations on \ATerms\ described in Section \ref{aterm}
@@ -745,8 +747,10 @@ objects, one list for each object size.
 Allocation of objects is now simply a matter of taking the first element
 from the appropriate free-list, which is an extremely cheap operation.
 If garbage collection does not yield enough free objects, new memory blocks
-will be allocated to satisfy allocation requests. 
+will be allocated to satisfy allocation requests.
 
+REMARK on how the distinction, between ATerm addresses and integers
+which are in the same range, is discovered.
 
 %}}}
 %{{{ The Binary ATerm Format (BAF)
@@ -1062,6 +1066,24 @@ compiler, see the next section.
 
 \subsection{ASF+SDF to C compiler}
 
+The \asdf\ to C compiler \cite{BKO99} is a compiler for the algebraic
+specification language \asdf~\cite{HHKR89.update,BHK89,DHK96}. 
+It generates ANSI-C code and is based on
+the run-time environment based on the \aterm\ library.
+The terms manipulated by the generated C code are represented as \aterms.
+This \asdf\ compiler has been applied successfully in a number of
+industrial projects \cite{BDKKM96,VanDenBrandKlintVerhoef:98}, such as
+the development of a domain-specific language for describing interest
+products (in the financial domain)~\cite{ADR95} and a renovation
+factory for restructuring of COBOL code \cite{BSV97b}. In such
+industrial applications, the execution speed is very important, but
+when processing huge COBOL programs memory usage becomes a critical
+issue as well.
+
+The \aterm\ library takes of the maximal sharing and the garbage collection.
+For both facilities no extra code needs to be generated.
+ 
+
 \subsection{JFG}
 
 %}}}
@@ -1075,6 +1097,10 @@ compiler, see the next section.
 \item GEL
 \end{itemize}
 
+%}}}
+%{{{ Figures
+
+\section{Some Figures on Performance and Reduction}
 %}}}
 %{{{ Conclusions
 
