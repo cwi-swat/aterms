@@ -26,7 +26,7 @@ public class TomSignatureGenerator extends Generator {
 		this.impl = impl;
 		this.prefix = params.getPrefix();
 	}
-
+	
 	public void generate() {
 		genTomBuiltinTypes();
 		genTomTypes(adt);

@@ -8,11 +8,11 @@ import apigen.gen.tom.TomSignatureImplementation;
 
 public class JavaTomSignatureGenerator extends TomSignatureGenerator {
 
-	private String apiName;
+	private String packageName;
 	
 	public JavaTomSignatureGenerator(ADT adt, TomSignatureImplementation impl, JavaTomGenerationParameters params) {
 		super(adt,  impl, params);
-		this.apiName = params.getApiName();
+		this.packageName = params.getPackageName();
 	}
 	
     public String getDirectory() {
@@ -25,11 +25,10 @@ public class JavaTomSignatureGenerator extends TomSignatureGenerator {
                   + File.separatorChar
                   + getPackageName().replace('.', File.separatorChar);
       }
-
       return dir;
   }
 	
 	public String getPackageName() {
-    return apiName/*.toLowerCase()*/;
+    return packageName/*.toLowerCase()*/;
 	}
 }
