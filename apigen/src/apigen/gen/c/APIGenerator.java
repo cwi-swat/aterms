@@ -190,12 +190,15 @@ public class APIGenerator extends CGenerator {
 		              buildListManyFormalArgsWithoutHeadAndTail(type) + typeName + " arg1)";
 		hprintln(decl + ";");
 		println(decl + " {");
-		println("  if (ATisEmpty(arg0)) {");
+		println("  if (ATisEmpty((ATermList) arg0)) {");
 		println("    return arg1;");
 		println("  }");
-		println("  arg1 = " + prefix + "make" + typeName + "Many(("+ elementTypeName + ")ATparse(\"0\"), " +
+		// First we 'fake' a new list insertion using the first element of arg0 as a dummy value
+		println("  arg1 = " + prefix + "make" + typeName + "Many(("+ elementTypeName + ")ATgetFirst((ATermList) arg0), " +
 		           buildListManyActualArgsWithoutHeadAndTail(type) + " arg1);");
+        // Then we remove the dummy value in type unsafe mode to get a list that starts with the expected separators
 		println("  arg1 = (" + typeName + ") ATgetNext((ATermList) arg1);");
+        // Now we can concatenate
 		println("  return (" + typeName + ") ATconcat((ATermList) arg0, (ATermList) arg1);");
 		println("}");
 	}
