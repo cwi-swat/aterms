@@ -70,12 +70,14 @@ EXTRA_DIST = \
 rolodex.c rolodex.h: rolodex.adt
 	${ADTC} \
 		--input ${top_srcdir}/test/rolodex.adt \
+		--name rolodex \
 		--compat-term \
 		--classpath ${top_builddir}:${JAVA_ATERM}:${SHARED_OBJECTS}
 
 list.c list.h: list.adt list.pro
 	${ADTC} \
 		--input ${top_srcdir}/test/list.adt \
+		--name list \
 		--prologue ${top_srcdir}/test/list.pro \
 		--compat-term \
 		--classpath ${top_builddir}:${JAVA_ATERM}:${SHARED_OBJECTS}
@@ -83,21 +85,22 @@ list.c list.h: list.adt list.pro
 builtins.c builtins.h: builtins.adt 
 	${ADTC} \
 		--input ${top_srcdir}/test/builtins.adt \
+		--name builtins \
 		--classpath ${top_builddir}:${JAVA_ATERM}:${SHARED_OBJECTS}
 
 %.java.sh: Makefile
 	${ADTJAVA} --input ${top_srcdir}/test/$*.adt \
-	           --output ${top_srcdir}/test/$* \
-		   --package org.example \
+	           --output ${top_srcdir} \
+		   --package test \
 		   --name $* \
 		   --classpath ${top_builddir}
-	(cd ${top_srcdir} ; pwd ;\
+	(cd ${top_srcdir}; \
          CLASSPATH=.:${top_srcdir}:${JAVA_ATERM}:${SHARED_OBJECTS} \
          ${JAVAC} test/$($*_Main).java)
-	@(echo "#! /bin/sh";\
-	  echo "CLASSPATH=.:${top_srcdir}:${JAVA_ATERM}:${SHARED_OBJECTS}";\
-	  echo "export CLASSPATH";\
-          echo "cd ${top_srcdir}/test" ;\
+	@(echo "#! /bin/sh"; \
+	  echo "CLASSPATH=.:${top_srcdir}:${JAVA_ATERM}:${SHARED_OBJECTS}"; \
+	  echo "export CLASSPATH"; \
+          echo "cd ${top_srcdir}/test"; \
 	  echo "java test.$($*_Main) ${top_srcdir}/test")
 	> $@ \
 	&& chmod +x $@
