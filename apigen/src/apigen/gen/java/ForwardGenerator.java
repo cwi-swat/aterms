@@ -6,6 +6,7 @@ import java.util.List;
 
 import apigen.adt.ADT;
 import apigen.adt.Alternative;
+import apigen.adt.ListType;
 import apigen.adt.Type;
 import apigen.gen.StringConversions;
 
@@ -35,21 +36,36 @@ public class ForwardGenerator extends JavaGenerator {
 		while(types.hasNext()) {
 			Type type = (Type) types.next();
 			Iterator alts = type.alternativeIterator();
-            while (alts.hasNext()) {
-                Alternative alt = (Alternative) alts.next();
-                genVisit(type, alt);
-            }
+			
+			if (type instanceof ListType) {
+				genListVisit(type);
+			} 
+			else {
+              while (alts.hasNext()) {
+                  Alternative alt = (Alternative) alts.next();
+                  genVisit(type, alt);
+              }
+			}
 		}
+	}
+
+	private void genListVisit(Type type) {
+		String className = ListTypeGenerator.className(type);
+		String classImplName = ListTypeImplGenerator.className(type);
+		genVisitMethod(className, classImplName);
+	}
+
+	private void genVisitMethod(String className, String classImplName) {
+		println("public void visit_" + className + "(" + classImplName + " arg) throws jjtraveler.VisitFailure {");
+		println("  any.visit(arg);");
+		println("}");
 	}
 
 	private void genVisit(Type type, Alternative alt) {
         String className =  AlternativeGenerator.className(type,alt);
         String classImplName =  AlternativeImplGenerator.className(type,alt);
         
-		println("public void visit_" + className + "(" + classImplName + " arg ) throws jjtraveler.VisitFailure {");
-        println("  any.visit(arg);");
-        println("}");
-		
+        genVisitMethod(className, classImplName);
 	}
 
 	protected void generate() {
@@ -58,8 +74,8 @@ public class ForwardGenerator extends JavaGenerator {
         println("public class Fwd extends Visitor implements jjtraveler.Visitor");
         println("{");
         genConstructor();
-	genVoidVisit();
-	genVisits(adt);
+	    genVoidVisit();
+	    genVisits(adt);
         println("}");
 	}
 

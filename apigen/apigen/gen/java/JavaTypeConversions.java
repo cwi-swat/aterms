@@ -13,11 +13,11 @@ public class JavaTypeConversions implements TypeConversions {
 	}
 
 	public String TermType() {
-		return "ATerm";
+		return "aterm.ATerm";
 	}
 
 	public String ListType() {
-		return "ATermList";
+		return "aterm.ATermList";
 	}
 
   public String StringType() {

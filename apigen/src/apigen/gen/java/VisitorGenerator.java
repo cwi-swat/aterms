@@ -5,6 +5,7 @@ import java.util.List;
 
 import apigen.adt.ADT;
 import apigen.adt.Alternative;
+import apigen.adt.ListType;
 import apigen.adt.Type;
 
 public class VisitorGenerator extends JavaGenerator {
@@ -44,18 +45,33 @@ public class VisitorGenerator extends JavaGenerator {
 		Iterator types = adt.typeIterator();
 		while (types.hasNext()) {
 			Type type = (Type) types.next();
-			Iterator alts = type.alternativeIterator();
-			while (alts.hasNext()) {
-				Alternative alt = (Alternative) alts.next();
-				genVisit(type, alt);
+			
+			if (type instanceof ListType) {
+			  genListVisit(type);	
+			}
+			else {
+			  Iterator alts = type.alternativeIterator();
+			  while (alts.hasNext()) {
+				  Alternative alt = (Alternative) alts.next();
+			  	  genVisit(type, alt);
+			  }
 			}
 		}
+	}
+
+	private void genListVisit(Type type) {
+		String className = ListTypeGenerator.className(type);
+		String classImplName = ListTypeImplGenerator.className(type);
+		genVisitDecl(classImplName, className);
 	}
 
 	private void genVisit(Type type, Alternative alt) {
 		String classImplName = AlternativeImplGenerator.className(type, alt);
         String className = AlternativeGenerator.className(type, alt);
-        
+		genVisitDecl(classImplName, className);
+	}
+
+	private void genVisitDecl(String classImplName, String className) {
 		println("public abstract void visit_" + className + "(" + classImplName + " arg ) throws jjtraveler.VisitFailure;");
 	}
 

@@ -10,6 +10,7 @@ import java.util.List;
 
 import apigen.adt.ADT;
 import apigen.adt.Alternative;
+import apigen.adt.ListType;
 import apigen.adt.Type;
 import apigen.adt.api.ADTFactory;
 import apigen.adt.api.Entries;
@@ -109,9 +110,9 @@ public class Main {
 
 	static public void run(InputStream input) {
 		try {
-      ADTFactory factory = new ADTFactory();
-      ATerm raw = factory.readFromFile(input);
-      Entries entries = Entries.fromTerm(raw);      
+			ADTFactory factory = new ADTFactory();
+			ATerm raw = factory.readFromFile(input);
+			Entries entries = Entries.fromTerm(raw);
 			generateAPI(new ADT(entries));
 		} catch (ParseError e) {
 			System.err.println("A parse error occurred in the ADT file:");
@@ -126,15 +127,15 @@ public class Main {
 		new GenericConstructorGenerator(adt, basedir, apiName, pkg, verbose, visitable, 0).run();
 		new MakeRulesGenerator(adt, basedir, apiName, verbose).run();
 
-        if (visitable) {
-        	new VisitorGenerator(adt,basedir,apiName,pkg,imports,verbose,folding).run();
-        	new ForwardGenerator(adt,basedir,apiName,pkg,imports,verbose,folding).run();
-        }
-        
+		if (visitable) {
+			new VisitorGenerator(adt, basedir, apiName, pkg, imports, verbose, folding).run();
+			new ForwardGenerator(adt, basedir, apiName, pkg, imports, verbose, folding).run();
+		}
+
 		if (jtom) {
 			JavaTomSignatureImplementation sigImpl = new JavaTomSignatureImplementation(apiName, jtype);
 			new TomSignatureGenerator(adt, sigImpl, basedir, apiName, prefix, verbose, folding).run();
-        }
+		}
 
 		generateTypeClasses(adt);
 	}
@@ -143,9 +144,15 @@ public class Main {
 		Iterator types = api.typeIterator();
 		while (types.hasNext()) {
 			Type type = (Type) types.next();
-			new TypeImplGenerator(type, basedir, pkg, apiName, imports, verbose).run();
-			new TypeGenerator(type, basedir, pkg, imports, verbose, folding).run();
-			generateAlternativeClasses(type);
+
+			if (type instanceof ListType) {
+				new ListTypeImplGenerator((ListType) type, basedir, pkg, apiName, imports, verbose).run();
+				new ListTypeGenerator(type, basedir, pkg, imports, verbose, folding).run();
+			} else {
+				new TypeImplGenerator(type, basedir, pkg, apiName, imports, verbose).run();
+				new TypeGenerator(type, basedir, pkg, imports, verbose, folding).run();
+				generateAlternativeClasses(type);
+			}
 		}
 	}
 

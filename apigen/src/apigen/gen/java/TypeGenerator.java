@@ -26,11 +26,16 @@ public class TypeGenerator extends JavaGenerator {
 
   public static String className(String type) {
     String res = StringConversions.makeIdentifier(converter.getType(type));
-    if(res.equals("ATerm")) {
+    /* TODO:
+     * This code does not belong here, it should be solved in 
+     * JavaTypeConversions. I've commented it out and put it into that class
+     * to see what happens.  
+     * if(res.equals("ATerm")) {
       res = "aterm." + res;
     } else if(res.equals("ATermList")) {
       res = "aterm." + res;
     }
+    */
     return res;
   }
     
@@ -52,8 +57,12 @@ public class TypeGenerator extends JavaGenerator {
 	    printTypeClass(type); 
 	 }
 	 
-	private void printTypeClass(Type type) {
-		println("abstract public class " + className);
+	protected String classModifier() {
+		return "public abstract";
+	}
+	
+	protected void printTypeClass(Type type) {
+		println(classModifier() + " class " + className);
 		println("extends " + TypeImplGenerator.className(type));
 		println("{");
 		println();
