@@ -78,7 +78,7 @@ public class FactoryGenerator extends JavaGenerator {
             Type type = (Type) types.next();
 
             if (type instanceof NormalListType) {
-                genFactoryListTypeFromTerm((NormalListType) type);
+                genListTypeFromTerm((NormalListType) type);
             } else if (type instanceof SeparatedListType) {
                 genSeparatedListTypeFromTermMethod((SeparatedListType) type);
             } else {
@@ -543,7 +543,7 @@ public class FactoryGenerator extends JavaGenerator {
 
             if (type instanceof ListType) {
                 if (type instanceof SeparatedListType) {
-                    genFactorySeparatedListToTerm((SeparatedListType) type);
+                    genSeparatedListToTerm((SeparatedListType) type);
                 }
             } else {
                 Iterator alts = type.alternativeIterator();
@@ -922,7 +922,7 @@ public class FactoryGenerator extends JavaGenerator {
         println();
     }
 
-    private void genFactoryListTypeFromTerm(NormalListType type) {
+    private void genListTypeFromTerm(NormalListType type) {
         JavaGenerationParameters params = getJavaGenerationParameters();
         String returnTypeName = TypeGenerator.qualifiedClassName(params, type);
         String className = TypeGenerator.className(type);
@@ -1012,7 +1012,8 @@ public class FactoryGenerator extends JavaGenerator {
         println();
         println("    if (list.getLength() == 1) {");
 
-        String singletonElement = buildFromTermListElement(elementType, "list.getFirst()");
+        String singletonElement =
+            buildFromTermListElement(elementType, "list.getFirst()");
 
         String elementClass = TypeGenerator.className(elementType);
         String elementClassFromTerm = elementClass + "FromTerm";
@@ -1055,7 +1056,8 @@ public class FactoryGenerator extends JavaGenerator {
         println("      java.util.List children = nodes[i];");
         String elementTypeName = TypeGenerator.qualifiedClassName(params, elementType);
 
-        String head = buildFromTermListElement(elementType, "(aterm.ATerm) children.get(0)");
+        String head =
+            buildFromTermListElement(elementType, "(aterm.ATerm) children.get(0)");
         println("      " + elementTypeName + " head = " + head + ";");
 
         genFromTermSeparatorFieldAssigments(type);
@@ -1073,10 +1075,7 @@ public class FactoryGenerator extends JavaGenerator {
 
     private String buildFromTermListElement(String elementType, String element) {
         if (getConverter().isReserved(elementType)) {
-            element =
-                getConverter().makeATermToBuiltinConversion(
-                    elementType,
-                    element);
+            element = getConverter().makeATermToBuiltinConversion(elementType, element);
         } else {
             String elementClass = TypeGenerator.className(elementType);
             element = elementClass + "FromTerm(" + element + ")";
@@ -1093,7 +1092,7 @@ public class FactoryGenerator extends JavaGenerator {
         return separatorArgs;
     }
 
-    private void genFactorySeparatedListToTerm(SeparatedListType type) {
+    private void genSeparatedListToTerm(SeparatedListType type) {
         String paramTypeName =
             TypeGenerator.qualifiedClassName(getJavaGenerationParameters(), type);
         String manyPattern = patternListVariable(type);
@@ -1125,20 +1124,20 @@ public class FactoryGenerator extends JavaGenerator {
         println();
 
         String continueConversion = "";
-        String head = "First";
         if (!getConverter().isReserved(elementType)) {
             continueConversion = ".toTerm()";
-            head = "Head";
         }
-        println(
-            "    aterm.ATermList result = factory.makeList(nodes[0].get"
-                + head
-                + "()"
-                + continueConversion
-                + ");");
+        String convertedHead = getConverter().makeBuiltinToATermConversion(elementType, "nodes[0].getHead()");
+        convertedHead += continueConversion;
+
+        println("    aterm.ATerm result = factory.makeList(" + convertedHead + ");");
         println("    for (int i = 1; i < length; i++) {");
         println("      java.util.List args = new java.util.LinkedList();");
-        println("      args.add(nodes[i].get" + head + "()" + continueConversion + ");");
+
+        String boxedHead = BoxingBuilder.buildBoxer(elementType, "nodes[i].getHead()");
+        boxedHead += continueConversion;
+
+        println("      args.add(" + boxedHead + ");");
 
         Iterator separators = type.separatorFieldIterator();
         while (separators.hasNext()) {
@@ -1148,16 +1147,18 @@ public class FactoryGenerator extends JavaGenerator {
             String capitalizedFieldId =
                 StringConversions.makeCapitalizedIdentifier(fieldId);
             String fieldGetter = "get" + capitalizedFieldId + "()";
+            String boxedField = BoxingBuilder.buildBoxer(fieldType, fieldGetter);
 
             continueConversion = ".toTerm()";
             if (getConverter().isReserved(fieldType)) {
                 continueConversion = "";
             }
-            println("      args.add(nodes[i]." + fieldGetter + continueConversion + ");");
+            boxedField += continueConversion;
+            println("      args.add(nodes[i]." + boxedField + ");");
         }
 
         println("      args.add(result);");
-        println("      result = (aterm.ATermList) " + manyPattern + ".make(args);");
+        println("      result = " + manyPattern + ".make(args);");
         println("    }");
         println();
         println("    return result;");

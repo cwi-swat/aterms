@@ -1,6 +1,7 @@
 package test;
 
 import test.builtins.Factory;
+import test.builtins.types.SepIntList;
 import aterm.pure.PureFactory;
 
 public class BuiltinsTest {
@@ -30,6 +31,16 @@ public class BuiltinsTest {
 
 		test.builtins.types.D s = factory.makeD_Sstring("one");
 		testAssert(s.toString().equals("str(\"one\")"), "make str test");
+        
+        SepIntList sepi1 = factory.makeSepIntList(1);
+        SepIntList sepi2 = factory.makeSepIntList(2,"sep",sepi1);
+        testAssert(sepi2.toString().equals("[2,\"sep\",\",\",1]"),"make builtins list");
+        
+        SepIntList sepi3 = factory.makeSepIntList(2);
+        SepIntList sepi4 = factory.makeSepIntList(1,"sep",sepi3);
+        testAssert(sepi2.reverseSepIntList().isEqual(sepi4),"reverse separated builtins list");   
+        
+        //TODO: extend tests to cover whole of generated list API
 	}
 
 	public final static void main(String[] args) {

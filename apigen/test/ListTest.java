@@ -80,13 +80,16 @@ public class ListTest {
 		testAssert(l.isSortModuleList() == true, "is<type> test");
 		testAssert(l.isModules() == true, "is<cons> test");
 
-		/*
-		 * Test whether we get a term of the correct type! A ClassCastException
-		 * will occur otherwise
-		 */
 		String example = "[]";
-		ATerm termExample = factory.getPureFactory().parse(example);
-		mods[4] = (Modules) factory.makeModules();
+        ATerm termExample;
+        
+        try {
+		  termExample = factory.getPureFactory().parse(example);
+		  mods[4] = (Modules) factory.makeModules();
+        }
+        catch (ClassCastException ex) {
+            testAssert(false, "ClassCastException occurred due to wrong equivalence implementation");
+        }
 
 		example = "\"amodule\"";
 		termExample = factory.getPureFactory().parse(example);

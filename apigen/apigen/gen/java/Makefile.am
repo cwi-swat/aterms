@@ -20,4 +20,5 @@ java_JAVA = \
 	SeparatedListTypeGenerator.java \
 	TypeGenerator.java \
 	VisitorGenerator.java \
-	EquivalentBuilder.java
+	EquivalentBuilder.java \
+	BoxingBuilder.java
