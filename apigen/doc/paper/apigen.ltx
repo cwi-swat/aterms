@@ -1244,9 +1244,9 @@ pre-processor phase, without any form of type checking on the arguments
 of the macro.
 
 % }}}
-% {{{  Equality tests
+% {{{  Equality test
 
-\heading{Equality tests}
+\heading{Equality test}
 
 Because \aterms\ are used as implementation, we get the trivial equality
 check based on memory address comparison for free. We only need to
@@ -1296,6 +1296,14 @@ themselves do not directly invoke \texttt{isValidBool}. Efficiency
 of the \texttt{BoolToTerm} function could be traded for even more
 robustness, by making it refuse to convert any \aterm\ that does not
 satisfy \texttt{isValidBool}.
+
+Also note that the \texttt{isBoolX} functions perform a \emph{shallow}
+match: they do not check the \emph{arguments} of the alternative they
+test. For example, \texttt{isBoolAnd} does not check if its \texttt{lhs}
+and \texttt{rhs} are actually valid booleans. It merely tests if the
+term is an instance of the pattern for the \texttt{and} alternative.
+It would be possible to generate code that performs a \emph{deep} match,
+again at the cost of a considerable efficiency hit.
 
 % }}}
 % {{{  Inspector
