@@ -46,5 +46,5 @@ ${JAVADOCDIR}.tar.gz: ${JAVA_FILES}
 noinst_SCRIPTS = ${PACKAGE}-${VERSION}.pkg
 
 ${PACKAGE}-${VERSION}.pkg: package Makefile
-	cp $ < $@
+	cp $< $@
 
