@@ -19,6 +19,9 @@
 
 $Id$
 
+2000/10/31 (jong@cwi.nl)
+  * Fixed "configure --help" statement for --with-prof
+
 2000/9/06 ({jong,olivierp}@cwi.nl)
   * Added _ for struct names to avoid C++ problems
   * Version 1.4.4
