@@ -1,59 +1,159 @@
 #!/bin/sh
-PRG=`basename $0`
-DATE=`date`
 
-# {{{ autoconf variables
+# {{{ variables
 
-prefix=@prefix@
+     prefix=@prefix@
 exec_prefix=@exec_prefix@
-bindir=@bindir@
-datadir=@datadir@
+     bindir=@bindir@
+    datadir=@datadir@
+        PRG=`basename $0`
 
 # }}}
+
 # {{{ usage()
 
 usage() {
 cat << ENDCAT >&2
-Usage   : $PRG <module> <options>
-Example : $PRG Booleans -prefix SDF -prologue Booleans.pro
-Note    : <options> are passed to apigen.c.CGen.
+Usage: $PRG -i <adt-file> -p <prologue> [options]
+
+Parameters:
+
+  -i | --input <FILE>     specify input adt                [not specified]
+  -p | --prologue <FILE>  specify prologue-code file       [not specified]
+  -o | --output <STEM>    generate <STEM>.[ch] etc.        [improvised]
+  -P | --prefix <STR>     specify API-prefix               [""]
+  -c | --classpath <PATH> override CGen classes            [see below]
+  -d | --dicttoc <FILE>   override default dicttoc         [see below]
+  -v | --verbose          be verbose during generation     [off]
+  -h | --help             display this information
+
+Default locations:
+  classes = ${CGEN}
+  dicttoc = ${DICTTOC}
+
+Example: $PRG -i Booleans.adt -prefix SDF -prologue Booleans.pro
+
 ENDCAT
 }
 
 # }}}
 
-# {{{ check argument count
+# {{{  info()
 
-if test $# -lt 1
-then
+info () {
+  if [ $VERBOSE -gt 0 ]; then
+    echo $* >&2
+   fi
+}
+
+# }}}
+# {{{  error()
+
+error() {
+  echo "${PRG}: $*" >&2
+  exit 1
+}
+
+# }}}
+# {{{  require()
+
+require() {
+  [ -f $1 ] || error "no such file: $1"
+}
+
+# }}}
+
+# {{{  default settings
+
+# settings/options
+   INPUT=""
+  PREFIX=""
+PROLOGUE=""
+ VERBOSE=0
+
+# data needed
+   CGEN=${prefix}/classes
+DICTTOC=${bindir}/dicttoc
+
+# }}}
+
+# {{{  handle command line options
+
+if [ $# -eq 0 ]; then
   usage
   exit 1
 fi
 
+while [ $# -gt 0 ]
+do
+  case $1 in
+    -i | --input)
+      shift; INPUT=$1 ;;
+
+	-o | --output)
+	  shift; OUTPUT=$1 ;;
+
+    -p | --prologue)
+      shift; PROLOGUE=$1 ;;
+
+    -P | --prefix)
+      shift; PREFIX=$1 ;;
+
+    -c | --classpath)
+      shift; CGEN=$1 ;;
+
+    -d | --dicttoc)
+      shift; DICTTOC=$1 ;;
+
+    -v | --verbose)
+      VERBOSE=1 ;;
+
+    -h | --help)
+      usage; exit 0 ;;
+
+    *)
+      error "unknown option: $1"
+  esac
+  shift
+done
+
 # }}}
 
-# {{{ Variable section
+# {{{ sanity checks and variable setup
 
-MODULE=$1
-shift
+if [ "a${INPUT}" == "a" ]; then
+  error "no input file specified (use -i <file>)"
+else
+  require ${INPUT}
+fi
 
-APIFILE="${MODULE}.adt"
+if [ "a${PROLOGUE}" == "a" ]; then
+  error "no prologue file specified (use -p <file>)"
+else
+  require ${PROLOGUE}
+fi
 
-DICTTOC=${bindir}/dicttoc
-GENCAPI="java -classpath ${CLASSPATH}:${prefix}/classes apigen.c.CGen"
+if [ "a${OUTPUT}" == "a" ]; then
+  OUTPUT=`basename ${INPUT} | cut -d. -f1`
+  info "Improvising output-stem: ${OUTPUT}"
+fi
 
-# }}}
-
-# {{{ Sanity check
-
-if test ! -f ${MODULE}.adt
-then
-  echo "could not find adt-file: ${MODULE}.adt" >&2
-  exit 1
+if [ "a${PREFIX}" == "a" ]; then
+  OPTIONAL_PREFIX=""
+else
+  OPTIONAL_PREFIX="-prefix ${PREFIX}"
 fi
 
 # }}}
 
-${GENCAPI} -input ${MODULE}.adt -output ${MODULE} $@
-${DICTTOC} -dict ${MODULE}.dict
+# {{{  generate C code from ADT
 
+java  -classpath ${CGEN} apigen.c.CGen \
+	  -input ${INPUT} \
+	  -output ${OUTPUT} \
+	  -prologue ${PROLOGUE} \
+	  ${OPTIONAL_PREFIX}
+
+${DICTTOC} -dict ${OUTPUT}.dict
+
+# }}}

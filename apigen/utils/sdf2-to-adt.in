@@ -12,7 +12,6 @@ exec_prefix=@exec_prefix@
  ASOURCEBIN=@ASOURCEBIN@
     PKGDATA=${datadir}/@PACKAGE@
         PRG=`basename $0`
-       DATE=`date`
 
 # }}}
 
@@ -24,15 +23,15 @@ Usage: $PRG -i <sdf2-specification> [options]
 
 Parameters:
   
-  -i | --input  <FILE>    specify input specification       [not specified]
-  -o | --output <FILE>    specify name of generated ADT     [default: <IN>.adt]
-  -t | --table  <FILE>    specify the APIGEN-table to use   [see below]
-  -l | --label  <FILE>    specify labeling equations        [see below]
-  -g | --generator <FILE> specify compiled generator        [see below]
-  -e | --expand-cons      propagate cons-annotations        [on]
-  -r | --remove-cons      remove cons-annotations           [off]
-  -v | --verbose          be verbose during generation      [off]
-  -s | --skip-cleanup     skip cleanup (debugging aid)      [off]
+  -i | --input  <FILE>    specify input specification      [not specified]
+  -o | --output <FILE>    specify name of generated ADT    [default: <IN>.adt]
+  -e | --expand-cons      propagate cons-annotations       [on]
+  -r | --remove-cons      remove cons-annotations          [off]
+  -t | --table <FILE>     override APIGEN-parsetable       [see below]
+  -l | --label <FILE>     override labeling equations      [see below]
+  -g | --generator <FILE> override compiled generator      [see below]
+  -v | --verbose          be verbose during generation     [off]
+  -s | --skip-cleanup     skip cleanup (debugging aid)     [off]
   -h | --help             display this information
 
 Default locations:
@@ -63,6 +62,13 @@ error() {
 }
 
 # }}}
+# {{{  require()
+
+require() {
+  [ -f $1 ] || error "no such file: $1"
+}
+
+# }}}
 # {{{  cleanup()
 
 cleanup() {
@@ -78,13 +84,6 @@ cleanup() {
       ls -l .api_[0-4]_$$
     fi
   fi
-}
-
-# }}}
-# {{{  err()
-
-err() {
-  error "Bailing out!"
 }
 
 # }}}
@@ -111,15 +110,12 @@ APPLYFUNC=${EVALBIN}/apply-function
 
 # }}}
 
-# {{{ check command line
+# {{{  handle command line options
 
 if [ $# -eq 0 ]; then
   usage
   exit 1
 fi
-
-# }}}
-# {{{  handle command line options
 
 while [ $# -gt 0 ]
 do
@@ -162,14 +158,15 @@ done
 
 # }}}
 
-# {{{ Sanity checks and variable setup
+# {{{ sanity checks and variable setup
 
 if [ "a${INPUT}" == "a" ]; then
   error "no input file specified (use -i <file>)"
+else
+  require ${INPUT}
 fi
 
-[ -f ${INPUT} ] || error "no such file: ${INPUT}"
-[ -f ${APITABLE} ] || error "no such file: ${APITABLE}"
+require ${APITABLE}
 
 if [ "a$OUTPUT" == "a" ]; then
   OUTPUT=${INPUT}.adt
@@ -177,7 +174,14 @@ fi
 
 # }}}
 
-# {{{  Generate API
+# {{{  err()
+
+err() {
+  error "Bailing out!"
+}
+
+# }}}
+# {{{  generate ADT from SDF
 
 trap cleanup EXIT
 

@@ -51,13 +51,23 @@ booltest_DEPENDENCIES	= booltest.af1 libBooleans.a
 %INTERMEDIATE: Booleans.adt
 
 rolodex.c rolodex.h: rolodex.adt rolodex.pro
-	${top_srcdir}/utils/adt-to-c rolodex -prologue rolodex.pro
+	${top_srcdir}/utils/adt-to-c	\
+		--input rolodex.adt	\
+		--prologue rolodex.pro	\
+		--classpath ${top_srcdir}:${ATERM}/classes
 
 list.c list.h: list.adt list.pro
-	${top_srcdir}/utils/adt-to-c list -prologue list.pro
+	${top_srcdir}/utils/adt-to-c	\
+		--input list.adt	\
+		--prologue list.pro	\
+		--classpath ${top_srcdir}:${ATERM}/classes
 
 Booleans.c Booleans.h: Booleans.adt Booleans.pro
-	${top_srcdir}/utils/adt-to-c Booleans -prologue Booleans.pro -prefix SDF
+	${top_srcdir}/utils/adt-to-c	\
+		--input Booleans.adt	\
+		--prologue Booleans.pro	\
+		--prefix SDF		\
+		--classpath ${top_srcdir}:${ATERM}/classes
 
 booltest.af1: Booleans.trm.tbl booltest.trm
 	${SGLR} -1 -p Booleans.trm.tbl -i booltest.trm -o $@
