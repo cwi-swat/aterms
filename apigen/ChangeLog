@@ -4,12 +4,14 @@
    of the jar files.
  * Changed test directory to generate API's in subdirectories. automake-time
    inclusion of generated Makefiles is no longer necessary in this new setup.
+ * Added test of jjtraveller interface
+ * Set version to 1.6 to start wrapping up a release
 
 2003-03-15  (jurgenv@cwi.nl)
  * Added generation of jjtraveler interface
  * Fixed some bugs in C generation that were introduced in the last refactoring 
- * Internal AFun name of a constructor is now equal to the ADT constructor name in the
-   Java backend.
+ * Internal AFun name of a constructor is now equal to the ADT constructor name 
+   in the Java backend.
 
 2003-03-11  Pierre-Etienne Moreau  <pem@escher.loria.fr>
  * --jtype option added to generate tom constructors with prefix
