@@ -1294,10 +1294,10 @@ void testCompare()
   ATerm atlist4 = ATmake("[0,2,3]");
 
   /* placeholder smaller */
-  ATerm atplaceholder1 = ATmake("<serm>");
+  ATerm atplaceholder1 = ATparse("<serm>");
 
   /* placeholder bigger */
-  ATerm atplaceholder2 = ATmake("<uerm>");
+  ATerm atplaceholder2 = ATparse("<uerm>");
 
   /* annos smaller */
   ATerm atanno1 = ATmake("f(a)");
@@ -1364,6 +1364,7 @@ void testCompare()
   test_assert("blob-cmp", 3, ATcompare(atblob,atblob3) == -1);
   test_assert("blob-cmp", 4, ATcompare(atblob4,atblob) == -1);
 
+  printf("compare tests ok.\n");
 }
 
 /*}}}  */
@@ -1408,7 +1409,7 @@ int main(int argc, char *argv[])
 #ifndef NO_SHARING
   testDiff();
 #endif
-
+  testCompare();
   return 0;
 }
 
