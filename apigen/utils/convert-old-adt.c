@@ -19,7 +19,7 @@ void usage(void)
 {
     fprintf(stderr,
 	"\n%s converts ADT files in old style to new style ADT files\n\n"
-        "Usage: %s -V -o <output> -h <file-1> ... <file-n>\n"
+        "Usage: %s -i <input> -o <output> -[Vhl]\n"
         "Options:\n"
         "\t-h              display help information (usage)\n"
 	"\t-i              ADT file in old format (default stdin)\n"
