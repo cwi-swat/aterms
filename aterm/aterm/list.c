@@ -670,10 +670,6 @@ void ATtablePut(ATermTable table, ATerm key, ATerm value)
   unsigned int hnr = TABLE_HASH((unsigned int)key, key->header);
   hnr %= table->size;
 
-
-  assert(AT_isValidTerm(key));
-  assert(AT_isValidTerm(value));
-
   table->entries[hnr] = (ATermList)ATdictPut((ATerm)table->entries[hnr], 
 											 key, value);
 	table->nr_entries++;
