@@ -11,14 +11,14 @@
 
 \begin{sloppypar} Since the development of the \atlib~\cite{BJKO2000}
 in 1999, its use for the implementation of tree-like data structures has
-become quite popular amongst developers of scanners, parsers, rewrite
+become quite popular among developers of scanners, parsers, rewrite
 engines and model checkers. Apart from its inevitable deployment in the
 tools of the \metaenv~\cite{Kli93,BKMO97,tool.demo} for which it was
-specifically designed, the \atlib\ is used amongst others in: the ELAN
+specifically designed, the \atlib\ is used amnesty others in: the ELAN
 system~\cite{BR01}, the XT Program Transformation Tools~\cite{xt} which
 are based on the Stratego Language~\cite{Stratego}, the CoFI Algebraic
 Specification Language CASL~\cite{caslsum,CoFI}, and the $\mu$CRL ToolSet
-for Analysing Algebraic Specifications~\cite{mucrl-toolset}. \aterms\
+for Analyzing Algebraic Specifications~\cite{mucrl-toolset}. \aterms\
 include several nice features: they are easy to manipulate yet very
 efficient; they come with a built-in garbage collector (in the
 \C\ library), and they have persistence support in the form of a
@@ -1539,7 +1539,7 @@ provide an authoritative description of the formats used, and to generate
 a consistent \api\ as described in this paper.
 
 \item Replacing all direct, untyped \aterm-manipulations by typed calls
-to the generated \api. In practise, this often amounted to replacing
+to the generated \api. In practice, this often amounted to replacing
 large sections of code by concise snippets or even a single invocation
 of the \api, clearly demonstrating the transition to a higher level of
 abstraction. The fact that we now operate in a typed domain means that
@@ -1627,7 +1627,7 @@ specific context (generating \aterm\ manipulation code from an \sdf\
 specification), many of the issues encountered are not \aterm\ or
 \sdf\ specific at all. In fact any generic data exchange formalism
 potentially suffers from the problem that generic manipulation functions
-are inheritly type unsafe.  For instance if we look at \xml, DOM based
+are inherently type unsafe.  For instance if we look at \xml, DOM based
 libraries for manipulating \xml\ in a generic way suffer from many of the
 the same problems as the \aterm\ library. Recent techniques like \xml\
 data binding (discussed in Section~\ref{sec:related}) take the same
@@ -1687,7 +1687,7 @@ in generative programming as described in Section~\ref{sec:related}. We
 want to extend this case study into a more generic approach. This
 approach will be based on a modular generic generator that takes a
 set of abstract data definitions and generates code for them. The code
-generator must be extendible with domain specific ``modules'' to generate
+generator must be extensible with domain specific ``modules'' to generate
 extra functionality. These modules should not only be able to add extra
 functions when needed, but they should also be able to use \emph{Aspect
 Oriented Programming}~\cite{aspect} to add functionality to functions
