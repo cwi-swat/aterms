@@ -50,10 +50,27 @@ ATerm. In practice, we use them in this way frequently.}
 
 \item[4.] Preserving sharing is confusing.
 
+\emph{We agree that sharing is not a property per se of
+ATerms but rather of their representation.
+In 2/6 we have changed ``preserve any sharing''
+into ``preserve any implicit or explicit sharing'' to stress this.
+Note, that we are formulating here general requirements and we are not yet
+focussing on ATerms.
+We disagree with the remark of the referee that using text I/O will
+give precisely the same amount of sharing as using binary I/O.  This
+is only the case if the amount of sharing is maximal.  Intermediate
+amounts of sharing cannot be expressed.  An example has been added to
+6/1/4 to further illustrate this point.  }
+
 \item[5.] Averages is misleading in Table 1.
 
-\emph{This row has been removed from all tables.}
-
+\emph{The tables have been split in two: ``artificial cases'' and ``real cases''.
+The row ``Averages'' is now labelled ``Real Case Averages'' to make it
+more explicit which cases are used in the average.
+We agree, of course, that one can question how representative our real
+cases are. However, we still find it usefull to give an average to
+sumarize the measurements.
+}
 
 \item[6.] Figure 3 needs work.
 
@@ -66,6 +83,9 @@ between size and sharing is.}
 
 \item[7.] Measurements are only concerned with AsFix-style data.
 
+\emph{This is not true. The cases Random-Unique, Random,
+COBOL Parser table and LPO do not use AsFix.}
+
 \item[8.] The claim ``2 bits per node'' is misleading.
 \emph{See issue \#1.}
 
@@ -75,6 +95,11 @@ between size and sharing is.}
 about the sizes of the integers and reals.}
 
 \item[10.] Mention S-expressions, SGML and XML in section 6.1
+
+\emph{We did already discuss XML in the original text.
+A comparison with S-expressions has been added. 
+A discussion (inclduing some measurements)
+of ASDL has been added.}
 
 \item[11.] Spell ``data structures'' consistently. \emph{Fixed.}
 
@@ -103,6 +128,11 @@ more self-contained.}
 
 \item[20.] Omit Appendix B or condense it.
 
+\emph{We prefer to keep this appendix, since it gives
+insight in the simplicity of the level 1 interface
+as well as of the details of the level 2 interface.
+}
+
 \end{itemize}
 
 \subsection{Second Referee}
@@ -110,6 +140,7 @@ more self-contained.}
 \begin{itemize}
 
 \item[21.] Comparison with related work is weak (section 6).
+\emph{See issue \#10.}
 
 \item[22.] Make clearer comparison with related work.
 \emph{See issue \#21.}
@@ -139,7 +170,15 @@ now added measurements related to reading/writing ASDL. Also see issue
 
 
 \item[25.] Typo and question: binary encoding to/from strings.
-\emph{Typo fixed. Regarding the question ...}
+\emph{Typo fixed. Regarding the questions:
+(1) No we currently do not support
+a function to use binary encodings to/from strings.  
+(2) Yes, one of our primary applications of ATerms ships
+ them in BAF format across a network. This is achieved by using the file
+ operationms with file descriptors that point to a socket or pipe.
+ A comment about this has been added in section 2.2.2.
+}
+
 
 \item[26.] Typo. page 14. \emph{Fixed.}
 
@@ -159,6 +198,10 @@ reading the Ascii representation involves more matching operations.}
 \item[31.] Typo 4.2. \emph{Fixed.}
 
 \item[32.] Tables 2 and 3 are confusing.
+
+\emph{We give totals in seconds (s) and times per node in micro-seconds
+($\mu$s). Using the same unit would enlarge the values for totals
+in an undesirable way. No change made.}
 
 \end{itemize}
 
