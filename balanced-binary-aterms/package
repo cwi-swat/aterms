@@ -1,6 +1,6 @@
 package 
 identification
-   name=balanced-binary-trees
+   name=balanced-binary-aterms
    version=0.1
    location=http://www.cwi.nl/~storm
    info=http://www.cwi.nl/~storm
