@@ -45,15 +45,122 @@ public class APIGenerator extends CGenerator {
 		genTypes(adt);
 		genInitFunction();
 		genTermConversions(adt);
+		genListsApi(adt);
 		genConstructors(adt);
 		genIsEquals(adt);
 		genAccessors(adt);
 		genSortVisitors(adt);
 		genEpilogue();
 	}
+    
+	private void genListsApi(ADT adt) {
+      Iterator types = adt.typeIterator();
+      
+      bothPrintFoldOpen("list functions");  
+      while (types.hasNext()) {
+	    Type type = (Type) types.next();
+	   
+	    if (type instanceof ListType) {
+	   	  genListApi((ListType) type);
+	    }	
+	  }
+	  bothPrintFoldClose();
+	}
 
-	//{{{ private void genPrologue(API api)
+	private void genListApi(ListType type) {
+	   String typeName = buildTypeName(type.getId());
+	   String elementTypeName = buildTypeName(type.getElementType());
+	   genGetLength(typeName);
+	   genReverse(typeName);
+	   genAppend(typeName, elementTypeName);
+	   genConcat(typeName);
+	   genSlice(typeName);
+	   genGetElementAt(typeName, elementTypeName);
+	   genReplaceElementAt(typeName, elementTypeName);
+	   genListMakes(typeName, elementTypeName);
+	}
 
+	private void genListMakes(String typeName, String elementTypeName) {
+       for (int arity = 1; arity <= 6; arity++) {
+       	 genListMake(arity, typeName, elementTypeName);
+       }
+	}
+
+	private void genListMake(int arity, String typeName, String elementTypeName) {
+		String decl = typeName + " " + prefix + "make" + typeName + arity + "(";
+		for (int i = 1; i < arity; i++) {
+			decl = decl + elementTypeName + " elem" + i + ", ";
+		}
+		decl = decl + elementTypeName + " elem" + arity + ")";
+		hprintln(decl + ";");
+		println(decl + " {");
+		print("  return (" + typeName + ") ATmakeList" + arity + "(");
+		
+		for (int i = 1; i < arity; i++) {
+			print("(ATerm) elem" + i + ", ");
+		}
+		println("(ATerm) elem" + arity + ");");
+		println("}");
+	}
+
+	private void genGetElementAt(String typeName, String elementTypeName) {
+		String decl = elementTypeName + " " + prefix + "get" + typeName + elementTypeName + "At(" + typeName + " arg, int index)";
+		hprintln(decl + ";");
+		println(decl +" {");
+		println(" return (" + elementTypeName + ") ATelementAt((ATermList) arg, index);");
+		println("}");
+	}
+	
+	private void genReplaceElementAt(String typeName, String elementTypeName) {
+		String decl = typeName + " " + prefix + "replace" + typeName + elementTypeName + "At(" + typeName + " arg, " + elementTypeName + " elem, int index)";
+		hprintln(decl + ";");
+		println(decl +" {");
+		println(" return (" + typeName + ") ATreplace((ATermList) arg, (ATerm) elem, index);");
+		println("}");
+	}
+
+	private void genReverse(String typeName) {
+		String decl = typeName + " " + prefix + "reverse" + typeName + "(" +
+		              typeName + " arg)";
+		hprintln(decl + ";");
+		println(decl + " {");
+		println("  return (" + typeName + ") ATreverse((ATermList) arg);");
+		println("}");
+	}
+
+	private void genAppend(String typeName, String elementTypeName) {
+		String decl = typeName + " " + prefix + "append" + typeName + "(" + typeName + " arg, " + elementTypeName + " elem)";
+		hprintln(decl + ";");
+		println(decl + " {");
+		println("  return (" + typeName + ") ATappend((ATermList) arg, (ATerm) elem);");
+		println("}");
+	}
+    
+	private void genConcat(String typeName) {
+	   String decl = typeName + " " + prefix + "concat" + typeName + "(" + typeName + " arg0, " + typeName + " arg1)";
+	   hprintln(decl + ";");
+	   println(decl + " {");
+	   println("  return (" + typeName + ") ATconcat((ATermList) arg0, (ATermList) arg1);");
+	   println("}");
+	}
+	
+	private void genSlice(String typeName) {
+		String decl = typeName + " " + prefix + "slice" + typeName + "(" + typeName + " arg, int start, int end)";
+		hprintln(decl + ";");
+		println(decl + " {");
+		println("  return (" + typeName + ") ATgetSlice((ATermList) arg, start, end);");
+		println("}");
+	}
+		
+	private void genGetLength(String typeName) {
+		String decl = "int " + prefix + "get" + typeName + "Length (" + typeName + " arg)";
+		
+		hprintln(decl + ";");
+		println(decl + " {");
+		println("  return ATgetLength((ATermList) arg);");
+		println("}");
+	}
+	
 	private void genPrologue() {
 		genHeaderIfDefWrapper();
 		genHeaderIncludes();
