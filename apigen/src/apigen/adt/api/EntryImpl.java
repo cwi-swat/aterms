@@ -27,6 +27,10 @@ abstract public class EntryImpl extends ADTConstructor
       return tmp;
     }
 
+    if ((tmp = Entry_List.fromTerm(trm)) != null) {
+      return tmp;
+    }
+
 
     throw new RuntimeException("This is not a Entry: " + trm);
   }
@@ -36,6 +40,11 @@ abstract public class EntryImpl extends ADTConstructor
   }
 
   public boolean isConstructor()
+  {
+    return false;
+  }
+
+  public boolean isList()
   {
     return false;
   }
@@ -51,6 +60,11 @@ abstract public class EntryImpl extends ADTConstructor
   }
 
   public boolean hasTermPattern()
+  {
+    return false;
+  }
+
+  public boolean hasElemSort()
   {
     return false;
   }
@@ -83,6 +97,16 @@ abstract public class EntryImpl extends ADTConstructor
   public Entry setTermPattern(aterm.ATerm _termPattern)
   {
      throw new RuntimeException("This Entry has no TermPattern");
+  }
+
+  public aterm.ATerm getElemSort()
+  {
+     throw new RuntimeException("This Entry has no ElemSort");
+  }
+
+  public Entry setElemSort(aterm.ATerm _elemSort)
+  {
+     throw new RuntimeException("This Entry has no ElemSort");
   }
 
 

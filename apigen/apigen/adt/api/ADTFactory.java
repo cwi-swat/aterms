@@ -10,6 +10,8 @@ public class ADTFactory extends PureFactory
   private Entries protoEntries_List;
   private aterm.AFun funEntry_Constructor;
   private Entry protoEntry_Constructor;
+  private aterm.AFun funEntry_List;
+  private Entry protoEntry_List;
   public ADTFactory()
   {
      super();
@@ -39,6 +41,10 @@ public class ADTFactory extends PureFactory
     Entry_Constructor.initializePattern();
     funEntry_Constructor = makeAFun("_Entry_Constructor", 3, false);
     protoEntry_Constructor = new Entry_Constructor();
+
+    Entry_List.initializePattern();
+    funEntry_List = makeAFun("_Entry_List", 2, false);
+    protoEntry_List = new Entry_List();
 
   }
 
@@ -76,6 +82,18 @@ public class ADTFactory extends PureFactory
   public Entry_Constructor makeEntry_Constructor(aterm.ATerm _sort, aterm.ATerm _alternative, aterm.ATerm _termPattern) {
     aterm.ATerm[] args = new aterm.ATerm[] {_sort, _alternative, _termPattern};
     return makeEntry_Constructor( funEntry_Constructor, args, empty);
+  }
+
+  protected Entry_List makeEntry_List(aterm.AFun fun, aterm.ATerm[] args, aterm.ATermList annos) {
+    synchronized (protoEntry_List) {
+      protoEntry_List.initHashCode(annos,fun,args);
+      return (Entry_List) build(protoEntry_List);
+    }
+  }
+
+  public Entry_List makeEntry_List(aterm.ATerm _sort, aterm.ATerm _elemSort) {
+    aterm.ATerm[] args = new aterm.ATerm[] {_sort, _elemSort};
+    return makeEntry_List( funEntry_List, args, empty);
   }
 
 }
