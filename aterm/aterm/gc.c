@@ -3,7 +3,6 @@
 
 #include <unistd.h>
 #include <stdlib.h>
-#include <values.h>
 #include <time.h>
 #include <sys/times.h>
 #include <limits.h>
