@@ -1,5 +1,8 @@
 $Id$
 
+2003-04-23 julien Guyon <julien.guyon@loria.fr>
+ * Release 1.2
+
 2003-03-30 <jurgenv@cwi.nl>
  * Used backquotes to delay calling *-config scripts to after
    configure phase. Otherwise autobundle can't configure all packages
