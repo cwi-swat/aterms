@@ -200,7 +200,9 @@ Symbol ATmakeSymbol(char *name, int arity, ATbool quoted)
   unsigned int  hash_val = AT_hashSymbol(name, arity) % table_size;
   SymEntry      cur;
   
-	assert(arity < MAX_ARITY);
+	if(arity >= MAX_ARITY)
+		ATabort("cannot handle symbols with arity %d (max=%d)\n",
+						arity, MAX_ARITY);
 
   /* Find symbol in table */
   cur = hash_table[hash_val];
@@ -294,7 +296,9 @@ ATbool AT_findSymbol(char *name, int arity, ATbool quoted)
   unsigned int  hash_val = AT_hashSymbol(name, arity) % table_size;
   SymEntry      cur;
   
-  assert(arity < MAX_ARITY);
+	if(arity >= MAX_ARITY)
+		ATabort("cannot handle symbols with arity %d (max=%d)\n",
+						arity, MAX_ARITY);
 
   /* Find symbol in table */
   cur = hash_table[hash_val];

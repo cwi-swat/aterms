@@ -7,21 +7,13 @@
 typedef struct ProtEntry
 {
 	struct ProtEntry *next;
-	ATerm *term;
-} ProtEntry;
-
-typedef struct
-{
 	ATerm *start;
 	int    size;
-} ProtectedArray;
-
+} ProtEntry;
 
 extern ATbool silent;
 extern ProtEntry **at_prot_table;
 extern int at_prot_table_size;
-extern ProtectedArray *at_protected_arrays;
-extern int at_nrprotected_arrays;
 
 void AT_markTerm(ATerm t);
 void AT_unmarkTerm(ATerm t);

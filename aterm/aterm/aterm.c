@@ -76,10 +76,6 @@ ProtEntry      *free_prot_entries = NULL;
 ProtEntry     **at_prot_table = NULL;
 int             at_prot_table_size = 0;
 
-ProtectedArray *at_protected_arrays = NULL; /* Holds protected arrays */
-int             at_nrprotected_arrays = -1; /* How many arrays */
-int             at_maxprotected_arrays = -1; /* How many arrays maximally */
-
 static ATerm   *mark_stack = NULL;
 static int      mark_stack_size = 0;
 int             mark_stats[3] = {0, MYMAXINT, 0};
@@ -188,18 +184,6 @@ ATinit(int argc, char *argv[], ATerm * bottomOfStack)
 	if(!at_prot_table)
 		ATerror("ATinit: cannot allocate space for prot-table of size %d\n",
 						at_prot_table_size);
-
-	/*}}}  */
-	/*{{{  Initialize protected arrays */
-
-	/* Allocate initial array of protected arrays */
-	at_nrprotected_arrays  = 0;
-	at_maxprotected_arrays = PROTECT_ARRAY_INITIAL_SIZE;
-	at_protected_arrays    = (ProtectedArray *)calloc(at_maxprotected_arrays,
-																											sizeof(ProtectedArray));
-	if(!at_protected_arrays)
-		ATerror("ATinit: cannot allocate space for %d protected arrays.\n",
-						at_maxprotected_arrays);
 
 	/*}}}  */
 	/*{{{  Initialize mark stack */
@@ -353,28 +337,7 @@ ATabort(const char *format,...)
 void
 ATprotect(ATerm * term)
 {
-	ProtEntry *entry;
-	unsigned int hnr;
-
-	assert(*term == NULL || AT_isValidTerm(*term)); /* Check the precondition */
-
-	if(!free_prot_entries) {
-		int i;
-		ProtEntry *entries = (ProtEntry *)calloc(PROTECT_EXPAND_SIZE, sizeof(ProtEntry));
-		if(!entries)
-			ATerror("out of memory in ATprotect.\n");
-		for(i=0; i<PROTECT_EXPAND_SIZE; i++) {
-			entries[i].next = free_prot_entries;
-			free_prot_entries = &entries[i];
-		}
-	}
-	entry = free_prot_entries;
-	free_prot_entries = free_prot_entries->next;
-	hnr = (unsigned int)term;
-	hnr %= at_prot_table_size;
-	entry->next = at_prot_table[hnr];
-	at_prot_table[hnr] = entry;
-	entry->term = term;
+	ATprotectArray(term, 1);
 }
 
 /*}}}  */
@@ -387,15 +350,68 @@ ATprotect(ATerm * term)
 void
 ATunprotect(ATerm * term)
 {
+	ATunprotectArray(term);
+}
+
+/*}}}  */
+/*{{{  void ATprotectArray(ATerm *start, int size) */
+
+/**
+	* Protect an array
+	*/
+
+void ATprotectArray(ATerm *start, int size)
+{
+	ProtEntry *entry;
+	unsigned int hnr;
+
+#ifndef NDEBUG
+	int i;
+	for(i=0; i<size; i++) {
+		assert(start[i] == NULL || 
+					 AT_isValidTerm(start[i])); /* Check the precondition */
+	}
+#endif
+
+	if(!free_prot_entries) {
+		int i;
+		ProtEntry *entries = (ProtEntry *)calloc(PROTECT_EXPAND_SIZE, 
+																						 sizeof(ProtEntry));
+		if(!entries)
+			ATerror("out of memory in ATprotect.\n");
+		for(i=0; i<PROTECT_EXPAND_SIZE; i++) {
+			entries[i].next = free_prot_entries;
+			free_prot_entries = &entries[i];
+		}
+	}
+	entry = free_prot_entries;
+	free_prot_entries = free_prot_entries->next;
+	hnr = (unsigned int)start;
+	hnr %= at_prot_table_size;
+	entry->next = at_prot_table[hnr];
+	at_prot_table[hnr] = entry;
+	entry->start = start;
+	entry->size  = size;
+}
+
+/*}}}  */
+/*{{{  void ATunprotectArrray(ATerm *start) */
+
+/**
+ * Unprotect an array of terms.
+ */
+
+void ATunprotectArray(ATerm *start)
+{
 	unsigned int hnr;
 	ProtEntry *entry, *prev;
 	
-	hnr = (unsigned int)term;
+	hnr = (unsigned int)start;
 	hnr %= at_prot_table_size;
 	entry = at_prot_table[hnr];
 
 	prev = NULL;
-	while(entry->term != term) {
+	while(entry->start != start) {
 		prev  = entry;
 		entry = entry->next;
 		assert(entry);
@@ -411,71 +427,6 @@ ATunprotect(ATerm * term)
 }
 
 /*}}}  */
-/*{{{  void ATprotectArray(ATerm *start, int size) */
-
-/**
-	* Protect an array
-	*/
-
-void ATprotectArray(ATerm *start, int size)
-{
-	/*
-	 * If at_nrprotected_arrays < at_maxprotected_arrays, 
-	 * then at_nrprotected_arrays holds the exact index of the first free slot. 
-	 * Otherwise, we need to resize at_protected_arrays.
-	 */
-	int idx;
-
-#ifndef NDEBUG
-  for(idx=0; idx<size; idx++) {
-		assert(start[idx] == NULL || AT_isValidTerm(start[idx]));
-	}
-#endif
-
-	if (at_nrprotected_arrays >= at_maxprotected_arrays) {
-		at_maxprotected_arrays += PROTECT_ARRAY_EXPAND_SIZE;
-		at_protected_arrays = (ProtectedArray *) realloc(at_protected_arrays,
-														 at_maxprotected_arrays * sizeof(ProtectedArray));
-		if (!at_protected_arrays)
-	    ATerror("ATprotectArray: no space to hold %d protected arrays.\n",
-							at_maxprotected_arrays);
-	}
-
-	idx = at_nrprotected_arrays++;
-	at_protected_arrays[idx].start = start;
-	at_protected_arrays[idx].size  = size;
-}
-
-/*}}}  */
-/*{{{  void ATunprotectArrray(ATerm *start) */
-
-/**
- * Unprotect an array of terms.
- */
-
-void ATunprotectArray(ATerm *start)
-{
-	int lcv;
-	
-	/*
-	 * Traverse array of protected term arrays. If equal, switch last protected
-	 * array into this slot and clear last protected slot. Update number of
-	 * protected arrays.
-	 */
-	for (lcv = 0; lcv < at_nrprotected_arrays; ++lcv) {
-		if (at_protected_arrays[lcv].start == start) {
-			at_nrprotected_arrays--;
-			at_protected_arrays[lcv].start = 
-				at_protected_arrays[at_nrprotected_arrays].start;
-			at_protected_arrays[lcv].size = 
-				at_protected_arrays[at_nrprotected_arrays].size;
-			at_protected_arrays[at_nrprotected_arrays].start = NULL;
-			break;
-		}
-	}
-}
-
-/*}}}  */
 /*{{{  void AT_printAllProtectedTerms(FILE *file) */
 
 void AT_printAllProtectedTerms(FILE *file)
@@ -486,21 +437,11 @@ void AT_printAllProtectedTerms(FILE *file)
 	for(i=0; i<at_prot_table_size; i++) {
 		ProtEntry *cur = at_prot_table[i];
 		while(cur) {
-			if(*cur->term) {
-				ATfprintf(file, "%t\n", i, cur->term);
-				fflush(file);
-			}
-		}
-	}
-
-	fprintf(file, "protected arrays:\n");
-	for(i=0; i<at_nrprotected_arrays; i++) {
-		ProtectedArray *ar = &at_protected_arrays[i];
-		fprintf(file, "  array %d at %p of size %d:\n", i, ar->start, ar->size);
-		for(j=0; j<ar->size; j++) {
-			if(ar->start[j]) {
-				ATfprintf(file, "    %d: %t\n", j, ar->start[j]);
-				fflush(file);
+			for(j=0; j<cur->size; j++) {
+				if(cur->start[j]) {
+					ATfprintf(file, "%t\n", i, cur->start[j]);
+					fflush(file);
+				}
 			}
 		}
 	}

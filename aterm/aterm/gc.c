@@ -118,7 +118,7 @@ void __cdecl mark_phase()
 void mark_phase()
 #endif
 {
-  int i;
+  int i, j;
 	int stack_size;
 	int nr_stack_terms, nr_stack_syms;
 	int nr_reg_terms, nr_reg_syms;
@@ -256,20 +256,11 @@ void mark_phase()
   for(i=0; i<at_prot_table_size; i++) {
 		ProtEntry *cur = at_prot_table[i];
 		while(cur) {
-			if(*cur->term)
-				AT_markTerm(*cur->term);
+			for(j=0; j<cur->size; j++) {
+				if(cur->start[j])
+					AT_markTerm(cur->start[j]);
+			}
 			cur = cur->next;
-		}
-	}
-
-	/* Traverse protected arrays */
-	for(i=0; i<at_nrprotected_arrays; i++) {
-		ATerm *cur = at_protected_arrays[i].start;
-		ATerm *end = cur + at_protected_arrays[i].size;
-		while(cur < end) {
-			if(*cur)
-				AT_markTerm(*cur);
-			cur++;
 		}
 	}
 

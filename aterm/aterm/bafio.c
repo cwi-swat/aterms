@@ -83,7 +83,7 @@ typedef struct
 	top_symbol **toptable;
 } top_symbols;
 
-typedef struct
+typedef struct sym_entry
 {
 	AFun id;
 	int	arity;
@@ -100,6 +100,8 @@ typedef struct
 
 	int cur_index;
 	int nr_times_top; /* # occurences of this symbol as topsymbol */
+
+	struct sym_entry *next_topsym;
 } sym_entry;
 
 typedef struct
@@ -122,6 +124,7 @@ char bafio_id[] = "$Id$";
 static int nr_unique_symbols = -1;
 static sym_read_entry *read_symbols;
 static sym_entry *sym_entries = NULL;
+static sym_entry *first_topsym = NULL;
 
 static char *text_buffer = NULL;
 static int   text_buffer_size = 0;
@@ -504,7 +507,7 @@ static sym_entry *get_top_symbol(ATerm t, ATbool anno_done)
 				sym = ATgetAFun((ATermAppl)t);
 				break;
 		  default:
-				ATerror("get_top_symbol: illegal term (%n)\n", t);
+				ATabort("get_top_symbol: illegal term (%n)\n", t);
 				sym = -1;
 				break;
 		}
@@ -540,12 +543,53 @@ static int bit_width(int val)
   * terms have been sorted by symbol.
 	*/
 
+void gather_top_symbols(sym_entry *cur_entry, int cur_arg, 
+												int total_top_symbols)
+{
+	int index;
+	unsigned int hnr;
+	top_symbols *tss;
+	sym_entry *top_entry;
+
+	tss = &cur_entry->top_symbols[cur_arg];
+	tss->nr_symbols = total_top_symbols;
+	tss->symbols = (top_symbol *) calloc(total_top_symbols,
+																			 sizeof(top_symbol));
+	if (!tss->symbols)
+		ATerror("build_arg_tables: out of memory (top_symbols: %d)\n",
+						total_top_symbols);
+	tss->toptable_size = (total_top_symbols*5)/4;
+	tss->toptable = (top_symbol **) calloc(tss->toptable_size,
+																				 sizeof(top_symbol *));
+	if (!tss->toptable)
+		ATerror("build_arg_tables: out of memory (table_size: %d)\n",
+						tss->toptable_size);
+	
+	index = 0;
+	for(top_entry=first_topsym; top_entry; top_entry=top_entry->next_topsym) {
+		/*for(lcv=index=0; lcv<nr_unique_symbols; lcv++) {
+			if (sym_entries[lcv].nr_times_top > 0) {*/
+		top_symbol *ts;
+		ts = &cur_entry->top_symbols[cur_arg].symbols[index];
+		ts->index = top_entry-sym_entries;
+		ts->count = top_entry->nr_times_top;
+		ts->code_width = bit_width(total_top_symbols);
+		ts->code = index;
+		ts->s = top_entry->id;
+		
+		hnr = ts->s % tss->toptable_size;
+		ts->next = tss->toptable[hnr];
+		tss->toptable[hnr] = ts;
+		
+		top_entry->nr_times_top = 0;
+		index++;
+	}
+}
+
 static void build_arg_tables()
 {
 	int cur_sym, cur_arg, cur_trm;
-	int index, lcv;
-	top_symbols *tss;
-	unsigned int hnr;
+	sym_entry *topsym;
 	
 	for(cur_sym=0; cur_sym<nr_unique_symbols; cur_sym++) {
 		sym_entry *cur_entry = &sym_entries[cur_sym];
@@ -556,13 +600,15 @@ static void build_arg_tables()
 		if(arity == 0)
 			cur_entry->top_symbols = NULL;
 		else {
-			cur_entry->top_symbols = (top_symbols *)calloc(arity, sizeof(top_symbols));
+			cur_entry->top_symbols = (top_symbols *)calloc(arity, 
+																										 sizeof(top_symbols));
 			if(!cur_entry->top_symbols)
 				ATerror("build_arg_tables: out of memory (arity: %d)\n", arity);
 		}
 
 		for(cur_arg=0; cur_arg<arity; cur_arg++) {
 			int total_top_symbols = 0;
+			first_topsym = NULL;
 			for(cur_trm=0; cur_trm<cur_entry->nr_terms; cur_trm++) {
 				ATerm term = cur_entry->terms[cur_trm].t;
 				ATerm arg = NULL;
@@ -597,44 +643,16 @@ static void build_arg_tables()
 							break;
 					}
 				}
-				if (!get_top_symbol(arg, 
-						 sym_entries[cur_sym].id == AS_ANNOTATION ? ATtrue : ATfalse)->nr_times_top++)
+				topsym = get_top_symbol(arg, sym_entries[cur_sym].id == 
+																AS_ANNOTATION ? ATtrue : ATfalse);
+				if (!topsym->nr_times_top++) {
 					total_top_symbols++;
-			}
-			tss = &cur_entry->top_symbols[cur_arg];
-			tss->nr_symbols = total_top_symbols;
-			tss->symbols = (top_symbol *) calloc(total_top_symbols,
-																						sizeof(top_symbol));
-			if (!tss->symbols)
-				ATerror("build_arg_tables: out of memory (top_symbols: %d)\n",
-								total_top_symbols);
-			tss->toptable_size = (total_top_symbols*5)/4;
-			tss->toptable = (top_symbol **) calloc(tss->toptable_size,
-																						 sizeof(top_symbol *));
-			if (!tss->toptable)
-				ATerror("build_arg_tables: out of memory (table_size: %d)\n",
-								tss->toptable_size);
-
-			for(lcv=index=0; lcv<nr_unique_symbols; lcv++)
-			{
-				if (sym_entries[lcv].nr_times_top > 0)
-				{
-					top_symbol *ts;
-					ts = &cur_entry->top_symbols[cur_arg].symbols[index];
-					ts->index = lcv;
-					ts->count = sym_entries[lcv].nr_times_top;
-					ts->code_width = bit_width(total_top_symbols);
-					ts->code = index;
-					ts->s = sym_entries[lcv].id;
-					
-					hnr = ts->s % tss->toptable_size;
-					ts->next = tss->toptable[hnr];
-					tss->toptable[hnr] = ts;
-
-					sym_entries[lcv].nr_times_top = 0;
-					index++;
+					topsym->next_topsym = first_topsym;
+					first_topsym = topsym;
 				}
 			}
+
+			gather_top_symbols(cur_entry, cur_arg, total_top_symbols);
 		}
 	}
 }
@@ -1153,7 +1171,6 @@ ATwriteToBinaryFile(ATerm t, FILE *file)
 }
 
 /*}}}  */
-
 
 /*{{{  Symbol read_symbol(FILE *file) */
 

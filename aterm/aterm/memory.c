@@ -520,7 +520,6 @@ static void allocate_block(int size)
 
 ATerm AT_allocate(int size)
 {
-	int i;
 	ATerm at;
 
 	while (!at_freelist[size])
@@ -543,8 +542,7 @@ ATerm AT_allocate(int size)
 			AT_collect(size);	
 			if(infoflags & INFO_HASHING)
 				hash_info(hash_info_after_gc);
-			for(i=MIN_TERM_SIZE; i<MAX_TERM_SIZE; i++)
-				alloc_since_gc[size] = 0;
+			alloc_since_gc[size] = 0;
 		}
 	}
 
