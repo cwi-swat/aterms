@@ -17,7 +17,7 @@
 /*}}}  */
 /*{{{  defines */
 
-#define MAX_SIZE 16
+#define MAX_SIZE 32
 #define BLOCK_SIZE (1<<16)
 #define GC_THRESHOLD BLOCK_SIZE/4
 
