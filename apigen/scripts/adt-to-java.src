@@ -4,15 +4,16 @@ set -e
 
 APIGEN=apigen.gen.java.Main
 CLASSPATH=__APIGEN_CLASSES__:__JAVA_ATERM__
+JAR=true
 
 java -classpath ${CLASSPATH} ${APIGEN} $*
 
 while [ $# -gt 0 ]
 do
   case $1 in
-    --noJar)
+    --nojar)
       shift;
-      JAR=FALSE ;
+      JAR=false ;
       break;;
     *)
       shift;
@@ -20,7 +21,7 @@ do
   shift
 done
 
-if [ "a${JARGEN}" != "a" ]; then
+if [ "a${JARGEN}" = "atrue" ]; then
 	PARAMS=apigen.env
 	. ${PARAMS}
 

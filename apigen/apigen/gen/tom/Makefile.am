@@ -8,7 +8,6 @@ javadir = ${prefix}/classes/apigen/gen/tom
 JAVAROOT = ${top_builddir}
 
 java_JAVA = \
-	TomGenerationParameters.java \
 	TomSignatureGenerator.java \
 	TomSignatureImplementation.java \
 	TomTypeConversions.java
