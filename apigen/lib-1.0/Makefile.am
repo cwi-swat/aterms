@@ -7,18 +7,18 @@
 include $(top_srcdir)/make_rules
 
 ADT_TO_C		= ${top_builddir}/utils/adt-to-c
-noinst_LIBRARIES	= libOLDADT.a
-noinst_HEADERS		= OLDADT.h OLDADT_dict.h 
+noinst_LIBRARIES	= libADT10.a
+noinst_HEADERS		= ADT10.h ADT10_dict.h 
 
-libOLDADT_a_SOURCES	= OLDADT.c OLDADT_dict.c
-CLEANFILES		= libOLDADT.a OLDADT.[ch] OLDADT.dict OLDADT_dict.[ch]
-EXTRA_DIST		= OLDADT.adt OLDADT.pro
+libADT10_a_SOURCES	= ADT10.c ADT10_dict.c
+CLEANFILES		= libADT10.a ADT10.[ch] ADT10.dict ADT10_dict.[ch]
+EXTRA_DIST		= ADT10.adt ADT10.pro
 
-%INTERMEDIATE: OLDADT.c OLDADT_dict.c OLDADT.dict
+%INTERMEDIATE: ADT10.c ADT10_dict.c ADT10.dict
 
-OLDADT.c OLDADT.h OLDADT.dict OLDADT_dict.c OLDADT_dict.h: OLDADT.adt OLDADT.pro
+ADT10.c ADT10.h ADT10.dict ADT10_dict.c ADT10_dict.h: ADT10.adt ADT10.pro
 	${ADT_TO_C} \
-		--input OLDADT.adt		\
-		--prologue OLDADT.pro	\
-		--prefix OLDADT_		\
+		--input ADT10.adt		\
+		--prologue ADT10.pro	\
+		--prefix ADT10_		\
 		--classpath ${top_builddir}:${EXTERNAL_JARS}

@@ -1,9 +1,9 @@
 .deps
-OLDADT.c
-OLDADT.dict
-OLDADT.h
-OLDADT_dict.c
-OLDADT_dict.h
+ADT10.c
+ADT10.dict
+ADT10.h
+ADT10_dict.c
+ADT10_dict.h
 Makefile
 Makefile.in
-libOLDADT.a
+libADT10.a
