@@ -24,7 +24,8 @@ SOURCE = Testing.java JavaTif.java ToolBusChannel.java TestTool.java \
 		TestingTool.java ToolException.java \
 		Test.java Testing.java Tool.java 
 
-CLASSES	= $(patsubst %.java,%.class,$(SOURCE))
+CLASSES	= $(patsubst %.java,%.class,$(SOURCE)) \
+	TifGenerator.class SpecOrderVector.class
 
 all: ${CLASSES}
 
