@@ -1,5 +1,9 @@
 $Id$
 
+2002/01/04 <jong@cwi.nl>
+ * Added "--with-cflags=" support to configure.in
+ * Removed explicit overwriting of CFLAGS in aterm/Makefile.am
+
 2001/12/20 ({jurgenv,olivierp,jong}@cwi.nl)
  * Added assert in ATconcat, second argument should be an AT_LIST.
 

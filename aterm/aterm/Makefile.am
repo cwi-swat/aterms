@@ -20,10 +20,6 @@ PRIVATE_INCL		= _aterm.h _afun.h debug.h gc.h list.h make.h \
 			memory.h util.h bafio.h version.h tafio.h byteio.h \
 			md5.h
 
-#CFLAGS			= -Wall -g -O2 -DDMALLOC -I/ufs/olivierp/include
-#CFLAGS			= -Wall -g -O2
-CFLAGS			= -Wall -g -O
-
 ALLINCLUDES		= ${PUBLIC_INCL} ${PRIVATE_INCL}
 
 include_HEADERS		= $(PUBLIC_INCL)

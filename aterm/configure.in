@@ -6,6 +6,13 @@ dnl $Id$
 AC_INIT(Makefile.in)
 AM_INIT_AUTOMAKE(aterm, 1.6.6beta)
 
+dnl {{{  Which compiler to use?
+
+AC_REQUIRE([AC_PROG_CC])
+AC_PROG_CC
+
+dnl }}}
+
 dnl Default values
 CC_GCC=gcc
 CFLAGS_GCC="-Wall -O4"
@@ -54,6 +61,20 @@ AC_AIX
 
 AC_SET_MAKE
 
+dnl {{{  Handle --with-cflags option
+
+AC_ARG_WITH(cflags,
+   [  --with-cflags=CFLAGS     standard options of C compiler],
+   CFLAGS=${withval},
+   if test "a${GCC}" = "ayes"; then
+     CFLAGS="-Wall -g -O2"
+   fi;
+)
+
+AC_SUBST(CFLAGS)
+
+dnl }}}
+
 AC_ARG_WITH(gcc,
    [  --with-gcc               create gcc version (libATerm-gcc.a)],
       ATERM_LIB_GCC=libATerm-gcc.a,)
@@ -72,7 +93,7 @@ AC_ARG_WITH(prof,
 
 
 AC_ARG_WITH(all,
-   [  --with-all               convenience alias for --with-{gcc,cc,dbg,prof} ],
+   [  --with-all               convenience alias for --with-{gcc,cc,dbg,prof}],
       ATERM_LIB_GCC=libATerm-gcc.a
       ATERM_LIB_CC=libATerm-cc.a
       ATERM_LIB_DBG=libATerm-dbg.a
