@@ -26,7 +26,12 @@ import shared.SharedObject;
 import aterm.*;
 
 class AFunImpl extends ATermImpl implements AFun {
-  String name;
+ 
+	public AFunImpl(PureFactory factory) {
+		super(factory);
+	}
+
+	String name;
   int arity;
   boolean isQuoted;
 
@@ -45,7 +50,7 @@ class AFunImpl extends ATermImpl implements AFun {
   }
 
   public SharedObject duplicate() {
-    AFunImpl clone = new AFunImpl();
+    AFunImpl clone = new AFunImpl(factory);
     clone.init(hashCode(), name, arity, isQuoted);
     return clone;
   }

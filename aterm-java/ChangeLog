@@ -1,5 +1,12 @@
 $Id$
 
+2003/08/13 <jurgenv@cwi.nl>
+ * Removed getStaticFactory methods and static references to factories to make
+   use of multiple factories possible again. 
+ * Added local references to factory and constructors to initialize the
+   factory. The factory is not initialized in the init method to prevent
+   unnecessary copying of the factory reference.
+
 2003/08/12 <{pem@loria.fr>
  * Added the getEmpty() function which returns the empty element of a list
  * getEmpty and insert are used in ATermListImpl (instead of getPureFactory())

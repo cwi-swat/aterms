@@ -34,94 +34,115 @@ import aterm.ATermPlaceholder;
 import aterm.Visitor;
 
 class ATermIntImpl extends ATermImpl implements ATermInt {
-  int value;
+	int value;
 
-  public int getType() {
-    return ATerm.INT;
-  }
+	public ATermIntImpl(PureFactory factory) {
+		super(factory);
+	}
 
-  protected void init(int hashCode, ATermList annos, int value) {
-    super.init(hashCode, annos);
-    this.value = value;
-  }
+	public int getType() {
+		return ATerm.INT;
+	}
 
-  protected void initHashCode(ATermList annos, int value) {
-    this.value = value;
-    this.internSetAnnotations(annos);
-    this.setHashCode(this.hashFunction());
-      //super.init(hashCode, annos);
-  }
+	protected void init(int hashCode, ATermList annos, int value) {
+		super.init(hashCode, annos);
+		this.value = value;
+	}
 
-  
-  public SharedObject duplicate() {
-    ATermIntImpl clone = new ATermIntImpl();
-    clone.init(hashCode(), getAnnotations(), value);
-    return clone;
-  }
-  
-  public boolean equivalent(SharedObject obj) {
-    if (super.equivalent(obj)) {
-      ATermInt peer = (ATermInt) obj;
-      return peer.getInt() == value;
-    }
-    
-    return false;
-  }
+	protected void initHashCode(ATermList annos, int value) {
+		this.value = value;
+		this.internSetAnnotations(annos);
+		this.setHashCode(this.hashFunction());
+		//super.init(hashCode, annos);
+	}
 
-  protected boolean match(ATerm pattern, List list) {
-    if (this.equals(pattern)) {
-      return true;
-    }
+	public SharedObject duplicate() {
+		ATermIntImpl clone = new ATermIntImpl(factory);
+		clone.init(hashCode(), getAnnotations(), value);
+		return clone;
+	}
 
-    if (pattern.getType() == ATerm.PLACEHOLDER) {
-      ATerm type = ((ATermPlaceholder) pattern).getPlaceholder();
-      if (type.getType() == ATerm.APPL) {
-        ATermAppl appl = (ATermAppl) type;
-        AFun afun = appl.getAFun();
-        if (afun.getName().equals("int") && afun.getArity() == 0 && !afun.isQuoted()) {
-          list.add(new Integer(value));
-          return true;
-        }
-      }
-    }
+	public boolean equivalent(SharedObject obj) {
+		if (super.equivalent(obj)) {
+			ATermInt peer = (ATermInt) obj;
+			return peer.getInt() == value;
+		}
 
-    return super.match(pattern, list);
-  }
+		return false;
+	}
 
-  public int getInt() {
-    return value;
-  }
+	protected boolean match(ATerm pattern, List list) {
+		if (this.equals(pattern)) {
+			return true;
+		}
 
-  public ATerm setAnnotations(ATermList annos) {
-    return getPureFactory().makeInt(value, annos);
-  }
+		if (pattern.getType() == ATerm.PLACEHOLDER) {
+			ATerm type = ((ATermPlaceholder) pattern).getPlaceholder();
+			if (type.getType() == ATerm.APPL) {
+				ATermAppl appl = (ATermAppl) type;
+				AFun afun = appl.getAFun();
+				if (afun.getName().equals("int") && afun.getArity() == 0 && !afun.isQuoted()) {
+					list.add(new Integer(value));
+					return true;
+				}
+			}
+		}
 
-  public void accept(Visitor v) throws VisitFailure {
-    v.visitInt(this);
-  }
+		return super.match(pattern, list);
+	}
 
-  private int hashFunction() {
-    /* Set up the internal state */
-    int a = 0x9e3779b9; /* the golden ratio; an arbitrary value */
-    int b = 0x9e3779b9; /* the golden ratio; an arbitrary value */
-    int c = 2;          /* the previous hash value */
+	public int getInt() {
+		return value;
+	}
 
-    /*------------------------------------- handle the last 11 bytes */
-    a += (getAnnotations().hashCode()<<8);
-    a += (value);
-    
-    a -= b; a -= c; a ^= (c >> 13);
-    b -= c; b -= a; b ^= (a << 8);
-    c -= a; c -= b; c ^= (b >> 13);
-    a -= b; a -= c; a ^= (c >> 12);
-    b -= c; b -= a; b ^= (a << 16);
-    c -= a; c -= b; c ^= (b >> 5);
-    a -= b; a -= c; a ^= (c >> 3);
-    b -= c; b -= a; b ^= (a << 10);
-    c -= a; c -= b; c ^= (b >> 15);
+	public ATerm setAnnotations(ATermList annos) {
+		return getPureFactory().makeInt(value, annos);
+	}
 
-    /*-------------------------------------------- report the result */
-    return c;
-  }
+	public void accept(Visitor v) throws VisitFailure {
+		v.visitInt(this);
+	}
+
+	private int hashFunction() {
+		/* Set up the internal state */
+		int a = 0x9e3779b9; /* the golden ratio; an arbitrary value */
+		int b = 0x9e3779b9; /* the golden ratio; an arbitrary value */
+		int c = 2; /* the previous hash value */
+
+		/*------------------------------------- handle the last 11 bytes */
+		a += (getAnnotations().hashCode() << 8);
+		a += (value);
+
+		a -= b;
+		a -= c;
+		a ^= (c >> 13);
+		b -= c;
+		b -= a;
+		b ^= (a << 8);
+		c -= a;
+		c -= b;
+		c ^= (b >> 13);
+		a -= b;
+		a -= c;
+		a ^= (c >> 12);
+		b -= c;
+		b -= a;
+		b ^= (a << 16);
+		c -= a;
+		c -= b;
+		c ^= (b >> 5);
+		a -= b;
+		a -= c;
+		a ^= (c >> 3);
+		b -= c;
+		b -= a;
+		b ^= (a << 10);
+		c -= a;
+		c -= b;
+		c ^= (b >> 15);
+
+		/*-------------------------------------------- report the result */
+		return c;
+	}
 
 }

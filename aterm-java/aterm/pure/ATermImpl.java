@@ -40,12 +40,13 @@ import aterm.ParseError;
 
 public abstract class ATermImpl extends ATermVisitableImpl implements ATerm, SharedObjectWithID {
   private ATermList annotations;
-  static protected PureFactory factory;
+  protected PureFactory factory;
   private int hashCode;
   private int uniqueId;
-
-  static public void initialize(PureFactory f) {
-    factory = f;
+ 
+  public ATermImpl(PureFactory factory) {
+  	super();
+  	this.factory = factory;
   }
 
   public int hashCode() {
@@ -79,16 +80,12 @@ public abstract class ATermImpl extends ATermVisitableImpl implements ATerm, Sha
     }
   }
 
-  static protected PureFactory getStaticFactory() {
+  public ATermFactory getFactory() {
     return factory;
   }
   
-  public ATermFactory getFactory() {
-    return getStaticFactory();
-  }
-  
   protected PureFactory getPureFactory() {
-    return getStaticFactory();
+    return (PureFactory) getFactory();
   }
   
   public ATerm setAnnotation(ATerm label, ATerm anno) {

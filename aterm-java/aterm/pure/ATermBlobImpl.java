@@ -28,8 +28,12 @@ import shared.SharedObject;
 
 import aterm.*;
 
-class ATermBlobImpl extends ATermImpl implements ATermBlob {
-  byte[] data;
+class ATermBlobImpl extends ATermImpl implements ATermBlob {  
+	byte[] data;
+
+	public ATermBlobImpl(PureFactory factory) {
+		super(factory);
+	}
 
   public int getType() {
     return ATerm.BLOB;
@@ -41,7 +45,7 @@ class ATermBlobImpl extends ATermImpl implements ATermBlob {
   }
   
   public SharedObject duplicate() {
-    ATermBlobImpl clone = new ATermBlobImpl();
+    ATermBlobImpl clone = new ATermBlobImpl(factory);
     clone.init(hashCode(), getAnnotations(), data);
     return clone;
   }

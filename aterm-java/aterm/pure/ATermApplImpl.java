@@ -28,9 +28,13 @@ import shared.SharedObject;
 
 import aterm.*;
 
-public class ATermApplImpl extends ATermImpl implements ATermAppl {
+public class ATermApplImpl extends ATermImpl implements ATermAppl {  	
   AFun fun;
   ATerm[] args;
+
+  public ATermApplImpl(PureFactory factory) {
+    super(factory);
+  }
 
   public int getType() {
     return ATerm.APPL;
@@ -54,7 +58,7 @@ public class ATermApplImpl extends ATermImpl implements ATermAppl {
   }
 
   public SharedObject duplicate() {
-    ATermApplImpl clone = new ATermApplImpl();
+    ATermApplImpl clone = new ATermApplImpl(factory);
     clone.init(hashCode(), getAnnotations(), fun, args);
     return clone;
   }
