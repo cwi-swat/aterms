@@ -1,5 +1,10 @@
 $Id$
 
+Wed Aug 27 14:20:42 CEST 2003 <{jong,kooiker}@cwi.nl>
+ * version bump to 1.5
+ * make empty list notion private to PureFactory
+ * remove any static references to 'empty'
+
 2003/08/14 <jurgenv@cwi.nl>
  * Made all constructors of ATerm implementations protected.
  * Made init and initHashCode methods also protected.
