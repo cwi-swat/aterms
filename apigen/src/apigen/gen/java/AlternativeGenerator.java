@@ -54,13 +54,13 @@ public class AlternativeGenerator extends JavaGenerator {
 
 	protected void generate() {
 		printPackageDecl();
-		genAlternativeClassImpl(type, alt);
+		genAlternativeClass(type, alt);
 	}
 
-	private void genAlternativeClassImpl(Type type, Alternative alt) {
+	private void genAlternativeClass(Type type, Alternative alt) {
 		print("public class " + className + " extends " + superClassName);
 		if (visitable) {
-			print(" implements jjtraveler.Visitable");
+			print("  implements jjtraveler.Visitable");
 		}
 		println(" {");
 

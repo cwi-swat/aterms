@@ -20,11 +20,11 @@ public class GenericConstructorGenerator extends JavaGenerator {
 		this.className = className(params.getApiName());
 		this.factoryName = FactoryGenerator.className(params.getApiName());
 	}
-	
+
 	public String getClassName() {
 		return className;
 	}
-	
+
 	public static String className(String apiName) {
 		return StringConversions.makeCapitalizedIdentifier(apiName) + "Constructor";
 	}
@@ -35,10 +35,7 @@ public class GenericConstructorGenerator extends JavaGenerator {
 	}
 
 	private void genGenericConstructorClass() {
-		println("abstract public class " + className);
-		println("  extends aterm.pure.ATermApplImpl");
-		println("  implements aterm.ATerm");
-		println("{");
+		println("abstract public class " + className + " extends aterm.pure.ATermApplImpl {");
 		println("  protected aterm.ATerm term = null;");
 		println();
 		println("  " + factoryName + " factory = null;");

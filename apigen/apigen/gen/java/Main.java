@@ -157,7 +157,7 @@ public class Main {
 				new ListTypeGenerator(params, (NormalListType) type).run();
 			}
 			else if (type instanceof SeparatedListType) {
-				new SeparatedListTypeImplGenerator(params, (SeparatedListType) type).run();
+				new SeparatedListTypeGenerator(params, (SeparatedListType) type).run();
 
 			}
 			else if (!converter.isReserved(type.getId())) {

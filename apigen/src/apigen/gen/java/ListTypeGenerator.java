@@ -6,9 +6,7 @@ import apigen.gen.GenerationParameters;
 
 public class ListTypeGenerator extends TypeGenerator {
 	private ListType type;
-	//	private String typeId;
 	private String typeName;
-	//	private String elementTypeId;
 	private String elementTypeName;
 	private String factory;
 
@@ -16,11 +14,7 @@ public class ListTypeGenerator extends TypeGenerator {
 		super(params, type);
 		this.type = type;
 		this.typeName = TypeGenerator.className(type);
-		//		this.typeId =
-		// StringConversions.makeCapitalizedIdentifier(type.getId());
 		this.elementTypeName = TypeGenerator.className(type.getElementType());
-		//		this.elementTypeId =
-		// StringConversions.makeCapitalizedIdentifier(type.getElementType());
 		this.factory = FactoryGenerator.className(params.getApiName());
 	}
 
@@ -35,14 +29,14 @@ public class ListTypeGenerator extends TypeGenerator {
 	protected void generate() {
 		printPackageDecl();
 		printImports();
-		genListTypeClassImpl();
+		genListTypeClass();
 	}
 
 	public static String className(Type type) {
 		return TypeGenerator.className(type);
 	}
 
-	protected void genListTypeClassImpl() {
+	protected void genListTypeClass() {
 		println("public class " + typeName + " extends aterm.pure.ATermListImpl {");
 
 		genInitMethod();
@@ -79,9 +73,9 @@ public class ListTypeGenerator extends TypeGenerator {
 		println("}");
 	}
 
-	protected void genConstructor(String class_impl_name) {
+	protected void genConstructor(String className) {
 		println("  protected " + factory + " factory = null;");
-		println(" " + class_impl_name + "(" + factory + " factory) {");
+		println(" " + className + "(" + factory + " factory) {");
 		println("     super(factory.getPureFactory());");
 		println("     this.factory = factory;");
 		println("  }");
