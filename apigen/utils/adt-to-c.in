@@ -14,13 +14,13 @@ exec_prefix=@exec_prefix@
 
 usage() {
 cat << ENDCAT >&2
-Usage: $PRG -i <adt-file> -p <prologue> [options]
+Usage: $PRG -i <adt-file> [options]
 
 Parameters:
 
   -i | --input <FILE>     specify input adt                [not specified]
-  -p | --prologue <FILE>  specify prologue-code file       [not specified]
   -o | --output <STEM>    generate <STEM>.[ch] etc.        [improvised]
+  -p | --prologue <FILE>  specify prologue-code file       [""]
   -P | --prefix <STR>     specify API-prefix               [""]
   -c | --classpath <PATH> override CGen classes            [see below]
   -d | --dicttoc <FILE>   override default dicttoc         [see below]
@@ -31,7 +31,7 @@ Default locations:
   classes = ${CGEN}
   dicttoc = ${DICTTOC}
 
-Example: $PRG -i Booleans.adt -prefix SDF -prologue Booleans.pro
+Example: $PRG -i Booleans.adt --prefix SDF --prologue Booleans.pro
 
 ENDCAT
 }
@@ -127,15 +127,16 @@ else
   require ${INPUT}
 fi
 
-if [ "a${PROLOGUE}" == "a" ]; then
-  error "no prologue file specified (use -p <file>)"
-else
-  require ${PROLOGUE}
-fi
-
 if [ "a${OUTPUT}" == "a" ]; then
   OUTPUT=`basename ${INPUT} | cut -d. -f1`
   info "Improvising output-stem: ${OUTPUT}"
+fi
+
+if [ "a${PROLOGUE}" == "a" ]; then
+  OPTIONAL_PROLOGUE=""
+else
+  require ${PROLOGUE}
+  OPTIONAL_PROLOGUE="-prologue ${PROLOGUE}"
 fi
 
 if [ "a${PREFIX}" == "a" ]; then
@@ -149,9 +150,9 @@ fi
 # {{{  generate C code from ADT
 
 java  -classpath ${CGEN} apigen.c.CGen \
-	  -input ${INPUT} \
-	  -output ${OUTPUT} \
-	  -prologue ${PROLOGUE} \
+	  -input ${INPUT}	\
+	  -output ${OUTPUT}	\
+	  ${OPTIONAL_PROLOGUE}	\
 	  ${OPTIONAL_PREFIX}
 
 ${DICTTOC} -dict ${OUTPUT}.dict

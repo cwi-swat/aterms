@@ -25,8 +25,8 @@ LDFLAGS			= -L${ATERMLIB}
 LDADD			= -lATerm
 CFLAGS			= -Wall -g -O2
 
-EXTRA_DIST		= rolodex.adt rolodex.pro Booleans.sdf Booleans.pro \
-			list.adt list.pro booltest.trm
+EXTRA_DIST		= rolodex.adt Booleans.sdf list.adt list.pro \
+			booltest.trm
 
 noinst_PROGRAMS		= ${PROGS}
 
@@ -50,10 +50,9 @@ booltest_DEPENDENCIES	= booltest.af1 libBooleans.a
 # generated and should be considered intermediate
 %INTERMEDIATE: Booleans.adt
 
-rolodex.c rolodex.h: rolodex.adt rolodex.pro
+rolodex.c rolodex.h: rolodex.adt
 	${top_srcdir}/utils/adt-to-c	\
 		--input rolodex.adt	\
-		--prologue rolodex.pro	\
 		--classpath ${top_srcdir}:${ATERM}/classes
 
 list.c list.h: list.adt list.pro
@@ -62,10 +61,9 @@ list.c list.h: list.adt list.pro
 		--prologue list.pro	\
 		--classpath ${top_srcdir}:${ATERM}/classes
 
-Booleans.c Booleans.h: Booleans.adt Booleans.pro
+Booleans.c Booleans.h: Booleans.adt
 	${top_srcdir}/utils/adt-to-c	\
 		--input Booleans.adt	\
-		--prologue Booleans.pro	\
 		--prefix SDF		\
 		--classpath ${top_srcdir}:${ATERM}/classes
 

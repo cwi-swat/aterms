@@ -9,7 +9,7 @@
 
 static Rolodex acceptRolodex(Rolodex rolo)
 {
-  ATfprintf(stderr, "acceptRolodex: %t\n", rolo);
+  /*ATfprintf(stderr, "acceptRolodex: %t\n", rolo);*/
   return rolo;
 }
 

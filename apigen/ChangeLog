@@ -1,134 +1,148 @@
+2001/02/19 (jong@cwi.nl)
+ * version 0.7.3
+ * The use of prologue files is now optional in adt-to-c. If no prologue
+   file is specified, no special prologue code is generated.
+ * test/rolotest and test/booltest no longer have (a zero byte) prologue
+ * removed test/rolodex.pro and test/Booleans.pro
+ * fixed output of usage() in utils/adt-to-c (conforming to new behaviour)
+ * silenced output of test/rolotest (new visit/acceptor code was verbose)
+ * added ChangeLog entry for Jurgen's fix to his changes of 2001/01/16
+
+2001/02/19 (jurgenv@cwi.nl)
+ * adapted test/booltest to conform to the new functions generated for
+   the bottomsorts (see immediately below)
+
 2001/02/16 (jurgenv@cwi.nl)
-  * removed generation of bottomsorts Lexical, Separator and Layout and
+ * removed generation of bottomsorts Lexical, Separator and Layout and
     replaced them by generating lex(<name(str)>), sep(<name(str)>) and 
     w(<name(str)>).  
 
 2001/02/16 ({jong,olivierp}@cwi.nl)
-  * Added prefix to the front of visitor names
-  * patched ChangeLog entry date
+ * Added prefix to the front of visitor names
+ * patched ChangeLog entry date
 
 2001/02/16 (jong@cwi.nl)
-  * utils/adt-to-c rewritten, option handling is now the same as in
+ * utils/adt-to-c rewritten, option handling is now the same as in
     sdf2-to-adt, so be sure to check "adt-to-c --help" before using
     it!
-  * test/Makefile.am now uses the appropriate switches in both sdf2-to-adt
+ * test/Makefile.am now uses the appropriate switches in both sdf2-to-adt
     and adt-to-c calls to avoid {classpath,binary,script}-location confusion.
-  * utils/Makefile.am uses the appropriate switches in adt-to-adt
+ * utils/Makefile.am uses the appropriate switches in adt-to-adt
 
 2001/02/15 ({jong,olivierp}@cwi.nl)
-  * Added support for basic types: int (int), real (double), str (char *)
-  * Added support for sort specific visitors
+ * Added support for basic types: int (int), real (double), str (char *)
+ * Added support for sort specific visitors
 
 2001/02/15 (jong@cwi.nl)
-  * Version 0.7.1
-  * --verbose in sdf2-to-adt was called --VERBOSE (fixed)
-  * added -g, --generator option to sdf2-to-adt which overrides default
+ * Version 0.7.1
+ * --verbose in sdf2-to-adt was called --VERBOSE (fixed)
+ * added -g, --generator option to sdf2-to-adt which overrides default
     location of compiled apigen-specification
-  * Added -l <FILE> option to sdf2-to-adt which overrides default location
+ * Added -l <FILE> option to sdf2-to-adt which overrides default location
     of labeling equations.
-  * The -h option now shows the default locations of the APIGEN parsetable
+ * The -h option now shows the default locations of the APIGEN parsetable
      and the labeling equations.
 
 2001/02/14 (jong@cwi.nl)
-  * sdf2-to-adt script enhanced to conform to mainstream options
+ * sdf2-to-adt script enhanced to conform to mainstream options
     (-i, --input, -o, --output to specify input/output files)
 
 2001/02/08 (jong@cwi.nl)
-  * utils/sdf2-to-adt rewritten: uses temporary files and does proper cleanup
+ * utils/sdf2-to-adt rewritten: uses temporary files and does proper cleanup
     upon exit. Several flags added, amongst which is -t to specify location
     of the parsetable used by the script.
-  * utils/sdf2-to-adt is now more robust: the exit code of each substep is
+ * utils/sdf2-to-adt is now more robust: the exit code of each substep is
     checked and the script refuses to continue after encountering errors
     Replaced the redundant "unparse-'hack function symbol'-reparse" fase
     by adding more support in the specification.
 
 2001/02/08 (jong@cwi.nl)
-  * Added reflexive ADT to access adt's (creates: libADT.a)
-  * sdf directory removed entirely
-  * configuration improved (using AC_PACKAGE_REQUIRE)
-  * dependency on xt tools removed
-  * labeling now done by asf-evaluator (implemented using traversals)
-  * directories test and doc re-activated, tests work again
-  * obsolete <("",Sort)> notation cleaned up from list-test
-  * expand-cons and remove-cons support added to sdf2-to-adt
+ * Added reflexive ADT to access adt's (creates: libADT.a)
+ * sdf directory removed entirely
+ * configuration improved (using AC_PACKAGE_REQUIRE)
+ * dependency on xt tools removed
+ * labeling now done by asf-evaluator (implemented using traversals)
+ * directories test and doc re-activated, tests work again
+ * obsolete <("",Sort)> notation cleaned up from list-test
+ * expand-cons and remove-cons support added to sdf2-to-adt
 
 2001/01/15 ({jong,markvdb}@cwi.nl)
-  * sdf directory removed from top-level Makefile.am
-  * gen-c-api stuff removed, adt-to-c introduced
-  * several improvements in c-backend needed to get c-code compiled
-  * heuristic added in sdf2-to-adt spec. for productions with only 1 alt.
+ * sdf directory removed from top-level Makefile.am
+ * gen-c-api stuff removed, adt-to-c introduced
+ * several improvements in c-backend needed to get c-code compiled
+ * heuristic added in sdf2-to-adt spec. for productions with only 1 alt.
 
 2000/09/27 (jong@cwi.nl)
-  * Version 0.6
-  * Fixed capitalization bug in build-valid-c-afun's
-  * Relaxed syntax in C-FILE-NAME to allow `-'
-  * Any existing `-' characters are stripped in the prefix,
+ * Version 0.6
+ * Fixed capitalization bug in build-valid-c-afun's
+ * Relaxed syntax in C-FILE-NAME to allow `-'
+ * Any existing `-' characters are stripped in the prefix,
     this fixes a bug where '-' characters where passed all the way
     through to C functionnames (where they are illegal)
 
 2000/09/20 (jong@cwi.nl)
-  * removed capitalization of FieldId's in build-valid-c-afun
-  * sorted variables in Gen-C-API.sdf alphabetically.
+ * removed capitalization of FieldId's in build-valid-c-afun
+ * sorted variables in Gen-C-API.sdf alphabetically.
 
 2000/09/15 (jong@cwi.nl)
-  * Bugfix in Sdf2-to-ADT.eqs, imports were handled improperly.
-  * Removed double definition of %%-layout.
+ * Bugfix in Sdf2-to-ADT.eqs, imports were handled improperly.
+ * Removed double definition of %%-layout.
 
 2000/09/10 (jong@cwi.nl)
-  * Version 0.5
-  * Added heuristics for translating unlabeled tokens into valid C-ids.
-  * Fields now have a prefix and an id ("wsAfter", "openBracket").
-  * Updated tests to reflect recent changes in specification.
+ * Version 0.5
+ * Added heuristics for translating unlabeled tokens into valid C-ids.
+ * Fields now have a prefix and an id ("wsAfter", "openBracket").
+ * Updated tests to reflect recent changes in specification.
 
 2000/09/08 (jong@cwi.nl)
-  * Removed unlabeled sdf-specification now that pgen understands labels.
-  * Makefile.am generates parsetables for Sdf2-to-ADT and Gen-C-API.
+ * Removed unlabeled sdf-specification now that pgen understands labels.
+ * Makefile.am generates parsetables for Sdf2-to-ADT and Gen-C-API.
 
 2000/09/06 ({jong,olivierp}@cwi.nl)
-  * Version 0.4
-  * Lexical support works
+ * Version 0.4
+ * Lexical support works
 
 2000/09/05 ({jong,olivierp}@cwi.nl)
-  * Version 0.3, (cvs tag: v0_3)
-  * List support works
+ * Version 0.3, (cvs tag: v0_3)
+ * List support works
 
 2000/08/31 (jong@cwi.nl)
-  * Initiated list-support, including tentative testcase.
+ * Initiated list-support, including tentative testcase.
 
 2000/08/29 (jong@cwi.nl)
-  * "===" changed to "===>" in specifications
+ * "===" changed to "===>" in specifications
 
 2000/08/28 (jong@cwi.nl)
-  * Version 0.2.1
-  * Removed unused layout definitions in C-Layout
-  * test/Makefile.am used obsolete 'apigen' instead of 'gen-c-api'
-  * fixed dependency problem in check target
-  * Updated SDF_FILES in spec/Makefile.am to reflect recent changes
+ * Version 0.2.1
+ * Removed unused layout definitions in C-Layout
+ * test/Makefile.am used obsolete 'apigen' instead of 'gen-c-api'
+ * fixed dependency problem in check target
+ * Updated SDF_FILES in spec/Makefile.am to reflect recent changes
     in specification structure.
 
 2000/08/22 ({jong,olivierp}@cwi.nl)
-  * Version is now 0.2
-  * Renamed apigen script to gen-c-api
-  * Added sdf2-to-adt script
-  * Added test-case for sdf2-to-adt
-  * Added top module 'Sdf2-to-C-API'
-  * Attributes are now supported in Sdf2 spec.
+ * Version is now 0.2
+ * Renamed apigen script to gen-c-api
+ * Added sdf2-to-adt script
+ * Added test-case for sdf2-to-adt
+ * Added top module 'Sdf2-to-C-API'
+ * Attributes are now supported in Sdf2 spec.
 	
 2000/08/22 ({jong,olivierp}@cwi.nl)
-  * Now ignoring generated baf files
-  * Added Sdf2-to-ADT specification: we are now able to generate an API
+ * Now ignoring generated baf files
+ * Added Sdf2-to-ADT specification: we are now able to generate an API
     for a basic SDF spec (no specials like lists, lexicals, optionals... yet)
 
 2000/08/07 (jong@cwi.nl)
-  * repository: removed apigen, added apigen.in
-  * tables are now found using @top_srcdir@, rather than /ufs/olivierp/...
-  * apigen now generates sensible AUTHORS, NEWS, README, ChangeLog as well.
-  * Added date+timestamp to generated {configure.in, Makefile.am, reconf} files
+ * repository: removed apigen, added apigen.in
+ * tables are now found using @top_srcdir@, rather than /ufs/olivierp/...
+ * apigen now generates sensible AUTHORS, NEWS, README, ChangeLog as well.
+ * Added date+timestamp to generated {configure.in, Makefile.am, reconf} files
 
 2000/08/04 ({jong,olivierp}@cwi.nl)
-  * First working version of apigen stuff.
-  * Added generation of isValidxxx, makeTermFromxxx, 
+ * First working version of apigen stuff.
+ * Added generation of isValidxxx, makeTermFromxxx, 
     and makexxxfromTerm functions.
 
 2000/08/01
-  * Initial revision
+ * Initial revision
