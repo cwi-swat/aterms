@@ -17,7 +17,7 @@
 %%    along with this program; if not, write to the Free Software
 %%    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 %%
-<%{{{ Introduction
+%{{{ Introduction
 
 \section{Introduction} \label{intro}
 Cut and paste operations on complex data structures are standard in
@@ -762,7 +762,7 @@ word contains a pointer to the placeholder type.
 \paragraph{BLOB encoding}
 The length of the data contained in a BLOB term is stored in
 the three bytes after the header. 
-This means that upto 16,777,200 bytes can be encoded in a single
+This means that up to 16,777,200 bytes can be encoded in a single
 BLOB term.
 A pointer to the actual data is stored in the third word.
 
@@ -1599,7 +1599,7 @@ access functions based on the\emph{ match-and-make} paradigm.
 \paragraph{Intermediate representations in compiler frameworks}
 There exist numerous frameworks for compilers and programming
 environments that provide facilities for representing intermediate
-data. Examples are Centaur's VTP~\cite{BCDILP89}, Eli~\cite{Eli92},
+data. Examples are Centaur's VTP~\cite{BCDIKLP89}, Eli~\cite{Eli92},
 Cocktail's Ast~\cite{Ast92}, SUIF~\cite{Suif94}, ASDL~\cite{Wan97}, and
 Montana~\cite{Karasick98}. These systems either provide an explicit
 intermediate format (Eli, Ast, SUIF) or they provide a programmable
@@ -1749,7 +1749,7 @@ straightforward translation possible between \ATerms\ and XML.
 The main difference between the two is that XML is more verbose and
 does not provide a simple mechanism to represent sharing, whereas
 \ATerms\ provide the \baf\ format. This may
-not be a problem for Web documents like catalogues and database
+not be a problem for Web documents like catalogs and database
 records, but is does present a major obstacle in our case when we need
 to exchange huge terms between tools. We are currently considering
 whether some link between \ATerms\ and XML may be advantageous.
@@ -1822,7 +1822,7 @@ the \TB\ coordination architecture~\cite{BK98}. It was used to
 represent data which were transported between tools written in
 different languages running on different machines.  Simultaneously, we
 were developing a formalism for representing parse 
-trees \cite{GB94,BKOV99.asfix}.
+trees \cite{GB94}.
 In addition, incompatible term formats were in use in various of our
 compiler projects~\cite{FKW98}. Observing the similarities between all
 these incompatible term data types triggered the work on \ATerms\ as
@@ -1862,22 +1862,5 @@ of terms that is completely hidden behind high-level read and write
 operations.
 
 %}}}
-
-\section*{Availability}
-
-The \ATerm\ library can be obtained via 
-
-\begin{quote}
-{\small 
-\begin{verbatim}
-http://www.wins.uva.nl/pub/programming-research/software/aterm/
-\end{verbatim}
-}
-\end{quote}
-
-\noindent The current version of the library is available for Unix (including Linux)
-and Windows/NT.  We are currently working on a 64-bits implementation
-of the library.
- 
 
 

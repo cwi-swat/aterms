@@ -121,27 +121,27 @@ public class ATermList extends ATerm
       // Check for the empty list
       if(first == null || trms.first == null)
         return first == null && trms.first == null;
-			
-			
+      
+      
       // First we need to handle the special case where the pattern <term>
       // is used.
       if(first.getType() == PLACEHOLDER) {
-				ATerm ph = ((ATermPlaceholder)first).getPlaceholderType();
-				if(ph.getType() == APPL) {
-					ATermAppl appl = (ATermAppl)ph;
-					if(appl.getName().equals("list") && appl.getArguments().isEmpty()) {
-						subterms.addElement(trms);
-						return true;
-					}
-				}
+	ATerm ph = ((ATermPlaceholder)first).getPlaceholderType();
+	if(ph.getType() == APPL) {
+	  ATermAppl appl = (ATermAppl)ph;
+	  if(appl.getName().equals("list") && appl.getArguments().isEmpty()) {
+	    subterms.addElement(trms);
+	    return true;
+	  }
+	}
       }
       
       if(this == trm)
-				return true;
-
+	return true;
+      
       // Just match the first element and the tail.
       if(!first.match(trms.first, subterms))
-				return false;
+	return false;
       
       return next.match(trms.next, subterms);
     }

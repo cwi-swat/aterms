@@ -197,6 +197,7 @@ public class ATermAppl extends ATerm
 	  case '\\':	o.print('\\');	o.print('\\');	break;
 	  case '\'':	o.print('\\');	o.print('\'');	break;
 	  case '\"':	o.print('\\');	o.print('\"');	break;
+
 	  case '!':	case '@':	case '#':	case '$':
 	  case '%':	case '^':	case '&':	case '*':
 	  case '(':	case ')':	case '-':	case '_':
@@ -316,7 +317,7 @@ public class ATermAppl extends ATerm
   }
 
   //}
-	//{ public ATerm getArgument(int idx)
+  //{ public ATerm getArgument(int idx)
 
 	/**
 		* Retrieve a specific argument
@@ -336,7 +337,7 @@ public class ATermAppl extends ATerm
   }
 
   //}
-	//{ public int getArity()
+  //{ public int getArity()
 
 	/**
 		* What is the arity of this function?

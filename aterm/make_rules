@@ -53,3 +53,4 @@ SHARED_COMPILE = $(CC_SHARED) $(CFLAGS_SHARED) $(DEFS_SHARED) $(STDDEFS)
 
 %-ns.o   : %.c $(ALLINCLUDES)
 	$(NS_COMPILE) -c $< -o $@
+

@@ -1,0 +1,387 @@
+/*
+
+    ATerm -- The ATerm (Annotated Term) library
+    Copyright (C) 1998-2000  Stichting Mathematisch Centrum, Amsterdam, 
+                             The  Netherlands.
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
+
+*/
+
+#include <stdio.h>
+#include <time.h>
+#include <ctype.h>
+#include <string.h>
+
+#include "aterm2.h"
+
+#define ROW_LENGTH 16
+
+static char *prefix = NULL;
+
+/*{{{  static void usage(char *prg, int exit_code) */
+
+static void usage(char *prg, int exit_code)
+{
+  fprintf(stderr, "usage: %s -dict <dict-file> [-prefix <prefix>]\n", prg);
+  fprintf(stderr, "<dict-file> must be of the following format:\n");
+  fprintf(stderr, "\t[afuns([alias3,symbol1],[alias4,symbol2]),\n");
+  fprintf(stderr, "\t terms([[alias1,term1],[alias2,term2],...])]\n");
+  exit(exit_code);
+}
+
+/*}}}  */
+
+/*{{{  static void checkAFun(ATerm afun) */
+
+static void checkAFun(ATerm afun)
+{
+  if (ATgetType(afun) != AT_APPL) {
+    ATfprintf(stderr, "wrong afun spec: %t\n", afun);
+    exit(1);
+  }
+}
+
+/*}}}  */
+/*{{{  static void checkAlias(ATerm alias) */
+
+static void checkAlias(ATerm alias)
+{
+  if (ATgetType(alias) == AT_APPL) {
+    ATermAppl appl = (ATermAppl)alias;
+    AFun afun = ATgetAFun(appl);
+    if (ATgetArity(afun) == 0 && !ATisQuoted(afun)) {
+      return;
+    }
+  }
+
+  ATfprintf(stderr, "incorrect alias: %t\n", alias);
+  exit(1);
+}
+
+/*}}}  */
+
+/*{{{  static void generateHeader(FILE *file, ATermList terms, ATermList afuns) */
+
+static void generateHeader(FILE *file, ATermList terms, ATermList afuns)
+{
+  time_t now = time(NULL);
+
+  fprintf(file, "/*\n * Generated at %s", ctime(&now));
+  fprintf(file, " */\n\n");
+
+  fprintf(file, "#ifndef __%s_H\n", prefix);
+  fprintf(file, "#define __%s_H\n\n", prefix);
+  fprintf(file, "#include <aterm2.h>\n\n");
+
+  while (!ATisEmpty(afuns)) {
+    ATerm afun, alias, pair = ATgetFirst(afuns);
+    afuns = ATgetNext(afuns);
+
+    if (!ATmatch(pair, "[<term>,<term>]", &alias, &afun)) {
+      ATfprintf(stderr, "malformed [alias,afun] pair: %t\n", pair);
+      exit(1);
+    }
+
+    checkAlias(alias);
+    checkAFun(afun);
+
+    ATfprintf(file, "extern AFun %t;\n", alias);
+  }
+
+  fprintf(file, "\n");
+
+  while (!ATisEmpty(terms)) {
+    ATerm term, alias, pair = ATgetFirst(terms);
+    terms = ATgetNext(terms);
+
+    if (!ATmatch(pair, "[<term>,<term>]", &alias, &term)) {
+      ATfprintf(stderr, "malformed [alias,term] pair: %t\n", pair);
+      exit(1);
+    }
+
+    checkAlias(alias);
+
+    ATfprintf(file, "extern ATerm %t;\n", alias);
+  }
+
+  fprintf(file, "\nextern void init_%s();\n", prefix);
+
+  fprintf(file, "\n#endif /* __%s_H */\n", prefix);
+}
+
+/*}}}  */
+/*{{{  static void generateSource(FILE *file, ATermList terms, ATermList afuns) */
+
+static void generateSource(FILE *file, ATermList terms, ATermList afuns)
+{
+  int len, row, col, index;
+  unsigned char *data;
+  ATerm all;
+  ATermList list, term_aliases, afun_aliases;
+  ATermList term_values, afun_values;
+  time_t now = time(NULL);
+
+  fprintf(file, "/*\n * Generated at %s", ctime(&now));
+  fprintf(file, " */\n\n");
+
+  fprintf(file, "#include \"%s.h\"\n\n", prefix);
+
+  /*{{{  unzip term and afun lists */
+
+  term_aliases = ATempty;
+  afun_aliases = ATempty;
+  term_values  = ATempty;
+  afun_values  = ATempty;
+
+  list = afuns;
+  while (!ATisEmpty(list)) {
+    ATerm alias, value;
+    ATerm pair = ATgetFirst(list);
+    list = ATgetNext(list);
+    if (!ATmatch(pair, "[<term>,<term>]", &alias, &value)) {
+      ATfprintf(stderr, "malformed [alias,afun] pair: %t\n", pair);
+      exit(1);
+    }
+    afun_aliases = ATinsert(afun_aliases, alias);
+    afun_values  = ATinsert(afun_values, value);
+  }
+
+  afun_aliases = ATreverse(afun_aliases);
+  afun_values  = ATreverse(afun_values);
+
+  list = terms;
+  while (!ATisEmpty(list)) {
+    ATerm alias, value;
+    ATerm pair = ATgetFirst(list);
+    list = ATgetNext(list);
+    if (!ATmatch(pair, "[<term>,<term>]", &alias, &value)) {
+      ATfprintf(stderr, "malformed [alias,term] pair: %t\n", pair);
+      exit(1);
+    }
+    term_aliases = ATinsert(term_aliases, alias);
+    term_values  = ATinsert(term_values, value);
+  }
+
+  term_aliases = ATreverse(term_aliases);
+  term_values  = ATreverse(term_values);
+
+  /*}}}  */
+
+  /*{{{  generate symbol declarations */
+
+  list = afun_aliases;
+  while (!ATisEmpty(list)) {
+    ATerm alias = ATgetFirst(list);
+    list = ATgetNext(list);
+
+    checkAlias(alias);
+
+    ATfprintf(file, "AFun %t;\n", alias);
+  }
+
+  fprintf(file, "\n");
+
+  /*}}}  */
+  /*{{{  generate term declarations */
+
+  list = term_aliases;
+  while (!ATisEmpty(list)) {
+    ATerm alias = ATgetFirst(list);
+    list = ATgetNext(list);
+
+    checkAlias(alias);
+
+    ATfprintf(file, "ATerm %t = NULL;\n", alias);
+  }
+
+  /*}}}  */
+  /*{{{  generate BAF data */
+
+  ATfprintf(file, "\n/*\n");
+
+  list = afuns;
+  while (!ATisEmpty(list)) {
+    ATermList pair = (ATermList)ATgetFirst(list);
+    list = ATgetNext(list);
+    ATfprintf(file, " * %t = %t\n", ATelementAt(pair, 0), ATelementAt(pair, 1));
+  }
+  ATfprintf(file, " *\n");
+
+  list = terms;
+  while (!ATisEmpty(list)) {
+    ATermList pair = (ATermList)ATgetFirst(list);
+    list = ATgetNext(list);
+    ATfprintf(file, " * %t = %t\n", ATelementAt(pair, 0), ATelementAt(pair, 1));
+  }
+  ATfprintf(file, " *\n");
+  ATfprintf(file, " */\n");
+
+  ATfprintf(file, "\nstatic ATermList _%s = NULL;\n\n", prefix);
+
+  all = ATmake("[<term>,<term>]", afun_values, term_values);
+  data = (unsigned char *)ATwriteToBinaryString(all, &len);
+
+  ATfprintf(file, "#define _%s_LEN %d\n\n", prefix, len);
+  ATfprintf(file, "static char _%s_baf[_%s_LEN] = {\n", prefix, prefix, len);
+  
+  index = 0;
+ 
+  for (row=0; index<len; row++) {
+    for (col=0; col<ROW_LENGTH && index<len; col++) {
+      fprintf(file, "0x%02X", data[index++]);
+      if (index < len) {
+	fprintf(file, ",");
+      }
+    }
+    fprintf(file, "\n");
+  }
+
+  ATfprintf(file, "};\n\n");
+
+  /*}}}  */
+  /*{{{  generate init function */
+
+  ATfprintf(file, "void init_%s()\n", prefix);
+  ATfprintf(file, "{\n");
+  ATfprintf(file, "  ATermList afuns, terms;\n\n");
+
+  ATfprintf(file, "  _%s = (ATermList)ATreadFromBinaryString(_%s_baf, _%s_LEN);\n\n", 
+	    prefix, prefix, prefix);
+  ATfprintf(file, "  ATprotect((ATerm *)&_%s);\n\n", prefix);
+
+  ATfprintf(file, "  afuns = (ATermList)ATelementAt(_%s, 0);\n\n", prefix);
+
+  list = afuns;
+  while (!ATisEmpty(list)) {
+    ATerm alias;
+    ATermList pair = (ATermList)ATgetFirst(list);
+    list = ATgetNext(list);
+    alias = ATelementAt(pair, 0);
+    ATfprintf(file, "  %t = ATgetAFun((ATermAppl)ATgetFirst(afuns));\n", alias);
+    ATfprintf(file, "  afuns = ATgetNext(afuns);\n");
+  }
+
+  ATfprintf(file, "\n  terms = (ATermList)ATelementAt(_%s, 1);\n\n", prefix);
+
+  list = terms;
+  index = 0;
+  while (!ATisEmpty(list)) {
+    ATerm alias;
+    ATermList pair = (ATermList)ATgetFirst(list);
+    list = ATgetNext(list);
+    alias = ATelementAt(pair, 0);
+    ATfprintf(file, "  %t = ATgetFirst(terms);\n", alias);
+    ATfprintf(file, "  terms = ATgetNext(terms);\n");
+  }
+
+  ATfprintf(file, "}\n");
+
+  /*}}}  */
+
+}
+
+/*}}}  */
+
+/*{{{  static void generateCode(ATermList terms, ATermList afuns) */
+
+static void generateCode(ATermList terms, ATermList afuns)
+{
+  FILE *source, *header;
+  char path_source[BUFSIZ];
+  char path_header[BUFSIZ];
+
+  sprintf(path_source, "%s.c", prefix);
+  sprintf(path_header, "%s.h", prefix);
+
+  source = fopen(path_source, "w");
+  header = fopen(path_header, "w");
+
+  if (!source || !header) {
+    fprintf(stderr, "could not open source and/or header files (%s,%s)\n",
+	    path_source, path_header);
+    exit(1);
+  }
+
+  generateHeader(header, terms, afuns);
+  generateSource(source, terms, afuns);
+
+  fclose(header);
+  fclose(source);
+}
+
+/*}}}  */
+
+/*{{{  int main(int argc, char *argv[]) */
+
+int main(int argc, char *argv[])
+{
+  int i;
+  ATerm bottomOfStack;
+  char *dict_name = NULL;
+  ATerm dict;
+  ATermList terms, afuns;
+  static char buf[BUFSIZ];
+
+  for (i=1; i<argc; i++) {
+    if (strcmp(argv[i], "-h") == 0) {
+      usage(argv[0], 0);
+    } else if(strcmp(argv[i], "-dict") == 0) {
+      dict_name = argv[++i];
+    } else if(strcmp(argv[i], "-prefix") == 0) {
+      prefix = argv[++i];
+    }
+  }
+
+  if (dict_name == NULL) {
+    usage(argv[0], 1);
+  }
+
+  if (prefix == NULL) {
+    char *ptr = strrchr(dict_name, '/');
+
+    if (ptr) {
+      strcpy(buf, ptr+1);
+    } else {
+      strcpy(buf, dict_name);
+    }
+
+    prefix = buf;
+    for (ptr=buf; *ptr; ptr++) {
+      if (!isalnum((int)*ptr)) {
+	*ptr = '_';
+      }
+    }
+  }
+
+  ATinit(argc, argv, &bottomOfStack);
+
+  dict = ATreadFromNamedFile(dict_name);
+
+  if (!dict) {
+    fprintf(stderr, "could not read dictionary from file: %s\n", dict_name);
+    exit(1);
+  }
+
+  if (!ATmatch(dict, "[afuns([<list>]),terms([<list>])]", &afuns, &terms)) {
+    usage(argv[0], 1);
+  }
+
+  generateCode(terms, afuns);
+
+  return 0;
+}
+
+/*}}}  */

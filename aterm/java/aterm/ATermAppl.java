@@ -31,6 +31,14 @@ package aterm;
 public interface ATermAppl extends ATerm {
 
     /**
+     * Gets the AFun object that represents the function symbol of this application
+     *
+     * @return the function symbol of this application.
+     *
+     */
+    public AFun getAFun();
+
+    /**
      * Gets the function name of this application.
      *
      * @return the function name of this application.
@@ -44,6 +52,15 @@ public interface ATermAppl extends ATerm {
      * @return a list containing all arguments of this application.
      */
     public ATermList getArguments();
+
+    /**
+     * Gets the arguments of this application as an array of ATerm objects.
+     *
+     * @return an array containing all arguments of this application.
+     *
+     */
+
+    public ATerm[] getArgumentArray();
 
     /**
      * Gets a specific argument of this application.

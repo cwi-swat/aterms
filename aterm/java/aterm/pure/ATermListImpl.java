@@ -22,7 +22,9 @@
 
 package aterm.pure;
 
+import aterm.*;
 import java.util.List;
+import java.util.Vector;
 
 class ATermListImpl
   extends ATermImpl
@@ -37,31 +39,35 @@ class ATermListImpl
 
   static int hashFunction(ATerm first, ATermList next)
   {
-    return first.hashCode() ^ next.hashCode();
+    int hnr;
+
+    hnr = next.hashCode();
+    return first.hashCode() ^ (hnr << 1) ^ (hnr >> 1);
   }
 
   //}
-  //{ int hashCode()
+  //{ public int hashCode()
 
-  int hashCode()
+  public int hashCode()
   {
-    return first.hashCode() ^ next.hashCode();
+    return hashFunction(first, next);
   }
 
   //}
-  //{ int getType()
+  //{ public int getType()
 
-  int getType()
+  public int getType()
   {
     return ATerm.LIST;
   }
 
   //}
 
-  //{ protected ATermListImpl(ATerm first, ATermList next)
+  //{ protected ATermListImpl(PureFactory factory, ATerm first, ATermList next)
 
-  protected ATermListImpl(ATerm first, ATermList next)
+  protected ATermListImpl(PureFactory factory, ATerm first, ATermList next)
   {
+    super(factory);
     this.first  = first;
     this.next   = next;
     this.length = 1 + next.getLength();
@@ -76,7 +82,7 @@ class ATermListImpl
     if (pattern.getType() == LIST) {
       ATermList l = (ATermList)pattern;
 
-      if (this == emtpy) {
+      if (this == empty) {
 	return l == empty;
       }
 
@@ -85,8 +91,8 @@ class ATermListImpl
       }
 
       // match("[1,2,3],[<list>]")
-      if (l.first.getType() == PLACEHOLDER) {
-	ATerm ph_type = ((ATermPlaceholder)l.first).getPlaceholderType();
+      if (l.getFirst().getType() == PLACEHOLDER) {
+	ATerm ph_type = ((ATermPlaceholder)l.getFirst()).getPlaceholder();
 	if (ph_type.getType() == APPL) {
 	  ATermAppl appl = (ATermAppl)ph_type;
 	  if (appl.getName().equals("list") && appl.getArguments().isEmpty()) {
@@ -96,11 +102,21 @@ class ATermListImpl
 	} 
       }
 
-      if (!first.match(l.first, list)) {
+      List submatches = first.match(l.getFirst());
+      if (submatches == null) {
 	return false;
       }
 
-      return next.match(l.next, list);
+      list.addAll(submatches);
+
+      submatches = next.match(l.getNext());
+
+      if (submatches == null) {
+	return false;
+      }
+
+      list.addAll(submatches);
+      return true;
     }
 
     return super.match(pattern, list);;
@@ -111,14 +127,22 @@ class ATermListImpl
 
   public String toString()
   {
+    String result;
+
     if (this == empty) {
       return "";
     }
 
+    result = first.toString();
+
+    if (first.getType() == LIST) {
+      result = "[" + result + "]";
+    }
+
     if (next == empty) {
-      return first.toString();
+      return result;
     } else {
-      return first.toString() + "," + next.toString();
+      return result + "," + next.toString();
     }
   }
 
@@ -164,11 +188,11 @@ class ATermListImpl
     ATermList cur;
 
     cur = this;
-    while (cur.next != empty) {
-      cur = cur.next;
+    while (cur.getNext() != empty) {
+      cur = cur.getNext();
     }
 
-    return cur.first;
+    return cur.getFirst();
   }
 
   //}
@@ -190,15 +214,15 @@ class ATermListImpl
 
     cur = this;
     for (i=0; i<start; i++) {
-      cur = cur.next;
+      cur = cur.getNext();
     }
 
-    while (cur != empty && cur.first != el) {
-      cur = cur.next;
+    while (cur != empty && cur.getFirst() != el) {
+      cur = cur.getNext();
       ++i;
     }
 
-    return list == empty ? -1 : i;
+    return cur == empty ? -1 : i;
   }
 
   //}
@@ -237,10 +261,10 @@ class ATermListImpl
   public ATermList concat(ATermList rhs)
   {
     if (next == empty) {
-      return PureFactory.factory.makeList(first, rhs);
+      return factory.makeList(first, rhs);
     }
 
-    return PureFactory.factory.makeList(first, next.concat(rhs));
+    return factory.makeList(first, next.concat(rhs));
   }
 
   //}
@@ -248,7 +272,7 @@ class ATermListImpl
 
   public ATermList append(ATerm el) 
   {
-    return concat(PureFactory.factory.makeList(el, empty));
+    return concat(factory.makeList(el, empty));
   }
 
   //}
@@ -257,15 +281,15 @@ class ATermListImpl
   public ATerm elementAt(int index)
   {
     if (0 > index || index > length) {
-      return new IllegalArgumentException("illegal list index: " + index);
+      throw new IllegalArgumentException("illegal list index: " + index);
     } 
 
     ATermList cur = this;
     for (int i=0; i<index; i++) {
-      cur = cur.next;
+      cur = cur.getNext();
     }
 
-    return cur.first;
+    return cur.getFirst();
   }
 
   //}
@@ -283,7 +307,7 @@ class ATermListImpl
       return this;
     }
 
-    return PureFactory.factory.makeList(first, result);
+    return factory.makeList(first, result);
   }
 
   //}
@@ -299,7 +323,7 @@ class ATermListImpl
       return next;
     }
 
-    return PureFactory.factory.makeList(first, next.removeElementAt(index-1));
+    return factory.makeList(first, next.removeElementAt(index-1));
   }
 
   //}
@@ -317,7 +341,7 @@ class ATermListImpl
       return this;
     }
 
-    return PureFactory.factory.makeList(first, result);
+    return factory.makeList(first, result);
   }
 
   //}
@@ -325,7 +349,7 @@ class ATermListImpl
 
   public ATermList insert(ATerm el)
   {
-    return PureFactory.factory.makeList(el, this);
+    return factory.makeList(el, this);
   }
 
   //}
@@ -341,7 +365,7 @@ class ATermListImpl
       return insert(el);
     }
 
-    return PureFactory.factory.makeList(first, next.insertAt(el, i-1));
+    return factory.makeList(first, next.insertAt(el, i-1));
   }
 
   //}
@@ -361,7 +385,7 @@ class ATermListImpl
     elems = new Vector();
     
     while (true) {
-      next = cur.next;
+      next = cur.getNext();
       if (next == empty) {
 	cur = empty;
 	for (int i=elems.size()-1; i>=0; i--) {
@@ -369,12 +393,12 @@ class ATermListImpl
 	}
 	return cur;
       } else {
-	elems.add(cur.first);
-	cur = cur.next;
+	elems.add(cur.getFirst());
+	cur = cur.getNext();
       }
     }
   }
-  
+
   //}
   //{ public ATermList getSlice(int start, int end)
 
@@ -388,16 +412,16 @@ class ATermListImpl
 
     list = this;
     for (i=0; i<start; i++) {
-      list = list.next;
+      list = list.getNext();
     }
 
     for (i=0; i<size; i++) {
-      buffer.add(list.first);
-      list = list.next;
+      buffer.add(list.getFirst());
+      list = list.getNext();
     }
 
     for (--i; i>=0; i--) {
-      result = result.insert(buffer.get(i));
+      result = result.insert((ATerm)buffer.get(i));
     }
 
     return result;
@@ -420,19 +444,19 @@ class ATermListImpl
 
     cur = this;
     for (lcv=0; lcv<i; lcv++) {
-      buffer.add(cur.first);
-      cur = cur.next;
+      buffer.add(cur.getFirst());
+      cur = cur.getNext();
     }
 
     /* Skip the old element */
-    cur = cur.next;
+    cur = cur.getNext();
 
     /* Add the new element */
     cur = cur.insert(el);
 
     /* Add the prefix */
     for(--lcv; lcv>=0; lcv--) {
-      cur = cur.insert(buffer.get(i));
+      cur = cur.insert((ATerm)buffer.get(i));
     }
 
     return cur;

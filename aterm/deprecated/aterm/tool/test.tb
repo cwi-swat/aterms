@@ -27,8 +27,10 @@ process TEST is
 let
   T : testing,
   X : term,
-  Y : int
+  Y : int,
+  Z : list
 in
+  Z := [1,2.3] .
   execute(testing, T?) .
   snd-do(T, testit("abc")) .
   snd-do(T, testit("a", 3)) .
@@ -36,6 +38,7 @@ in
   snd-eval(T, question(square)) .
   rec-value(T, answer(X?)) .
   printf("X = %t\n", X) .
+  snd-do(T, listtest(Z)) .
   ( rec-event(T, test-event(Y?)) .
     printf("acknowledging event: test-event(%d)\n", Y) .
     snd-ack-event(T, test-event(Y, 4.5))

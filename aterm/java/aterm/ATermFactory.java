@@ -32,20 +32,19 @@ public interface ATermFactory
   ATerm make(String pattern, List args);
   ATerm make(ATerm pattern, List args);
 
-  AFun  makeAFun(String name, int arity, boolean isQuoted);
 
   ATermInt makeInt(int val);
-
   ATermReal makeReal(double val);
-
-  ATermAppl makeAppl(AFun fun);
-  ATermAppl makeAppl(AFun fun, List args);
-  
-  ATermList makeList(ATerm first, ATerm next);
-
+  ATermList makeList(ATerm first, ATermList next);
   ATermPlaceholder makePlaceholder(ATerm type);
-
   ATermBlob makeBlob(byte[] data);
+
+  AFun  makeAFun(String name, int arity, boolean isQuoted);
+  ATermAppl makeAppl(AFun fun);
+  ATermAppl makeAppl(AFun fun, ATerm[] args);
+
+  ATerm setAnnotation(ATerm term, ATerm label, ATerm anno);
+  ATerm removeAnnotation(ATerm term, ATerm label);
 
   ATerm readFromTextFile(InputStream stream);
   ATerm readFromBinaryFile(InputStream stream);

@@ -59,6 +59,11 @@ public class TestingTool extends Testing
     return R;
   }
 
+  void listtest(ATermList l) 
+  {
+    System.out.println("list received: " + l);
+  }
+
   void recTerminate(ATerm t0)
   {
     System.out.print("recTerminate called: ");

@@ -315,21 +315,21 @@ public class World
       // Lookup int in the world-global hashtable
       cur = table[idx];
       while(cur != null) {
-				ATerm term = (ATerm)cur.get();
-				if(term == null) {
-					// Found a ghost reference, remove it to speed up lookups.
-					if(prev == null)
-						table[idx] = cur.next;
-					else
-						prev.next = cur.next;
-				} else {
-					if(term.getType() == ATerm.INT) {
-						iterm = (ATermInt)term;
-						if(iterm.getInt() == i && iterm.getAnnotations() == annos)
-							return iterm;
-					}
-				}
-				cur = cur.next;
+	ATerm term = (ATerm)cur.get();
+	if(term == null) {
+	  // Found a ghost reference, remove it to speed up lookups.
+	  if(prev == null)
+	    table[idx] = cur.next;
+	  else
+	    prev.next = cur.next;
+	} else {
+	  if(term.getType() == ATerm.INT) {
+	    iterm = (ATermInt)term;
+	    if(iterm.getInt() == i && iterm.getAnnotations() == annos)
+	      return iterm;
+	  }
+	}
+	cur = cur.next;
       }
       // Term not found, create a new one
       iterm = new ATermInt(this, i, annos);
@@ -466,7 +466,7 @@ public class World
 
   //}
 
-	//{ public ATermBlob makeBlob(byte[] data)
+  //{ public ATermBlob makeBlob(byte[] data)
 
 	/**
 		* Create a BLOB
@@ -478,7 +478,7 @@ public class World
 	}
 
 	//}
-	//{ protected ATermBlob makeBlob(byte[] data, ATermList annos)
+  //{ protected ATermBlob makeBlob(byte[] data, ATermList annos)
 
 	/**
 		* Create a BLOB
@@ -662,7 +662,7 @@ public class World
   }
 
   //}
-	//{ public ATerm make(String pattern, Enumeration e)
+  //{ public ATerm make(String pattern, Enumeration e)
 
 	/**
 		* Make using a list of arguments
@@ -868,7 +868,7 @@ public class World
 
   //}
 
-	//{ public ATerm parse(String s)
+  //{ public ATerm parse(String s)
 
 	/**
 		* Parse an ATerm
@@ -883,7 +883,7 @@ public class World
 	}
 
 	//}
-	//{ public ATerm readFromString(String s)
+  //{ public ATerm readFromString(String s)
 
 	/**
 		* Parse an ATerm
@@ -898,7 +898,7 @@ public class World
 	}
 
 	//}
-	//{ public ATerm readFromTextFile(InputStream i)
+  //{ public ATerm readFromTextFile(InputStream i)
 
 	/**
 		* Read a term from a text file
@@ -915,7 +915,7 @@ public class World
 	}
 
 	//}
-
+  
   //{ public ATerm importTerm(ATerm term)
 
   /**
@@ -1015,23 +1015,23 @@ public class World
     String fun;
 
     switch(channel.last()) {
-      case '[':	
-				//{ Read a list
+    case '[':	
+      //{ Read a list
 				
-				if(channel.readNext() == ']') {
-					channel.readNext();
-					result = empty;
-				} else {
-					result = parseATermList(channel);
-					if(channel.last() != ']')
-						throw new ParseError(channel, channel.last(), "']' expected");
-					channel.readNext();
-				}
-
-				//}
-				break;
-      case '<':
-				//{ Read a placeholder
+      if(channel.readNext() == ']') {
+	channel.readNext();
+	result = empty;
+      } else {
+	result = parseATermList(channel);
+	if(channel.last() != ']')
+	  throw new ParseError(channel, channel.last(), "']' expected");
+	channel.readNext();
+      }
+      
+      //}
+    break;
+    case '<':
+      //{ Read a placeholder
 
 				channel.readNext();
 				type = parseATerm(channel);
@@ -1041,9 +1041,9 @@ public class World
 				channel.readNext();
 				
 				//}
-				break;
-      case '"':
-				//{ Read a quoted function
+      break;
+    case '"':
+      //{ Read a quoted function
 				
 				fun = parseQuotedId(channel);
 				if(channel.last() == '(') {
@@ -1057,16 +1057,16 @@ public class World
 					result = makeAppl(fun, empty, true);
 
 				//}
-				break;
-      case '-':
-      case '0':	case '1':	case '2': 	case '3': 	case '4':
-      case '5':	case '6':	case '7':	case '8':	case '9':
-				result = parseNumber(channel);
-				break;
-      default:
-				if(Character.isLetter((char)channel.last()) ||
-					 channel.last() == '_') {
-					//{ Parse an unquoted function
+      break;
+    case '-':
+    case '0':	case '1':	case '2': 	case '3': 	case '4':
+    case '5':	case '6':	case '7':	case '8':	case '9':
+      result = parseNumber(channel);
+      break;
+    default:
+      if(Character.isLetter((char)channel.last()) ||
+	 channel.last() == '_') {
+	//{ Parse an unquoted function
 					 
 					fun = parseId(channel);
 					if(channel.last() == '(') {
@@ -1082,37 +1082,37 @@ public class World
 						result = makeAppl(fun);
 
 					//}
-				} else {
-					throw new ParseError(channel, channel.last(), "illegal character");
-				}
+      } else {
+	throw new ParseError(channel, channel.last(), "illegal character");
+      }
     }
 
-		if(channel.last() == '{') {
-			ATermList annos;
-			// Parse annotation
-			if(channel.readNext() == '}') {
-				channel.readNext();
-				annos = empty;
-			} else {
-				annos = parseATermList(channel);
-				if(channel.last() != '}')
-					throw new ParseError(channel, channel.last(), "'}' expected");
-				channel.readNext();
-			}
-			result = result.setAnnotations(annos);	
-		}
+    if(channel.last() == '{') {
+      ATermList annos;
+      // Parse annotation
+      if(channel.readNext() == '}') {
+	channel.readNext();
+	annos = empty;
+      } else {
+	annos = parseATermList(channel);
+	if(channel.last() != '}')
+	  throw new ParseError(channel, channel.last(), "'}' expected");
+	channel.readNext();
+      }
+      result = result.setAnnotations(annos);	
+    }
 
-		/* Parse some ToolBus anomalies for backwards compatibility */
-		if(channel.last() == ':') {
-			channel.readNext();
-			ATerm anno = parseATerm(channel);
-			result = result.setAnnotation(ATerm.parse("type"), anno);
-		}
+    /* Parse some ToolBus anomalies for backwards compatibility */
+    if(channel.last() == ':') {
+      channel.readNext();
+      ATerm anno = parseATerm(channel);
+      result = result.setAnnotation(ATerm.parse("type"), anno);
+    }
 
-		if(channel.last() == '?') {
-			channel.readNext();
-			result = result.setAnnotation(ATerm.parse("result"),ATerm.parse("true"));
-		}
+    if(channel.last() == '?') {
+      channel.readNext();
+      result = result.setAnnotation(ATerm.parse("result"),ATerm.parse("true"));
+    }
 
 
     return result;
@@ -1168,28 +1168,28 @@ public class World
     do {
       escaped = false;
       if(channel.read() == '\\') {
-				channel.read();
-				escaped = true;
+	channel.read();
+	escaped = true;
       }
 
       if(escaped) {
-				switch(channel.last()) {
-					case 'n':	str.append('\n');	break;
-					case 't':	str.append('\t');	break;
-					case 'b':	str.append('\b');	break;
-					case 'r':	str.append('\r');	break;
-					case 'f':	str.append('\f');	break;
-					case '\\':	str.append('\\');	break;
-					case '\'':	str.append('\'');	break;
-					case '\"':	str.append('\"');	break;
-					case '0':	case '1':	case '2':	case '3':
-					case '4':	case '5':	case '6':	case '7':
-						str.append(channel.readOct());
-						break;
-					default:	str.append('\\').append(channel.last());
-				} 
+	switch(channel.last()) {
+	case 'n':	str.append('\n');	break;
+	case 't':	str.append('\t');	break;
+	case 'b':	str.append('\b');	break;
+	case 'r':	str.append('\r');	break;
+	case 'f':	str.append('\f');	break;
+	case '\\':	str.append('\\');	break;
+	case '\'':	str.append('\'');	break;
+	case '\"':	str.append('\"');	break;
+	case '0':	case '1':	case '2':	case '3':
+	case '4':	case '5':	case '6':	case '7':
+	  str.append(channel.readOct());
+	  break;
+	default:	str.append('\\').append(channel.last());
+	} 
       } else if(channel.last() != '\"')
-				str.append(channel.last());
+	str.append(channel.last());
     } while(escaped || channel.last() != '"');
     channel.readNext();
     return str.toString();
@@ -1265,7 +1265,7 @@ public class World
 
   //}
 
-	//{ public ATerm dictCreate()
+  //{ public ATerm dictCreate()
 
 	/**
 		* Create a new ATerm dictionary
@@ -1277,7 +1277,7 @@ public class World
 	}
 
 	//}
-	//{ public ATerm dictGet(ATerm dict, ATerm key)
+  //{ public ATerm dictGet(ATerm dict, ATerm key)
 
 	/**
 		* Retrieve an element from an ATerm dictionary
@@ -1298,7 +1298,7 @@ public class World
 	}
 
 	//}
-	//{ public ATerm dictPut(ATerm dict, ATerm key, ATerm value)
+  //{ public ATerm dictPut(ATerm dict, ATerm key, ATerm value)
 
 	/**
 		* Store a key/value pair in a ATerm dictionary.
@@ -1325,7 +1325,7 @@ public class World
 	}
 
 	//}
-	//{ public ATerm dictRemove(ATerm dict, ATerm key)
+  //{ public ATerm dictRemove(ATerm dict, ATerm key)
 
 	/**
 		* Remove an element from a dictionary.

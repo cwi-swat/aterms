@@ -17,13 +17,34 @@
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 #
-SUBDIRS   = util tool
+# $Id$
+#
+# vim:ts=8:sw=8
 
-javadir   = $(prefix)/classes-old/aterm
+include ../make_rules
 
-java_JAVA = World.java ATerm.java ATermList.java ATermAppl.java ATermInt.java \
-		ATermPlaceholder.java ATermReal.java ATermBlob.java \
-		ATermChannel.java ParseError.java \
-		ATermSize.java ATest.java Primes.java
+INCLUDES		= -I$(top_srcdir)/aterm
 
-JAVAROOT  = ${top_builddir}/java1.2/
+LDFLAGS			= -L$(top_builddir)/aterm/
+
+LDLIBS			= -lATerm
+
+bin_PROGRAMS		= termsize baffle dicttoc
+
+termsize_SOURCES	= termsize.c
+termsize_LDADD		= $(LDLIBS)
+
+baffle_SOURCES		= baffle.c
+baffle_LDADD		= $(LDLIBS)
+
+dicttoc_SOURCES		= dicttoc.c
+dicttoc_LDADD		= $(LDLIBS)
+
+bin_SCRIPTS		= baf2trm trm2baf trmcat
+
+CFLAGS			= -Wall -g -O2
+
+
+EXTRA_DIST		= $(bin_SCRIPTS)
+
+

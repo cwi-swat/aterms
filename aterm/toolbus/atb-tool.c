@@ -420,14 +420,10 @@ ATerm  ATBreadTerm(int fd)
   }
   buffer[len] = '\0';
 	
-
-  /* Parse the string */
   t = ATparse(buffer+8);
   assert(t);
 
-  /*ATfprintf(stderr, "term before unpacking: %t\n\n", t);*/
   t = ATBunpack(t);
-  /*ATfprintf(stderr, "term after unpacking: %t\n\n", t);*/
 
   return t;
 }
@@ -508,7 +504,7 @@ int ATBhandleOne(int fd)
 
   if(appl == NULL)
     return -1;
-	
+
   result = connections[fd]->handler(fd, (ATerm)appl);
 
   if(result)

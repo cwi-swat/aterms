@@ -1,0 +1,11 @@
+[
+afuns([
+  [symbolA, "A very complex symbol"(1,2,3)],
+  [symbolB, "another \"complex\" symbol"]
+]),
+terms([
+  [patternA, patroon("a",<term>)],
+  [patternB, patroon("b")]
+])
+]
+

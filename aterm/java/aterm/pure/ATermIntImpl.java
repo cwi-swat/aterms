@@ -22,6 +22,7 @@
 
 package aterm.pure;
 
+import aterm.*;
 import java.util.List;
 
 class ATermIntImpl
@@ -39,27 +40,28 @@ class ATermIntImpl
 
   //}
 
-  //{ int hashCode()
+  //{ public int hashCode()
 
-  int hashCode()
+  public int hashCode()
   {
     return value;
   }
 
   //}
-  //{ int getType()
+  //{ public int getType()
 
-  int getType()
+  public int getType()
   {
     return ATerm.INT;
   }
 
   //}
 
-  //{ protected ATermIntImpl(int value)
+  //{ protected ATermIntImpl(PureFactory factory, int value)
 
-  protected ATermIntImpl(int value)
+  protected ATermIntImpl(PureFactory factory, int value)
   {
+    super(factory);
     this.value = value;
   }
 
@@ -74,9 +76,9 @@ class ATermIntImpl
     }
 
     if (pattern.getType() == ATerm.PLACEHOLDER) {
-      ATerm type = ((ATermPlaceholder)pattern).getPlaceholderType();
+      ATerm type = ((ATermPlaceholder)pattern).getPlaceholder();
       if (type.getType() == ATerm.APPL) {
-	ATerm appl = (ATermAppl)type;
+	ATermAppl appl = (ATermAppl)type;
 	AFun  afun = appl.getAFun();
 	if(afun.getName().equals("int") && afun.getArity() == 0 && !afun.isQuoted()) {
 	  list.add(new Integer(value));

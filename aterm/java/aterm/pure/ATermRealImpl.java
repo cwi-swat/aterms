@@ -22,6 +22,7 @@
 
 package aterm.pure;
 
+import aterm.*;
 import java.util.List;
 
 class ATermRealImpl
@@ -39,27 +40,28 @@ class ATermRealImpl
 
   //}
 
-  //{ int hashCode()
+  //{ public int hashCode()
 
-  int hashCode()
+  public int hashCode()
   {
     return hashFunction(value);
   }
 
   //}
-  //{ int getType()
+  //{ public int getType()
 
-  int getType()
+  public int getType()
   {
     return ATerm.REAL;
   }
 
   //}
 
-  //{ protected ATermRealImpl(double value)
+  //{ protected ATermRealImpl(PureFactory factory, double value)
 
-  protected ATermRealImpl(double value)
+  protected ATermRealImpl(PureFactory factory, double value)
   {
+    super(factory);
     this.value = value;
   }
 
@@ -74,9 +76,9 @@ class ATermRealImpl
     }
 
     if (pattern.getType() == ATerm.PLACEHOLDER) {
-      ATerm type = ((ATermPlaceholder)pattern).getPlaceholderType();
+      ATerm type = ((ATermPlaceholder)pattern).getPlaceholder();
       if (type.getType() == ATerm.APPL) {
-	ATerm appl = (ATermAppl)type;
+	ATermAppl appl = (ATermAppl)type;
 	AFun  afun = appl.getAFun();
 	if(afun.getName().equals("real") && afun.getArity() == 0 && !afun.isQuoted()) {
 	  list.add(new Double(value));

@@ -19,6 +19,11 @@
 
 $Id$
 
+2000/7/12 ({jong,olivierp}@cwi.nl)
+  * introduced subdir 'utils' with utility programs
+  * added dicttoc program so constant terms and afuns can be placed in a 
+    special '.dict' file.
+	
 2000/6/28 (jong@cwi.nl)
   * version is now 1.1
   * ToolBus-tools using the ATerm-library can now ATBpack() terms

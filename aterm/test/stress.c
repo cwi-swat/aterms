@@ -43,6 +43,8 @@
 #include "util.h"
 #include "gc.h"
 
+#include "stress_dict.h"
+
 /*}}}  */
 /*{{{  defines */
 
@@ -485,7 +487,11 @@ testMake(void)
   int len = 8;
   char *data = strdup("ABCDEFG");
   Symbol sym[8];
+  ATerm t;
   
+  t = ATparse("rec-eval(create-rule(\"Tcl/Tk-17097\",process-list(step),step,true,"
+	      "[break,disable]))");
+
   test_assert("make", 1, ATisEqual(ATmake("<int>", 3), ATmakeInt(3)));
   test_assert("make", 2, ATisEqual(ATmake("<real>", 3.8), ATmakeReal(3.8)));
   test_assert("make", 3, ATisEqual(ATmake("<blob>", len, data),
@@ -967,6 +973,22 @@ void testIndexedSet()
 }
 
 /*}}}  */
+/*{{{  void testDictToC() */
+
+void testDictToC()
+{
+  init_stress_dict();
+  test_assert("dicttoc", 1, ATisEqual(patternA, 
+				      ATparse("patroon(\"a\",<term>)")));
+  test_assert("dicttoc", 2, ATisEqual(patternB, ATparse("patroon(\"b\")")));
+  test_assert("dicttoc", 3, symbolA == ATmakeAFun("A very complex symbol", 
+						  3, ATtrue));
+  test_assert("dicttoc", 4, symbolB == ATmakeAFun("another \"complex\" symbol",
+						  0, ATtrue));
+  printf("dicttoc tests ok.\n");
+}
+
+/*}}}  */
 
 /*{{{  void testBaffle() */
 
@@ -1034,6 +1056,7 @@ int main(int argc, char *argv[])
   testMark();
   testTable();
   testIndexedSet();
+  testDictToC();
 
   return 0;
 }

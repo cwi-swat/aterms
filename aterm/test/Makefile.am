@@ -28,9 +28,9 @@ PROGS              	= stress primes randgen termstats \
 TESTS	          	= stress
 
 EXTRA_DIST = termstats.sh test.tb test2.tb test.trms error.trm  \
-             tool2.tif.c tool2.tif.h
+             tool2.tif.c tool2.tif.h stress.dict
 
-CLEANFILES = test2.tifs
+CLEANFILES = test2.tifs tool2.tif.c tool2.tif.h stress_dict.c stress_dict.h
 
 INCLUDES   = -I. -I$(top_srcdir)/aterm -I$(top_srcdir)/toolbus
 
@@ -43,7 +43,7 @@ LDLIBS			= -lATB -lATerm
 
 noinst_PROGRAMS		= $(PROGS)
 stress_SOURCES		= stress.c 
-stress_LDADD		= $(LDLIBS)
+stress_LDADD		= stress_dict.o $(LDLIBS)
 
 primes_SOURCES		= primes.c
 primes_LDADD		= $(LDLIBS)
@@ -75,6 +75,13 @@ tool2.tif.o : tool2.tif.c tool2.tif.h
 
 %.tif.c %.tif.h : test2.tifs
 	PATH=$(top_builddir)/toolbus/:$$PATH tifstoc -tool tool2 $<
+
+stress_dict.o: stress_dict.c stress_dict.h
+stress.o: stress_dict.h
+
+%_dict.c %_dict.h: %.dict ${top_srcdir}/utils/dicttoc
+	${top_srcdir}/utils/dicttoc -dict $<
+
 
 test: stress
 	./stress

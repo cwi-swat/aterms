@@ -201,7 +201,7 @@ public abstract class ATerm
   }
 
   //}
-	//{ public ATerm make(String pattern, Enumeration e)
+  //{ public ATerm make(String pattern, Enumeration e)
 
 	/**
 		* Make using a list of arguments
@@ -287,7 +287,7 @@ public abstract class ATerm
   }
 
   //}
-	//{ public void writeToTextFile(OutputStream stream)
+  //{ public void writeToTextFile(OutputStream stream)
 
 
   /**
@@ -328,7 +328,7 @@ public abstract class ATerm
 
 
 	//}
-	//{ public void print(PrintWriter writer)
+  //{ public void print(PrintWriter writer)
 
 	/**
 		* Print a term to a stream.
@@ -344,7 +344,7 @@ public abstract class ATerm
 	}
 
 	//}
-	//{ public void println(PrintWriter writer)
+  //{ public void println(PrintWriter writer)
 
 	/**
 		* Print a term to a stream.
@@ -362,7 +362,7 @@ public abstract class ATerm
 	}
 
 	//}
-	//{ public void print(OutputStream stream)
+  //{ public void print(OutputStream stream)
 
 	/**
 		* Print a term to a stream.
@@ -378,7 +378,7 @@ public abstract class ATerm
 	}
 
 	//}
-	//{ public void println(OutputStream stream)
+  //{ public void println(OutputStream stream)
 
 	/**
 		* Print a term to a stream.
@@ -396,7 +396,7 @@ public abstract class ATerm
 	}
 
 	//}
-
+  
   //{ abstract protected ATerm setAnnotations(ATermList annos)
 
   /**
@@ -476,7 +476,7 @@ public abstract class ATerm
 
   //}
 
-	//{ public boolean isEqual(ATerm term)
+  //{ public boolean isEqual(ATerm term)
 
 	/**
 		* Check the equality of two ATerms
@@ -532,7 +532,7 @@ public abstract class ATerm
   }
 
   //}
-	//{ public String writeToString()
+  //{ public String writeToString()
 
 	/**
 		* Write this ATerm to a String.

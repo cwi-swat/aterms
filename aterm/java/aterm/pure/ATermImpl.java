@@ -22,21 +22,40 @@
 
 package aterm.pure;
 
-imports aterm.ATerm;
+import aterm.*;
 
-imports java.util.List;
-imports java.util.LinkedList;
 
-public abstract ATermImpl
+import java.util.List;
+import java.util.LinkedList;
+
+public abstract class ATermImpl
   implements ATerm
 {
   private ATerm annotations;
+  PureFactory factory;
+
+  //{ public ATermImpl(PureFactory factory)
+
+  public ATermImpl(PureFactory factory)
+  {
+    this.factory = factory;
+  }
+
+  //}
+  //{ public ATermFactory getFactory()
+
+  public ATermFactory getFactory()
+  {
+    return factory;
+  }
+
+  //}
 
   //{ public ATerm setAnnotation(ATerm label, ATerm anno)
 
   public ATerm setAnnotation(ATerm label, ATerm anno)
   {
-    return PureFactory.factory.setAnnotation(this, label, anno);
+    return factory.setAnnotation(this, label, anno);
   }
 
   //}
@@ -44,7 +63,7 @@ public abstract ATermImpl
 
   public ATerm removeAnnotation(ATerm label)
   {
-    return PureFactory.factory.removeAnnotation(this, label);
+    return factory.removeAnnotation(this, label);
   }
 
   //}
@@ -61,7 +80,7 @@ public abstract ATermImpl
   public List match(String pattern) 
     throws ParseError
   {
-    return match(PureFactory.factory.parsePattern(pattern));
+    return match(factory.parsePattern(pattern));
   }
 
 
@@ -89,7 +108,7 @@ public abstract ATermImpl
       return this == term;
     }
 
-    return PureFactory.factory.isDeepEqual(this, term);
+    return factory.isDeepEqual(this, term);
   }
 
   //}
@@ -102,7 +121,7 @@ public abstract ATermImpl
     }
 
     if (obj instanceof ATerm) {
-      return PureFactory.factory.isDeepEqual(this, (ATerm)obj);
+      return factory.isDeepEqual(this, (ATerm)obj);
     }
 
     return false;
@@ -110,14 +129,14 @@ public abstract ATermImpl
 
   //}
 
-  //{ boolean match(String pattern, List list)
+  //{ boolean match(ATerm pattern, List list)
 
-  boolean match(String pattern, List list)
+  boolean match(ATerm pattern, List list)
   {
     if (pattern.getType() == PLACEHOLDER) {
       ATerm type = ((ATermPlaceholder)pattern).getPlaceholder();
       if (type.getType() == ATerm.APPL) {
-	ATerm appl = (ATermAppl)type;
+	ATermAppl appl = (ATermAppl)type;
 	AFun  afun = appl.getAFun();
 	if(afun.getName().equals("term") && afun.getArity() == 0 && !afun.isQuoted()) {
 	  list.add(this);

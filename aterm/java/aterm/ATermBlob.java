@@ -36,7 +36,7 @@ public interface ATermBlob extends ATerm {
      *
      * @param the size of the data in this blob.
      */
-    public int getSize();
+    public int getBlobSize();
 
     /**
      * Gets the data in this blob.
@@ -44,5 +44,5 @@ public interface ATermBlob extends ATerm {
      * @return the data in this blob.
      *
      */
-    public byte[] getData();
+    public byte[] getBlobData();
 }
