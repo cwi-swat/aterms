@@ -10,7 +10,6 @@
 #ifndef WIN32
 #include <unistd.h>
 #include <sys/times.h>
-#include <values.h>
 #endif
 
 #include "_aterm.h"
