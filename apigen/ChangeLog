@@ -1,3 +1,8 @@
+2002/11/04 (vinju@loria.fr)
+ * ADT class computes bottom sorts
+ * Generate initialize calls for bottom sorts to in JavaGen
+ * Release 1.4
+
 2002/10/30 (vinju@loria.fr)
  * Bumped to 1.4beta
  * Added dependency on aterm-java and shared-objects
