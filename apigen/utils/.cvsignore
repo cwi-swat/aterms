@@ -3,5 +3,5 @@ Makefile
 Makefile.in
 extract-api-files
 extract-api-files.o
-gen-c-api
+adt-to-c
 sdf2-to-adt
