@@ -845,7 +845,7 @@ ATbool ATwriteToNamedTextFile(ATerm t, const char *name)
     return ATwriteToTextFile(t, stdout);
   }
 
-  if(!(f = fopen(name, "w"))) {
+  if(!(f = fopen(name, "wb"))) {
     return ATfalse;
   }
 
@@ -1749,7 +1749,7 @@ ATerm ATreadFromNamedFile(const char *name)
   if(!strcmp(name, "-"))
     return ATreadFromFile(stdin);
 
-  if(!(f = fopen(name, "r")))
+  if(!(f = fopen(name, "rb")))
     return NULL;
 
   t = ATreadFromFile(f);

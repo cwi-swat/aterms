@@ -174,7 +174,7 @@ void testBlob()
   test_assert("blob", 1, strcmp(ATgetBlobData(b[0]), ATgetBlobData(b[1])) == 0);
 
   /*file = tmpfile();*/
-  file = fopen("test.blob", "w+");
+  file = fopen("test.blob", "wb+");
   ATwriteToTextFile((ATerm)b[0], file);
   fflush(file);
   fseek(file, 0, SEEK_SET);
@@ -438,7 +438,7 @@ void
 testRead(void)
 {
   ATerm t;
-  FILE *f = fopen(SRCDIR "test.trms", "r");
+  FILE *f = fopen(SRCDIR "test.trms", "rb");
   if(!f)
     ATerror("cannot open file \"test.trms\"");
 
@@ -472,7 +472,7 @@ testRead(void)
   parse_error_encountered = ATfalse;
 #endif
   fprintf(stderr, "Next term should give a parse error at line 0, col 17\n");
-  f = fopen(SRCDIR "error.trm", "r");
+  f = fopen(SRCDIR "error.trm", "rb");
   t = ATreadFromTextFile(f);
   fclose(f);
 #ifdef ABORT_ON_PARSE_ERROR
@@ -1073,11 +1073,11 @@ void testBaffle()
 
   test_assert("baffle", 1, AT_calcUniqueSubterms(ATparse("f(a,[1])"))==5);
   sprintf(buf, "baffle-test-%d.baf", (int)getpid());
-  file = fopen(buf, "w");
+  file = fopen(buf, "wb");
   if(file) {
     test_assert("baffle", 2, ATwriteToBinaryFile(test1, file));
     fclose(file);
-    file = fopen(buf, "r");
+    file = fopen(buf, "rb");
     test2 = ATreadFromBinaryFile(file); 
     test_assert("baffle", 3, test2);
     test_assert("baffle", 4, ATisEqual(test1, test2));
@@ -1138,7 +1138,7 @@ void testTaf()
 
   fclose(file);
 
-  file = fopen("test.taf", "r");
+  file = fopen("test.taf", "rb");
   if (!file) {
     ATerror("could not open file: test.taf for reading\n");
   }

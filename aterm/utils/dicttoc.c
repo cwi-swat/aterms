@@ -292,8 +292,8 @@ static void generateCode(ATermList terms, ATermList afuns)
   sprintf(path_source, "%s.c", file_prefix);
   sprintf(path_header, "%s.h", file_prefix);
 
-  source = fopen(path_source, "w");
-  header = fopen(path_header, "w");
+  source = fopen(path_source, "wb");
+  header = fopen(path_header, "wb");
 
   if (!source || !header) {
     fprintf(stderr, "could not open source and/or header files (%s,%s)\n",

@@ -1219,7 +1219,7 @@ ATbool ATwriteToNamedBinaryFile(ATerm t, const char *name)
   if(!strcmp(name, "-"))
     return ATwriteToBinaryFile(t, stdout);
 
-  if(!(f = fopen(name, "w"))) {
+  if(!(f = fopen(name, "wb"))) {
     return ATfalse;
   }
 

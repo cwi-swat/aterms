@@ -456,7 +456,7 @@ void AT_cleanupMemory()
 
   if(infoflags & INFO_HASHING) {
     int max = MAX_INFO_SIZES-1;
-    FILE *f = fopen("hashing.stats", "w");
+    FILE *f = fopen("hashing.stats", "wb");
 
     if(!f)
       ATerror("cannot open hashing statisics file: \"hashing.stats\"\n");

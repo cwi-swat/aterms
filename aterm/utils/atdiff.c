@@ -42,7 +42,7 @@ int main(int argc, char *argv[])
     if (strcmp(argv[i], "--nodiffs") == 0) {
       diff_file = NULL;
     } else if (strcmp(argv[i], "--diffs") == 0) {
-      diff_file = fopen(argv[++i], "w");
+      diff_file = fopen(argv[++i], "wb");
       if (!diff_file) {
 	fprintf(stderr, "could not open file %s for writing.\n", argv[i]);
 	exit(1);
@@ -50,7 +50,7 @@ int main(int argc, char *argv[])
     } else if (strcmp(argv[i], "--notemplate") == 0) {
       template_file = NULL;
     } else if (strcmp(argv[i], "--template") == 0) {
-      template_file = fopen(argv[++i], "w");
+      template_file = fopen(argv[++i], "wb");
       if (!template_file) {
 	fprintf(stderr, "could not open file %s for writing.\n", argv[i]);
 	exit(1);
