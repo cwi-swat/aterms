@@ -66,7 +66,7 @@ void AT_initMemory(int argc, char *argv[])
     if (streq(argv[i], TERM_HASH_OPT))
       table_size = atoi(argv[++i]);
 
-  DBG_MEM(printf("initial term table size = %d\n", table_size));
+  DBG_MEM(fprintf(stderr, "initial term table size = %d\n", table_size));
 
   for(i=0; i<MAX_SIZE; i++) {
     nrblocks[i] = 0;
