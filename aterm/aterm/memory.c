@@ -644,18 +644,28 @@ ATermAppl ATmakeAppl(Symbol sym, ...)
 
 ATermAppl ATmakeAppl0(Symbol sym)
 {
-  ATerm cur;
+  ATerm cur, prev;
+	ATerm *hashspot;
   header_type header = APPL_HEADER(0, 0, sym);
-
   unsigned int hnr = HNUM1(header);
   
   CHECK_ARITY(ATgetArity(sym), 0);
 
-  cur = hashtable[hnr & table_mask];
-  while(cur) {
-		if(cur->header == header)
+	prev = NULL;
+	hashspot = &(hashtable[hnr & table_mask]);
+
+  for(cur = *hashspot; cur; cur = cur->next) {
+		if(cur->header == header) {
+			/* Promote current entry to front of hashtable */
+			if (prev != NULL) {
+				prev->next = cur->next;
+				cur->next = *hashspot;
+				*hashspot = cur;
+			}
+
 			return (ATermAppl)cur;
-    cur = cur->next;
+		}
+		prev = cur;
 	}
 
 	cur = AT_allocate(ARG_OFFSET);
@@ -677,17 +687,28 @@ ATermAppl ATmakeAppl0(Symbol sym)
 
 ATermAppl ATmakeAppl1(Symbol sym, ATerm arg0)
 {
-  ATerm cur;
+  ATerm cur, prev;
+	ATerm *hashspot;
   header_type header = APPL_HEADER(0, 1, sym);
   unsigned int hnr = HNUM2(header, arg0);
  
   CHECK_ARITY(ATgetArity(sym), 1);
  
-  cur = hashtable[hnr & table_mask];
-  while(cur) {
-    if(cur->header == header && ATgetArgument(cur, 0) == arg0)
+	prev = NULL;
+	hashspot = &(hashtable[hnr & table_mask]);
+
+  for(cur = *hashspot; cur; cur = cur->next) {
+    if(cur->header == header && ATgetArgument(cur, 0) == arg0) {
+			/* Promote current entry to front of hashtable */
+			if (prev != NULL) {
+				prev->next = cur->next;
+				cur->next = *hashspot;
+				*hashspot = cur;
+			}
+
 			return (ATermAppl)cur;
-    cur = cur->next;
+		}
+		prev = cur;
 	}
 
 	cur = AT_allocate(ARG_OFFSET+1);
@@ -710,18 +731,28 @@ ATermAppl ATmakeAppl1(Symbol sym, ATerm arg0)
 
 ATermAppl ATmakeAppl2(Symbol sym, ATerm arg0, ATerm arg1)
 {
-  ATerm cur;
+  ATerm cur, prev;
+  ATerm *hashspot;
   header_type header = APPL_HEADER(0, 2, sym);
   unsigned int hnr = HNUM3(header, arg0, arg1);
   
   CHECK_ARITY(ATgetArity(sym), 2);
 
-  cur = hashtable[hnr & table_mask];
-  while(cur) {
-		if(cur->header == header &&	ATgetArgument(cur, 0) == arg0 &&
-			 ATgetArgument(cur, 1) == arg1)
+	prev = NULL;
+	hashspot = &(hashtable[hnr & table_mask]);
+
+  for(cur = *hashspot; cur; cur = cur->next) {
+		if(cur->header == header && ATgetArgument(cur, 0) == arg0 &&
+			 ATgetArgument(cur, 1) == arg1) {
+			/* Promote current entry to front of hashtable */
+			if (prev != NULL) {
+				prev->next = cur->next;
+				cur->next = *hashspot;
+				*hashspot = cur;
+			}
 			return (ATermAppl)cur;
-    cur = cur->next;
+		}
+		prev = cur;
 	}
 
 	cur = AT_allocate(ARG_OFFSET+2);
