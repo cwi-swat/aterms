@@ -13,7 +13,7 @@ public class ListTypeGenerator extends TypeGenerator {
 		super(params, type);
 		this.type = type;
 		this.typeName = TypeGenerator.className(type);
-		this.elementTypeName = TypeGenerator.className(type.getElementType());
+		this.elementTypeName = TypeGenerator.qualifiedClassName(params, type.getElementType());
 		this.factory = FactoryGenerator.qualifiedClassName(params);
 	}
 
@@ -55,41 +55,47 @@ public class ListTypeGenerator extends TypeGenerator {
 	}
 
 	protected void genInitMethod() {
-		println("  protected void init (int hashCode, aterm.ATermList annos, aterm.ATerm first, aterm.ATermList next) {");
+		println("  public void init(int hashCode, aterm.ATermList annos, aterm.ATerm first, aterm.ATermList next) {");
 		println("    super.init(hashCode, annos, first, next);");
 		println("  }");
+		println();
 	}
 
 	protected void genInitHashcodeMethod() {
-		println("  protected void initHashCode(aterm.ATermList annos, aterm.ATerm first, aterm.ATermList next) {");
+		println("  public void initHashCode(aterm.ATermList annos, aterm.ATerm first, aterm.ATermList next) {");
 		println("    super.initHashCode(annos, first, next);");
 		println("  }");
+		println();
 	}
 
 	protected void genGetFactoryMethod() {
-		println("  public " + factory + " " + factoryGetter() + "{");
+		println("  public " + factory + " " + factoryGetter() + " {");
 		println("    return factory;");
 		println("}");
+		println();
 	}
 
 	protected void genConstructor(String className) {
-		println("  protected " + factory + " factory = null;");
-		println(" " + className + "(" + factory + " factory) {");
+		println("  private " + factory + " factory = null;");
+		println("  public " + className + "(" + factory + " factory) {");
 		println("     super(factory.getPureFactory());");
 		println("     this.factory = factory;");
 		println("  }");
+		println();
 	}
 
 	protected void genInsertMethod() {
 		println("  public " + typeName + " insert(" + elementTypeName + " head) {");
 		println("    return " + factoryGetter() + ".make" + typeName + "(head, (" + typeName + ") this);");
 		println("  }");
+		println();
 	}
 
 	protected void genOverrideInsertMethod() {
 		println("  public aterm.ATermList insert(aterm.ATerm head) {");
 		println("    return insert((" + elementTypeName + ") head);");
 		println("  }");
+		println();
 	}
 
 	protected void genGetEmptyMethod() {
@@ -97,7 +103,7 @@ public class ListTypeGenerator extends TypeGenerator {
 		println("  public aterm.ATermList getEmpty() {");
 		println("    return (aterm.ATermList)" + factoryGetter() + ".make" + className + "();");
 		println("  }");
-		println("");
+		println();
 	}
 
 	protected void genPredicates() {
@@ -115,12 +121,14 @@ public class ListTypeGenerator extends TypeGenerator {
 		println("  public boolean hasTail() {");
 		println("    return !isEmpty();");
 		println("  }");
+		println();
 	}
 
 	protected void genHasHeadMethod() {
 		println("  public boolean hasHead() {");
 		println("    return !isEmpty();");
 		println("  }");
+		println();
 	}
 
 	protected void genSharedObjectInterface() {
@@ -131,27 +139,29 @@ public class ListTypeGenerator extends TypeGenerator {
 	protected void genDuplicateMethod() {
 		String className = TypeGenerator.className(type);
 		println("  public shared.SharedObject duplicate() {");
-		println("	 " + className + " clone = new " + className + "(factory);");
-		println("	 clone.init(hashCode(), getAnnotations(), getFirst(), getNext());");
-		println("	 return clone;");
+		println("    " + className + " clone = new " + className + "(factory);");
+		println("    clone.init(hashCode(), getAnnotations(), getFirst(), getNext());");
+		println("    return clone;");
 		println("  }");
+		println();
 	}
 
 	protected void genEquivalentMethod() {
 		String className = TypeGenerator.className(type);
 
 		println("  public boolean equivalent(shared.SharedObject peer) {");
-		println("	 if (peer instanceof " + className + ") {");
-		println("	 	return super.equivalent(peer);");
-		println("	 }");
-		println("	 else {");
+		println("    if (peer instanceof " + className + ") {");
+		println("      return super.equivalent(peer);");
+		println("    }");
+		println("    else {");
 		println("      return false;");
-		println("	 }");
+		println("    }");
 		println("  }");
+		println();
 	}
 
 	protected String factoryGetter() {
-		return "get" + factory + "()";
+		return "get" + FactoryGenerator.className(getJavaGenerationParameters()) + "()";
 	}
 
 	protected void genGetters() {
@@ -165,12 +175,14 @@ public class ListTypeGenerator extends TypeGenerator {
 		println("  public " + className + " getTail() {");
 		println("    return (" + className + ") getNext();");
 		println("  }");
+		println();
 	}
 
 	protected void genGetHead() {
 		println("  public " + elementTypeName + " getHead() {");
 		println("    return (" + elementTypeName + ") getFirst();");
 		println("  }");
+		println();
 	}
 
 	protected void genIsAlternativeMethods() {
@@ -184,25 +196,30 @@ public class ListTypeGenerator extends TypeGenerator {
 		println("  public boolean isMany() {");
 		println("    return !isEmpty();");
 		println("  }");
+		println();
 	}
 
 	protected void genIsEmpty(String className) {
+		JavaGenerationParameters params = getJavaGenerationParameters();
 		println("  public boolean isEmpty() {");
-		println("    return this == " + "get" + factory + "().make" + className + "();");
+		String getFactoryMethodName = "get" + FactoryGenerator.className(params);
+		println("    return this == " +  getFactoryMethodName+ "().make" + className + "();");
 		println("  }");
+		println();
 	}
 
 	protected void genIsSingle() {
 		println("  public boolean isSingle() {");
 		println("    return !isEmpty() && getNext().isEmpty();");
 		println("  }");
+		println();
 	}
+	
 	protected void genToTerm() {
 		String get_factory = factoryGetter();
 		String className = TypeGenerator.className(type);
 
-		println("  public aterm.ATerm toTerm()");
-		println("  {");
+		println("  public aterm.ATerm toTerm() {");
 		println("    if (this.term == null) {");
 		println("      " + className + " reversed = (" + className + ")this.reverse();");
 		println("      aterm.ATermList tmp = " + get_factory + ".getPureFactory().makeList();");
@@ -214,6 +231,7 @@ public class ListTypeGenerator extends TypeGenerator {
 		println("    }");
 		println("    return this.term;");
 		println("  }");
+		println();
 	}
 
 	protected void genTermField() {
@@ -224,6 +242,6 @@ public class ListTypeGenerator extends TypeGenerator {
 		println("  public String toString() {");
 		println("    return toTerm().toString();");
 		println("  }");
+		println();
 	}
-
 }

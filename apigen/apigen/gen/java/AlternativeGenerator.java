@@ -64,7 +64,7 @@ public class AlternativeGenerator extends JavaGenerator {
 		boolean visitable = getJavaGenerationParameters().isVisitable();
 		print("public class " + className + " extends " + superClassName);
 		if (visitable) {
-			print("  implements jjtraveler.Visitable");
+			print(" implements jjtraveler.Visitable");
 		}
 		println(" {");
 
@@ -215,10 +215,11 @@ public class AlternativeGenerator extends JavaGenerator {
 	}
 
 	private void genAltGetAndSetMethod(Field field) {
+		JavaGenerationParameters params = getJavaGenerationParameters();
 		String fieldName = StringConversions.makeCapitalizedIdentifier(field.getId());
 		String fieldId = getFieldId(field.getId());
 		String fieldType = field.getType();
-		String fieldClass = TypeGenerator.className(fieldType);
+		String fieldClass = TypeGenerator.qualifiedClassName(params, fieldType);
 		String fieldIndex = getFieldIndex(field.getId());
 
 		genFieldGetterMethod(fieldName, fieldType, fieldClass, fieldIndex);
@@ -320,7 +321,8 @@ public class AlternativeGenerator extends JavaGenerator {
 	}
 
 	private void genOverrrideSetArgument(Type type, Alternative alt) {
-		String alt_classname = className(alt);
+		JavaGenerationParameters params = getJavaGenerationParameters();
+		String altClassName = className(alt);
 
 		println("  public aterm.ATermAppl setArgument(aterm.ATerm arg, int i) {");
 		if (type.getAltArity(alt) > 0) {
@@ -329,25 +331,25 @@ public class AlternativeGenerator extends JavaGenerator {
 			Iterator fields = type.altFieldIterator(alt.getId());
 			for (int i = 0; fields.hasNext(); i++) {
 				Field field = (Field) fields.next();
-				String field_type = field.getType();
-				String field_class = TypeGenerator.className(field_type);
+				String fieldType = field.getType();
+				String fieldClass = TypeGenerator.qualifiedClassName(params, fieldType);
 
 				String instance_of;
 
-				if (field_type.equals("str")) {
+				if (fieldType.equals("str")) {
 					instance_of = "aterm.ATermAppl";
 				}
-				else if (field_type.equals("int")) {
+				else if (fieldType.equals("int")) {
 					instance_of = "aterm.ATermInt";
 				}
-				else if (field_type.equals("real")) {
+				else if (fieldType.equals("real")) {
 					instance_of = "aterm.ATermReal";
 				}
-				else if (field_type.equals("term")) {
+				else if (fieldType.equals("term")) {
 					instance_of = "aterm.ATerm";
 				}
 				else {
-					instance_of = field_class;
+					instance_of = fieldClass;
 				}
 
 				println("      case " + i + ":");
@@ -356,22 +358,22 @@ public class AlternativeGenerator extends JavaGenerator {
 					"          throw new RuntimeException(\"Argument "
 						+ i
 						+ " of a "
-						+ alt_classname
+						+ altClassName
 						+ " should have type "
-						+ field_type
+						+ fieldType
 						+ "\");");
 				println("        }");
 				println("        break;");
 			}
 			println(
 				"      default: throw new RuntimeException(\""
-					+ alt_classname
+					+ altClassName
 					+ " does not have an argument at \" + i );");
 			println("    }");
 			println("    return super.setArgument(arg, i);");
 		}
 		else {
-			println("      throw new RuntimeException(\"" + alt_classname + " has no arguments\");");
+			println("      throw new RuntimeException(\"" + altClassName + " has no arguments\");");
 		}
 		println("  }");
 	}
@@ -388,10 +390,11 @@ public class AlternativeGenerator extends JavaGenerator {
 	}
 
 	private void genAltDuplicateMethod(Type type, Alternative alt) {
+		JavaGenerationParameters params = getJavaGenerationParameters();
 		String altClassName = className(alt);
-
 		println("  public shared.SharedObject duplicate() {");
-		println("    " + altClassName + " clone = new " + altClassName + "(getPeanoFactory());");
+		String getFactoryMethodName = "get" + FactoryGenerator.className(params);
+		println("    " + altClassName + " clone = new " + altClassName + "(" + getFactoryMethodName + "());");
 		println("    clone.init(hashCode(), getAnnotations(), getAFun(), " + "getArgumentArray());");
 		println("    return clone;");
 		println("  }");

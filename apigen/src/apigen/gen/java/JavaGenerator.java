@@ -131,12 +131,13 @@ public abstract class JavaGenerator extends Generator {
 	}
 
 	protected String buildActualNullArgumentList(Iterator fields) {
+		JavaGenerationParameters params = getJavaGenerationParameters();
 		StringBuffer buf = new StringBuffer();
 
 		while (fields.hasNext()) {
 			Field field = (Field) fields.next();
 			buf.append('(');
-			buf.append(TypeGenerator.className(field.getType()));
+			buf.append(TypeGenerator.qualifiedClassName(params, field.getType()));
 			buf.append(") null");
 
 			if (fields.hasNext()) {
@@ -163,8 +164,8 @@ public abstract class JavaGenerator extends Generator {
 
 		while (fields.hasNext()) {
 			Field field = (Field) fields.next();
-
-			buf.append(TypeGenerator.qualifiedClassName(params, field.getType()));
+			String type = field.getType();
+			buf.append(TypeGenerator.qualifiedClassName(params, type));
 			buf.append(' ');
 			buf.append(getFieldId(field.getId()));
 

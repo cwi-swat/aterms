@@ -54,7 +54,8 @@ public class VisitorGenerator extends JavaGenerator {
 	}
 
 	private void genListVisit(Type type) {
-		genVisitDecl(ListTypeGenerator.className(type), "");
+		String classTypeName = ListTypeGenerator.className(type);
+		genVisitDecl(classTypeName, TypeGenerator.qualifiedClassName(getJavaGenerationParameters(), classTypeName));
 	}
 
 	private void genVisit(Type type, Alternative alt) {
@@ -63,14 +64,15 @@ public class VisitorGenerator extends JavaGenerator {
 		genVisitDecl(methodName, paramName);
 	}
 
-	private void genVisitDecl(String methodName, String paramName) {
-		println("  public abstract void visit_" + methodName + "(" + paramName + " arg) throws jjtraveler.VisitFailure;");
+	private void genVisitDecl(String methodName, String paramTypeName) {
+		println(
+			"  public abstract void visit_" + methodName + "(" + paramTypeName + " arg) throws jjtraveler.VisitFailure;");
 	}
-	
+
 	public static String packageName(GenerationParameters params) {
 		return StringConversions.decapitalize(params.getApiName());
 	}
-	
+
 	public static String qualifiedClassName(JavaGenerationParameters params) {
 		StringBuffer buf = new StringBuffer();
 		buf.append(params.getPackageName());

@@ -47,18 +47,19 @@ public class ForwardGenerator extends JavaGenerator {
 	}
 
 	private void genListVisit(Type type) {
-		genVisitMethod(ListTypeGenerator.className(type), "");
+		String classTypeName = ListTypeGenerator.className(type);
+		genVisitMethod(classTypeName, TypeGenerator.qualifiedClassName(getJavaGenerationParameters(), classTypeName));
 	}
 
-	private void genVisitMethod(String methodName, String paramType) {
-		println("  public void " + methodName + "(" + paramType + " arg) throws jjtraveler.VisitFailure {");
+	private void genVisitMethod(String methodName, String paramTypeName) {
+		println("  public void visit_" + methodName + "(" + paramTypeName + " arg) throws jjtraveler.VisitFailure {");
 		println("    any.visit(arg);");
 		println("  }");
 		println();
 	}
 
 	private void genVisit(Type type, Alternative alt) {
-		String methodName = "visit_" + FactoryGenerator.concatTypeAlt(type, alt);
+		String methodName = FactoryGenerator.concatTypeAlt(type, alt);
 		String paramType = AlternativeGenerator.qualifiedClassName(getJavaGenerationParameters(), type, alt);
 
 		genVisitMethod(methodName, paramType);

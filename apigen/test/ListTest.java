@@ -1,13 +1,13 @@
 package test;
 
-import test.list.Layout;
+import test.list.layout.Layout;
 import test.list.ListFactory;
-import test.list.Module;
-import test.list.ModuleList;
-import test.list.Modules;
-import test.list.Modules2;
-import test.list.NineSeps;
-import test.list.Separated;
+import test.list.module.Module;
+import test.list.moduleList.ModuleList;
+import test.list.modules.Modules;
+import test.list.modules2.Modules2;
+import test.list.nineSeps.NineSeps;
+import test.list.separated.Separated;
 import aterm.ATerm;
 import aterm.ATermList;
 import aterm.pure.PureFactory;

@@ -29,6 +29,9 @@ public class TypeGenerator extends JavaGenerator {
 	}
 
 	public static String qualifiedClassName(JavaGenerationParameters params, String type) {
+		if (getConverter().isReserved(type)) {
+			return getConverter().getType(type);
+		}
 		StringBuffer buf = new StringBuffer();
 		buf.append(params.getPackageName());
 		buf.append('.');
@@ -136,20 +139,21 @@ public class TypeGenerator extends JavaGenerator {
 	}
 
 	protected void genDefaultGetAndSetMethod(Type type, Field field) {
-		String class_name = TypeGenerator.className(type.getId());
-		String field_name = StringConversions.makeCapitalizedIdentifier(field.getId());
-		String field_id = getFieldId(field.getId());
-		String field_type_id = TypeGenerator.className(field.getType());
+		JavaGenerationParameters params = getJavaGenerationParameters();
+		String className = TypeGenerator.className(type.getId());
+		String fieldName = StringConversions.makeCapitalizedIdentifier(field.getId());
+		String fieldId = getFieldId(field.getId());
+		String fieldTypeId = TypeGenerator.qualifiedClassName(params, field.getType());
 
 		// getter
-		println("  public " + field_type_id + " get" + field_name + "() {");
-		println("     throw new UnsupportedOperationException(\"This " + class_name + " has no " + field_name + "\");");
+		println("  public " + fieldTypeId + " get" + fieldName + "() {");
+		println("     throw new UnsupportedOperationException(\"This " + className + " has no " + fieldName + "\");");
 		println("  }");
 		println();
 
 		// setter
-		println("  public " + class_name + " set" + field_name + "(" + field_type_id + " " + field_id + ") {");
-		println("     throw new IllegalArgumentException(\"Illegal argument: \" + " + field_id + ");");
+		println("  public " + className + " set" + fieldName + "(" + fieldTypeId + " " + fieldId + ") {");
+		println("     throw new IllegalArgumentException(\"Illegal argument: \" + " + fieldId + ");");
 		println("  }");
 		println();
 	}

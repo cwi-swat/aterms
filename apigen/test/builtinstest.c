@@ -18,13 +18,13 @@ int main(int argc, char *argv[])
    * to be fixed!
    */
 
-  data[0] = (ATerm) makeDInteger(1);
+  data[0] = (ATerm) makeDIinteger(1);
   assert(data[0] && ATisEqual(data[0], ATparse("int(1)")));
 
-  data[1] = (ATerm) makeDDouble(1.0);
+  data[1] = (ATerm) makeDDdouble(1.0);
   assert(data[1] && ATisEqual(data[1], ATparse("double(1.0)")));
 
-  data[2] = (ATerm) makeDString("one");
+  data[2] = (ATerm) makeDSstring("one");
   assert(data[2] && ATisEqual(data[2], ATparse("str(\"one\")")));
 
   data[3] = (ATerm) makeDTrm(ATparse("one"));
