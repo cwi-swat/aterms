@@ -196,6 +196,11 @@ conclusions (Section~\ref{sec:conclusions}) and future work
 \subsection{Related Work}
 \label{sec:related}
 
+We briefly discuss some related work that deals with the aspects we
+address in this paper: applying \emph{generational} techniques to create
+an \emph{abstraction layer} on top of a \emph{generic} data exchange
+formalism.
+
 % {{{  Grammars as Contracts
 
 \medskip 
@@ -217,9 +222,7 @@ this situation. We also focus on generating more intuitive and
 readable API's, at the cost of extra annotation effort on the
 original syntax definition.
 
-
 % }}}
-
 % {{{  Zephyr ASDL
 
 \medskip
@@ -298,14 +301,10 @@ XML are generated.  The actual code generation can be steered using a
 specification in XML. This makes it possible to add e.g. interfaces and
 extra code to the generated classes.
 
-%% Comparable approach: generate classes from schema/DTD representing
-%% XML entities.  Typical example: jaxb (http://java.sun.com/xml/jaxb)
-%% \begin{itemize}
-%% \item Java specific
-%% \item XML oriented: classes implement RootElement, XML as exchange format
-%% \item No sharing
-%% \item Code generation can be steered (using a spec. in XML)
-%% \end{itemize}
+A commercial initiative~\cite{breeze} offers a tool that generates
+\java\ code from an XML Schema. The generated code can \emph{marshal}
+and \emph{unmarshal} XML terms to Java objects with accessors to retrieve
+type safe (sub)elements.
 
 % }}}
 % {{{  Generative Programming
