@@ -20,6 +20,7 @@
 
 package aterm;
 
+// TODO: this should be a refinement of the jjtraveler interface
 public interface ATermVisitable
   extends aterm.visitor.Visitable
 {
