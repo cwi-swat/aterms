@@ -110,5 +110,24 @@ public abstract ATermImpl
 
   //}
 
-  abstract boolean match(String pattern, List list);
+  //{ boolean match(String pattern, List list)
+
+  boolean match(String pattern, List list)
+  {
+    if (pattern.getType() == PLACEHOLDER) {
+      ATerm type = ((ATermPlaceholder)pattern).getPlaceholder();
+      if (type.getType() == ATerm.APPL) {
+	ATerm appl = (ATermAppl)type;
+	AFun  afun = appl.getAFun();
+	if(afun.getName().equals("term") && afun.getArity() == 0 && !afun.isQuoted()) {
+	  list.add(this);
+	  return true;
+	}
+      }
+    }
+    
+    return false;
+  }
+
+  //}
 }

@@ -36,5 +36,5 @@ public interface ATermPlaceholder extends ATerm {
      * @return the type of this placeholder.
      *
      */
-    public int getPlaceholderType();
+    public ATerm getPlaceholder();
 }

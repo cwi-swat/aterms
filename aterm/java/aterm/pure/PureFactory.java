@@ -62,25 +62,26 @@ public class PureFactory
 
   synchronized ATermInt makeInt(int val)
   {
+    ATerm term;
     int hnr = ATermIntImpl.hashFunction(val);
     int idx = hnr % table_size;
 
     HashedWeakRef prev, cur;
     prev = null;
     cur  = term_table[idx];
-    while(cur != null) {
-      ATerm term = (ATerm)cur.get();
-      if(term == null) {
+    while (cur != null) {
+      term = (ATerm)cur.get();
+      if (term == null) {
 	// Found a reference to a garbage collected term, remove it to speed up lookups.
-	if(prev == null) {
+	if (prev == null) {
 	  table[idx] = cur.next;
 	} else {
 	  prev.next = cur.next;
 	}
       } else {
-	if(term.getType() == ATerm.INT) {
-	  if(((ATermInt)term).getInt() == val) {
-	    return term;
+	if (term.getType() == ATerm.INT) {
+	  if (((ATermInt)term).getInt() == val) {
+	    return (ATermInt)term;
 	  }
 	}
       }
@@ -92,7 +93,86 @@ public class PureFactory
     cur = new HashedWeakRef(term, table[idx]);
     table[idx] = cur;
 
-    return term;
+    return (ATermInt)term;
+  }
+
+  //}
+  //{ ATermInt makeReal(double val)
+
+  synchronized ATermReal makeReal(int val)
+  {
+    ATerm term;
+    int hnr = ATermRealImpl.hashFunction(val);
+    int idx = hnr % table_size;
+
+    HashedWeakRef prev, cur;
+    prev = null;
+    cur  = term_table[idx];
+    while (cur != null) {
+      term = (ATerm)cur.get();
+      if (term == null) {
+	// Found a reference to a garbage collected term, remove it to speed up lookups.
+	if (prev == null) {
+	  table[idx] = cur.next;
+	} else {
+	  prev.next = cur.next;
+	}
+      } else {
+	if (term.getType() == ATerm.REAL) {
+	  if (((ATermReal)term).getValue() == val) {
+	    return (ATermReal)term;
+	  }
+	}
+      }
+      cur = cur.next;
+    }
+    
+    // No real term with 'val' found, so let's create one!
+    term = new ATermReal(val);
+    cur = new HashedWeakRef(term, table[idx]);
+    table[idx] = cur;
+
+    return (ATermReal)term;
+  }
+
+  //}
+  //{ ATermInt makeList(ATerm first, ATermList next)
+
+  synchronized ATermList makeList(ATerm first, ATermList next)
+  {
+    ATerm term;
+    int hnr = ATermListImpl.hashFunction(first, next);
+    int idx = hnr % table_size;
+
+    HashedWeakRef prev, cur;
+    prev = null;
+    cur  = term_table[idx];
+    while (cur != null) {
+      term = (ATerm)cur.get();
+      if (term == null) {
+	// Found a reference to a garbage collected term, remove it to speed up lookups.
+	if (prev == null) {
+	  table[idx] = cur.next;
+	} else {
+	  prev.next = cur.next;
+	}
+      } else {
+	if (term.getType() == ATerm.LIST) {
+	  ATermList list = (ATermList)term;
+	  if (list.getFirst() == first && list.getNext() == next) {
+	    return list;
+	  }
+	}
+      }
+      cur = cur.next;
+    }
+    
+    // No existing term found, so let's create one!
+    term = new ATermList(first, next);
+    cur = new HashedWeakRef(term, table[idx]);
+    table[idx] = cur;
+
+    return (ATermList)term;
   }
 
   //}

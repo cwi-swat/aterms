@@ -70,10 +70,14 @@ public interface ATermList extends ATerm {
      * Lookup starts at a given index (0 being the first element).
      *
      * @param el the element to look for.
-     * @param start the starting position of the lookup.
+     * @param start the starting position of the lookup. Negative start
+     *        implies searching backwards from the tail of the list.
      *
      * @return the index of the first occurance of el in this list,
      * or -1 if el does not occur.
+     *
+     * @throws IllegalArgumentException when start &gt; length of list ||
+     *         start &lt; -length
      *
      * @see #lastIndexOf
      */

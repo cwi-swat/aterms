@@ -24,17 +24,17 @@ package aterm.pure;
 
 import java.util.List;
 
-class ATermIntImpl
+class ATermRealImpl
   extends ATermImpl
-  implements ATermInt
+  implements ATermReal
 {
-  int value;
+  double value;
 
-  //{ static int hashFunction(int value)
+  //{ static int hashFunction(double value)
 
-  static int hashFunction(int value)
+  static int hashFunction(double value)
   {
-    return value;
+    return (new Double(value)).hashCode();
   }
 
   //}
@@ -43,7 +43,7 @@ class ATermIntImpl
 
   int hashCode()
   {
-    return value;
+    return hashFunction(value);
   }
 
   //}
@@ -51,14 +51,14 @@ class ATermIntImpl
 
   int getType()
   {
-    return ATerm.INT;
+    return ATerm.REAL;
   }
 
   //}
 
-  //{ protected ATermIntImpl(int value)
+  //{ protected ATermRealImpl(double value)
 
-  protected ATermIntImpl(int value)
+  protected ATermRealImpl(double value)
   {
     this.value = value;
   }
@@ -78,8 +78,8 @@ class ATermIntImpl
       if (type.getType() == ATerm.APPL) {
 	ATerm appl = (ATermAppl)type;
 	AFun  afun = appl.getAFun();
-	if(afun.getName().equals("int") && afun.getArity() == 0 && !afun.isQuoted()) {
-	  list.add(new Integer(value));
+	if(afun.getName().equals("real") && afun.getArity() == 0 && !afun.isQuoted()) {
+	  list.add(new Double(value));
 	  return true;
 	}
       }
@@ -99,10 +99,10 @@ class ATermIntImpl
   //}
   //{ public int getInt()
 
-  public int getInt()
+  public double getReal()
   {
     return value;
   }
 
-  //}
+  //}  
 }

@@ -23,6 +23,8 @@
 package aterm;
 
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.List;
 
 public interface ATermFactory
 {
@@ -52,5 +54,5 @@ public interface ATermFactory
   void writeToTextFile(OutputStream stream);
   void writeToBinaryFile(OutputStream stream);
 
-  ATerm import(ATerm term);
+  ATerm importTerm(ATerm term);
 }
