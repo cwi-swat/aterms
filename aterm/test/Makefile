@@ -32,7 +32,7 @@ stress-gcc: stress.c
 
 asfixtest: asfixtest.c
 	$(CC_GCC) $(CFLAGS_GCC) $(INCL) $(LFLAGS) -o asfixtest asfixtest.c \
-	-L../asfix -lAsFix $(LIBS_GCC)
+	-L../asfix -lAsFix-gcc $(LIBS_GCC)
 
 primes-cc: primes.c
 	$(CC_CC) $(CFLAGS_CC) $(INCL) $(LFLAGS) -o primes-cc primes.c $(LIBS_CC)

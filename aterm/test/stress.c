@@ -277,6 +277,15 @@ void testList(void)
   test_assert("list-ops", 20, ATisEqual(list[11], 
 				  ATreadFromString(" [0,0,0,0,0] ")));
 
+	ATfprintf(stderr, "result of ATremoveElement: %t\n", 
+						ATremoveElement((ATermList)ATparse("[1,2,3,2]"), ATparse("2")));
+	test_assert("list-ops", 21, 
+							ATisEqual(ATremoveElement((ATermList)ATparse("[1,2,3,2]"),
+																				ATparse("2")), ATparse("[1,3,2]")));
+	test_assert("list-ops", 22, 
+							ATisEqual(ATremoveAll((ATermList)ATparse("[1,2,3,2]"),
+																		ATparse("2")), ATparse("[1,3]")));
+
   printf("list tests ok.\n");
 }
 
@@ -412,6 +421,10 @@ testMake(void)
                            ATmakeInt(2),ATmakeInt(3),ATmakeInt(4),
                            ATmakeInt(5),ATmakeInt(6),ATmakeInt(7),
 						   ATmakeInt(8),ATmakeInt(9))));
+
+	test_assert("make", 10, ATisEqual(ATmake("[\"f\"([<list>])]", 
+																					 ATparse("[1,2,3]")),
+																		ATparse("[\"f\"([1,2,3])]")));
 
 	fprintf(stderr, "The following tests should generate parse errors.\n");
 	ATparse("<int");
