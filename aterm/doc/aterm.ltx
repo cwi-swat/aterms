@@ -148,7 +148,7 @@ The last construct is the \emph{annotation construct}, which makes it
 possible to annotate terms with transparent
 information\footnote{Transparent in the sense that the result of most
 operations is independent of the annotations. This makes it easy to
-completely ignore annotations. Typical examples of the use of
+completely ignore annotations. Examples of the use of
 annotations include annotating parse trees with positional or
 typesetting information, and annotating abstract syntax trees with the
 results of type checking.}.
@@ -275,8 +275,6 @@ Section~\ref{aterm-datatype}.
 
 For reasons of efficiency and conciseness, reading and writing can
 take place in two forms: text and binary.  
-%%In the first form, files are read and written in a
-%%format that is identical to 
 The text format uses the textual representation discussed
 earlier in Section~\ref{aterm-datatype} and Appendix
 \ref{concrete-syntax}.  This format is human-readable,
@@ -286,13 +284,10 @@ labeling and referring to terms.  Instead of \texttt{f(g(a),g(a))},
 one could then write \texttt{f(1:g(a), \#1)}. The first occurrence of
 \texttt{g(a)} is labeled with ``\texttt{1}'', and the second
 occurrence refers to this label (``\texttt{\#1}'').},
-%%and any implicit sharing in terms is lost since
-%%this cannot be expressed in a pure textual representation.  
-and any sharing in the in-memory representation in terms is lost.
+and any sharing in the in-memory representation of terms is lost.
 
-%%In the second form, a dedicated binary format is used 
-The binary format (Binary ATerm Format, see Section~\ref{baf}) is
-portable format, machine-readable, very compact, 
+The binary format (Binary ATerm Format, see Section~\ref{baf}) is 
+portable, machine-readable, very compact, 
 and preserves all in-memory sharing.
 The operations are:
 
@@ -323,8 +318,8 @@ of term $t$ as a string.
 
 \end{itemize}
 
-The file operations can also be used to read from or write
-to a network connection like a socket or pipe.
+Either format can be used on any linear stream, including files, sockets,
+pipes, etc.
 
 \subsubsection{Annotating \ATerms} \label{annotating}
 
@@ -368,7 +363,8 @@ it is returned unchanged.
 
 In Section~\ref{intro} we have already mentioned our main
 requirements: openness, simplicity, efficiency, conciseness,
-language-independence, and annotations.  There are a number of other
+language-independence, and capable of dealing with annotations.  
+There are a number of other
 issues to consider that have a great impact on the implementation, and
 that make this a fairly unique problem:
 
@@ -380,7 +376,7 @@ that make this a fairly unique problem:
 
 \item The expected lifetime of terms in most applications is very short.
       This means that garbage collection must be fast and should touch
-      as few memory locations as possible to improve caching and paging 
+      a minimal amount of memory locations to improve caching and paging 
       performance.
 
 \item The total memory requirements of an application cannot be estimated
@@ -437,7 +433,7 @@ terms is thus invisible to the library user.
 Maximal sharing of terms can only be maintained when we check at every
 term creation whether a particular term already exists or not. This
 check implies a search through all existing terms but must
-be {\em extremely fast} in order not to impose an
+be fast in order not to impose an
 unacceptable penalty on term creation.  Using a hash function that
 depends on the internal code of the function symbol and the addresses
 of its arguments, we can quickly search for a function application
@@ -466,61 +462,58 @@ algorithms that minimize the effect of this shortcoming.
 
 \subsubsection{Searching for Shared Subterms}
 
-The maximal sharing of terms can only be maintained when we check at
-term creation time whether a particular term already exists. The
-lookup must be \emph{extremely fast}, in order to ensure efficient
-term creation. Using a hash function that depends on the
+Maximal sharing of terms requires checking at term creation time whether
+this term already exists. This search must be fast in order to ensure 
+efficient term creation. A hash function based on the
 \emph{addresses} of the function symbol and the arguments of a function
-application, we can quickly search the hash table to find a function 
+application allows for a quick lookup in the hash table to find a function 
 application before creating it.
 
 \paragraph{Collisions}
-One of the issues involved in using hash techniques is handling
-the collisions in the hash table.  The simplest
-technique is to linearly chain entries together that hash to the 
-same bucket. In this scenario, one pointer is needed in each
-object for hash chaining, which in our case means a memory
+One issue in hash techniques is handling collisions. The simplest
+technique is linear chaining~\cite{Knuth73}.
+This requires one pointer in each
+object for hash chaining, which in our implementation implies a memory
 overhead of about 25 percent. Other solutions for collision
-resolution will either increase the memory requirements (e.g.
-binary tree chaining), or the time needed for insertions
-or deletions (open addressing, see \cite{Knuth73}).
+resolution will either increase the memory requirements, 
+or the time needed for insertions or deletions (see \cite{Knuth73}).
 We therefore use linear hash chaining in our implementation. 
 
 \paragraph{Direct or Indirect Hashing}
 Another issue is whether to store all terms directly in
-the hash table, or to only store references in it.
-Storing the objects directly in the hash table has the advantage
-that we can save a memory access when retrieving a term.
+the hash table, or only references.
+Storing the objects directly in the hash table saves a
+memory access when retrieving a term as well as the
+space needed to store the reference.
 However, there are severe drawbacks to this approach:
 \begin{itemize}
-\item We cannot rehash the old terms because rehashing
-      means that we have to physically move the objects in memory.
-      In a setting where we use C as an implementation language, moving
+\item We cannot rehash old terms because rehashing
+      means that we have to move the objects in memory.
+      When using C as an implementation language, moving
       objects in memory is not allowed because we can only determine
       a conservative root set and therefore are not allowed to change
       the pointers to roots.
       This would mean that the hash table could not grow beyond its 
-      initial size, clearly an undesirable feature.
-\item The internal fragmentation is increased, because empty slots
-      in the hash table are as large as the object size instead of
+      initial size.
+\item Internal fragmentation is increased, because empty slots
+      in the hash table are as large as the object instead of
       only one machine word.
-\item We would need a separate hash table for each term size in order to
+\item We would need a separate hash table for each term size to
       decrease the internal fragmentation. 
 \end{itemize}
 
-Because of these problems, we decided to use linear hash chaining
+Because of these problems, we use linear hash chaining
 combined with indirect hashing.
 When the load of the hash table reaches a certain threshold, 
-we allocate a larger table, rehash all the entries of the 
-old table into the new one, and free the old hash table.
+we rehash into a larger table.
 
-It is possible for a user to increase the initial size of
-the hash table in order to save the number of resizing and rehashing
+The user can increase the initial size of
+the hash table to save on resizing and rehashing
 operations. The \ATerm\ library provides facilities for defining hash tables
 as well. This allows the implementation of a fast lookup mechanism
-for \ATerms. The user-defined hash tables are used, for instance, 
-to implement memo-functions in the \asdf\ to C compiler, see
-Section~\ref{asdf2c}.
+for \ATerms. User-defined hash tables are used, for instance, 
+to implement memo-functions in the \asdf\ to C compiler (see
+Section~\ref{asdf2c}).
 
 %{{{ Garbage collection
 
@@ -600,11 +593,10 @@ least three or four bytes.
 
 \subsubsection{Reusing an Existing Garbage Collector}
 A number of excellent generic garbage collectors for C are 
-freely available, so a legitimate question is why not reuse an
-existing implementation instead of implementing our own?
+freely available, so why do we not reuse an existing implementation?
 
-We have examined a number of alternatives, but none of these quite 
-fitted our needs. The Boehm-Weiser garbage collector \cite{BW88} came close,
+We have examined a number of alternatives, but none of them fit 
+our needs. The Boehm-Weiser garbage collector \cite{BW88} came close,
 but we face a number of unusual circumstances that render existing
 garbage collectors impractical:
 
@@ -624,8 +616,8 @@ garbage collectors impractical:
               it in the current implementation, this characteristic
               makes the use of a \emph{generational} garbage collector
               very attractive.
-        \item The overwhelming majority of objects only consists of 
-              between 8 and 16 bytes.
+        \item The majority of objects have an in-memory 
+	      representation of 8, 12, or 16 bytes.
         \item Practical experience has shown that not many root pointers
               are kept in static variables or on the generic C heap. 
               Performance can be increased
@@ -692,13 +684,13 @@ be allocated to satisfy allocation requests.
 \subsection{Term Encoding} \label{term-encoding}
 
 An important issue in the implementation of \ATerms\ is how to
-represent this data type in such a way that all operations can be performed
-efficiently, without using more memory than is absolutely necessary.
+represent this data type so that all operations can be performed
+efficiently in time and space.
 
 The very concise encoding of \ATerms\ we use is as follows.
-Assume that one machine word consists of four bytes, which is
-typical for modern architectures.  Every \ATerm\ object is stored in
-two or more machine words.  The first byte of the first word is called
+Assume that one machine word consists of four bytes.
+Every \ATerm\ object is stored in two or more machine words.
+The first byte of the first word is called
 the \emph{header} of the object, and consists of four fields (see
 Figure \ref{header}):
 
@@ -742,7 +734,7 @@ The arity of an integer term is 0.
 
 \paragraph{REAL encoding}
 In an real term, the third and fourth word contain the real value 
-represented by an 8 byte floating point number.
+represented by an 8 byte IEEE floating point number.
 The arity of a real term is 0.
 
 \paragraph{APPL encoding}
@@ -808,7 +800,7 @@ with type {\tt LIST}, which represents the list of annotations.
 
 %{{{ The Binary ATerm Format (BAF)
 
-\subsection{The Binary \ATerm\ Format (BAF)} \label{baf}
+\subsection{\ATerm\ Exchange: the Binary \ATerm\ Format} \label{baf}
 
 The efficient exchange of \ATerms\ 
 between tools is very important. The simplest form of exchange 
@@ -831,8 +823,8 @@ to each subterm and each symbol occurring in a term that we want to
 exchange. When referring to this term, we could use its index instead
 of its address. 
 
-When writing a term, we first start by writing a table (in order of
-increasing index) of all function symbols used in this term. Each
+When writing a term, we begin by writing a table (in order of
+increasing indices) of all function symbols used in this term. Each
 function symbol consists of the string representation of its name
 followed by its arity.
 
@@ -1601,7 +1593,7 @@ from the S-expressions in LISP. \ATerms\ are no exception to this
 rule. The main improvements of \ATerms\ over S-expressions are
 
 \begin{itemize}
-\item \ATerms\ are language independent.
+%% TODO: IS THIS TRUE? \item \ATerms\ are language independent.
 \item \ATerms\ support arbitrary binary data (Blobs, see Section~\ref{aterm-datatype}).
 \item \ATerms\ support annotations.
 \item \ATerms\ support maximal sharing in a systematic way.
@@ -1765,7 +1757,8 @@ hierarchically structured data and both allow arbitrary extensions
 straightforward translation possible between \ATerms\ and XML.
 
 The main difference between the two is that XML is more verbose and
-does not provide a simple mechanism to represent sharing.  This may
+does not provide a simple mechanism to represent sharing, whereas
+\ATerms\ provide the \baf\ format. This may
 not be a problem for Web documents like catalogues and database
 records, but is does present a major obstacle in our case when we need
 to exchange huge terms between tools. We are currently considering
@@ -1782,10 +1775,10 @@ rules for data encoding~\cite{ASN.1.PER}.
 \begin{sloppypar}
 In an earlier project in our group, the Graph Exchange Language 
 (GEL)~\cite{Kam94}
-has been developed.  It is similar in goals to \baf, but \baf\ can
+has been developed. It is similar in goals to \baf, but \baf\ can
 only represent acyclic directed graphs, whereas GEL can represent
 arbitrary (potentially cyclic) graphs.  The technical approaches are
-different as well.  GEL uses a binary-encoded postfix format to
+different as well. GEL uses a binary-encoded postfix format to
 represent the nodes in the graph and introduces explicit labels to
 reuse previously constructed parts of the graph. \baf\ uses a prefix
 format augmented by generated symbol tables.
