@@ -1624,12 +1624,13 @@ information, such as unstructured binary objects and annotations, can
 also be represented as an \aterm.  Everything that can be represented
 by a grammar can be represented in \aterms\ as well as ASDL.
 
-ASDL pickles and the BAF format for \aterms\ are comparable with respect to
-functionality, both are binary representations of (among others) syntax trees.
-The pickle and unpickle functions are generated
-from the ASDL description and are thus application specific (this may be more
-efficient) whereas the reading and writing of BAF is entirely generic (this
-avoids the proliferation of versions).
+ASDL pickles and the BAF format for \aterms\ are comparable with
+respect to functionality, both are binary representations of (among
+others) syntax trees.  The pickle and unpickle functions are generated
+from the ASDL description and are thus application specific (this may
+be more efficient) whereas the reading and writing of BAF is entirely
+generic (this avoids the proliferation of versions).
+
 
 ASDL and \aterms\ can be compared at two different levels:
 
@@ -1652,8 +1653,9 @@ COBOL Parse Table & 4212633 & 213683 & 2507957 \\ \hline
 \end{center}
 \end{table}
   
-\item \emph{High level}: compare at the level of parse trees or abstract syntax trees.
-ASDL is typically used to represent abstract syntax trees while
+\item \emph{High level}: compare at the level of parse trees or 
+abstract syntax trees.  ASDL is typically used to represent abstract
+syntax trees while
 \aterms\ can be used to represent both as we have discussed in
 Section~\ref{asfix-casfix}. To make a meaningful comparison, we
 compare ASDL pickles with \asfix.  By providing an ASDL definition of
