@@ -250,6 +250,13 @@ void testList(void)
 
 /*}}}  */
 
+/*{{{  void testPrintf(void) */
+void testPrintf()
+{
+	ATfprintf(stderr, "Test: %3.4d\n", 3);
+}
+/*}}}  */
+
 /*{{{  int main(int argc, char *argv[]) */
 
 /**
@@ -267,6 +274,7 @@ int main(int argc, char *argv[])
   testAppl();
   testList();
   testOther();
+  testPrintf();
 
   return 0;
 }
