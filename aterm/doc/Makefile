@@ -10,7 +10,6 @@ EXAMPLES		= $(patsubst %,$(EXAMPLEDIR)/%,$(EXAMPLEFILES))
 all: at.ps manual.ps
 
 at.ps: at.dvi $(PICS)
-	dvips at.dvi
 
 at.dvi: at.ltx spec/ATerm.mtx $(CHAPS) $(PICS)
 
@@ -22,7 +21,6 @@ manual.dvi: manual.ltx $(EXAMPLES)
 manual.ps: manual.dvi
 	makeindex manual.idx
 	latex manual.ltx
-	dvips manual.dvi
 
 # You need fig2dev version 3.2 for this.
 header.ps: header.fig

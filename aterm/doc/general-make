@@ -1,5 +1,8 @@
 .SUFFIXES: .grap .pic .ltx .dvi .bbl .ind .idx .xwd .ps .tex .fig
 
+%.ps: %.dvi
+	dvips -o $@ $<
+
 .ltx.dvi:
 	latex $<
 	-@fgrep -s 'LaTeX Warning: Citation' $*.log && bibtex $* && latex $<
