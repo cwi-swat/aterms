@@ -1,3 +1,8 @@
+2001/02/16 (jurgenv@cwi.nl)
+  * removed generation of bottomsorts Lexical, Separator and Layout and
+    replaced them by generating lex(<name(str)>), sep(<name(str)>) and 
+    w(<name(str)>).  
+
 2001/02/16 ({jong,olivierp}@cwi.nl)
   * Added prefix to the front of visitor names
   * patched ChangeLog entry date

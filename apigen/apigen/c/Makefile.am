@@ -4,6 +4,7 @@
 # $Id$
 #
 
+
 java_JAVA       = CGen.java
 
 javadir         = ${prefix}/classes/apigen/c

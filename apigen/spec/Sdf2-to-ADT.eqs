@@ -175,7 +175,7 @@ equations
      [$ListType, empty,  []],
      [$ListType, single, [<head($ElemType)>]],
      [$ListType, many,   [<head($ElemType)>,
-                          w(<ws-after-first(Layout)>),
+                          w(<ws-after-first(str)>),
                           <[tail($ListType)]>]]
 
 [equ-build-list-entries-iter-plus]
@@ -186,7 +186,7 @@ equations
   build-list-entries($Label : $Sort +) = 
      [$ListType, single, [<head($ElemType)>]],
      [$ListType, many,   [<head($ElemType)>,
-                          w(<ws-after-first(Layout)>),
+                          w(<ws-after-first(str)>),
                           <[tail($ListType)]>]]
 
 [equ-build-list-entries-iter-sep-star]
@@ -198,9 +198,9 @@ equations
      [$ListType, empty,[]],
      [$ListType, single, [<head($ElemType)>]],
      [$ListType, many,[<head($ElemType)>,
-                       w(<ws-after-first(Layout)>),
-                       <sep(Separator)>,
-                       w(<ws-after-sep(Layout)>),
+                       w(<ws-after-first(str)>),
+                       sep(<sep(str)>),
+                       w(<ws-after-sep(str)>),
                        <[tail($ListType)]>]]
 
 [equ-build-list-entries-iter-sep-plus]
@@ -211,9 +211,9 @@ equations
   build-list-entries($Label : { $Sort $Sep } +) = 
      [$ListType, single, [<head($ElemType)>]],     
      [$ListType, many,[<head($ElemType)>,
-                       w(<ws-after-first(Layout)>),
-                       <sep(Separator)>,
-                       w(<ws-after-sep(Layout)>),
+                       w(<ws-after-first(str)>),
+                       sep(<sep(str)>),
+                       w(<ws-after-sep(str)>),
                        <[tail($ListType)]>]]
 
 [default-equ-build-list-entries]
@@ -242,7 +242,7 @@ equations
   build-asfix-appl-arg($Label:$Symbol) = $AFArg,
   build-asfix-appl-args($Symbol+) = $AFArgs,
   afun-concat(ws after sdflit-to-afun($Label)) = $FieldId,
-  w(<$FieldId(Layout)>) = $FieldWs
+  w(<$FieldId(str)>) = $FieldWs
   ===>
   build-asfix-appl-args($Label:$Symbol $Symbol+) = $AFArg, $FieldWs, $AFArgs
 
@@ -250,7 +250,7 @@ equations
   build-asfix-appl-arg($Literal) = $AFArg,
   build-asfix-appl-args($Symbol+) = $AFArgs,
   afun-concat(ws after sdflit-to-lit($Literal)) = $FieldId,
-  w(<$FieldId(Layout)>) = $FieldWs
+  w(<$FieldId(str)>) = $FieldWs
   ===>
   build-asfix-appl-args($Literal $Symbol+) = $AFArg, $FieldWs, $AFArgs
 
@@ -371,4 +371,4 @@ equations
   $AFSort = sort-to-lit($Sort)
   ===>
   lexical-to-adt($Symbol* -> $Sort $Attributes) = 
-	[ $TypeId, $AltId, lex(<lex(Lexical)>,sort($AFSort)) ]
+	[ $TypeId, $AltId, lex(<lex(str)>,sort($AFSort)) ]

@@ -8,12 +8,12 @@ static void testBooleans(SDFBoolList l)
 {
   SDFBool b, left, right, bool[2];
   SDFBoolElems elems;
-  SDFLayout ws;
+  char* ws;
   SDFBool true;
 
   /*ATfprintf(stderr, "l=%t\n", l);*/
 
-  true = SDFmakeBoolTrue(ATparse("\"true\""));
+  true = SDFmakeBoolTrue("\"true\"");
 
   assert(SDFisValidBoolList(l));
   assert(SDFhasBoolListElems(l));
@@ -49,7 +49,7 @@ static void testBooleans(SDFBoolList l)
 
   assert(SDFhasBoolWsAfterAmp(b));
   ws = SDFgetBoolWsAfterAmp(b);
-  assert(ATmatch(ws, "\" \""));
+  assert(!strcmp(ws, "\" \""));
 
   bool[1] = SDFmakeBoolOr(SDFmakeBoolAnd(true,ws,ws,SDFmakeBoolFalse()),ws,ws,true);
   assert(ATisEqual(bool[0], bool[1]));
