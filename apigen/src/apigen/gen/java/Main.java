@@ -161,18 +161,21 @@ public class Main {
 			Type type = (Type) types.next();
 
 			if (type instanceof NormalListType) {
-				new ListTypeImplGenerator((NormalListType) type, basedir, pkg, apiName, imports, verbose).run();
-				new ListTypeGenerator(type, basedir, pkg, apiName, imports, verbose).run();
+				new ListTypeGenerator((NormalListType) type, basedir, pkg, apiName, imports, verbose).run();
+				//				new ListTypeGenerator(type, basedir, pkg, apiName, imports,
+				// verbose).run();
 			}
 			else if (type instanceof SeparatedListType) {
 				new SeparatedListTypeImplGenerator((SeparatedListType) type, basedir, pkg, apiName, imports, verbose)
 					.run();
-				new ListTypeGenerator(type, basedir, pkg, apiName, imports, verbose).run();
+				//				new ListTypeGenerator(type, basedir, pkg, apiName, imports,
+				// verbose).run();
 
 			}
 			else if (!converter.isReserved(type.getId())) {
-				new TypeImplGenerator(type, basedir, pkg, apiName, imports, verbose).run();
 				new TypeGenerator(type, basedir, pkg, apiName, imports, verbose).run();
+				//				new TypeGenerator(type, basedir, pkg, apiName, imports,
+				// verbose).run();
 				generateAlternativeClasses(type);
 			}
 		}
@@ -183,8 +186,9 @@ public class Main {
 		while (alt_iter.hasNext()) {
 			Alternative alt = (Alternative) alt_iter.next();
 
-			new AlternativeGenerator(type, alt, basedir, pkg, apiName, imports, verbose).run();
-			new AlternativeImplGenerator(type, alt, apiName, basedir, pkg, imports, verbose, visitable).run();
+			//			new AlternativeGenerator(type, alt, basedir, pkg, apiName,
+			// imports, verbose).run();
+			new AlternativeGenerator(type, alt, apiName, basedir, pkg, imports, verbose, visitable).run();
 		}
 	}
 }

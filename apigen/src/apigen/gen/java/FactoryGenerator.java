@@ -437,7 +437,7 @@ public class FactoryGenerator extends JavaGenerator {
 
 	private void genAltToTerm(Type type, Alternative alt) {
 		String className = AlternativeGenerator.className(type, alt);
-		String classImplName = AlternativeImplGenerator.className(type, alt);
+		String classImplName = AlternativeGenerator.className(type, alt);
 
 		println("  protected aterm.ATerm toTerm(" + classImplName + " arg) {");
 		println("    java.util.List args = new java.util.LinkedList();");
@@ -822,7 +822,7 @@ public class FactoryGenerator extends JavaGenerator {
 
 	private void genFactorySeparatedListToTerm(SeparatedListType type) {
 		String className = TypeGenerator.className(type);
-		String classImplName = TypeImplGenerator.className(type);
+		String classImplName = TypeGenerator.className(type);
 		String manyPattern = "pattern" + className + "Many";
 
 		println("  public aterm.ATerm toTerm(" + classImplName + " arg) {");
