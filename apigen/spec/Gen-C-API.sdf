@@ -25,9 +25,14 @@ module Gen-C-API
       gen-fun-decls(API)				-> C-CONSTRUCTS
       gen-constructor-decl(AFun, AFun, API-Field*)	-> C-FUNCTION-DECL
       gen-constructor-decls(API-Type)			-> C-CONSTRUCTS
+      gen-valid-decl(API-Type)				-> C-CONSTRUCT
+      gen-valid-impl(API-Type)				-> C-CONSTRUCT
+      gen-valid-body(AFun, API-Alt*)			-> C-SERIES
       gen-check-decls(API-Type)				-> C-CONSTRUCTS
       gen-access-decls(API-Type)			-> C-CONSTRUCTS
       gen-access-impls(API-Type)			-> C-CONSTRUCTS
+      gen-term-decls(API-Type)				-> C-CONSTRUCTS
+      gen-term-impls(API-Type)				-> C-CONSTRUCTS
 
       gen-source(API)					-> C-FILE
       gen-struct-decls(API)				-> C-CONSTRUCTS
@@ -72,6 +77,7 @@ module Gen-C-API
     variables
       "$Alt"			-> API-Alt
       "$Alt+"			-> API-Alt+
+      "$Alt*"			-> API-Alt*
       "$AltId"			-> AFun
       "$AltField*"		-> API-Field*
       "$API"			-> API
@@ -87,6 +93,7 @@ module Gen-C-API
       "$GetExpr"[0-9]*		-> C-EXPR
       "$GetImpl"		-> C-CONSTRUCT
       "$Header"			-> C-FILE
+      "$Id"			-> C-ID
       "$Loc"			-> API-Location
       "$Loc*"[0-9]*		-> API-Location*
       "$Loc+"			-> API-Location+

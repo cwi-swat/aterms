@@ -1,2 +1,5 @@
+2000/08/04 ({jong,olivierp}@cwi.nl)
+  * Added generation of isValidxxx, makeTermFromxxx, 
+    and makexxxfromTerm functions.
 2000/08/01
-   * Initial revision
+  * Initial revision

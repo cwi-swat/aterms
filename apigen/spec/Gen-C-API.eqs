@@ -40,13 +40,16 @@ equations
   gen-fun-decls(api [ ]) =
 
 [equ-gen-fun-decls-divide]
-  gen-constructor-decls($Type) = $FunDeclList1,
-  gen-check-decls($Type) = $FunDeclList2,
-  gen-access-decls($Type) = $FunDeclList3,
-  gen-fun-decls(api [ $Type* ]) = $FunDeclList4
+  gen-term-decls($Type) = $FunDeclList1,
+  gen-constructor-decls($Type) = $FunDeclList2,
+  gen-valid-decl($Type) = $FunDeclList3,
+  gen-check-decls($Type) = $FunDeclList4,
+  gen-access-decls($Type) = $FunDeclList5,
+  gen-fun-decls(api [ $Type* ]) = $FunDeclList6
   ===
   gen-fun-decls(api [ $Type $Type* ]) = 
-	$FunDeclList1 $FunDeclList2 $FunDeclList3 $FunDeclList4
+	$FunDeclList1 $FunDeclList2 $FunDeclList3 
+        $FunDeclList4 $FunDeclList5 $FunDeclList6
 
 [equ-gen-constructor-decls-single]
   gen-constructor-decls(type [ $TypeId, alt [ $AltId, $Pattern ], $Field* ]) = 
@@ -65,6 +68,10 @@ equations
   ===
   gen-constructor-decl($TypeId, $AltId, $Field*) = 
 	build-c-id($TypeId) build-c-id(make $TypeId $AltId) ( $FormalArg* )
+
+[equ-gen-valid-decl]
+  gen-valid-decl(type [ $TypeId, $Alt+, $Field* ]) =
+    extern ATbool build-c-id(is valid $TypeId)(build-c-id($TypeId) arg);
 
 [equ-gen-check-decls-single]
   gen-check-decls(type [ $TypeId, alt [ $AltId, $Pattern ], $Field* ]) =
@@ -89,6 +96,11 @@ equations
   ===
   gen-access-decls(type [ $TypeId, $Alt+, $Field $Field* ]) = $FunDeclList2
 
+[equ-gen-term-decls]
+  gen-term-decls(type [ $TypeId, $Alt+, $Field* ]) =
+    extern build-c-id($TypeId) build-c-id(make $TypeId from term)(ATerm t);
+    extern ATerm build-c-id(make term from $TypeId)(build-c-id($TypeId) arg);
+
 [equ-gen-source]
    gen-struct-decls($API) = $Typedef*,
    gen-fun-impls($API)    = $FunImplList
@@ -112,13 +124,16 @@ equations
   gen-fun-impls(api [ ]) =
 
 [equ-gen-fun-impls-divide]
-  gen-constructor-impls($Type) = $FunImplList1,
-  gen-check-impls($Type) = $FunImplList2,
-  gen-access-impls($Type) = $FunImplList3,
-  gen-fun-impls(api [ $Type* ]) = $FunImplList4
+  gen-term-impls($Type) = $FunImplList1,
+  gen-constructor-impls($Type) = $FunImplList2,
+  gen-valid-impl($Type) = $FunImplList3,
+  gen-check-impls($Type) = $FunImplList4,
+  gen-access-impls($Type) = $FunImplList5,
+  gen-fun-impls(api [ $Type* ]) = $FunImplList6
   ===
   gen-fun-impls(api [ $Type $Type* ]) = 
-	$FunImplList1 $FunImplList2 $FunImplList3 $FunImplList4
+	$FunImplList1 $FunImplList2 $FunImplList3 
+	$FunImplList4 $FunImplList5 $FunImplList6
 
 [equ-gen-constructor-impls-single]
   gen-constructor-impls(type [ $TypeId, alt [ $AltId, $Pattern ], $Field* ]) = 
@@ -129,7 +144,6 @@ equations
   gen-constructor-impls(type [ $TypeId, $Alt+, $Field* ]) = $FunImplList2
   ===
   gen-constructor-impls(type [ $TypeId, $Alt $Alt+, $Field* ]) = $FunImplList1 $FunImplList2
-
 
 [equ-gen-constructor-impl]
   gen-constructor-decl($TypeId, $AltId, $Field*) = $FunDecl,
@@ -146,6 +160,22 @@ equations
 	return (build-c-id($TypeId))ATmakeTerm(build-c-id(pattern $TypeId $AltId), 
                                                $ActualArg*);
 
+[equ-gen-valid-impl]
+  gen-valid-impl(type [ $TypeId, $Alt+, $Field* ]) =
+    ATbool build-c-id(is valid $TypeId)(build-c-id($TypeId) arg) {
+      gen-valid-body($TypeId, $Alt+)
+    }
+
+[equ-gen-valid-body-empty]
+  gen-valid-body($TypeId, ) = return ATfalse;
+
+[equ-gen-valid-body-divide]
+  gen-valid-body($TypeId, $Alt*) = $Stat
+  ===
+  gen-valid-body($TypeId, alt [ $AltId, $Pattern ] $Alt*) =
+    if (build-c-id(is $TypeId $AltId)(arg)) {
+       return ATtrue;
+    } else $Stat
 
 [equ-gen-check-impls-single]
   gen-check-impls(type [ $TypeId, alt [ $AltId, $Pattern ], $Field* ]) = 
@@ -181,6 +211,17 @@ equations
   gen-access-impls(type [ $TypeId, $Alt+, $Field* ]) = $FunImplList
   ===
   gen-access-impls(type [ $TypeId, $Alt+, $Field $Field* ]) = $GetImpl $SetImpl $FunImplList
+
+[equ-gen-term-impls]
+  build-c-id($TypeId) = $Id
+  ===
+  gen-term-impls(type [ $TypeId, $Alt+, $Field* ]) =
+    $Id build-c-id(make $TypeId from term)(ATerm t) {
+      return ($Id)t;
+    }
+    ATerm build-c-id(make term from $TypeId)($Id arg) {
+      return (ATerm)arg;
+   }
 
 [equ-build-init-decl]
   build-init-decl(c-file-name($Char*)) = 
