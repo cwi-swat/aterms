@@ -50,7 +50,7 @@ ALL_INCLUDES		= ${PUBLIC_INCL} ${PRIVATE_INCL}
 
 include_HEADERS		= $(PUBLIC_INCL)
 
-EXTRA_DIST		= $(ALLSRCS)
+EXTRA_DIST		= $(ALLSRCS) tblog-interface.tb tblog.dict
 
 CLEANFILES		= tblog-interface.tifs logger.tif.c logger.tif.h \
 			tblog_dict.c tblog_dict.h
@@ -83,8 +83,8 @@ tblog.o: tblog_dict.h logger.tif.h
 # file exists in the current directory. The ToolBus by default uses the
 # dirname of its second argument to determine the location where to store
 # its output. This does not work correct when using VPATH in the Makefile.
-%.tifs: %.tb
+tblog-interface.tifs: tblog-interface.tb
 	$(TOOLBUS) -gentifs $<
 	@if [ "a${VPATH}" != "a" ]; then \
-	  mv ${srcdir}/test2.tifs $@ ;\
+	  mv ${srcdir}/tblog-interface.tifs $@ ;\
 	fi

@@ -20,8 +20,11 @@
 
 javadir		= ${prefix}/classes/aterm/pure
 
-java_JAVA	= AFunImpl.java ATermImpl.java ATermPlaceholderImpl.java \
-		 ATermApplImpl.java ATermIntImpl.java ATermRealImpl.java \
-		 ATermBlobImpl.java ATermListImpl.java PureFactory.java
+java_JAVA	= ATermImpl.java ATermIntImpl.java ATermListImpl.java \
+		ATermRealImpl.java PureFactory.java
+
+#		ATermImpl.java ATermPlaceholderImpl.java \
+#		ATermApplImpl.java ATermIntImpl.java ATermRealImpl.java \
+#		ATermBlobImpl.java ATermListImpl.java PureFactory.java
 
 JAVAROOT	= ${top_builddir}/java/

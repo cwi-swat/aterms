@@ -34,7 +34,7 @@ CLEANFILES = test2.tifs tool2.tif.c tool2.tif.h stress_dict.c stress_dict.h
 
 INCLUDES   = -I. -I$(top_srcdir)/aterm -I$(top_srcdir)/toolbus
 
-CFLAGS                  = -Wall -g
+CFLAGS                  = -Wall -g -DTESTSRCDIR="\"$(top_srcdir)/test/\""
 
 LDFLAGS 		= -L$(top_builddir)/aterm/ \
 			  -L$(top_builddir)/toolbus/
@@ -90,7 +90,7 @@ test: stress
 # file exists in the current directory. The ToolBus by default uses the
 # dirname of its second argument to determine the location where to store
 # its output. This does not work correct when using VPATH in the Makefile.
-%.tifs: %.tb
+test2.tifs: test2.tb
 	$(TOOLBUS) -gentifs $<
 	@if [ "a${VPATH}" != "a" ]; then \
 	   mv ${srcdir}/test2.tifs $@ ;\

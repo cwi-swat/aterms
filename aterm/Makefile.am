@@ -19,6 +19,6 @@
 #
 SUBDIRS=aterm utils toolbus test $(JAVA_SUBDIR) doc
 
-DIST_SUBDIRS=aterm utils toolbus test doc java1.2
+DIST_SUBDIRS=aterm utils toolbus test doc java java1.2
 
 EXTRA_DIST=make_rules
