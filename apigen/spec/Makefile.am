@@ -8,7 +8,7 @@ SUBDIRS		= add-labels
 
 bin_PROGRAMS	= Sdf2-to-ADT
 
-CFLAGS		= -g -Wall -O2 -DMAIN_Sdf2_to_AsFix2ME_ADT
+CFLAGS		= -g -Wall -Wno-unused -O2 -DMAIN_Sdf2_to_AsFix2ME_ADT
 
 INCLUDES	= -I$(ASCINC) \
 		-I$(PT_SUPPORT)/include \
