@@ -1,0 +1,30 @@
+ace(plugins([term,java.visitor]),
+[
+list("rolo-list", "rolodex"),
+type("rolodex",
+  [field("phone", "phone-number"),
+   type("home",
+        [field("name", "string")
+            {["term.pattern","home(<name>,<phone>)"]}]),
+   type("work",
+        [field("company", "string")
+            {["term.pattern","work(<company>,<phone>)"]}])
+  ]){["list", "rolo-list"],["list.term.pattern","[<head>,<tail>]"]},
+type("phone-number",
+  [type("voice",
+        [field("voice", "integer")
+            {["term.pattern", "voice(<voice>)"]}]),
+   type("fax",
+        [field("fax", "integer")
+            {["term.pattern", "fax(<fax>)"]}])
+  ])
+])
+
+[
+  [ RoloList, multi, [<elem(Rolodex)>,<[tail(RoloList)]>]],
+  [ RoloList, empty, []],
+  [ Rolodex, Home, home([<name(str)>,<phone(PhoneNumber)>]) ],
+  [ Rolodex, Work, work([<company(str)>,<phone(PhoneNumber)>]) ],
+  [ PhoneNumber, Voice, voice(<voice(int)>)],
+  [ PhoneNumber, Fax,   fax(<fax(int)>)]
+]
