@@ -66,7 +66,7 @@ static int default_tid  = -1;
 static Connection *connections[FD_SETSIZE] = { NULL };
 
 static Symbol symbol_rec_do = NULL;
-static ATermAppl term_snd_void = NULL;
+static ATerm term_snd_void = NULL;
 
 /* term buffer */
 static int buffer_size = 0;
@@ -112,9 +112,9 @@ ATBinit(int argc, char *argv[], ATerm *stack_bottom)
 
 	/* Build some constants */
 	symbol_rec_do = ATmakeSymbol("rec-do", 1, ATfalse);
-	term_snd_void = (ATermAppl)ATparse("snd-void");
+	term_snd_void = ATparse("snd-void");
 	ATprotectSymbol(symbol_rec_do);
-	ATprotect((ATerm *)&term_snd_void);
+	ATprotect(&term_snd_void);
 
 	/* Allocate initial buffer */
 	buffer = (char *)malloc(INITIAL_BUFFER_SIZE);
@@ -235,13 +235,13 @@ int ATBeventloop(void)
 }
 
 /*}}}  */
-/*{{{  int ATBsend(int fd, ATerm term) */
+/*{{{  int ATBwriteTerm(int fd, ATerm term) */
 
 /**
 	* Send a term to the ToolBus.
 	*/
 
-int ATBsend(int fd, ATerm term)
+int ATBwriteTerm(int fd, ATerm term)
 {
   int len = AT_calcTextSize(term) + 8 /* Add lenspec */;
 	int wirelen = MAX(len, MIN_MSG_SIZE);
@@ -250,29 +250,29 @@ int ATBsend(int fd, ATerm term)
 	sprintf(buffer, "%-.7d:", len);
 	AT_writeToStringBuffer(term, buffer+8);
 	if(mwrite(fd, buffer, wirelen) < 0)
-		ATerror("ATBsend: connection with ToolBus lost.\n");
+		ATerror("ATBwriteTerm: connection with ToolBus lost.\n");
 	return 0;
 }
 
 /*}}}  */
-/*{{{  ATerm  ATBreceive(int fd) */
+/*{{{  ATerm  ATBreadTerm(int fd) */
 
 /**
 	* Receive a term from the ToolBus.
 	*/
 
-ATerm  ATBreceive(int fd)
+ATerm  ATBreadTerm(int fd)
 {
   int len;
   ATerm t;
 
   /* Read the first batch */
   if(mread(fd, buffer, MIN_MSG_SIZE) <= 0) 
-	ATerror("ATBreceive: connection with ToolBus lost.\n");
+	ATerror("ATBreadTerm: connection with ToolBus lost.\n");
   
   /* Retrieve the data length */
   if(sscanf(buffer, "%7d:", &len) != 1)
-	ATerror("ATBreceive: error in lenspec: %s\n", buffer);
+	ATerror("ATBreadTerm: error in lenspec: %s\n", buffer);
   
   /* Make sure the buffer is large enough */
   resize_buffer(len);
@@ -280,7 +280,7 @@ ATerm  ATBreceive(int fd)
   if(len > MIN_MSG_SIZE) {
 	/* Read the rest of the data */
 	if(mread(fd, buffer+MIN_MSG_SIZE, len-MIN_MSG_SIZE) < 0)
-	  ATerror("ATBreceive: connection with ToolBus lost.\n");
+	  ATerror("ATBreadTerm: connection with ToolBus lost.\n");
   }
 
   /* Parse the string */
@@ -359,10 +359,11 @@ int ATBpeekAny(void)
 
 int ATBhandleOne(int fd)
 {
-	ATermAppl appl, result;
+	ATermAppl appl;
+  ATerm result;
 	ATbool recdo = ATfalse;
 
-	appl = (ATermAppl)ATBreceive(fd);
+	appl = (ATermAppl)ATBreadTerm(fd);
 
 	if(appl == NULL)
 	  return -1;
@@ -370,12 +371,12 @@ int ATBhandleOne(int fd)
 	if(ATgetSymbol(appl) == symbol_rec_do)
 	  recdo = ATtrue;
 
-	result = connections[fd]->handler(fd, appl);
+	result = connections[fd]->handler(fd, (ATerm)appl);
 	
 	if(result)
-	  return ATBsend(fd, (ATerm)result);
+	  return ATBwriteTerm(fd, result);
 	else if(recdo)
-	  return ATBsend(fd, (ATerm)term_snd_void);
+	  return ATBwriteTerm(fd, term_snd_void);
 
 	return 0;
 }
@@ -438,6 +439,45 @@ int ATBgetDescriptors(fd_set *set)
 }
 
 /*}}}  */
+
+/*{{{  ATerm ATBcheckSignature(ATerm signature, char *sigs[], int nrsigs) */
+
+/**
+	* Check a signature.
+	*/
+
+ATerm ATBcheckSignature(ATerm signature, char *sigs[], int nrsigs)
+{
+	ATermList list = (ATermList)signature;
+	int i;
+
+	ATprintf("checking signature: %t\n", signature);
+	ATprintf("signature spec consists of %d elements:\n", nrsigs);
+	for(i=0; i<nrsigs; i++) {
+		ATprintf("  %s\n", sigs[i]);
+	}
+
+	while(!ATisEmpty(list)) {
+		ATbool found = ATfalse;
+		ATerm entry = ATgetFirst(list);
+		list = ATgetNext(list);
+
+		for(i=0; i<nrsigs && !found; i++) {
+			if(ATisEqual(ATparse(sigs[i]), entry))
+				found = ATtrue;
+		}
+
+		if(!found) {
+			ATprintf("entry %t not in signature!\n", entry);
+			return entry;
+		}
+	}
+
+	return NULL;
+}
+
+/*}}}  */
+
 
 /*{{{  static int connect_unix_socket(int port) */
 

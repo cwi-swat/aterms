@@ -3,6 +3,7 @@ PRODUCT		= toolbus
 
 ATBSRCS		= atb-tool.c
 ATBLIBS		= libATB-gcc.a libATB-cc.a libATB-dbg.a libATB-prof.a
+PROGS		= ctif
 
 CC_CC		= cc
 CC_GCC		= gcc
@@ -39,7 +40,7 @@ OBJ_PROF	= $(patsubst %.c,%-prof.o,$(ATBSRCS))
 AR		= ar
 AR_FLAGS	= cr
 
-all: $(ATBLIBS)
+all: $(ATBLIBS) $(PROGS)
 
 %-cc.o: %.c
 	${CC_CC} ${CFLAGS_CC} -c -o $@ $<
@@ -64,6 +65,10 @@ libATB-dbg.a: ${OBJ_DBG}
 
 libATB-prof.a: ${OBJ_PROF}
 	${AR} ${AR_FLAGS} $@ ${OBJ_PROF}
+
+ctif: ctif.c atb-tool.h ../aterm/libATerm-dbg.a libATB-dbg.a
+	${CC_DBG} ${CFLAGS_DBG} -o ctif ctif.c \
+			-L../aterm -lATerm-dbg -L. -lATB-dbg -lsocket -lnsl
 
 clean:
 	rm -f $(ATBLIBS) *.o *~ core
