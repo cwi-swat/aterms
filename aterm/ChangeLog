@@ -1,5 +1,9 @@
 $Id$
 
+2001/08/17 (jong@cwi.nl)
+ * Version 1.6.4beta initiated
+ * Started work on doc/xootic.ltx
+
 2001/08/14 (jong@cwi.nl)
  * Version 1.6.3 released
  * Added script utils/genpkg.sh which generates toplevel "aterm.pkg"
