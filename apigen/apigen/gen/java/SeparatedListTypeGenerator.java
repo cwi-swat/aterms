@@ -74,11 +74,6 @@ public class SeparatedListTypeGenerator extends TypeGenerator {
         println("  }");
     }
 
-    private void genOverrideElementAtMethod() {
-        // TODO Auto-generated method stub
-        
-    }
-
     private void genAppendMethods() {
         genAppendMethod();
         genOverrideAppendMethod();
