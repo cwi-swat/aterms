@@ -1,6 +1,6 @@
 SUBDIRS	= config aterm2xml xml2aterm test
 
-EXTRA_DIST      = make_rules $(wildcard *.pkg)
+EXTRA_DIST      = $(wildcard *.pkg)
 
 noinst_SCRIPTS = ${PACKAGE}-${VERSION}.pkg
 
