@@ -541,7 +541,7 @@ public class PureFactory
     do {
       buf.append((char)c);
       c = reader.read();
-    } while (Character.isLetter((char)c) || c == '_');
+    } while (Character.isLetter((char)c) || c == '_' || c == '-');
 
     return buf.toString();
   }
@@ -716,6 +716,7 @@ public class PureFactory
       case '0':	case '1': case '2': case '3': case '4':
       case '5':	case '6': case '7': case '8': case '9':
         result = parseNumber(reader);
+	c = reader.skipWS();
 	break;
 
       default:
@@ -724,6 +725,7 @@ public class PureFactory
 	  //{{{ Parse an unquoted function
 					 
 	  funname = parseId(reader);
+	  c = reader.skipWS();
 	  if (reader.getLastChar() == '(') {
 	    c = reader.readSkippingWS();
 	    if (c == -1) {
@@ -1043,6 +1045,16 @@ class ATermReader
 
     return last_char;
 
+  }
+
+  public int skipWS()
+    throws IOException
+  {
+    while (Character.isWhitespace((char)last_char)) {
+      last_char = reader.read();
+    }
+
+    return last_char;
   }
 
   public int readOct()

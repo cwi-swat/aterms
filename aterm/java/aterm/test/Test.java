@@ -4,12 +4,13 @@ import aterm.*;
 import aterm.pure.*;
 
 import java.util.*;
+import java.io.*;
 
 public class Test
 {
   ATermFactory factory;
 
-  //{ public final static void main(String[] args)
+  //{{{ public final static void main(String[] args)
 
   public final static void main(String[] args)
   {
@@ -19,17 +20,17 @@ public class Test
     //nativeSuite.testAll();
   }
 
-  //}
-  //{ public Test(ATermFactory factory)
+  //}}}
+  //{{{ public Test(ATermFactory factory)
 
   public Test(ATermFactory factory)
   {
     this.factory = factory;
   }
 
-  //}
+  //}}}
 
-  //{ void assert(boolean condition)
+  //{{{ void assert(boolean condition)
 
   void assert(boolean condition)
   {
@@ -38,9 +39,9 @@ public class Test
     }
   }
 
-  //}
+  //}}}
 
-  //{ public void testMakeInt()
+  //{{{ public void testMakeInt()
 
   public void testMakeInt()
   {
@@ -68,8 +69,8 @@ public class Test
     System.out.println("pass: testMakeInt");
   }
 
-  //}
-  //{ public void testMakeReal()
+  //}}}
+  //{{{ public void testMakeReal()
 
   public void testMakeReal()
   {
@@ -92,8 +93,8 @@ public class Test
     System.out.println("pass: testMakeReal");
   }
 
-  //}
-  //{ public void testMakeAppl()
+  //}}}
+  //{{{ public void testMakeAppl()
 
   public void testMakeAppl()
   {
@@ -129,8 +130,8 @@ public class Test
     System.out.println("application tests ok.\n");
   }
 
-  //}
-  //{ public void testParser()
+  //}}}
+  //{{{ public void testParser()
 
   public void testParser()
   {
@@ -144,10 +145,11 @@ public class Test
     t = factory.parse("3.14");
     t = factory.parse("f(\"x y z\"(),<abc(31)>,[])");
     t = factory.parse("home([<name(\"\",String)>,<phone(\"\",PhoneNumber)>])");
+    t = factory.parse("[ a , b ]");
   }
 
-  //}
-  //{ public void testAll()
+  //}}}
+  //{{{ public void testAll()
 
   public void testAll()
   {
@@ -161,5 +163,5 @@ public class Test
     */
   }
 
-  //}
+  //}}}
 }
