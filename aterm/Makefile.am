@@ -19,6 +19,7 @@
 #
 SUBDIRS=aterm utils toolbus test $(JAVA_SUBDIRS) doc
 
-DIST_SUBDIRS=aterm utils toolbus test doc java java1.2
+# deprecated java1.2 removed from distribution
+DIST_SUBDIRS=aterm utils toolbus test doc java
 
 EXTRA_DIST=make_rules

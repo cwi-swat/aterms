@@ -73,7 +73,7 @@ AC_AIX
 AC_SET_MAKE
 
 AC_ARG_WITH(toolbus, 
-   [  --with-toolbus      Specify location of the ToolBus], 
+   [  --with-toolbus           Specify location of the ToolBus (developers only)], 
    TOOLBUS=$withval)
 
 if test "a${TOOLBUS}" = "a"; then
@@ -86,51 +86,34 @@ if test "a${TOOLBUS}" = "a"; then
  fi
 fi
 
-JAVA_SUBDIRS=
-AC_ARG_WITH(java,
-   [  --with-java         with Java support (jdk-1.2 and up).],
-      JAVA_SUBDIRS="${JAVA_SUBDIRS} java",)
-
-AC_ARG_WITH(old-java,
-   [  --with-old-java     with deprecated Java support. Note that 
-                      only jdk-1.2 (Java-2) is supported!],
-      JAVA_SUBDIRS="${JAVA_SUBDIRS} java1.2",)
-
 AC_ARG_WITH(gcc,
-   [  --with-gcc          create gcc version of the library (libATerm-gcc.a)],
+   [  --with-gcc               create gcc version (libATerm-gcc.a)],
       ATERM_LIB_GCC=libATerm-gcc.a
       TOOLBUS_LIB_GCC=libATB-gcc.a,)
 
 AC_ARG_WITH(cc,
-   [  --with-cc           create cc version of the library (libATerm-cc.a)],
+   [  --with-cc                create cc version (libATerm-cc.a)],
       ATERM_LIB_CC=libATerm-cc.a
       TOOLBUS_LIB_CC=libATB-cc.a,)
 
 AC_ARG_WITH(dbg,
-   [  --with-dbg          create debug version of the library (libATerm-dbg.a)],
+   [  --with-dbg               create debug version (libATerm-dbg.a)],
       ATERM_LIB_DBG=libATerm-dbg.a
       TOOLBUS_LIB_DBG=libATB-dbg.a,)
 
 AC_ARG_WITH(prof,
-   [  --with-prof         create profiling version of the library (libATerm-prof.a)],
+   [  --with-prof              create profiling version (libATerm-prof.a)],
       ATERM_LIB_PROF=libATerm-prof.a
       TOOLBUS_LIB_PROF=libATB-prof.a,)
 
 
-AC_ARG_WITH(64bit,
-   [  --with-64bit        create 64 bit cc version of the library (libATerm-cc64.a)],
-    CC=${CC_CC64}
-    CFLAGS=${CFLAGS_CC64}
-    LDFLAGS=${LDFLAGS_CC64}
-    INCL=${INCL_CC64},)
-
 #AC_ARG_WITH(shared,
-#   [  --with-shared         create a shared-library version of the library (libATerm-shared.so.${VERSION})],
+#   [  --with-shared         create a shared-library version (libATerm-shared.so.${VERSION})],
 #      ATERM_LIB_SHARED=libATerm-shared.so.${VERSION}
 #      TOOLBUS_LIB_SHARED=libATB-shared.so.${VERSION},)
 
 AC_ARG_WITH(all,
-   [  --with-all          create all libraries (--with-{gcc,cc,dbg,prof}, NOT java)],
+   [  --with-all               convenience alias for --with-{gcc,cc,dbg,prof} ],
       ATERM_LIB_GCC=libATerm-gcc.a
       TOOLBUS_LIB_GCC=libATB-gcc.a
       ATERM_LIB_CC=libATerm-cc.a
@@ -139,6 +122,25 @@ AC_ARG_WITH(all,
       TOOLBUS_LIB_DBG=libATB-dbg.a
       ATERM_LIB_PROF=libATerm-prof.a
       TOOLBUS_LIB_PROF=libATB-prof.a,)
+
+AC_ARG_WITH(64bit,
+   [  --with-64bit             create 64 bit cc version (libATerm-cc64.a)],
+    CC=${CC_CC64}
+    CFLAGS=${CFLAGS_CC64}
+    LDFLAGS=${LDFLAGS_CC64}
+    INCL=${INCL_CC64},)
+
+JAVA_SUBDIRS=
+AC_ARG_WITH(java,
+   [  --with-java              create Java "library" (jdk-1.2 and up).],
+      JAVA_SUBDIRS="${JAVA_SUBDIRS} java",)
+
+dnl deprecated java-1.2 files removed
+dnl
+dnl AC_ARG_WITH(old-java,
+dnl    [  --with-old-java     with deprecated Java support. Note that 
+dnl                       only jdk-1.2 (Java-2) is supported!],
+dnl       JAVA_SUBDIRS="${JAVA_SUBDIRS} java1.2",)
 
 AC_SUBST(ATERM_LIB_GCC)
 AC_SUBST(ATERM_LIB_CC)
@@ -210,16 +212,19 @@ if test ${GETHOSTNAME_FOUND} = no; then
    AC_CHECK_LIB(nsl,gethostname,[GETHOSTNAME_FOUND=yes;LIBS="$LIBS -lnsl"])
 fi
 
+dnl deprecated java-1.2 files removed
+dnl
+dnl 	java1.2/Makefile \
+dnl 	java1.2/aterm/Makefile \
+dnl 	java1.2/aterm/tool/Makefile \
+dnl 	java1.2/aterm/util/Makefile \
+
 AC_OUTPUT( \
 	Makefile \
 	aterm/Makefile \
 	utils/Makefile \
 	test/Makefile \
 	toolbus/Makefile \
-	java1.2/Makefile \
-	java1.2/aterm/Makefile \
-	java1.2/aterm/tool/Makefile \
-	java1.2/aterm/util/Makefile \
 	java/Makefile \
 	java/aterm/Makefile \
 	java/aterm/pure/Makefile \
