@@ -1003,23 +1003,29 @@ public class APIGenerator extends CGenerator {
 	}
 
 	private void genSetField(Type type, Field field) {
-		String type_id = StringConversions.makeIdentifier(type.getId());
-		String type_name = buildTypeName(type);
-		String field_id = StringConversions.makeIdentifier(field.getId());
-		String field_type_name = buildTypeName(field.getType());
+		String typeId = StringConversions.makeIdentifier(type.getId());
+		String typeName = buildTypeName(type);
+		String fieldId = StringConversions.makeIdentifier(field.getId());
+		
+		String fieldType = field.getType();
+		String fieldTypeName = buildTypeName(fieldType);
+		if (fieldType.equals(TypeConverter.CHARS_TYPE) || fieldType.equals(TypeConverter.STR_TYPE)) {
+			fieldTypeName = "const " + fieldTypeName;
+		}
+		
 		String decl =
-			type_name
+			typeName
 				+ " "
 				+ prefix
 				+ "set"
-				+ type_id
-				+ StringConversions.capitalize(field_id)
+				+ typeId
+				+ StringConversions.capitalize(fieldId)
 				+ "("
-				+ type_name
+				+ typeName
 				+ " arg, "
-				+ field_type_name
+				+ fieldTypeName
 				+ " "
-				+ field_id
+				+ fieldId
 				+ ")";
 
 		hprintln(decl + ";");
@@ -1039,7 +1045,7 @@ public class APIGenerator extends CGenerator {
 				print("else ");
 			}
 			println("if (" + buildIsAltName(type, loc.getAltId()) + "(arg)) {");
-			print("    return (" + type_name + ")");
+			print("    return (" + typeName + ")");
 			Iterator steps = loc.stepIterator();
 			String arg = genBuiltinToATerm(field.getType(), StringConversions.makeIdentifier(field.getId()));
 			genSetterSteps(steps, new LinkedList(), arg);
@@ -1047,8 +1053,8 @@ public class APIGenerator extends CGenerator {
 			println("  }");
 		}
 		println();
-		println("  ATabort(\"" + type_id + " has no " + StringConversions.capitalize(field_id) + ": %t\\n\", arg);");
-		println("  return (" + type_name + ")NULL;");
+		println("  ATabort(\"" + typeId + " has no " + StringConversions.capitalize(fieldId) + ": %t\\n\", arg);");
+		println("  return (" + typeName + ")NULL;");
 
 		println("}");
 		printFoldClose();
