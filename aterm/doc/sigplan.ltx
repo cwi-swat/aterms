@@ -50,13 +50,14 @@
 for the exchange of tree-like data structures between distributed
 applications. The \texttt{C}-implementation of \ATerms\ is a library
 based on maximal subterm sharing and automatic garbage collection.
-This paper shows how a compilation technique called \emph{strength
-reduction} killed the conservative garbage collector used in this
-\C-library. We show how inspecting the generated assembly
+This paper shows how a compiler optimization called \emph{strength
+reduction} wreaked havoc on the conservative garbage collector used
+in this \C-library. We show how inspecting the generated assembly
 helped point out a flaw in the assumptions upon which the conservative
 garbage collector implementation was based, and how we repaired the
 collector. Finally, we point out that other, even more ``intelligent''
-optimizations could still fool our repaired collector.
+optimizations could still fool our repaired collector and any other
+collector based on the same principles.
 
 \end{abstract}
 
