@@ -19,6 +19,13 @@
 
 $Id$
 
+2000/02/20 (jong@cwi.nl)
+ In utils/atrmannos.c:
+ * Folding added
+ * Superfluous #includes removed (aterm1.h, stdlib.h, unistd.h)
+ * CVS-id added to header
+ * Copyright extended to 2001
+
 2000/02/20 (jurgenv@cwi.nl)
  * Added utility atrmannos. This utility can be used to remove a number
    of specific annotations or all annotations from a term.

@@ -1,6 +1,6 @@
 /*
     ATerm -- The ATerm (Annotated Term) library
-    Copyright (C) 1998-2000  Stichting Mathematisch Centrum, Amsterdam,
+    Copyright (C) 1998-2001  Stichting Mathematisch Centrum, Amsterdam,
                              The  Netherlands.
 
     This program is free software; you can redistribute it and/or modify
@@ -17,13 +17,11 @@
     along with this program; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 
+    $Id$
 */
 
 #include <stdio.h>
-#include <aterm1.h>
 #include <aterm2.h>
-#include <stdlib.h>
-#include <unistd.h>
 
 static char version[] = "1.0";
 
@@ -33,28 +31,38 @@ static char version[] = "1.0";
 
 typedef enum { AUTODETECT, TEXT, SHARED_TEXT, BINARY } Format;
 
-ATerm visitATerm(ATerm tree, ATerm (*accept)(ATerm t, ATerm data), ATerm data)
+/*{{{  ATerm visitATerm(ATerm tree, ATerm (*accept)(ATerm t, ATerm data), ATerm data) */
+
+static ATerm
+visitATerm(ATerm tree, ATerm (*accept)(ATerm t, ATerm data), ATerm data)
 {
   switch(ATgetType(tree)) {
   case AT_APPL:
+    /*{{{  Handle function application */
+
     {
+      int arity = ATgetArity(ATgetAFun((ATermAppl)appl));
       ATerm arg;
       int i;
 
-      for(i = 0; i < arity(tree); i++) {
+      for (i = 0; i < arity; i++) {
         arg  = ATgetArgument((ATermAppl) tree, i);
         arg  = visitATerm(arg, accept, data);
         tree = (ATerm) ATsetArgument((ATermAppl) tree, arg, i);
       }
     }
+
+    /*}}}  */
     break;
   case AT_LIST:
+    /*{{{  handle lists */
+
     {
       ATermList list = (ATermList) tree;
       ATermList newlist;
       ATerm annos = AT_getAnnotations(tree);
 
-      for(newlist = ATempty; !ATisEmpty(list); list = ATgetNext(list)) {
+      for (newlist = ATempty; !ATisEmpty(list); list = ATgetNext(list)) {
         newlist = ATinsert(newlist, visitATerm(ATgetFirst(list), accept, data));
       }
 
@@ -64,6 +72,8 @@ ATerm visitATerm(ATerm tree, ATerm (*accept)(ATerm t, ATerm data), ATerm data)
         tree = AT_setAnnotations(tree, annos);
       }
     }
+
+    /*}}}  */
     break;
   default:
     break;
@@ -72,28 +82,38 @@ ATerm visitATerm(ATerm tree, ATerm (*accept)(ATerm t, ATerm data), ATerm data)
   return accept(tree, data);
 }
 
-ATerm removeAllAnnotations(ATerm tree, ATerm data)
+/*}}}  */
+
+/*{{{  static ATerm removeAllAnnotations(ATerm tree, ATerm data) */
+
+static ATerm removeAllAnnotations(ATerm tree, ATerm data)
 {
   return ATremoveAllAnnotations(tree);
 }
 
-ATerm removeAllAnnotationsRecursive(ATerm tree)
+/*}}}  */
+/*{{{  static ATerm removeAllAnnotationsRecursive(ATerm tree) */
+
+static ATerm removeAllAnnotationsRecursive(ATerm tree)
 {
    return visitATerm(tree, removeAllAnnotations, NULL);
-
 }
 
-ATerm removeAnnotationRecursive(ATerm tree, ATerm label)
+/*}}}  */
+/*{{{  static ATerm removeAnnotationRecursive(ATerm tree, ATerm label) */
+
+static ATerm removeAnnotationRecursive(ATerm tree, ATerm label)
 {
   return visitATerm(tree, ATremoveAnnotation, label);
 }
 
-/*
-    Usage: displays helpful usage information
- */
-void usage(const char *myname, const char* myversion)
+/*}}}  */
+
+/*{{{  static void usage(const char *myname, const char* myversion) */
+
+static void usage(const char *myname, const char* myversion)
 {
-    fprintf(stderr,
+    fprintf (stderr,
         "Usage: %s [<options>]\n"
         "Options:\n"
         "  -i <input>     - Read input from file <input>            (Default: stdin)\n"
@@ -109,16 +129,23 @@ void usage(const char *myname, const char* myversion)
         myname, myversion);
 }
 
-void requireArgument(int argc, char *argv[], int arg)
+/*}}}  */
+/*{{{  static void requireArgument(int argc, char *argv[], int arg) */
+
+static void requireArgument(int argc, char *argv[], int arg)
 {
-   if (arg + 1 >= argc) {
+   if (arg > argc) {
      fprintf(stderr,
              "%s: %s option requires an argument.\n", argv[0], argv[arg]);
      exit(1);
    }
 }
 
-int main (int argc, char **argv)
+/*}}}  */
+
+/*{{{  int main (int argc, char *argv[]) */
+
+int main (int argc, char *argv[])
 {
   ATerm  bottomOfStack;
   ATerm  term = NULL;
@@ -135,7 +162,8 @@ int main (int argc, char **argv)
   ATinit(argc, argv, &bottomOfStack);    
   labels = ATempty;
 
-  if(argc == 1) { /* no arguments */
+  if (argc == 1) {
+    /* no arguments */
     usage(argv[0], version);
     exit(1);
   }
@@ -251,3 +279,5 @@ int main (int argc, char **argv)
 
   return 0;
 }
+
+/*}}}  */
