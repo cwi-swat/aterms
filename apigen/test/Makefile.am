@@ -13,6 +13,7 @@ JAVATESTS = PeanoTest ListTest
 TESTS		= rolotest listtest \
 	          $(foreach j, ${JAVATESTS}, ${j}.java.sh)
 
+# Building the C programs that are to be run during testing:
 check_PROGRAMS	= rolotest listtest
 check_LIBRARIES	= librolodex.a liblist.a 
 
@@ -27,6 +28,7 @@ listtest_SOURCES	= listtest.c
 listtest_LDADD		= -L. -llist -lATerm
 listtest_DEPENDENCIES	= liblist.a
 
+# Building the Java class files that are to be run during testing:
 javadir = ${top_builddir}/test/classfiles
 JAVAROOT = ${top_builddir}
 CLASSPATH_ENV = CLASSPATH=${top_builddir}:${SHARED_OBJECTS}:${JAVA_ATERM}:${srcdir}/$(JAVAROOT)::$$CLASSPATH
@@ -53,6 +55,7 @@ CLEANFILES		= ${check_PROGRAMS} ${check_LIBRARIES} \
 
 EXTRA_DIST		= rolodex.adt list.adt list.pro peano.adt
 
+# Below the generation of Java and C API's:
 rolodex.c rolodex.h: rolodex.adt
 	${ADTC} \
 		--input ${top_srcdir}/test/rolodex.adt \
