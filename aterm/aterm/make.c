@@ -11,6 +11,7 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include "aterm2.h"
+#include "make.h"
 #include "deprecated.h"
 #include "util.h"
 
@@ -140,6 +141,7 @@ ATerm ATvmakeTerm(ATerm pat, va_list args)
 /*}}}  */
 
 /*{{{  ATerm AT_vmakeTerm(ATerm pat, va_list *args) */
+
 static ATerm
 AT_vmakeTerm(ATerm pat, va_list *args)
 {
@@ -209,6 +211,7 @@ AT_vmakeTerm(ATerm pat, va_list *args)
 		break;
 	}
 }
+
 /*}}}  */
 
 /*{{{  static ATermAppl makeArguments(ATermAppl appl, name, quoted, *args) */
@@ -224,7 +227,11 @@ makeArguments(ATermAppl appl, char *name, ATbool quoted, va_list *args)
 	ATermList list;
 	ATermList arglist;
 
-	if (nr_args-- <= NR_INLINE_TERMS)
+	if(nr_args == 0)
+    {
+	    sym = ATmakeSymbol(name, 0, quoted);
+		return ATmakeAppl0(sym);
+	} else if (nr_args-- <= NR_INLINE_TERMS)
 	{
 		for (cur = 0; cur < nr_args; cur++)
 			terms[cur] = AT_vmakeTerm(ATgetArgument(appl, cur), args);
@@ -275,12 +282,14 @@ makeArguments(ATermAppl appl, char *name, ATbool quoted, va_list *args)
 /*}}}  */
 
 /*{{{  ATerm makePlaceholder(ATermPlaceholder pat, va_list *args) */
+
 ATerm
 makePlaceholder(ATermPlaceholder pat, va_list *args)
 {
-	if (ATgetType(pat) == AT_APPL)
+    ATerm type = ATgetPlaceholder(pat);
+    if (ATgetType(type) == AT_APPL) 
 	{
-		ATermAppl appl = (ATermAppl) pat;
+	    ATermAppl appl = (ATermAppl) type;
 		Symbol sym = ATgetSymbol(appl);
 		if (sym == symbol_int && ATgetArity(sym) == 0)
 			return (ATerm) ATmakeInt(va_arg(*args, int));
@@ -291,7 +300,8 @@ makePlaceholder(ATermPlaceholder pat, va_list *args)
 									  va_arg(*args, void *));
 		else if(sym == symbol_placeholder)
 			return (ATerm) ATmakePlaceholder(va_arg(*args, ATerm));
-		else if (sym == symbol_appl || sym == symbol_str)
+		else if (streq(ATgetName(sym), "appl") || 
+				 streq(ATgetName(sym), "str"))
 		{
 			ATbool quoted = (sym == symbol_str ? ATtrue : ATfalse);
 			return (ATerm) makeArguments(appl, va_arg(*args, char *),
@@ -301,4 +311,5 @@ makePlaceholder(ATermPlaceholder pat, va_list *args)
 	ATerror("makePlaceholder: illegal pattern %t\n", pat);
 	return (ATerm) NULL;
 }
+
 /*}}}  */

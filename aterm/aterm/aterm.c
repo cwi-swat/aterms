@@ -13,6 +13,7 @@
 #include "memory.h"
 #include "symbol.h"
 #include "list.h"
+#include "make.h"
 
 #include <assert.h>
 
@@ -74,6 +75,7 @@ void ATinit(int argc, char *argv[],
   AT_initMemory(argc, argv);
   AT_initSymbol(argc, argv);
   AT_initList(argc, argv);
+  AT_initMake(argc, argv);
 /*  ATinitGC(argc, argv, bottomOfStack);
 */
 }
@@ -93,8 +95,9 @@ void ATerror(const char *format, ...)
   if(error_handler)
     error_handler(format, args);
   else {
-	ATvfprintf(stderr, format, args);
-    exit(1);
+    ATvfprintf(stderr, format, args);
+    abort();
+    /*exit(1);*/
   }
 
   va_end(args);
@@ -690,7 +693,24 @@ static ATermAppl fparse_quoted_appl(int *c, FILE *f)
     if(*c == EOF)
       return NULL;
     if(escaped) {
-      buffer[len++] = *c;
+      switch(*c) {
+	case 'n':
+	  buffer[len++] = '\n';
+	  break;
+	case 'r':
+	  buffer[len++] = '\r';
+	  break;
+	case 't':
+	  buffer[len++] = '\t';
+	  break;
+	case '\\':
+	  buffer[len++] = '\\';
+	  break;
+	default:
+	  buffer[len++] = '\\';
+	  buffer[len++] = *c;
+	  break;
+      }
       escaped = ATfalse;
     } else if(*c == '\\')
       escaped = ATtrue;
@@ -971,7 +991,24 @@ static ATermAppl sparse_quoted_appl(int *c, char **s)
     if(*c == EOF)
       return NULL;
     if(escaped) {
-      buffer[len++] = *c;
+      switch(*c) {
+	case 'n':
+	  buffer[len++] = '\n';
+	  break;
+	case 'r':
+	  buffer[len++] = '\r';
+	  break;
+	case 't':
+	  buffer[len++] = '\t';
+	  break;
+	case '\\':
+	  buffer[len++] = '\\';
+	  break;
+	default:
+	  buffer[len++] = '\\';
+	  buffer[len++] = *c;
+	  break;
+      }
       escaped = ATfalse;
     } else if(*c == '\\')
       escaped = ATtrue;
