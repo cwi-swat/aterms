@@ -731,7 +731,8 @@ The arity of a real term is 0.
 
 \paragraph{APPL encoding}
 The remaining 3 bytes following the header in the first word are used to
-represent the function symbol. The words following the second word contain
+represent the index in a table containing the function symbols. 
+The words following the second word contain
 references to the function arguments.
 In this way, function applications can be encoded in
 $2+n$ machine words, with $n$ the arity of the function application.
@@ -973,7 +974,7 @@ be exploited and there are many subterms with a relatively high arity.
 
 \item[COBOL Parse Table:] a generated parse table for COBOL including
 embedded SQL and CICS.  The grammar consists of 1885 productions and
-the generated automaton has 6151 states.  The parse tables contains an
+the generated automaton has 6151 states.  The parse table contains an
 action-table (218592 non-empty entries) and a goto-table (95245
 non-empty entries).  This is an example of an abstract data type
 represented as \ATerm.
@@ -1021,7 +1022,9 @@ Risla library           &   708838 &     40073 &   94.35 &   960170 &  1.35   \\
 LPO                     &  8894391 &    225229 &   97.47 &  3701438 &  0.42   \\ \hline \hline
 Averages		&	   &	       &   94.82 &	    &  1.29   \\ \hline    
 \end{tabular}
-\caption{Memory usage of \ATerms} \label{measurements-in-memory}
+\caption{Memory usage of \ATerms\footnote{Since we consider
+Random-unique and Random as worst cases, we do not include them in the
+row \emph{Averages} in this and the following tables.}} \label{measurements-in-memory}
 \end{center}
 \end{table}
 
@@ -1034,9 +1037,7 @@ node. As can be seen from these figures, at least in our applications
 sharing \emph{does} make a difference. By fully exploiting the
 redundancies in the input terms, we can store a node using on the average
 1.3 bytes, and still perform operations on them efficiently.  The
-worst case behaviour is 15 bytes per node.\footnote{Since we consider
-Random-unique and Random as worst cases, we do not include them in the
-row \emph{Averages} in this and the following tables.}
+worst case behaviour is 15 bytes per node.
 
 \begin{figure}
 \centerline{\epsfig{file=sharing.eps}}
@@ -1144,6 +1145,15 @@ the time to write the \baf\ representation,
 and the average write time per node.
 Typically, we can read a node in 0.3 $\mu$s and write it in 1.2 $\mu$s.
 
+Note that reading a \baf\ term is faster than writing the same term,
+whereas in case of \ascii\ the writing is faster than reading. This is
+caused by the fact that reading the \ascii\ representation of an \aterm\
+involves quite some matching operations, whereas reading the \baf\ 
+representation can be done with less matching.
+On the other hand, writing the \baf\ representation involves more
+calculations to encode the sharing of terms, whereas writing 
+the \ascii\ representation involves a straightforward term traversal.
+
 
 \begin{table}[tb]
 \begin{center}
@@ -1236,7 +1246,17 @@ represented for any language or formalism.
 \label{asfix}
 
 \asfix\ (\asdf\ Fixed format) is an incarnation of \ATerms\ for
-representing \asdf~\cite{HHKR92.new,BHK89,DHK96}
+representing \asdf~\cite{HHKR92.new,BHK89,DHK96}.
+\asdf\ is a modular algebraic specification formalism for describing the
+syntax and semantics of (programming) languages. \sdf\ (Syntax 
+Definition Formalism) allows the definition of the concrete and
+abstract syntax of a language and is comparable to (E)BNF.
+\asf\ (Algebraic Specification Formalism) allows the definition
+of the semantics in terms of equations, which are interpreted
+as rewrite rules.
+The development of \asdf\ specifications is supported by
+an integrated programming environment, 
+the \asdf\ Meta-Environment \cite{Kli93.meta}.
 
 Each module or term is
 represented by its parse tree which contains both the syntax rules
@@ -1476,7 +1496,7 @@ There exist numerous frameworks for compilers and programming
 environments that provide facilities for representing intermediate
 data. Examples are Centaur's VTP~\cite{BCDILP89}, Eli~\cite{Eli92},
 Cocktail's Ast~\cite{Ast92} SUIF~\cite{Suif94} and
-Montana~\cite{Karasick98}, These systems either provide an explicit
+Montana~\cite{Karasick98}. These systems either provide an explicit
 intermediate format (Eli, Ast, SUIF) or they provide a programmable
 interface to the intermediate data (VTP, Montana).  Lamb's
 IDL~\cite{Lamb-IDL} and OMG's IDL~\cite{OMG-IDL} are frameworks for
@@ -1619,7 +1639,8 @@ http://www.wins.uva.nl/pub/programming-research/software/aterm/
 \end{quote}
 
 \noindent The current version of the library is available for Unix and Linux.
-We are currently porting the library to Windows/NT.
+The current implementation of the library is also available under Windows/NT.
+We are currently working on a 64-bits implementation of the library.
 
 
 \section*{Acknowledgments}
@@ -1628,6 +1649,8 @@ We want to thank all current users of the \ATerm\ library.
 Special thanks to Jan-Friso Groote (for his input and sometimes
 severe requirements) and to Merijn de Jonge and Jeroen Scheerder
 (for detecting quite a lot of intricate bugs).
+Alexander van den Bergh who did the porting to Windows/NT as part
+of his Master thesis project.
 Finally, we want to thank Pierre-Etienne Moreau for the fruitful
 discussions on this subject during his stay in Amsterdam.
 
