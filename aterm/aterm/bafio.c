@@ -593,7 +593,7 @@ static void build_arg_tables()
 					}
 				}
 				if (!get_top_symbol(arg, 
-						 sym_entries[cur_sym].id == AS_ANNOTATION)->nr_times_top++)
+						 sym_entries[cur_sym].id == AS_ANNOTATION ? ATtrue : ATfalse)->nr_times_top++)
 					total_top_symbols++;
 			}
 			tss = &cur_entry->top_symbols[cur_arg];

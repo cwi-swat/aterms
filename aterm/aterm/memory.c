@@ -243,7 +243,7 @@ void resize_hashtable()
 	/*}}}  */
 	
 	/*{{{  Clear 2nd half of new table, uses increment == 2*oldsize */
-	memset(hashtable+oldsize, 0, oldsize);
+	memset(hashtable+oldsize, 0, oldsize*sizeof(ATerm));
 	/*}}}  */
 	
 	/*{{{  Rehash all old elements */

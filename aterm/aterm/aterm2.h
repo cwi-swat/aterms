@@ -210,5 +210,6 @@ void    ATunprotectAFun(AFun sym);
 ATerm AT_getAnnotations(ATerm t);
 ATerm AT_setAnnotations(ATerm t, ATerm annos);
 ATerm AT_removeAnnotations(ATerm t);
+ATerm ATremoveAllAnnotations(ATerm t);
 
 #endif

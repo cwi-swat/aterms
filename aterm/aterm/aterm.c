@@ -91,7 +91,7 @@ static ATerm    sparse_term(int *c, char **s);
 	*/
 
 void
-AT_cleanup()
+AT_cleanup(void)
 {
     AT_cleanupGC();
     AT_cleanupMemory();
@@ -2521,6 +2521,48 @@ ATbool AT_isEqual(ATerm t1, ATerm t2)
 }
 
 /*}}}  */
-
 #endif
+
+/*{{{  ATerm ATremoveAllAnnotations(ATerm t) */
+
+ATerm ATremoveAllAnnotations(ATerm t)
+{
+	switch(ATgetType(t)) {
+		case AT_INT:
+		case AT_REAL:
+		case AT_BLOB:
+			return AT_removeAnnotations(t);
+
+		case AT_LIST:
+			{
+				if(ATisEmpty((ATermList)t)) {
+					return AT_removeAnnotations(t);
+				} else {
+					ATermList l = (ATermList)t;
+					return (ATerm)ATinsert((ATermList)ATremoveAllAnnotations((ATerm)ATgetNext(l)),
+																 ATremoveAllAnnotations(ATgetFirst(l)));
+				}
+			}
+
+		case AT_APPL:
+			{
+				ATermAppl appl = (ATermAppl)t;
+				ATermList args = ATgetArguments(appl);
+				AFun fun = ATgetAFun(appl);
+				return (ATerm)ATmakeApplList(fun, (ATermList)ATremoveAllAnnotations((ATerm)args));
+			}
+
+		case AT_PLACEHOLDER:
+			{
+				ATermPlaceholder ph = (ATermPlaceholder)t;
+				return (ATerm)ATmakePlaceholder(ATremoveAllAnnotations(ATgetPlaceholder(ph)));
+			}
+
+		default:
+			ATerror("illegal term type: %d\n", ATgetType(t));
+			return NULL;
+	}
+}
+
+/*}}}  */
 
