@@ -1,0 +1,33 @@
+equations
+  [equ-get-type-int]  get-type($Int) = #int
+  [equ-get-type-list] get-type([$ATerm*]) = #list
+  [equ-get-type-int] get-type(<$ATerm>) = #placeholder
+  [default-equ-get-type] get-type($ATerm) = #appl
+
+  [equ-capitalize-a] capitalize( afun("a" $Char*) ) =  afun("A" $Char*)
+  [equ-capitalize-b] capitalize( afun("b" $Char*) ) =  afun("B" $Char*)
+  [equ-capitalize-c] capitalize( afun("c" $Char*) ) =  afun("C" $Char*)
+  [equ-capitalize-d] capitalize( afun("d" $Char*) ) =  afun("D" $Char*)
+  [equ-capitalize-e] capitalize( afun("e" $Char*) ) =  afun("E" $Char*)
+  [equ-capitalize-f] capitalize( afun("f" $Char*) ) =  afun("F" $Char*)
+  [equ-capitalize-g] capitalize( afun("g" $Char*) ) =  afun("G" $Char*)
+  [equ-capitalize-h] capitalize( afun("h" $Char*) ) =  afun("H" $Char*)
+  [equ-capitalize-i] capitalize( afun("i" $Char*) ) =  afun("I" $Char*)
+  [equ-capitalize-j] capitalize( afun("j" $Char*) ) =  afun("J" $Char*)
+  [equ-capitalize-k] capitalize( afun("k" $Char*) ) =  afun("K" $Char*)
+  [equ-capitalize-l] capitalize( afun("l" $Char*) ) =  afun("L" $Char*)
+  [equ-capitalize-m] capitalize( afun("m" $Char*) ) =  afun("M" $Char*)
+  [equ-capitalize-n] capitalize( afun("n" $Char*) ) =  afun("N" $Char*)
+  [equ-capitalize-o] capitalize( afun("o" $Char*) ) =  afun("O" $Char*)
+  [equ-capitalize-p] capitalize( afun("p" $Char*) ) =  afun("P" $Char*)
+  [equ-capitalize-q] capitalize( afun("q" $Char*) ) =  afun("Q" $Char*)
+  [equ-capitalize-r] capitalize( afun("r" $Char*) ) =  afun("R" $Char*)
+  [equ-capitalize-s] capitalize( afun("s" $Char*) ) =  afun("S" $Char*)
+  [equ-capitalize-t] capitalize( afun("t" $Char*) ) =  afun("T" $Char*)
+  [equ-capitalize-u] capitalize( afun("u" $Char*) ) =  afun("U" $Char*)
+  [equ-capitalize-v] capitalize( afun("v" $Char*) ) =  afun("V" $Char*)
+  [equ-capitalize-w] capitalize( afun("w" $Char*) ) =  afun("W" $Char*)
+  [equ-capitalize-x] capitalize( afun("x" $Char*) ) =  afun("X" $Char*)
+  [equ-capitalize-y] capitalize( afun("y" $Char*) ) =  afun("Y" $Char*)
+  [equ-capitalize-z] capitalize( afun("z" $Char*) ) =  afun("Z" $Char*)
+  [default-capitalize] capitalize( $AFun ) =  $AFun

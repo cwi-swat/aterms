@@ -1,0 +1,24 @@
+module ATerm-Utils
+  imports ATerm
+
+  exports
+    sorts ATermType
+      
+    context-free syntax
+      get-type ( ATerm )				-> ATermType
+      "#int"						-> ATermType
+      "#list"						-> ATermType
+      "#appl"						-> ATermType
+      "#placeholder"					-> ATermType
+      capitalize ( AFun )				-> AFun
+
+      capitalize					-> AFun {reject}
+
+  hiddens
+    variables
+      "$Char*"		-> CHAR*
+      "$AFun"		-> AFun
+      "$Int"		-> IntCon
+      "$ATerm"		-> ATerm
+      "$ATerm*"		-> { ATerm "," }*
+

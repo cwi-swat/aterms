@@ -1,0 +1,150 @@
+equations
+
+[equ-generate-api]
+  generate-api($APISpec) = merge-types(gen-api($APISpec))
+
+[equ-gen-api-empty] 
+  gen-api([]) = api [ ]
+
+[equ-gen-api-divide] 
+  gen-api([ $Entry* ]) = api [ $Type* ]
+  ============================================================ 
+  gen-api([ $Entry, $Entry*]) = api [ gen-type($Entry) $Type*]
+
+
+[equ-gen-type]
+  gen-fields($AltId, , $Pattern) = $Field*,
+  alt [ $AltId, $Pattern ] = $Alt
+  ===
+  gen-type([$TypeId,$AltId,$Pattern]) = type [ $TypeId, $Alt, $Field* ]
+
+[equ-gen-fields-afun]
+  gen-fields($AltId, $Path, $AFun) = 
+
+[equ-gen-fields-appl]
+  gen-fields($AltId, $Path, $AFun($Arg+)) = 
+	gen-fields-terms($AltId, $Path -> arg:zero, $Arg+)
+
+[equ-gen-fields-list]
+  gen-fields($AltId, $Path, [$Elem*]) = 
+	gen-fields-terms($AltId, $Path -> elem:zero, $Elem*)
+
+[equ-gen-fields-placeholder]
+  gen-fields($AltId, $Path, <$FieldId($FieldType)>) = 
+	field [ $FieldId, $FieldType, loc [ $AltId, $Path ] ]
+
+[equ-gen-fields-terms-divide]
+  gen-fields($AltId, $Path1, $Elem)  = $Field*1,
+  $Path2 = next-sibling($Path1),
+  gen-fields-terms($AltId, $Path2, $Elem*) = $Field*2,
+  $Field* = $Field*1 $Field*2
+  ===
+  gen-fields-terms($AltId, $Path1, $Elem,$Elem*) = $Field*
+
+[equ-gen-fields-terms-empty]
+  gen-fields-terms($AltId, $Path, ) =
+
+[equ-merge-types-empty]
+  merge-types(api [ ]) = api [ ]
+
+[equ-merge-types-divide]
+  $CurType = type [ $CurTypeId, $CurAlt+, $CurField* ],
+  collect-types($CurTypeId, $TodoType*) = $CollectedType*,
+  join-type($CurType $CollectedType*) = $JoinedType,
+  remove-type($CurTypeId, $TodoType*)  = $RemainingType*,
+  merge-types(api [ $RemainingType* ]) = api [ $MergedType* ]
+  ===
+  merge-types(api [ $CurType $TodoType* ]) = api [ $JoinedType $MergedType* ]
+
+[equ-collect-types-empty]
+  collect-types($CurTypeId, ) = 
+
+[equ-collect-types-pos]
+  $CurType = type [ $CurTypeId, $CurAlt+, $CurField*],
+  collect-types($CurTypeId, $TodoType*) = $CollectedType*
+  ===
+  collect-types($CurTypeId, $CurType $TodoType*) = $CurType $CollectedType*
+
+[equ-collect-types-neg]
+  $CurType = type [ $TypeId, $CurAlt+, $CurField*],
+  $CurTypeId != $TypeId,
+  collect-types($CurTypeId, $TodoType*) = $CollectedType*
+  ===
+  collect-types($CurTypeId, $CurType $TodoType*) = $CollectedType*
+
+[equ-remove-type-empty]
+  remove-type($CurTypeId, ) =
+
+[equ-remove-type-pos]
+  $CurType = type [ $CurTypeId, $CurAlt+, $CurField*],
+  remove-type($CurTypeId, $TodoType*) = $RemainingType*
+  ===
+  remove-type($CurTypeId, $CurType $TodoType*) = $RemainingType*
+
+[equ-remove-type-neg]
+  $CurType = type [ $TypeId, $CurAlt+, $CurField*],
+  $CurTypeId != $TypeId,
+  remove-type($CurTypeId, $TodoType*) = $RemainingType*
+  ===
+  remove-type($CurTypeId, $CurType $TodoType*) = $CurType $RemainingType*
+
+[equ-join-type-empty]
+  join-type($CurType) = $CurType
+
+[equ-join-type-divide]
+  $CurType = type [ $CurTypeId, $CurAlt+, $CurField* ],
+  join-type($TodoType+) = type [ $CurTypeId, $Alt+, $Field* ],
+  $MergedField* = merge-fields($CurField*, $Field*)
+  ===
+  join-type($CurType $TodoType+) = type [ $CurTypeId, $CurAlt+ $Alt+, $MergedField* ]
+
+[equ-merge-fields-empty]
+  merge-fields( , $Field*) = $Field*
+
+[equ-merge-fields-pos]
+  $CurField   = field [ $FieldId, $AltId, $Loc ],
+  $MergedField* = $Field*1 $MergedField $Field*2,
+  $MergedField = field [ $FieldId, $AltId, $Loc+ ],
+  $NewField = field [ $FieldId, $AltId, $Loc $Loc+ ]
+  ===
+  merge-fields($CurField $Field*, $MergedField*) = 
+	merge-fields($Field*, $Field*1 $NewField $Field*2)
+
+[default-merge-fields-neg]
+  merge-fields($CurField $Field*, $MergedField*) = 
+	merge-fields($Field*, $CurField $MergedField*)
+
+[equ-get-fields-for-alt-empty]
+  get-fields-for-alt($AltId, ) =
+
+[equ-get-fields-for-alt-pos]
+  get-fields-for-alt($AltId, $Field*1) = $Field*2 
+  ===
+  get-fields-for-alt($AltId, field [ $FieldId, $FieldType, 
+	$Loc*1 loc [ $AltId, $Path ] $Loc*2] $Field*1) =
+		field [ $FieldId, $FieldType, 
+		loc [ $AltId, $Path ] ] $Field*2
+
+[default-get-fields-for-alt-neg]
+  get-fields-for-alt($AltId, $Field $Field*) =
+	get-fields-for-alt($AltId, $Field*)
+
+[equ-sort-fields-pos]
+  first-field($Field1, $Field2) = $Field2
+  ===
+  sort-fields($Field*1 $Field1 $Field*2 $Field2 $Field*3) =
+	sort-fields($Field*1 $Field2 $Field*2 $Field1 $Field*3)
+
+[default-sort-fields-neg]
+  sort-fields($Field*) = $Field*
+
+[equ-first-field-first]
+  $Field1 = field [ $FieldId1, $FieldType1, loc [ $AltId1, $Path1 ] ],
+  $Field2 = field [ $FieldId2, $FieldType2, loc [ $AltId2, $Path2 ] ],
+  first-path($Path1, $Path2) = $Path1
+  ===
+  first-field($Field1, $Field2) = $Field1
+
+[default-first-field-second]
+  first-field($Field1, $Field2) = $Field2
+

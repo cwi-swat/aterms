@@ -1,0 +1,22 @@
+module ATerm-Path
+
+imports ATerm Naturals
+exports
+  sorts ATerm-Path ATerm-Path-Node
+ 
+  context-free syntax
+   "arg" ":" Nat			-> ATerm-Path-Node
+   "elem" ":" Nat			-> ATerm-Path-Node
+   { ATerm-Path-Node "->" }*		-> ATerm-Path
+
+   "succ" "(" ATerm-Path-Node ")"	-> ATerm-Path-Node
+   "next-sibling" "(" ATerm-Path ")"	-> ATerm-Path
+
+   "first-path" "(" ATerm-Path "," ATerm-Path ")"		-> ATerm-Path
+   "first-node" "(" ATerm-Path-Node "," ATerm-Path-Node ")"	-> ATerm-Path-Node
+hiddens
+  variables
+    "$Nat"[0-9]*	-> Nat
+    "$Node"[0-9]*	-> ATerm-Path-Node
+    "$Path"[0-9]*	-> { ATerm-Path-Node "->" }*
+

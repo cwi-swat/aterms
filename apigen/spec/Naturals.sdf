@@ -1,0 +1,19 @@
+module Naturals
+
+exports
+  sorts Nat
+
+  context-free syntax
+    "zero"		-> Nat		{ constructor }
+    "succ" "(" Nat ")"	-> Nat		{ constructor }
+
+    "lowest" "(" Nat "," Nat ")" -> Nat
+
+hiddens
+  lexical syntax
+   [\ \n\t]		-> LAYOUT
+  context-free restrictions
+    LAYOUT? -/- [\ \n\t]
+
+  variables
+    "Nat"[0-9]*		-> Nat

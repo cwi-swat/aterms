@@ -1,0 +1,10 @@
+equations
+
+[equ-succ-node-arg]
+  succ(arg:$Nat) = $Path -> arg:succ($Nat)
+
+[equ-succ-node-elem]
+  succ(elem:$Nat) = $Path -> elem:succ($Nat)
+
+[equ-next-sibling]
+  next-sibling($Path -> $Node) = $Path -> succ($Node)

@@ -1,0 +1,88 @@
+module Gen-C-API
+
+  imports C-Syntax Gen-API
+
+  exports
+    sorts C-API NEWLINE
+
+    context-free syntax
+      "gen-c-api" "(" API ")"				-> C-API
+      "[" C-FILE "$$" C-FILE "]"			-> C-API
+
+  hiddens
+
+    context-free syntax
+      gen-header(API)					-> C-FILE
+      gen-typedefs(API)					-> C-CONSTRUCTS
+      gen-typedef(API-Type)				-> C-CONSTRUCT
+      gen-fun-decls(API)				-> C-CONSTRUCTS
+      gen-constructor-decl(AFun, AFun, API-Field*)	-> C-FUNCTION-DECL
+      gen-constructor-decls(API-Type)			-> C-CONSTRUCTS
+      gen-access-decls(API-Type)			-> C-CONSTRUCTS
+      gen-access-impls(API-Type)			-> C-CONSTRUCTS
+
+      gen-source(API)					-> C-FILE
+      gen-struct-decls(API)				-> C-CONSTRUCTS
+      gen-struct-decl(API-Type)				-> C-CONSTRUCT
+      gen-pattern-defs(API)				-> C-CONSTRUCTS
+      gen-pattern-def(API-Type)				-> C-CONSTRUCT
+
+      gen-fun-impls(API)				-> C-CONSTRUCTS
+      gen-constructor-impl(AFun, AFun, API-Field*)	-> C-CONSTRUCT
+      gen-constructor-impls(API-Type)			-> C-CONSTRUCTS
+      gen-constructor-body(AFun, AFun, API-Field*)	-> C-SERIES
+      gen-getter-impl ( AFun, API-Field )		-> C-CONSTRUCT
+      gen-getter-body ( AFun, AFun, API-Location* )	-> C-SERIES
+
+      build-select-expr ( ATerm-Path , C-EXPR )		-> C-EXPR
+      build-getter-decl ( AFun, AFun , AFun )		-> C-FUNCTION-DECL
+      build-setter-decl ( AFun, AFun , AFun )		-> C-FUNCTION-DECL
+      build-formal-args-list ( API-Field* )		-> C-VARIABLE-DECLS
+      build-actual-args-list ( API-Field* )		-> C-ACTUALS
+      build-typedef ( AFun )				-> C-CONSTRUCT
+      build-c-id-tail ( AFun+ )                        	-> C-ID
+      build-c-id ( AFun+ )                        	-> C-ID
+      build-c-int ( Nat )				-> C-NAT-CON
+
+    variables
+      "$Alt"			-> API-Alt
+      "$Alt+"			-> API-Alt+
+      "$AltId"			-> AFun
+      "$AltField*"		-> API-Field*
+      "$API"			-> API
+      "$Field"			-> API-Field
+      "$Field*"			-> API-Field*
+      "$FieldId"		-> AFun
+      "$FieldType"		-> AFun
+      "$FunDecl"[0-9]*		-> C-FUNCTION-DECL
+      "$FunDeclList"[0-9]*	-> C-CONSTRUCT*
+      "$FunImpl"		-> C-CONSTRUCT
+      "$FunImplList"[0-9]*	-> C-CONSTRUCT*
+      "$Loc"			-> API-Location
+      "$Loc*"[0-9]*		-> API-Location*
+      "$Loc+"			-> API-Location+
+      "$Pattern"		-> ATerm
+      "$SortedField*"		-> API-Field*
+      "$Type"			-> API-Type
+      "$Type*"			-> API-Type*
+      "$TypeId"			-> AFun
+
+      "$Typedef"		-> C-CONSTRUCT
+      "$Typedef*"[0-9]*		-> C-CONSTRUCT*
+      "$FunBody"		-> C-SERIES
+      "$VarDef"			-> C-CONSTRUCT
+      "$VarDef*"		-> C-CONSTRUCT*
+      "$FormalArg"		-> C-VARIABLE-DECL
+      "$FormalArg*"		-> { C-VARIABLE-DECL "," }*
+      "$ActualArg"		-> C-ID
+      "$ActualArg*"		-> { C-EXPR "," }*
+      "$SelectExpr"[0-9]*	-> C-EXPR
+      "$Stat"			-> C-STAT
+
+      "$AFun"			-> AFun
+      "$AFun+"			-> AFun+
+      "$Path"			-> { ATerm-Path-Node "->" }*
+      "$Index"			-> Nat
+      "$Nat"			-> Nat
+
+      "$Char*"[0-9]* 		-> CHAR*

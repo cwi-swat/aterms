@@ -1,0 +1,7 @@
+module C-Utils
+
+  imports C-Syntax ATerm-Syntax
+
+  exports
+    context-free syntax
+      "build-c-id" "(" AFun+ ")"                        -> C-ID

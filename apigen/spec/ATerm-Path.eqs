@@ -1,0 +1,30 @@
+equations
+
+[equ-succ-node-arg]
+  succ(arg:$Nat) = arg:succ($Nat)
+
+[equ-succ-node-elem]
+  succ(elem:$Nat) = elem:succ($Nat)
+
+[equ-next-sibling]
+  next-sibling($Path -> $Node) = $Path -> succ($Node)
+
+[equ-first-path-equal]
+  first-path($Node -> $Path1, $Node -> $Path2) = first-path($Path1, $Path2)
+
+[default-first-path-unequal-first]
+  first-node($Node1, $Node2) = $Node1
+  ===
+  first-path($Node1 -> $Path1, $Node2 -> $Path2) = $Node1 -> $Path1
+
+[default-first-path-unequal-second]
+  first-node($Node1, $Node2) != $Node1
+  ===
+  first-path($Node1 -> $Path1, $Node2 -> $Path2) = $Node2 -> $Path2
+
+[first-node-arg]
+  first-node(arg:$Nat1, arg:$Nat2) = arg:lowest($Nat1,$Nat2)
+
+[first-node-elem]
+  first-node(elem:$Nat1, elem:$Nat2) = elem:lowest($Nat1,$Nat2)
+

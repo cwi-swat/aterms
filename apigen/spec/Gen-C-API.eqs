@@ -1,0 +1,239 @@
+equations
+
+[equ-gen-c-api]
+  gen-c-api($API) = [ gen-header($API) $$ gen-source($API) ]
+
+[equ-gen-header]
+  gen-typedefs($API) = $Typedef*,
+  gen-fun-decls($API) = $FunDeclList
+  ===
+  gen-header($API) = $Typedef* $FunDeclList
+
+[equ-gen-typedefs-empty]
+  gen-typedefs(api [ ]) =
+
+[equ-gen-typedefs-divide]
+  gen-typedef($Type)  = $Typedef,
+  gen-typedefs(api [ $Type* ]) = $Typedef*
+  ===
+  gen-typedefs(api [ $Type $Type* ]) = $Typedef $Typedef*
+
+[equ-gen-typedef]
+  gen-typedef(type [ $TypeId, $Alt+, $Field* ]) = build-typedef($TypeId)
+
+[equ-gen-fun-decls-empty]
+  gen-fun-decls(api [ ]) =
+
+[equ-gen-fun-decls-divide]
+  gen-constructor-decls($Type) = $FunDeclList1,
+  gen-access-decls($Type) = $FunDeclList2,
+  gen-fun-decls(api [ $Type* ]) = $FunDeclList3
+  ===
+  gen-fun-decls(api [ $Type $Type* ]) = $FunDeclList1 $FunDeclList2 $FunDeclList3
+
+[equ-gen-constructor-decls-single]
+  gen-constructor-decls(type [ $TypeId, alt [ $AltId, $Pattern ], $Field* ]) = 
+	extern gen-constructor-decl($TypeId, $AltId, $Field*);
+
+[equ-gen-constructor-decls-divide]
+  gen-constructor-decls(type [ $TypeId, $Alt, $Field* ]) = $FunDeclList1,
+  gen-constructor-decls(type [ $TypeId, $Alt+, $Field*]) = $FunDeclList2
+  ===
+  gen-constructor-decls(type [ $TypeId, $Alt $Alt+, $Field* ]) = $FunDeclList1 $FunDeclList2
+
+[equ-gen-constructor-decl]
+  get-fields-for-alt($AltId, $Field*) = $AltField*,
+  sort-fields($AltField*) = $SortedField*,
+  build-formal-args-list($SortedField*) = $FormalArg*
+  ===
+  gen-constructor-decl($TypeId, $AltId, $Field*) = 
+	build-c-id($TypeId) build-c-id(make $TypeId $AltId) ( $FormalArg* )
+
+[equ-gen-access-decls-empty]
+  gen-access-decls(type [ $TypeId, $Alt+, ]) =
+
+[equ-gen-access-decls-divide]
+  $Field = field [ $FieldId, $FieldType, $Loc+ ],
+  build-getter-decl($TypeId, $FieldType, $FieldId) = $FunDecl1,
+  build-setter-decl($TypeId, $FieldType, $FieldId) = $FunDecl2,
+  gen-access-decls(type [ $TypeId, $Alt+, $Field* ]) = $FunDeclList1,
+  extern $FunDecl1; extern $FunDecl2; $FunDeclList1 = $FunDeclList2
+  ===
+  gen-access-decls(type [ $TypeId, $Alt+, $Field $Field* ]) = $FunDeclList2
+
+[equ-gen-source]
+   gen-struct-decls($API) = $Typedef*1,
+   gen-pattern-defs($API) = $Typedef*2,
+   gen-fun-impls($API)    = $FunImplList
+   ===
+   gen-source($API) = $Typedef*1 $Typedef*2 $FunImplList
+
+[equ-gen-struct-decls-empty]
+  gen-struct-decls(api [ ]) =
+
+[equ-gen-struct-decls-divide]
+  gen-struct-decl($Type) = $Typedef,
+  gen-struct-decls(api [ $Type* ]) = $Typedef*
+  ===
+  gen-struct-decls(api [ $Type $Type* ]) = $Typedef $Typedef*
+
+[equ-gen-struct-decl]
+  gen-struct-decl(type [ $TypeId, $Alt+, $Field* ]) = 
+	typedef struct ATerm build-c-id(_ $TypeId);
+
+[equ-gen-pattern-defs-empty]
+  gen-pattern-defs(api [ ]) =
+
+[equ-gen-pattern-defs-divide]
+  gen-pattern-def($Type) = $VarDef,
+  gen-pattern-defs(api [ $Type* ]) = $VarDef*
+  ===
+  gen-pattern-defs(api [ $Type $Type* ]) = $VarDef $VarDef*
+
+[equ-gen-pattern-def]
+  gen-pattern-def(type [ $TypeId, $Alt+, $Field* ]) =
+	ATerm build-c-id(pattern $TypeId) = NULL;
+
+[equ-gen-fun-impls-empty]
+  gen-fun-impls(api [ ]) =
+
+[equ-gen-fun-impls-divide]
+  gen-constructor-impls($Type) = $FunImplList1,
+  gen-access-impls($Type) = $FunImplList2,
+  gen-fun-impls(api [ $Type* ]) = $FunImplList3
+  ===
+  gen-fun-impls(api [ $Type $Type* ]) = $FunImplList1 $FunImplList2 $FunImplList3
+
+[equ-gen-constructor-impls-single]
+  gen-constructor-impls(type [ $TypeId, alt [ $AltId, $Pattern ], $Field* ]) = 
+	gen-constructor-impl($TypeId, $AltId, $Field*)
+
+[equ-gen-constructor-impls-divide]
+  gen-constructor-impls(type [ $TypeId, $Alt, $Field* ]) = $FunImplList1,
+  gen-constructor-impls(type [ $TypeId, $Alt+, $Field* ]) = $FunImplList2
+  ===
+  gen-constructor-impls(type [ $TypeId, $Alt $Alt+, $Field* ]) = $FunImplList1 $FunImplList2
+
+
+[equ-gen-constructor-impl]
+  gen-constructor-decl($TypeId, $AltId, $Field*) = $FunDecl,
+  gen-constructor-body($TypeId, $AltId, $Field*) = $FunBody
+  ===
+  gen-constructor-impl($TypeId, $AltId, $Field*) = $FunDecl { $FunBody }
+
+[equ-gen-constructor-body]
+  get-fields-for-alt($AltId, $Field*) = $AltField*,
+  sort-fields($AltField*) = $SortedField*,  
+  build-actual-args-list($SortedField*) = $ActualArg*
+  ===
+  gen-constructor-body($TypeId, $AltId, $Field*) = 
+	return (build-c-id($TypeId))ATmakeTerm($ActualArg*);
+
+[equ-gen-access-impls-empty]
+  gen-access-impls(type [ $TypeId, $Alt+, ]) =
+
+[equ-gen-access-impls-divide]
+  gen-getter-impl($TypeId, $Field) = $FunImpl,
+  gen-access-impls(type [ $TypeId, $Alt+, $Field* ]) = $FunImplList
+  ===
+  gen-access-impls(type [ $TypeId, $Alt+, $Field $Field* ]) = $FunImpl $FunImplList
+
+[equ-gen-getter-impl]
+  build-getter-decl($TypeId, $FieldType, $FieldId) = $FunDecl,
+  gen-getter-body($TypeId, $FieldType, $Loc+) = $FunBody
+  ===
+  gen-getter-impl($TypeId, field [$FieldId, $FieldType, $Loc+]) = $FunDecl { $FunBody }
+
+[equ-gen-getter-body-empty]
+  gen-getter-body($TypeId, $FieldType, ) = 
+	{ 
+	  ATabort("malformed term: %t\n", arg);
+	  return NULL;
+	}
+
+[equ-gen-getter-body-divide]
+  $Loc = loc [ $AltId, $Path ],
+  $SelectExpr = build-select-expr($Path, build-c-id(arg)),
+  $Stat = gen-getter-body($TypeId, $FieldType, $Loc*)
+  ===
+  gen-getter-body($TypeId, $FieldType, $Loc $Loc*) = 
+	if (build-c-id(is $TypeId $AltId)(arg)) {
+	  return (build-c-id($FieldType))$SelectExpr; 
+        } else $Stat
+
+
+
+[equ-build-select-expr-empty]
+  build-select-expr( , $SelectExpr) = $SelectExpr
+
+[equ-build-select-expr-elem]
+  $SelectExpr2 = ATelementAt((ATermList)$SelectExpr1, build-c-int($Index))
+  ===
+  build-select-expr(elem:$Index -> $Path, $SelectExpr1) = 
+	build-select-expr($Path, $SelectExpr2)
+
+[equ-build-select-expr-arg]
+  $SelectExpr2 = ATgetArgument((ATermAppl)$SelectExpr1, build-c-int($Index))
+  ===
+  build-select-expr(arg:$Index -> $Path, $SelectExpr1) = 
+	build-select-expr($Path, $SelectExpr2)
+
+[equ-build-getter-decl]
+  build-getter-decl($TypeId, $FieldType, $FieldId) =
+    build-c-id($FieldType) build-c-id(get $FieldId) ( build-c-id($TypeId) arg )
+
+[equ-build-setter-decl]
+  build-setter-decl($TypeId, $FieldType, $FieldId) =
+    build-c-id($TypeId) 
+    build-c-id(set $FieldId) ( build-c-id($TypeId) arg, 
+                               build-c-id($FieldType) build-c-id($FieldId) )
+
+[equ-build-formal-args-list-empty]
+  build-formal-args-list( ) =
+
+[equ-build-formal-args-list-divide]
+  build-c-id($FieldType) build-c-id($FieldId) = $FormalArg,
+  build-formal-args-list($Field*) = $FormalArg*
+  ===
+  build-formal-args-list(field [ $FieldId, $FieldType, $Loc+ ] $Field*) = 
+	$FormalArg, $FormalArg*
+
+[equ-build-actual-args-list-empty]
+  build-actual-args-list( ) =
+
+[equ-build-actual-args-list-divide]
+  build-c-id($FieldId) = $ActualArg,
+  build-actual-args-list($Field*) = $ActualArg*
+  ===
+  build-actual-args-list(field [ $FieldId, $FieldType, $Loc+ ] $Field*) = 
+	$ActualArg, $ActualArg*
+
+[equ-build-typedef]
+  build-typedef($TypeId) =
+        typedef struct build-c-id(_ $TypeId) * build-c-id($TypeId);
+
+[equ-build-c-id-single]
+  capitalize($AFun) = afun($Char*)
+  ===
+  build-c-id-tail ( $AFun ) = c-id($Char*)
+
+[equ-build-c-id-divide]
+  build-c-id-tail ( $AFun ) = c-id($Char*1),
+  build-c-id-tail ( $AFun+) = c-id($Char*2)
+  =================================================
+  build-c-id-tail ( $AFun $AFun+ ) = c-id($Char*1 $Char*2)
+
+[equ-build-c-id-multi]
+  build-c-id-tail ( $AFun+ ) = c-id($Char*2)
+  ===
+  build-c-id ( afun($Char*1) $AFun+ ) = c-id($Char*1 $Char*2)
+
+[equ-build-c-id-single]
+  build-c-id(afun($Char*)) = c-id($Char*)
+
+[equ-build-c-int-zero] 
+  build-c-int(zero) = 0
+
+[equ-build-c-int-succ]
+  build-c-int(succ($Nat)) = succ(build-c-int($Nat))
+

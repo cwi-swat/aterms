@@ -1,0 +1,5 @@
+gen-c-api(
+api [ type [ Player , alt [ Paladin , paladin ( < move ( Int ) > ,
+< strength ( Int ) > ) ] alt [ Mage , mage ( < move ( Int ) > ,
+< mana ( Int ) > ) ] , field [ strength , Int , loc [ Paladin , arg : succ ( zero ) ] ] field [ move , Int , loc [ Paladin , arg : zero ] loc [ Mage , arg : zero ] ] field [ mana , Int , loc [ Mage , arg : succ ( zero ) ] ] ] ]
+)
