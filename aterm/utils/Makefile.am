@@ -6,7 +6,7 @@
 include ../make_rules
 
 CFLAGS			= -Wall -g -O2
-EXTRA_DIST		= $(bin_SCRIPTS) trm2taf.src
+EXTRA_DIST		= $(bin_SCRIPTS)
 
 INCLUDES		= -I$(top_srcdir)/aterm
 
