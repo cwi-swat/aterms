@@ -1,10 +1,10 @@
-
 /**
   * Basic ATerm support.
   */
 
 #include "aterm2.h"
 #include "memory.h"
+#include "symbol.h"
 
 #include <assert.h>
 
@@ -22,11 +22,13 @@ void ATinit(int argc, char *argv[],
 {
   /* Check for reasonably sized ATerm (32 bits, 4 bytes)     */
   /* This check might break on perfectly valid architectures */
-  /* that have char == 2 bytes, and sizeof(ATerm) == 2       */
-  assert(sizeof(ATerm) == 4);
+  /* that have char == 2 bytes, and sizeof(header_type) == 2 */
+  assert(sizeof(header_type) == sizeof(ATerm *));
+  assert(sizeof(header_type) >= 4);
 
   error_handler = error;
   AT_initMemory(argc, argv);
+  AT_initSymbol(argc, argv);
 /*  ATinitGC(argc, argv, bottomOfStack);
 */
 }

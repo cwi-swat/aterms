@@ -9,8 +9,8 @@ LFLAGS		= -g
 AR		= ar
 
 ATERMLIBS	= libATerm.a
-ATERMSRCS	= basic.c memory.c
-ATERMOBJS	= basic.o memory.o
+ATERMSRCS	= basic.c memory.c symbol.c
+ATERMOBJS	= basic.o memory.o symbol.o
 
 all: $(ATERMLIBS)
 
@@ -21,6 +21,12 @@ libATerm.a: $(ATERMOBJS)
 
 clean:
 	rm -f $(ATERMLIBS) $(ATERMOBJS) *.o *~ core
+
+tag:
+	ctags -t *.[ch]
+
+depend:
+	$(CC) -MM $(CFLAGS) $(DEFS) $(INCLUDES) $(ATERMSRCS) > .depend
 
 .depend:
 	$(CC) -MM $(CFLAGS) $(DEFS) $(INCLUDES) $(ATERMSRCS) > .depend

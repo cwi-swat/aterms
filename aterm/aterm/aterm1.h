@@ -13,20 +13,22 @@
 
 #define AT_INT          0
 #define AT_REAL         1
-#define AT_APPL         4
-#define AT_TERMS        2
+#define AT_APPL         2
 #define AT_LIST         3
-#define AT_PLACEHOLDER  5
-#define AT_BLOB         6
+#define AT_PLACEHOLDER  4
+#define AT_BLOB         5
 
-/* This assumes 32 bit ints */
-typedef unsigned int ATerm;
+typedef struct ATerm
+{
+	header_type   header;
+	struct ATerm *next;
+} ATerm;
 
 /** The following functions implement the operations of
   * the 'standard' ATerm interface, and should appear
   * in some form in every implementation of the ATerm
   * datatype.
-  * The prefix T is used to make these functions
+  * The prefix AT is used to make these functions
   * relatively unique.
   */
 

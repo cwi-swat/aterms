@@ -13,19 +13,54 @@
   */
 
 #include "aterm1.h"
-#include "asymbol.h"
 #include "abool.h"
 
 /**
   * We define some new datatypes.
   */
+typedef struct Symbol Symbol;
 
-typedef ATerm ATermInt;
-typedef ATerm ATermReal;
-typedef ATerm ATermAppl;
-typedef ATerm ATermList;
-typedef ATerm ATermPlaceholder;
-typedef ATerm ATermBlob;
+typedef struct
+{
+	header_type   header;
+	struct ATerm *next;
+	int           value;
+} ATermInt;
+
+typedef struct
+{
+	header_type   header;
+	struct ATerm *next;
+	double        value;
+} ATermReal;
+
+typedef struct
+{
+	header_type   header;
+	struct ATerm *next;
+} ATermAppl;
+
+typedef struct ATermList
+{
+	header_type       header;
+	struct ATerm     *next;
+	struct ATerm     *head;
+	struct ATermList *tail;
+} ATermList;
+
+typedef struct
+{
+	header_type   header;
+	struct ATerm *next;
+	struct ATerm *ph_type;
+} ATermPlaceholder;
+
+typedef struct
+{
+	header_type   header;
+	struct ATerm *next;
+	void         *data;
+} ATermBlob;
 
 /** The following functions implement the operations of
   * the 'standard' ATerm interface, and should appear
@@ -90,5 +125,17 @@ void   *ATgetBlobData(ATermBlob *blob);
 int     ATgetBlobSize(ATermBlob *blob);
 int     ATgetBlobFlags(ATermBlob *blob);
 void    ATsetBlobDestructor(void (*destructor)(ATermBlob *));
+
+/* The Symbol type */
+Symbol *ATmakeSymbol(char *name, int arity, ATbool quoted);
+
+/* char   *ATgetName(Symbol *sym); */
+#define	ATgetName(sym)	((sym)->name)
+
+/* int     ATgetArity(Symbol *sym); */
+#define ATgetArity(sym)	((sym)->arity)
+
+/* ATbool  ATisQuoted(Symbol *sym); */
+#define	ATisQuoted(sym)	(IS_QUOTED((sym)->header))
 
 #endif
