@@ -21,7 +21,7 @@ do
   shift
 done
 
-if [ "a${JARGEN}" = "atrue" ]; then
+if [ "a${JAR}" = "atrue" ]; then
 	PARAMS=apigen.env
 	. ${PARAMS}
 
