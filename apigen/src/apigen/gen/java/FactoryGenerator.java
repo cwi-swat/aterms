@@ -717,7 +717,7 @@ public class FactoryGenerator extends JavaGenerator {
         String methodName,
         String protoName) {
         println(
-            "  protected "
+            "  public "
                 + returnTypeName
                 + ' '
                 + methodName
@@ -851,7 +851,7 @@ public class FactoryGenerator extends JavaGenerator {
         }
 
         println(
-            "  protected "
+            "  public "
                 + returnTypeName
                 + ' '
                 + methodName
@@ -1272,12 +1272,15 @@ public class FactoryGenerator extends JavaGenerator {
         String protoName = protoListVariable(type);
         String emptyName = emptyListVariable(type);
         String emptyHashCode = buildInitialEmptyListHashcode(listTypeCount).toString();
+        String pureEmptyName = "factory.getEmpty()";
         println(
             "    "
                 + protoName
                 + ".init("
                 + emptyHashCode
-                + ", null, null, "
+                + ", "
+                + "null"
+                + ", null, "
                 + buildAmountOfSeparatorsNullExpressions(type)
                 + "null);");
         println(
@@ -1294,7 +1297,7 @@ public class FactoryGenerator extends JavaGenerator {
                 + ".init("
                 + emptyHashCode
                 + ", "
-                + emptyName
+                + pureEmptyName
                 + ", null, "
                 + buildAmountOfSeparatorsNullExpressions(type)
                 + "null);");
@@ -1316,7 +1319,8 @@ public class FactoryGenerator extends JavaGenerator {
         String protoName = protoListVariable(type);
         String emptyName = emptyListVariable(type);
         String emptyHashCode = buildInitialEmptyListHashcode(listTypeCount).toString();
-        println("    " + protoName + ".init(" + emptyHashCode + ", null, null, null);");
+        String pureEmptyName = "factory.getEmpty()";
+        println("    " + protoName + ".init(" + emptyHashCode + ", " + "null" + ", null, null);");
         println(
             "    "
                 + emptyName
@@ -1331,7 +1335,7 @@ public class FactoryGenerator extends JavaGenerator {
                 + ".init("
                 + emptyHashCode
                 + ", "
-                + emptyName
+                + pureEmptyName
                 + ", null, null);");
     }
 

@@ -180,8 +180,16 @@ public class ListTypeGenerator extends TypeGenerator {
 
 	private void genOverrideInsertMethod() {
 		String head = getConverter().makeATermToBuiltinConversion(elementType, "head");
+		println("  public aterm.ATermList make(aterm.ATerm head, aterm.ATermList tail, aterm.ATermList annos) {");
+		println("    return " + buildFactoryGetter() + ".make" + typeName + "(head, tail, annos);");
+		println("  }");
+		println();
+		println("  public aterm.ATermList make(aterm.ATerm head, aterm.ATermList tail) {");
+		println("    return make(head, tail, " + buildFactoryGetter() + ".getPureFactory().getEmpty());");
+		println("  }");
+		println();
 		println("  public aterm.ATermList insert(aterm.ATerm head) {");
-		println("    return insert((" + elementTypeName + ") " + head + ");");
+		println("    return make(head, this);");
 		println("  }");
 		println();
 	}
@@ -290,7 +298,7 @@ public class ListTypeGenerator extends TypeGenerator {
 
 	private void genIsEmpty(String className) {
 		println("  public boolean isEmpty() {");
-		println("    return this == " + buildFactoryGetter() + ".make" + className + "();");
+		println("    return getFirst()==getEmpty().getFirst() && getNext()==getEmpty().getNext();");
 		println("  }");
 		println();
 	}

@@ -38,7 +38,7 @@ class JavaTomGenerationParameters extends JavaGenerationParameters {
 		return buf.toString();
 	}
 	
-	public boolean isJavaGen() {
+	public boolean isJavaGen() { 
 		return javaGenStuff;
 	}
 	

@@ -1,5 +1,9 @@
 # $Id$
 
+2004-12-17  pem
+
+	* improved isEmpty() implementation
+
 Thu Dec 16 10:59:44 CET 2004 <jurgenv@cwi.nl>
  * Added new builtin type 'char', which leads to arguments of type
    char in both C and Java, but constructs a corresponding ATermInt
