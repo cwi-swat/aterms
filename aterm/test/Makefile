@@ -42,10 +42,19 @@ clean:
 	rm -f $(TESTPRGS) $(TESTOBJS) *~ core
 
 depend:
-	$(CC_GCC) -MM $(CFLAGS) $(DEFS) $(INCL) $(TESTSRCS) > .depend
+	$(CC_GCC) -MM $(DEFS) $(INCL) $(TESTSRCS) > /tmp/.gendep
+	cat /tmp/.gendep | sed "s/.o:/-cc.o:/"   >  .depend
+	cat /tmp/.gendep | sed "s/.o:/-gcc.o:/"  >> .depend
+	cat /tmp/.gendep | sed "s/.o:/-dbg.o:/"  >> .depend
+	cat /tmp/.gendep | sed "s/.o:/-prof.o:/" >> .depend
+	rm -f /tmp/.gendep
 
 .depend:
-	$(CC_GCC) -MM $(CFLAGS) $(DEFS) $(INCL) $(TESTSRCS) > .depend
+	$(CC_GCC) -MM $(DEFS) $(INCL) $(TESTSRCS) > /tmp/.gendep
+	cat /tmp/.gendep | sed "s/.o:/-cc.o:/"   >  .depend
+	cat /tmp/.gendep | sed "s/.o:/-gcc.o:/"  >> .depend
+	cat /tmp/.gendep | sed "s/.o:/-dbg.o:/"  >> .depend
+	cat /tmp/.gendep | sed "s/.o:/-prof.o:/" >> .depend
+	rm -f /tmp/.gendep
 
 include .depend
-
