@@ -103,6 +103,10 @@ class ATermPlaceholderImpl
 	  ATerm type = (ATerm)args.get(0);
 	  args.remove(0);
 	  return factory.makePlaceholder(type);
+	} else if (name.equals("str")) {
+	  String str = (String)args.get(0);
+	  args.remove(0);
+	  return factory.makeAppl(factory.makeAFun(str, 0, true));
 	}
       }
       if (name.equals("appl")) {

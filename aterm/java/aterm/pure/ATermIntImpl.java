@@ -49,8 +49,6 @@ class ATermIntImpl
 
   protected boolean match(ATerm pattern, List list)
   {
-    System.out.println("ATermIntImpl.match: " + pattern + "," + list);
-
     if (this.equals(pattern)) {
       return true; 
     }
