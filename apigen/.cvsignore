@@ -6,3 +6,8 @@ Makefile.in
 config.log
 config.cache
 config.status
+COPYING
+INSTALL
+install-sh
+missing
+mkinstalldirs

@@ -24,7 +24,7 @@ extends Generator
   { { "int",  "Integer"    },
     { "real", "Double" },
     { "str",  "String" },
-    { "term", "aterm.ATerm" }
+    { "term", "ATerm" }
   };
 
   //}}}
@@ -304,7 +304,7 @@ extends Generator
 		println("    return fromTerm(trm);");
 		println("  }");
     printFoldClose();
-		printFoldOpen("isEqual(" + class_name + ")");
+		printFoldOpen("equals(" + class_name + ")");
 		println("  public boolean isEqual(" + class_name + " peer)");
 		println("  {");
 		println("    return term.isEqual(peer.toTerm());");
@@ -445,6 +445,7 @@ extends Generator
 		all.add("java.io.InputStream");
 		all.add("java.io.OutputStream");
 		all.add("java.io.IOException");
+    all.add("aterm.ATerm");
 		
 		Iterator iter = all.iterator();
 		while (iter.hasNext()) {
@@ -910,6 +911,13 @@ extends Generator
     println("  get_subterm(t,n) { null }");
     println("}");
     println();
+    println("%typeterm ATerm {");
+    println("  implement { ATerm }");
+    println("  get_fun_sym(t) { t }");
+    println("  cmp_fun_sym(s1,s2) { s1 == s2 }");
+    println("  get_subterm(t,n) { null }");
+    println("}");
+    println();
 	}
 
 
@@ -949,7 +957,7 @@ extends Generator
     String operator_name = capitalize(buildId(alt.getId()));
     String alt_class_name = buildAltClassName(type,alt);
       
-    print  ("%op " + class_name + " " + operator_name);
+    print  ("%op " + class_name + " " + alt_class_name); // operator_name if Tom can deal with it
     
     Iterator fields = type.altFieldIterator(alt.getId());
     if (fields.hasNext()) {
