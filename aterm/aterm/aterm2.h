@@ -207,4 +207,8 @@ void    ATprotectAFun(AFun sym);
 void    ATunprotectAFun(AFun sym);
 #define ATunprotectSymbol ATunprotectAFun
 
+ATerm AT_getAnnotations(ATerm t);
+ATerm AT_setAnnotations(ATerm t, ATerm annos);
+ATerm AT_removeAnnotations(ATerm t);
+
 #endif

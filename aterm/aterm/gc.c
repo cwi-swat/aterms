@@ -62,9 +62,9 @@ void AT_initGC(int argc, char *argv[], ATerm *bottomOfStack)
 			flags |= (PRINT_GC_TIME | PRINT_GC_STATS);
 		else if(strcmp(argv[i], "-at-help") == 0) {
 			fprintf(stderr, "    %-20s: print non-intrusive gc information "
-							"after execution\n", "-print-gc-time");
+							"after execution\n", "-at-print-gc-time");
 			fprintf(stderr, "    %-20s: print elaborate gc information "
-							"after execution\n", "-print-gc-info");
+							"after execution\n", "-at-print-gc-info");
 		}
 	}
 }

@@ -136,9 +136,11 @@ ATinit(int argc, char *argv[], ATerm * bottomOfStack)
 
 	if(help) {
 		fprintf(stderr, "usage: %s [options]\n", argv[0]);
-		fprintf(stderr, "    %-20s: print this help info\n", "-help");
+		fprintf(stderr, "    %-20s: print this help info\n", "-at-help");
+		fprintf(stderr, "    %-20s: generate runtime gc information.\n",
+						"-at-verbose");
 		fprintf(stderr, "    %-20s: suppress runtime gc information.\n",
-						"-silent");
+						"-at-silent");
 	}
 
 	/* Protect novice users that simply pass NULL as bottomOfStack */
@@ -800,26 +802,26 @@ writeToString(ATerm t, char *buf)
 
     switch (ATgetType(t))
     {
-    case AT_INT:
-	/*{{{  write integer */
+			case AT_INT:
+				/*{{{  write integer */
 
 	sprintf(buf, "%d", ATgetInt((ATermInt) t));
 	buf += strlen(buf);
 
 	/*}}}  */
-	break;
-
-    case AT_REAL:
-	/*{{{  write real */
+				break;
+				
+			case AT_REAL:
+				/*{{{  write real */
 
 	sprintf(buf, "%f", ATgetReal((ATermReal) t));
 	buf += strlen(buf);
 
 	/*}}}  */
-	break;
-
-    case AT_APPL:
-	/*{{{  write appl */
+				break;
+				
+			case AT_APPL:
+				/*{{{  write appl */
 
 	appl = (ATermAppl) t;
 	sym = ATgetSymbol(appl);
@@ -838,10 +840,10 @@ writeToString(ATerm t, char *buf)
 	}
 
 	/*}}}  */
-	break;
-
-    case AT_LIST:
-	/*{{{  write list */
+				break;
+				
+			case AT_LIST:
+				/*{{{  write list */
 
 	list = (ATermList) t;
 	if (!ATisEmpty(list))
@@ -857,19 +859,19 @@ writeToString(ATerm t, char *buf)
 	}
 
 	/*}}}  */
-	break;
-
-    case AT_PLACEHOLDER:
-	/*{{{  write placeholder */
+				break;
+				
+			case AT_PLACEHOLDER:
+				/*{{{  write placeholder */
 
 	trm = ATgetPlaceholder((ATermPlaceholder) t);
 	buf = topWriteToString(trm, buf);
 
 	/*}}}  */
-	break;
-
-    case AT_BLOB:
-	/*{{{  write blob */
+				break;
+				
+			case AT_BLOB:
+				/*{{{  write blob */
 
 	blob = (ATermBlob) t;
 	size = ATgetBlobSize(blob);
@@ -878,7 +880,7 @@ writeToString(ATerm t, char *buf)
 	buf += 9 + size;
 
 	/*}}}  */
-	break;
+				break;
     }
     return buf;
 }
@@ -886,17 +888,23 @@ writeToString(ATerm t, char *buf)
 static char    *
 topWriteToString(ATerm t, char *buf)
 {
-    if (ATgetType(t) == AT_LIST)
-    {
-	*buf++ = '[';
-	buf = writeToString(t, buf);
-	*buf++ = ']';
-    }
-    else
-    {
-	buf = writeToString(t, buf);
-    }
-    return buf;
+	ATerm annos = AT_getAnnotations(t);
+
+	if (ATgetType(t) == AT_LIST) {
+		*buf++ = '[';
+		buf = writeToString(t, buf);
+		*buf++ = ']';
+	} else {
+		buf = writeToString(t, buf);
+	}
+
+	if(annos) {
+		*buf++ = '{';
+		buf = writeToString(annos, buf);
+		*buf++ = '}';
+	}
+
+	return buf;
 }
 
 /*}}}  */
@@ -920,61 +928,61 @@ textSize(ATerm t)
 
     switch (ATgetType(t))
     {
-    case AT_INT:
-	sprintf(numbuf, "%d", ATgetInt((ATermInt) t));
-	size = strlen(numbuf);
-	break;
-
-    case AT_REAL:
-	sprintf(numbuf, "%f", ATgetReal((ATermReal) t));
-	size = strlen(numbuf);
-	break;
-
-    case AT_APPL:
-	appl = (ATermAppl) t;
-	sym = ATgetSymbol(appl);
-	arity = ATgetArity(sym);
-	size = symbolTextSize(sym);
-	for (i = 0; i < arity; i++)
-	    size += topTextSize(ATgetArgument(appl, i));
-	if (arity > 0)
-	{
-	    /* Add space for the ',' characters */
-	    if (arity > 1)
-		size += arity - 1;
-	    /* and for the '(' and ')' characters */
-	    size += 2;
-	}
-	break;
-
-    case AT_LIST:
-	list = (ATermList) t;
-	if (ATisEmpty(list))
-	    size = 0;
-	else
-	{
-	    size = ATgetLength(list) - 1;	/* Space for the ','
-						 * characters */
-	    while (!ATisEmpty(list))
-	    {
-		size += topTextSize(ATgetFirst(list));
-		list = ATgetNext(list);
-	    }
-	}
-	break;
-
-    case AT_PLACEHOLDER:
-	trm = ATgetPlaceholder((ATermPlaceholder) t);
-	size = topTextSize(trm);
-	break;
-
-    case AT_BLOB:
-	size = 9 + ATgetBlobSize((ATermBlob) t);
-	break;
-
-    default:
-	ATerror("textSize: Illegal type %d\n", ATgetType(t));
-	return -1;
+			case AT_INT:
+				sprintf(numbuf, "%d", ATgetInt((ATermInt) t));
+				size = strlen(numbuf);
+				break;
+				
+			case AT_REAL:
+				sprintf(numbuf, "%f", ATgetReal((ATermReal) t));
+				size = strlen(numbuf);
+				break;
+				
+			case AT_APPL:
+				appl = (ATermAppl) t;
+				sym = ATgetSymbol(appl);
+				arity = ATgetArity(sym);
+				size = symbolTextSize(sym);
+				for (i = 0; i < arity; i++)
+					size += topTextSize(ATgetArgument(appl, i));
+				if (arity > 0)
+					{
+						/* Add space for the ',' characters */
+						if (arity > 1)
+							size += arity - 1;
+						/* and for the '(' and ')' characters */
+						size += 2;
+					}
+				break;
+				
+			case AT_LIST:
+				list = (ATermList) t;
+				if (ATisEmpty(list))
+					size = 0;
+				else
+					{
+						size = ATgetLength(list) - 1;	/* Space for the ','
+																					 * characters */
+						while (!ATisEmpty(list))
+							{
+								size += topTextSize(ATgetFirst(list));
+								list = ATgetNext(list);
+							}
+					}
+				break;
+				
+			case AT_PLACEHOLDER:
+				trm = ATgetPlaceholder((ATermPlaceholder) t);
+				size = topTextSize(trm);
+				break;
+				
+			case AT_BLOB:
+				size = 9 + ATgetBlobSize((ATermBlob) t);
+				break;
+				
+			default:
+				ATerror("textSize: Illegal type %d\n", ATgetType(t));
+				return -1;
     }
     return size;
 }
@@ -982,12 +990,17 @@ textSize(ATerm t)
 static int
 topTextSize(ATerm t)
 {
-    int             size = textSize(t);
+	ATerm annos = AT_getAnnotations(t);
+	int size = textSize(t);
 
-    if (ATgetType(t) == AT_LIST)
-	size += 2;
+	if (ATgetType(t) == AT_LIST)
+		size += 2;
+	if(annos) {
+		size += 2; /* '{' and '}' */
+		size += textSize(annos);
+	}
 
-    return size;
+	return size;
 }
 
 int
@@ -1748,56 +1761,56 @@ sparse_term(int *c, char **s)
     switch (*c)
     {
     case '"':
-	result = (ATerm) sparse_quoted_appl(c, s);
-	break;
-    case '[':
-	snext_skip_layout(c, s);
-	if (*c == ']')
-	    result = (ATerm) ATempty;
-	else
-	{
-	    result = (ATerm) sparse_terms(c, s);
-	    if (result == NULL || *c != ']')
-		return NULL;
-	}
-	snext_skip_layout(c, s);
-	break;
-    case '<':
-	snext_skip_layout(c, s);
-	t = sparse_term(c, s);
-	if (t != NULL && *c == '>')
-	{
-	    result = (ATerm) ATmakePlaceholder(t);
-	    snext_skip_layout(c, s);
-	}
-	break;
-    default:
-	if (isalpha(*c))
-	    result = (ATerm) sparse_unquoted_appl(c, s);
-	else if (isdigit(*c))
-	    result = sparse_num_or_blob(c, s, ATtrue);
-	else if (*c == '.' || *c == '-')
-	    result = sparse_num_or_blob(c, s, ATfalse);
-	else
-	    result = NULL;
+			result = (ATerm) sparse_quoted_appl(c, s);
+			break;
+			case '[':
+				snext_skip_layout(c, s);
+				if (*c == ']')
+					result = (ATerm) ATempty;
+				else
+					{
+						result = (ATerm) sparse_terms(c, s);
+						if (result == NULL || *c != ']')
+							return NULL;
+					}
+				snext_skip_layout(c, s);
+				break;
+			case '<':
+				snext_skip_layout(c, s);
+				t = sparse_term(c, s);
+				if (t != NULL && *c == '>')
+					{
+						result = (ATerm) ATmakePlaceholder(t);
+						snext_skip_layout(c, s);
+					}
+				break;
+			default:
+				if (isalpha(*c))
+					result = (ATerm) sparse_unquoted_appl(c, s);
+				else if (isdigit(*c))
+					result = sparse_num_or_blob(c, s, ATtrue);
+				else if (*c == '.' || *c == '-')
+					result = sparse_num_or_blob(c, s, ATfalse);
+				else
+					result = NULL;
     }
-
+		
     sskip_layout(c, s);
-
+		
     if (*c == '{')
-    {
-	/* Term is annotated */
-	snext_skip_layout(c, s);
-	if (*c != '}')
-	{
-	    ATerm           annos = (ATerm) sparse_terms(c, s);
-	    if (annos == NULL || *c != '}')
-		return NULL;
-	    result = AT_setAnnotations(result, annos);
-	}
-	snext_skip_layout(c, s);
-    }
-
+			{
+				/* Term is annotated */
+				snext_skip_layout(c, s);
+				if (*c != '}')
+					{
+						ATerm           annos = (ATerm) sparse_terms(c, s);
+						if (annos == NULL || *c != '}')
+							return NULL;
+						result = AT_setAnnotations(result, annos);
+					}
+				snext_skip_layout(c, s);
+			}
+		
     return result;
 }
 
@@ -1821,15 +1834,15 @@ ATreadFromString(const char *string)
 
     if (!term)
     {
-	int             i;
-	fprintf(stderr, "ATreadFromString: parse error at or near:\n");
-	fprintf(stderr, "%s\n", orig);
-	for (i = 1; i < string - orig; ++i)
-	    fprintf(stderr, " ");
-	fprintf(stderr, "^\n");
+			int             i;
+			fprintf(stderr, "ATreadFromString: parse error at or near:\n");
+			fprintf(stderr, "%s\n", orig);
+			for (i = 1; i < string - orig; ++i)
+				fprintf(stderr, " ");
+			fprintf(stderr, "^\n");
     }
     else
-	string--;
+			string--;
 
     return term;
 }

@@ -1456,7 +1456,7 @@ ATreadFromBinaryFile(FILE *file)
 		return NULL;
 
 	if(val != BAF_VERSION) {
-		fprintf(stderr, "ATreadFromBinaryFile: old BAF version, giving up!\n");
+		fprintf(stderr, "ATreadFromBinaryFile: wrong BAF version, giving up!\n");
 		return NULL;
 	}
 
