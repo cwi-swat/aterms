@@ -4,59 +4,59 @@
 
 #include "Booleans.h"
 
-static void testBooleans(BoolList l)
+static void testBooleans(SDFBoolList l)
 {
-  Bool b, left, right, bool[2];
-  BoolElems elems;
-  SDFWhiteSpace ws;
-  Bool true;
+  SDFBool b, left, right, bool[2];
+  SDFBoolElems elems;
+  SDFLayout ws;
+  SDFBool true;
 
   /* ATfprintf(stderr, "l=%t\n", l); */
 
-  true = makeBoolTrue(ATparse("\"true\""));
+  true = SDFmakeBoolTrue(ATparse("\"true\""));
 
-  assert(isValidBoolList(l));
-  assert(hasBoolListElems(l));
+  assert(SDFisValidBoolList(l));
+  assert(SDFhasBoolListElems(l));
 
-  elems = getBoolListElems(l);
-  assert(isBoolElemsMany(elems));
-  bool[0] = getBoolElemsHead(elems);
+  elems = SDFgetBoolListElems(l);
+  assert(SDFisBoolElemsMany(elems));
+  bool[0] = SDFgetBoolElemsHead(elems);
   b = bool[0];
 
-  assert(isValidBool(b));
-  assert(isBoolOr(b));
+  assert(SDFisValidBool(b));
+  assert(SDFisBoolOr(b));
 
-  assert(hasBoolLop(b));
-  left = getBoolLop(b);
-  assert(isValidBool(left));
-  assert(isBoolAnd(left));
+  assert(SDFhasBoolLeft(b));
+  left = SDFgetBoolLeft(b);
+  assert(SDFisValidBool(left));
+  assert(SDFisBoolAnd(left));
 
-  assert(hasBoolRop(b));
-  right = getBoolRop(b);
-  assert(isValidBool(right));
-  assert(isBoolTrue(right));
+  assert(SDFhasBoolRight(b));
+  right = SDFgetBoolRight(b);
+  assert(SDFisValidBool(right));
+  assert(SDFisBoolTrue(right));
   
   b = left;
-  assert(hasBoolLop(b));
-  left = getBoolLop(b);
-  assert(isValidBool(left));
-  assert(isBoolTrue(left));
+  assert(SDFhasBoolLeft(b));
+  left = SDFgetBoolLeft(b);
+  assert(SDFisValidBool(left));
+  assert(SDFisBoolTrue(left));
   
-  assert(hasBoolRop(b));
-  right = getBoolRop(b);
-  assert(isValidBool(right));
-  assert(isBoolFalse(right));
+  assert(SDFhasBoolRight(b));
+  right = SDFgetBoolRight(b);
+  assert(SDFisValidBool(right));
+  assert(SDFisBoolFalse(right));
 
-  assert(hasBoolWsAfterAmpersand(b));
-  ws = getBoolWsAfterAmpersand(b);
+  assert(SDFhasBoolWsAfterAmp(b));
+  ws = SDFgetBoolWsAfterAmp(b);
   assert(ATmatch(ws, "\" \""));
 
-  bool[1] = makeBoolOr(makeBoolAnd(true,ws,ws,makeBoolFalse()),ws,ws,true);
+  bool[1] = SDFmakeBoolOr(SDFmakeBoolAnd(true,ws,ws,SDFmakeBoolFalse()),ws,ws,true);
   assert(ATisEqual(bool[0], bool[1]));
 
-  elems = getBoolElemsTail(elems);
-  assert(isBoolElemsSingle(elems));
-  assert(!hasBoolElemsTail(elems));
+  elems = SDFgetBoolElemsTail(elems);
+  assert(SDFisBoolElemsSingle(elems));
+  assert(!SDFhasBoolElemsTail(elems));
 }
 
 int main(int argc, char *argv[])
@@ -65,13 +65,13 @@ int main(int argc, char *argv[])
   ATerm term;
 
   ATinit(argc, argv, &bottomOfStack);
-  initBooleansApi();
+  SDFinitBooleansApi();
 
   term = ATreadFromNamedFile("booltest.af1");
   assert(term);
   ATprotect(&term);
 
-  testBooleans(makeBoolListFromTerm(ATgetArgument((ATermAppl)term, 6)));
+  testBooleans(SDFmakeBoolListFromTerm(ATgetArgument((ATermAppl)term, 6)));
 
   return 0;
 }

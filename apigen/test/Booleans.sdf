@@ -13,12 +13,12 @@ exports
     LAYOUT? -/- [\ \t\n]
 
   context-free syntax
-    false			-> Bool {cons("false")}
-    lop:Bool "&" rop:Bool	-> Bool {cons("and"),left}
-    lop:Bool "|" rop:Bool	-> Bool {cons("or"),left}
+    false				-> Bool {cons("false")}
+    "left":Bool "&" "right":Bool	-> Bool {cons("and"),left}
+    "left":Bool "|" "right":Bool	-> Bool {cons("or"),left}
 
     "[" elems:{ Bool ";" }* "]" -> BoolList {cons("list")}
 
   context-free priorities
-    lop:Bool "&" rop:Bool -> Bool
-  > lop:Bool "|" rop:Bool -> Bool
+    "left":Bool "&" "right":Bool -> Bool
+  > "left":Bool "|" "right":Bool -> Bool
