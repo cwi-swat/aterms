@@ -46,7 +46,7 @@ ATerm visitATerm(ATerm tree, ATerm (*accept)(ATerm t, ATerm data), ATerm data)
 
       for(i = 0; i < arity(tree); i++) {
         arg  = ATgetArgument((ATermAppl) tree, i);
-        arg  = accept(arg, data);
+        arg  = visitATerm(arg, accept, data);
         tree = (ATerm) ATsetArgument((ATermAppl) tree, arg, i);
       }
     }
@@ -58,7 +58,7 @@ ATerm visitATerm(ATerm tree, ATerm (*accept)(ATerm t, ATerm data), ATerm data)
       ATerm annos = AT_getAnnotations(tree);
 
       for(newlist = ATempty; !ATisEmpty(list); list = ATgetNext(list)) {
-        newlist = ATinsert(newlist, accept(ATgetFirst(list), data));
+        newlist = ATinsert(newlist, visitATerm(ATgetFirst(list), accept, data));
       }
 
       tree = (ATerm) ATreverse(newlist);
@@ -69,11 +69,10 @@ ATerm visitATerm(ATerm tree, ATerm (*accept)(ATerm t, ATerm data), ATerm data)
     }
     break;
   default:
-    tree = accept(tree, data);
     break;
   }
 
-  return tree;
+  return accept(tree, data);
 }
 
 ATerm removeAllAnnotations(ATerm tree, ATerm data)
@@ -167,6 +166,7 @@ int main (int argc, char **argv)
       exit(1);
     } else {
       while(--count_annos >= 0) {
+ATwarning("removing: %s\n", annotation[count_annos]);
         t = removeAnnotationRecursive(t, ATparse(annotation[count_annos]));
       }
     }
