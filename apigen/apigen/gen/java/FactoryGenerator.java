@@ -10,7 +10,6 @@ import apigen.gen.StringConversions;
 public class FactoryGenerator extends JavaGenerator {
     private String className;
     private ADT adt;
-    private boolean jtype;
   
 	public FactoryGenerator(ADT adt, String directory, String apiName, String pkg, List standardImports, 
 	                                    boolean verbose, boolean folding) {

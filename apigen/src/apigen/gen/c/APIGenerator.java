@@ -805,7 +805,6 @@ public class APIGenerator extends CGenerator {
 	//{{{ private void genIsAlt(Type type, Alternative alt)
 
 	private void genIsAlt(Type type, Alternative alt) {
-		String type_id = StringConversions.makeIdentifier(type.getId());
 		String type_name = buildTypeName(type);
 		String decl = "inline ATbool " + buildIsAltName(type, alt) + "(" + type_name + " arg)";
 		String pattern;
