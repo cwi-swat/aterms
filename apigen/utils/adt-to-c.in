@@ -29,7 +29,7 @@ Parameters:
   -h | --help             display this information
 
 Default locations:
-  classes = ${CGEN}:${ATERM}/classes
+  classes = ${CGEN}:${ATERM_JAVA}:${SHARED_OBJECTS}
   dicttoc = ${DICTTOC}
 
 Example: $PRG -i Booleans.adt --prefix SDF --prologue Booleans.pro
@@ -164,7 +164,7 @@ fi
 
 # {{{  generate C code from ADT
 
-java  -classpath ${CGEN}:${ATERM}/classes apigen.gen.c.CGen \
+java  -classpath ${CGEN}:${ATERM_JAVA}:${SHARED_OBJECTS} apigen.gen.c.CGen \
 	  -input ${INPUT}	\
 	  -output ${OUTPUT}	\
 	  ${OPTIONAL_PROLOGUE}	\
