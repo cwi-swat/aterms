@@ -191,6 +191,619 @@ without first converting it to an application-specific representation.
 % discussion (Section~\ref{discussion}) conclude this paper.
 
 %}}}
+%{{{ ATerms at a Glance
+
+\section*{ATerms at a Glance} \label{aterms-at-a-glance}
+
+We now describe the constructors of the \ATerm\ data type and
+the operations defined on it.
+
+%}}}
+%{{{ The ATerm datatype
+
+\subsection*{The \ATerm\ Data Type}
+
+The data type of \ATerms\ ({\tt ATerm}) is defined as follows:
+
+\begin{itemize}
+\item  {\tt INT}: An integer constant (32-bits integer) is an \ATerm.\footnote{
+There is a version of the \aterm\ library
+which supports 64-bit architectures as well.}
+
+\item {\tt REAL}: A real constant (64-bits real) is an \ATerm.
+
+\item {\tt APPL}: A function application consisting of a function symbol and
+      zero or more \ATerms\ (arguments) is an \ATerm.
+      The number of arguments of the function is called
+      the \emph{arity} of the function.
+
+\item {\tt LIST}: A list of zero or more \ATerms\ is an \ATerm.
+
+\item {\tt PLACEHOLDER}: A placeholder term containing an \ATerm\ representing the
+      type of the placeholder is an \ATerm.
+
+\item {\tt BLOB}: A ``blob'' (Binary Large data OBject) containing a length indication
+      and a byte array of arbitrary (possibly very large) binary data 
+      is an \ATerm.
+
+\item A list of \ATerm\ pairs may be associated with every \ATerm\
+      representing a list of $(label,annotation)$ pairs.
+
+\end{itemize}
+
+Each of these constructs except the last one (i.e., {\tt INT}, {\tt
+REAL}, {\tt APPL}, {\tt LIST}, {\tt PLACEHOLDER}, and {\tt BLOB}) form
+subtypes of the data type {\tt ATerm}.
+These subtypes are needed when determining the type of an arbitrary
+\ATerm.  Depending on the actual implementation language they will be
+represented as a constant (C, Pascal) or a subclass (C++, Java).
+
+The last construct is the \emph{annotation construct}, which makes it
+possible to annotate terms with transparent
+information\footnote{Transparent in the sense that the result of most
+operations is independent of the annotations. This makes it easy to
+completely ignore annotations. Examples of the use of
+annotations include annotating parse trees with positional or
+typesetting information, and annotating abstract syntax trees with the
+results of type checking.}.
+
+We will now give a number of examples to
+show some of the features of the textual representation of \ATerms.
+
+\begin{itemize}
+\item Integer and real constants are written conventionally:
+      {\tt 1}, {\tt 3.14}, and {\tt -0.7E34} are all valid \ATerms.
+
+\item Function applications are represented by a function name followed
+      by an open parenthesis, a list of arguments separated
+      by commas, and a closing parenthesis. When there are no
+      arguments, the parentheses may be omitted. Examples are:
+      {\tt f(a,b)} and {\tt "test!"(1,2.1,"Hello world!")}.
+      These examples show that double quotes can be used to delimit
+      function names that are not identifiers.
+
+\item Lists are represented by an opening square bracket, a number of
+      list elements separated by commas and a closing square bracket:
+      {\tt [1,2,"abc"]}, {\tt []}, and {\tt [f,g([1,2]),x]} are
+      examples.
+
+\item A placeholder is represented by an opening angular bracket
+      followed by a subterm and a closing angular bracket. Examples are
+      {\tt <int>}, {\tt <[3]>}, and {\tt <f(<int>,<real>)>}.
+
+\item Blobs do not have a concrete syntax because their human-readable form
+      depends on the actual blob content.
+\end{itemize}
+
+\subsection*{Operations on ATerms}
+
+The operations on \ATerms\ fall into three categories: making and
+matching \ATerms, reading and writing  \ATerms,
+and annotating \ATerms. The total
+of only 13 functions provide enough functionality for most users to
+build simple applications with \ATerms.  We refer to this interface as
+the \emph{level one} interface of the \ATerm\ data type.
+
+To accommodate ``power'' users of \ATerms\ we also provide a
+\emph{level two} interface, which contains a more sophisticated set of
+data types and functions. It is typically used in generated C code
+that calls \ATerm\ primitives, or in efficiency-critical applications.
+These extensions are useful only when more control over the underlying
+implementation is needed or in situations where some operations that
+can be implemented using level one constructs can be expressed more
+concisely and implemented more efficiently using level two constructs.
+The level two interface is a strict superset of the level one
+interface.
+
+Observe that \ATerms\ are a purely functional data type and that no
+destructive updates are possible, see the section on maximal sharing 
+for more details.
+
+\subsubsection*{Making and Matching \ATerms}
+
+The simplicity of the level one interface is achieved by the
+\emph{make-and-match} paradigm:
+
+\begin{itemize}
+\item \emph{make}  (compose) a new \ATerm\ by providing a pattern for it and filling in the holes in the pattern.
+\item \emph{match} (decompose) an existing \ATerm\ by comparing it with a pattern
+and decompose it according to this pattern.
+\end{itemize}
+
+Patterns are just \ATerms\ containing placeholders.  These
+placeholders determine the places where \ATerms\ must be substituted
+or matched.  An example of a pattern is {\tt "and(<int>,<appl>)"}.
+These patterns appear as string argument of both make and match and
+are remotely comparable to the format strings in the {\tt printf}/{\tt
+scanf} functions in C.
+The operations for making and matching \ATerms\ are:
+
+\begin{itemize}
+\begin{sloppypar}
+\item {\tt ATerm ATmake(String $p$, ATerm $a_1$, ..., ATerm $a_n$)}:
+         Create a new
+term by taking the string pattern $p$, parsing it as an \ATerm\ and filling
+the placeholders in the resulting term with values taken from $a_1$
+through $a_n$.
+If the parse fails, a message is printed and the program is aborted.
+The types of the arguments depend on the specific placeholders used
+in \emph{pattern}. For instance, when the placeholder {\tt <int>} is used
+an integer is expected as argument and a new integer ATerm is constructed.
+\end{sloppypar}
+
+\item 
+\begin{sloppypar}
+{\tt ATbool ATmatch(ATerm $t$, String $p$, ATerm *$a_1$, ..., ATerm *$a_n$)}:
+
+Match term $t$ against
+pattern $p$, and bind subterms that match with placeholders in
+$p$ with the result variables $a_1$ through $a_n$.
+Again, the type of the result variables depend on the placeholders
+used.
+If the parse of pattern $p$ fails, a message is printed and the program 
+is aborted.
+If the term itself contains placeholders these may occur in the 
+resulting substitutions.
+The function returns {\tt true} when the match succeeds,
+{\tt false} otherwise.
+\end{sloppypar}
+
+\item {\tt Boolean ATisEqual(ATerm $t_1$, ATerm $t_2$)}: 
+Check whether two \ATerms\ are 
+equal. The annotations of $t_1$ and $t_2$ must be equal as well.
+
+\item {\tt Integer ATgetType(ATerm $t$)}: Retrieves the type of an
+\ATerm. This operation returns one of the subtypes mentioned above.
+
+\end{itemize}
+
+\subsubsection*{Reading and Writing \ATerms}
+
+For reasons of efficiency and conciseness, reading and writing can
+take place in two forms: text and binary.  
+The text format uses the textual representation discussed
+earlier.  This format is human-readable,
+space-inefficient\footnote{ The unnecessary size explosion could be
+avoided by extending the textual representation with a mechanism for
+labeling and referring to terms.  Instead of \texttt{f(g(a),g(a))},
+one could then write \texttt{f(1:g(a), \#1)}. The first occurrence of
+\texttt{g(a)} is labeled with ``\texttt{1}'', and the second
+occurrence refers to this label (``\texttt{\#1}'').},
+and any sharing of the in-memory representation of terms is lost.
+
+The binary format (Binary ATerm Format) is 
+portable, machine-readable, very compact, 
+and preserves all in-memory sharing.
+The operations for reading and writing \ATerms\ are:
+
+\begin{itemize}
+
+\item {\tt ATerm ATreadFromString(String $s$)}: Creates a new term 
+by parsing
+the string $s$. When a parse error occurs, a message is printed, and
+a special error value is returned.
+
+\item {\tt ATerm ATreadFromTextFile(File $f$)}: Creates a new term by 
+parsing the data from file $f$. Again, parse errors result in a 
+message being printed and an error value being returned.
+
+\item {\tt ATerm ATreadFromBinaryFile(File $f$)}: Creates a new term by reading a
+binary representation from file $f$. 
+
+\item {\tt Boolean ATwriteToTextFile(ATerm $t$, File $f$)}: Write the text
+representation of term $t$ to file $f$. Returns {\tt true} for
+success and {\tt false} for failure.
+
+\item {\tt Boolean ATwriteToBinaryFile(ATerm $t$, File $f$)}: Write a 
+binary representation of term $t$ to file $f$. Returns
+{\tt true} for success, and {\tt false} for failure.
+
+\item {\tt String ATwriteToString(ATerm $t$)}: Return the text representation
+of term $t$ as a string.
+
+\end{itemize}
+
+Either format (textual or binary) can be used on any linear stream, including files, sockets,
+pipes, etc.
+
+\subsubsection*{Annotating \ATerms}
+
+Annotations are $(label,annotation)$ pairs that may be attached to an
+\ATerm. Recall that \ATerms\ are a completely functional data type and
+that no destructive updates are possible. This is evident in the
+following operations for manipulating annotations:
+
+\begin{itemize}
+
+\item 
+\begin{sloppypar}
+{\tt ATerm ATsetAnnotation(ATerm $t$, ATerm $l$, ATerm $a$)}:
+Return a copy of term $t$ in which the annotation labeled with $l$ has been changed
+into $a$. If $t$  does not have an annotation with
+the specified label, it is added.
+\end{sloppypar}
+
+\item {\tt ATerm ATgetAnnotation(ATerm $t$, ATerm $l$)}:
+Retrieve the annotation labeled with $l$ from term $t$.
+If $t$ does not have an annotation with the specified label,
+a special error value is returned.
+
+\item {\tt ATerm ATremoveAnnotation(ATerm $t$, ATerm $l$)}: Return a copy
+of term $t$ from which the annotation labeled with $l$ has been removed.
+If $t$ does not have an annotation with the specified label,
+it is returned unchanged.
+
+\end{itemize}
+
+%}}}
+\section*{Implementation}
+
+%{{{ Requirements
+
+\subsection*{Requirements}
+\label{requirements}
+
+In the introduction we have already mentioned our main
+requirements: openness, simplicity, efficiency, conciseness,
+language-independence, and capable of dealing with annotations.  
+There are a number of other
+issues to consider that have a great impact on the implementation, and
+that make this a fairly unique problem:
+
+\begin{itemize}
+
+\item By providing automatic garbage collection \ATerm\ users
+      do not need to deallocate \ATerm\ objects explicitly.
+      This is safe and simple (for the user).
+
+\item The expected lifetime of terms in most applications is very short.
+      This means that garbage collection must be fast and should touch
+      a minimal amount of memory locations to improve caching and paging 
+      performance.
+
+\item The total memory requirements of an application cannot be estimated
+      in advance. It must be possible to allocate more memory incrementally.
+
+\item Most applications exhibit a high level of redundancy in the terms
+      being processed. Large terms often have a significant number of
+      identical subterms. Intuitively this can be explained from the
+      fact that most applications process terms with a fixed signature and
+      a limited tree depth. When the amount of terms that is being processed
+      increases, it is plausible that the similarity between terms also
+      increases.
+
+\item In typical applications less than 0.1 percent of all terms have
+      an arity higher than 5.
+
+\item Many applications will use annotations only sparingly. 
+      The implementation should not impose a penalty on applications
+      that do not use them.
+
+\item In order to have a portable yet efficient implementation, the
+      implementation language will be C. This poses some special 
+      requirements on the garbage collection strategy\footnote{We have
+      implemented the library in Java as well. 
+      In this case, many of the issues
+      we discuss in this paper are irrelevant, either because we can use 
+      built-in features of Java (garbage collection), or
+      because we just cannot express these low level concerns in Java.}.
+\end{itemize}
+
+With these considerations in mind, we will now discuss
+maximal (in-memory) sharing of terms,
+garbage collection,
+the encoding of terms, and
+the Binary ATerm Format.
+     
+%}}}
+%{{{ Design
+
+\subsection*{Maximal Sharing}
+
+Our strategy to minimize memory usage is simple but effective: we only
+create terms that are \emph{new}, i.e., that do not exist already.  If
+a term to be constructed already exists, that term is reused,
+ensuring maximal sharing.  This strategy fully exploits the redundancy
+that is typically present in the terms to be built and leads to
+maximal sharing of subterms. The library functions that construct terms
+make sure that shared terms are returned whenever possible.  The sharing of
+terms is thus invisible to the library user.
+
+\subsubsection*{The Effects of Maximal Sharing}
+
+Maximal sharing of terms can only be maintained when we check at every
+term creation whether a particular term already exists or not. This
+check implies a search through all existing terms but must
+be fast in order not to impose an
+unacceptable penalty on term creation.  Using a hash function that
+depends on the internal code of the function symbol and the addresses
+of its arguments, we can quickly search for a function application
+before creating it.  The terms are stored in a hash table.  The hash
+table does not contain the terms themselves, but pointers to the
+terms. This provides a flexible mechanism of resizing the table and
+ensures that all entries in the table are of equal size. Hence the
+(modest but not negligible) cost at term creation time is one
+hash table lookup.
+
+Fortunately, we get two returns on this investment.  First, the
+considerably reduced memory usage also leads to reduced
+execution time.  Second, we gain substantially as the equality
+check on terms ({\tt ATisEqual}) becomes very cheap: it reduces from
+an operation that is linear in the number of subterms to be compared
+to a constant operation (pointer equality).
+
+Another consequence of our approach is less fortunate.  Because terms
+can be shared without their creator knowing it, terms cannot be modified
+without creating unwanted side-effects.  This means that terms
+effectively become \emph{immutable} after creation.  Destructive
+updates on maximally shared terms are not allowed.  Especially in list
+operations, the fact that \ATerms\ are immutable can be expensive. It
+is often the responsibility of the user of the library to choose
+algorithms that minimize the effect of this shortcoming.
+
+\subsubsection*{Searching for Shared Subterms}
+
+Maximal sharing of terms requires checking at term creation time whether
+this term already exists. This search must be fast in order to ensure 
+efficient term creation. A hash function based on the
+\emph{addresses} of the function symbol and the arguments of a function
+application allows for a quick lookup in the hash table to find a function 
+application before creating it.
+
+\paragraph{Collisions}
+One issue in hash techniques is handling collisions. The simplest
+technique is linear chaining~\cite{Knuth73}.
+This requires one pointer in each
+object for hash chaining, which in our implementation implies a memory
+overhead of about 25 percent. Other solutions for collision
+resolution will either increase the memory requirements, 
+or the time needed for insertions or deletions (see \cite{Knuth73}).
+We therefore use linear hash chaining in our implementation. 
+
+\paragraph{Direct or Indirect Hashing}
+Another issue is whether to store all terms directly in
+the hash table, or only references.
+Storing the objects directly in the hash table saves a
+memory access when retrieving a term as well as the
+space needed to store the reference.
+However, there are severe drawbacks to this approach:
+\begin{itemize}
+\item We cannot rehash old terms because rehashing
+      means that we have to move the objects in memory.
+      When using C as an implementation language, moving
+      objects in memory is not allowed because we can only determine
+      a conservative root set and therefore are not allowed to change
+      the pointers to roots.
+      This would mean that the hash table could not grow beyond its 
+      initial size.
+\item Internal fragmentation is increased, because empty slots
+      in the hash table are as large as the object instead of
+      only one machine word.
+\item We would need a separate hash table for each term size to
+      decrease the internal fragmentation. 
+\end{itemize}
+
+Because of these problems, we use linear hash chaining
+combined with indirect hashing.
+When the load of the hash table reaches a certain threshold, 
+we rehash into a larger table.
+
+The user can increase the initial size of
+the hash table to save on resizing and rehashing
+operations. The \ATerm\ library provides facilities for defining hash tables
+as well. This allows the implementation of a fast lookup mechanism
+for \ATerms.
+
+%{{{ Garbage collection
+
+\subsection*{Garbage Collection}
+
+\subsubsection*{Which Technique?}
+The most common strategies for automatic recycling of unused space
+are reference counting, mark-compact collection, and 
+mark-sweep collection. 
+In our case, reference counting is not a valid alternative, because
+it takes too much time and space and is very hard to implement 
+in C.
+Mark compact garbage collection is also unattractive because
+it assumes that objects can be relocated. This is not the case
+in C where we cannot identify \emph{all} references to an object.
+We can only determine the root set conservatively which is good enough
+for mark-sweep collection discussed below, but not for mark-compact collection.
+
+\paragraph{Mark-sweep Garbage Collection}
+
+Mark-sweep garbage collection works using three phases.
+In the first phase, all objects on the heap are marked as `dead'.
+In the second phase, all objects reachable from the known set of root
+objects are marked as `live'. In the third phase, all `dead' objects
+are swept into a list of free objects.
+
+Mark-sweep garbage collection can be implemented in C efficiently,
+and without support from the programmer or compiler \cite{BW88,Bo93}. 
+Mark-sweep collection is more efficient,
+both in time and space than reference counting \cite{JL96}. A possible
+drawback is increased memory fragmentation compared to mark-compact collection.
+The typical space overhead for a mark-sweep garbage collection algorithm is
+only 1 bit per object, whereas a reference count field would take at
+least three or four bytes.
+
+
+\subsubsection*{Implementing the Garbage Collector}
+
+Considering both performance and the maintainability of the code that
+uses the \ATerm\ library, we have opted for a version of the
+mark-sweep garbage collector.  Every object contains a single bit used
+by the mark-sweep algorithm to indicate `live' (marked) objects. At
+the start of a garbage collection cycle, all objects are unmarked. The
+garbage collector tries to locate and mark all live objects by
+traversing all terms that are explicitly protected by the programmer
+(using the {\tt ATprotect} function), and by scanning the C run-time stack
+looking for words that could be references to objects. When such a
+word is found, the object (and the transitive closure of all of the
+objects it refers to) are marked as `live'.
+
+This scan of the run-time stack causes all objects referenced from local
+variables to be protected from being garbage collected.
+Our garbage collector 
+is a  conservative collector in the sense that some of the words on the
+stack could accidentally have the same bit pattern as object references.
+Because there is no way to separate these `fake' bit patterns from
+`real' object references, this can cause
+objects to be marked as `live' when these are actually garbage.
+Note that bit patterns on the stack that do not point to valid objects
+are not traversed at all. Only when a bit pattern represents an address
+that is a valid object address it is followed to mark the corresponding
+object.
+
+When all live objects are marked, a single sweep through the heap
+is used to store all objects that are free in separate lists of free
+objects, one list for each object size.
+
+As we shall see in the next section, most objects consist
+of only a couple of machine words.  By restricting the maximum arity
+of a function, we can also set an upper bound on the maximum size of
+objects.  This enables us to base the memory management algorithms we
+use on a small number of block sizes.  Allocation of objects is now
+simply a matter of taking the first element from the appropriate
+free-list, which is an extremely cheap operation.  If garbage
+collection does not yield enough free objects, new memory blocks will
+be allocated to satisfy allocation requests.
+
+%}}}
+
+%{{{ Term encoding
+
+\subsection*{Term Encoding}
+
+An important issue in the implementation of \ATerms\ is how to
+represent this data type so that all operations can be performed
+efficiently in time and space.
+
+The very concise encoding of \ATerms\ we use is as follows.
+Assume that one machine word consists of four bytes.
+Every \ATerm\ object is stored in two or more machine words.
+The first byte of the first word is called
+the \emph{header} of the object, and consists of four fields (see
+Figure \ref{header}):
+
+\begin{figure}[tb]
+  \centerline{\epsfig{file=header.eps,scale=0.6}}
+  \caption{\label{header}The header layout}
+\end{figure}
+ 
+\begin{itemize}
+\item A field consisting of one bit used as a mark flag by the garbage
+      collector.
+\item A field consisting of one bit indicating whether or not this term
+      has an annotation.
+\item A field consisting of three bits that indicate the type of the term.
+\item A field consisting of three bits representing the arity (number of
+      pointers to other terms) of this object. When this field
+      contains the maximum value of 7, the term must be a function application
+      and the actual arity can be found by retrieving the arity of the
+      function symbol (see below).
+\end{itemize}
+
+Depending on the type of the node (as determined by the header byte in
+the first word) the remaining bytes in the first word contain either a
+function symbol, a length indication, or they are unused.
+
+The \emph{second} word is always used for hashing, and links together
+all terms in the same hash bucket.
+
+The type of the node determines its exact layout and contents.  We
+will now describe the encoding of the different term types in more detail.
+
+\paragraph{INT encoding}
+In an integer term, the third word contains the integer value.
+The arity of an integer term is 0.
+
+\paragraph{REAL encoding}
+In an real term, the third and fourth word contain the real value 
+represented by an 8 byte IEEE floating point number.
+The arity of a real term is 0.
+
+\paragraph{APPL encoding}
+The remaining 3 bytes following the header in the first word are used to
+represent the index in a table containing the function symbols. 
+The words following the second word contain
+references to the function arguments.
+In this way, function applications can be encoded in
+$2+n$ machine words, with $n$ the arity of the function application.
+
+\paragraph{LIST encoding}
+The binary list constructor can be seen as a special function
+application with no function symbol and an arity of 2. The
+third word points to the first element in the list, this is called
+the {\tt first} field, the fourth word
+points to the remainder of the list, and is called the {\tt next} field. 
+The length of the list is
+stored in the three bytes after the header in the first word.
+The empty list
+is represented using a LIST object with empty
+first and next fields, and a length of 0.
+
+\paragraph{PLACEHOLDER encoding}
+The placeholder term has an arity of 1, where the third
+word contains a pointer to the placeholder type.
+
+\paragraph{BLOB encoding}
+The length of the data contained in a BLOB term is stored in
+the three bytes after the header. 
+This means that up to 16,777,200 bytes can be encoded in a single
+BLOB term.
+A pointer to the actual data is stored in the third word.
+
+\paragraph{Annotations}
+In all cases, annotations are represented using an extra word
+at the end of the term object. The single annotation bit in the header
+indicates whether or not an annotation is present. Only when this
+bit is set, an extra word is allocated that points to a term
+with type {\tt LIST}, which represents the list of annotations.
+
+%}}}
+
+%{{{ The Binary ATerm Format (BAF)
+
+\subsection*{\ATerm\ Exchange: the Binary \ATerm\ Format}
+
+The efficient exchange of \ATerms\ 
+between tools is very important. The simplest form of exchange 
+is based on the concrete syntax.
+This would involve printing the term on one side and parsing it
+on the other. The concrete syntax is not a very efficient exchange format
+however, because the sharing of function symbols and subterms cannot 
+be expressed in this way.
+
+A better solution would be to exchange a representation in which
+sharing (both of function symbols and subterms) can be expressed
+concisely.  A raw memory dump cannot be used, because addresses in the
+address space of one process have no meaning in the address space of
+another process.
+
+In order to address these problems, we have developed \baf, the
+{\bf B}inary {\bf A}Term {\bf F}ormat.
+Instead of writing addresses, we assign a unique number (index)
+to each subterm and each symbol occurring in a term that we want to 
+exchange. When referring to this term, we could use its index instead
+of its address. 
+
+When writing a term, we begin by writing a table (in order of
+increasing indices) of all function symbols used in this term. Each
+function symbol consists of the string representation of its name
+followed by its arity.
+
+{\em ATerms are written in prefix order.}
+To write a function application, first the index of the function
+symbol is written. Then the indices of the arguments are written. When
+an argument consists of a term that has not been written yet, the
+index of the argument is first written itself before continuing with
+the next argument.  In this way, every subterm is written exactly
+once. Every time a parent term wishes to refer to a subterm, it just
+uses the subterm's index.
+
+%}}}
 % {{{  \section{Availability}
 
 \section*{Availability}
