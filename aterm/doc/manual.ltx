@@ -830,11 +830,55 @@ utilities are automatically built when the \ATlib\ is compiled and
 installed.
 
 \subsection{\ATerm-conversion: {\tt baffle}}\label{util-baffle}
+This utility can be used to convert {\sc baf} to text and vice versa.
+It also offers the option of interpreting a {\sc baf}-file. This will show
+the commands which are executed to (re-)build the \aterm. This option was
+created to aid debugging {\sc baf}-files and is probably of little use to
+the regular \ATlib\ user.
+\smallskip\noindent
+\begin{small}
+\begin{verbatim}
+Usage: baffle [-i <input>] [-o <output> | -c] [-v] [-rb | -rt] [-wb | -wt]
+ 
+    -i <input>    - Read input from file <input>        (Default: stdin)
+    -o <output>   - Write output to file <output>       (Default: stdout)
+    -c            - Check validity of input-term
+    -v            - Print version information
+    -h            - Display help
+    -ri           - Write interpretation of BAF-input
+    -rb, -rt      - Choose between BAF and TEXT input   (Default: -rb)
+    -wb, -wt      - Choose between BAF and TEXT output  (Default: -wb)
+\end{verbatim}
+\end{small}
 
-\subsection{Calculating an \ATerm's size: {\tt
-	termsize}}\label{util-termsize}
+\subsubsection{\tt term2baf}
+A small script called {\tt term2baf} is included which can be used to
+connect a process producing textual output and a proces which expects {\sc
+baf} input. It just sets up {\tt baffle} with the appropriate switches and
+redirects {\tt stdin} and {\tt stdout} accordingly.
 
-\renewcommand{\indexname}{Index\addcontentsline{toc}{section}{\numberline{}Index}}
+\subsubsection{\tt baf2term}
+A small script called {\tt baf2term} is included which can be used to
+connect a process producing {\sc baf} output and a proces which expects
+textual input. It just sets up {\tt baffle} with the appropriate switches
+and redirects {\tt stdin} and {\tt stdout} accordingly.
+
+\subsection{Calculating an \ATerm's size: {\tt termsize}}
+\label{util-termsize}
+This utility can be used to calculate two things:
+\begin{itemize}
+  \item coresize: the amount of memory a given \aterm needs;
+  \item textsize: the amount of memory needed to hold a textual
+  representation of an \aterm. 
+\end{itemize}
+The results are written to {\tt stdout}. As {\tt termsize} uses {\tt
+ATreadFromFile}, it can calculate the size of both textual representations
+of \aterms\ as well as {\sc baf} representations.
+
+\smallskip\noindent Usage: {\tt termsize < }\emph{inputfile}.
+
+\renewcommand{\indexname}
+	{Index\addcontentsline{toc}{section}{\numberline{}Index}}
 \printindex
 
 \end{document}
