@@ -21,6 +21,7 @@ $Id$
 
 2000/9/05 ({jong,olivierp}@cwi.nl)
   * Added functions ATgetTail, ATreplaceTail
+  * Version 1.4.3
 
 2000/8/17 ({jong,olivierp}@cwi.nl)
   * Added and documented ATchecksum function and atsum utility
