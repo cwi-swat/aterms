@@ -25,8 +25,7 @@ public class MakeRulesGenerator extends  Generator {
     
 	protected void generate() {
 		String prefix = name + "API";
-    
-		info("generating " + name + "MakeRules");
+   
 		Iterator types = adt.typeIterator();
 		int bucket = 0;
 		int i = 0;
@@ -39,7 +38,7 @@ public class MakeRulesGenerator extends  Generator {
 		  }
       
 		  print("\\\n" + getClassFileName(JavaGenerator.getClassName(type.getId())));
-		  print(getClassFileName(JavaGenerator.getClassImplName(type.getId())));
+		  print(" " + getClassFileName(JavaGenerator.getClassImplName(type.getId())));
 		  i++;
             
 		  Iterator alts = type.alternativeIterator();
@@ -52,7 +51,7 @@ public class MakeRulesGenerator extends  Generator {
 			}
                
 			print("\\\n" + getClassFileName(AlternativeImplGenerator.getAltClassImplName(type.getId(),alt.getId())));
-			print(getClassFileName(AlternativeGenerator.getAltClassName(type.getId(),alt.getId()))); 
+			print(" " + getClassFileName(AlternativeGenerator.getAltClassName(type,alt))); 
 			i++;
 		  }
 		}

@@ -19,11 +19,10 @@ public class FactoryGenerator extends JavaGenerator {
 	}
 
 	public static String getFactoryClassName(String apiName) {
-		return  apiName + "Factory";
+		return  StringConversions.makeCapitalizedIdentifier(apiName) + "Factory";
 	}
 	
 	protected void generate() {
-    
 	   printPackageDecl();
     
        imports.add("aterm.pure.PureFactory");
@@ -65,7 +64,7 @@ public class FactoryGenerator extends JavaGenerator {
 		 Iterator alts = type.alternativeIterator();
 		 while (alts.hasNext()) {
 		   Alternative alt = (Alternative) alts.next();
-		   String altClassName = AlternativeGenerator.getAltClassName(type.getId(),alt.getId());
+		   String altClassName = AlternativeGenerator.getAltClassName(type,alt);
 		   String typeClassName = getClassName(type.getId());
 		   String protoVar = "proto" + altClassName;
 		   String funVar = "fun" + altClassName;
@@ -83,7 +82,7 @@ public class FactoryGenerator extends JavaGenerator {
 		 Iterator alts = type.alternativeIterator();
 		 while (alts.hasNext()) {
 		   Alternative alt = (Alternative) alts.next();
-		   String altClassName = AlternativeGenerator.getAltClassName(type.getId(),alt.getId());
+		   String altClassName = AlternativeGenerator.getAltClassName(type,alt);
 		   String protoVar = "proto" + altClassName;
 		   String funVar = "fun" + altClassName;
         
@@ -119,7 +118,7 @@ public class FactoryGenerator extends JavaGenerator {
 		 Iterator alts = type.alternativeIterator();
 		 while (alts.hasNext()) {
 		   Alternative alt = (Alternative)alts.next();
-		   String altClassName = AlternativeGenerator.getAltClassName(type.getId(),alt.getId());
+		   String altClassName = AlternativeGenerator.getAltClassName(type,alt);
 		   String protoVar = "proto" + altClassName;
 		   String funVar = "fun" + altClassName;
 

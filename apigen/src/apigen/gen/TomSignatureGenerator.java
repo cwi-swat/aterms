@@ -17,8 +17,6 @@ public class TomSignatureGenerator extends Generator {
 	}
 	
 	public void generate() {
-		info("generating " + filename + ".t");
-
 		genTomBuiltinTypes();
 		genTomTypes(adt);
 	}
@@ -32,10 +30,10 @@ public class TomSignatureGenerator extends Generator {
 		String equals) {
 
 		return 
-               "%typeterm " + type+ "{\n"
-			+ "  implement { "+ impl+ "}\n"
-			+ "  get_fun_sym(t) {"+ get_fun_sym + "}\n"
-			+ "  cmp_fun_sym(s1,s2) { "+ cmp_fun_sym + "}\n"
+               "%typeterm " + type + "{\n"
+			+ "  implement { " + impl + "}\n"
+			+ "  get_fun_sym(t) {" + get_fun_sym + "}\n"
+			+ "  cmp_fun_sym(s1,s2) { " + cmp_fun_sym + "}\n"
 			+ "  get_subterm(t,n) {" + get_subterm + "}\n"
 			+ "  equals(t1,t2) {" + equals+ "}\n"
 			+ "}";

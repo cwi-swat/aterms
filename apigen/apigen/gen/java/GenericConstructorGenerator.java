@@ -19,7 +19,7 @@ public class GenericConstructorGenerator extends JavaGenerator {
 	}
 	
 	public static String getConstructorClassName(String apiName) {
-			return StringConversions.makeCapitalizedIdentifier(apiName) + "Factory";
+			return StringConversions.makeCapitalizedIdentifier(apiName) + "Constructor";
 	}
     
 	protected void generate() {

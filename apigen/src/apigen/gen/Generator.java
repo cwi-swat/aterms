@@ -28,6 +28,7 @@ public abstract class Generator {
 
 	public void run() {
 		stream = createStream(filename, extension, directory);
+		info ("generating " + filename + extension);
 		generate();
 		closeStream(stream);
 	}

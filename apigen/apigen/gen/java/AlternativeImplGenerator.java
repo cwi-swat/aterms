@@ -39,7 +39,7 @@ public class AlternativeImplGenerator extends JavaGenerator {
 		this.typeId = type.getId();
 		this.altId = alt.getId();
 		this.className = getAltClassImplName(typeId,altId);
-		this.subClassName = AlternativeGenerator.getAltClassName(typeId,altId);
+		this.subClassName = AlternativeGenerator.getAltClassName(type,alt);
 		this.superClassName = TypeGenerator.getClassName(typeId);
 		this.visitable = visitable;
 	}

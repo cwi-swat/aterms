@@ -18,13 +18,13 @@ public class AlternativeGenerator extends JavaGenerator {
 		List standardImports,
 		boolean verbose,
 		boolean folding) {
-		super(directory, getAltClassName(type.getId(), alt.getId()), pkg, standardImports, verbose, folding);
+		super(directory, getAltClassName(type, alt), pkg, standardImports, verbose, folding);
 		this.type = type;
 		this.alt = alt;
 	}
 
 	public static String getAltClassName(String type, String alt) {
-		return getClassName(type + "_" + StringConversions.makeCapitalizedIdentifier(alt));
+		return StringConversions.makeCapitalizedIdentifier(type) + "_" + StringConversions.makeCapitalizedIdentifier(alt);
 	}
 
 	public static String getAltClassName(Type type, Alternative alt) {
@@ -33,9 +33,10 @@ public class AlternativeGenerator extends JavaGenerator {
 
 	public void run() {
 		if (!new File(getPath(directory, getAltClassName(type,alt), ".java")).exists()) {
+			info("generating " + getAltClassName(type,alt) + extension);
 			super.run();
 		} else {
-			info("preserving " + getAltClassName(type,alt));
+			info("preserving " + getAltClassName(type,alt) + extension);
 		}
 	}
 
