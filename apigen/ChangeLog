@@ -1,5 +1,6 @@
 2000/09/08 (jong@cwi.nl)
   * Removed unlabeled sdf-specification now that pgen understands labels.
+  * Makefile.am generates parsetables for Sdf2-to-ADT and Gen-C-API.
 
 2000/09/06 ({jong,olivierp}@cwi.nl)
   * Version 0.4
