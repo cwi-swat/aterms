@@ -59,26 +59,26 @@ equations
   build-asfix-attr-list($Attr, $Attr+, $ConsOption) = $AFAttr*1,$AFAttr*2
 
 [equ-build-asfix-attr-left]        build-asfix-attr(left, $ConsOption)        =
-                                     assoc("left")
+                                     assoc(left)
 [equ-build-asfix-attr-right]       build-asfix-attr(right, $ConsOption)       =
-                                     assoc("right")
+                                     assoc(right)
 [equ-build-asfix-attr-nonassoc]       build-asfix-attr(non-assoc, $ConsOption)       =
-                                     assoc("non-assoc")
+                                     assoc(non-assoc)
 [equ-build-asfix-attr-assoc]       build-asfix-attr(assoc, $ConsOption)       =
-                                     assoc("assoc")
+                                     assoc(assoc)
 [equ-build-asfix-attr-bracket]     build-asfix-attr(bracket, $ConsOption)     =
-                                     "bracket"
+                                     bracket
 [equ-build-asfix-attr-avoid]       build-asfix-attr(avoid, $ConsOption)       =
-                                     "avoid"
+                                     avoid
 [equ-build-asfix-attr-prefer]      build-asfix-attr(prefer, $ConsOption)      =
-                                     "prefer"
+                                     prefer
 
 [equ-build-asfix-attr-cons-remove]
   build-asfix-attr(cons($ATerm), cons-remove) =
 
 [equ-build-asfix-attr-cons-expand]
-  build-asfix-attr(cons($ATerm), cons-expand) = term("cons"(quote-all-funs($ATerm)))
+  build-asfix-attr(cons($ATerm), cons-expand) = term(cons($ATerm))
 
 [default-build-asfix-attr] 
-  build-asfix-attr($ATerm, $ConsOption) = term(quote-all-funs($ATerm))
+  build-asfix-attr($ATerm, $ConsOption) = term($ATerm)
 
