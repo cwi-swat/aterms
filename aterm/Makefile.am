@@ -22,6 +22,3 @@ SUBDIRS=aterm toolbus test $(JAVA_SUBDIR) doc
 DIST_SUBDIRS=aterm toolbus test doc java1.2
 
 EXTRA_DIST=make_rules
-
-
-
