@@ -9,7 +9,7 @@ import apigen.adt.api.Factory;
 import apigen.adt.api.types.Modules;
 import apigen.gen.GenerationParameters;
 import aterm.ParseError;
-import aterm.pure.PureFactory;
+import aterm.pure.SingletonFactory;
 
 public class ADTReader {
 
@@ -17,7 +17,7 @@ public class ADTReader {
 		Iterator iter = params.getInputFiles().iterator();
 		String fileName = "";
 		try {
-			Factory factory = new Factory(new PureFactory());
+			Factory factory = new Factory(SingletonFactory.getInstance());
 			Modules all = factory.makeModules();
 			//Entries all = factory.makeEntries();
 			while (iter.hasNext()) {
