@@ -16,3 +16,9 @@ PeanoFactory.java
 PeanoConstructor.java
 Nat*.java
 peano.adt
+*.class
+*.java.sh
+Module*.java
+ListCons*.java
+ListFac*.java
+classcheck.stamp

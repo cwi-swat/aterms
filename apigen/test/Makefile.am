@@ -5,6 +5,8 @@
 #
 
 include ${top_srcdir}/make_rules
+include ${srcdir}/PeanoMakeRules
+include ${srcdir}/ListMakeRules
 
 ADTC		= ${top_builddir}/utils/adt-to-c
 ADTJAVA         = ${top_builddir}/utils/adt-to-java
@@ -33,20 +35,9 @@ javadir = ${top_builddir}/test/classfiles
 JAVAROOT = ${top_builddir}
 CLASSPATH_ENV = CLASSPATH=${top_builddir}:${SHARED_OBJECTS}:${JAVA_ATERM}:${srcdir}/$(JAVAROOT)::$$CLASSPATH
 
-PeanoTestAPI = Nat.java Nat_SucImpl.java  PeanoConstructor.java \
-               NatImpl.java  Nat_Zero.java PeanoFactory.java \
-               Nat_Suc.java  Nat_ZeroImpl.java
 
-ListTestAPI =  ListFactory.java ListConstructor.java ModulesImpl.java \
-               Modules_ListImpl.java Modules_List.java Modules_BodyImpl.java \
-               Modules_Body.java Modules.java ModuleListImpl.java \
-	       ModuleList_ModulesImpl.java ModuleList_Modules.java \
-	       ModuleList.java Module.java ModuleImpl.java \
-	       Module_DefaultImpl.java Module_Default.java \
-	       Modules_Empty.java Modules_EmptyImpl.java
-
-check_JAVA = ${PeanoTestAPI} PeanoTest.java \
-	     ${ListTestAPI} ListTest.java
+check_JAVA = ${PeanoAPI} PeanoTest.java \
+	     ${ListAPI} ListTest.java
 
 CLEANFILES		= ${check_PROGRAMS} ${check_LIBRARIES} \
 			rolodex*.[ch] rolodex_dict.[ch] \
@@ -76,14 +67,14 @@ list.c list.h: list.adt list.pro
 	  echo "export CLASSPATH";\
 	  echo "java test.$*") > $@ && chmod +x $@
 
-${PeanoTestAPI}: peano.adt
+${PeanoAPI}: peano.adt
 	${ADTJAVA} --input ${top_srcdir}/test/peano.adt \
 	           --output ${top_builddir}/test \
 		   --package test \
 		   --name peano \
 		   --classpath ${top_builddir}
 
-${ListTestAPI}: list.adt
+${ListAPI}: list.adt
 	${ADTJAVA} --input ${top_srcdir}/test/list.adt \
 	           --output ${top_builddir}/test \
 		   --package test \

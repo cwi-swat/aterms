@@ -1,0 +1,10 @@
+
+
+PeanoAPI0=\
+Nat.java NatImpl.java \
+Nat_ZeroImpl.java Nat_Zero.java\
+Nat_SucImpl.java Nat_Suc.java
+
+PeanoAPI=\
+PeanoFactory.java PeanoConstructor.java \
+${PeanoAPI0} 
