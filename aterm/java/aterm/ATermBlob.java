@@ -10,18 +10,18 @@ package aterm;
  */
 public interface ATermBlob extends ATerm {
 
-    /**
-     * Gets the size (in bytes) of the data in this blob.
-     *
-     * @param the size of the data in this blob.
-     */
-    public int getBlobSize();
+  /**
+   * Gets the size (in bytes) of the data in this blob.
+   *
+   * @return the size of the data in this blob.
+   */
+  public int getBlobSize();
 
-    /**
-     * Gets the data in this blob.
-     *
-     * @return the data in this blob.
-     *
-     */
-    public byte[] getBlobData();
+  /**
+   * Gets the data in this blob.
+   *
+   * @return the data in this blob.
+   *
+   */
+  public byte[] getBlobData();
 }
