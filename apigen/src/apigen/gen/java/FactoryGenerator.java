@@ -2,6 +2,8 @@ package apigen.gen.java;
 
 import java.util.Iterator;
 
+import sun.security.jgss.spi.MechanismFactory;
+
 import apigen.adt.ADT;
 import apigen.adt.Alternative;
 import apigen.adt.Field;
@@ -144,28 +146,32 @@ public class FactoryGenerator extends JavaGenerator {
                 String proto = protoListVariable(type);
 
                 if (type instanceof SeparatedListType) {
-                    SeparatedListType lType = (SeparatedListType) type;
+                    SeparatedListType sepListType = (SeparatedListType) type;
                     genMakeEmptyList(returnTypeName, methodName, empty);
                     genMakeSingletonSeparatedList(
                         returnTypeName,
                         methodName,
                         paramTypeName,
-                        lType,
+                        sepListType,
                         empty);
                     genMakeManySeparatedList(
-                        lType.getElementType(),
+                        sepListType.getElementType(),
                         returnTypeName,
                         methodName,
                         paramTypeName,
-                        lType);
+                        sepListType);
                     genMakeManySeparatedTermList(
                         returnTypeName,
                         methodName,
                         proto,
-                        lType);
-                    genReverseSeparatedLists(lType, methodName);
-                    genConcatSeparatedLists(lType, methodName);
-                    genAppendSeparatedLists(lType, methodName);
+                        sepListType);
+                    genMakeFixedSizedSeparatedList(
+                        returnTypeName,
+                        methodName,
+                        sepListType);
+                    genReverseSeparatedLists(sepListType, methodName);
+                    genConcatSeparatedLists(sepListType, methodName);
+                    genAppendSeparatedLists(sepListType, methodName);
                 } else {
                     genMakeEmptyList(returnTypeName, methodName, empty);
                     genMakeSingletonList(
@@ -184,6 +190,97 @@ public class FactoryGenerator extends JavaGenerator {
         }
     }
 
+    private void genMakeFixedSizedSeparatedList(
+        String returnTypeName,
+        String methodName,
+        SeparatedListType type) {
+        for (int i = 2; i < 7; i++) {
+            genMakeFixedSizedSeparatedList(returnTypeName, methodName, type, i);
+        }
+    }
+
+    private void genMakeFixedSizedSeparatedList(
+        String returnTypeName,
+        String methodName,
+        SeparatedListType type,
+        int size) {
+        String formalSeps = buildFormalSeparatorArguments(type);
+        String actualSeps = buildActualSeparatorArgumentList(type, false);
+
+        if (!formalSeps.equals("")) {
+            formalSeps += ", ";
+            actualSeps += ", ";
+        }
+
+        JavaGenerationParameters params = getJavaGenerationParameters();
+        String qualifiedElementName =
+            TypeGenerator.qualifiedClassName(params, type.getElementType());
+        String formalElems = buildFormalArgumentList(qualifiedElementName, "elem", size);
+        String actualElems = buildActualArgumentList("elem", 1, size);
+        println(
+            "  public "
+                + returnTypeName
+                + " "
+                + methodName
+                + "("
+                + formalSeps
+                + formalElems
+                + ") {");
+
+        String recursiveActualSeps = "";
+        if (size > 2) {
+            // a singleton does not have separators
+            recursiveActualSeps = actualSeps;
+        }
+
+        println(
+            "    return "
+                + methodName
+                + "(elem0, "
+                + actualSeps
+                + methodName
+                + "("
+                + recursiveActualSeps   
+                + actualElems
+                + "));");
+        println("  }");
+        println();
+    }
+
+    private String buildActualArgumentList(String arg, int from, int to) {
+        StringBuffer buf = new StringBuffer();
+        int i = from;
+
+        while (i < to) {
+            buf.append(arg);
+            buf.append(i);
+
+            i++;
+            if (i < to) {
+                buf.append(", ");
+            }
+        }
+        return buf.toString();
+    }
+
+    private String buildFormalArgumentList(String type, String arg, int size) {
+        StringBuffer buf = new StringBuffer();
+        int i = 0;
+
+        while (i < size) {
+            buf.append(type);
+            buf.append(' ');
+            buf.append(arg);
+            buf.append(i);
+
+            i++;
+            if (i < size) {
+                buf.append(", ");
+            }
+        }
+        return buf.toString();
+    }
+
     private void genAppendSeparatedLists(SeparatedListType type, String methodName) {
         JavaGenerationParameters params = getJavaGenerationParameters();
         String qualifiedClassName = TypeGenerator.qualifiedClassName(params, type);
@@ -193,7 +290,7 @@ public class FactoryGenerator extends JavaGenerator {
         String actualSeps = buildActualSeparatorArgumentList(type, false);
         String elementTypeName =
             TypeGenerator.qualifiedClassName(params, type.getElementType());
-        
+
         if (formalSeps.length() > 0) {
             formalSeps += ", ";
             actualSeps += ", ";
@@ -215,7 +312,9 @@ public class FactoryGenerator extends JavaGenerator {
 
     }
 
-    private String buildActualSeparatorArgumentList(SeparatedListType type, boolean convert) {
+    private String buildActualSeparatorArgumentList(
+        SeparatedListType type,
+        boolean convert) {
         return buildActualTypedAltArgumentList(type.separatorFieldIterator(), convert);
     }
 

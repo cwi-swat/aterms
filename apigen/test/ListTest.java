@@ -172,8 +172,32 @@ public class ListTest {
 
         testAppend();
         testElementAt();
+        testMakeLists();
 
         testNineSeps();
+    }
+
+    private void testMakeLists() {
+        Module m[] = new Module[6];
+        
+        for (int i = 0; i < 6; i ++) {
+          m[i] = factory.makeModule_Default("m" + i);
+        }
+        Layout l = factory.makeLayout_Default("l");
+ 
+        Separated list[] = new Separated[7];
+        
+        list[0] = factory.makeSeparated();
+        list[1] = factory.makeSeparated(m[0]);
+        list[2] = factory.makeSeparated(l,l,m[0],m[1]);
+        list[3] = factory.makeSeparated(l,l,m[0],m[1],m[2]);
+        list[4] = factory.makeSeparated(l,l,m[0],m[1],m[2],m[3]);
+        list[5] = factory.makeSeparated(l,l,m[0],m[1],m[2],m[3],m[4]);
+        list[6] = factory.makeSeparated(l,l,m[0],m[1],m[2],m[3],m[4],m[5]);
+        
+        for (int i = 0; i < 7; i++) {
+          testAssert(list[i].getLength() == i, "" + i + " element list");
+        }
     }
 
     private void testElementAt() {
