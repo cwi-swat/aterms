@@ -186,8 +186,6 @@ ATerm     ATdictGet(ATerm dict, ATerm key);
 ATerm     ATdictPut(ATerm dict, ATerm key, ATerm value);
 ATerm     ATdictRemove(ATerm dict, ATerm key);
 
-/* Gewijzigd door JFG */
-
 ATermTable ATtableCreate(long initial_size, int max_load_pct);
 void       ATtableDestroy(ATermTable table);
 void       ATtableReset(ATermTable table);
@@ -201,13 +199,11 @@ ATermIndexedSet
            ATindexedSetCreate(long initial_size, int max_load_pct);
 void       ATindexedSetDestroy(ATermIndexedSet set);
 void       ATindexedSetReset(ATermIndexedSet set);
-long       ATindexedSetPut(ATermIndexedSet set, ATerm key, ATbool *new);
-long       ATindexedSetGetIndex(ATermIndexedSet set, ATerm key);
-void       ATindexedSetRemove(ATermIndexedSet set, ATerm key);
-ATermList  ATindexedSetKeys(ATermIndexedSet set);
+long       ATindexedSetPut(ATermIndexedSet set, ATerm elem, ATbool *new);
+long       ATindexedSetGetIndex(ATermIndexedSet set, ATerm elem);
+void       ATindexedSetRemove(ATermIndexedSet set, ATerm elem);
+ATermList  ATindexedSetElements(ATermIndexedSet set);
 ATerm      ATindexedSetGetElem(ATermIndexedSet set, long index);
-
-/* Einde wijziging JFG */
 
 /* Higher order functions */
 ATermList ATfilter(ATermList list, ATbool (*predicate)(ATerm));

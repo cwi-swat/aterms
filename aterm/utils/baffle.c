@@ -24,7 +24,7 @@
  *
  * Usage:
  *
- * baffle [-i <input>] [-o <output> | -c] [-v] [-rb | -rt] [-wb | -wt]
+ * baffle [-i <input>] [-o <output> | -c] [-v] [-rb | -rt | -rs] [-wb | -wt | -ws]
  *
  * -i <input>    - Read input from file <input>        (Default: stdin)
  * -o <output>   - Write output to file <output>       (Default: stdout)
@@ -57,15 +57,14 @@ static void
 usage(char *prg)
 {
   fprintf(stderr,
-	  "Usage: %s [-i <input>] [-o <output> | -c] [-v] [-rb | -rt] [-wb | -wt]\n\n"
+	  "Usage: %s [-i <input>] [-o <output> | -c] [-v] [-rb | -rt | -rs] [-wb | -wt | -ws]\n\n"
 	  "    -i <input>    - Read input from file <input>        (Default: stdin)\n"
 	  "    -o <output>   - Write output to file <output>       (Default: stdout)\n"
 	  "    -c            - Check validity of input-term\n"
 	  "    -v            - Print version information\n"
 	  "    -h            - Display help\n"
-	  "    -ri           - Write interpretation of BAF-input\n"
-	  "    -rb, -rt, -rs - Choose between BAF, TEXT, and SHARED-TEXT input   (Default: autodetect)\n"
-	  "    -wb, -wt, -ws - Choose between BAF, TEXT, and SHARED-TEXT output  (Default: -wb)\n", 
+	  "    -rb, -rt, -rs - Choose between BAF, TEXT, and TAF input   (Default: autodetect)\n"
+	  "    -wb, -wt, -ws - Choose between BAF, TEXT, and TAF output  (Default: -wb)\n", 
 	  prg);
 }
 

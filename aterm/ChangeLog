@@ -25,6 +25,8 @@ $Id$
   * AFun table size now always a power of 2 (abolished % operator).
   * AFun table now resizes dynamically
   * Replaced -at-symboltable <size> with -at-afuntable <class>
+  * Added explanation of the taf format and taf related functions and scripts
+  * Fixed ATindexedSet documentation
 
 2000/8/15 ({jong,olivierp}@cwi.nl)
   * Version is now 1.4.1

@@ -953,7 +953,7 @@ void testIndexedSet()
       ATindexedSetRemove(set,ATmake("f(<int>)",i));
     }
 
-  if (ATgetLength(ATindexedSetKeys(set))!=0)
+  if (ATgetLength(ATindexedSetElements(set))!=0)
     ATerror("Problem2\n");
   
   for(i=0 ; i<MAX_ELEM ; i++)
@@ -974,7 +974,7 @@ void testIndexedSet()
 	ATerror("Problem5\n");
     }
 
-  if (ATgetLength(ATindexedSetKeys(set))!=MAX_ELEM)
+  if (ATgetLength(ATindexedSetElements(set))!=MAX_ELEM)
     ATerror("Problem6\n");
 
   printf("indexedSet tests ok.\n");

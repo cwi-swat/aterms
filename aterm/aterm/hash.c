@@ -489,17 +489,17 @@ long ATindexedSetGetIndex(ATermIndexedSet hashset, ATerm elem)
 }
 
 /*}}}  */
-/*{{{  void ATindexedSetRemove(ATermIndexedSet hashset, ATerm key) */
+/*{{{  void ATindexedSetRemove(ATermIndexedSet hashset, ATerm elem) */
 
-void ATindexedSetRemove(ATermIndexedSet hashset, ATerm key)
+void ATindexedSetRemove(ATermIndexedSet hashset, ATerm elem)
 { 
-  ATtableRemove(hashset, key);
+  ATtableRemove(hashset, elem);
 }
 
 /*}}}  */
-/*{{{  ATermList ATindexedSetKeys(ATermIndexedSet hashset) */
+/*{{{  ATermList ATindexedSetElements(ATermIndexedSet hashset) */
 
-ATermList ATindexedSetKeys(ATermIndexedSet hashset)
+ATermList ATindexedSetElements(ATermIndexedSet hashset)
 { 
   return tableContent(hashset->keys, hashset->nr_entries);
 }
