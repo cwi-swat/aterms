@@ -1,6 +1,0 @@
-[
-  [ Player, Paladin, 
-	appl(paladin,[move(<move(Int)>),strength(<strength(Int)>)]) ],
-  [ Player, Mage, 
-	appl(mage,[move(<move(Int)>),mana(<mana(Int)>)]) ]
-]

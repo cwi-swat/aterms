@@ -10,6 +10,7 @@ module Gen-C-API
       C-FILE-NAME [\:]					-> C-FILE-TAG
 
     context-free syntax
+      c-api ":" C-FILE-NAME "," C-CONSTRUCT* "," ATerm	-> C-API
       gen-c-api ( C-FILE-NAME, C-CONSTRUCT*, API )	-> C-API
       C-FILE-TAG C-FILE "$$"				-> C-API-FILE
       C-FILE-TAG ATerm "$$"				-> C-API-FILE
@@ -34,7 +35,7 @@ module Gen-C-API
       gen-term-decls(API-Type)				-> C-CONSTRUCTS
       gen-term-impls(API-Type)				-> C-CONSTRUCTS
 
-      gen-source(API)					-> C-FILE
+      gen-source(C-FILE-NAME, API)			-> C-FILE
       gen-struct-decls(API)				-> C-CONSTRUCTS
       gen-struct-decl(API-Type)				-> C-CONSTRUCT
 
@@ -55,6 +56,7 @@ module Gen-C-API
       gen-setter-body ( AFun, AFun, AFun, API-Location* ) -> C-SERIES
 
       build-init-decl ( C-FILE-NAME )			-> C-FUNCTION-DECL
+      build-init-impl ( C-FILE-NAME )			-> C-CONSTRUCT
       build-check-decl ( AFun, AFun )			-> C-FUNCTION-DECL
       build-get-expr ( ATerm-Path , C-EXPR )		-> C-EXPR
       build-getter-decl ( AFun, AFun , AFun )		-> C-FUNCTION-DECL
@@ -72,17 +74,28 @@ module Gen-C-API
       build-source-tag ( C-FILE-NAME )			-> C-FILE-TAG
       build-dict-tag ( C-FILE-NAME )			-> C-FILE-TAG
       build-dict-header ( C-FILE-NAME )			-> C-INCLUDE-FILE
+      build-api-header ( C-FILE-NAME )			-> C-INCLUDE-FILE
       build-macro ( C-FILE-NAME )			-> C-ID
 
+      replace-holes ( ATerm )				-> ATerm
+      replace-holes-terms ( ATerms )			-> ATerms
+
     variables
+      "$ADT"			-> ATerm
+      "$AFun"			-> AFun
       "$Alt"			-> API-Alt
       "$Alt+"			-> API-Alt+
       "$Alt*"			-> API-Alt*
       "$AltId"			-> AFun
       "$AltField*"		-> API-Field*
       "$API"			-> API
+      "$ApiHeader"		-> C-INCLUDE-FILE
+      "$Args"[0-9]*		-> { ATerm "," }+
+      "$ATerm"[0-9]*		-> ATerm
+      "$ATerms"[0-9]*		-> { ATerm "," }*
       "$Dict"[0-9]*		-> { ATerm "," }*
       "$DictHeader"		-> C-INCLUDE-FILE
+      "$Elems"[0-9]*		-> { ATerm "," }*
       "$Field"			-> API-Field
       "$Field*"			-> API-Field*
       "$FieldId"		-> AFun
@@ -94,6 +107,7 @@ module Gen-C-API
       "$GetImpl"		-> C-CONSTRUCT
       "$Header"			-> C-FILE
       "$Id"			-> C-ID
+      "$InitImpl"		-> C-CONSTRUCT
       "$Loc"			-> API-Location
       "$Loc*"[0-9]*		-> API-Location*
       "$Loc+"			-> API-Location+

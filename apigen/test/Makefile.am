@@ -4,9 +4,26 @@
 # $Id$
 #
 
-PARSER          = ${SGLRBIN}/sglr
-ASOURCE         = ${ASOURCEBIN}/asource
+PROGS	= rolotest
 
-APIGEN          = ${top_builddir}/spec/c-source/Gen-C-API
-POSTGEN         = tr -d '\n'
-TABLE           = ${top_builddir}/spec/Gen-C-API.trm.tbl
+TESTS	= rolotest
+
+INCLUDES		= -I${ATERM}/include -Irolodex
+LDFLAGS			= -L${ATERM}/lib
+
+noinst_PROGRAMS		= ${PROGS}
+rolotest_SOURCES	= rolotest.c
+rolotest_LDADD		= librolodex.a -lATerm
+
+rolotest.o: rolodex/rolodex.h
+
+CLEANFILES		= librolodex.a ${PROGS}
+
+librolodex.a rolodex/rolodex.h: rolodex.adt rolodex.pro
+	${top_srcdir}/utils/apigen rolodex 1.0
+	@cd rolodex; \
+	./reconf; \
+	./configure --with-aterm=${ATERM}; \
+	${MAKE}
+	@cp rolodex/librolodex.a .
+	

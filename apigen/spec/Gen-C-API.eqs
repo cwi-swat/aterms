@@ -1,8 +1,12 @@
 equations
 
+[equ-c-api]
+  c-api: $Prefix , $Prologue, $ADT = 
+	gen-c-api($Prefix, $Prologue, generate-api($ADT))
+
 [equ-gen-c-api]
   gen-header($Prefix, $Prologue, $API) = $Header,
-  gen-source($API) = $Source,
+  gen-source($Prefix, $API) = $Source,
   gen-dict($API) = $Dict
   ===
   gen-c-api($Prefix, $Prologue, $API) =
@@ -103,9 +107,16 @@ equations
 
 [equ-gen-source]
    gen-struct-decls($API) = $Typedef*,
-   gen-fun-impls($API)    = $FunImplList
+   build-init-impl($Prefix)  = $InitImpl,
+   gen-fun-impls($API)    = $FunImplList,
+   build-api-header($Prefix) = $ApiHeader
    ===
-   gen-source($API) = $Typedef* $FunImplList
+   gen-source($Prefix, $API) = 
+     #include <stdio.h>@
+     #include $ApiHeader@
+     $Typedef*
+     $InitImpl
+     $FunImplList
 
 [equ-gen-struct-decls-empty]
   gen-struct-decls(api [ ]) =
@@ -227,6 +238,13 @@ equations
   build-init-decl(c-file-name($Char*)) = 
 	void build-c-id(init afun($Char*) api)()
 
+
+[equ-build-init-impl]
+  build-init-impl(c-file-name($Char*)) = 
+	void build-c-id(init afun($Char*) api)() {
+           build-c-id(afun("i" "n" "i" "t" "_" $Char* "_" "d" "i" "c" "t"))();
+        }
+
 [equ-build-check-decl]
   build-check-decl($TypeId, $AltId) =
     build-c-id(ATbool) build-c-id(is $TypeId $AltId) ( build-c-id($TypeId) arg )
@@ -298,19 +316,19 @@ equations
   
 
 [equ-build-set-expr-empty]
-  build-set-expr($FieldId, $Parent, ) = build-c-id($FieldId)
+  build-set-expr($FieldId, $Parent, ) = (ATerm)build-c-id($FieldId)
 
 [equ-build-set-expr-elem]
   $GetExpr = build-get-expr($Parent, build-c-id(arg)),
   $SetExpr1 = build-set-expr($FieldId, $Parent -> elem:$Index, $Path),
-  $SetExpr2 = ATreplace($GetExpr, $SetExpr1, build-c-int($Index))
+  $SetExpr2 = (ATerm)ATreplace((ATermList)$GetExpr, $SetExpr1, build-c-int($Index))
   ===
   build-set-expr($FieldId, $Parent, elem:$Index -> $Path) = $SetExpr2
 
 [equ-build-set-expr-arg]
   $GetExpr = build-get-expr($Parent, build-c-id(arg)),
   $SetExpr1 = build-set-expr($FieldId, $Parent -> arg:$Index, $Path),
-  $SetExpr2 = ATsetArgument($GetExpr, $SetExpr1, build-c-int($Index))
+  $SetExpr2 = (ATerm)ATsetArgument((ATermAppl)$GetExpr, $SetExpr1, build-c-int($Index))
   ===
   build-set-expr($FieldId, $Parent, arg:$Index -> $Path) = $SetExpr2
 
@@ -396,6 +414,9 @@ equations
   build-dict-header(c-file-name($Char*)) = 
 	c-include-file(""" $Char* "_" "d" "i" "c" "t" "." "h" """)
 
+[equ-build-api-header]
+  build-api-header(c-file-name($Char*)) = c-include-file(""" $Char* "." "h" """)
+
 [equ-build-macro]
   build-macro(c-file-name($Char*)) = c-id("_" "_" $Char* "_" "H")
 
@@ -410,10 +431,35 @@ equations
 
 [equ-gen-dict-alts-single]
   gen-dict-alts(type [ $TypeId, alt [ $AltId, $Pattern ], $Field* ]) =
-	[ build-afun(pattern $TypeId $AltId), $Pattern ]
+	[ build-afun(pattern $TypeId $AltId), replace-holes($Pattern) ]
 
 [equ-gen-dicts-alts-divide]
   gen-dict-alts(type [ $TypeId, $Alt, $Field* ]) = $Dict1,
   gen-dict-alts(type [ $TypeId, $Alt+, $Field* ]) = $Dict2
   ===
   gen-dict-alts(type [ $TypeId, $Alt $Alt+, $Field* ]) = $Dict1, $Dict2
+
+[default-replace-holes]
+  replace-holes($ATerm) = $ATerm
+
+[equ-replace-holes-appl]
+  replace-holes-terms($Args1) = $Args2
+  ===
+  replace-holes($AFun($Args1)) = $AFun($Args2)
+
+[equ-replace-holes-list]
+  replace-holes-terms($Elems1) = $Elems2
+  ===
+  replace-holes([$Elems1]) = [$Elems2]
+
+[equ-replace-holes-placeholder]
+  replace-holes(<$ATerm>) = <term>
+
+[equ-replace-holes-terms-empty]
+  replace-holes-terms() =
+
+[equ-replace-holes-terms-divide]
+  replace-holes($ATerm1) = $ATerm2,
+  replace-holes-terms($ATerms1) = $ATerms2
+  ===
+  replace-holes-terms($ATerm1,$ATerms1) = $ATerm2,$ATerms2

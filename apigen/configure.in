@@ -23,6 +23,12 @@ else
 	ASROUCE=`dirname \`dirname ${ASOURCE}\``
 fi
 
+dnl Handle --with-aterm=... argument to configure
+AC_ARG_WITH(aterm,
+[  --with-aterm=DIR        ATerm-library is in DIR],
+ATERM=${withval},)
+AC_SUBST(ATERM)
+
 dnl Our own version of libdir whose value is set dynamically
 AC_SUBST(INSTLIBDIR)
 INSTLIBDIR="$libdir"
