@@ -676,7 +676,8 @@ public class CGen
 
     pattern = prefix + "pattern" + type_id + capitalize(buildId(alt.getId()));
 
-    if (contains_placeholder) {
+    /* Optimization disabled because of possible presence of annotations! */
+    if (true || contains_placeholder) {
       match_code.append("ATmatchTerm((ATerm)arg, " + pattern);
       Iterator fields = type.altFieldIterator(alt.getId());
       while (fields.hasNext()) {
