@@ -72,9 +72,25 @@ tag:
 	ctags -t *.[ch]
 
 depend:
-	$(CC_GCC) -MM $(CFLAGS_GCC) $(ATERMSRCS) > .depend
+	$(CC_GCC) -MM $(DEFS_CC) $(INCL_CC) $(ATERMSRCS) > /tmp/.gendep
+	cat /tmp/.gendep | sed "s/.o:/-cc.o:/"   >  .depend
+	$(CC_GCC) -MM $(DEFS_GCC) $(INCL_GCC) $(ATERMSRCS) > /tmp/.gendep
+	cat /tmp/.gendep | sed "s/.o:/-gcc.o:/"  >> .depend
+	$(CC_GCC) -MM $(DEFS_DBG) $(INCL_DBG) $(ATERMSRCS) > /tmp/.gendep
+	cat /tmp/.gendep | sed "s/.o:/-dbg.o:/"  >> .depend
+	$(CC_GCC) -MM $(DEFS_PROF) $(INCL_PROF) $(ATERMSRCS) > /tmp/.gendep
+	cat /tmp/.gendep | sed "s/.o:/-prof.o:/" >> .depend
+	rm -f /tmp/.gendep
 
 .depend:
-	$(CC_GCC) -MM $(CFLAGS_GCC) $(ATERMSRCS) > .depend
+	$(CC_GCC) -MM $(DEFS_CC) $(INCL_CC) $(ATERMSRCS) > /tmp/.gendep
+	cat /tmp/.gendep | sed "s/.o:/-cc.o:/"   >  .depend
+	$(CC_GCC) -MM $(DEFS_GCC) $(INCL_GCC) $(ATERMSRCS) > /tmp/.gendep
+	cat /tmp/.gendep | sed "s/.o:/-gcc.o:/"  >> .depend
+	$(CC_GCC) -MM $(DEFS_DBG) $(INCL_DBG) $(ATERMSRCS) > /tmp/.gendep
+	cat /tmp/.gendep | sed "s/.o:/-dbg.o:/"  >> .depend
+	$(CC_GCC) -MM $(DEFS_PROF) $(INCL_PROF) $(ATERMSRCS) > /tmp/.gendep
+	cat /tmp/.gendep | sed "s/.o:/-prof.o:/" >> .depend
+	rm -f /tmp/.gendep
 
 include .depend
