@@ -134,15 +134,7 @@ public class TypeImplGenerator extends JavaGenerator {
 	   println();
 	 }
 	 
-	private void genDefaultIsMethod(Alternative alt) {   
-		   println("  public boolean is" + StringConversions.makeCapitalizedIdentifier(alt.getId()) + "()");
-		   println("  {");
-		   println("    return false;");
-		   println("  }");
-		   println();
-	   }
-  
-	 private void genDefaultHasMethods(Type type)
+     private void genDefaultHasMethods(Type type)
 	 {
 	   Iterator fields = type.fieldIterator() ;
     
@@ -161,8 +153,16 @@ public class TypeImplGenerator extends JavaGenerator {
 		 println();
 	 }
   
+	private void genDefaultIsMethod(Alternative alt) {   
+		   println("  public boolean is" + StringConversions.makeCapitalizedIdentifier(alt.getId()) + "()");
+		   println("  {");
+		   println("    return false;");
+		   println("  }");
+		   println();
+	   }
+  	
     private void genIsTypeMethod(Type type) {
-        println("  public boolean is" + TypeGenerator.className(type) + "()  {");
+        println("  public boolean isSort" + TypeGenerator.className(type) + "()  {");
         println("    return true;");
         println("  }");
         println();  

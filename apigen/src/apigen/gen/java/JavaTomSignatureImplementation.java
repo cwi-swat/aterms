@@ -189,7 +189,7 @@ public class JavaTomSignatureImplementation implements TomSignatureImplementatio
 	}
 
 	public String OperatorIsFSym(String term, String type, String alt) {
-		return "(" + term + "!= null) &&" + term + ".is" + StringConversions.makeCapitalizedIdentifier(alt) + "()";
+		return "(" + term + "!= null) && " + term + ".is" + StringConversions.makeCapitalizedIdentifier(alt) + "()";
 	}
 
 	public String OperatorGetSlot(String term, String type, String slot) {

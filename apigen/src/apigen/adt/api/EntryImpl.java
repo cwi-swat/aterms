@@ -1,8 +1,7 @@
 package apigen.adt.api;
 
-import aterm.*;
-import java.io.InputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 abstract public class EntryImpl extends ADTConstructor
 {

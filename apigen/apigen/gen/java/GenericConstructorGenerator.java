@@ -93,7 +93,7 @@ public class GenericConstructorGenerator extends JavaGenerator {
       }
 
 	private void genDefaultTypePredicate(Type type) {
-		println("  public boolean is" + TypeGenerator.className(type) + "() {");
+		println("  public boolean isSort" + TypeGenerator.className(type) + "() {");
         println("    return false;");
         println("  }");
         println();
