@@ -206,16 +206,46 @@ void testList(void)
   list[6] = ATmakeList6((ATerm)ATmakeInt(1), (ATerm)ATmakeInt(2), 
 			(ATerm)ATmakeInt(3), (ATerm)ATmakeInt(4), 
 			(ATerm)ATmakeInt(5), (ATerm)ATmakeInt(6));
+  list[7] = ATmakeList3((ATerm)ATmakeInt(1), (ATerm)ATmakeInt(2), 
+			(ATerm)ATmakeInt(3));
+  list[8] = ATmakeList2((ATerm)ATmakeInt(2), (ATerm)ATmakeInt(3));
 
   assert(ATisEmpty(list[0]));
   assert(!ATisEmpty(list[1]));
 
   for(i=0; i<6; i++) {
-    test_term("list", 1, (ATerm)list[i], AT_LIST);
+    test_term("list-creation", i+1, (ATerm)list[i], AT_LIST);
     assert(ATgetLength(list[i]) == i);
     ATwriteToTextFile((ATerm)list[i], stdout);
     fprintf(stdout, "\n");
   }
+
+  test_assert("list-ops", 1, ATisEqual(list[3], ATgetPrefix(list[4])));
+  test_assert("list-ops", 2, ATisEqual(ATmakeInt(6), ATgetLast(list[6])));
+  test_assert("list-ops", 3, ATisEqual(list[8], ATgetSlice(list[5], 1, 3)));
+  test_assert("list-ops", 4, ATisEmpty(ATgetSlice(list[6], 0, 0)));
+  test_assert("list-ops", 5, ATisEmpty(ATgetSlice(list[7], 2, 2)));
+  test_assert("list-ops", 6, ATisEmpty(ATgetSlice(list[7], 1, 1)));
+  test_assert("list-ops", 7, ATisEqual(list[2], ATgetSlice(list[2],0,2)));
+  test_assert("list-ops", 8, ATisEqual(ATgetFirst(list[5]), ATmakeInt(1)));
+  test_assert("list-ops", 9, ATisEqual(ATgetNext(list[3]), list[8]));
+  test_assert("list-ops",10, ATisEqual(ATinsert(list[8], 
+						(ATerm)ATmakeInt(1)), list[3]));
+  test_assert("list-ops",11, ATisEqual(ATappend(list[3], 
+						(ATerm)ATmakeInt(4)), list[4]));
+  list[15] = ATconcat(list[4], list[3]);
+  test_assert("list-ops",12, ATgetLength(list[15]) == 7);
+  list[14] = ATconcat(list[3], list[3]);
+  test_assert("list-ops",13, ATgetLength(list[14]) == 6);
+  list[13] = ATinsertAt(list[14], (ATerm)ATmakeInt(4), 3);
+  test_assert("list-ops",14, ATisEqual(list[13], list[15]));
+
+  test_assert("list-ops",15, ATisEqual(ATelementAt(list[4], 1),
+				       (ATerm)ATmakeInt(2)));
+  test_assert("list-ops",16, ATindexOf(list[4], (ATerm)ATmakeInt(2),0) == 1);
+  test_assert("list-ops",17, ATlastIndexOf(list[4], (ATerm)ATmakeInt(2),0) == 1);
+  test_assert("list-ops",16, ATindexOf(list[4], (ATerm)ATmakeInt(2),2) == -1);
+  test_assert("list-ops",17, ATlastIndexOf(list[4], (ATerm)ATmakeInt(2),0) == 1);
 }
 
 /*}}}  */
