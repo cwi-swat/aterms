@@ -1,5 +1,0 @@
-equations
-
-[equ-build-typedef]
-  build-typedef($Alias) =
-        typedef struct build-c-id(_ $Alias) * build-c-id($Alias);

@@ -1,9 +1,0 @@
-module C-Layout
-exports
-  lexical syntax
-    [\ \t\n]                      -> LAYOUT
-    "/*" ~[\*]* "*/"		  -> LAYOUT
-
-  context-free restrictions
-    LAYOUT? -/- [\ \t\n] %% | [\/].[\*\/] 
-

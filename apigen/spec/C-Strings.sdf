@@ -1,9 +1,0 @@
-module C-Strings
-
-exports
-  sorts C-STR-CON
-  
-  lexical syntax
-    "\"" ~[\"\n]* "\"" -> C-STR-CON
-    "\"\"\""           -> C-STR-CON
-
