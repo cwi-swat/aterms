@@ -163,7 +163,7 @@ fi
 
 # {{{  generate C code from ADT
 
-java  -classpath ${CGEN} apigen.c.CGen \
+java  -classpath ${CGEN} apigen.gen.c.CGen \
 	  -input ${INPUT}	\
 	  -output ${OUTPUT}	\
 	  ${OPTIONAL_PROLOGUE}	\

@@ -1,3 +1,7 @@
+2002/09/24 (vinju@loria.fr)
+ * Renamed API class to ADT class (eclipse rules!)
+ * Made deeper package hierarchy in apigen to be able to reuse more code in the near future
+ 
 2002/09/23 (vinju@loria.fr)
  * Partly re-implemented and finished initial functionality of adt-to-java
  * Added --folding to adt-to-java to (de)activate folding support in the generated classes

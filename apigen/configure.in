@@ -132,8 +132,11 @@ utils/sdf2-to-adt
 utils/adt-to-c
 utils/adt-to-java
 apigen/Makefile
-apigen/c/Makefile
-apigen/java/Makefile
+apigen/adt/Makefile
+apigen/gen/Makefile
+apigen/gen/c/Makefile
+apigen/gen/java/Makefile
+apigen/gen/jtom/Makefile
 test/Makefile
 doc/Makefile
 doc/paper/Makefile
