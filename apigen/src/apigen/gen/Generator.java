@@ -100,12 +100,8 @@ public abstract class Generator {
 			PrintStream stream = new PrintStream(new FileOutputStream(file));
 			return stream;
 		} catch (FileNotFoundException exc) {
-			System.err.println(
-				"fatal error: Failed to open " + file + " for writing.");
-			System.exit(1);
+			throw new RuntimeException("fatal error: Failed to open " + file + " for writing.");
 		}
-		
-		return null;
 	}
 
     protected String getPath(String directory, String name, String ext) {

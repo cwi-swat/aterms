@@ -3,7 +3,6 @@
 # {{{ variables
 
      PRG=`basename $0`
-   ATERM=@ATERM@
   JAVA_ATERM=@JAVA_ATERM@
   SHARED_OBJECTS=@SHARED_OBJECTS@
   prefix=@prefix@
@@ -96,9 +95,12 @@ do
     -c | --classpath)
       shift; CLASSES=$1;;
 
+    -f | --folding)
+      FOLDING=1 ;;
+      
     -o | --output)
       shift; OUTPUT=$1 ;;
-
+      
     -p | --package)
       shift; OPT_PACKAGE=$1 ;;
 
@@ -108,17 +110,14 @@ do
     -n | --name)
       shift; NAME="$1";;
 
-    -v | --verbose)
-      VERBOSE=1 ;;
-     
-    -f | --folding)
-      FOLDING=1 ;;
-
     -t | --visitable)
       VISITABLE=1 ;;
     
     -j | --jtom)
       JTOM=1 ;;
+      
+    -v | --verbose)
+      VERBOSE=1 ;;
   
     -h | --help)
       usage; exit 0 ;;
@@ -146,29 +145,29 @@ fi
 if [ "a${OPT_PACKAGE}" = "a" ]; then
   OPT_PACKAGE=""
 else
-  OPT_PACKAGE="-package ${OPT_PACKAGE}"
+  OPT_PACKAGE="--package ${OPT_PACKAGE}"
 fi
 
 if [ $VERBOSE -gt 0 ]; then
-  OPT_VERBOSE="-verbose"
+  OPT_VERBOSE="--verbose"
 else
   OPT_VERBOSE=""
 fi
 
 if [ $FOLDING -gt 0 ]; then
-  OPT_FOLDING="-folding"
+  OPT_FOLDING="--folding"
 else
   OPT_FOLDING=""
 fi
 
 if [ $VISITABLE -gt 0 ]; then
-  OPT_VISITABLE="-visitable"
+  OPT_VISITABLE="--visitable"
 else
   OPT_VISITABLE=""
 fi
 
 if [ $JTOM -gt 0 ]; then
-  OPT_JTOM="-jtom"
+  OPT_JTOM="--jtom"
 else
   OPT_JTOM=""
 fi
@@ -176,7 +175,7 @@ fi
 if [ "a${NAME}" = "a" ]; then
   OPT_NAME=""
 else
-  OPT_NAME="-name ${NAME}"
+  OPT_NAME="--name ${NAME}"
 fi
 
   
@@ -185,8 +184,8 @@ fi
 # {{{  generate Java code from ADT
 java  -classpath ${CLASSES}:${SHARED_OBJECTS}:${JAVA_ATERM} \
           apigen.gen.java.Main \
-	  -input ${INPUT}	\
-	  -basedir ${OUTPUT}	\
+	  --input ${INPUT}	\
+	  --output ${OUTPUT}	\
 	  ${OPT_IMPORTS}	\
 	  ${OPT_PACKAGE}	\
 	  ${OPT_VERBOSE}        \

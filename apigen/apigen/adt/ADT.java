@@ -45,8 +45,7 @@ public class ADT {
 						iter.remove();
 					}
 				} catch (ClassCastException exc) {
-					System.err.println("unexpected entry found:" + iter.previous());
-					System.exit(1);
+					throw new RuntimeException("unexpected entry found:" + iter.previous());
 				}
 			}
 

@@ -45,17 +45,16 @@ public class Main {
 	private static void usage() {
 		System.err.println("usage: JavaGen [options]");
 		System.err.println("options:");
-		System.err.println("\t-verbose                  [off]");
-		System.err.println("\t-package <package>        [\"\"]");
-		System.err.println("\t-name <api name>          [improvised]");
-		System.err.println("\t-basedir <basedir>        [\".\"]");
-		System.err.println("\t-import <package>         (can be repeated)");
-		System.err.println("\t-input <in>               [-]");
-		System.err.println("\t-folding                  [off]");
-		System.err.println("\t-visitable                [off]");
-		System.err.println("\t-jtom                     [off]");
-		System.err.println("\t-jtype                    [off]");
-		System.exit(1);
+		System.err.println("\t-i || --input <in>              [-]");
+		System.err.println("\t-f || --folding                 [off]");
+		System.err.println("\t-o || --output <outputdir>        [\".\"]");
+		System.err.println("\t-p || --package <package>        [\"\"]");
+		System.err.println("\t-i || --import <package>         (can be repeated)");
+		System.err.println("\t-n || --name <api name>          [improvised]");
+		System.err.println("\t-t || --visitable                [off]");
+		System.err.println("\t-j || --jtom                     [off]");
+		System.err.println("\t-v || --verbose                  [off]");
+		System.err.println("\t--jtype                    [off]");
 	}
 
 	public static void main(String[] args) {
@@ -68,41 +67,43 @@ public class Main {
 		}
 
 		for (int i = 0; i < args.length; i++) {
-			if ("-help".startsWith(args[i])) {
-				usage();
-			}
-			else if ("-verbose".startsWith(args[i])) {
-				verbose = true;
-			}
-			else if ("-package".startsWith(args[i])) {
-				pkg = args[++i];
-			}
-			else if ("-basedir".startsWith(args[i])) {
-				basedir = args[++i];
-			}
-			else if ("-import".startsWith(args[i])) {
+		  if ("--input".startsWith(args[i]) || "-i".startsWith(args[i])) {
+			  input = args[++i];
+		  }
+		  else if ("--folding".startsWith(args[i]) || "-f".startsWith(args[i])) {
+			  folding = true;
+		  }
+		  else if ("--output".startsWith(args[i]) || "-o".startsWith(args[i])) {
+			  basedir = args[++i];
+		  }
+		  else if ("--package".startsWith(args[i]) || "-p".startsWith(args[i])) {
+			  pkg = args[++i];
+		  }
+		  else if ("--import".startsWith(args[i]) || "-m".startsWith(args[i])) {
 				imports.add(args[++i]);
 			}
-			else if ("-input".startsWith(args[i])) {
-				input = args[++i];
+			else if ("--name".startsWith(args[i]) || "-n".startsWith(args[i])) {
+				apiName = args[++i];
 			}
-			else if ("-folding".startsWith(args[i])) {
-				folding = true;
-			}
-			else if ("-visitable".startsWith(args[i])) {
+			else if ("--visitable".startsWith(args[i]) || "-t".startsWith(args[i])) {
 				visitable = true;
 			}
-			else if ("-jtom".startsWith(args[i])) {
+			else if ("--jtom".startsWith(args[i]) || "-j".startsWith(args[i])) {
 				jtom = true;
 			}
-			else if ("-jtype".startsWith(args[i])) {
-				jtype = true;
+			else if ("--verbose".startsWith(args[i])) {
+				verbose = true;
 			}
-			else if ("-name".startsWith(args[i])) {
-				apiName = args[++i];
+			else if ("--help".startsWith(args[i])) {
+				usage();
+				return;
+			}
+			else if ("--jtype".startsWith(args[i])) {
+				jtype = true;
 			}
 			else {
 				usage();
+				return;
 			}
 		}
 
@@ -114,8 +115,9 @@ public class Main {
 				inputStream = new FileInputStream(input);
 				if (apiName.equals("")) {
 					if (input.equals("-")) {
-						System.err.println("Please give a name to the API");
+						System.err.println("Error: Please give a name to the API");
 						usage();
+						return;
 					}
 					else {
 						File apiFile = new File(input);
@@ -128,8 +130,7 @@ public class Main {
 
 			}
 			catch (FileNotFoundException e) {
-				System.out.println("Failed to open ADT file: " + input + " for reading");
-				System.exit(1);
+				System.out.println("Error: Failed to open ADT file: " + input + " for reading");
 			}
 		}
 
@@ -142,11 +143,13 @@ public class Main {
 			generateAPI(new ADT(entries));
 		}
 		catch (ParseError e) {
-			System.err.println("A parse error occurred in the ADT file:");
-			System.err.println(e);
+			System.err.println("Error: A parse error occurred in the ADT file:"+e);
 		}
 		catch (IOException e) {
-			System.err.println("Could not read ADT from input: " + input);
+			System.err.println("Error: Could not read ADT from input: " + input);
+		}
+		catch (RuntimeException e) {
+			System.err.println("Error: "+e.getMessage());
 		}
 	}
 

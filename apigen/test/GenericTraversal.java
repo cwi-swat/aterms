@@ -25,8 +25,7 @@ public class GenericTraversal {
 		  }
 		} catch(Exception e) {
 		  e.printStackTrace();
-		  System.out.println("Please, extend genericTraversal");
-		  System.exit(0);
+		  throw new RuntimeException("Please, extend genericTraversal");
 		}
 		return res;
 	  } 
