@@ -19,6 +19,8 @@
 
 $Id$
 
+2000/01/11 (jong@cwi.nl)
+ * fixed bug in parsing of unquoted afuns (digits were ignored)                  
 2001/01/11 (jong@cwi.nl)
  * Version 1.4.6pl1 released. An omission in configure.in degraded
    the usefulness of release 1.4.6 for those who use it for the
