@@ -211,10 +211,14 @@ AC_OUTPUT( \
 	utils/Makefile \
 	test/Makefile \
 	toolbus/Makefile \
-	java1.2/Makefile java1.2/aterm/Makefile \
-	java1.2/aterm/tool/Makefile java1.2/aterm/util/Makefile \
-	java/aterm/Makefile java/aterm/pure/Makefile java/aterm/test/Makefile \
-        doc/Makefile \
-        doc/examples/Makefile \
-        doc/spec/Makefile \
+	java1.2/Makefile \
+	java1.2/aterm/Makefile \
+	java1.2/aterm/tool/Makefile \
+	java1.2/aterm/util/Makefile \
+	java/aterm/Makefile \
+	java/aterm/pure/Makefile \
+	java/aterm/test/Makefile \
+	doc/Makefile \
+	doc/examples/Makefile \
+	doc/spec/Makefile \
 	, )
