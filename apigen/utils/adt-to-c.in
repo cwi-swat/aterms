@@ -21,6 +21,7 @@ Parameters:
   -p | --prologue <FILE>  specify prologue-code file       [""]
   -P | --prefix <STR>     specify API-prefix               [""]
   -c | --classpath <PATH> override CGen classes            [see below]
+  -C | --compat-term      generate old term conv. macros   [off]
   -d | --dicttoc <FILE>   override default dicttoc         [see below]
   -t | --no-timestamp     do not output timestamps         [off]
   -v | --verbose          be verbose during generation     [off]
@@ -70,6 +71,7 @@ require() {
   PROLOGUE=""
    VERBOSE=0
 TIMESTAMPS=1
+    COMPAT=0
 
 # data needed
    CGEN=${prefix}/classes
@@ -90,8 +92,8 @@ do
     -i | --input)
       shift; INPUT=$1 ;;
 
-	-o | --output)
-	  shift; OUTPUT=$1 ;;
+    -o | --output)
+      shift; OUTPUT=$1 ;;
 
     -p | --prologue)
       shift; PROLOGUE=$1 ;;
@@ -101,6 +103,9 @@ do
 
     -c | --classpath)
       shift; CGEN=$1 ;;
+
+    -C | --compat-term)
+      COMPAT=1 ;;
 
     -d | --dicttoc)
       shift; DICTTOC=$1 ;;
@@ -148,6 +153,12 @@ else
   OPTIONAL_PREFIX="-prefix ${PREFIX}"
 fi
 
+if [ "${COMPAT}" = "1" ]; then
+  OPTIONAL_COMPAT="-compatible:term"
+else
+  OPTIONAL_COMPAT=""
+fi
+
 # }}}
 
 # {{{  generate C code from ADT
@@ -156,7 +167,8 @@ java  -classpath ${CGEN} apigen.c.CGen \
 	  -input ${INPUT}	\
 	  -output ${OUTPUT}	\
 	  ${OPTIONAL_PROLOGUE}	\
-	  ${OPTIONAL_PREFIX}
+	  ${OPTIONAL_PREFIX}    \
+	  ${OPTIONAL_COMPAT}
 
 if [ $TIMESTAMPS -gt 0 ]; then
   ${DICTTOC} -dict ${OUTPUT}.dict

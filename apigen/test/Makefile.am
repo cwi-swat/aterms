@@ -47,18 +47,21 @@ EXTRA_DIST		= rolodex.adt Booleans.sdf list.adt list.pro \
 rolodex.c rolodex.h: rolodex.adt
 	${ADT_TO_C} \
 		--input ${top_srcdir}/test/rolodex.adt \
+		--compat-term \
 		--classpath ${top_builddir}:${ATERM}/classes
 
 list.c list.h: list.adt list.pro
 	${ADT_TO_C} \
 		--input ${top_srcdir}/test/list.adt \
 		--prologue ${top_srcdir}/test/list.pro \
+		--compat-term \
 		--classpath ${top_builddir}:${ATERM}/classes
 
 Booleans.c Booleans.h: Booleans.adt
 	${ADT_TO_C} \
 		--input Booleans.adt \
 		--prefix SDF \
+		--compat-term \
 		--classpath ${top_builddir}:${ATERM}/classes
 
 booltest.af1: Booleans.trm.tbl booltest.trm

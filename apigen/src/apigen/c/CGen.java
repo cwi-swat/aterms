@@ -60,6 +60,8 @@ public class CGen
   private char last_special_char;
   private String last_special_char_word;
 
+  private boolean make_term_compatibility;
+
   //{{{ private static void usage()
 
   private static void usage()
@@ -93,6 +95,7 @@ public class CGen
     String output = null;
     String prologue = null;
     InputStream inputStream;
+    boolean make_term_compatibility = false;
 
     if (args.length == 0) {
       usage();
@@ -111,6 +114,8 @@ public class CGen
 	prologue = args[++i];
       } else if ("-input".startsWith(args[i])) {
 	input = args[++i];
+      } else if ("-compatible:term".equals(args[i])) {
+	make_term_compatibility = true;
       } else {
 	usage();
       }
@@ -128,14 +133,16 @@ public class CGen
 	output = input.substring(0, extIndex);
       }
     }
-    CGen gen = new CGen(inputStream, output, prefix, prologue);
+    CGen gen = new CGen(inputStream, output, prefix, prologue,
+			make_term_compatibility);
   }
 
   //}}}
 
   //{{{ public CGen(InputStream input, String output, String prefix, String prologue)
 
-  public CGen(InputStream input, String output, String prefix, String prologue)
+  public CGen(InputStream input, String output, String prefix, String prologue,
+	      boolean make_term_compatibility)
     throws IOException
   {
     this.input     = input;
@@ -143,6 +150,7 @@ public class CGen
     this.capOutput = capitalize(output);
     this.prefix    = prefix;
     this.prologue  = prologue;
+    this.make_term_compatibility = make_term_compatibility;
     afuns_by_name  = new HashMap();
     afuns_by_afun  = new HashMap();
     specialChars   = new HashMap();
@@ -329,10 +337,14 @@ public class CGen
       String type_id = buildId(type.getId());
       String type_name = buildTypeName(type);
 
-      //{{{ PPPmakeXXXFromTerm(ATerm t)
+      //{{{ PPPXXXFromTerm(ATerm t)
 
-      String decl =
-	type_name + " " + prefix + "make" + type_id + "FromTerm(ATerm t)";
+      if (make_term_compatibility) {
+	String old_macro = "#define " + prefix + "make" + type_id + "FromTerm(t)"
+	  + " (" + prefix + type_id + "FromTerm(t))";
+	header.println(old_macro);
+      }
+      String decl = type_name + " " + prefix + type_id + "FromTerm(ATerm t)";
       header.println(decl + ";");
       printFoldOpen(source, decl);
       source.println(decl);
@@ -342,10 +354,14 @@ public class CGen
       printFoldClose(source);
 
       //}}}
-      //{{{ PPPmakeTermFromXxx(Xxx arg)
+      //{{{ PPPXXXtoTerm(Xxx arg)
 
-      decl = "ATerm " + prefix + "makeTermFrom" + type_id
-	+ "(" + type_name + " arg)";
+      if (make_term_compatibility) {
+	String old_macro = "#define " + prefix + "makeTermFrom" + type_id + "(t)"
+	  + " (" + prefix + type_id + "ToTerm(t))";
+	header.println(old_macro);
+      }
+      decl = "ATerm " + prefix + type_id + "ToTerm(" + type_name + " arg)";
       header.println(decl + ";");
       printFoldOpen(source, decl);
       source.println(decl);
