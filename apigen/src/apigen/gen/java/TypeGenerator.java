@@ -101,8 +101,8 @@ public class TypeGenerator extends JavaGenerator {
 	}
 
 	protected void genInitHashcodeMethod() {
-		println("  public void initHashCode(aterm.ATermList annos, aterm.AFun fun, aterm.ATerm[] i_args) {");
-		println("  	super.initHashCode(annos, fun, i_args);");
+		println("  public void initHashCode(aterm.ATermList annos, aterm.AFun fun, aterm.ATerm[] args) {");
+		println("  	super.initHashCode(annos, fun, args);");
 		println("  }");
 		println();
 	}

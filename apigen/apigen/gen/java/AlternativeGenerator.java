@@ -95,8 +95,8 @@ public class AlternativeGenerator extends JavaGenerator {
 	}
 
 	private void genInitHashcodeMethod() {
-		println("  public void initHashCode(aterm.ATermList annos, aterm.AFun fun, aterm.ATerm[] i_args) {");
-		println("  	super.initHashCode(annos, fun, i_args);");
+		println("  public void initHashCode(aterm.ATermList annos, aterm.AFun fun, aterm.ATerm[] args) {");
+		println("  	super.initHashCode(annos, fun, args);");
 		println("  }");
 		println();
 	}
@@ -409,9 +409,10 @@ public class AlternativeGenerator extends JavaGenerator {
 	}
 
 	private void genAltVisitableInterface(Type type, Alternative alt) {
+		String visitorPackage = VisitorGenerator.qualifiedClassName(getGenerationParameters());
 		String altClassName = className(alt);
 
-		println("  public void accept(jjtraveler.Visitor v) throws jjtraveler.VisitFailure {");
+		println("  public void accept(" + visitorPackage + ".Visitor v) throws jjtraveler.VisitFailure {");
 		println("    v.visit_" + altClassName + "(this);");
 		println("  }");
 		println();

@@ -22,7 +22,6 @@ public class Main {
 	private static TypeConverter converter = new TypeConverter(new JavaTypeConversions());
 	private static GenerationParameters params = new GenerationParameters();
 
-	private static boolean visitable = false;
 	private static boolean jtom = false;
 	private static boolean jtype = false;
 
@@ -135,7 +134,7 @@ public class Main {
 		new GenericConstructorGenerator(adt, params).run();
 		new MakeRulesGenerator(adt, params).run();
 
-		if (visitable) {
+		if (params.isVisitable()) {
 			new VisitorGenerator(adt, params).run();
 			new ForwardGenerator(adt, params).run();
 		}
