@@ -121,7 +121,7 @@ public class FactoryGenerator extends JavaGenerator {
 		   String altClassName = AlternativeGenerator.className(type,alt);
 		   String protoVar = "proto" + altClassName;
 		   String funVar = "fun" + altClassName;
-           String afunName = alt.getId();
+           String afunName = type.getId() + "_" + alt.getId();
                    
 		   println();        
 		   println("    " + altClassName + ".initializePattern();");
