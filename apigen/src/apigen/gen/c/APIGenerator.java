@@ -126,7 +126,6 @@ public class APIGenerator extends CGenerator {
         String elementTypeName = buildTypeName(type.getElementType());
         String elementTypeId = StringConversions.makeIdentifier(type.getElementType());
         int seps = type.getSeparators().getLength();
-        System.err.println("Seps" + type.getSeparators());
 
         genGetSeparatedLength(typeId, typeName, type.getSeparators());
         genSeparatedReverse(type, typeId, typeName);

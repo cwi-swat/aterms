@@ -107,7 +107,7 @@ public class TypeGenerator extends JavaGenerator {
 
 	protected void genConstructor(String classImplName) {
 		String factoryName = FactoryGenerator.qualifiedClassName(getJavaGenerationParameters());
-		println("  protected " + classImplName + "(" + factoryName + " factory) {");
+		println("  public " + classImplName + "(" + factoryName + " factory) {");
 		println("     super(factory);");
 		println("  }");
 		println();

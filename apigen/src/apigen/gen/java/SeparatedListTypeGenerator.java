@@ -7,14 +7,22 @@ import apigen.adt.SeparatedListType;
 import apigen.gen.StringConversions;
 import apigen.gen.TypeConverter;
 
-public class SeparatedListTypeGenerator extends ListTypeGenerator {
-    private SeparatedListType listType;
+public class SeparatedListTypeGenerator extends TypeGenerator {
+    private SeparatedListType type;
+    private String typeName;
+    private String elementTypeName;
+    private String factory;
+    private String elementType;
 
     public SeparatedListTypeGenerator(
         JavaGenerationParameters params,
         SeparatedListType type) {
         super(params, type);
-        this.listType = type;
+        this.type = type;
+        this.typeName = TypeGenerator.className(type);
+        this.elementType = type.getElementType();
+        this.elementTypeName = TypeGenerator.qualifiedClassName(params, elementType);
+        this.factory = FactoryGenerator.qualifiedClassName(params);
     }
 
     protected void generate() {
@@ -23,8 +31,18 @@ public class SeparatedListTypeGenerator extends ListTypeGenerator {
         genSeparatedListTypeClass();
     }
 
+    public String getTypeName() {
+        return typeName;
+    }
+
+    public String getFactory() {
+        return factory;
+    }
+
     private void genSeparatedListTypeClass() {
         println("public class " + getTypeName() + " extends aterm.pure.ATermListImpl {");
+
+        genFactoryField();
         genSeparatorFields();
         genSeparatorsGettersAndSetters();
         genInitMethod();
@@ -44,15 +62,94 @@ public class SeparatedListTypeGenerator extends ListTypeGenerator {
         println("}");
     }
 
+    protected void genConstructor(String className) {
+        println("  public " + className + "(" + factory + " factory) {");
+        println("     super(factory.getPureFactory());");
+        println("     this.factory = factory;");
+        println("  }");
+        println();
+    }
+
+    private void genFactoryField() {
+        println("  private " + factory + " factory = null;");
+    }
+    private void genGetEmptyMethod() {
+        String className = TypeGenerator.className(type);
+        println("  public aterm.ATermList getEmpty() {");
+        println(
+            "    return (aterm.ATermList)"
+                + buildFactoryGetter()
+                + ".make"
+                + className
+                + "();");
+        println("  }");
+        println();
+    }
+
+    private void genSharedObjectInterface() {
+        genEquivalentMethod();
+        genDuplicateMethod();
+    }
+
+    private void genGetters() {
+        genGetHead();
+        genGetTail();
+    }
+
+    private void genGetTail() {
+        String className = TypeGenerator.className(type);
+
+        println("  public " + className + " getTail() {");
+        println("    return (" + className + ") getNext();");
+        println("  }");
+        println();
+    }
+
+    private void genGetHead() {
+        println("  public " + elementTypeName + " getHead() {");
+        String convertedValue =
+            getConverter().makeATermToBuiltinConversion(elementType, "getFirst()");
+        println("    return (" + elementTypeName + ")" + convertedValue + ";");
+        println("  }");
+        println();
+    }
+
+    private void genTermField() {
+        println("  protected aterm.ATerm term = null;");
+    }
+
+    private void genToString() {
+        println("  public String toString() {");
+        println("    return toTerm().toString();");
+        println("  }");
+        println();
+    }
+
     private void genReverseMethods() {
         genOverrideReverseMethod();
         genTypedReverseMethod();
     }
 
+    private String buildFactoryGetter() {
+        return AbstractTypeGenerator.getFactoryMethodName(getGenerationParameters())
+            + "()";
+    }
+
+    private void genGetFactoryMethod() {
+        println("  public " + getFactory() + " " + buildFactoryGetter() + " {");
+        println("    return factory;");
+        println("}");
+        println();
+    }
+
     private void genTypedReverseMethod() {
         println("  public " + getTypeName() + " reverse" + getTypeName() + "() {");
         println(
-            "    return " + factoryGetter() + ".reverse((" + getTypeName() + ")this);");
+            "    return "
+                + buildFactoryGetter()
+                + ".reverse(("
+                + getTypeName()
+                + ")this);");
         println("  }");
         println();
     }
@@ -70,15 +167,15 @@ public class SeparatedListTypeGenerator extends ListTypeGenerator {
     }
 
     private void genTypedConcatMethod() {
-        String formalSepArgs = buildFormalSeparatorArguments(listType);
-        String actualSepArgs = buildActualSeparatorArguments(listType);
+        String formalSepArgs = buildFormalSeparatorArguments(type);
+        String actualSepArgs = buildActualSeparatorArguments(type);
 
         String typeName = getTypeName();
         println(
             "  public " + typeName + " concat(" + formalSepArgs + typeName + " peer) {");
         println(
             "    return "
-                + factoryGetter()
+                + buildFactoryGetter()
                 + ".concat(this, "
                 + actualSepArgs
                 + "peer);");
@@ -100,7 +197,7 @@ public class SeparatedListTypeGenerator extends ListTypeGenerator {
     protected void genToTerm() {
         println("  public aterm.ATerm toTerm() {");
         println("    if (term == null) {");
-        println("      term = " + factoryGetter() + ".toTerm(this);");
+        println("      term = " + buildFactoryGetter() + ".toTerm(this);");
         println("    }");
         println("    return term;");
         println("  }");
@@ -110,8 +207,9 @@ public class SeparatedListTypeGenerator extends ListTypeGenerator {
     protected void genOverrideInsertMethod() {
         println("  public aterm.ATermList insert(aterm.ATerm head) {");
         println("    throw new java.lang.UnsupportedOperationException(");
-        println("      \"Cannot insert ATerm in separated list ("
-                + listType.getId()
+        println(
+            "      \"Cannot insert ATerm in separated list ("
+                + type.getId()
                 + "), use a factory make method.\");");
         println("  }");
         println();
@@ -120,10 +218,10 @@ public class SeparatedListTypeGenerator extends ListTypeGenerator {
     protected void genInitMethod() {
         println(
             "  public void init(int hashCode, aterm.ATermList annos, aterm.ATerm first, "
-                + buildFormalSeparatorArguments(listType)
+                + buildFormalSeparatorArguments(type)
                 + "aterm.ATermList next) {");
         println("    super.init(hashCode, annos, first, next);");
-        genSeparatorInitAssignments(listType);
+        genSeparatorInitAssignments(type);
         println("  }");
         println();
     }
@@ -131,10 +229,10 @@ public class SeparatedListTypeGenerator extends ListTypeGenerator {
     protected void genInitHashcodeMethod() {
         println(
             "  public void initHashCode(aterm.ATermList annos, aterm.ATerm first, "
-                + buildFormalSeparatorArguments(listType)
+                + buildFormalSeparatorArguments(type)
                 + "aterm.ATermList next) {");
         println("    super.initHashCode(annos, first, next);");
-        genSeparatorInitAssignments(listType);
+        genSeparatorInitAssignments(type);
         println("  }");
         println();
     }
@@ -159,7 +257,7 @@ public class SeparatedListTypeGenerator extends ListTypeGenerator {
     }
 
     private void genSeparatorsGettersAndSetters() {
-        Iterator fields = listType.separatorFieldIterator();
+        Iterator fields = type.separatorFieldIterator();
         while (fields.hasNext()) {
             Field field = (Field) fields.next();
             genSeparatorGetterAndSetter(field);
@@ -205,11 +303,11 @@ public class SeparatedListTypeGenerator extends ListTypeGenerator {
                 + fieldClass
                 + " arg) {");
         println("    if (!isEmpty() && !isSingle()) {");
-        String arglist = buildActualSeparatorArguments(listType);
+        String arglist = buildActualSeparatorArguments(type);
         arglist = arglist.replaceAll(fieldId, "arg");
         println(
             "      return "
-                + factoryGetter()
+                + buildFactoryGetter()
                 + ".make"
                 + getClassName()
                 + "(getHead(), "
@@ -227,13 +325,34 @@ public class SeparatedListTypeGenerator extends ListTypeGenerator {
     }
 
     protected void genPredicates() {
-        genIsEmpty(listType.getId());
+        genIsEmpty(type.getId());
         genIsMany();
         genIsSingle();
     }
 
+    private void genIsMany() {
+        println("  public boolean isMany() {");
+        println("    return !isEmpty();");
+        println("  }");
+        println();
+    }
+
+    private void genIsEmpty(String className) {
+        println("  public boolean isEmpty() {");
+        println(
+            "    return this == " + buildFactoryGetter() + ".make" + className + "();");
+        println("  }");
+        println();
+    }
+
+    private void genIsSingle() {
+        println("  public boolean isSingle() {");
+        println("    return !isEmpty() && getNext().isEmpty();");
+        println("  }");
+        println();
+    }
     private void genSeparatorFields() {
-        Iterator fields = listType.separatorFieldIterator();
+        Iterator fields = type.separatorFieldIterator();
 
         while (fields.hasNext()) {
             Field field = (Field) fields.next();
@@ -267,7 +386,7 @@ public class SeparatedListTypeGenerator extends ListTypeGenerator {
             "    " + getClassName() + " clone = new " + getClassName() + "(factory);");
         println(
             "    clone.init(hashCode(), getAnnotations(), getFirst(), "
-                + buildActualSeparatorArguments(listType)
+                + buildActualSeparatorArguments(type)
                 + "getNext());");
         println("    return clone;");
         println("  }");
@@ -289,7 +408,7 @@ public class SeparatedListTypeGenerator extends ListTypeGenerator {
     }
 
     private void genSeparatorFieldsEquivalentConjunction() {
-        Iterator fields = listType.separatorFieldIterator();
+        Iterator fields = type.separatorFieldIterator();
         while (fields.hasNext()) {
             Field field = (Field) fields.next();
             String fieldId = JavaGenerator.getFieldId(field.getId());

@@ -25,19 +25,19 @@ public class SeparatedListType extends ListType {
     }
 
     public Iterator separatorFieldIterator() {
-        return new FirstAndLastSkippingIterator(altFieldIterator("many"));
+        return new FirstAndLastSkippingIterator(altFieldIterator(MANY_LIST_ALT_NAME));
     }
 
     public Alternative getManyAlternative() {
-        return getAlternative("many");
+        return getAlternative(MANY_LIST_ALT_NAME);
     }
 
     public Field getManyField(String fieldId) {
-        return getAltField("many", fieldId);
+        return getAltField(MANY_LIST_ALT_NAME, fieldId);
     }
 
     public Iterator manyFieldIterator() {
-        return altFieldIterator("many");
+        return altFieldIterator(MANY_LIST_ALT_NAME);
     }
 
     public int countSeparatorFields() {
