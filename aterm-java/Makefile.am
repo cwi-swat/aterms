@@ -1,6 +1,11 @@
 SUBDIRS = aterm test config .
 
-EXTRA_DIST=jjtraveler-1.3.jar
+JJTRAVELER = jjtraveler-1.3.jar
+
+EXTRA_DIST = ${JJTRAVELER}
+
+noinst_DATA = ${JAVADOCDIR}.tar.gz
+data_DATA = ${JARFILE} ${JJTRAVELER}
 
 JARFILE = aterm-${VERSION}.jar
 JAVADOCDIR = aterm-javadoc
@@ -17,8 +22,6 @@ JAVA_CLASSES = \
 	ATermPlaceholder \
 	ATermReal
 
-noinst_DATA = ${JAVADOCDIR}.tar.gz
-data_DATA = ${JARFILE}
 
 javadoc: ${JAVADOCDIR}.tar.gz
 
