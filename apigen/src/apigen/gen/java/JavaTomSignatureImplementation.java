@@ -145,7 +145,7 @@ public class JavaTomSignatureImplementation implements TomSignatureImplementatio
 
 	public String OperatorName(String type, String id) {
         if (jtype) {
-            return StringConversions.makeIdentifier(type + "_" +
+            return StringConversions.makeIdentifier(type) + "_" +
                         StringConversions.makeIdentifier(id);
         }
         else {
