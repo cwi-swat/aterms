@@ -2,8 +2,14 @@ package apigen.gen.c;
 
 import apigen.gen.StringConversions;
 import apigen.gen.TomSignatureImplementation;
+import apigen.gen.TypeConverter;
 
 public class CTomSignatureImplementation implements TomSignatureImplementation {
+	private static TypeConverter converter;
+	
+	static {
+		converter = new TypeConverter(new CTypeConversions());
+	}
 	
 	private String buildTypeName(String type) {
 		return StringConversions.makeCapitalizedIdentifier(type);
@@ -18,7 +24,7 @@ public class CTomSignatureImplementation implements TomSignatureImplementation {
     }
     
 	public String StringImpl() {
-		return "char*";
+		return converter.StringType();
 	}
 
 	public String StringGetFunSym(String arg1) {
@@ -42,7 +48,7 @@ public class CTomSignatureImplementation implements TomSignatureImplementation {
     }
     
 	public String IntegerImpl() {
-		return "int";
+		return converter.IntegerType();
 	}
 
 	public String IntegerGetFunSym(String arg1) {
@@ -66,7 +72,7 @@ public class CTomSignatureImplementation implements TomSignatureImplementation {
     }
     
 	public String DoubleImpl() {
-		return "float";
+		return converter.RealType();
 	}
 
 	public String DoubleGetFunSym(String arg1) {
@@ -90,7 +96,7 @@ public class CTomSignatureImplementation implements TomSignatureImplementation {
     }
     
 	public String ATermImpl() {
-		return "ATerm";
+		return converter.TermType();
 	}
 
 	public String ATermGetFunSym(String arg) {

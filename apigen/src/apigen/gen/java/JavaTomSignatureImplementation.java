@@ -2,9 +2,16 @@ package apigen.gen.java;
 
 import apigen.gen.StringConversions;
 import apigen.gen.TomSignatureImplementation;
+import apigen.gen.TypeConverter;
 
 public class JavaTomSignatureImplementation 
 implements TomSignatureImplementation {
+	private static TypeConverter converter;
+	
+	static {
+		converter = new TypeConverter(new JavaTypeConversions());
+	}
+	
 	private String api_name;
 	
 	public JavaTomSignatureImplementation(String api_name) {
@@ -20,7 +27,7 @@ implements TomSignatureImplementation {
 	}
 
 	public String StringImpl() {
-		return StringName();
+		return converter.StringType();
 	}
 
 	public String StringGetFunSym(String arg1) {
@@ -44,7 +51,7 @@ implements TomSignatureImplementation {
 	}
 
 	public String IntegerImpl() {
-		return IntegerName();
+		return converter.IntegerType();
 	}
 
 	public String IntegerGetFunSym(String arg1) {
@@ -68,7 +75,7 @@ implements TomSignatureImplementation {
 	}
 
 	public String DoubleImpl() {
-		return DoubleName();
+		return converter.RealType();
 	}
 
 	public String DoubleGetFunSym(String arg1) {
@@ -92,7 +99,7 @@ implements TomSignatureImplementation {
 	}
 
 	public String ATermImpl() {
-		return ATermName();
+		return converter.TermType();
 	}
 
 	public String ATermGetFunSym(String arg) {
