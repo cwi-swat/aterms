@@ -275,9 +275,7 @@ testRead(void)
   do {
     t = ATreadFromTextFile(f);
     if(t) {
-      fprintf(stdout, "term read: ");
-      ATwriteToTextFile(t, stdout);
-      fprintf(stdout, "\n");
+	  ATprintf("term read: %t\n", t);
     } else
       fprintf(stdout, "no more terms to read.\n");
   } while(t);
