@@ -1173,13 +1173,13 @@ AT_calcTextSize(ATerm t)
 char *
 ATwriteToString(ATerm t)
 {
-  int             size = topTextSize(t);
+  int             size = topTextSize(t)+1;
   char           *end;
   
   RESIZE_BUFFER(size);
   
   end = topWriteToString(t, buffer);
-  *end = '\0';
+  *end++ = '\0';
   
   assert(end - buffer == size);
   
