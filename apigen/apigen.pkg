@@ -1,0 +1,18 @@
+package
+identification
+  name=__PACKAGE__
+  version=__VERSION__
+  location=http://www.cwi.nl/projects/MetaEnv/apigen
+  info=http://www.cwi.nl/projects/MetaEnv/apigen
+  description='Generate typed tree-like data-structures in C and Java.
+               The implementation is based on the ATerm library which
+               provides maximal sub-term sharing'
+
+  keywords=meta-environment, code generation, C, java, aterm, maximal sharing
+
+configuration interface
+
+requires
+  aterm		2.0
+  aterm-java    1.1
+  shared-objects 1.1
