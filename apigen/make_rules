@@ -5,8 +5,8 @@
 #
 
 CFLAGS		= -g -Wall -Werror -O2
-INCLUDES	= -I ${ATERMINC}
-LDFLAGS		= -L ${ATERMLIB}
+INCLUDES	= -I$(ATERM)/include -I$(PT_SUPPORT)/include
+LDFLAGS		= -L$(ATERM)/lib -I$(PT_SUPPORT)/lib
 
 SUFFIXES 	= .pic .ltx .dvi .bbl .ind .idx .xwd .ps .tex .fig
 
