@@ -1,5 +1,8 @@
 $Id$
 
+Tue Mar  5 14:50:18 CET 2002 <jong@cwi.nl>
+* Increased magical LENSPEC from 8 to 12 bytes
+
 2002/01/16 <jong@cwi.nl>
 * Removed all '-O' optimization flags due to gcc optimizer bugs
 * Added "Note on Compiler Optimizations" to README 
