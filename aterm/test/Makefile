@@ -42,10 +42,10 @@ clean:
 	rm -f $(TESTPRGS) $(TESTOBJS) *~ core
 
 depend:
-	$(CC) -MM $(CFLAGS) $(DEFS) $(INCL) $(TESTSRCS) > .depend
+	$(CC_GCC) -MM $(CFLAGS) $(DEFS) $(INCL) $(TESTSRCS) > .depend
 
 .depend:
-	$(CC) -MM $(CFLAGS) $(DEFS) $(INCL) $(TESTSRCS) > .depend
+	$(CC_GCC) -MM $(CFLAGS) $(DEFS) $(INCL) $(TESTSRCS) > .depend
 
 include .depend
 
