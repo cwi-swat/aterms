@@ -70,9 +70,9 @@ public class FactoryGenerator extends JavaGenerator {
             Type type = (Type) types.next();
 
             if (type instanceof NormalListType) {
-                genListTypeFromTermMethod((NormalListType) type);
+                genFactoryListTypeFromTerm((NormalListType) type);
             } else if (type instanceof SeparatedListType) {
-                genSeparatedListTypeFromTermMethod((SeparatedListType) type);
+                genFactorySeparatedListTypeFromTermMethod((SeparatedListType) type);
             } else {
                 genTypeFromTermMethod(type);
             }
@@ -158,9 +158,44 @@ public class FactoryGenerator extends JavaGenerator {
                     genFactoryMakeManySeparatedList(lType, className, elementClassName);
                     genFactoryMakeManySeparatedTermList(lType, className);
                     genFactoryReverseSeparated(lType, className, elementClassName);
+                    genFactoryConcatSeparated(lType, className, elementClassName);
                 }
             }
         }
+    }
+
+    private void genFactoryConcatSeparated(SeparatedListType type, String className, String elementClassName) {
+        String sepArgs = buildOptionalSeparatorArguments(type);
+        String formalSepArgs = buildFormalTypedArgumentList(type.separatorFieldIterator());
+        if (formalSepArgs.length() > 0) {
+            formalSepArgs += ", ";
+        }
+        
+        println("  public " + className + " concat(" + className + " arg0, " + formalSepArgs + className + " arg1) {");
+        println("    if (arg0.isEmpty()) {");
+        println("      return arg1;");
+        println("    }");
+        println("    " + className + " list = reverse(arg0);");
+        println("    " + className + " result = arg1;");
+        println("");
+        println("    while(!list.isSingle()) {");
+        println("      result = make" + className + "(list.getHead(), " + sepArgs + "result);");
+        
+        Iterator seps = type.separatorFieldIterator();
+        while (seps.hasNext()) {
+            Field sep = (Field) seps.next();
+            String fieldId = AlternativeImplGenerator.getFieldId(sep.getId());
+            String fieldGet = "get" + StringConversions.makeCapitalizedIdentifier(sep.getId());
+            println("      " + fieldId + " = list." + fieldGet + "();");            
+            
+        }
+        println("      list = list.getTail();");
+        println("    }");
+        println("");
+        println("    result = make" + className + "(list.getHead(), " + sepArgs + "result);");
+        println("");
+        println("    return result;");
+        println("  }");
     }
 
     private void genFactoryReverseSeparated(
@@ -396,7 +431,7 @@ public class FactoryGenerator extends JavaGenerator {
 
             if (type instanceof ListType) {
                 if (type instanceof SeparatedListType) {
-                    genSeparatedListToTerm((SeparatedListType) type);
+                    genFactorySeparatedListToTerm((SeparatedListType) type);
                 }
             } else {
                 Iterator alts = type.alternativeIterator();
@@ -770,7 +805,7 @@ public class FactoryGenerator extends JavaGenerator {
         println("  }");
     }
 
-    private void genListTypeFromTermMethod(NormalListType type) {
+    private void genFactoryListTypeFromTerm(NormalListType type) {
         String className = ListTypeGenerator.className(type);
         String elementType = type.getElementType();
         String elementTypeName = TypeGenerator.className(elementType);
@@ -825,7 +860,7 @@ public class FactoryGenerator extends JavaGenerator {
         return result;
     }
 
-    private void genSeparatedListTypeFromTermMethod(SeparatedListType type) {
+    private void genFactorySeparatedListTypeFromTermMethod(SeparatedListType type) {
         String className = ListTypeGenerator.className(type);
         String makeClassName = "make" + className;
         String manyPattern = "pattern" + className + "Many";
@@ -917,7 +952,7 @@ public class FactoryGenerator extends JavaGenerator {
         return separatorArgs;
     }
 
-    private void genSeparatedListToTerm(SeparatedListType type) {
+    private void genFactorySeparatedListToTerm(SeparatedListType type) {
         String className = TypeGenerator.className(type);
         String classImplName = TypeImplGenerator.className(type);
         String manyPattern = "pattern" + className + "Many";

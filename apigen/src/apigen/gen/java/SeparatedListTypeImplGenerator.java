@@ -76,6 +76,7 @@ public class SeparatedListTypeImplGenerator extends ListTypeImplGenerator {
         
     }
 
+    
     protected void genToTerm() {
         String factoryName = FactoryGenerator.className(apiName);
 

@@ -9,6 +9,7 @@ import test.list.Modules2;
 import test.list.NineSeps;
 import test.list.Separated;
 import aterm.ATerm;
+import aterm.ATermList;
 
 public class ListTest {
 
@@ -133,12 +134,17 @@ public class ListTest {
     l2 = factory.makeLayout_Default("l2");
     sep = factory.makeSeparated(m,l1,l2,factory.makeSeparated(m2));
 
-    testAssert(sep.toTerm().isEqual(factory.parse("[\"m\",l(\"l1\"),\"sep\",l(\"l2\"),\"m2\"]")), "many separated list");
+    ATerm p = factory.parse("[\"m\",l(\"l1\"),\"sep\",l(\"l2\"),\"m2\"]");
+    testAssert(sep.toTerm().isEqual(p), "many separated list");
     
+    ATerm pc = ((ATermList) p).concat((ATermList) factory.parse("[l(\"l1\"),\"sep\",l(\"l2\")]")).concat((ATermList) p);
+    testAssert(factory.concat(sep,l1,l2,sep).toTerm().isEqual(pc), "concat test");
     NineSeps ns = factory.makeNineSeps(m,factory.makeNineSeps(m2));
     testAssert(ns.toTerm().isEqual(factory.parse("[\"m\",1,2,3,4,5,6,7,8,9,\"m2\"]")), "many separated toTerm");
     testAssert(ns.reverse().isEqual(factory.makeNineSeps(m2, factory.makeNineSeps(m))), "many separated reverse");
     testAssert(ns.reverse().reverse().isEqual(ns), "reverse separated list test");
+    
+    
   }
 
   public final static void main(String[] args) {
