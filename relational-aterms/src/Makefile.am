@@ -1,11 +1,11 @@
 
-lib_LIBRARIES = libATerm-relations.a
+lib_LIBRARIES = librelational-aterms.a
 
 include_HEADERS = \
-	aterm-relations.h
+	relational-aterms.h
 
-libATerm_relations_a_SOURCES = \
-	aterm-relations.c
+librelationa;_aterms_a_SOURCES = \
+	relational-aterms.c
 
 AM_CFLAGS = -Wall -pedantic -g -O2
 

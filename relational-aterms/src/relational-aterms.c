@@ -1,7 +1,7 @@
 
 #include <limits.h>
 
-#include "aterm-relations.h"
+#include "relational-aterms.h"
 
 
 #define COMPARATOR ATR_compare
