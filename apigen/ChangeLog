@@ -1,3 +1,6 @@
+2003-08-15  (jurgenv@cwi.nl)
+ * Generating reverse method is unnecessary again
+ 
 2003-08-13  (jurgenv@cwi.nl)
  * Major change in code generation. The first step toward no more static references
    to factories. All things related to patterns are moved to the generated factory

@@ -63,7 +63,6 @@ public class ListTypeImplGenerator extends TypeImplGenerator {
 		genSharedObjectInterface();
 		genGetEmptyMethod();
 		genInsertMethod();
-		genReverseMethod();
 		println("}");
 	}
 
@@ -86,33 +85,6 @@ public class ListTypeImplGenerator extends TypeImplGenerator {
 				+ " factory) {");
 		println("     super(factory);");
 		println("     this.factory = factory;");
-		println("  }");
-	}
-
-	private void genReverseMethod() {
-		String className = TypeGenerator.className(type);
-
-		println("  public aterm.ATermList reverse() {");
-
-		println("  	 " + typeName + " cur = this;");
-		println(
-			"  	 "
-				+ typeName
-				+ " reverse = ("
-				+ typeName
-				+ ") "
-				+ factoryGetter()
-				+ ".make"
-				+ className
-				+ "();");
-		println("  	 while(!cur.isEmpty()){");
-		println(
-			"  	   reverse = ("
-				+ typeName
-				+ ")reverse.insert((aterm.ATerm) cur.getHead());");
-		println("  	   cur = cur.getTail();");
-		println("  	 }");
-		println("  	 return reverse;");
 		println("  }");
 	}
 
