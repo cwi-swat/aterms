@@ -133,6 +133,9 @@ public class Test
   }
 
   //}}}
+  
+ 
+  
   //{{{ public void testDict()
 
   public void testDict()
@@ -210,6 +213,21 @@ public class Test
     list = factory.makeList();
     result = list.append(factory.parse("1"));
     test_assert(result.equals(factory.parse("[1]")));
+    
+    ATerm l1 = factory.parse("[]");
+    ATerm l2 = factory.parse("[<list>]");
+    ATerm l3 = factory.parse("[<term>,<list>]");
+    ATerm a1 = factory.parse("1");
+    
+    List args = new LinkedList();
+    args.add(l1);
+    test_assert((l2.make(args)).equals(factory.parse("[]")));
+    
+    args = new LinkedList();
+    args.add(a1);
+    args.add(l1);
+    test_assert((l3.make(args)).equals(factory.parse("[1]")));
+    
   }
 
   //}}}
