@@ -614,6 +614,39 @@ void testGC()
 }
 
 /*}}}  */
+/*{{{  void testMark() */
+
+/**
+	* Test the marking code.
+	*/
+
+void testMark()
+{
+	int i;
+	ATerm zero = ATparse("zero");
+	ATerm one  = ATparse("one");
+  ATerm t1 = zero;
+	ATerm t2 = one;
+	ATerm t14;
+	ATerm result;
+
+	for(i=0; i<100000; i++) {
+		t1 = ATmake("succ(<int>,<term>)", i, t1);
+		t2 = ATmake("succ(<int>,<term>)", i, t2);
+	}
+	result = ATmake("result(<term>,<term>)", t1, t2);
+	
+	AT_markTerm(result);
+	test_assert("marking", 1, IS_MARKED(zero->header));
+	test_assert("marking", 2, IS_MARKED(one->header));
+	AT_unmarkTerm(result);
+	test_assert("marking", 3, !IS_MARKED(zero->header));
+	test_assert("marking", 4, !IS_MARKED(one->header));
+
+	printf("mark tests ok.\n");
+}
+
+/*}}}  */
 
 /*{{{  int main(int argc, char *argv[]) */
 
@@ -639,8 +672,7 @@ int main(int argc, char *argv[])
   testMake();
   testMatch();
   testGC();
-
-  ATprintf("term: %t\n", ATmake("u1(choice(1))"));
+	testMark();
 
   return 0;
 }

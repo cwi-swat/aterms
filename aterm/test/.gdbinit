@@ -23,8 +23,8 @@ define termtype
               if $type == 6
                 printf "AT_BLOB\n"
               else
-                printf "*illegal*\n"
- 	      end
+                printf "AT_SYMBOL\n"
+ 	          end
             end
           end
         end
