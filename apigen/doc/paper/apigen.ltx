@@ -1,7 +1,20 @@
+%
+% File: apigen.ltx
+%
+% $Id$
+%
+
 \documentclass{article}
 
 % {{{  LaTeX configuration
 
+\newcommand{\atlib}{ATerm-library}
+\newcommand{\apigen}{\mbox{\sc apigen}}
+\newcommand{\sdf}{\mbox{\sc Sdf}}
+\newcommand{\asf}{\mbox{\sc Asf}}
+\newcommand{\asdf}{\mbox{\sc Asf+Sdf}}
+\newcommand{\asmetaenv}{{\sc Asf+Sdf}\ Meta-En\-vir\-on\-ment}
+\newcommand{\api}{\mbox{\sc api}}
 
 % }}}
 % {{{  Title page
@@ -18,8 +31,67 @@
   {\small\sl\tt Hayco.de.Jong@cwi.nl, Pieter.Olivierp@cwi.nl}
 }
 
-% }}}
-
 \begin{document}
 \maketitle
+
+% }}}
+% {{{  Abstract
+
+\begin{abstract}
+
+Syntax definition languages are used to describe the syntax of a language.
+Terms over these languages are parsed to produce parse trees.  These parse
+trees can subsequently be processed, e.g. by a compiled specification. For
+top notch performance, dedicated tools can be written in languages such
+as {\tt C}. Maintainability and readability of such tools improves when
+they do not operate on the tree structure directly, but rather access
+(parts of) the tree using an Abstract Programming Interface~(\api). This
+paper describes how a \emph{labeled \sdf\ specification} can be used to
+generate an abstract \api, as well as \emph{type-safe}, \emph{efficient}
+implementations of this \api.
+
+\end{abstract}
+
+% }}}
+% {{{  Introduction
+
+\section{Introduction}\label{intro}
+
+Syntax definition languages such as \sdf~\cite{HHKR92} can be used
+to specify the syntax of a (programming) language in a formal way. An
+integrated environment such as the \asmetaenv~\cite{XXX} can be used to
+develop syntax definitions and specify rewrite rules. These rules can be
+applied to terms which are parsed over the specified language. The view
+on the language as used in the \asmetaenv{} is of a formal, high level
+nature, which helps develop applications at the level of the (abstract)
+syntax. Specifications written in this way can be compiled to a target
+machine specific, executable program.
+
+The \asmetaenv{} is often used to develop a prototype just to see if an
+idea will work\footnote{As a matter of fact, the \apigen{} project itself
+was constructed this way.}. The execution speed or memory usage of the
+compiled specification however, is sometimes found to be inadequate for
+industrial strength applications. In these cases, the insights gained
+in the problem area through writing the specification are re-used in a
+``high-performance'' language, such as \texttt{C}. In \sdf{} related
+cases, such a tool relies on the \atlib{}~\cite{} for both efficient
+in-memory storage of terms, as well as high-speed access to terms.
+
+So, why bother to generate an \api? It turns out that writing tools based
+on a particular version of a syntax is subject to a particular maintenance
+problem: changes in the specification of the syntax.  Whenever the syntax
+changes, tools that expect certain information at a specific position
+in the parse tree are left crippled.
+
+\texttt{TODO: vbtje van mini spec met hoe de boom veranderd?}
+
+For a tool to be less dependent on the syntax definition of the
+parsed terms it works on, it should refrain from accessing the tree
+representation directly. Rather, it should rely on an intermediate layer
+which encapsulates the tree representation.
+
+\texttt{TODO: type-safeness, layer must be efficient}
+
+% }}}
+
 \end{document}
