@@ -62,7 +62,7 @@ class ATermListImpl extends ATermImpl implements ATermList {
   }
 
   
-  public Object clone() {
+  public SharedObject duplicate() {
     ATermListImpl clone = new ATermListImpl();
     clone.init(hashCode(), getAnnotations(), first, next);
     return clone;

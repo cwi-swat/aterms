@@ -38,7 +38,7 @@ class ATermRealImpl extends ATermImpl implements ATermReal {
     this.value = value;
   }
   
-  public Object clone() {
+  public SharedObject duplicate() {
     ATermRealImpl clone = new ATermRealImpl();
     clone.init(hashCode(), getAnnotations(), value);
     return clone;

@@ -43,7 +43,7 @@ class AFunImpl extends ATermImpl implements AFun {
     this.setHashCode(this.hashFunction());
   }
 
-  public Object clone() {
+  public SharedObject duplicate() {
     AFunImpl clone = new AFunImpl();
     clone.init(hashCode(), name, arity, isQuoted);
     return clone;

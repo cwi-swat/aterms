@@ -51,7 +51,7 @@ public class ATermApplImpl extends ATermImpl implements ATermAppl {
     this.setHashCode(this.hashFunction());
   }
 
-  public Object clone() {
+  public SharedObject duplicate() {
     ATermApplImpl clone = new ATermApplImpl();
     clone.init(hashCode(), getAnnotations(), fun, args);
     return clone;

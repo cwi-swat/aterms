@@ -46,7 +46,7 @@ class ATermIntImpl extends ATermImpl implements ATermInt {
   }
 
   
-  public Object clone() {
+  public SharedObject duplicate() {
     ATermIntImpl clone = new ATermIntImpl();
     clone.init(hashCode(), getAnnotations(), value);
     return clone;

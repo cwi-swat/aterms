@@ -1,5 +1,8 @@
-
-2002-11-20    <jurgenv@loria.fr>
+2002-12-09   <jurgenv@cwi.nl>
+  * Bumped to 1.1beta
+  * Changed code according to new SharedObject interface
+  
+2002-11-20    <vinju@loria.fr>
   * Bugfix in list matching code.
   
 2002-11-19    <{moreau,vinju}@loria.fr>

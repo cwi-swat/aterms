@@ -38,7 +38,7 @@ class ATermBlobImpl extends ATermImpl implements ATermBlob {
     this.data = data;
   }
   
-  public Object clone() {
+  public SharedObject duplicate() {
     ATermBlobImpl clone = new ATermBlobImpl();
     clone.init(hashCode(), getAnnotations(), data);
     return clone;

@@ -38,7 +38,7 @@ class ATermPlaceholderImpl extends ATermImpl implements ATermPlaceholder {
     this.type = type;
   }
   
-  public Object clone() {
+  public SharedObject duplicate() {
     ATermPlaceholderImpl clone = new ATermPlaceholderImpl();
     clone.init(hashCode(), getAnnotations(), type);
     return clone;

@@ -44,7 +44,7 @@ public abstract class ATermImpl extends ATermVisitableImpl implements ATerm, Sha
     return this.hashCode;
   }
   
-  abstract public Object clone();
+  abstract public SharedObject duplicate();
 
   protected void setHashCode(int hashcode) {
     this.hashCode = hashcode;

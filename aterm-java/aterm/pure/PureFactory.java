@@ -132,7 +132,7 @@ public class PureFactory extends SharedObjectFactory implements ATermFactory {
   }
   
   static private int hashReal(ATermList annos, double value) {
-    return doobs_hashFunction(new Object[] { annos, new Double(value) });
+    return shared.HashFunctions.doobs(new Object[] { annos, new Double(value) });
   }
 
   public ATermPlaceholder makePlaceholder(ATerm type, ATermList annos) {
@@ -143,7 +143,7 @@ public class PureFactory extends SharedObjectFactory implements ATermFactory {
   }
   
   static private int hashPlaceholder(ATermList annos, ATerm type) {
-    return doobs_hashFunction(new Object[] { annos, type });
+    return shared.HashFunctions.doobs(new Object[] { annos, type });
   }
   
   public ATermBlob makeBlob(byte[] data, ATermList annos) {
@@ -154,7 +154,7 @@ public class PureFactory extends SharedObjectFactory implements ATermFactory {
   }
   
   static private int hashBlob(ATermList annos, byte[] data) {
-    return doobs_hashFunction(new Object[] { annos, data }); 
+    return shared.HashFunctions.doobs(new Object[] { annos, data }); 
   }
   
   public ATermList makeList(ATerm first, ATermList next, ATermList annos) {
