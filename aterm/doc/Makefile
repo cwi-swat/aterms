@@ -26,10 +26,12 @@ encoding.ps: encoding.fig
 	fig2dev -Lps encoding.fig encoding.ps
 
 spell: at.ltx
-	detex at.ltx | spell +words.txt
+#	detex at.ltx | spell +words.txt
+	detex manual.ltx | spell -b +words.txt
 
 clean:
 	rm -f *~ at.aux at.bbl at.blg at.dvi at.log at.ps \
+		manual.dvi manual.ps \
 		encoding.ps header.ps 
 
 # end of Makefile

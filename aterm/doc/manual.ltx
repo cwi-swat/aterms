@@ -8,7 +8,6 @@
 \newcommand{\ATerm}{ATerm}
 \newcommand{\ATerms}{ATerms}
 \newcommand{\Symbol}{Symbol}
-\newcommand{\Symbols}{Symbols}
 
 \newcommand{\ATtrue}{\mbox{\tt ATtrue}}
 \newcommand{\ATfalse}{\mbox{\tt ATfalse}}
@@ -17,13 +16,46 @@
 \newcommand{\ATprotect}{\mbox{\tt ATprotect}}
 \newcommand{\ATprotectArray}{\mbox{\tt ATprotectArray}}
 
-% \command{init.c} will input file "examples/init.c" in verbatim mode.
+\openout 15 functions.idx
+\openout 14 macros.idx
+
+% \example{init.c} will input file "examples/init.c" in verbatim mode.
 \newcommand{\example}[1]{
 	\noindent\hrulefill
 	\begin{small}
 	\verbatiminput{examples/#1}
 	\end{small}
 	\hrulefill
+}
+
+% NULL
+\newcommand{\NULL}{{\tt NULL}}
+
+% Function definition
+\newcommand{\Function}[4]{\vspace{0.3cm}
+	\noindent
+	\framebox[12.6cm][l]{{\bf function:} #1} \vspace{0.1cm}\newline
+	{\bf Summary:\hspace{0.2cm}} #4\newline
+	{\bf Declaration:}
+% \vspace{-0.1cm}
+		{#2} {#1}({#3})
+        \write 15 {\string\FuncEntry{#1}{#2}{#3}{#4}{\thepage}}
+}
+
+% Macro definition
+\newcommand{\Macro}[4]{\vspace{0.3cm}
+	\noindent
+	\framebox[12.6cm][l]{{\bf macro:} {#2} {#1}({#3})} \vspace{0.1cm}\newline
+	{\bf Summary:\hspace{0.2cm}} #4\newline
+	{\bf Declaration:}
+% \vspace{-0.1cm}
+	\write 14 {\string\MacroEntry{#1}{#2}{#3}{#4}{\thepage}}
+}
+
+% Function/Macro description (optional)
+\newcommand{\Describe}[1]{
+
+	\noindent{\bf Description:} #1
 }
 
 \def\aterms{\mbox{ATerms}}
@@ -44,28 +76,28 @@
 \section{Introduction}\label{intro}
 This manual describes the functionality provided in the \ATlib.
 Section~\ref{usage} explains in general the steps that must be taken to
-initialize and work with the \ATlib.
+initialise and work with the \ATlib.
 Section~\ref{lvl1} describes the level one interface.
 Section~\ref{lvl2} describes the level two interface.
 
 %----[ USAGE ]----
 \section{Using the \ATlib}\label{usage}
 This section explains the basics of using the \ATlib.  Section~\ref{init}
-demonstrates initialization of the \ATlib.  Section~\ref{prot} explains how
+demonstrates initialisation of the \ATlib.  Section~\ref{prot} explains how
 to protect global \aterm\ variables and arrays of \aterms.
 
-%----[ INITIALIZING ATERM LIBRARY ]----
-\subsection{Initializing the \ATlib}\label{init}
-To initialize the \ATlib, a call to \ATinit\ must be made from \main,
+%----[ INITIALISING ATERM LIBRARY ]----
+\subsection{Initialising the \ATlib}\label{init}
+To initialise the \ATlib, a call to \ATinit\ must be made from \main,
 passing the commandline arguments stored in {\tt argc} and {\tt argv}.
 Also, the address of a locally created ATerm variable must be passed.  This
 address is used by the garbage collector to determine the bottom of the stack
 to be inspected for \aterms.
-The following code demonstrates a typical initialization of the \ATlib.
+The following code demonstrates a typical initialisation of the \ATlib.
 
 \example{init.c}
 
-Note that {\tt NULL} is \emph{not} a valid bottom of stack argument!
+Note that \NULL\ is \emph{not} a valid bottom of stack argument!
 
 %----[ PROTECTING ATERMS]----
 \subsection{Protecting global \aterms\ and arrays of \aterms}\label{prot}
@@ -94,7 +126,7 @@ Users of the \ATlib\ are urged to use {\sc baf} versions when exchanging
 any constraints on names of \aterm-files, the user is encouraged to use the
 extension {\tt .baf} for {\sc baf} files. This will avoid confusion between
 textual representations and binary ones.  Textual representations could use
-the extention {\tt .trm}.
+the extension {\tt .trm}.
 
 %--------------------[ LEVEL ONE INTERFACE ]--------------------
 
@@ -129,10 +161,14 @@ The following {\tt C}-types are defined in the level one interface:
 \end{small}
 
 \subsection{Level One Functionality}\label{func1}
-\begin{itemize}
-\item {\tt ATerm ATmake(const char *pattern, ...);}\\
+\Function{\tt ATmake}{\ATerm}{\tt const char *pattern, ...}
+{Create an \ATerm}
+\Describe{
 	Creates an \aterm\ given a pattern and corresponding values.
+	The following table shows which patterns can be used, and which type
+	of arguments should be passed if such a pattern is used.
 
+	\smallskip
 	\begin{small}
 	\begin{tabular}{|l|l|l|}
 	\hline
@@ -150,69 +186,146 @@ The following {\tt C}-types are defined in the level one interface:
 	\end{tabular}
 	\end{small}
 
+	\medskip\noindent
 	Types {\tt <appl>} and {\tt <str>} should contain a pattern consisting
 	of the function symbol to be used and the types of the arguments.  It
 	must be followed by exactly the number of arguments that are used in the
-	pattern. Also, the types of the arguments must match the respecitve
+	pattern. Also, the types of the arguments must match the respective
 	types used in the pattern.
 
-	\smallskip
+	\smallskip\noindent
 	Here are some examples of {\tt ATmake}:
 
 	\example{make.c}
-\item {\tt {\tt ATbool} ATmatch(\aterm\ t, const char *string);}
+}
+
+\Function{\tt ATmatch}{\tt ATbool}{\aterm\ t, const char *string}
+{Match an \aterm\ against a pattern}
+\Describe{
 	Matches an \aterm\ against a pattern, attempting to fill the `holes'.
 	If the \aterm\ matches the pattern, \ATtrue\ is returned and the
 	variables will be filled according to the pattern, otherwise \ATfalse\
 	is returned.
 
-	\smallskip
+	\smallskip\noindent
 	Here are a few examples of {\tt ATmatch}:
 
 	\example{match.c}
-\item {\tt ATreadFromString(const char *string);}\\
-	Reads (parses) an \aterm\ from a string. A convenience macro
-	{\tt ATparse} is included in {\tt aterm1.h}.
-\item {\tt ATreadFromTextFile(FILE *file);}\\
-	Reads (parses) an \aterm\ from a \emph{text} file.
-\item {\tt ATreadFromBinaryFile(FILE *file);}\\
-	Reads an \aterm\ from a {\sc baf} file (See Section~\ref{baf})
-\item {\tt ATreadFromFile(FILE *file);}\\
-	Reads an \aterm\ from a file. A magic number detection is done to see if
-	the file is in {\tt BAF}. If so, it will read binary, otherwise it will
-	read the text file and parse it to an \aterm.
-\item {\tt ATparse(s)}:\\
-	A convenience macro for {\tt ATreadFromString} (q.v.)
-\item {\tt ATgetType(t)}:\\
-	A macro that returns the type of an \aterm. Result is one of the types
-	mentioned at the beginning of this section.
-\item {\tt ATisEqual(t1, t2)}:\\
-	A macro that tests equality of \aterms\ {\tt t1} and {\tt t2}.
-\item {\tt ATbool ATwriteToTextFile(\aterm\ t, FILE *f);}\\
-	Writes term {\tt t} to file {\tt f} in textual format.
-\item {\tt ATbool ATwriteToBinaryFile(\aterm\ t, FILE *F);}\\
-	Writes term {\tt t} to file {\tt f} in Binary ATerm Format ({\sc baf}).
-\item {\tt char *ATwriteToString(\aterm\ t);}\\
+}
+
+\Function{\tt ATreadFromString}{\ATerm}{const char *string}
+{Read an \aterm\ from string}
+\Describe{
+	This function parses an character string into an \aterm.
+	A convenience macro {\tt ATparse} is included in {\tt aterm1.h}.
+}
+
+\Function{\tt ATreadFromTextFile}{\ATerm}{FILE *file}
+{Read an \aterm\ from text file}
+\Describe{
+	This function reads a text file and parses the contents into an \aterm.
+}
+
+\Function{\tt ATreadFromBinaryFile}{\ATerm}{FILE *file}
+{Read an \aterm\ from binary file ({\sc baf})}
+\Describe{
+	This function reads a binary file and builds an \aterm.
+}
+
+\Function{\tt ATreadFromFile}{\ATerm}{FILE *file}
+{Read an \aterm\ from binary or textfile}
+\Describe{
+	This function reads an \aterm\ from a file. A magic number detection is
+	done to see if the file is in {\sc baf}. If so, the binary term will
+	be read, otherwise the textual term will be parsed.
+}
+
+\Macro{\tt ATparse}{\ATerm}{const char *str}
+{A convenience macro for {\tt ATreadFromString}}
+\Describe{
+	This macro is simply a shortcut to {\tt ATreadFromString(str)}.
+}
+
+\Macro{\tt ATgetType}{int}{\ATerm\ term}
+{Return the type of {\tt term}}
+\Describe{
+	A macro that returns the type of an \aterm. Result is one of
+	{\tt AT\_APPL}, {\tt AT\_INT}, {\tt AT\_REAL}, {\tt AT\_LIST},
+	{\tt AT\_PLACEHOLDER}, or {\tt AT\_BLOB}.
+}
+
+\Macro{\tt ATisEqual}{int}{\ATerm\ t1, \ATerm\ t2}
+{A macro that tests equality of \aterms\ {\tt t1} and {\tt t2}}
+\Describe{
+	As \ATerms\ are shared, testing equality can be done by comparing the
+	addresses of {\tt t1} and {\tt t2}, which is exactly what this macro does.
+}
+
+\Function{\tt ATwriteToTextFile}{\tt ATbool}{\aterm\ t, FILE *f}
+{Writes term {\tt t} to file {\tt f} in textual format}
+\Describe{
+	This function writes \aterm\ {\tt t} to the file {\tt f} in textual format.
+	This term can later be read again by {\tt ATreadFromTextFile}.
+}
+
+\Function{\tt ATwriteToBinaryFile}{\tt ATbool}{\tt \aterm\ t, FILE *F}
+{Writes term {\tt t} to file {\tt f} in Binary ATerm Format ({\sc baf})}
+\Describe{
+	This function writes \aterm\ {\tt t} to the file {\tt f} in {\sc baf}.
+	This term can later be read again by {\tt ATreadFromBinaryFile}.
+}
+
+\Function{\tt ATwriteToString}{\tt char *}{\aterm\ t}
+{Writes term {\tt t} to a string}
+\Describe{
 	Writes term {\tt t} to an internal string buffer. The beginning of this
 	buffer is returned. Note that the contents of this buffer are volatile
 	and may be overwritten by any call to the \ATlib.
-\item {\tt \aterm\ ATsetAnnotation(\aterm\ t, \aterm\ label, \aterm\ anno);}\\
-	Creates a version of {\tt t} that is annotated with label {\tt label}
-	and annotation {\tt anno}.
-\item {\tt \aterm\ ATgetAnnotation(\aterm\ t, \aterm\ label);}\\
-	Retrieves annotation of {\tt t} with label {\tt label}.
-\item {\tt \aterm\ ATremoveAnnotation(\aterm\ t, \aterm\ label);}\\
-	Returns a version of {\tt t} which has its annotation with label
-	{\tt label} removed.
-\item {\tt void ATinit(int argc, char *argv[], \aterm\ *bottomOfStack);}\\
-	Initializes the \ATlib. See Section~\ref{init}.
-\item {\tt int ATprintf(const char *format, ...);}\\
-      {\tt int ATfprintf(FILE *stream, const char *format, ...);}\\
-      {\tt int ATvfprintf(FILE *stream, const char *format, ...);}\\
-	Similar, to the well-known {\tt C}-functions {\tt printf}, {\tt fprintf}
-	and {\tt vfprintf}, these function print a formatted string. The
-	formats {\tt c, d, i, o, u, x, X, e, E, f, g, G, p, s} behave as can be
-	expected from {\tt printf}. In addition the conversion specifiers
+}
+
+\Function{\tt ATsetAnnotation}{\ATerm}{\aterm\ t, \aterm\ label, \aterm\ anno}
+{Annotate a term with a labeled annotation}
+\Describe{
+	Creates a version of {\tt t} that is annotated with annotation {\tt anno}
+	which is labeled by {\tt label}.
+}
+
+\Function{\tt ATgetAnnotation}{\ATerm}{\aterm\ t, \aterm\ label}
+{Retrieves annotation of {\tt t} with label {\tt label}}
+\Describe{
+	This function can be used to retrieve a specific annotation of a term.
+	If {\tt t} has no annotations, or no annotation labeled with {\tt label}
+	exists, \NULL\ is returned. Otherwise the annotation is returned.
+}
+
+\Function{\tt ATremoveAnnotation}{\ATerm}{\aterm\ t, \aterm\ label}
+{Remove a specific annotation from a term}
+\Describe{
+	This function returns a version of {\tt t} which has its annotation with
+	label {\tt label} removed. If {\tt t} has no annotations, or no annotation
+	labeled with {\tt label} exists, {\tt t} itself is returned.
+}
+
+\Function{\tt ATinit}{\tt void}
+{\tt int argc, char *argv[], \aterm\ *bottomOfStack}
+{Initialise the \ATlib. See Section~\ref{init}}
+
+\Function{\tt ATprintf}{\tt int}{\tt const char *format, ...}
+{\ATerm\ version of {\tt printf}}
+\Describe{See ATvfprintf}
+
+\Function{\tt ATfprintf}{\tt int}{\tt FILE *stream, const char *format, ...}
+{\ATerm\ version of {\tt fprintf}}
+\Describe{See ATvfprintf}
+
+\Function{\tt ATvfprintf}{\tt int}
+{\tt FILE *stream, const char *format, va\_list args}
+{\ATerm\ version of {\tt vfprintf}}
+\Describe{
+	The functions {\tt ATprintf}, {\tt ATfprintf} and {\tt ATvfprintf}
+	are used for formatted output to file. The conversion specifiers
+	{\tt c, d, i, o, u, x, X, e, E, f, g, G, p, s} behave as can be
+	expected from {\tt (f)printf}. In addition the conversion specifiers
 	{\tt l, n, t} and {\tt y} are supported:
 
 	\begin{small}
@@ -222,37 +335,59 @@ The following {\tt C}-types are defined in the level one interface:
 	Conversion specifier & Action \\
 	\hline
 	{\tt l} & print an \aterm-list \\
-	{\tt n} & print information about an \aterm \\
+	{\tt n} & print information about an \aterm\ node \\
 	{\tt t} & print an \aterm \\
-	{\tt y} & print the symbol of an \aterm \\
+	{\tt y} & print the symbol of an \aterm-application \\
 	\hline
 	\end{tabular}
 	\end{center}
 	\end{small}
+}
 		
-\item {\tt void ATsetErrorHandler(void (*handler)(const char *format, va\_list args));}\\
-	Sets up an errorhandler for the \ATlib. This handler will be called
-	when an errormessage is sent to {\tt ATerror}. If no handler is set,
-	the message is printed to {\tt stderr} through {\tt ATfprintf} and the
-	\ATlib\ then calls {\tt abort()}. 
-\item {\tt void ATerror(const char *format, ...);}\\
-	Function similar to {\tt fprintf}. If an errorhandler has been setup
-	through call to {\tt ATsetErrorHandler}, this handler will be called.
-	Otherwise {\tt ATerror} prints a formatted message to {\tt stderr},
-	through {\tt ATvfprintf} (q.v.) followed by a call to {\tt abort}.
-\item {\tt void ATprotect(\aterm\ *atp);}\\
+\Function{\tt ATsetErrorHandler}{\tt void}
+{\tt (void (*handler)(const char *, va\_list))}
+{Specify an errorhandler for the \ATlib.}
+\Describe{
+	This function can be used to set up an errorhandler for the \ATlib.
+	This handler will be called when an errormessage is sent to {\tt ATerror}.
+	If no handler is set, the message is printed to {\tt stderr} through
+	{\tt ATfprintf} and the \ATlib\ then calls {\tt abort()}. 
+}
+
+\Function{\tt ATerror}{\tt void}{\tt (const char *format, ...)}
+{Dump an errormessage and abort the \ATlib}
+\Describe{
+	If an errorhandler has been installed through a call to
+	{\tt ATsetErrorHandler}, this handler will be called. Otherwise
+	{\tt ATerror} prints a formatted message to {\tt stderr}, through
+	{\tt ATvfprintf} (q.v.) followed by a call to {\tt abort}.
+}
+
+\Function{\tt ATprotect}{\tt void}{\aterm\ *atp}{Protect an \aterm}
+\Describe{
 	Protects an \aterm\ from being freed at garbage collection. See
 	Section~\ref{prot}.
-\item {\tt void ATunprotecte(\aterm\ *atp);}\\
+}
+
+\Function{\tt ATunprotect}{\tt void}{\aterm\ *atp}{Unprotect an \aterm}
+\Describe{
 	Releases protection of an \aterm\ which has previously been protected
 	through a call to {\tt ATprotect}.
-\item {\tt void ATprotectArray(\aterm\ *start, int size);}\\
-	Protects an array of {\tt size} \aterms\ starting at {\tt start}.
-\item {\tt void ATunprotectArray(\aterm\ *start);}\\
+}
+
+\Function{\tt ATprotectArray}{void}{\aterm\ *start, int size)}
+{Protect an array of \ATerms}
+\Describe{
+	Protects an entire array of {\tt size} \aterms\ starting at {\tt start}.
+}
+
+\Function{\tt ATunprotectArray}{void}{\aterm\ *start)}
+{Unprotect an array of \ATerms}
+\Describe{
 	Releases protection of the array of \aterms\ which starts at {\tt
 	start}.
+}
 
-\end{itemize}
 %--------------------[ LEVEL TWO INTERFACE ]--------------------
 
 \section{Level Two Interface}\label{lvl2}
@@ -273,5 +408,219 @@ interface also uses the following types:
 \end{itemize}
 
 \subsection{Level Two Functionality}\label{func2}
+
+\subsubsection{ATermInt}
+\Function{\tt ATmakeInt}{\tt ATermInt}{\tt int value}
+{Build an \aterm Int from an integer ({\tt int})}
+
+\Macro{\tt ATgetInt}{\tt int}{\ATerm\ t}
+{Get the integer value from an \aterm Int.}
+
+\subsubsection{ATermReal}
+\Function{\tt ATmakeReal}{\tt ATermReal}{double value}
+{Build an \aterm Real from a real ({\tt double}).}
+
+\Macro{\tt ATgetReal}{\tt double}{\tt \ATerm\ t}
+{Macro to get the real value from an \aterm Real.}
+
+\subsubsection{ATermAppl}
+\Function{\tt ATmakeAppl}{ATermAppl}{\Symbol\ sym, ...}
+{Build an application from a variable number of arguments.}
+\Describe{
+	The arity is taken from the first argument {\tt sym}, so the other
+	arguments to {\tt ATmakeAppl} should be the arguments for the
+	application. For arity $0\ldots 6$ the appropriate {\tt ATmakeAppl<N>} 
+	can be used instead for better efficiency.
+}
+
+\Function{\tt ATmakeAppl0}{\tt ATermAppl}{\Symbol\ s}
+{Make a function application with zero arguments}
+
+\Function{\tt ATmakeAppl1}{\tt ATermAppl}{\Symbol\ s, \ATerm\ a0}
+{Make a function application with one argument}
+
+\Function{\tt ATmakeAppl2}{\tt ATermAppl}{\Symbol\ s, \ATerm\ a0, a1}
+{Make a function application with two arguments}
+
+\Function{\tt ATmakeAppl3}{\tt ATermAppl}{\Symbol\ s, \ATerm\ a0, a1, a2}
+{Make a function application with three arguments}
+
+\Function{\tt ATmakeAppl4}{\tt ATermAppl}{\Symbol\ s, \ATerm\ a0, a1, a2, a3}
+{Make a function application with four arguments}
+
+\Function{\tt ATmakeAppl5}{\tt ATermAppl}{\Symbol\ s,
+	\ATerm\ a0, a1, a2, a3, a4}
+{Make a function application with five arguments}
+
+\Function{\tt ATmakeAppl6}{\tt ATermAppl}
+{\Symbol\ s, \ATerm\ a0, a1, a2, a3, a4, a5}
+{Make a function application with six arguments}
+\Describe{
+	These functions build an application of arity zero through 6, i.e.
+	an application with $0\ldots 6$ arguments. Use these functions to
+	build {\tt ATermAppl}s with small arity in favour of the generic
+	{\tt ATmakeAppl} described above.
+}
+
+\Macro{\tt ATget\Symbol}{\Symbol}{\tt ATermAppl}
+{Get the symbol of an application}
+
+\Macro{\tt ATgetArgument}{\ATerm}{\tt ATermAppl, int nr}
+{Get the {\tt nr}-th argument of an application}
+
+\Function{\tt ATsetArgument}{ATermAppl}{ATermAppl appl, ATerm arg, int n}
+{Set the {\tt nr}-th argument of an application to {\tt arg}}
+\Describe{
+	This function return a copy of {\tt appl} with argument {\tt n}
+	replaced by {\tt arg}.
+}
+
+\Function{\tt ATgetArguments}{\tt ATermList}{ATermAppl appl}
+{Get a list of arguments of an application}
+\Describe{
+	Return the arguments of {\tt appl} in {\tt ATermList} format.
+	Note: traversing the arguments of {\tt appl} can be done more
+	efficiently using the {\tt ATgetArgument} macro.
+}
+
+\Function{\tt ATmakeApplList}{\tt ATermAppl}{\Symbol\ sym, ATermList args}
+{Build an application given a \Symbol\ and list of arguments}
+\Describe{
+	Build an application from {\tt sym} and the argumentlist {\tt args}.
+	Note: unless the arguments are already in an {\tt ATermList}, it is
+	probably more efficient to use the appropriate {\tt ATmakeAppl<N>}.
+}
+
+\Function{\tt ATmakeApplArray}{\tt ATermAppl}{\Symbol\ sym, ATerm args[]}
+{Build an application given a \Symbol\ and array of arguments}
+
+\subsubsection{ATermList}
+\Function{\tt ATmakeList}{\tt ATermList}{int n, ...}
+{Create an {\tt ATermList} of $n$ elements}
+\Describe{
+	This function can be used to build an {\tt ATermList} of $n$ elements.
+	The elements should be passed as arguments $1\ldots n$.
+}
+
+\Macro{\tt ATmakeList0()}{\tt ATermList}{}
+{Macro defined to point to the empty list {\tt []}}
+
+\Function{\tt ATmakeList1}{\tt ATermList}{\ATerm\ el0}
+{Construct a list of one element}
+
+\Function{\tt ATmakeList2}{\tt ATermList}{\ATerm\ el0, el1}
+{Construct a list of two elements}
+
+\Function{\tt ATmakeList3}{\tt ATermList}{\ATerm\ el0, el1, el2}
+{Construct a list of three elements}
+
+\Function{\tt ATmakeList4}{\tt ATermList}{\ATerm\ el0, el1, el2, el3}
+{Construct a list of four elements}
+
+\Function{\tt ATmakeList5}{\tt ATermList}{\ATerm\ el0, el1, el2, el3, el4}
+{Construct a list of five elements}
+
+\Function{\tt ATmakeList6}{\tt ATermList}{\ATerm\ el0, el1, el2, el3, el4, el5}
+{Construct a list of six elements}
+\Describe{
+	These functions build an {\tt ATermList} of $1\ldots 6$ elements.
+	Longer lists should be created using the generic {\tt ATmakeList}
+	function described above.
+}
+
+\Macro{\tt ATgetLength}{\tt int}{\tt ATermList l}
+{Macro to get the length of list {\tt l}}
+
+\Macro{\tt ATgetFirst}{\ATerm}{\tt ATermList l}
+{Macro to get the first element of list {\tt l}}
+
+\Macro{\tt ATgetNext}{\tt ATermList}{\tt ATermList l}
+{Macro to get the next part (the tail) of list {\tt l}}
+
+\Macro{\tt ATisEmpty}{\tt ATbool}{\tt ATermList l}
+{Macro to test if list {\tt l} is empty}
+
+\Function{\tt ATgetPrefix}{\tt ATermList}{\tt ATermList list}
+{Return all but the last element of {\tt list}}
+
+\Function{\tt ATgetLast}{\ATerm}{\tt ATermList list}
+{Return the last element of {\tt list}}
+
+\Function{\tt ATgetSlice}{\tt ATermList}
+{ATermList list, int start, int end}
+{Get a portion (slice) of a list}
+\Describe{
+	Return the portion of {\tt list} that lies between {\tt start} and
+	{\tt end}. Thus {\tt start} is included, {\tt end} is not.
+}
+
+\Function{\tt ATinsert}{\tt ATermlist}{\tt ATermList list, \ATerm\ el}
+{Return {\tt list} with {\tt el} inserted.}
+
+\Function{\tt ATinsertAt}{\tt ATermList}
+{(ATermList list, \ATerm\ el, int index}
+  {Return {\tt list} with {\tt el} inserted at position {\tt index}}
+
+\Function{\tt ATappend}{\tt ATermList}{\tt ATermList list, ATerm el}
+{Return {\tt list} with {\tt el} appended}
+
+\Function{\tt ATconcat}{\tt ATermList}{\tt ATermList list1, ATermList list2}
+{Return the concatenation of {\tt list1} and {\tt list2}}
+
+\Function{\tt ATindexOf}{\tt int}{\tt ATermList list, ATerm el, int start)}
+{Return the index of an \ATerm\ in a list}
+\Describe{
+	Return the index where {\tt el} can be found in {\tt list}. Start
+	looking at position {\tt start}. Returns {\tt -1} if {\tt el} is
+	not in {\tt list}.
+}
+
+\Function{\tt ATlastIndexOf}{\tt int}
+{\tt ATermList list, ATerm el, int start)}
+{Return the index of an \ATerm\ in a list (reverse)}
+\Describe{
+	Search backwards for {\tt el} in {\tt list}. Start searching at
+	{\tt start}. Return the index of the first occurrence of {\tt l}
+	encountered, or {\tt -1} when {\tt el} is not present before
+	{\tt start}.
+}
+
+\Function{\tt ATelementAt}{\ATerm}{\tt ATermList list, int index)}
+{Return a specific element of a list}
+\Describe{
+	Return the element at position {\tt index} in {\tt list}. Return
+	\NULL\ when {\tt index} is not in {\tt list}.
+}
+
+\Function{\tt ATremoveElement}{\tt ATermList}{\tt ATermList list, \ATerm\ el}
+{Return {\tt list} with one occurrence of {\tt el} removed}
+
+\Function{\tt ATremoveAll}{\tt ATermList}{\tt ATermList list, \ATerm\ el}
+{Return {\tt list} with all occurrences of {\tt el} removed}
+
+\Function{\tt ATremoveElementAt}{\tt ATermList}
+{\tt ATermList list, int index}
+{Return {\tt list} with the element at {\tt index} removed}
+
+\Function{\tt ATreplace}{\tt ATermList}{\tt ATermList list, \ATerm\ el, int idx}
+{Return {\tt list} with the element at {\tt index} replaced by {\tt el}}
+
+\Function{\tt ATreverse}{\tt ATermList}{\tt ATermList list)}
+{Return {\tt list} with its elements in reversed order}
+
+\subsubsection{ATplaceholder}
+\Function{\tt ATmakePlaceholder}{\tt ATermPlaceholder}{\tt\ATerm\ type}
+{Build an \aterm Placeholder of {\tt type}}
+
+\Macro{\tt ATgetPlaceholder}{\ATerm}{\tt ATermPlaceholder ph}
+{Macro to get the type of an \aterm Placeholder}
+
+\subsubsection{ATblob}
+\Function{\tt ATmakeBlob}{\tt ATermBlob}{\tt int size, void *data)}
+{Build a Binary Large OBject given {\tt size} and {\tt data}}
+
+\subsection{ATtable}
+
+\subsubsection{Dictionaries}
 
 \end{document}
