@@ -5,40 +5,65 @@
 \section{Concrete Syntax}
 \label{concrete-syntax}
 
-In this appendix, we will present a formal definition of the concrete
-syntax of \ATerms\ using the syntax definition formalism SDF\cite{sdf}.
-
-The first section of the concrete syntax definition defines a number
-of syntactic features which are not visible to the outside world.
-XXX UITBREIDEN XXX
+here follows a formal definition of the concrete
+syntax of \ATerms\ using the syntax definition formalism SDF\cite{HHKR92.new}.
+Note that there is no concrete syntax defined for blobs, because 
+a humanly readable representation of blobs depends on the type
+of data stored in the blob.
 
 \vspace{0.4cm}
 {\NOAUTOHEADER  \input{spec/ATerm.mtx}}
 \vspace{0.4cm}
-Note that there is no concrete syntax defined for blobs, because 
-a humanly readable representation of blobs depends on the type
-of data stored in the blob.
 
 %{{{ Level 2 interface
 
 \section{Level 2 interface}
 \label{level2}
-The operations described in Section \ref{aterm} are not sufficient for
+The operations described in Section \ref{aterms-at-a-glance} are not sufficient for
 all applications. Some applications need more control over the underlying 
 implementation, or need operations that can be implemented using
 level one constructs but can be expressed more concisely and implemented more
 efficiently using more specialized constructs.
 
 We have therefore designed a level 2 interface that is a strict superset of
-the level 1 interface described in Section \ref{aterm}. Some new datatypes
+the level 1 interface described in Section \ref{aterms-at-a-glance}. Some new datatypes
 are introduced, as well as some new operations on \ATerms.
 
-The level 2 interface introduces 8 new datatypes. The first datatype
-represents function application symbols, and is called \AFun.
-The other 7 datatypes are subtypes of the \ATerm\ datatype, and implement 
-the different term types. These subtypes allow us to introduce operations
-that are only valid for one specific term type, instead of the general
-\ATerm\ operations described earlier.
+The level 2 interface introduces 7 new datatypes.  Except for the
+auxiliary datatype \AFun\ for representing function symbols, they are
+subtypes of the \ATerm\ datatype, and implement the different term
+types.  These subtypes allow us to introduce operations that are only
+valid for one specific term type, instead of the general \ATerm\
+operations described earlier.
+
+%{{{ ATermInt
+
+\paragraph{ATermInt:} This datatype represents integer terms.
+The operations on ATermInt are:
+
+\begin{itemize}
+\item {\tt ATermInt makeInt(Integer \emph{value})}: Construct a new integer
+term.
+\item {\tt Integer getInt(ATermInt \emph{i})}: Retrieve the value of an 
+      integer term.
+\end{itemize}
+
+%}}}
+
+%{{{ ATermReal
+
+\paragraph{ATermReal:} This datatype represents real-number terms.
+The operations on ATermReal are:
+XXX Hier komen Real en double beide voor; is dit de bedoeling? Niet mooiXXX
+
+\begin{itemize}
+\item {\tt ATermReal makeReal(Real \emph{value})}: Construct a new 
+      real term.
+\item {\tt double getReal(ATermReal \emph{r})}: Retrieve the value of 
+      a real term.
+\end{itemize}
+
+%}}}
 
 %{{{ AFun
 
@@ -46,15 +71,15 @@ that are only valid for one specific term type, instead of the general
 name, an arity, and an indication whether the symbol name is quoted or not.
 The operations on symbols are:
 \begin{itemize}
-\item {\tt makeAFun(\emph{name},\emph{arity},\emph{quoted})}: Construct
+\item {\tt makeAFun(String \emph{name}, Integer \emph{arity}, Boolean \emph{quoted})}: Construct
 a new symbol. If a symbol with the given name, arity, and quotation already 
 exists, the existing symbol is returned. Otherwise a new symbol is created
 and returned. \AFuns\ are also subject to garbage collection in order
 to avoid long running (interactive) programs from slowly running out of
 symbols.
-\item {\tt getName(\emph{symbol})}: Retrieve the name of a symbol.
-\item {\tt getArity(\emph{symbol})}: Retrieve the arity of a symbol.
-\item {\tt isQuoted(\emph{symbol})}: Check if a symbol is quoted.
+\item {\tt getName(AFun \emph{symbol})}: Retrieve the name of a symbol.
+\item {\tt getArity(AFun \emph{symbol})}: Retrieve the arity of a symbol.
+\item {\tt isQuoted(AFun \emph{symbol})}: Check if a symbol is quoted.
 \end{itemize}
 
 %}}}
@@ -75,7 +100,7 @@ The operations on this datatype are:
 		symbol and arguments.
 \item {\tt AFun getFun(ATermAppl \emph{appl})}: 
       Retrieve the function symbol of a function application.
-\item {\tt ATerm getArgument(ATermAppl \emph{appl}, int \emph{n})}: 
+\item {\tt ATerm getArgument(ATermAppl \emph{appl}, Integer \emph{n})}: 
       Retrieve a specific argument.
 \end{itemize}
 
@@ -84,10 +109,10 @@ The operations on this datatype are:
 
 \paragraph{ATermList:} This datatype represents the binary list constructor.
 Element indices start at 0. Thus a list of length $n$ has elements
-$0\ldots n-1$.
+$0,\ldots,n-1$.
 The operations on ATermList are:
 \begin{itemize}
-\item {\tt ATermList makeList$n$(ATerm \emph{el}$_0$,$\ldots$,
+\item {\tt ATermList makeList$n$(ATerm \emph{el}$_0$$,\ldots,$
 	       ATerm \emph{el}$_{n-1}$)}:
       This is a family of operations, one for each $n$ between
       $0$ and $6$ (inclusive). These operations are used to quickly construct
@@ -102,7 +127,7 @@ The operations on ATermList are:
 	element of \emph{list}.
 \item {\tt ATerm getLast(ATermList \emph{list})}: Retrieve the last element from
       \emph{list}.
-\item {\tt ATermList getSlice(ATermList \emph{list}, Integer \emph{start}, 
+\item {\tt ATermList getSlice(ATermList \emph{list}, Integer \emph{start},
    Integer \emph{end})}: Retrieve the portion of \emph{list} from position
    \emph{start} through \emph{end-1}. 
 \item {\tt Boolean isEmpty(ATermList \emph{list})}: Check if \emph{list}
@@ -120,48 +145,23 @@ The operations on ATermList are:
        Integer \emph{n})}:
       Search for an element in \emph{list} and return the index of the first
       location where \emph{el} is present. Start searching at index \emph{n}.
-      If the element is not present after element \emph{n}, return -1.
+      If the element is not present after element \emph{n}, return $-1$.
 \item {\tt Integer lastIndexOf(ATermList \emph{list}, ATerm \emph{el},
        Integer \emph{n})}:
       Search backwards for \emph{el} in \emph{list}, and return the index of
 	  the last location where the element is present. Start searching 
 	at index \emph{n}. 
-	If the element is not present before element \emph{n}, return -1.
+	If the element is not present before element \emph{n}, return $-1$.
 \item {\tt ATerm elementAt(ATermList \emph{list}, Integer \emph{index})}:
       Retrieve element at position \emph{index} from \emph{list}.
 \item {\tt ATermList removeElement(ATermList \emph{list}, ATerm \emph{elem})}:
-	Remove once occurence of an element from a list.
+	Remove once occurrence of an element from a list.
 \item {\tt ATermList removeElementAt(ATermList \emph{list}, 
 	Integer \emph{index})}: Remove an indexed element from a list.
 \end{itemize}
 
 %}}}
-%{{{ ATermInt
 
-\paragraph{ATermInt:} This datatype represents integer terms.
-The operations on ATermInt are:
-
-\begin{itemize}
-\item {\tt ATermInt makeInt(Integer \emph{value})}: Construct a new integer
-term.
-\item {\tt Integer getInt(ATermInt \emph{i})}: Retrieve the value of an 
-      integer term.
-\end{itemize}
-
-%}}}
-%{{{ ATermReal
-
-\paragraph{ATermReal:} This datatype represents real-number terms.
-The operations on ATermReal are:
-
-\begin{itemize}
-\item {\tt ATermReal makeReal(Real \emph{value})}: Construct a new 
-      real term.
-\item {\tt double getReal(ATermReal \emph{r})}: Retrieve the value of 
-      a real term.
-\end{itemize}
-
-%}}}
 %{{{ ATermPlaceholder
 
 \paragraph{ATermPlaceholder:} This datatype represents placeholder terms.
@@ -178,17 +178,12 @@ The operations on ATermPlaceholder are:
 %{{{ ATermBlob
 
 \paragraph{ATermBlob:} This datatype represents Binary Large OBject terms.
-The memory management of blobs must be done explicitly by the application
-programmer. 
-
 %%Blobs are never allocated, freed, or even touched by the
 %%\ATerm\ library. 
-
 %%Blob destructors can be registered using the
 %%{\tt registerBlobDestructor} function. All registered destructors are
 %%called before the space occupied by a `dead' ATermBlob is reused. 
-
-The operations on ATermBlob are:
+The operations on ATermBlob are: XXX blob versus *blob?? XXX
 
 \begin{itemize}
 \item {\tt ATermBlob makeBlob(Integer \emph{size}, Data \emph{data})}: 
@@ -198,6 +193,9 @@ The operations on ATermBlob are:
 \item {\tt Data getBlobData(ATermBlob *\emph{blob})}: Retrieve the data
       pointer stored in a blob.
 \end{itemize}
+
+The memory management of blobs must be done explicitly by the application
+programmer. 
 
 %}}}
 
