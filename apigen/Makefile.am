@@ -1,4 +1,4 @@
-SUBDIRS = apigen scripts lib-1.0 lib-2.0 utils test doc
+SUBDIRS = apigen scripts lib-1.0 lib-2.0 utils test doc config
 
 ACLOCAL_FLAGS = -I .
 

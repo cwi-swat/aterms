@@ -1,0 +1,1 @@
+echo "__PREFIX__/share/apigen-__VERSION__.jar:__EXTERNAL_JARS__"

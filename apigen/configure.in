@@ -81,6 +81,7 @@ apigen/gen/tom/c/Makefile
 apigen/gen/tom/java/Makefile
 test/Makefile
 doc/Makefile
+config/Makefile
 ])
 AC_OUTPUT
 
