@@ -549,6 +549,9 @@ void usage(void)
 
 /*}}}  */
 
+#define ATprotectList(t) (ATprotect((ATerm*)(void*)t))
+#define ATprotectAppl(t) (ATprotect((ATerm*)(void*)t))
+
 /*{{{  int main(int argc, char *argv[]) */
 
 int main(int argc, char *argv[])
