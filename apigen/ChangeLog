@@ -6,6 +6,8 @@ Tue Dec  2 10:54:54 CET 2003 <{jong,jurgenv}@cwi.nl>
  * Split of a scripts directory from the utils directory  to prevent
    a circular dependency.
  * Bumped to version 2.0
+ * Added support for lists of elements of builtin types (int, str, etc) in C
+ * Separated lists in C are now fully functional
 
 Mon Dec  1 14:12:47 CET 2003 <{jong,jurgenv}@cwi.nl>
  * apigen/gen/c:

@@ -6,5 +6,16 @@
   constructor(D, sstring, str(<string(str)>)),
 
   constructor(D, all, all(<integer(int)>,<number(real)>,<trm(term)>,<string(str)>)),
-  constructor(D, some, some(<integer(int)>,<number(real)>))
+  constructor(D, some, some(<integer(int)>,<number(real)>)),
+  
+  list(IntList, int),
+  list(DoubleList, real),
+  list(TermList, term),
+  list(StringList, str),
+
+  separated-list(SepIntList, int,[<sep(str)>,<pes(str)>]),
+  separated-list(SepDoubleList, real,[<sep(str)>,","]),
+  separated-list(SepTermList, term,[<sep(str)>,","]),
+  separated-list(SepStringList, str,[<sep(str)>,","])
+  
 ]
