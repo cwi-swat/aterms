@@ -148,7 +148,6 @@ testOther(void)
 void
 testAppl(void)
 {
-  int i;
   Symbol symmies[4];
   ATermAppl apples[16];
 
@@ -167,17 +166,17 @@ testAppl(void)
   apples[5] = ATmakeAppl(symmies[3], apples[0], apples[1], apples[0],
 			 apples[1], apples[0], apples[1], apples[0],
 			 apples[1], apples[0], apples[1]);
+  apples[6] = ATsetArgument(apples[2], (ATerm)apples[0], 0);
 
+  assert(apples[6] == apples[1]);
   assert(apples[1] == apples[3]);
+  assert(apples[2] != apples[1]);
+  assert(apples[2] != apples[6]);
   assert(apples[1] != apples[2]);
   assert(apples[2] != apples[3]);
   assert(apples[0] != apples[1]);
 
-  for(i=0; i<6; i++) {
-    fprintf(stdout, "apples[%d] = ", i);
-    ATwriteToTextFile((ATerm)apples[i], stdout);
-    fprintf(stdout, "\n");
-  }
+  printf("application tests ok.\n");
 }
 
 /*}}}  */
@@ -252,7 +251,19 @@ void testList(void)
 								 (ATerm)ATmakeInt(1),
 								 (ATerm)ATmakeInt(2))),
 				       list[2]));
-  printf("list tests ok.");
+
+  list[10] = (ATermList)ATreadFromString("[1,2,3,4,5]");
+  list[11] = ATreplace(list[10], (ATerm)ATmakeInt(0), 2);
+  test_assert("list-ops", 19, ATisEqual(list[11], 
+				  ATreadFromString("[1, 2, 0, 4, 5]")));
+
+  for(i=0; i<5; i++)
+	list[11] = ATreplace(list[11], (ATerm)ATmakeInt(0), i);
+
+  test_assert("list-ops", 20, ATisEqual(list[11], 
+				  ATreadFromString(" [0,0,0,0,0] ")));
+
+  printf("list tests ok.\n");
 }
 
 /*}}}  */
@@ -361,11 +372,14 @@ testMake(void)
 	test_assert("make", 5, ATisEqual(ATmake("<str>", "def"),
 									 ATmakeAppl0(sym[1])));
 	sym[2] = ATmakeSymbol("echt", 3, ATfalse);
+
 	test_assert("make", 6, ATisEqual(ATmake("<appl(<int>, <list>)>",
 		"echt", 123, ATmakeList2((ATerm)ATmakeInt(7), (ATerm)ATmakeReal(7.01))),
 		ATreadFromString("echt(123, 7, 7.01)")));
 	test_assert("make", 7, ATisEqual(ATmake("<placeholder>", ATmakeInt(7)),
 		ATmakePlaceholder((ATerm)ATmakeInt(7))));
+
+	printf("make tests ok.\n");
 }
 
 /*}}}  */
