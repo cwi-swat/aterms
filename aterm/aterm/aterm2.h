@@ -24,7 +24,6 @@ typedef ATerm ATermInt;
 typedef ATerm ATermReal;
 typedef ATerm ATermAppl;
 typedef ATerm ATermList;
-typedef ATerm ATerms;
 typedef ATerm ATermPlaceholder;
 typedef ATerm ATermBlob;
 
@@ -52,38 +51,34 @@ Symbol    *ATgetSymbol(ATermAppl *appl);
 ATerm     *ATgetArgument(ATermAppl *appl, int arg);
 
 /* Portability */
-ATerms *ATgetArguments(ATermAppl *appl);
+ATermList *ATgetArguments(ATermAppl *appl);
 
 /* The ATermList type */
-ATermList *ATmakeList(ATerms *terms);
-ATerms    *ATgetTerms(ATermList *list);
-
-/* The ATerms type */
-ATerms *ATmakeTerms0();
-ATerms *ATmakeTerms1(ATerm *el0);
-ATerms *ATmakeTerms2(ATerm *el0, ATerm *el1);
-ATerms *ATmakeTerms3(ATerm *el0, ATerm *el1, ATerm *el2);
-ATerms *ATmakeTerms4(ATerm *el0, ATerm *el1, ATerm *el2, ATerm *el3);
-ATerms *ATmakeTerms5(ATerm *el0, ATerm *el1, ATerm *el2, ATerm *el3, 
-		    ATerm *el4);
-ATerms *ATmakeTerms6(ATerm *el0, ATerm *el1, ATerm *el2, ATerm *el3, 
-		    ATerm *el4, ATerm *el5);
-ATerms *ATmakeTerms7(ATerm *el0, ATerm *el1, ATerm *el2, ATerm *el3, 
-		    ATerm *el4, ATerm *el5, ATerm *el6);
-int     ATgetLength(ATerms *terms);
-ATerm  *ATgetFirst(ATerms *terms);
-ATerms *ATgetNext(ATerms *terms);
-ATerms *ATgetPrefix(ATerms *terms);
-ATerm  *ATgetLast(ATerms *terms);
-ATerms *ATgetSlice(ATerms *terms, int start, int end);
-ATbool *ATisEmpty(ATerms *terms);
-ATerms *ATinsert(ATerms *terms, ATerm *el);
-ATerms *ATinsertAt(ATerms *terms, ATerm *el, int index);
-ATerms *ATappend(ATerms *terms, ATerm *el);
-ATerms *ATconcat(ATerms *terms1, ATerms *terms2);
-int     ATindexOf(ATerms *terms, ATerm *el, int start);
-int     ATlastIndexOf(ATerms *terms, ATerm *el, int start);
-ATerm   ATelementAt(ATerms *terms, int index);
+ATermList *ATmakeList0();
+ATermList *ATmakeList1(ATerm *el0);
+ATermList *ATmakeList2(ATerm *el0, ATerm *el1);
+ATermList *ATmakeList3(ATerm *el0, ATerm *el1, ATerm *el2);
+ATermList *ATmakeList4(ATerm *el0, ATerm *el1, ATerm *el2, ATerm *el3);
+ATermList *ATmakeList5(ATerm *el0, ATerm *el1, ATerm *el2, ATerm *el3, 
+		       ATerm *el4);
+ATermList *ATmakeList6(ATerm *el0, ATerm *el1, ATerm *el2, ATerm *el3, 
+		       ATerm *el4, ATerm *el5);
+ATermList *ATmakeList7(ATerm *el0, ATerm *el1, ATerm *el2, ATerm *el3, 
+		       ATerm *el4, ATerm *el5, ATerm *el6);
+int        ATgetLength(ATermList *list);
+ATerm     *ATgetFirst(ATermList *list);
+ATermList *ATgetNext(ATermList *list);
+ATermList *ATgetPrefix(ATermList *list);
+ATerm     *ATgetLast(ATermList *list);
+ATermList *ATgetSlice(ATermList *list, int start, int end);
+ATbool    *ATisEmpty(ATermList *list);
+ATermList *ATinsert(ATermList *list, ATerm *el);
+ATermList *ATinsertAt(ATermList *list, ATerm *el, int index);
+ATermList *ATappend(ATermList *list, ATerm *el);
+ATermList *ATconcat(ATermList *list1, ATermList *list2);
+int        ATindexOf(ATermList *list, ATerm *el, int start);
+int        ATlastIndexOf(ATermList *list, ATerm *el, int start);
+ATerm      ATelementAt(ATermList *list, int index);
 
 /* The ATermPlaceholder type */
 ATermPlaceholder *ATmakePlaceholder(ATerm *type);

@@ -1,5 +1,7 @@
 \documentclass{article}
 
+%{{{ LaTeX configuration
+
 \usepackage{epsfig}
 \usepackage{ASF+SDF}
 
@@ -15,12 +17,18 @@
 \def\sdf{\mbox{\sc Sdf}}
 \def\asdf{\mbox{\sc Asf+Sdf}}
 
+%}}}
+
+%{{{ Title page
+
 \title{Efficient Annotated Terms}
 \author{\small P.A. Olivier, {\tt olivierp@wins.uva.nl} \\
         \small H.A. de Jong, {\tt jong@wins.uva.nl}}
 
 \begin{document}
 \maketitle
+
+%}}}
 
 %{{{ Abstract
 
@@ -74,8 +82,8 @@ This datatype can be defined as follows.
 \begin{itemize}
 \item An integer constant is an \ATerm.
 \item A real constant is an \ATerm.
-\item A list of zero or more \ATerms\ is an \ATerm.
-\item A list of terms between rectangular brackets is an \ATerm.
+\item A list of zero or more \ATerms\ between rectangular brackets
+      is an \ATerm.
 \item A function application consisting of a function symbol and
       a list of zero or more \ATerms\ (arguments) is an \ATerm.
       The number of arguments of a function application is called
@@ -85,8 +93,9 @@ This datatype can be defined as follows.
 \item A blob (Binary Large data OBject) containing a length indication
       and a byte array of binary data (possibly of very large size)
       is an \ATerm.
-\item Every \ATerm\ may be associated with a list of labeled \ATerms\ 
-      representing a list of annotations.
+\item Every \ATerm\ may be associated with a list of \ATerm\ pairs
+      between curly braces, representing a list of $(label,annotation)$ 
+      pairs.
 \end{itemize}
 Each of these constructs except the last one can be seen as a subtype of
 the generic type {\tt ATerm}. The last construct is the \emph{annotation
@@ -119,8 +128,7 @@ of data stored in the blob.
 \begin{itemize}
 \item {\tt INT}:  An integer term.
 \item {\tt REAL}: A real term.
-\item {\tt TERMS}: A list of terms consisting of a first element and a tail.
-\item {\tt LIST}: A list between rectangular brackets.
+\item {\tt LIST}: A list of terms.
 \item {\tt APPL}: A function application.
 \item {\tt PLACEHOLDER}: A placeholder term between angled
         brackets.
@@ -129,33 +137,36 @@ of data stored in the blob.
 
 The operations are as follows:
 \begin{itemize}
-\item {\tt make(\emph{pattern}, \emph{args})}: This operation returns a new
+\item {\tt ATerm make(\emph{pattern}, \emph{args})}: This operation returns a new
 term created by taking the string pattern, parsing it as a term and filling
  the holes in the resulting term with arguments taken from {\tt args}.
-\item {\tt readFromString(\emph{string})}: Creates a new term by parsing
+\item {\tt ATerm readFromString(\emph{string})}: Creates a new term by parsing
 \emph{string}.
-\item {\tt readFromTextFile(\emph{file})}: Creates a new term by parsing the
+\item {\tt ATerm readFromTextFile(\emph{file})}: Creates a new term by parsing the
 data from \emph{file}.
-\item {\tt readFromBinaryFile(\emph{file})}: Creates a new term by reading a
+\item {\tt ATerm readFromBinaryFile(\emph{file})}: Creates a new term by reading a
 compact binary representation from \emph{file}.
-\item {\tt getType(\emph{term})}: Retrieve the type of a term. This
+\item {\tt Integer getType(\emph{term})}: Retrieve the type of a term. This
 operation returns one of the constants mentioned above.
-\item {\tt match(\emph{term}, \emph{pattern})}: Match \emph{term} against
+\item {\tt ATermList match(\emph{term}, \emph{pattern})}: Match \emph{term} against
 \emph{pattern}, and return a list of subterms matching with placeholders
 in \emph{pattern}.
-\item {\tt writeToTextFile(\emph{term}, \emph{file})}: Write the text
-representation of \emph{term} to \emph{file}.
-\item {\tt writeToBinaryFile(\emph{term}, \emph{file})}: Write the compact
-binary representation of \emph{term} to \emph{file}.
-\item {\tt writeToString(\emph{term})}: Return the text representation
+\item {\tt Boolean writeToTextFile(\emph{term}, \emph{file})}: Write the text
+representation of \emph{term} to \emph{file}. Returns {\tt true} for
+success and {\tt false} for failure.
+\item {\tt Boolean writeToBinaryFile(\emph{term}, \emph{file})}: Write the compact
+binary representation of \emph{term} to \emph{file}. Returns
+{\tt true} for success, and {\tt false} for failure.
+\item {\tt String writeToString(\emph{term})}: Return the text representation
 of \emph{term} as a string.
-\item {\tt setAnnotation(\emph{term}, \emph{label}, \emph{annotation})}:
+\item {\tt ATerm setAnnotation(\emph{term}, \emph{label}, \emph{annotation})}:
 Set the annotation labeled by \emph{label} of \emph{term} to
-\emph{annotation}.
-\item {\tt getAnnotation(\emph{term}, \emph{label})}:
+\emph{annotation}. Returns the old annotations.
+\item {\tt ATerm getAnnotation(\emph{term}, \emph{label})}:
 Retrieve the annotation labeled by \emph{label} of \emph{term}.
-\item {\tt removeAnnotation(\emph{term}, \emph{label})}: Remove
-the annotation labeled by \emph{label} from \emph{term}.
+\item {\tt ATerm removeAnnotation(\emph{term}, \emph{label})}: Remove
+the annotation labeled by \emph{label} from \emph{term}. Returns
+the old annotation.
 \end{itemize}
  Together these operations form a set of operations that is sufficiently
 powerful for most users, yet is simple enough to learn in a relatively
@@ -226,7 +237,7 @@ and that make this a fairly unique problem:
 \item A lot of applications will use annotations seldom. It is therefore
       important that annotations do not add significantly to the
       overall memory requirements when they are not used.
-\item In order to have a portable yet efficient implementation, our
+\item In order to have a portable yet efficient implementation, the
       implementation language will be C. This poses some special 
       requirements for the garbage collection strategy\footnote{We also
       implemented the library in Java. In this case, a lot of the issues
@@ -302,12 +313,11 @@ However, there a severe drawbacks to this approach:
       in the hashtable are as large as the object size instead of
       only one machine word.
 \end{itemize}
-Because of these problems, we decided to store references in the
-hashtable instead.
 
-When the hashtable is nearly full, we can now allocate a new and
-bigger table, and rehash all the entries of the old table in
-the new one.
+Because of these problems, we decided to use linear hash chaining
+in combination with indirect hashing.
+When the hashtable is nearly full, we can allocate a larger
+table, and rehash all the entries of the old table in the new one.
 
 %{{{ Garbage collection
 
@@ -377,10 +387,10 @@ to reclaim unused terms because this gives us the highest possible performance,
 and because small pauses due to garbage collection are acceptable, as long
 as they are short enough to allow smooth user interaction.
 
-We have designed a variant of the basic
-mark-sweep algorithm that fits seamlessly with the hashing strategy that
-we discussed earlier. It turns out that the solution we adopted for using 
-hashtables efficiently, also benefits the garbage collection strategy.
+% We have designed a variant of the basic
+% mark-sweep algorithm that fits seamlessly with the hashing strategy that
+% we discussed earlier. It turns out that the solution we adopted for using 
+% hashtables efficiently, also benefits the garbage collection strategy.
 
 As we shall see in Section \ref{implementation}, 
 most objects consist of only a couple
@@ -425,6 +435,7 @@ list of term references. Experiments have shown that in typical applications
 quite varying list sizes are encountered. The array approach is inferior, 
 because adding and deleting elements of a list would become to expensive.
 So we have opted for the linked list approach.
+
 {\tt <PO> dit moet uitgebreider.}
 
 %}}}
@@ -451,7 +462,9 @@ can also be implemented efficiently.
 
 After discussing the requirements of the library (Section \ref{requirements}),
 and the design (Section \ref{design}), we will now describe the implementation
-of the \ATerm\ datatype in C\cite{KR88}{\tt <PO> need a reference to ANSI-C!}.
+of the \ATerm\ datatype in C\cite{KR88}
+
+{\tt <PO> need a reference to ANSI-C!}.
 
 An important issue in the implementation is how to represent \ATerms\ 
 in such a way that all operations can be performed efficiently, without using
@@ -473,12 +486,12 @@ of the object, and consists of three fields (see Figure \ref{header}):
  
 \begin{itemize}
 \item A field consisting of 3 bits that indicate the type of the term.
+\item A field consisting of 1 bit that indicates whether this term has an
+      annotation or not.
 \item A field consisting of 4 bits representing the arity (number of
       pointers to other terms) of this object. When this field
       contains the maximum value of 15, the actual arity of this 
       object is stored in the second word.
-\item A field consisting of 1 bit that indicates whether this term has an
-      annotation or not.
 \end{itemize}
 
 The second word is used for hashing, and links together all terms in the same
@@ -503,7 +516,7 @@ and the actual arity is stored in the third word. In this case,
 the arguments start after the third word instead of after the second word.
 In this case the function application uses $3+n$ words.
 
-\paragraph{TERMS encoding}
+\paragraph{LIST encoding}
 The binary list constructor can be seen as a special function
 application with no function symbol and an arity of 2. The
 third word points to the first element in the list, this is called
@@ -513,15 +526,8 @@ The length of the list is
 stored in the three bytes after the header in the first word.
 The empty list\footnote{Due to the uniqueness of terms, only
 one instance of the empty list is present at any one time}
-is represented using a TERMS object with a {\tt NULL} pointer as both the
+is represented using a LIST object with empty
 first and next fields, and a length of 0.
-
-\paragraph{LIST encoding}
-This toplevel list constructor has an arity of 1, so the
-second word contains a reference to the actual TERMS object
-linking that connects the elements of this list. Again the
-three bytes after the header are used to store the length
-of the list.
 
 \paragraph{INT encoding}
 In an integer term, the third word contains the integer value.
@@ -625,61 +631,49 @@ The operations on this datatype are:
 %}}}
 %{{{ ATermList
 
-\paragraph{ATermList:} This datatype represents the top-level list
-constructor. The operations on this datatype are:
-\begin{itemize}
-\item {\tt ATermList makeList(ATerms \emph{terms})}: 
-      Build a list given a list of terms.
-\item {\tt ATerms listTerms(ATermList \emph{list})}: Retrieve the list
-      of elements of this list.
-\end{itemize}
-
-%}}}
-%{{{ ATerms
-
-\paragraph{ATerms:} This datatype represents the binary list constructor.
+\paragraph{ATermList:} This datatype represents the binary list constructor.
 The operations on this datatype are:
 \begin{itemize}
-\item {\tt ATerms makeTerms\emph{n}(ATerm \emph{el1},..., ATerm \emph{eln})}:
+\item {\tt ATermList makeList\emph{n}(ATerm \emph{el1},..., ATerm \emph{eln})}:
       This is actually a family of operations, one for each \emph{n} between
-      0 and 7. These operations are used to quickly construct small
-	  sequences of \emph{terms}.
-\item {\tt Integer getLength(ATerms \emph{terms})}: Retrieve the length of
-		\emph{terms}.
-\item {\tt ATerm getFirst(ATerms \emph{terms})}: Retrieve the first element of
-	\emph{terms}.
-\item {\tt ATerms getNext(ATerms \emph{terms})}: Retrieve all but the first
-	element of \emph{terms}.
-\item {\tt ATerms getPrefix(ATerms \emph{terms})}: Retrieve all but the last
-	element of \emph{terms}.
-\item {\tt ATerm getLast(ATerms \emph{terms})}: Retrieve the last element from
-      \emph{terms}.
-\item {\tt ATerms getSlice(ATerms \emph{terms}, Integer \emph{start}, 
+      0 and 7. These operations are used to quickly construct small lists
+      of terms.
+\item {\tt Integer getLength(ATermList \emph{list})}: Retrieve the length of
+		\emph{list}.
+\item {\tt ATerm getFirst(ATermList \emph{list})}: Retrieve the first element of
+	\emph{list}.
+\item {\tt ATermList getNext(ATermList \emph{list})}: Retrieve all but the first
+	element of \emph{list}.
+\item {\tt ATermList getPrefix(ATermList \emph{list})}: Retrieve all but the last
+	element of \emph{list}.
+\item {\tt ATerm getLast(ATermList \emph{list})}: Retrieve the last element from
+      \emph{list}.
+\item {\tt ATermList getSlice(ATermList \emph{list}, Integer \emph{start}, 
                            Integer \emph{end})}: Retrieve the portion of
-	\emph{terms} between \emph{start} and \emph{end} (inclusive).
-\item {\tt boolean isEmpty(ATerms \emph{terms})}: Check if \emph{terms} has
-\item {\tt ATerms insert(ATerms \emph{terms}, ATerm \emph{el})}:
+	\emph{list} between \emph{start} and \emph{end} (inclusive).
+\item {\tt boolean isEmpty(ATermList \emph{list})}: Check if \emph{list} has
+\item {\tt ATermList insert(ATermList \emph{list}, ATerm \emph{el})}:
       Insert a single element at the start of a list.
-\item {\tt ATerms insertAt(ATerms \emph{terms}, ATerm \emph{el},
+\item {\tt ATermList insertAt(ATermList \emph{list}, ATerm \emph{el},
        Integer \emph{index})}:
-      Insert a single element at position index in \emph{terms} list.
-\item {\tt ATerms append(ATerms \emph{terms}, ATerm \emph{el})}:
-      Append a single element to the end of \emph{terms}.
-\item {\tt ATerms concat(Aterms \emph{terms1}, ATerms \emph{terms2})}:
-      Concatenate \emph{terms1} and \emph{terms2}.
-\item {\tt Integer indexOf(ATerms \emph{terms}, ATerm \emph{el},
+      Insert a single element at position index in \emph{list}.
+\item {\tt ATermList append(ATermList \emph{list}, ATerm \emph{el})}:
+      Append a single element to the end of \emph{list}.
+\item {\tt ATermList concat(ATermList \emph{list1}, ATermList \emph{list2})}:
+      Concatenate \emph{list1} and \emph{list2}.
+\item {\tt Integer indexOf(ATermList \emph{list}, ATerm \emph{el},
        Integer \emph{n})}:
-      Search for an element in \emph{terms} and return the index of the first
+      Search for an element in \emph{list} and return the index of the first
       location where \emph{el} is present. Start searching at index \emph{n}.
       If the element is not present after element \emph{n}, return -1.
-\item {\tt Integer lastIndexOf(ATerms \emph{terms}, ATerm \emph{el},
+\item {\tt Integer lastIndexOf(ATermList \emph{list}, ATerm \emph{el},
        Integer \emph{n})}:
-      Search backwards for \emph{el} in \emph{terms}, and return the index of
+      Search backwards for \emph{el} in \emph{list}, and return the index of
 	  the last location where the element is present. Start searching at index
       \emph{n}. If the element is not present before element \emph{n},
       return -1.
-\item {\tt ATerm elementAt(ATerms \emph{terms}, Integer \emph{index})}:
-      Retrieve element at position \emph{index} from \emph{terms}.
+\item {\tt ATerm elementAt(ATermList \emph{list}, Integer \emph{index})}:
+      Retrieve element at position \emph{index} from \emph{list}.
 \end{itemize}
 
 %}}}
