@@ -48,7 +48,8 @@ INSTALL_PRG	= @INSTALL_PRG@
 INSTALL_DAT	= @INSTALL_DAT@
 
 SCRIPTS		= baf2trm trm2baf
-PROGS		= termsize baffle ${SCRIPTS}
+BINARIES	= termsize baffle
+PROGS		= ${BINARIES} ${SCRIPTS}
 PROGSRCS	= termsize.c baffle.c
 ATERMSRCS	= aterm.c list.c make.c memory.c afun.c gc.c bafio.c \
 		version.c
@@ -68,7 +69,7 @@ OBJ_PROF	= $(patsubst %.c,%-prof.o,$(ATERMSRCS))
 all: $(ATERMLIBS) $(PROGS)
 
 clean:
-	@CLEAN@
+	@CLEAN@ ${BINARIES}
 
 dist: ${DISTFILES}
 	@cp ${DISTFILES} ${DISTDIR}	
