@@ -34,7 +34,7 @@ DBG_COMPILE    = $(CC_DBG)    $(CFLAGS_DBG)    $(DEFS_DBG)    $(STDDEFS)
 PROF_COMPILE   = $(CC_PROF)   $(CFLAGS_PROF)   $(DEFS_PROF)   $(STDDEFS)
 CC64_COMPILE   = $(CC_CC64)   $(CFLAGS_CC64)   $(DEFS_CC64)   $(STDDEFS)
 SHARED_COMPILE = $(CC_SHARED) $(CFLAGS_SHARED) $(DEFS_SHARED) $(STDDEFS)
-
+COMPILE        = $(CC)        $(CFLAGS)        $(DEFS)        $(STDDEFS)
 ## Rules for compiling C files to include in static libraries
 %-cc.o   : %.c $(ALLINCLUDES)
 	CFLAGS= $(CC_COMPILE) -c $< -o $@

@@ -19,6 +19,10 @@
 
 $Id$
 
+2000/7/14 (mdejonge@cwi.nl)
+  * added definition for COMPILE in make_rules to get around a bug in
+    automake
+
 2000/7/14 (jong@cwi.nl)
   * Improved dependencies and cleaning in toolbus/Makefile.am
 
