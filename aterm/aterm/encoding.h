@@ -85,7 +85,7 @@ typedef unsigned int header_type;
 #define GET_TYPE(h)     (((h) & MASK_TYPE) >> SHIFT_TYPE)
 #define HAS_ANNO(h)     ((h) & MASK_ANNO)
 #define GET_ARITY(h)	((unsigned int)(((h) & MASK_ARITY) >> SHIFT_ARITY))
-#define GET_SYMBOL(h)	((h) >> SHIFT_SYMBOL)
+#define GET_SYMBOL(h)	((Symbol) ((h) >> SHIFT_SYMBOL))
 #define GET_LENGTH(h)	((h) >> SHIFT_LENGTH)
 #define IS_QUOTED(h)	(((h) & MASK_QUOTED) ? ATtrue : ATfalse)
 

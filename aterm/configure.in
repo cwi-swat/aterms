@@ -11,7 +11,7 @@ AC_PROG_CC
 
 # Default values
 CC_GCC=gcc
-CFLAGS_GCC="-Wall -g -O" #" -O4" disabled due to gcc optimizer bugs
+CFLAGS_GCC="-Wall -g -O4" 
 LFLAGS_GCC=""
 DEFS_GCC="\$(DEFS) -DNDEBUG"
 INCL_GCC=""

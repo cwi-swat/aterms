@@ -1,7 +1,15 @@
 $Id$
 
+Wed Apr 14 13:43:28 CEST 2004 <jurgenv@cwi.nl>
+ * GET_SYMBOL macro used shifts to retrieve a symbol key, but did
+   not cast to Symbol type, which results in a 'comparison between
+   signed and unsigned' warning in new compilers. Old compilers can
+   be configured to produce the warning using -Wsign-compare (not in -Wall).
+ * -O4 reactivated in normal optimized compile of aterm library
+
 Thu Apr  1 14:14:57 CEST 2004 <jong@cwi.nl>
  * patch by Armijn Hemel to add aterm.spec.in (used to generate RPM)
+
 
 Wed Feb 11 15:36:36 CET 2004 <kooiker@cwi.nl>
  * aterm/gc.c: remove verbose print: minor_sweep_phase_young 
