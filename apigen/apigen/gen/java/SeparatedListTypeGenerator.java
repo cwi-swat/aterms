@@ -72,10 +72,16 @@ public class SeparatedListTypeGenerator extends ListTypeGenerator {
     private void genTypedConcatMethod() {
         String formalSepArgs = buildFormalSeparatorArguments(listType);
         String actualSepArgs = buildActualSeparatorArguments(listType);
-        
-                String typeName = getTypeName();
-        println("  public " + typeName + " concat(" + formalSepArgs + typeName + " peer) {");
-        println("    return " + factoryGetter() + ".concat(this, " + actualSepArgs + "peer);");
+
+        String typeName = getTypeName();
+        println(
+            "  public " + typeName + " concat(" + formalSepArgs + typeName + " peer) {");
+        println(
+            "    return "
+                + factoryGetter()
+                + ".concat(this, "
+                + actualSepArgs
+                + "peer);");
         println("  }");
         println();
     }
@@ -83,7 +89,8 @@ public class SeparatedListTypeGenerator extends ListTypeGenerator {
     private void genOverrideConcatMethod() {
         println("  public aterm.ATermList concat(aterm.ATermList peer) {");
         println("    throw new java.lang.UnsupportedOperationException(");
-        println("      \"Cannot concat ATermList to "
+        println(
+            "      \"Cannot concat ATermList to "
                 + getTypeName()
                 + ", use typed concat method with separators.\");");
         println("  }");
@@ -102,10 +109,10 @@ public class SeparatedListTypeGenerator extends ListTypeGenerator {
 
     protected void genOverrideInsertMethod() {
         println("  public aterm.ATermList insert(aterm.ATerm head) {");
-        println(
-            "    throw new java.lang.UnsupportedOperationException(\"Insert is not supported for separated lists ("
+        println("    throw new java.lang.UnsupportedOperationException(");
+        println("      \"Cannot insert ATerm in separated list ("
                 + listType.getId()
-                + "), please use a make method.\");");
+                + "), use a factory make method.\");");
         println("  }");
         println();
     }
