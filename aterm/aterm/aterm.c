@@ -78,7 +78,7 @@ int             nr_marks = 0;
 /*}}}  */
 /*{{{  function declarations */
 
-extern char    *strdup(const char *s);
+/* extern char    *strdup(const char *s); */
 static ATerm    fparse_term(int *c, FILE * f);
 static ATerm    sparse_term(int *c, char **s);
 

@@ -53,7 +53,7 @@ static va_list *args = (va_list *) &theargs;
 /*}}}  */
 /*{{{  function declarations */
 
-extern char *strdup(const char *s);
+/* extern char *strdup(const char *s); */
 static ATerm makePlaceholder(ATermPlaceholder pat);
 static ATermAppl makeArguments(ATermAppl appl, Symbol name);
 static ATerm AT_vmakeTerm(ATerm pat);

@@ -50,7 +50,7 @@ ATerm    *at_lookup_table_alias = NULL;
 /*}}}  */
 /*{{{  function declarations */
 
-extern char *strdup(const char *s);
+/* extern char *strdup(const char *s); */
 
 /*}}}  */
 
