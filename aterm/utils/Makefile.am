@@ -36,7 +36,3 @@ atrmannos_LDADD         =  $(LDLIBS)
 
 bin_SCRIPTS		= baf2trm baf2taf trm2baf trm2taf taf2trm taf2baf \
 			  trmcat
-
-%: %.src
-	sed 's@__BUILDDIR__@$(top_builddir)@g;' < $< > $@ && chmod +x $@
-
