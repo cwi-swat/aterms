@@ -1,5 +1,9 @@
 $Id$
 
+2003-10-14 (jurgenv@cwi.nl)
+  * Added generation of aterm2xml static library
+  * Bumped to version 0.3
+
 2003-06-27 (jurgenv@cwi.nl)
   * Added package definition file
 
