@@ -986,7 +986,58 @@ extends Generator
       genAltGetAndSetMethod(type, alt, field);
     }
     
+    genOverrrideSetArgument(type, alt);
+    
     printFoldClose();
+	}
+	
+	private void genOverrrideSetArgument(Type type, Alternative alt) {
+		String alt_classname = buildAltClassName(type,alt);
+		
+		println("  public aterm.ATermAppl setArgument(aterm.ATerm arg, int i) {");
+		if (computeAltArity(type,alt) > 0) {
+		  println("    switch(i) {");
+		
+		  Iterator fields = type.altFieldIterator(alt.getId());
+		  for (int i = 0; fields.hasNext(); i++) {
+		  	  Field field = (Field) fields.next();
+			  String field_name = capitalize(buildId(field.getId()));
+			  String field_type = field.getType();
+			  String field_class = buildClassName(field_type);
+			  
+			  String instance_of;
+			
+			  if (field_type.equals("str")) {
+			  	  instance_of = "aterm.ATermAppl";
+			  }
+			  else if (field_type.equals("int")) {
+				  instance_of = "aterm.ATermInt";
+			  }
+			  else if (field_type.equals("double")) {
+				  instance_of = "aterm.ATermReal";
+			  }
+			  else if (field_type.equals("term")) {
+				  instance_of = "aterm.ATerm";
+			  }
+			  else {
+				  instance_of = field_class;
+			  }
+			
+			  println("      case " + i + ":");
+			  println("        if (! (arg instanceof " + instance_of + ")) { ");
+			  println("          throw new RuntimeException(\"Argument " + i + " of a " + alt_classname +
+			            " should have type " + field_type + "\");");
+			  println("        }");
+			  println("        break;");
+		  }
+		  println("      default: throw new RuntimeException(\"" + alt_classname + " does not have an argument at \" + i );");
+		  println("    }");
+		  println("    return super.setArgument(arg, i);");
+		}
+		else {
+			println("      throw new RuntimeException(\"" + alt_classname + " has no arguments\");");
+		}
+		println("  }");
 	}
 
 	private void genAltGetAndSetMethod(Type type, Alternative alt, Field field) {
@@ -1026,7 +1077,7 @@ extends Generator
                field_class + " " + field_id + ")");
     println("  {");
     
-    print("    return (" + class_name + ") this.setArgument(");
+    print("    return (" + class_name + ") super.setArgument(");
     
     if (field_type.equals("str")) {
       print("getFactory().makeAppl(getFactory().makeAFun(" + field_id + ", 0, true))");
@@ -1045,7 +1096,8 @@ extends Generator
     
     println("  }");
     println();
-	}
+
+  }
   
   private void genDefaultGetAndSetMethod(Type type, Field field) {
     String class_name = buildClassName(type);

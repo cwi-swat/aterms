@@ -1,10 +1,15 @@
 
+2002/12/18 (jurgenv@cwi.nl)
+ * Changed overriding of setArgument. It uses an instanceof to test if the argument is of 
+   the correct type. If not, descriptive RuntimeExceptions are thrown. "super.setArgument" is
+   used to set the argument in case the type is correct.
+    
 2002/12/09 (jurgenv@cwi.nl)
- * Changed generation of java code according to some changes in SharedObject interface
- * Added overriding of setArgument that immediately throws an exception. This prevents construction
-   illegal trees using the ATerm API directly.
+ * Changed generation of java code according to some changes in SharedObject 
+   interface
+ * Added overriding of setArgument that immediately throws an exception. 
+   This prevents construction illegal trees using the ATerm API directly.
    
-=======
 2002/12/11 (jong@cwi.nl)
  * explicitly link libADT.a, rather than looking for it in install-dir
 
