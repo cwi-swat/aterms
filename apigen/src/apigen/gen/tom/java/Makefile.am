@@ -9,5 +9,6 @@ EXTRA_DIST = ${java_JAVA}
 
 java_JAVA = \
 	JavaTomSignatureImplementation.java \
+	JavaTomSignatureGenerator.java \
 	JavaTomGenerationParameters.java \
 	Main.java
