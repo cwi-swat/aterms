@@ -7,6 +7,7 @@
    access restrictions in aterm-java library
  * Refactored generated code for insert methods (one uses the other)
  * Minimized access to generated methods that should not be used by the user.
+ * Changed ADT.adt to use list constructors, bootstrapped apigen
 
 2003-08-13  (jurgenv@cwi.nl)
  * Major change in code generation. The first step toward no more static

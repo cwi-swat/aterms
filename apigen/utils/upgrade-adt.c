@@ -130,7 +130,7 @@ ADT_Entries convertEntries(ADT10_Entries old)
     ADT_Entry newEntry = convertEntry(oldEntry);
 
     if (newEntry != NULL) {
-      new = ADT_makeEntriesList(convertEntry(oldEntry), new);
+      new = ADT_makeEntriesMany(convertEntry(oldEntry), new);
     }
   }
 

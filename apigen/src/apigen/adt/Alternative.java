@@ -73,7 +73,7 @@ public class Alternative {
 			} else if (ph.match("list") != null) {
 				return ATerm.LIST;
 			} else if (ph.match("term") != null) {
-				throw new RuntimeException("multiple alts with <term> pattern?");
+				return ATerm.APPL;
 			} else {
 				throw new RuntimeException("strange root pattern: " + match_pattern);
 			}

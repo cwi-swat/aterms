@@ -1,9 +1,9 @@
 package apigen.adt.api;
 
-public abstract class Entries
+public class Entries
 extends EntriesImpl
 {
-  Entries(ADTFactory factory) {
+  protected Entries(ADTFactory factory) {
     super(factory);
   }
 

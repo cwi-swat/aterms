@@ -4,18 +4,14 @@ import aterm.*;
 import aterm.pure.PureFactory;
 public class ADTFactory extends PureFactory
 {
-  private aterm.AFun funEntries_Empty;
-  private Entries protoEntries_Empty;
-  private aterm.ATerm patternEntries_Empty;
-  private aterm.AFun funEntries_List;
-  private Entries protoEntries_List;
-  private aterm.ATerm patternEntries_List;
+  private Entries protoEntries;
   private aterm.AFun funEntry_Constructor;
   private Entry protoEntry_Constructor;
   private aterm.ATerm patternEntry_Constructor;
   private aterm.AFun funEntry_List;
   private Entry protoEntry_List;
   private aterm.ATerm patternEntry_List;
+  static protected Entries emptyEntries;
   public ADTFactory()
   {
      super();
@@ -28,14 +24,10 @@ public class ADTFactory extends PureFactory
   }
   private void initialize()
   {
-
-    patternEntries_Empty = parse("[]");
-    funEntries_Empty = makeAFun("_Entries_Empty", 0, false);
-    protoEntries_Empty = new Entries_Empty(this);
-
-    patternEntries_List = parse("[<term>,<list>]");
-    funEntries_List = makeAFun("_Entries_List", 2, false);
-    protoEntries_List = new Entries_List(this);
+    protoEntries = new Entries(this);
+    protoEntries.init(84, null, null, null);
+    emptyEntries = (Entries) build(protoEntries);
+    emptyEntries.init(84, emptyEntries, null, null);
 
 
     patternEntry_Constructor = parse("constructor(<term>,<term>,<term>)");
@@ -47,68 +39,6 @@ public class ADTFactory extends PureFactory
     protoEntry_List = new Entry_List(this);
 
   }
-  protected Entries_Empty makeEntries_Empty(aterm.AFun fun, aterm.ATerm[] args, aterm.ATermList annos) {
-    synchronized (protoEntries_Empty) {
-      protoEntries_Empty.initHashCode(annos,fun,args);
-      return (Entries_Empty) build(protoEntries_Empty);
-    }
-  }
-
-  public Entries_Empty makeEntries_Empty() {
-    aterm.ATerm[] args = new aterm.ATerm[] {};
-    return makeEntries_Empty( funEntries_Empty, args, empty);
-  }
-
-  public Entries Entries_EmptyFromTerm(aterm.ATerm trm)
-  {
-    java.util.List children = trm.match(patternEntries_Empty);
-
-    if (children != null) {
-      Entries tmp = makeEntries_Empty();
-      tmp.setTerm(trm);
-      return tmp;
-    }
-    else {
-      return null;
-    }
-  }
-  protected aterm.ATerm toTerm(Entries_EmptyImpl arg) {
-    java.util.List args = new java.util.LinkedList();
-    return make(patternEntries_Empty, args);
-  }
-
-  protected Entries_List makeEntries_List(aterm.AFun fun, aterm.ATerm[] args, aterm.ATermList annos) {
-    synchronized (protoEntries_List) {
-      protoEntries_List.initHashCode(annos,fun,args);
-      return (Entries_List) build(protoEntries_List);
-    }
-  }
-
-  public Entries_List makeEntries_List(Entry _head, Entries _tail) {
-    aterm.ATerm[] args = new aterm.ATerm[] {_head, _tail};
-    return makeEntries_List( funEntries_List, args, empty);
-  }
-
-  public Entries Entries_ListFromTerm(aterm.ATerm trm)
-  {
-    java.util.List children = trm.match(patternEntries_List);
-
-    if (children != null) {
-      Entries tmp = makeEntries_List(EntryFromTerm( (aterm.ATerm) children.get(0)), EntriesFromTerm( (aterm.ATerm) children.get(1)));
-      tmp.setTerm(trm);
-      return tmp;
-    }
-    else {
-      return null;
-    }
-  }
-  protected aterm.ATerm toTerm(Entries_ListImpl arg) {
-    java.util.List args = new java.util.LinkedList();
-    args.add(((Entry)arg.getArgument(0)).toTerm());
-    args.add(((Entries)arg.getArgument(1)).toTerm());
-    return make(patternEntries_List, args);
-  }
-
   protected Entry_Constructor makeEntry_Constructor(aterm.AFun fun, aterm.ATerm[] args, aterm.ATermList annos) {
     synchronized (protoEntry_Constructor) {
       protoEntry_Constructor.initHashCode(annos,fun,args);
@@ -127,7 +57,6 @@ public class ADTFactory extends PureFactory
 
     if (children != null) {
       Entry tmp = makeEntry_Constructor((aterm.ATerm) children.get(0), (aterm.ATerm) children.get(1), (aterm.ATerm) children.get(2));
-      tmp.setTerm(trm);
       return tmp;
     }
     else {
@@ -160,7 +89,6 @@ public class ADTFactory extends PureFactory
 
     if (children != null) {
       Entry tmp = makeEntry_List((aterm.ATerm) children.get(0), (aterm.ATerm) children.get(1));
-      tmp.setTerm(trm);
       return tmp;
     }
     else {
@@ -174,21 +102,40 @@ public class ADTFactory extends PureFactory
     return make(patternEntry_List, args);
   }
 
+  public Entries makeEntries() {
+    return emptyEntries;
+  }
+  public Entries makeEntries(Entry elem ) {
+    return (Entries) makeEntries(elem, emptyEntries);
+  }
+  public Entries makeEntries(Entry head, Entries tail) {
+    return (Entries) makeEntries((aterm.ATerm) head, (aterm.ATermList) tail, empty);
+  }
+  protected Entries makeEntries(aterm.ATerm head, aterm.ATermList tail, aterm.ATermList annos) {
+    synchronized (protoEntries) {
+      protoEntries.initHashCode(annos,head,tail);
+      return (Entries) build(protoEntries);
+    }
+  }
   public Entries EntriesFromTerm(aterm.ATerm trm)
   {
-    Entries tmp;
-    tmp = Entries_EmptyFromTerm(trm);
-    if (tmp != null) {
-      return tmp;
-    }
-
-    tmp = Entries_ListFromTerm(trm);
-    if (tmp != null) {
-      return tmp;
-    }
-
-
-    throw new RuntimeException("This is not a Entries: " + trm);
+     if (trm instanceof aterm.ATermList) {
+        aterm.ATermList list = ((aterm.ATermList) trm).reverse();
+        Entries result = makeEntries();
+        for (; !list.isEmpty(); list = list.getNext()) {
+          Entry elem = EntryFromTerm(list.getFirst());
+           if (elem != null) {
+             result = makeEntries(elem, result);
+           }
+           else {
+             throw new RuntimeException("Invalid element in Entries: " + elem);
+           }
+        }
+        return result;
+     }
+     else {
+       throw new RuntimeException("This is not a Entries: " + trm);
+     }
   }
   public Entry EntryFromTerm(aterm.ATerm trm)
   {

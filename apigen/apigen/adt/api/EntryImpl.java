@@ -6,7 +6,7 @@ import java.io.IOException;
 
 abstract public class EntryImpl extends ADTConstructor
 {
-  EntryImpl(ADTFactory factory) {
+  protected EntryImpl(ADTFactory factory) {
      super(factory);
   }
   protected void init(int hashCode, aterm.ATermList annos, aterm.AFun fun,	aterm.ATerm[] args) {

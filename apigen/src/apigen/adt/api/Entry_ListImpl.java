@@ -9,7 +9,7 @@ extends Entry
   protected void initHashCode(aterm.ATermList annos, aterm.AFun fun, aterm.ATerm[] i_args) {
   	super.initHashCode(annos, fun, i_args);
   }
-  Entry_ListImpl(ADTFactory factory) {
+  protected Entry_ListImpl(ADTFactory factory) {
     super(factory);
   }
   private static int index_sort = 0;
