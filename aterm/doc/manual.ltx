@@ -466,6 +466,15 @@ arguments}
 	be read, otherwise the textual representation will be parsed.
 }
 
+\Function{ATreadFromNamedFile}{\ATerm}{char *filename}
+{Read an \aterm\ from named binary or text file}
+\Describe{
+        This function reads an \aterm\ file {\tt filename}. A test is
+        performed to see if the file is in {\sc baf}. If so, the binary
+        term will be read, otherwise the textual representation will be
+        parsed. "-" is standard input's filename.
+}
+
 \Macro{ATparse}{\ATerm}{const char *str}
 {A convenience macro for {\tt ATreadFromString}}
 \Describe{
@@ -501,6 +510,20 @@ are completely equal, inclusive any annotations they might have!}
 \Describe{
 	This function writes \aterm\ {\tt t} to the file {\tt f} in {\sc baf}.
 	This term can later be read again by {\tt ATreadFromBinaryFile}.
+}
+
+\Function{ATWriteNamedTextFile}{\ATerm}{\aterm\ t, char *filename}
+{Writes term {\tt t} to file named {\tt filename} in textual format}
+\Describe{
+	This function writes \aterm\ {\tt t} in textual representation
+        to file  {\tt filename}.  "-" is standard output's filename.
+}
+
+\Function{ATWriteNamedBinaryFile}{\ATerm}{\aterm\ t, char *filename}
+{Writes term {\tt t} to file named {\tt filename} in Binary ATerm Format ({\sc baf})}
+\Describe{
+	This function writes \aterm\ {\tt t} in textual representation
+        to file  {\tt filename}.  "-" is standard output's filename.
 }
 
 \Function{ATwriteToString}{char *}{\aterm\ t}
