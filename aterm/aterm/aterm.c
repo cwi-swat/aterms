@@ -556,7 +556,7 @@ writeToTextFile(ATerm t, FILE * f)
 					}
 					fputc(')', f);
 				}
-			
+
 				/*}}}  */
 				break;
 			case AT_LIST:
@@ -1794,51 +1794,130 @@ ATreadFromString(const char *string)
 void
 AT_markTerm(ATerm t)
 {
-    int             i, arity;
-    Symbol          sym;
-    ATerm          *current = mark_stack + 1;
-    ATerm          *limit = mark_stack + mark_stack_size - MARK_STACK_MARGE;
-    ATerm          *depth = mark_stack;
+	int             i, arity;
+	Symbol          sym;
+	ATerm          *current = mark_stack + 1;
+	ATerm          *limit = mark_stack + mark_stack_size - MARK_STACK_MARGE;
+	ATerm          *depth = mark_stack;
+	
+	mark_stack[0] = NULL;
+	*current++ = t;
+	
+	while (ATtrue) {
+		if (current > limit) {
+			int current_index, depth_index;
+			
+			current_index = current - mark_stack;
+			depth_index   = depth - mark_stack;
+			
+			/* We need to resize the mark stack */
+			mark_stack_size = mark_stack_size * 2;
+			mark_stack = (ATerm *) realloc(mark_stack, sizeof(ATerm) * mark_stack_size);
+			if (!mark_stack)
+				ATerror("cannot realloc mark stack to %d entries.\n", mark_stack_size);
+			limit = mark_stack + mark_stack_size - MARK_STACK_MARGE;
+			fprintf(stderr, "resized mark stack to %d entries\n", mark_stack_size);
+			
+			current = mark_stack + current_index;
+			depth   = mark_stack + depth_index;
+		}
+			
+		if (current > depth)
+			depth = current;
+			
+		t = *--current;
+			
+		if (!t)
+			break;
 
-    mark_stack[0] = NULL;
-    *current++ = t;
-
-    while (ATtrue)
-    {
-			if (current > limit)
-				{
-					int current_index, depth_index;
-					
-					current_index = current - mark_stack;
-					depth_index   = depth - mark_stack;
-					
-					/* We need to resize the mark stack */
-					mark_stack_size = mark_stack_size * 2;
-					mark_stack = (ATerm *) realloc(mark_stack, sizeof(ATerm) * mark_stack_size);
-					if (!mark_stack)
-						ATerror("cannot realloc mark stack to %d entries.\n", mark_stack_size);
-					limit = mark_stack + mark_stack_size - MARK_STACK_MARGE;
-					fprintf(stderr, "resized mark stack to %d entries\n", mark_stack_size);
-					
-					current = mark_stack + current_index;
-					depth   = mark_stack + depth_index;
-				}
-			
-			if (current > depth)
-				depth = current;
-			
-			t = *--current;
-			
-			if (!t)
+		if (IS_MARKED(t->header))
+			continue;
+		
+		SET_MARK(t->header);
+		
+		switch (GET_TYPE(t->header)) {
+			case AT_INT:
+			case AT_REAL:
+			case AT_BLOB:
 				break;
+				
+			case AT_APPL:
+				sym = ATgetSymbol((ATermAppl) t);
+				AT_markSymbol(sym);
+				arity = GET_ARITY(t->header);
+				if (arity > MAX_INLINE_ARITY)
+					arity = ATgetArity(sym);
+				for (i = 0; i < arity; i++)
+					*current++ = ATgetArgument((ATermAppl) t, i);
+				break;
+				
+			case AT_LIST:
+				if (!ATisEmpty((ATermList) t)) {
+					*current++ = (ATerm) ATgetNext((ATermList) t);
+					*current++ = ATgetFirst((ATermList) t);
+				}
+				break;
+				
+			case AT_PLACEHOLDER:
+				*current++ = ATgetPlaceholder((ATermPlaceholder) t);
+				break;
+		}
+	}
+	STATS(mark_stats, depth - mark_stack);
+	nr_marks++;
+}
 
-			if (IS_MARKED(t->header))
-				continue;
+/*}}}  */
+/*{{{  void AT_unmarkTerm(ATerm t) */
 
-			SET_MARK(t->header);
+/**
+  * Unmark a term and all of its children.
+	* pre: the whole term must be marked.
+  */
+
+void
+AT_unmarkTerm(ATerm t)
+{
+	int             i, arity;
+	Symbol          sym;
+	ATerm          *current = mark_stack + 1;
+	ATerm          *limit = mark_stack + mark_stack_size - MARK_STACK_MARGE;
+	ATerm          *depth = mark_stack;
+	
+	mark_stack[0] = NULL;
+	*current++ = t;
+	
+	while (ATtrue) {
+		if (current > limit) {
+	    int current_index, depth_index;
 			
-			switch (GET_TYPE(t->header))
-			{
+	    current_index = current - mark_stack;
+	    depth_index   = depth - mark_stack;
+			
+	    /* We need to resize the mark stack */
+	    mark_stack_size = mark_stack_size * 2;
+	    mark_stack = (ATerm *) realloc(mark_stack, sizeof(ATerm) * mark_stack_size);
+	    if (!mark_stack)
+				ATerror("cannot realloc mark stack to %d entries.\n", mark_stack_size);
+	    limit = mark_stack + mark_stack_size - MARK_STACK_MARGE;
+	    fprintf(stderr, "resized mark stack to %d entries\n", mark_stack_size);
+			
+	    current = mark_stack + current_index;
+	    depth   = mark_stack + depth_index;
+		}
+		
+		if (current > depth)
+	    depth = current;
+		
+		t = *--current;
+		
+		if (!t)
+	    break;
+		
+		if(IS_MARKED(t->header)) {
+			CLR_MARK(t->header);
+		
+			switch (GET_TYPE(t->header)) {
 				case AT_INT:
 				case AT_REAL:
 				case AT_BLOB:
@@ -1846,7 +1925,7 @@ AT_markTerm(ATerm t)
 					
 				case AT_APPL:
 					sym = ATgetSymbol((ATermAppl) t);
-					AT_markSymbol(sym);
+					AT_unmarkSymbol(sym);
 					arity = GET_ARITY(t->header);
 					if (arity > MAX_INLINE_ARITY)
 						arity = ATgetArity(sym);
@@ -1865,93 +1944,9 @@ AT_markTerm(ATerm t)
 					*current++ = ATgetPlaceholder((ATermPlaceholder) t);
 					break;
 			}
-    }
-    STATS(mark_stats, depth - mark_stack);
-    nr_marks++;
-}
-
-/*}}}  */
-/*{{{  void AT_unmarkTerm(ATerm t) */
-
-/**
-  * Unmark a term and all of its children.
-  */
-
-void
-AT_unmarkTerm(ATerm t)
-{
-    int             i, arity;
-    Symbol          sym;
-    ATerm          *current = mark_stack + 1;
-    ATerm          *limit = mark_stack + mark_stack_size - MARK_STACK_MARGE;
-    ATerm          *depth = mark_stack;
-
-    mark_stack[0] = NULL;
-    *current++ = t;
-
-    while (ATtrue)
-    {
-	if (current > limit)
-	{
-	    int current_index, depth_index;
-
-	    current_index = current - mark_stack;
-	    depth_index   = depth - mark_stack;
-
-	    /* We need to resize the mark stack */
-	    mark_stack_size = mark_stack_size * 2;
-	    mark_stack = (ATerm *) realloc(mark_stack, sizeof(ATerm) * mark_stack_size);
-	    if (!mark_stack)
-		ATerror("cannot realloc mark stack to %d entries.\n", mark_stack_size);
-	    limit = mark_stack + mark_stack_size - MARK_STACK_MARGE;
-	    fprintf(stderr, "resized mark stack to %d entries\n", mark_stack_size);
-
-	    current = mark_stack + current_index;
-	    depth   = mark_stack + depth_index;
+		}
 	}
-
-	if (current > depth)
-	    depth = current;
-
-	t = *--current;
-
-	if (!t)
-	    break;
-
-	CLR_MARK(t->header);
-
-	switch (GET_TYPE(t->header))
-	{
-	case AT_INT:
-	case AT_REAL:
-	case AT_BLOB:
-	    break;
-
-	case AT_APPL:
-	    sym = ATgetSymbol((ATermAppl) t);
-	    AT_unmarkSymbol(sym);
-	    arity = GET_ARITY(t->header);
-	    if (arity > MAX_INLINE_ARITY)
-		arity = ATgetArity(sym);
-	    for (i = 0; i < arity; i++)
-		*current++ = ATgetArgument((ATermAppl) t, i);
-	    break;
-
-	case AT_LIST:
-	    if (!ATisEmpty((ATermList) t))
-	    {
-		*current++ = (ATerm) ATgetNext((ATermList) t);
-		*current++ = ATgetFirst((ATermList) t);
-	    }
-	    break;
-
-	case AT_PLACEHOLDER:
-	    *current++ = ATgetPlaceholder((ATermPlaceholder) t);
-	    break;
-	}
-    }
-    STATS(mark_stats, depth - mark_stack);
-    nr_marks++;
+	STATS(mark_stats, depth - mark_stack);
 }
 
 /*}}}  */
@@ -2042,22 +2037,21 @@ AT_calcCoreSize(ATerm t)
 static int
 calcUniqueSubterms(ATerm t)
 {
-    int    i, arity, nr_unique = 0;
-    Symbol sym;
+	int    i, arity, nr_unique = 0;
+	Symbol sym;
 	ATermList list;
-
-    if (IS_MARKED(t->header))
+	
+	if (IS_MARKED(t->header))
 		return 0;
-
-    switch (ATgetType(t))
-    {
+	
+	switch (ATgetType(t)) {
 		case AT_INT:
 		case AT_REAL:
 		case AT_BLOB:
 		case AT_PLACEHOLDER:
 			nr_unique = 1;
 			break;
-
+			
 		case AT_APPL:
 			nr_unique = 1;
 			sym = ATgetSymbol((ATermAppl) t);
@@ -2065,7 +2059,7 @@ calcUniqueSubterms(ATerm t)
 			for (i = 0; i < arity; i++)
 				nr_unique += calcUniqueSubterms(ATgetArgument((ATermAppl)t, i));
 			break;
-
+			
 		case AT_LIST:
 			nr_unique = 1;
 			list = (ATermList)t;
@@ -2074,11 +2068,11 @@ calcUniqueSubterms(ATerm t)
 			  list = ATgetNext(list);
 			}
 		  break;
-    }
+	}
+	
+	SET_MARK(t->header);
 
-		SET_MARK(t->header);
-
-    return nr_unique;
+	return nr_unique;
 }
 
 

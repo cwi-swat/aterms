@@ -437,7 +437,6 @@ ATermList ATreplace(ATermList list, ATerm el, int idx)
 
 ATermList ATreverse(ATermList list)
 {
-	int len = ATgetLength(list);
 	ATermList result = ATempty;
 
 	while(!ATisEmpty(list)) {
@@ -445,8 +444,6 @@ ATermList ATreverse(ATermList list)
 		list = ATgetNext(list);
 	}
 	
-	assert(len == ATgetLength(result));
-
 	return result;
 }
 

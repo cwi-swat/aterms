@@ -481,47 +481,57 @@ ATerm AT_allocate(int size)
 
 void AT_freeTerm(int size, ATerm t)
 {
-	ATbool found = ATfalse;
-	int idx, nrargs = size-ARG_OFFSET;
+	ATbool found;
+	int i, nrargs = size-ARG_OFFSET;
 
 	/* Remove the node from the hashtable */
-	unsigned int hnr = hash_number(t->header, nrargs, (ATerm *)(t+1)) & table_mask;
+	unsigned int hnr = hash_number(t->header, nrargs, 
+																 (ATerm *)(t+1)) & table_mask;
 	ATerm prev = NULL, cur = hashtable[hnr];
 
-	while(1) {
+	do {
+		ATerm *arg_cur, *arg_t;
+
 		assert(cur);
 		/*if(!cur)
 			ATerror("### cannot find term %n at %p in hashtable at pos %d"
 							", header = %d\n", t, t, hnr, t->header);*/
-		if(t->header == cur->header) {
-			found = ATtrue;
-			for(idx=0; idx<nrargs; idx++) {
-				if(ATgetArgument((ATermAppl)t, idx) != 
-					 ATgetArgument((ATermAppl)cur, idx)) {
-					found = ATfalse;
-					break;
-				}
-			}
-		} else {
-			found = ATfalse;
+
+		if(t->header != cur->header)
+			continue;
+
+		arg_cur = ((ATerm *)cur) + ARG_OFFSET + nrargs;
+		arg_t = ((ATerm *)t) + ARG_OFFSET + nrargs;
+
+		switch(nrargs) {
+			/* fall-throughs are intended */
+			default:
+				found = ATtrue;
+				for(i=0; found && i<nrargs-6; i++)
+					if(*(--arg_cur) != *(--arg_t))
+						found = ATfalse;
+				if(!found)
+					continue;
+			case 6: if(*(--arg_cur) != *(--arg_t)) continue;
+			case 5: if(*(--arg_cur) != *(--arg_t)) continue;
+			case 4: if(*(--arg_cur) != *(--arg_t)) continue;
+			case 3: if(*(--arg_cur) != *(--arg_t)) continue;
+			case 2: if(*(--arg_cur) != *(--arg_t)) continue;
+			case 1: if(*(--arg_cur) != *(--arg_t)) continue;
+			case 0:
+				/* Actually free the node */
+				if(prev)
+					prev->next = cur->next;
+				else
+					hashtable[hnr] = cur->next;
+
+				/* Put the node in the appropriate free list */
+				t->header = FREE_HEADER;
+				t->next  = at_freelist[size];
+				at_freelist[size] = t;
+				return;
 		}
-
-		if(found)
-			break;
-
-		prev = cur;
-		cur = cur->next;
-	}
-
-	if(prev)
-		prev->next = cur->next;
-	else
-		hashtable[hnr] = cur->next;
-
-	/* Put the node in the appropriate free list */
-	t->header = FREE_HEADER;
-	t->next  = at_freelist[size];
-	at_freelist[size] = t;
+	} while(prev=cur, cur=cur->next);
 }
 
 /*}}}  */

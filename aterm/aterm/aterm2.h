@@ -191,9 +191,6 @@ ATermBlob ATmakeBlob(int size, void *data);
 void    ATregisterBlobDestructor(ATbool (*destructor)(ATermBlob));
 void    ATunregisterBlobDestructor(ATbool (*destructor)(ATermBlob));
 
-extern ATerm *lookup_table_alias;
-extern SymEntry *lookup_table;
-
 Symbol  ATmakeSymbol(char *name, int arity, ATbool quoted);
 /*char   *ATgetName(Symbol sym);*/
 #define ATgetName(sym) (lookup_table[(sym)]->name)

@@ -251,10 +251,12 @@ ATbool AT_isValidSymbol(Symbol sym)
   * Mark a symbol by setting its mark bit.
   */
 
+/* <PO> This is now a macro
 void AT_markSymbol(Symbol s)
 {
   lookup_table[s]->header |= MASK_MARK;
 }
+*/
 
 /*}}}  */
 /*{{{  void AT_unmarkSymbol(Symbol s) */
@@ -263,10 +265,12 @@ void AT_markSymbol(Symbol s)
   * Unmark a symbol by clearing its mark bit.
   */
 
+/* <PO> This is now a macro
 void AT_unmarkSymbol(Symbol s)
 {
   lookup_table[s]->header &= ~MASK_MARK;
 }
+*/
 
 /*}}}  */
 /*{{{  ATbool AT_isMarkedSymbol(Symbol s) */
