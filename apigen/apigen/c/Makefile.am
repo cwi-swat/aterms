@@ -1,3 +1,8 @@
+#
+# vim:ts=8:sw=8:sts=0
+#
+# $Id$
+#
 
 java_JAVA       = CGen.java
 

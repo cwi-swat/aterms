@@ -11,7 +11,7 @@ static void testBooleans(SDFBoolList l)
   SDFLayout ws;
   SDFBool true;
 
-  /* ATfprintf(stderr, "l=%t\n", l); */
+  /*ATfprintf(stderr, "l=%t\n", l);*/
 
   true = SDFmakeBoolTrue(ATparse("\"true\""));
 

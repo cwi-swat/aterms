@@ -1,2 +1,2 @@
-#include <aterm1.h>@
+#include <aterm1.h>
 typedef ATerm Module;

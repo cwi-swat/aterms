@@ -8,66 +8,67 @@ SGLR			= ${SGLRBIN}/sglr
 SDF2TABLE		= ${PGENBIN}/sdf2table
 
 PROGS			= rolotest booltest listtest
+NOINST_PROGS		= ${PROGS}
 
 TESTS			= rolotest booltest listtest
 
-CLEANFILES		= librolodex.a libBooleans.a booltest.af1 \
-			Booleans.trm.tbl Booleans.adt ${PROGS}
+lib_LIBRARIES		= librolodex.a liblist.a libBooleans.a
+CLEANFILES		= ${PROGS} \
+			librolodex.a rolodex*.[ch] rolodex_dict.[ch] \
+			liblist.a list.[ch] list_dict.[ch] \
+			libBooleans.a Booleans.[ch] Booleans.dict \
+			Booleans_dict.[ch] Booleans.trm.tbl Booleans.adt \
+			booltest.af1
 
-INCLUDES		= -I${ATERMINC} -Irolodex -IBooleans -Ilist
+INCLUDES		= -I${ATERMINC}
 LDFLAGS			= -L${ATERMLIB}
 LDADD			= -lATerm
-CFLAGS			= -Wall -g
+CFLAGS			= -Wall -g -O2
 
 EXTRA_DIST		= rolodex.adt rolodex.pro Booleans.sdf Booleans.pro \
-			list.adt list.pro
+			list.adt list.pro booltest.trm
 
 noinst_PROGRAMS		= ${PROGS}
+
+librolodex_a_SOURCES	= rolodex.c rolodex_dict.c
+liblist_a_SOURCES	= list.c list_dict.c
+libBooleans_a_SOURCES	= Booleans.c Booleans_dict.c
 
 rolotest_SOURCES	= rolotest.c
 rolotest_LDADD		= librolodex.a ${LDADD}
 rolotest_DEPENDENCIES	= librolodex.a
 
-booltest_SOURCES	= booltest.c
-booltest_LDADD		= libBooleans.a ${LDADD}
-booltest_DEPENDENCIES	= booltest.af1 libBooleans.a
-
 listtest_SOURCES	= listtest.c
 listtest_LDADD		= liblist.a ${LDADD}
 listtest_DEPENDENCIES	= liblist.a
 
-# Needed for first time making (when no .deps dir exists)
-rolotest.o: rolodex/rolodex.h
-booltest.o: Booleans/Booleans.h
-listtest.o: list/list.h
+booltest_SOURCES	= booltest.c
+booltest_LDADD		= libBooleans.a ${LDADD}
+booltest_DEPENDENCIES	= booltest.af1 libBooleans.a
 
-librolodex.a rolodex/rolodex.h: rolodex.adt rolodex.pro
-	${top_srcdir}/utils/gen-c-api rolodex 1.0
-	@cd rolodex; \
-	./reconf; \
-	./configure --with-aterm-inc=${ATERMINC}; \
-	${MAKE}
-	@cp rolodex/librolodex.a .
-	
-libBooleans.a Booleans/Booleans.h: Booleans.sdf Booleans.pro
-	${top_srcdir}/utils/sdf2-to-adt Booleans.sdf 1.0
-	@cd Booleans; \
-	./reconf; \
-	./configure --with-aterm-inc=${ATERMINC}; \
-	${MAKE}
-	@cp Booleans/libBooleans.a .
+# Contrary to some other .adt files in this directory, Booleans.adt is
+# generated and should be considered intermediate
+%INTERMEDIATE: Booleans.adt
 
-liblist.a list/list.h: list.adt list.pro
-	${top_srcdir}/utils/gen-c-api list 1.0
-	@cd list; \
-	./reconf; \
-	./configure --with-aterm-inc=${ATERMINC}; \
-	${MAKE}
-	@cp list/liblist.a .
+# This can probably be removed ...
+#rolotest.o: rolodex.c rolodex.h
+#booltest.o: Booleans.c Booleans.h
+#listtest.o: list.h
 
-Booleans.trm.tbl: Booleans.sdf
-	(printf "definition\nmodule Main\nimports Booleans\n"; cat $<) |\
-	${SDF2TABLE} -o $@
+rolodex.c rolodex.h: rolodex.adt rolodex.pro
+	${top_srcdir}/utils/adt-to-c rolodex -prologue rolodex.pro
+
+list.c list.h: list.adt list.pro
+	${top_srcdir}/utils/adt-to-c list -prologue list.pro
+
+Booleans.c Booleans.h: Booleans.adt Booleans.pro
+	${top_srcdir}/utils/adt-to-c Booleans -prologue Booleans.pro -prefix SDF
 
 booltest.af1: Booleans.trm.tbl booltest.trm
 	${SGLR} -1 -p Booleans.trm.tbl -i booltest.trm -o $@
+
+%.adt: %.sdf
+	${top_srcdir}/utils/sdf2-to-adt $<
+
+%.trm.tbl: %.sdf
+	${SDF2TABLE} -m `basename $< .sdf` -i $< -o $@

@@ -1,0 +1,34 @@
+equations
+
+  [al-1'1] add-labels(definition $Definition) = 
+             definition add-labels-to-symbols($Definition)
+
+  [al-1'2] add-labels($Module) = add-labels-to-symbols($Module)
+
+  [als-1'1] add-labels-to-symbols(variables $Productions) =
+              variables $Productions
+
+  [als-1'2] add-labels-to-symbols(sorts $Symbols) =
+              sorts $Symbols
+
+  [als-1'3] add-labels-to-symbols($Symbols1) = $Symbols2
+            ============================================
+            add-labels-to-symbols($Symbols1 -> $Symbol $Attributes) =
+              $Symbols2 -> $Symbol $Attributes
+
+  [als-1'4] $Sort = sort(Char+),
+            $Label = literal(""" Char+ """)
+            ===============================
+            add-labels-to-symbols($Sort) = $Label:$Sort
+
+  [als-1'5] add-labels-to-symbols($Label:$Symbol) = $Label:$Symbol
+
+  [als-1'6] add-labels-to-symbols($Sort+) = "list":$Sort+
+
+  [als-1'7] add-labels-to-symbols($Sort*) = "list":$Sort*
+
+  [als-1'8] add-labels-to-symbols({$Symbol $Separator}+) = 
+              "list":{$Symbol $Separator}+
+
+  [als-1'9] add-labels-to-symbols({$Symbol $Separator}*) = 
+              "list":{$Symbol $Separator}*

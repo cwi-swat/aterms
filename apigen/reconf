@@ -2,7 +2,7 @@
 #
 # $Id$
 
-aclocal
+aclocal -I .
 autoconf
 autoheader
 automake -a

@@ -5,3 +5,28 @@
 #
 
 CFLAGS=-Wall -g -O2
+
+SUFFIXES = .grap .pic .ltx .dvi .bbl .ind .idx .xwd .ps .tex .fig
+
+%.ps: %.dvi
+	dvips -o $@ $<
+
+%.dvi: %.ltx
+	TEXINPUTS=$$TEXINPUTS:${srcdir} ;\
+	export TEXINPUTS ;\
+	latex $< ;\
+	fgrep -s 'LaTeX Warning: Citation' $*.log && bibtex $* && latex $< ;\
+	while fgrep -s 'Rerun to get cross-references right' $*.log ;\
+	do \
+		TEXINPUTS=$$TEXINPUTS:${srcdir} ;\
+		latex $< ;\
+	done
+
+%.bbl: %.ltx
+	bibtex $*
+
+%.ind: %.idx
+	makeindex $<
+
+%.eps: %.fig
+	fig2dev -Leps $< $@

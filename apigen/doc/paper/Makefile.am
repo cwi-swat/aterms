@@ -4,7 +4,7 @@
 # $Id$
 #
 
-include ${srcdir}/make_rules
+include ${top_srcdir}/make_rules
 
 doc: apigen.ps
 

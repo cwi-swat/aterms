@@ -7,4 +7,3 @@
 include $(top_srcdir)/make_rules
 
 bin_SCRIPTS	= sdf2-to-adt adt-to-c
-

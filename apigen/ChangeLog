@@ -1,3 +1,12 @@
+2001/02/08 (jong@cwi.nl)
+  * sdf directory removed entirely
+  * configuration improved (using AC_PACKAGE_REQUIRE)
+  * dependency on xt tools removed
+  * labeling now done by asf-evaluator (implemented using traversals)
+  * directories test and doc re-activated, tests work again
+  * obsolete <("",Sort)> notation cleaned up from list-test
+  * expand-cons and remove-cons support added to sdf2-to-adt
+
 2001/01/15 ({jong,markvdb}@cwi.nl)
   * sdf directory removed from top-level Makefile.am
   * gen-c-api stuff removed, adt-to-c introduced

@@ -1,0 +1,29 @@
+module AddLabels
+
+imports Sdf2-Syntax
+
+exports
+  context-free syntax
+    "add-labels" "(" SDF ")"    -> SDF
+    "add-labels" "(" Module ")" -> Module
+
+hiddens
+  context-free syntax
+    "add-labels-to-symbols" "(" Definition ")" -> Definition {traverse}
+    "add-labels-to-symbols" "(" Module ")"     -> Module {traverse}
+    "add-labels-to-symbols" "(" Grammar ")"    -> Grammar {traverse}
+    "add-labels-to-symbols" "(" Production ")" -> Production {traverse}
+    "add-labels-to-symbols" "(" Symbols ")"    -> Symbols {traverse}
+    "add-labels-to-symbols" "(" Symbol ")"     -> Symbol {traverse}
+
+  variables
+    "$Attributes"[0-9]*  -> Attributes
+    "$Definition"[0-9]*  -> Definition
+    "$Label"[0-9]*       -> Literal
+    "$Module"[0-9]*      -> Module
+    "$Productions"[0-9]* -> Productions
+    "$Sort"[0-9]*        -> Sort
+    "$Symbol"[0-9]*      -> Symbol
+    "$Separator"[0-9]*   -> Symbol
+    "$Symbols"[0-9]*     -> Symbols
+    "Char+"              -> CHAR+

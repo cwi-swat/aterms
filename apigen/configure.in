@@ -6,16 +6,16 @@ dnl
 
 dnl Process this file with autoconf to produce a configure script.
 AC_INIT(configure.in)
-AM_INIT_AUTOMAKE(apigen, 0.6.2)
+AM_INIT_AUTOMAKE(apigen, 0.7)
+
+dnl Add current dir to searchpath
+ACLOCAL="${ACLOCAL} -I ."
 
 dnl Our own version of libdir whose value is set dynamically
 AC_SUBST(INSTLIBDIR)
 INSTLIBDIR="$libdir"
 
 AC_REQUIRE([AC_PROG_CC])
-
-dnl Which compiler to use?
-AC_PROG_CC
 
 dnl What commands are needed to set the variable MAKE in Makefiles?
 AC_SET_MAKE
@@ -59,128 +59,79 @@ AC_SUBST(SOCKLIBS)
 
 dnl }}}
 
-dnl {{{ Handle --with-asc-support
-
-AC_ARG_WITH(asc-support,
-[  --with-asc-support=DIR  asc-support is in DIR],
-ASCSUPPORT=${withval},
-ASCSUPPORT=${prefix})
-
-ASCINC="${ASCSUPPORT}/include"
-ASCLIB="${ASCSUPPORT}/lib"
-AC_SUBST(ASCINC)
-AC_SUBST(ASCLIB)
-
-dnl }}}
-dnl {{{ Handle --with-asfix
-
-AC_ARG_WITH(asfix,
-[  --with-asfix=DIR        asfix is in DIR],
-ASFIX=${withval},
-ASFIX=${prefix})
-
-ASFIXINC="${ASFIX}/include"
-ASFIXLIB="${ASFIX}/lib"
-AC_SUBST(ASFIXINC)
-AC_SUBST(ASFIXLIB)
-
-dnl }}}
-dnl {{{ Handle --with-asource
-
-AC_PATH_PROG(ASOURCE, asource, no)
-if test "${ASOURCE}" = "no"; then
-	ASOURCE='${prefix}'
-else
-	ASOURCE=`dirname \`dirname ${ASOURCE}\``
-fi
-
-AC_ARG_WITH(asource,
-[  --with-asource=DIR      asource distribution is in DIR],
-ASOURCE=${withval},)
-
-AC_ARG_WITH(asource-bin,
-[  --with-asource-bin=DIR  asource executables are in DIR],
-ASOURCEBIN=${withval},
-ASOURCEBIN="${ASOURCE}/bin")
-
-AC_SUBST(ASOURCEBIN)
-
-dnl }}}
 dnl {{{ Handle --with-aterm
 
-AC_ARG_WITH(aterm,
-[  --with-aterm=DIR        ATerm-library is in DIR],
-ATERM=${withval},
-ATERM=${prefix})
+AC_PACKAGE_REQUIRE(aterm, baffle,
+	[  --with-aterm=DIR        ATerm-library is in DIR])
+AC_SUBST(ATERM)
+
 ATERMINC="${ATERM}/include"
-ATERMLIB="${ATERM}/lib"
 AC_SUBST(ATERMINC)
+
+ATERMLIB="${ATERM}/lib"
 AC_SUBST(ATERMLIB)
 
 dnl }}}
+
+dnl {asc,pt}-support are needed to use a compiled specification
+dnl {{{ Handle --with-asc-support
+
+AC_ARG_WITH(asfc-runtime,
+	[  --with-asc-support=DIR  asc-support is in DIR],
+	ASCSUPPORT=${withval},
+	ASCSUPPORT=${prefix})
+
+ASCINC=${ASCSUPPORT}/include
+AC_SUBST(ASCINC)
+
+ASCLIB=${ASCSUPPORT}/lib
+AC_SUBST(ASCLIB)
+
+dnl }}}
+dnl {{{ Handle --with-pt-support
+
+AC_PACKAGE_REQUIRE(pt-support, asource,
+	[  --with-pt-support=DIR   ParseTree distribution is in DIR])
+AC_SUBST(PT_SUPPORT)
+
+ASFIXINC=${PT_SUPPORT}/include
+AC_SUBST(ASFIXINC)
+
+ASFIXLIB=${PT_SUPPORT}/lib
+AC_SUBST(ASFIXLIB)
+
+ASOURCEBIN=${PT_SUPPORT}/bin
+AC_SUBST(ASOURCEBIN)
+
+dnl }}}
+
 dnl {{{ Handle --with-pgen
 
-AC_PATH_PROG(PGEN, parsetablegen, no)
-if test "${PGEN}" = "no"; then
-	PGEN='${prefix}'
-else
-	PGEN=`dirname \`dirname ${PGEN}\``
-fi
+AC_PACKAGE_REQUIRE(pgen, sdf2table,
+	[  --with-pgen=DIR         pgen distribution is in DIR])
+AC_SUBST(PGEN)
 
-AC_ARG_WITH(pgen,
-[  --with-pgen=DIR         pgen distribution is in DIR],
-PGEN=${withval},)
-
-AC_ARG_WITH(pgen-bin,
-[  --with-pgen-bin=DIR     pgen executables are in DIR],
-PGENBIN=${withval},
-PGENBIN="${PGEN}/bin")
-
+PGENBIN=${PGEN}/bin
 AC_SUBST(PGENBIN)
 
 dnl }}}
 dnl {{{ Handle --with-sglr
 
-AC_PATH_PROG(SGLR, sglr, no)
-if test "${SGLR}" = "no"; then
-	SGLR='${prefix}'
-else
-	SGLR=`dirname \`dirname ${SGLR}\``
-fi
+AC_PACKAGE_REQUIRE(sglr, sglr,
+	[  --with-sglr=DIR         sglr is in DIR])
+AC_SUBST(SGLR)
 
-AC_ARG_WITH(sglr,
-[  --with-sglr=DIR         sglr distribution is in DIR],
-SGLR=${withval},)
-
-AC_ARG_WITH(sglr-bin,
-[  --with-sglr-bin=DIR     sglr executables are in DIR],
-SGLRBIN=${withval},
-SGLRBIN="${SGLR}/bin")
-
+SGLRBIN=${SGLR}/bin
 AC_SUBST(SGLRBIN)
 
 dnl }}}
-dnl {{{ Handle --with-xt
 
-AC_PATH_PROG(XT, add-labels, no)
-if test "${XT}" = "no"; then
-	XT='${prefix}'
-else
-	XT=`dirname \`dirname ${XT}\``
-fi
+AC_PACKAGE_REQUIRE(asfe, asfe,
+	[  --with-asfe=DIR         asf-evaluator is in DIR])
+AC_SUBST(ASFE)
 
-AC_ARG_WITH(xt,
-[  --with-xt=DIR           xt distribution is in DIR],
-XT=${withval},)
-
-AC_ARG_WITH(xt-bin,
-[  --with-xt-bin=DIR       xt executables are in DIR],
-XTBIN=${withval},
-XTBIN="${XT}/bin")
-
-AC_SUBST(XTBIN)
-
-dnl }}}
+EVALBIN=${ASFE}/bin
+AC_SUBST(EVALBIN)
 
 dnl {{{ Output files
 
@@ -197,7 +148,7 @@ test/Makefile
 doc/Makefile
 doc/paper/Makefile
 spec/sdf2-to-adt/Makefile
-sdf/Makefile
+spec/add-labels/Makefile
 ,
 chmod +x utils/sdf2-to-adt utils/adt-to-c
 )
