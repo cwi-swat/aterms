@@ -636,6 +636,27 @@ void testGC()
 }
 
 /*}}}  */
+/*{{{  void testProtect() */
+
+void testProtect()
+{
+	static ATerm ts1 = NULL, ts2 = NULL;
+
+	ATprotect(&ts1);
+	ts1 = ATmake("unique-1");
+	ts2 = ATmake("unique-2");
+
+	AT_collect(2);
+	
+	assert(AT_isValidTerm(ts1));
+	assert(!AT_isValidTerm(ts2));
+
+	ATunprotect(&ts1);
+	AT_collect(2);
+	assert(!AT_isValidTerm(ts1));
+}
+
+/*}}}  */
 /*{{{  void testMark() */
 
 /**
@@ -763,6 +784,7 @@ int main(int argc, char *argv[])
   testMatch();
   testBaffle();
   testGC();
+	testProtect();
   testMark();
   testTable();
 

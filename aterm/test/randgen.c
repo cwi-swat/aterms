@@ -105,7 +105,7 @@ ATerm randgen()
 void usage(char *prg)
 {
 	fprintf(stderr, "usage: %s [-symbols <nr>] [-terms <nr>] [-wb|-wt] "
-					"[-seed <nr>] [-unique-leaves] [-help]\n",
+					"[-seed <nr>] [-magic <perc>] [-unique-leaves] [-help]\n",
 					prg);
 	exit(1);
 }
