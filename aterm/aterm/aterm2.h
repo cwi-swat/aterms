@@ -197,9 +197,6 @@ Symbol  ATmakeSymbol(char *name, int arity, ATbool quoted);
 void    ATprotectSymbol(Symbol sym);
 void    ATunprotectSymbol(Symbol sym);
 
-/* Calculate the in-core size of an ATerm */
-int ATinternalSize(ATerm t);
-
 /* C specific version of ATmake */
 ATerm ATvmake(const char *pat, va_list args);
 ATerm ATvmakeTerm(ATerm pat, va_list args);

@@ -1,12 +1,17 @@
 
 #include <stdio.h>
 
-#include "aterm2.h"
+#include "_aterm.h"
 
-int calc_size(FILE *file)
+void termsize(FILE *file)
 {
+	int core_size, text_size;
+
 	ATerm t = ATreadFromTextFile(file);
-	return ATinternalSize(t);
+	core_size = AT_calcCoreSize(t);
+	text_size = AT_calcTextSize(t);
+	printf("internal size: %d bytes, text size: %d bytes\n", 
+				 core_size, text_size);
 }
 
 int main(int argc, char *argv[])
@@ -15,8 +20,7 @@ int main(int argc, char *argv[])
 	int size;
 
 	ATinit(argc, argv, &bottomOfStack);
-	size = calc_size(stdin);
-	printf("size: %d bytes\n", size);
+	termsize(stdin);
 
 	return 0;
 }

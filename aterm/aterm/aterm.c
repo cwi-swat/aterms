@@ -1626,7 +1626,7 @@ void AT_unmarkTerm(ATerm t)
 				
 			case AT_APPL:
 				sym = ATgetSymbol((ATermAppl)t);
-				AT_markSymbol(sym);
+				AT_unmarkSymbol(sym);
 				arity = GET_ARITY(t->header);
 				if(arity > MAX_INLINE_ARITY)
 					arity = ATgetArity(sym);
@@ -1652,15 +1652,16 @@ void AT_unmarkTerm(ATerm t)
 
 /*}}}  */
 
-/*{{{  static int internalSize(ATerm t) */
+/*{{{  static int calcCoreSize(ATerm t) */
 
 /**
 	* Calculate the term size in bytes.
 	*/
 
-static int internalSize(ATerm t)
+static int calcCoreSize(ATerm t)
 {
 	int i, arity, size = 0;
+	Symbol sym;
 
 	if(IS_MARKED(t->header))
 		return size;
@@ -1677,23 +1678,29 @@ static int internalSize(ATerm t)
 			break;
 
 		case AT_APPL:
-			arity = ATgetArity(ATgetSymbol((ATermAppl)t));
+			sym = ATgetSymbol((ATermAppl)t);
+			arity = ATgetArity(sym);
 			size = 8 + arity*4;
+			if(!AT_isMarkedSymbol(sym)) {
+				size += strlen(ATgetName(sym))+1;
+				size += sizeof(struct SymEntry);
+				AT_markSymbol(sym);
+			}
 			for(i=0; i<arity; i++)
-				size += internalSize(ATgetArgument((ATermAppl)t, i));
+				size += calcCoreSize(ATgetArgument((ATermAppl)t, i));
 			break;
 			
 		case AT_LIST:
 			size = 16;
 			if(!ATisEmpty((ATermList)t)) {
-				size += internalSize(ATgetFirst((ATermList)t));
-				size += internalSize((ATerm)ATgetNext((ATermList)t));
+				size += calcCoreSize(ATgetFirst((ATermList)t));
+				size += calcCoreSize((ATerm)ATgetNext((ATermList)t));
 			}
 			break;
 
 		case AT_PLACEHOLDER:
 			size = 12;
-			size += internalSize(ATgetPlaceholder((ATermPlaceholder)t));
+			size += calcCoreSize(ATgetPlaceholder((ATermPlaceholder)t));
 			break;
 	}
 	return size;
@@ -1701,15 +1708,15 @@ static int internalSize(ATerm t)
 
 
 /*}}}  */
-/*{{{  int ATinternalSize(ATerm t) */
+/*{{{  int AT_calcCoreSize(ATerm t) */
 
 /**
 	* Calculate the term size in bytes.
 	*/
 
-int ATinternalSize(ATerm t)
+int AT_calcCoreSize(ATerm t)
 {
-	int result = internalSize(t);
+	int result = calcCoreSize(t);
 	AT_unmarkTerm(t);
 	return result;
 }

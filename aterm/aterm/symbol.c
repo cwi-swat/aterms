@@ -209,6 +209,18 @@ void AT_markSymbol(Symbol s)
 }
 
 /*}}}  */
+/*{{{  void AT_unmarkSymbol(Symbol s) */
+
+/**
+  * Unmark a symbol by clearing its mark bit.
+  */
+
+void AT_unmarkSymbol(Symbol s)
+{
+  lookup_table[s]->header &= ~MASK_MARK;
+}
+
+/*}}}  */
 /*{{{  ATbool AT_isMarkedSymbol(Symbol s) */
 
 /**
