@@ -1162,8 +1162,9 @@ ATbool ATwriteToNamedBinaryFile(ATerm t, const char *name)
   if(!strcmp(name, "-"))
     return ATwriteToBinaryFile(t, stdout);
 
-  if(!(f = fopen(name, "w")))
-    return NULL;
+  if(!(f = fopen(name, "w"))) {
+    return ATfalse;
+  }
 
   result = ATwriteToBinaryFile(t, f);
   fclose(f);

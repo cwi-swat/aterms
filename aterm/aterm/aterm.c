@@ -760,11 +760,13 @@ ATbool ATwriteToNamedTextFile(ATerm t, const char *name)
   FILE  *f;
   ATbool result;
 
-  if(!strcmp(name, "-"))
+  if(!strcmp(name, "-")) {
     return ATwriteToTextFile(t, stdout);
+  }
 
-  if(!(f = fopen(name, "w")))
-    return NULL;
+  if(!(f = fopen(name, "w"))) {
+    return ATfalse;
+  }
 
   result = ATwriteToTextFile(t, f);
   fclose(f);
@@ -1212,11 +1214,18 @@ fparse_terms(int *c, FILE * f)
 	ATermList list;
 	ATerm el = fparse_term(c, f);
 
+	if(el == NULL) {
+		return NULL;
+	}
+
 	list = ATinsert(ATempty, el);
 
 	while(*c == ',') {
 		fnext_skip_layout(c, f);
 		el = fparse_term(c, f);
+		if(el == NULL) {
+			return NULL;
+		}
 		list = ATinsert(list, el);
 	}
 
@@ -1485,22 +1494,24 @@ fparse_term(int *c, FILE * f)
 				else
 					result = NULL;
     }
-		
-    fskip_layout(c, f);
 
-    if (*c == '{')
-    {
-			/* Term is annotated */
-			fnext_skip_layout(c, f);
-			if (*c != '}')
+		if(result != NULL) {
+			fskip_layout(c, f);
+			
+			if (*c == '{')
 				{
-					ATerm annos = (ATerm) fparse_terms(c, f);
-					if (annos == NULL || *c != '}')
-						return NULL;
-					result = AT_setAnnotations(result, annos);
+					/* Term is annotated */
+					fnext_skip_layout(c, f);
+					if (*c != '}')
+						{
+							ATerm annos = (ATerm) fparse_terms(c, f);
+							if (annos == NULL || *c != '}')
+								return NULL;
+							result = AT_setAnnotations(result, annos);
+						}
+					fnext_skip_layout(c, f);
 				}
-			fnext_skip_layout(c, f);
-    }
+		}
 		
     return result;
 }
@@ -1627,11 +1638,18 @@ sparse_terms(int *c, char **s)
 	ATermList list;
 	ATerm el = sparse_term(c, s);
 
+	if(el == NULL) {
+		return NULL;
+	}
+
 	list = ATinsert(ATempty, el);
 
 	while(*c == ',') {
 		snext_skip_layout(c, s);
 		el = sparse_term(c, s);
+		if(el == NULL) {
+			return NULL;
+		}
 		list = ATinsert(list, el);
 	}
 
@@ -1703,11 +1721,11 @@ sparse_quoted_appl(int *c, char **s)
     /* Time to parse the arguments */
     if (*c == '(')
     {
-	snext_skip_layout(c, s);
-	args = sparse_terms(c, s);
-	if (args == NULL || *c != ')')
-	    return NULL;
-	snext_skip_layout(c, s);
+			snext_skip_layout(c, s);
+			args = sparse_terms(c, s);
+			if (args == NULL || *c != ')')
+				return NULL;
+			snext_skip_layout(c, s);
     }
 
     /* Wrap up this function application */
@@ -1905,22 +1923,24 @@ sparse_term(int *c, char **s)
 					result = NULL;
     }
 		
-    sskip_layout(c, s);
+		if(result != NULL) {
+			sskip_layout(c, s);
 		
-    if (*c == '{')
-			{
-				/* Term is annotated */
-				snext_skip_layout(c, s);
-				if (*c != '}')
-					{
-						ATerm           annos = (ATerm) sparse_terms(c, s);
-						if (annos == NULL || *c != '}')
-							return NULL;
-						result = AT_setAnnotations(result, annos);
-					}
-				snext_skip_layout(c, s);
-			}
-		
+			if (*c == '{')
+				{
+					/* Term is annotated */
+					snext_skip_layout(c, s);
+					if (*c != '}')
+						{
+							ATerm annos = (ATerm) sparse_terms(c, s);
+							if (annos == NULL || *c != '}')
+								return NULL;
+							result = AT_setAnnotations(result, annos);
+						}
+					snext_skip_layout(c, s);
+				}
+		}
+
     return result;
 }
 
@@ -1942,9 +1962,9 @@ ATreadFromString(const char *string)
 
     term = sparse_term(&c, (char **) &string);
 
-    if (!term)
+    if (term == NULL)
     {
-			int             i;
+			int i;
 			fprintf(stderr, "ATreadFromString: parse error at or near:\n");
 			fprintf(stderr, "%s\n", orig);
 			for (i = 1; i < string - orig; ++i)
