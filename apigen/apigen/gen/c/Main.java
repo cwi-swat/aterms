@@ -7,8 +7,6 @@ import java.util.List;
 import apigen.adt.ADT;
 import apigen.adt.ADTReader;
 import apigen.adt.api.ADTFactory;
-import apigen.gen.tom.TomSignatureGenerator;
-import apigen.gen.tom.c.*;
 
 public class Main {
 	public final static void main(String[] arguments) {
@@ -52,13 +50,13 @@ public class Main {
 		params.setFolding(false);
 		return params;
 	}
-	
+
 	private static void checkParameters(CGenerationParameters params) {
 		if (params.getApiName() == null) {
 			throw new IllegalArgumentException("No API name specified");
 		}
 	}
-	
+
 	private static void generateAPI(CGenerationParameters params, ADT adt) {
 		ADTFactory factory = new ADTFactory();
 		APIGenerator apigen = new APIGenerator(params, adt);
