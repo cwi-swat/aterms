@@ -714,6 +714,10 @@ them.
 
 \Function{\tt ATinsert}{\tt ATermlist}{\tt ATermList list, \ATerm\ el}
 {Return {\tt list} with {\tt el} inserted.}
+\Describe{
+  The complexity of {\tt ATinsert} is $O(1)$. That is, the behaviour of
+  {\tt ATinsert} does not degrade as the length of {\tt list} increases.
+}
 
 \Function{\tt ATinsertAt}{\tt ATermList}
 {(ATermList list, \ATerm\ el, int index}
@@ -721,6 +725,31 @@ them.
 
 \Function{\tt ATappend}{\tt ATermList}{\tt ATermList list, ATerm el}
 {Return {\tt list} with {\tt el} appended}
+\Describe{
+  Note that {\tt ATappend} is implemented in terms of {\tt ATinsert} by
+  making a new list with {\tt el} as the first element and then {\tt
+  ATinsert}ing all elements from {\tt list}. As such, the complexity of
+  {\tt ATappend} is linear in the number of elements in {\tt list}.
+
+  When {\tt ATappend} is needed inside a loop that traverses a list,
+  behaviour of the loop will demonstrate quadratic complexity. To avoid
+  this behaviour, the inner loop could use {\tt ATinsert} instead of {\tt
+  ATappend} to make the new list. This will result in the target list being
+  in reverse order. A single {\tt ATreverse} must therefore be performed,
+  but this can be done once at the end of the loop bringing the behaviour
+  down from quadratic to linear complexity, but at the cost of two {\tt
+  ATinsert}s per element (one for each {\tt ATinsert} in the loop, and an
+  implicit one for each element through the use of {\tt ATreverse}). 
+  
+  An even further optimisation could make use of a locally allocated
+  buffer.  While traversing the list, all elements that would normally be
+  {\tt ATappend}ed, are now placed in this buffer. Finally, the result is
+  obtained by starting with an empty list and {\tt ATinsert}ing all
+  elements from this buffer in reverse order. As the cost of allocating and
+  freeing a local buffer is by no means marginal, this solution should
+  probably only be applied when the loop appends more than just a few
+  elements.
+}
 
 \Function{\tt ATconcat}{\tt ATermList}{\tt ATermList list1, ATermList list2}
 {Return the concatenation of {\tt list1} and {\tt list2}}
