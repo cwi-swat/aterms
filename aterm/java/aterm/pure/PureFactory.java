@@ -918,6 +918,15 @@ public class PureFactory
   }
 
   //}}}
+
+  //{{{ public ATerm make(String trm)
+
+  public ATerm make(String trm)
+  {
+    return parse(trm);
+  }
+
+  //}}}
   //{{{ public ATerm make(String pattern, List args)
 
   public ATerm make(String pattern, List args)

@@ -1,5 +1,8 @@
 $Id$
 
+2001/05/16 (jong@cwi.nl)
+ * Added make(String trm) (synonym for parse(String trm)) as per C-interface.
+
 2001/05/15 ({jong,olivierp}@cwi.nl)
  * Optimized ATremoveAllAnnotations
 

@@ -29,6 +29,16 @@ public interface ATermFactory
   ATerm parse(String trm);
 
   /**
+   * Creates a new ATerm by parsing a string.
+   * Synonym of <code>parse(String trm)<\code>;
+   *
+   * @param trm the string representation of the term
+   *
+   * @return the parsed term.
+   */
+  ATerm make(String trm);
+
+  /**
    * Creates a new ATerm given a string pattern and a list of arguments.
    * First the string pattern is parsed into an ATerm.
    * Then the holes in the pattern are filled with arguments taken from
