@@ -1,5 +1,6 @@
 package test;
 
+import test.peano.*;
 
 public class PeanoTest {
 

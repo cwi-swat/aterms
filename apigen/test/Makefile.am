@@ -5,15 +5,17 @@
 #
 
 include ${top_srcdir}/make_rules
-include PeanoMakeRules.am
-include ListMakeRules.am
 
 ADTC		= ${top_builddir}/utils/adt-to-c --verbose
 ADTJAVA         = ${top_builddir}/utils/adt-to-java --verbose 
 
-JAVATESTS = PeanoTest ListTest
-#TESTS		= $(foreach j, ${JAVATESTS}, ${j}.java.sh)
-TESTS		= rolotest listtest
+JAVATESTS = peano list
+TESTS	  = listtest rolotest $(foreach j, ${JAVATESTS}, ${j}.java.sh)
+
+JAVAC=javac
+
+peano_Main = PeanoTest
+list_Main  = ListTest
 
 # Building the C programs that are to be run during testing:
 check_PROGRAMS	= rolotest listtest
@@ -30,24 +32,13 @@ listtest_SOURCES	= listtest.c
 listtest_LDADD		= -L. -llist -lATerm
 listtest_DEPENDENCIES	= liblist.a
 
-JJTRAVJAR=${top_srcdir}/test/jjtraveler-1.3.jar
-
-# Building the Java class files that are to be run during testing:
-javadir = ${top_builddir}/test/classfiles
-JAVAROOT = ${top_builddir}
-CLASSPATH_ENV = CLASSPATH=${top_builddir}:${SHARED_OBJECTS}:${JAVA_ATERM}:${srcdir}/$(JAVAROOT):${JJTRAVJAR}::$$CLASSPATH
-
-check_JAVA = ${PeanoAPI} PeanoTest.java \
-	     ${ListAPI} ListTest.java
-
 CLEANFILES		= ${check_PROGRAMS} ${check_LIBRARIES} \
 			rolodex*.[ch] rolodex_dict.[ch] \
 			list.[ch] list_dict.[ch] \
-			${PeanoAPI} ${ListAPI} \
-			*.java.sh
+			*.java.sh peano/* list/* *.class
 
-EXTRA_DIST		= rolodex.adt list.adt list.pro peano.adt \
-                          PeanoMakeRules.am ListMakeRules.am
+EXTRA_DIST = rolodex.adt list.adt list.pro peano.adt \
+             PeanoTest.java ListTest.java  
 
 # Below the generation of Java and C API's:
 rolodex.c rolodex.h: rolodex.adt
@@ -63,24 +54,17 @@ list.c list.h: list.adt list.pro
 		--compat-term \
 		--classpath ${top_builddir}:${JAVA_ATERM}:${SHARED_OBJECTS}
 
-%.java.sh: %.java Makefile
-	@(echo "#! /bin/sh";\
-	  echo "CLASSPATH=${top_builddir}:${JAVA_ATERM}:${SHARED_OBJECTS}";\
-	  echo "export CLASSPATH";\
-	  echo "java test.$*") > $@ && chmod +x $@
-
-${PeanoAPI}: peano.adt
-	${ADTJAVA} --input ${top_srcdir}/test/peano.adt \
-	           --output ${top_builddir}/test \
-		   --package test \
-		   --name peano \
+%.java.sh: Makefile
+	${ADTJAVA} --input ${top_srcdir}/test/$*.adt \
+	           --output ${top_builddir}/test/$* \
+		   --package test.$* \
+		   --name $* \
 		   --classpath ${top_builddir}
-	mv ${srcdir}/PeanoMakeRules ${srcdir}/PeanoMakeRules.am
-
-${ListAPI}: list.adt
-	${ADTJAVA} --input ${top_srcdir}/test/list.adt \
-	           --output ${top_builddir}/test \
-		   --package test \
-		   --name list \
-		   --classpath ${top_builddir} 
-	mv ${srcdir}/ListMakeRules ${srcdir}/ListMakeRules.am
+	(cd ${top_srcdir} ; pwd ;\
+         CLASSPATH=.:${top_srcdir}:${JAVA_ATERM}:${SHARED_OBJECTS} \
+         ${JAVAC} test/$($*_Main).java)
+	@(echo "#! /bin/sh";\
+	  echo "CLASSPATH=.:${top_srcdir}:${JAVA_ATERM}:${SHARED_OBJECTS}";\
+	  echo "export CLASSPATH";\
+          echo "cd ${top_srcdir}" ;\
+	  echo "java test.$($*_Main)") > $@ && chmod +x $@

@@ -17,6 +17,7 @@ list.dict
 list.h
 list_dict.[ch]
 listtest
+peano
 peano.adt
 peanotest
 rolodex

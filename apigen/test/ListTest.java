@@ -1,5 +1,6 @@
 package test;
 
+import test.list.*;
 
 public class ListTest {
 

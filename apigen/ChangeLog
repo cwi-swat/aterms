@@ -2,6 +2,8 @@
 2003-03-18  (jurgenv@cwi.nl)
  * Use aterm-java-config and shared-objects-config to obtain the names
    of the jar files.
+ * Changed test directory to generate API's in subdirectories. automake-time
+   inclusion of generated Makefiles is no longer necessary in this new setup.
 
 2003-03-15  (jurgenv@cwi.nl)
  * Added generation of jjtraveler interface
