@@ -2208,4 +2208,3 @@ int AT_calcTermDepth(ATerm t)
 }
 
 /*}}}  */
-/* vim:ts=2:sw=2 */
