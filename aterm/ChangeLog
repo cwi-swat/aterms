@@ -23,6 +23,7 @@ $Id$
   * Added _ for struct names to avoid C++ problems
   * Version 1.4.4
   * Renamed TABLE_SIZE and TABLE_MASK to AT_TABLE_SIZE and AT_TABLE_MASK
+  * Renamed new and template variable names to keep C++ compatibility
 
 2000/9/05 ({jong,olivierp}@cwi.nl)
   * Added functions ATgetTail, ATreplaceTail

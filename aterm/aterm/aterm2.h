@@ -196,7 +196,7 @@ ATermIndexedSet
            ATindexedSetCreate(long initial_size, int max_load_pct);
 void       ATindexedSetDestroy(ATermIndexedSet set);
 void       ATindexedSetReset(ATermIndexedSet set);
-long       ATindexedSetPut(ATermIndexedSet set, ATerm elem, ATbool *new);
+long       ATindexedSetPut(ATermIndexedSet set, ATerm elem, ATbool *isnew);
 long       ATindexedSetGetIndex(ATermIndexedSet set, ATerm elem);
 void       ATindexedSetRemove(ATermIndexedSet set, ATerm elem);
 ATermList  ATindexedSetElements(ATermIndexedSet set);
@@ -244,6 +244,6 @@ ATerm ATremoveAllAnnotations(ATerm t);
    "RSA Data Security, Inc. MD5 Message-Digest Algorithm" (see RFC1321)
 */
 unsigned char *ATchecksum(ATerm t);
-ATbool ATdiff(ATerm t1, ATerm t2, ATerm *template, ATerm *diffs);
+ATbool ATdiff(ATerm t1, ATerm t2, ATerm *templ, ATerm *diffs);
 
 #endif

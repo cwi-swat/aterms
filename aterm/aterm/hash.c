@@ -407,10 +407,10 @@ void ATindexedSetReset(ATermIndexedSet hashset)
 }
 
 /*}}}  */
-/*{{{  static long keyPut(ATermIndexedSet hashset, key, value, ATbool *new)*/
+/*{{{  static long keyPut(ATermIndexedSet hashset, key, value, ATbool *isnew)*/
 
 static long keyPut(ATermIndexedSet hashset, ATerm key, 
-									 ATerm value, ATbool *new)
+									 ATerm value, ATbool *isnew)
 { 
   long n,m;
 
@@ -418,7 +418,7 @@ static long keyPut(ATermIndexedSet hashset, ATerm key,
 		m = hashset->nr_entries; 
 		n = hashPut(hashset,key,m);
 		if (n != m)  { 
-			*new = ATfalse;
+			*isnew = ATfalse;
 			if(value != NULL) { 
 				assert(hashset->values!=NULL);
 				hashset->values[ divELEMENTS_PER_TABLE(n)]
@@ -433,7 +433,7 @@ static long keyPut(ATermIndexedSet hashset, ATerm key,
 			      [modELEMENTS_PER_TABLE(hashset->first_free_position-1)]; 
 		n = hashPut(hashset, key, m);
 		if (n != m) { 
-			*new = ATfalse;
+			*isnew = ATfalse;
 			if(value != NULL) { 
 				assert(hashset->values != NULL);
 				hashset->values[ divELEMENTS_PER_TABLE(n)]
@@ -444,7 +444,7 @@ static long keyPut(ATermIndexedSet hashset, ATerm key,
 		hashset->first_free_position--;
 	}
 	
-  *new = ATtrue;
+  *isnew = ATtrue;
   insertKeyValue(hashset, n, key, value);
   if(hashset->nr_entries >= hashset->max_entries) {
      hashResizeSet(hashset); /* repaired by Jan Friso Groote, 25/7/00 */
@@ -454,16 +454,16 @@ static long keyPut(ATermIndexedSet hashset, ATerm key,
 }
 
 /*}}}  */
-/*{{{  long ATindexedSetPut(ATermIndexedSet hashset, elem, *new) */
+/*{{{  long ATindexedSetPut(ATermIndexedSet hashset, elem, *isnew) */
 
 /**
  * insert entry elem into the hashtable, and deliver
  * an index. If elem is already in the set, deliver 0 
  */
 
-long ATindexedSetPut(ATermIndexedSet hashset, ATerm elem, ATbool *new)
+long ATindexedSetPut(ATermIndexedSet hashset, ATerm elem, ATbool *isnew)
 {
-  return keyPut(hashset, elem, NULL, new);
+  return keyPut(hashset, elem, NULL, isnew);
 }
 
 /*}}}  */
@@ -606,9 +606,9 @@ void ATtablePut(ATermTable table, ATerm key, ATerm value)
 	/* insert entry key into the hashtable, and deliver
      an index. If key is already in the set, deliver 0 */
 
-  ATbool new;
+  ATbool isnew;
 
-  keyPut(table, key, value, &new);
+  keyPut(table, key, value, &isnew);
 }
 
 /*}}}  */
