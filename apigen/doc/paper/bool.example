@@ -9,9 +9,8 @@ exports
     Bool "and" Bool -> Bool {left}
     Bool "or" Bool  -> Bool {left}
 
-hiddens
-  variables
-    Bool -> Bool
+hiddens variables
+    "Bool" -> Bool
 
 equations
   [not-1] not true = false

@@ -7,11 +7,11 @@ exports
   context-free syntax
     AFun                   -> ATermAppl
     AFun "(" ATerms ")"    -> ATermAppl
-    "[" {ATerm ","}* "]"   -> ATermList
+    "[" ATerms "]"         -> ATermList
     "<" ATerm ">"          -> ATermPlaceholder
-   "{" ATerms "}"          -> Anno
+    "{" ATerms "}"         -> Anno
 
-    ATermInt  Anno?        -> ATerm
+    ATermInt Anno?         -> ATerm
     ATermReal Anno?        -> ATerm
     ATermAppl Anno?        -> ATerm
     ATermList Anno?        -> ATerm

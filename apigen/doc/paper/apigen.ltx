@@ -4,7 +4,7 @@
 % $Id$
 %
 
-\documentclass{article}
+\documentclass{elsart}
 
 % {{{  packages
 
@@ -30,22 +30,34 @@
 
 % }}}
 
+\begin{document}
+\begin{frontmatter}
 % {{{  Title page
 
-\title{Generation of Abstract Programming Interfaces from Syntax Definitions}
-\author{
-  H.A. de Jong$^{^1}$\\
-  P.A. Olivier$^{^1}$\\
-  \vspace{.1cm}\\
-  {\small\sl $^1$CWI,
-  Department of Software Engineering\vspace{-.2cm}}\\
-  {\small\sl Kruislaan 413, 1098 SJ Amsterdam, The Netherlands}
-  \vspace{.1cm}\\
-  {\small\sl\tt Hayco.de.Jong@cwi.nl, Pieter.Olivierp@cwi.nl}
+\title{Generation of Abstract Programming Interfaces \\
+  from Syntax Definitions}
+
+\author{H.A. de Jong},
+\author{P.A. Olivier}
+\address{
+  CWI, Department of Software Engineering, \\
+  Kruislaan 413,
+  1098 SJ Amsterdam,
+  The Netherlands
 }
 
-\begin{document}
-\maketitle
+%%\author{
+%%  H.A. de Jong$^{^1}$\\
+%%  P.A. Olivier$^{^1}$\\
+%%  \vspace{.1cm}\\
+%%  {\small\sl $^1$CWI,
+%%  Department of Software Engineering\vspace{-.2cm}}\\
+%%  {\small\sl Kruislaan 413, 1098 SJ Amsterdam, The Netherlands}
+%%  \vspace{.1cm}\\
+%%  {\small\sl\tt Hayco.de.Jong@cwi.nl, Pieter.Olivierp@cwi.nl}
+%%}
+%%
+%%\maketitle
 
 % }}}
 % {{{  Abstract
@@ -75,6 +87,8 @@ respect to changes in the parsetree format.
 \end{abstract}
 
 % }}}
+\end{frontmatter}
+
 % {{{  Introduction
 
 
@@ -84,10 +98,10 @@ respect to changes in the parsetree format.
 Since the development of the \atlib~\cite{BJKO2000} in 1999, its use
 for the implementation of tree-like data structures has become quite
 popular amongst developers of scanners, parsers, rewrite engines and
-model checkers. Apart from its inevitable deployment in the tools of
-the \metaenv\ for which it was specifically designed, the \atlib\ is
-used amongst others in: \texttt{todo: complete refs, name more examples}
-Elan, Peter Mosses' action semantics, muCRL toolkit, SIG?
+model checkers. Apart from its inevitable deployment in the tools of the
+\metaenv\ for which it was specifically designed, the \atlib\ is used
+amongst others in: \texttt{todo: complete refs, name more examples} the
+ELAN system~\cite{BR01}, Stratego~\cite{Vis01.rta}, CASL, muCRL toolkit?
 
 As more and more tools in the \metaenv\ were converted to work with
 the \atlib, it became apparent that the tools had become inflexible with
@@ -118,80 +132,106 @@ While maintaining the advantages of the \atlib\ (in our case most notably
 its efficiency due to maximal subterm sharing), applications built with
 this generated \api\ benefit from improved simplicity and readability,
 are easier to maintain and are more robust against changes in the
-underlying representation.
-\\ TODO: sectie-layout
-\\ TODO: wat er nu staat introduceert "sdf naar adt" nog niet
+underlying \asfix\ representation.
+
+This paper describes how an annotated grammar or syntax definition can
+be used to generate a library of functions that provide access to the
+parse trees of terms over this grammar. In particular we describe how
+a \sdf-specification commonly found when using the \metaenv\ is used
+to collect the information necessary to build a mapping between grammar
+productions and their \aterm-pattern in the eventual \asfix\ parse tree,
+and how this mapping is subsequently used to generate \C\ functions that
+provide an \api\ to these parse trees.
+
+Before getting to the core of the generation scheme, we
+present introductory sections on the specification formalism
+\asdf\ (Section~\ref{sec:asdf-nutshell}), and the syntax
+of \aterms\ (Section~\ref{sec:aterm-syntax}), and \asfix\
+(Section~\ref{sec:asfix-syntax}).
 
 % {{{  subsection{\asdf\ in a nutshell}
 
 \subsection{\asdf\ in a nutshell}
+\label{sec:asdf-nutshell}
 
-The specification formalism \asdf~\cite{BHK89,HHKR92} is a
-combination of the algebraic specification formalism \asf\ and the
-syntax definition formalism \sdf. An overview can be found in~\cite{DHK96}. 
-As an illustration, Figure~\ref{fig:bool-example} presents the
-definition of the Boolean datatype in \asdf.  \asdf\ specifications
-consist of modules, each module has an \sdf-part (defining lexical and
-context-free syntax) and an \asf-part (defining equations).  The \sdf\
-part corresponds to signatures in ordinary algebraic specification
-formalisms. However, syntax is not restricted to plain prefix notation
-since arbitrary context-free grammars can be defined.  The syntax
-defined in the \sdf-part of a module can be used immediately when
-defining equations, the syntax in equations is thus \emph{user-defined}.
+The specification formalism \asdf~\cite{BHK89,HHKR92} is a combination of
+the algebraic specification formalism \asf\ and the syntax definition
+formalism \sdf. An overview can be found in~\cite{DHK96}. As an
+illustration, Figure~\ref{fig:bool-example} presents the definition of
+the Boolean datatype in \asdf. \asdf\ specifications consist of modules,
+where each module has an \sdf-part (defining lexical and context-free
+syntax) and an \asf-part (defining equations). The \sdf\ part corresponds
+to signatures in ordinary algebraic specification formalisms. However,
+syntax is not restricted to plain prefix notation but instead arbitrary
+context-free grammars can be defined. The syntax defined in the \sdf-part
+of a module can be used immediately when defining equations, thus making
+the syntax used in equations \emph{user-defined}.
+
+% {{{  fig:bool-example
 
 \begin{figure}
+\begin{scriptsize}
 \hrulefill
 \verbatiminput{bool.example}
 \caption{\label{fig:bool-example} \asdf\ specification of the Booleans}
 \hrulefill
+\end{scriptsize}
 \end{figure}
 
-The emphasis in this chapter will be on the compilation of the equations
-appearing in a specification. They have the following distinctive features:
+% }}}
+
+The equations appearing in the \asf-part of a specification have the
+following distinctive features:
 
 \begin{itemize}
-\item Conditional equations with positive and negative conditions.
-\item Non left-linear equations.
-\item List matching.
-\item Default equations.
+  \item Conditional equations with positive and negative conditions.
+  \item Non left-linear equations.
+  \item List matching.
+  \item Default equations.
 \end{itemize}
 
-It is possible to execute specifications by interpreting the equations
-as conditional rewrite rules.  The semantics of \asdf\ are based on
-innermost rewriting.  Default equations are tried when all other
-applicable equations have failed, because either the arguments did not
-match or one of the conditions failed.
+It is possible to execute specifications by interpreting the equations as
+conditional rewrite rules.  The semantics of \asdf\ are based on innermost
+rewriting. Default equations are tried when all other applicable equations
+have failed, either because the arguments did not match or because one
+of the conditions failed.
 
 One of the powerful features of the \asdf\ specification language is
-list matching.  Figure \ref{fig:set-example} shows a single equation which
-removes multiple occurrences of identifiers from a set. In this
-example, variables with a {\tt *} in their name are list-variables that may
-match zero or more identifiers.  The implementation of list matching
-may involve backtracking to find a match that satisfies the left-hand side
-of the rewrite rule as well as all its conditions.
-There is only backtracking within the scope of a rewrite rule, 
-so if the right-hand side of the rewrite rule is normalized and this
-normalization fails {\em no} backtracking is performed to find a new match.
+list matching. Figure~\ref{fig:set-example} shows a single equation which
+removes multiple occurrences of identifiers from a set. In this example,
+variables with a {\tt *} in their name are list-variables that may match
+zero or more identifiers. The implementation of list matching may involve
+backtracking to find a match that satisfies the left-hand side of the
+rewrite rule as well as all of its conditions. Backtracking is only
+performed within the scope of a rewrite rule, so if the right-hand side
+of the rewrite rule is normalized and this normalization fails {\em no}
+backtracking is performed to find a new match.
 
 The development of \asdf\ specifications is supported by an interactive
-programming environment, the \asdf\ Meta-Environment~\cite{Kli93}.
-In this environment specifications can be developed and tested.
-It provides syntax-directed editors, a parser generator, and a rewrite engine.
-Given this rewrite engine terms can be reduced by interpreting the equations
-as rewrite rules.
-For instance, the term
+programming environment, the \metaenv~\cite{Kli93}. In this environment
+specifications can be developed and tested. It provides syntax-directed
+editors, a parser generator, and a rewrite engine. Given this rewrite
+engine terms can be reduced by interpreting the equations as rewrite
+rules. For instance, the term
 \begin{quote}
-{\tt true \& ( false | true )}
+  {\tt true \& ( false | true )}
 \end{quote}
-reduces to {\tt true} when applying the equations of Figure
-\ref{fig:bool-example}.
+
+reduces to {\tt true} when applying the equations of
+Figure~\ref{fig:bool-example}.
+
+% {{{  fig:set-example
 
 \begin{figure}
+\begin{scriptsize}
 \hrulefill
 \verbatiminput{set.example}
 \caption{\label{fig:set-example} \asdf\ specification of the Set equation}
 \hrulefill
+\end{scriptsize}
 \end{figure}
+
+% }}}
 
 % }}}
 % {{{  \subsection{Annotated Terms: the \aterm\ syntax}
@@ -225,7 +265,9 @@ likewise omitted\footnote{The official definition allows a much richer
 % }}}
 
 Examples of valid \aterms{} thus include:
+\begin{quote}
   \texttt{42, 3.14, and(true, not(false)), rolodex(<name(String)>), [a,b,c]},
+\end{quote}
 and (with annotation):
   \texttt{42\{answer\}, [a,b,c]\{chars\}, <string>\{sort\}}.
 
