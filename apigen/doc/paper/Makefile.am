@@ -5,7 +5,7 @@
 #
 
 SPECS = ATerms.sdf Symbol.sdf Tree.sdf Attributes.sdf
-EXAMPLES = bool.example set.example
+EXAMPLES = bool.example set.example bool_and_dict
 SOURCES = apigen.ltx ${SPECS} ${EXAMPLES}
 
 include ${top_srcdir}/make_rules

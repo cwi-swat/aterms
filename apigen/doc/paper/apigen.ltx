@@ -742,13 +742,16 @@ a toolbuilder would like to be able to do given the boolean syntax are:
 
 % }}}
 
-Fortunately, this wishlist is not at all utopian. All the information
-necessary to generate a library of access functions that perform the
-operations mentioned, is actually present in the \sdf-definition of
-the grammar.
+Obviously, this list is not exhaustive, but it does form a nice starting
+point. Fortunately, all the information necessary can be extracted from
+an \sdf-definition of the grammar. In order separate some concerns and
+simplify the generation, we split the process into two steps. First,
+we extract all the necessary information from the \sdf-definition, and
+store it in a convenient format. This step takes care of the parsing and
+analysis of the grammar. The second step takes the intermediate format
+and does the actual generation for a specific target language.
 
-\texttt{TODO: fix introduction of ADT format}
-The intermediate format is called \emph{annotated data type}, or \adt\
+We call the intermediate format \emph{annotated data type}, or \adt\
 for short. It holds the minimal amount of information for each syntax
 rule in the original \sdf\ specification. In particular, for each rule
 we need:
@@ -773,15 +776,32 @@ we could use \texttt{lhs}, and \texttt{rhs}, both of type \texttt{Bool}.
 \end{itemize}
 
 % }}}
+
+Since we are solving the maintenance problem of using \aterms\ as a data
+type representation, we decided we could very well use an \aterm\ to
+represent the elements of an \adt. The obvious advantage is that we get
+persistency (saving and loading of an \adt) for free, and we do not need
+to construct a domain specific language (with its own parser etc.) which
+would introduce undesired development-time overhead. Each entry in the
+\adt\ consists of the three elements \emph{sortname}, \emph{alternative},
+and \emph{term-pattern}, which we can easily represent as an \aterm-list.
+An entire \adt\ is then nothing more than a list of such lists. Instead
+of using a list, each single entry could also have been represented as
+a function with three arguments, but we opted for as little syntactic
+sugar in the entries, to simplify development-time debugging. Remember
+that an \adt\ entry contains an \aterm\ pattern and they are hard enough
+to read, without the introduction of an extra function-symbol around them.
+
 % {{{  Example adt-entry with explanation
 
-In the example of the boolean conjunction, we know that the sortname of
-the production is \texttt{Bool}, the alternative is called \texttt{and}.
-There are two operands, \texttt{lhs} and \texttt{rhs}, both of type
-Bool.  In the pattern we put typed placeholders \texttt{<lhs(Bool)>}
-and \texttt{<rhs(Bool)>} at the location of the nonterminals. Also,
-because the \aterm\ pattern is a parse tree pattern, we have to deal
-with any whitespace (layout) that might occur in the terms. Layout can
+As an example of the concrete representation of an \adt\ entry, let
+us look at the boolean \texttt{and}. In this example, we know that
+the sortname of the production is \texttt{Bool}, the alternative
+is called \texttt{and}.  There are two operands, \texttt{lhs} and
+\texttt{rhs}, both of type Bool. In the pattern we put typed placeholders
+\texttt{<lhs(Bool)>} and \texttt{<rhs(Bool)>} at the location of
+the corresponding nonterminals. Also, because this is a parse tree
+pattern, we have to allow layout (whitespace), which in this case can
 occur both after the non-terminal \texttt{lhs}, and after the literal
 \texttt{and}. The \adt\ entry thus becomes:
 
@@ -797,14 +817,16 @@ occur both after the non-terminal \texttt{lhs}, and after the literal
 \end{verbatim}
 \end{scriptsize}
 
-The sortname is in line $1$, the alternative is seen in line
-$2$. Following, in lines $4-7$ is the \aterm\ pattern of the actual
-parse tree. Lines $3-5$ spell out the \texttt{prod} of the \asfix\
-function application.  Lines $7-8$ show the \texttt{args} part. Clearly
-visible are the typed placeholders for \texttt{lhs} and \texttt{rhs},
-as well as the two placeholders matching optional layout. We gave them
-somewhat arbitrary names \texttt{ws-after-lhs}, and \texttt{ws-after-and}
-respectively.
+Lines $1$ and $2$ contain the sortname and the alternative, respectively.
+Following, in lines $3-7$ is the \aterm\ pattern of the actual parse
+tree. Lines $3-5$ spell out the \texttt{prod} of the \asfix\ function
+application.  Lines $6-7$ show the \texttt{args} part. Clearly visible
+are the typed placeholders for \texttt{lhs} and \texttt{rhs}.
+
+The two placeholders matching optional layout have the somewhat
+arbitrary names \texttt{ws-after-lhs}, and \texttt{ws-after-and}.
+Section~\ref{sec:sdf-to-adt} elaborates on the naming schemes used to
+generate understandble names.
 
 % }}}
 
@@ -814,20 +836,34 @@ respectively.
 \section{Deriving the \adt\ from a \sdf\ specification}
 \label{sec:sdf-to-adt}
 
-Now that we know what information we would like to have, how do we get
-it from the \sdf\ definition? If we look back at our \sdf\ definition
-of the booleans, we can derive some of the information already. The
-result \emph{sort} of a syntax rule is easy: it is explicitly mentioned
-at the end of each rule. The \aterm\ pattern is relatively easy, as we
-know the \sdf\ normalization rules and the underlying \asfix\ format that
-is used in the \metaenv. We can follow the same rules to find the \aterm\
-pattern that represents the syntax rule in actual parse trees.
+Now that we know what specific information we need in the \adt, how do we
+get it from the \sdf\ definition? If we look back at our \sdf\ definition
+of the booleans, we can derive two of the necessary elements immediately:
 
-But what about the \emph{alternative} and the \emph{descriptive} names
-for the non-terminals that we need? Given our \sdf\ rule for the boolean
-\texttt{and}, can we derive a sensible name for each of the \texttt{Bool}
-non-terminals? The only information we have is our syntax rule:
+\begin{itemize}
+
+\item The result \emph{sort} of a syntax rule. It is explicitly mentioned
+at the end of each rule.
+
+\item The \aterm\ pattern. It can be constructed by following the exact
+same rules for constructing \asfix\ terms that the \sdf\ normalizer uses.
+
+\end{itemize}
+
+This leaves us with the issue of coming up with a decent name for each
+\emph{alternative} production of the same sort, and we still need to
+figure out a way to give \emph{descriptive} names to the non-terminals
+in the grammar rule.
+
+\noindent\textbf{Naming the nonterminals}
+
+Given our \sdf\ rule for the boolean \texttt{and}, can we derive a
+sensible name for each of the \texttt{Bool} non-terminals? The only
+information we have is our syntax rule:
+
+\begin{quote}
 {\small\texttt{Bool "and" Bool -> Bool \{left\}} }
+\end{quote}
 
 If we use heuristics to call them e.g. \texttt{lhs} and \texttt{rhs},
 what do we do when we find another syntax rule that has three, four
@@ -835,24 +871,38 @@ or even more arguments? In syntax rules with only one non-terminal,
 we could default to using the sort name of that non-terminal. But in
 general, it is hard to come up with any kind of descriptive naming scheme.
 Keep in mind that most toolbuilders will not really be happy if they are
-confronted with access functions that have arbitrary generated names,
-or numbered arguments. Instead of coming up with any heuristic, we
-opted to use the \emph{labeling} mechanism present in \sdf, to label
-each non-terminal. This eliminates the need to invent a descriptive
-name altogether. Our syntax rule for \texttt{and} becomes: {\small
-\texttt{lhs:Bool "and" rhs:Bool -> Bool \{left\}} }
+confronted with access functions that have arbitrarily complex names,
+or numbered arguments.
+
+Instead of coming up with any kind of heuristic at all, we opted
+to use the \emph{labeling} mechanism present in \sdf, which allows
+grammar writers to label each non-terminal. This eliminates the need
+to invent a descriptive name altogether and provides an understandable
+link between items in a grammar rule and their subsequently generated
+access functions. Suppose we like the abbreviations \texttt{lhs}, and
+\texttt{rhs}, we could label the syntax rule for \texttt{and} to become:
+
+\begin{quote}
+{\small \texttt{lhs:Bool "and" rhs:Bool -> Bool \{left\}} }
+\end{quote}
+
+\noindent\textbf{Naming the alternatives}
 
 Similarly, we need a solution for the \emph{alternative} name. In this
-case the literal \texttt{and} is exactly the name we want. But what
-if there is no literal at all? Or what if the literal is some sort of
-baroque lexical expression (think of the \C\ and \java\ symbols \verb+&&+
-for conjunction). Again we are saved by \sdf, as it provides a way to
-annotate syntax rules. In fact, we will re-use the annotation which is
-quite commonly used in \sdf\ syntax files to annotate the name of the
-\emph{abstract syntax} node that corresponds to this particular syntax
-rule. Traditionally the \texttt{cons} annotation is used for this purpose.
-So, finally our \texttt{and} syntax rule becomes:
-{\small {\texttt{lhs:Bool "and" rhs:Bool -> Bool \{left, cons("and")\}} }
+case the literal \texttt{and} happens to a name we could use.  But what
+if there is no literal at all? Or if there are multiple literals in a
+production, which one do you use; do you concatenate them?  What if the
+literal is some sort of baroque lexical expression (think of the \C\
+and \java\ symbols \verb+&&+ for conjunction). Again we are saved by
+\sdf, which provides a way to annotate syntax rules. In fact, we re-use
+an annotation which is quite commonly used by \sdf\ syntax writers to
+annotate the name of the \emph{abstract syntax} node that corresponds to
+this particular syntax rule. Traditionally the \texttt{cons} annotation is
+used for this purpose.  So, finally our \texttt{and} syntax rule becomes:
+
+\begin{quote}
+{\small \texttt{lhs:Bool "and" rhs:Bool -> Bool \{left, cons("and")\}} }
+\end{quote}
 
 % }}}
 % {{{  Code generation from \adt\ to \C
@@ -860,8 +910,17 @@ So, finally our \texttt{and} syntax rule becomes:
 \section{Code generation from \adt\ to \C}
 \label{sec:adt-to-c}
 
+Given an abstract data type, which is generated from an \sdf\ definition,
+but which could also come from any other source, we no longer need to
+worry about any \sdf\ peculiarities, or parse tree specifics. Instead,
+we can concentrate on generating the desired functionality for a given
+target language. In this paper we concentrate on describing the steps
+needed to produce readable, type-safe \C\ code. Optimizations to the
+generated code can easily be obtained by removing type-safety checks,
+resulting in a more efficient production version of the code.
+
 \subsection{Generated types and functions}
-For each sortname in an \adt, we generate:
+For each sortname in an \adt, we generate the following items:
 % {{{  Generated items
 
 \begin{itemize}
@@ -872,7 +931,7 @@ For each sortname in an \adt, we generate:
 \item Conversion functions \texttt{fromTerm} and \texttt{toTerm}
       to interface with generic \atlib-functions, such as
       \texttt{ATreadFromFile}. These functions perform a type cast,
-      and as such form the entry and exit points to type safety.
+      and as such they form the entry and exit points to type safety.
 
 \item A validity function to test whether an instance of a sort
       is indeed valid, i.e. that it indeed matches one of the
@@ -903,15 +962,19 @@ For each sortname in an \adt, we generate:
 
 \subsection{Implementation}
 
-In order to isolate the \aterm-patterns as much as possible from
-the actual code, we generate a separate \C\ file for them. This
-\emph{dictionary} file declares a separate \afun\ variable for each
-\aterm\ function symbol, as well as a separate \aterm\ variable for each
-possible pattern. An initialization function is also generated which
-takes care of the proper initialization of all these variables, and
-which protects them from garbage collection by the built-in collector.
-A verbatim dump of all the patterns is included in a comment section in
-the generated code, to provide debugging feedback when necessary.
+In order to address the maintenance issues associated with the
+proliferation of \aterm-patterns, we decided it was a good idea to
+isolate them as much as possible from the actual code. This is achieved
+by generating a separate \emph{dictionary} file containing all the
+\aterm\ patterns needed in the library. This \emph{dictionary} file
+declares a separate \afun\ variable for each \aterm\ function symbol,
+and an \aterm\ variable for each possible pattern. An initialization
+function is also generated which takes care of the proper initialization
+of all these variables, and the necessary calls to \texttt{ATprotect}
+to shield them from the built-in garbage collector. A verbatim dump of
+all the patterns is included in a comment section in the generated code,
+to provide debugging feedback when necessary. An example of a dictionary
+file can be found in Appendix~\ref{app:bool_and_dict}.
 
 The actual implementation of the \api\ functions is generated in its own
 \C\ file, accompanied by a header file containing the signatures of all
@@ -993,7 +1056,15 @@ is presented here.
 \end{scriptsize}
 
 % }}}
-
+\section{Example generated dictionary file}
+\label{app:bool_and_dict}
+An abbreviated version of the generated dictionary file for the
+parse tree syntax (\asfix) of the boolean \texttt{and}. Multiple
+similar lines have been condensed by substitution the repetitions
+by an ellipsis (\texttt{...}).
+\begin{scriptsize}
+\verbatiminput{bool_and_dict}
+\end{scriptsize}
 % }}}
 
 \end{document}
