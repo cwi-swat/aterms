@@ -35,7 +35,7 @@ public class Main {
 
 		ADT adt = ADTReader.readADT(params);
 		JavaTomSignatureImplementation signature = new JavaTomSignatureImplementation(params);
-		new TomSignatureGenerator(adt, signature, params).run();
+		new JavaTomSignatureGenerator(adt, signature, params).run();
 
 		if (params.isJavaGen()) { // generate Java Stuff
 			apigen.gen.java.Main.generateAPI(adt, params);
