@@ -621,12 +621,12 @@ This scan of the run-time stack causes all objects referenced from local
 variables to be protected from being garbage collected.
 Our garbage collector 
 is a  conservative collector in the sense that some of the words on the
-stack could accidentally have the same bitpattern as object references.
-Because there is now way to separate these 'fake' bitpatterns from
+stack could accidentally have the same bit pattern as object references.
+Because there is no way to separate these 'fake' bit patterns from
 'real' object references, this can cause
-objects to be marked as `live' when there are actually garbage.
-Note that bitpatterns on the stack that do not point to valid objects
-are not traversed at all. Only when a bitpattern represents an address
+objects to be marked as `live' when these are actually garbage.
+Note that bit patterns on the stack that do not point to valid objects
+are not traversed at all. Only when a bit pattern represents an address
 that is a valid object address it is followed to mark the corresponding
 object.
 
@@ -651,7 +651,7 @@ be allocated to satisfy allocation requests.
 \subsection{Term Encoding} \label{term-encoding}
 
 An important issue in the implementation of \ATerms\ is how to
-represent them in such a way that all operations can be performed
+represent this data type in such a way that all operations can be performed
 efficiently, without using more memory than is absolutely necessary.
 
 The very concise encoding of \ATerms\ we use is as follows.
