@@ -8,7 +8,7 @@ int main(int argc, char **argv)
   ATerm mod, expmod;
   FILE *output, *input;
 
-  int bottomOfStack;
+  ATerm bottomOfStack;
 
   fname = "/home/markvdb/NEW-META/aterm/test/Test.asfix";
 

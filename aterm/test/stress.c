@@ -10,6 +10,7 @@
 #include "memory.h"
 #include "symbol.h"
 #include "util.h"
+#include "gc.h"
 
 /*}}}  */
 /*{{{  defines */
@@ -505,6 +506,31 @@ void testAnno(void)
 
 /*}}}  */
 
+/*{{{  void testGC() */
+
+void testGC()
+{
+#if 0
+	ATerm t[8];
+
+	t[0] = ATparse("abc");
+	t[1] = ATparse("f(1)");
+	t[2] = ATparse("g(<int>, [3,4])");
+	t[3] = ATparse("a(3,4,5){<annotation>}");
+	t[4] = t[3]+1;
+	t[5] = (ATerm) ((char *) t[1] + 1);
+
+	test_assert("gc", 0, AT_isValidTerm(t[0]));
+	test_assert("gc", 1, AT_isValidTerm(t[1]));
+	test_assert("gc", 2, AT_isValidTerm(t[2]));
+	test_assert("gc", 3, AT_isValidTerm(t[3]));
+	test_assert("gc", 4, !AT_isValidTerm(t[4]));
+	test_assert("gc", 5, !AT_isValidTerm(t[5]));
+#endif
+}
+
+/*}}}  */
+
 /*{{{  int main(int argc, char *argv[]) */
 
 /**
@@ -513,7 +539,7 @@ void testAnno(void)
 
 int main(int argc, char *argv[])
 {
-  int bottomOfStack;
+  ATerm bottomOfStack;
 
   ATinit(argc, argv, NULL, &bottomOfStack);
 
@@ -528,10 +554,9 @@ int main(int argc, char *argv[])
   testAnno();
   testMake();
   testMatch();
+	testGC();
 
   return 0;
 }
 
 /*}}}  */
-
-
