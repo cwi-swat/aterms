@@ -5,6 +5,8 @@ CLASSPATH_ENV = CLASSPATH=${top_srcdir}:$(EXTERNAL_JARS)
 javadir = ${prefix}/classes/apigen/gen/c
 JAVAROOT = ${top_builddir}
 
+EXTRA_DIST=${java_JAVA}
+
 java_JAVA = \
 	AFunRegister.java \
 	APIGenerator.java \

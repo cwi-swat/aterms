@@ -6,6 +6,8 @@
 
 CLASSPATH_ENV	= CLASSPATH=${top_srcdir}
 
+EXTRA_DIST=${java_JAVA}
+
 java_JAVA=\
 	FirstAndLastSkippingIterator.java
 	

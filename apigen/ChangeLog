@@ -1,5 +1,8 @@
 # $Id$
 
+Sat Apr 17 09:42:12 CEST 2004 <jurgenv@cwi.nl>
+ * Fixed a number of Makefile.am problems (automake 1.7.9 related) 
+
 Fri Mar 26 10:12:10 CET 2004 <{jong,kooiker}@cwi.nl>
  * apigen/apigen/gen/c/APIGenerator.java:
    - generate makeXYZ(void) instead of makeXYZ() when there are no

@@ -2,7 +2,7 @@
 
 include ADTMakeRules.am
 
-EXTRA_DIST = ADTMakeRules.am
+EXTRA_DIST = ADTMakeRules.am ${java_JAVA}
 
 JAVAROOT = ${top_builddir}
 javadir = ${prefix}/classes/apigen/adt/api
