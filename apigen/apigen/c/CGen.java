@@ -16,6 +16,9 @@ public class CGen
 {
   //{{{ Constants
 
+  // Do *NOT* add an entry for '-' (Dash) here, the dash is used
+  // as a word-separator!
+
   private final static String[] SPECIAL_CHAR_WORDS =
   { "[BracketOpen", "]BracketClose",
     "{BraceOpen",   "}BraceClose",
@@ -28,7 +31,6 @@ public class CGen
     "=Equals",	    "#Hash",
     "/Slash",	    "\\Backslash",
     "*Star",	    "_Underscore",
-    "-Minus",	    
   };
 
   private final static String[][] RESERVED_TYPES =
