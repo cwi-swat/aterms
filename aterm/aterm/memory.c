@@ -548,36 +548,39 @@ static void allocate_block(int size)
 
 ATerm AT_allocate(int size)
 {
-	ATerm at;
-
-	while (!at_freelist[size])
-	{
-		int total = at_nrblocks[size]*(BLOCK_SIZE/size);
-		/*printf("alloc_since_gc[%d] = %d, total=%d\n", size,
-					 alloc_since_gc[size], total);*/
-		if((100*alloc_since_gc[size]) <= GC_THRESHOLD*total) {
-		/*if(1) {*/
-				allocate_block(size);
+  ATerm at;
+  
+  while (!at_freelist[size])
+    {
+      long total = ((long)at_nrblocks[size])*(BLOCK_SIZE/size);
+      /*printf("alloc_since_gc[%d] = %d, total=%d\n", size,
+	alloc_since_gc[size], total);*/
+      if(100*(alloc_since_gc[size]/GC_THRESHOLD) <= total) {
+	/*if(1) {*/
+	allocate_block(size);
 #ifndef NO_SHARING
-				/* Hashtable might need resizing. */
-				if(total_nodes*100 > table_size*maxload)
-					resize_hashtable();
-#endif
-		} else {
-			gc_count++;
-			if(infoflags & INFO_HASHING)
-				hash_info(hash_info_before_gc);
-			AT_collect(size);	
-			if(infoflags & INFO_HASHING)
-				hash_info(hash_info_after_gc);
-			alloc_since_gc[size] = 0;
-		}
+	/* Hashtable might need resizing. */
+	if((total_nodes/maxload)*100 > table_size) {
+	  resize_hashtable();
 	}
-
-	at = at_freelist[size];
-	++alloc_since_gc[size];
-	at_freelist[size] = at_freelist[size]->next;
-	return at;
+#endif
+      } else {
+	gc_count++;
+	if(infoflags & INFO_HASHING) {
+	  hash_info(hash_info_before_gc);
+	}
+	AT_collect(size);	
+	if(infoflags & INFO_HASHING) {
+	  hash_info(hash_info_after_gc);
+	}
+	alloc_since_gc[size] = 0;
+      }
+    }
+  
+  at = at_freelist[size];
+  ++alloc_since_gc[size];
+  at_freelist[size] = at_freelist[size]->next;
+  return at;
 }
 
 /*}}}  */

@@ -262,46 +262,46 @@ Symbol ATmakeSymbol(char *name, int arity, ATbool quoted)
 /*{{{  void AT_freeSymbol(SymEntry sym) */
 
 /**
-	* Free a symbol
-	*/
+ * Free a symbol
+ */
 
 void AT_freeSymbol(SymEntry sym)
 {
-	ShortHashNumber hnr;
-	ATerm t = (ATerm)sym;
-	char *walk = sym->name;
-
-	/* Assert valid name-pointer */
-	assert(sym->name);
-
-	/* Calculate hashnumber */
-	for(hnr = GET_LENGTH(sym->header)*3; *walk; walk++)
-		hnr = 251 * hnr + *walk;
-	hnr %= table_size;
+  ShortHashNumber hnr;
+  ATerm t = (ATerm)sym;
+  char *walk = sym->name;
   
-	/* Update hashtable */
-	if (hash_table[hnr] == sym)
-		hash_table[hnr] = sym->next;
-	else
-	{
-		SymEntry cur, prev;
-		prev = hash_table[hnr]; 
-		for (cur = prev->next; cur != sym; prev = cur, cur = cur->next)
-			assert(cur != NULL);
-		prev->next = cur->next;
-	}
-	
-	/* Free symbol name */
-	free(sym->name);
-	sym->name = NULL;
-
-	at_lookup_table[sym->id] = (SymEntry)SYM_SET_NEXT_FREE(first_free);
-	first_free = sym->id;
-
-	/* Put the node in the appropriate free list */
-	t->header = FREE_HEADER;
-	t->next  = at_freelist[TERM_SIZE_SYMBOL];
-	at_freelist[TERM_SIZE_SYMBOL] = t;
+  /* Assert valid name-pointer */
+  assert(sym->name);
+  
+  /* Calculate hashnumber */
+  for(hnr = GET_LENGTH(sym->header)*3; *walk; walk++)
+    hnr = 251 * hnr + *walk;
+  hnr %= table_size;
+  
+  /* Update hashtable */
+  if (hash_table[hnr] == sym)
+    hash_table[hnr] = sym->next;
+  else
+    {
+      SymEntry cur, prev;
+      prev = hash_table[hnr]; 
+      for (cur = prev->next; cur != sym; prev = cur, cur = cur->next)
+	assert(cur != NULL);
+      prev->next = cur->next;
+    }
+  
+  /* Free symbol name */
+  free(sym->name);
+  sym->name = NULL;
+  
+  at_lookup_table[sym->id] = (SymEntry)SYM_SET_NEXT_FREE(first_free);
+  first_free = sym->id;
+  
+  /* Put the node in the appropriate free list */
+  t->header = FREE_HEADER;
+  t->next  = at_freelist[TERM_SIZE_SYMBOL];
+  at_freelist[TERM_SIZE_SYMBOL] = t;
 }
 
 /*}}}  */
