@@ -13,7 +13,6 @@
 #endif
 #include <stdio.h>
 #include <assert.h>
-#include <unistd.h>
 #include "_aterm.h"
 #include "memory.h"
 #include "afun.h"

@@ -10,6 +10,11 @@
 #include <stdlib.h>
 #include <assert.h>
 
+#ifdef WIN32
+#include <fcntl.h>
+#include <io.h>
+#endif
+
 #include "_aterm.h"
 #include "aterm2.h"
 #include "memory.h"
@@ -1034,6 +1039,13 @@ ATwriteToBinaryFile(ATerm t, FILE *file)
 	int lcv, cur;
 	int nr_bits;
 	AFun sym;
+
+#ifdef WIN32
+               if( _setmode( _fileno( file ), _O_BINARY ) == -1 ) {
+                    perror( "Warning: Cannot set outputfile to binary mode." );
+               }
+#endif
+
 	
 	/* Initialize bit buffer */
 	bit_buffer     = '\0';
@@ -1432,6 +1444,13 @@ ATreadFromBinaryFile(FILE *file)
 {
 	unsigned int val, nr_unique_terms;
 	ATerm result = NULL;
+
+#ifdef WIN32
+               if( _setmode( _fileno( file ), _O_BINARY ) == -1 ) {
+                    perror( "Warning: Cannot set inputfile to binary mode."
+ );
+               }
+#endif
 
 	/* Initialize bit buffer */
 	bit_buffer     = '\0';
