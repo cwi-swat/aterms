@@ -6,7 +6,6 @@ CC		= gcc
 CFLAGS		= -g -ansi -pedantic -Wall
 INCLUDES	= -I../aterm
 DEFS		=
-INCLUDES	=
 LFLAGS		= -g
 LIBS		= -L../aterm -lATerm -L$(EFENCE) -lefence
 AR		= ar
