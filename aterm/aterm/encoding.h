@@ -12,14 +12,14 @@
 #define MASK_ARITY	((1<<2) | (1<<3) | (1<<4))
 #define MASK_TYPE	((1<<5) | (1<<6) | (1<<7))
 
-#define SHIFT_ARITY		2
-#define SHIFT_TYPE		5
+#define SHIFT_ARITY	2
+#define SHIFT_TYPE	5
 #define SHIFT_LENGTH	8
 #define SHIFT_SYMBOL	SHIFT_LENGTH
 
-#define GET_MARK(h)		((h) & MASK_MARK)
-#define GET_TYPE(h)		(((h) & MASK_TYPE) >> SHIFT_TYPE)
-#define HAS_ANNO(h)		((h) & MASK_ANNO)
+#define GET_MARK(h)     ((h) & MASK_MARK)
+#define GET_TYPE(h)     (((h) & MASK_TYPE) >> SHIFT_TYPE)
+#define HAS_ANNO(h)     ((h) & MASK_ANNO)
 #define GET_ARITY(h)	(((h) & MASK_ARITY) >> SHIFT_ARITY)
 #define GET_SYMBOL(h)	((h) >> SHIFT_SYMBOL)
 #define GET_LENGTH(h)	((h) >> SHIFT_LENGTH)
@@ -36,6 +36,13 @@
 #define CLR_MARK(h)			((h) & ~MASK_MARK)
 #define CLR_ANNO(h)			((h) & ~MASK_ANNO)
 #define CLR_QUOTED(h)		((h) & ~MASK_QUOTED)
+
+#define APPL_HEADER(anno,ari,sym) ((anno) | ((ari) << SHIFT_ARITY) | \
+				   (AT_APPL << SHIFT_TYPE) | \
+				   ((header_type)(sym) << SHIFT_SYMBOL))
+#define INT_HEADER(anno)          ((anno) | AT_INT << SHIFT_TYPE)
+#define REAL_HEADER(anno)         ((anno) | AT_REAL << SHIFT_TYPE)
+
 
 /* This assumes 32 bits int */
 typedef unsigned int header_type;

@@ -51,6 +51,8 @@ void ATerror(const char *format, ...)
     vfprintf(stderr, format, args);
     exit(1);
   }
+
+  va_end(args);
 }
 
 /*}}}  */

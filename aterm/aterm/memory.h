@@ -9,7 +9,7 @@
 #include "aterm2.h"
 
 void AT_initMemory(int argc, char *argv[]);
-ATerm *AT_allocate(int size);
-ATerm *AT_collect();
+ATerm AT_allocate(int size);
+void  AT_collect(int size);
 
 #endif

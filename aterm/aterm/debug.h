@@ -10,7 +10,7 @@
 
 #ifdef DEBUG_ALL
 #define DEBUG_MEM
-#define DEBUG_ALLOC
+#define DEBUG_ARITY
 #endif
 
 #ifdef DEBUG_MEM
@@ -19,10 +19,10 @@
 #define DBG_MEM(cmd)
 #endif
 
-#ifdef DEBUG_ALLOC
-#define DBG_ALLOC(cmd) EXEC(cmd)
+#ifdef DEBUG_ARITY
+#define DBG_ARITY(cmd) EXEC(cmd)
 #else
-#define DBG_ALLOC(cmd)
+#define DBG_ARITY(cmd)
 #endif
 
 #endif

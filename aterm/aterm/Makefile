@@ -5,12 +5,13 @@ VERSION		= 0.0.1
 CC		= gcc
 CFLAGS		= -g -ansi -pedantic -Wall
 DEFS		= -DDEBUG_ALL
+INCLUDES	=
 LFLAGS		= -g
 AR		= ar
 
 ATERMLIBS	= libATerm.a
-ATERMSRCS	= basic.c memory.c symbol.c
-ATERMOBJS	= basic.o memory.o symbol.o
+ATERMSRCS	= aterm.c basic.c memory.c symbol.c
+ATERMOBJS	= aterm.o basic.o memory.o symbol.o
 
 all: $(ATERMLIBS)
 

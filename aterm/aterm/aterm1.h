@@ -10,6 +10,7 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include "encoding.h"
+#include "abool.h"
 
 #define AT_INT          0
 #define AT_REAL         1
@@ -22,7 +23,7 @@ typedef struct ATerm
 {
 	header_type   header;
 	struct ATerm *next;
-} ATerm;
+} *ATerm;
 
 /** The following functions implement the operations of
   * the 'standard' ATerm interface, and should appear
@@ -32,18 +33,21 @@ typedef struct ATerm
   * relatively unique.
   */
 
-ATerm *ATmake(char *pattern, ...);
-ATerm *ATmatch(ATerm *t, char *pattern, ...);
-ATerm *ATreadFromString(char *string);
-ATerm *ATreadFromTextFile(FILE *file);
-ATerm *ATreadFromBinaryFile(FILE *file);
-int    ATgetType(ATerm *t);
-int    ATwriteToTextFile(ATerm *t, FILE *file);
-int    ATwriteToBinaryFile(ATerm *t, FILE *file);
-char  *ATwriteToString(ATerm *t);
-void   ATsetAnnotation(ATerm *t, ATerm *label, ATerm *anno);
-ATerm *ATgetAnnotation(ATerm *t, ATerm *label);
-void   ATremoveAnnotation(ATerm *t, ATerm *label);
+ATerm ATmake(char *pattern, ...);
+ATerm ATmatch(ATerm t, char *pattern, ...);
+ATerm ATreadFromString(char *string);
+ATerm ATreadFromTextFile(FILE *file);
+ATerm ATreadFromBinaryFile(FILE *file);
+
+/* int    ATgetType(ATerm t); */
+#define ATgetType(t) GET_TYPE((t)->header)
+
+ATbool ATwriteToTextFile(ATerm t, FILE *file);
+ATbool ATwriteToBinaryFile(ATerm t, FILE *file);
+char  *ATwriteToString(ATerm t);
+void   ATsetAnnotation(ATerm t, ATerm label, ATerm anno);
+ATerm  ATgetAnnotation(ATerm t, ATerm label);
+void   ATremoveAnnotation(ATerm t, ATerm label);
 
 /**
   * We also define some functions that are specific
