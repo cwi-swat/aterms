@@ -14,7 +14,7 @@ public abstract class Generator {
 	protected PrintStream stream;
 
     /**
-     * Initialization of the generators arguments
+     * Generate a file using print, println, etc.
      * @param directory The path to the new file
      * @param filename  The name of the new file
      * @param extension The extension of the new file

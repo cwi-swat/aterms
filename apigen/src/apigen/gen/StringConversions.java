@@ -6,9 +6,14 @@ import java.util.Map;
 public class StringConversions {
 	static private Map specialChars;
 
-	// Do *NOT* add an entry for '-' (Dash) here, the dash is used
-	// as a word-separator!
-
+    /**
+     * A translation table from non-alphanumerics to acronyms.
+     */
+    
+    /* (non-javadoc) 
+     * Do *NOT* add an entry for '-' (Dash) here, the dash is used
+	 * as a word-separator!
+	 */
 	protected static final String[] SPECIAL_CHAR_WORDS =
 		{
 			"[BracketOpen",
@@ -37,6 +42,9 @@ public class StringConversions {
 			"'SingleQuote",
 			};
 
+    /** 
+     * Load the translation table into a hash table
+     */
 	static {
 		specialChars = new HashMap();
 
