@@ -2,8 +2,6 @@
   * encoding.h: Low level encoding of ATerm datatype.
   */
 
-/* #define NO_SHARING */
-
 #ifndef ENCODING_H
 #define ENCODING_H
 

@@ -164,14 +164,10 @@ ATinit(int argc, char *argv[], ATerm * bottomOfStack)
   AT_init_gc_parameters(low_memory);
 
   
-  if (!silent)
-#ifdef NO_SHARING
-    ATfprintf(stderr, "  ATerm Library (no maximal sharing), "
-	      "version %s, built: %s\n", at_version, at_date);
-#else
-  ATfprintf(stderr, "  ATerm Library, version %s, built: %s\n",
-	    at_version, at_date);
-#endif
+  if (!silent) {
+    ATfprintf(stderr, "  ATerm Library, version %s, built: %s\n",
+	      at_version, at_date);
+  }
 
   if(help) {
     fprintf(stderr, "    %-20s: print this help info\n", "-at-help");

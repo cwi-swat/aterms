@@ -30,13 +30,8 @@ static ATerm *stackBot = NULL;
 #define PRINT_GC_TIME           1
 #define PRINT_GC_STATS          2
 
-#ifndef NO_SHARING
 #define TO_OLD_RATIO   65
 #define TO_YOUNG_RATIO 25
-#else
-#define TO_OLD_RATIO   60
-#define TO_YOUNG_RATIO 25
-#endif
 
 static int     flags               = 0;
 
@@ -487,7 +482,6 @@ void AT_init_gc_parameters(ATbool low_memory)
     old_increase_rate_ratio = 50;
 
   } else {
-#ifndef NO_SHARING
       /* 20MB for 10 sizes in average*/
     gc_min_number_of_blocks = 2*(20*1024*1024)/(10*sizeof(Block));
     max_freeblocklist_size  = 100;
@@ -495,15 +489,7 @@ void AT_init_gc_parameters(ATbool low_memory)
     good_gc_ratio = 50;
     small_allocation_rate_ratio = 75;
     old_increase_rate_ratio = 50;
-#else
-      /* 20MB for 10 sizes in average*/
-    gc_min_number_of_blocks = 5*(20*1024*1024)/(10*sizeof(Block));
-    max_freeblocklist_size  = 1000;
-    min_nb_minor_since_last_major = 100;
-    good_gc_ratio = 40;
-    small_allocation_rate_ratio = 45;
-    old_increase_rate_ratio = 60;
-#endif
+
 #ifdef GC_VERBOSE
     fprintf(stderr,"gc_min_number_of_blocks = %d\n",gc_min_number_of_blocks);
 #endif
