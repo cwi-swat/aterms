@@ -36,7 +36,9 @@ main(int argc, char *argv[])
       }
       while (!feof(in)) {
 	char c = fgetc(in);
-	if (c == '$') {
+        if (c == '\n') {
+	  continue;
+	} else if (c == '$') {
 	  char lookahead = fgetc(in);
 	  if (lookahead != '$') {
 	    ungetc(lookahead, in);
@@ -44,6 +46,11 @@ main(int argc, char *argv[])
 	  }
 	  fclose(out);
 	  break;
+	} else if (c == '#') {
+	  fputc('\n', out);
+	} else if (c == '@') {
+	  fputc('\n', out);
+	  continue;
 	}
 	fputc(c, out);
       }
