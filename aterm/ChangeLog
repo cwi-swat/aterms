@@ -1,5 +1,9 @@
 $Id$
 
+2003-08-01  Jurgen Vinju <jurgenv@cwi.nl>
+ * Rewrote use AC_COMPILE_IFELSE to AC_TRY_COMPILE
+ * Released dependency on autoconf 2.52 to autoconf 2.13
+
 Tue Jul 29 14:34:19 CEST 2003 <{jong,jurgenv}@cwi.nl>
  * aterm/memory.c: use calloc instead of static array for protoTerm.
    Using a static array is not guaranteed to be sizeof(double) aligned,

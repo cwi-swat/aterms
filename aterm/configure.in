@@ -6,7 +6,7 @@
 AC_INIT(configure)
 AM_CONFIG_HEADER(config.h)
 AM_INIT_AUTOMAKE(aterm, 2.0.3)
-AC_PREREQ(2.52)
+AC_PREREQ(2.13)
 
 AC_PROG_CC
 
@@ -69,10 +69,10 @@ case "$target_cpu" in
 		CC=${CC_CC64}
 	fi
 
-	AC_COMPILE_IFELSE([AC_LANG_PROGRAM([], [[#ifndef __GNUC__
+	AC_TRY_COMPILE([], [[#ifndef __GNUC__
        		choke me
   		#endif
-	]])], [cc_cc64_gnu=yes], [cc_cc64_gnu=no])
+	]], [cc_cc64_gnu=yes], [cc_cc64_gnu=no])
 
 	if test $cc_cc64_gnu = yes; then
 		CFLAGS_CC64="-m64 -DAT_64BIT";
