@@ -144,7 +144,7 @@ static int writeToSharedTextFile(ATerm t, byte_writer *writer, ATermIndexedSet a
     case AT_REAL:
       /*{{{  Print a real */
 
-      elem_size = sprintf(print_buffer, "%f", ((ATermReal) t)->value);
+      elem_size = sprintf(print_buffer, "%.15e", ((ATermReal) t)->value);
       elem_size = write_bytes(print_buffer, elem_size, writer);
       if (elem_size < 0) {
 	return -1;

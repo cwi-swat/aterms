@@ -1,5 +1,11 @@
-
 $Id$
+
+2000/03/05 (jong@cwi.nl)
+ * Version 1.5.2beta
+ * Arne de Bruijn goes on a killing spree :-) Yet another three fixes
+   were submitted: ATermReals are now represented in strings using the
+   %.15e format. Arne also fixed a possible buffer-overflow and a missing
+   '\0' termination in ATermReal handling.
 
 2000/03/02 (jong@cwi.nl)
  * The ATermLibrary is now distributed under LGPL.

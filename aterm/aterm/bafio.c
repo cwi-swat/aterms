@@ -912,7 +912,7 @@ static ATbool write_term(ATerm t, byte_writer *writer, ATbool anno_done)
     case AT_REAL:
       {
 	static char buf[64]; /* must be able to hold str-rep of double */
-	sprintf(buf, "%f", ATgetReal((ATermReal)t));
+	sprintf(buf, "%.15e", ATgetReal((ATermReal)t));
 	if (flushBitsToWriter(writer)<0)
 	  return ATfalse;
 	if (writeString(buf, strlen(buf), writer) < 0)
@@ -1408,11 +1408,15 @@ ATerm read_term(sym_read_entry *sym, byte_reader *reader)
 
     {
       double real;
+      int len;
 
       if(flushBitsFromReader(reader) < 0)
 	return NULL;
-      if(readString(reader) < 0)
+      if((len = readString(reader)) < 0)
 	return NULL;
+
+      text_buffer[len] = '\0';
+
       sscanf(text_buffer, "%lf", &real);
       result = (ATerm)ATmakeReal(real);
     }

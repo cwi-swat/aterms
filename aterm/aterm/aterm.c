@@ -684,7 +684,7 @@ writeToTextFile(ATerm t, FILE * f)
       fprintf(f, "%d", ((ATermInt) t)->value);
       break;
     case AT_REAL:
-      fprintf(f, "%f", ((ATermReal) t)->value);
+      fprintf(f, "%.15e", ((ATermReal) t)->value);
       break;
     case AT_APPL:
       /*{{{  Print application */
@@ -939,7 +939,7 @@ writeToString(ATerm t, char *buf)
     case AT_REAL:
       /*{{{  write real */
 
-      sprintf(buf, "%f", ATgetReal((ATermReal) t));
+      sprintf(buf, "%.15e", ATgetReal((ATermReal) t));
       buf += strlen(buf);
 
       /*}}}  */
@@ -1063,7 +1063,7 @@ textSize(ATerm t)
       break;
 				
     case AT_REAL:
-      sprintf(numbuf, "%f", ATgetReal((ATermReal) t));
+      sprintf(numbuf, "%.15e", ATgetReal((ATermReal) t));
       size = strlen(numbuf);
       break;
 				
@@ -1451,7 +1451,7 @@ fparse_unquoted_appl(int *c, FILE * f)
 static ATerm
 fparse_num(int *c, FILE * f)
 {
-  char            num[32], *ptr = num;
+  char            num[32], *ptr = num, *numend = num + 30;
 
   if (*c == '-')
     {
@@ -1459,7 +1459,7 @@ fparse_num(int *c, FILE * f)
       fnext_char(c, f);
     }
 
-  while (isdigit(*c))
+  while (isdigit(*c) && ptr < numend)
     {
       *ptr++ = *c;
       fnext_char(c, f);
@@ -1472,13 +1472,13 @@ fparse_num(int *c, FILE * f)
 	{
 	  *ptr++ = *c;
 	  fnext_char(c, f);
-	  while (isdigit(*c))
+	  while (isdigit(*c) && ptr < numend)
 	    {
 	      *ptr++ = *c;
 	      fnext_char(c, f);
 	    }
 	}
-      if (toupper(*c) == 'E')
+      if (toupper(*c) == 'E' && ptr < numend)
 	{
 	  *ptr++ = *c;
 	  fnext_char(c, f);
@@ -1487,7 +1487,7 @@ fparse_num(int *c, FILE * f)
 	      *ptr++ = *c;
 	      fnext_char(c, f);
 	    }
-	  while (isdigit(*c))
+	  while (ptr < numend && isdigit(*c))
 	    {
 	      *ptr++ = *c;
 	      fnext_char(c, f);
