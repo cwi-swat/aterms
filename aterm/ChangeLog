@@ -19,6 +19,10 @@
 
 $Id$
 
+2000/4/13 (jong@cwi.nl)
+   * Added support for 64bits architecture.
+     Use --with-64bit configure option to create the 64bit library.
+
 2000/4/8 (mdejonge@cwi.nl)
    * Removed all asfix related stuff because the asfix library is now
      distributed separately (http://www.cwi.nl/projects/MetaEnv)
