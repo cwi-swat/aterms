@@ -841,6 +841,101 @@ Casl specifications~\cite{casl1}.
 \end{itemize}
 
 % }}}
+%{{{ Discussion
+
+\section*{Discussion}
+
+\subsection*{Related Work}
+
+\paragraph{S-expressions in LISP}
+Many intermediate representations are derived in some form or another
+from the S-expressions in LISP. \ATerms\ are no exception to this
+rule. The main improvements of \ATerms\ over S-expressions are
+
+\begin{itemize}
+\item \ATerms\ support arbitrary binary data (Blobs).
+\item \ATerms\ support annotations.
+\item \ATerms\ support maximal sharing in a systematic way.
+\item \ATerms\ support a concise, sharing preserving,
+exchange format that exploits the implicit signature
+of terms.
+\item The \ATerm\ library provides a comprehensive collection of
+access functions based on the\emph{ match-and-make} paradigm.
+\end{itemize}
+
+
+\begin{sloppypar}
+\paragraph{Intermediate representations in compiler frameworks}
+There exist numerous frameworks for compilers and programming
+environments that provide facilities for representing intermediate
+data. Examples are Centaur's VTP~\cite{BCDIKLP89}, Eli~\cite{Eli92},
+Cocktail's Ast~\cite{Ast92}, SUIF~\cite{Suif94}, ASDL~\cite{Wan97}, and
+Montana~\cite{Karasick98}. These systems either provide an explicit
+intermediate format (Eli, Ast, SUIF) or they provide a programmable
+interface to the intermediate data (VTP, Montana, ASDL).  Lamb's
+IDL~\cite{Lamb-IDL} and OMG's IDL~\cite{OMG-IDL} are frameworks for
+representing intermediate data that are not tied to a specific
+compiler construction paradigm but have objectives similar to the
+systems already mentioned.
+\end{sloppypar}
+
+These approaches typically use a grammar-like definition of the
+abstract syntax (including attributes) and provide (generated) access
+functions as well as readers and writers for these intermediate data. In most
+cases support exists for accessing the intermediate data from a small
+collection of source languages.
+
+
+\paragraph{XML}
+The Extensible Markup Language~\cite{XML1.0} is a
+standardized format for Web documents. Unlike HTML, XML makes a strict
+distinction between \emph{content} and \emph{presentation}.  XML can
+be \emph{extended} by adding user-defined \emph{tags} to parts of a
+document and by defining the overall structure of the document thus
+enabling well-formedness checks on documents.  Although the original
+objectives are completely different, there are striking similarities
+between \ATerms\ and XML: both serve the representation of
+hierarchically structured data and both allow arbitrary extensions
+(adding tags \emph{versus} adding function symbols).  There is also a
+straightforward translation possible between \ATerms\ and XML.
+
+The main difference between the two is that XML is more verbose and
+does not provide a simple mechanism to represent sharing, whereas
+\ATerms\ provide the \baf\ format. This may
+not be a problem for Web documents like catalogs and database
+records, but is does present a major obstacle in our case when we need
+to exchange huge terms between tools. We are currently considering
+whether some link between \ATerms\ and XML may be advantageous.
+
+
+\subsection*{Conclusions}
+
+As stated in the introduction, \ATerms\ are intended to form an \emph{open},
+\emph{simple}, 
+\emph{efficient}, \emph{concise}, and \emph{language
+independent} solution for the exchange of (tree-like) data structures
+between distributed applications.
+
+\ATerms\ \emph{are} open and language independent since they do not
+depend on any specific hardware or software platform.  
+\ATerms\ \emph{are} simple: the level one interface consists of only 13
+functions.  \ATerms\ \emph{are} efficient and concise.    
+Last but not least, \ATerms\ are also
+\emph{useful}.
+
+The \ATerm\ format is supported by a binary exchange format (BAF) which
+provides a mechanism to exchange \ATerms\ in a concise way. This
+BAF format maintains the in-memory sharing of terms and uses a
+minimal amount of bits to represent the nodes, in case of 
+\asfix\ terms only 2 bits are needed per node.
+
+The most innovative aspects of \ATerms\ are the simple procedural
+interface based on the \emph{make-and-match} paradigm, term
+annotations, maximal subterm sharing, and the concise binary encoding
+of terms that is completely hidden behind high-level read and write
+operations.
+
+%}}}
 % {{{  \section{Availability}
 
 \section*{Availability}
