@@ -14,4 +14,5 @@ java_JAVA = \
 	ATermPlaceholderImpl.java \
 	ATermRealImpl.java \
 	ATermVisitableImpl.java \
-	PureFactory.java
+	PureFactory.java\
+	ATermWriter.java

@@ -5,6 +5,7 @@ $Id$
  * All classed use PureFactory.getEmpty() instead of PureFactory.empty now to
    improve reusability of ATermListImpl
  * Visibility of empty is still 'protected' for backward compatibility
+ * Made internal class ATermWriter a toplevel class
    
 2003/08/07 <jurgenv@cwi.nl>
  * Made aterm.pure.ATermListImpl public such that it can be inherited from.
