@@ -33,7 +33,7 @@ listtest_DEPENDENCIES	= liblist.a
 # Building the Java class files that are to be run during testing:
 javadir = ${top_builddir}/test/classfiles
 JAVAROOT = ${top_builddir}
-CLASSPATH_ENV = CLASSPATH=/ufs/jurgenv/glt/classes:${top_builddir}:${SHARED_OBJECTS}:${JAVA_ATERM}:${srcdir}/$(JAVAROOT)::$$CLASSPATH
+CLASSPATH_ENV = CLASSPATH=${top_builddir}:${SHARED_OBJECTS}:${JAVA_ATERM}:${srcdir}/$(JAVAROOT)::$$CLASSPATH
 
 check_JAVA = ${PeanoAPI} PeanoTest.java \
 	     ${ListAPI} ListTest.java
