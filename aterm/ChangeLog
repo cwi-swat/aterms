@@ -1,7 +1,7 @@
 $Id$
 
 2002/09/23 <vinju@loria.fr>
-* Fixed a bug in the java library. Singletons did not match with
+* Fixed a bug in pure/ATermListImpl.java: Singletons did not match with
   [<term>,<list>].
 
 2002/09/23 <jong@cwi.nl>
