@@ -79,9 +79,25 @@
 
 %----[ INTRODUCTION ]----
 \section{Introduction}\label{intro}
-This manual describes the functionality provided by the \ATlib. It is
-intended to be a manual on how to use the \ATlib. Readers who are interested 
-in the design details of the \ATlib, can find these in~\cite{BJO98}.
+This manual describes the functionality provided by the \ATlib. The library
+is a high performance implementation of the \aterm\ datatype described
+in~\cite{BJO98}. If your application satisfies the following list of
+characteristics, the \ATlib\ is probably of good use to you.
+
+\begin{itemize}
+\item Maximal sharing of terms is required;
+\item Automatic garbage collection is required;
+\item There is no need for destructive update of terms (e.g. the \ATlib\ is
+not suited to implement stacks).
+\end{itemize}
+
+Typical applications are those that manipulate (abstract syntax) trees or
+terms, and those related to the new {\sc Asf+Sdf} Meta-Environment
+\cite{BKMO97} or the new {\sc Asf+Sdf} compiler~\cite{BOHK98}.
+
+This manual intended to be a comprehensive text on how to use the \ATlib.
+Readers who are interested in the design details of the \ATlib, can find
+these in~\cite{BJO98}.
 
 Section~\ref{usage} explains the basic steps that must be taken to
 initialise and work with the \ATlib.
