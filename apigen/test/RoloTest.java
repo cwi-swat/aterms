@@ -49,6 +49,6 @@ class Collector extends Fwd {
   }
 
   public void visit_PhoneNumber_Voice(PhoneNumber_VoiceImpl v) {
-    concatenation = concatenation + v.getVoice().toString();
+    concatenation = concatenation + v.getVoice();
   }
 }

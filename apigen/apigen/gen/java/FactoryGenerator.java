@@ -455,13 +455,13 @@ public class FactoryGenerator extends JavaGenerator {
 			Field field = (Field) fields.next();
 			String fieldType = field.getType();
 			String fieldClass = TypeGenerator.className(fieldType);
-
+			
 			if (fieldType.equals("str")) {
 				print("(String) children.get(" + argnr + ")");
 			} else if (fieldType.equals("int")) {
-				print("(Integer) children.get(" + argnr + ")");
+				print("((Integer) children.get(" + argnr + ")).intValue()");
 			} else if (fieldType.equals("real")) {
-				print("(Double) children.get(" + argnr + ")");
+				print("((Double) children.get(" + argnr + ")).doubleValue()");
 			} else if (fieldType.equals("term")) {
 				print("(aterm.ATerm) children.get(" + argnr + ")");
 			} else if (fieldType.equals("list")) {

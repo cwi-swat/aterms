@@ -17,11 +17,15 @@ public class BuiltinsTest
       D t = factory.makeD_Trm(factory.parse("one"));
       testAssert(t.toString().equals("term(one)"), "make term test");
       
-      D d = factory.makeD_Double(new Double(1.0));
+      D d = factory.makeD_Double(1.0);
       testAssert(d.toString().equals("double(1.0)"),"make double test");
+      testAssert(d.getNumber() == 1.0, "get double test");
+      testAssert(d.setNumber(2.0).getNumber() == 2.0, "set double test");
       
-      D i = factory.makeD_Integer(new Integer(1));
+      D i = factory.makeD_Integer(1);
       testAssert(i.toString().equals("int(1)"),"make int test");
+      testAssert(i.getInteger() == 1, "get integer test");
+      testAssert(i.setInteger(2).getInteger() == 2, "set integer test");
       
       D l = factory.makeD_Lst((aterm.ATermList) factory.parse("[one]"));
       testAssert(l.toString().equals("list([one])"), "make list test");

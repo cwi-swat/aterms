@@ -225,39 +225,14 @@ public class AlternativeImplGenerator extends JavaGenerator {
 		String fieldClass = TypeGenerator.className(fieldType);
 		String fieldIndex = getFieldIndex(field.getId());
 
-		// getter    
-		println("  public " + fieldClass + " get" + fieldName + "()");
-		println("  {");
-
-		if (fieldType.equals("str")) {
-			println(
-				"   return ((aterm.ATermAppl) this.getArgument("
-					+ fieldIndex
-					+ ")).getAFun().getName();");
-		} else if (fieldType.equals("int")) {
-			println(
-				"   return new Integer(((aterm.ATermInt) this.getArgument("
-					+ fieldIndex
-					+ ")).getInt());");
-		} else if (fieldType.equals("real")) {
-			println(
-				"   return new Double(((aterm.ATermReal) this.getArgument("
-					+ fieldIndex
-					+ ")).getReal());");
-		} else if (fieldType.equals("term")) {
-			println("   return this.getArgument(" + fieldIndex + ");");
-		} else {
-			println(
-				"    return ("
-					+ fieldClass
-					+ ") this.getArgument("
-					+ fieldIndex
-					+ ") ;");
-		}
-
-		println("  }");
+		genFieldGetterMethod(fieldName, fieldType, fieldClass, fieldIndex);
+		println();
+		genFieldSetterMethod(fieldName, fieldId, fieldType, fieldClass, fieldIndex);
 		println();
 
+	}
+
+	private void genFieldSetterMethod(String fieldName, String fieldId, String fieldType, String fieldClass, String fieldIndex) {
 		// setter    
 		println(
 			"  public "
@@ -279,9 +254,9 @@ public class AlternativeImplGenerator extends JavaGenerator {
 					+ fieldId
 					+ ", 0, true))");
 		} else if (fieldType.equals("int")) {
-			print("getFactory().makeInt(" + fieldId + ".intValue())");
+			print("getFactory().makeInt(" + fieldId + ")");
 		} else if (fieldType.equals("real")) {
-			print("getFactory().makeReal(" + fieldId + ".doubleValue())");
+			print("getFactory().makeReal(" + fieldId + ")");
 		} else {
 			print(fieldId);
 		}
@@ -289,8 +264,40 @@ public class AlternativeImplGenerator extends JavaGenerator {
 		println(", " + fieldIndex + ");");
 
 		println("  }");
-		println();
+	}
 
+	private void genFieldGetterMethod(String fieldName, String fieldType, String fieldClass, String fieldIndex) {
+		// getter    
+		println("  public " + fieldClass + " get" + fieldName + "()");
+		println("  {");
+
+		if (fieldType.equals("str")) {
+			println(
+				"   return ((aterm.ATermAppl) this.getArgument("
+					+ fieldIndex
+					+ ")).getAFun().getName();");
+		} else if (fieldType.equals("int")) {
+			println(
+				"   return ((aterm.ATermInt) this.getArgument("
+					+ fieldIndex
+					+ ")).getInt();");
+		} else if (fieldType.equals("real")) {
+			println(
+				"   return ((aterm.ATermReal) this.getArgument("
+					+ fieldIndex
+					+ ")).getReal();");
+		} else if (fieldType.equals("term")) {
+			println("   return this.getArgument(" + fieldIndex + ");");
+		} else {
+			println(
+				"    return ("
+					+ fieldClass
+					+ ") this.getArgument("
+					+ fieldIndex
+					+ ") ;");
+		}
+
+		println("  }");
 	}
 
 	private void genOverrideProperties(Type type, Alternative alt) {

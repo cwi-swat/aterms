@@ -82,10 +82,10 @@ public abstract class JavaGenerator extends Generator {
 
 			if (field_type.equals("str")) {
 				print("makeAppl(makeAFun(" + field_id + ", 0, true))");
-			} else if (field_type.equals("int")) {
-				print("makeInt(" + field_id + ".intValue())");
+			} else if (field_type.equals("int"))  {
+				print("makeInt(" + field_id + ")");
 			} else if (field_type.equals("real")) {
-				print("makeReal(" + field_id + ".doubleValue())");
+				print("makeReal(" + field_id + ")");
 			} else {
 				print(field_id);
 			}
