@@ -29,7 +29,7 @@ Options:
   -e | --expand-cons     put cons-annotations in term patterns  [default]
   -r | --remove-cons     remove cons-annotations from term patterns
   -v | --verbose         be verbose during generation
-  -s | --skip-cleanup    skip cleanup fase (useful for debugging)
+  -s | --skip-cleanup    skip cleanup phase (useful for debugging)
   -h | --help            display this information
 
 Example: $PRG --remove-cons -i Booleans.sdf -o Booleans.adt
