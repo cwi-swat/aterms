@@ -1,21 +1,19 @@
-2003-05-30    <pem@bach>
+2003-06-25    (jurgenv@cwi.nl)
+ * Release 1.6
 
-	* apigen/gen/java/TypeImplGenerator.java: generate public 
-          fromString and fromTextFile static functions
+2003-05-30    <pem@bach>
+ * apigen/gen/java/TypeImplGenerator.java: generate public 
+   fromString and fromTextFile static functions
 	
 2003-04-14    <pem@bach>
-
-	* apigen/gen/java/AlternativeImplGenerator.java: fix a hashing
-	  problem. 'b' is now initialized by the AFun().hashCode() instead
-	  of the goldenRatio.
-	
+ * apigen/gen/java/AlternativeImplGenerator.java: fix a hashing
+   problem. 'b' is now initialized by the AFun().hashCode() instead
+   of the goldenRatio.
 
 2003-05-06  Pierre-Etienne Moreau  <pem@escher.loria.fr>
- 
  * added "list" type for ATermList
  
 2003-04-28  Pierre-Etienne Moreau  <pem@escher.loria.fr>
-
  * apigen/gen/java/TypeGenerator.java: added a test to prefix the "ATerm"
    sort by the "aterm." package name in TypeGenerator.className
 
