@@ -2,8 +2,12 @@ javadir = ${prefix}/classes/shared
 
 JAVAROOT = ${top_builddir}
 
-java_JAVA = \
+JAVASOURCES = \
 	SharedObject.java \
 	SharedObjectWithID.java \
 	SharedObjectFactory.java \
         HashFunctions.java
+
+java_JAVA       = $(JAVASOURCES)
+
+EXTRA_DIST      = $(JAVASOURCES)
