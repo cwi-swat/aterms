@@ -5,6 +5,7 @@ import test.list.Module;
 import test.list.ModuleList;
 import test.list.Modules;
 import test.list.Modules2;
+import test.list.Separated;
 
 public class ListTest {
 
@@ -88,7 +89,10 @@ public class ListTest {
     example = "\"amodule\"";
     termExample = factory.parse(example);
     Module amodule = (Module) factory.makeModule_Default(example);
-        
+
+    Separated sep = factory.SeparatedFromTerm(factory.parse("[\"m2\",l(\"l2\"),\"sep\",l(\"l1\"),\"m1\",l(\"l2\"),\"sep\",l(\"l1\"),\"m2\",l(\"l2\"),\"sep\",l(\"l1\"),\"m1\"]"));
+
+    System.err.println("length: " +  sep.getLength());
   }
 
   public final static void main(String[] args) {

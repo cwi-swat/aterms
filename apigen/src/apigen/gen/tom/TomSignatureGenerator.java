@@ -157,8 +157,8 @@ public class TomSignatureGenerator extends Generator {
 	}
 
 	private void genTomType(Type type) {
-		if (type instanceof ListType) {
-			String eltType = ((ListType) type).getElementType();
+		if (type instanceof NormalListType) {
+			String eltType = ((NormalListType) type).getElementType();
 			
 			println(
 				TypeListTemplate(

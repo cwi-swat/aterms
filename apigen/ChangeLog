@@ -1,3 +1,8 @@
+2003-08-19  (jurgenv@cwi.nl)
+ * Committed basic setup for generating separated lists in Java
+ * Added several TODO comments where the generated code will have to be
+   adapted pretty soon.
+   
 2003-08-14  (jurgenv@cwi.nl)
  * Generating reverse method is unnecessary again.
  * Renamed lib directory to lib-2.0 and old-lib directory to lib-1.0

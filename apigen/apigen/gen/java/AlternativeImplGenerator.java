@@ -62,7 +62,7 @@ public class AlternativeImplGenerator extends JavaGenerator {
 
 	private void genAlternativeClassImpl(Type type, Alternative alt) {
 		println("abstract public class " + className);
-		println("extends " + typeId);
+		println("extends " + superClassName);
 		if (visitable) {
 			println("implements jjtraveler.Visitable");
 		}

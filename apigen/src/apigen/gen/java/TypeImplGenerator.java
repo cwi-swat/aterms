@@ -29,6 +29,7 @@ public class TypeImplGenerator extends JavaGenerator {
 	protected void generate() {
 		printPackageDecl();
 
+        // TODO: are these still needed?
 		imports.add("java.io.InputStream");
 		imports.add("java.io.IOException");
 
@@ -61,13 +62,13 @@ public class TypeImplGenerator extends JavaGenerator {
 
 	}
 
-	private void genInitMethod() {
+	protected void genInitMethod() {
 		println("  protected void init(int hashCode, aterm.ATermList annos, aterm.AFun fun,	aterm.ATerm[] args) {");
 		println("    super.init(hashCode, annos, fun, args);");
 		println("  }");
 	}
 
-	private void genInitHashcodeMethod() {
+	protected void genInitHashcodeMethod() {
 		println("  protected void initHashCode(aterm.ATermList annos, aterm.AFun fun, aterm.ATerm[] i_args) {");
 		println("  	super.initHashCode(annos, fun, i_args);");
 		println("  }");
@@ -83,7 +84,7 @@ public class TypeImplGenerator extends JavaGenerator {
 		println("  }");
 	}
 
-	private void genIsEqual(String class_name) {
+	protected void genIsEqual(String class_name) {
 		println("  public boolean isEqual(" + class_name + " peer)");
 		println("  {");
 		println("    return term.isEqual(peer.toTerm());");

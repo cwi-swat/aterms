@@ -116,7 +116,7 @@ public class ADT {
 
 	private void processList(String typeId, Entry first) {
     String elementType = ((ATermAppl) first.getElemSort()).getAFun().getName();
-		Type type = new ListType(factory, typeId, elementType);
+		Type type = new NormalListType(factory, typeId, elementType);
     types.add(type);
 	}
 

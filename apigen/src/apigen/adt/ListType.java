@@ -3,19 +3,17 @@ package apigen.adt;
 import aterm.ATermFactory;
 
 public class ListType extends Type {
-	protected String elementType;
-	protected ATermFactory factory;
+    protected ATermFactory factory;
+    protected String elementType;
+    
+    public ListType(String id, ATermFactory factory, String elementType) {
+        super(id);
+        this.factory = factory;
+        this.elementType = elementType;
+    }
+    
+    public String getElementType() {
+    	return elementType;
+    }
 
-	public ListType(ATermFactory factory, String id, String elementType) {
-		super(id);
-		this.factory = factory;
-		this.elementType = elementType;
-        
-    	addAlternative(Alternative.makeManyListConstructor(this.factory,getId(),getElementType()));
-    	addAlternative(Alternative.makeEmptyListConstructor(this.factory));
-	}
-
-	public String getElementType() {
-		return elementType;
-	}
 }

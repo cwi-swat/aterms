@@ -4,16 +4,12 @@ import apigen.adt.api.Separators;
 import aterm.ATermFactory;
 
 
-public class SeparatedListType extends Type {
+public class SeparatedListType extends ListType {
     protected Separators separators;
-    protected String elementType;
-    protected ATermFactory factory;
     
 	public SeparatedListType(ATermFactory factory, String id, String elementType, Separators separators) {
-		super(id);
+		super(id, factory, elementType);
 		this.separators = separators;
-		this.elementType = elementType;
-		this.factory = factory;
 		
 		addAlternative(Alternative.makeManySeparatedListConstructor(this.factory,getId(),elementType,separators));
 		addAlternative(Alternative.makeEmptyListConstructor(this.factory));
@@ -23,9 +19,4 @@ public class SeparatedListType extends Type {
 	public Separators getSeparators() {
 		return separators;
 	}
-
-	public String getElementType() {
-		return elementType;
-	}
-
 }

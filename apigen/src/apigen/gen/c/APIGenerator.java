@@ -12,7 +12,7 @@ import apigen.adt.ADT;
 import apigen.adt.Alternative;
 import apigen.adt.AlternativeList;
 import apigen.adt.Field;
-import apigen.adt.ListType;
+import apigen.adt.NormalListType;
 import apigen.adt.Location;
 import apigen.adt.SeparatedListType;
 import apigen.adt.Step;
@@ -81,8 +81,8 @@ public class APIGenerator extends CGenerator {
       while (types.hasNext()) {
 	    Type type = (Type) types.next();
 	   
-	    if (type instanceof ListType) {
-	   	  genListApi((ListType) type);
+	    if (type instanceof NormalListType) {
+	   	  genListApi((NormalListType) type);
 	    }
 	    else if (type instanceof SeparatedListType) {
 	    	genSeparatedListApi((SeparatedListType) type);
@@ -104,7 +104,7 @@ public class APIGenerator extends CGenerator {
         // TODO: extend the API to match the normal list API
 	}
 
-	private void genListApi(ListType type) {
+	private void genListApi(NormalListType type) {
 	   String typeName = buildTypeName(type.getId());
 	   String typeId = StringConversions.makeIdentifier(type.getId());
 	   String elementTypeName = buildTypeName(type.getElementType());
@@ -160,6 +160,8 @@ public class APIGenerator extends CGenerator {
 	}
 
 	private void genReverse(String typeId, String typeName) {
+        // TODO: generate a different reverse for separated lists because
+        // separators could be ordered wrong after a reverse!
 		String decl = typeName + " " + prefix + "reverse" + typeId + "(" +
 		              typeName + " arg)";
 		hprintln(decl + ";");
