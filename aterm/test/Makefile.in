@@ -41,6 +41,17 @@ LFLAGS_DBG	= @LFLAGS_DBG@
 LFLAGS_PROF	= @LFLAGS_PROF@
 LFLAGS_NS	= @LFLAGS_DBG@ 
 
+LIB_CC		= ../aterm/libATerm-cc.a ../asfix/libAsFix-cc.a \
+		../toolbus/libATB-cc.a
+LIB_GCC		= ../aterm/libATerm-gcc.a ../asfix/libAsFix-gcc.a \
+		../toolbus/libATB-gcc.a
+LIB_DBG		= ../aterm/libATerm-dbg.a ../asfix/libAsFix-dbg.a \
+		../toolbus/libATB-dbg.a
+LIB_PROF	= ../aterm/libATerm-prof.a ../asfix/libAsFix-prof.a \
+		../toolbus/libATB-prof.a
+LIB_NS		= ../aterm/libATerm-ns.a ../asfix/libAsFix-ns.a \
+		../toolbus/libATB-ns.a
+
 LIBS_CC		= -L../aterm -L../asfix -L../toolbus \
 			-lATerm-cc -lAsFix-cc -lATB-cc @LIBS@
 LIBS_GCC	= -L../aterm -L../asfix -L../toolbus \
@@ -75,42 +86,43 @@ dist: ${DISTFILES}
 
 install:
 
-stress-cc: stress.c
+stress-cc: stress.c ${LIB_CC}
 	$(CC_CC) $(CFLAGS_CC) $(DEFS_CC) $(INCL) $(LFLAGS) -o stress-cc stress.c $(LIBS_CC)
 
-stress-gcc: stress.c
+stress-gcc: stress.c ${LIB_DBG}
 	$(CC_DBG) $(CFLAGS_DBG) $(DEFS_GCC) $(INCL) $(LFLAGS) -o stress-gcc stress.c $(LIBS_DBG)
 
-stress-ns: stress.c
-	$(CC_NS) $(CFLAGS_NS) $(DEFS_NS) $(INCL) $(LFLAGS) -o stress-ns stress.c $(LIBS_NS)
+stress-ns: stress.c ${LIB_NS}
+	$(CC_NS) $(CFLAGS_NS) $(DEFS_NS) $(INCL) $(LFLAGS) -o stress-ns \
+		stress.c $(LIBS_NS)
 
-asfixtest: asfixtest.c
-	$(CC_DBG) $(CFLAGS_DBG) $(DEFS_DBG) $(INCL) $(LFLAGS) -o asfixtest asfixtest.c \
-	-L../asfix -lAsFix-gcc $(LIBS_DBG)
+asfixtest: asfixtest.c ${LIB_DBG}
+	$(CC_DBG) $(CFLAGS_DBG) $(DEFS_DBG) $(INCL) $(LFLAGS) -o asfixtest \
+		asfixtest.c $(LIBS_DBG)
 
-primes-cc: primes.c
+primes-cc: primes.c ${LIB_CC}
 	$(CC_CC) $(CFLAGS_CC) $(DEFS_CC) $(INCL) $(LFLAGS) -o primes-cc primes.c $(LIBS_CC)
 
-primes-ns: primes.c
+primes-ns: primes.c ${LIB_NS}
 	$(CC_NS) $(CFLAGS_NS) $(DEFS_NS) $(INCL) $(LFLAGS) -o primes-ns primes.c $(LIBS_NS)
 
-primes-gcc: primes.c
+primes-gcc: primes.c ${LIB_DBG}
 	$(CC_DBG) $(CFLAGS_DBG) $(INCL) $(LFLAGS) -o primes-gcc primes.c $(LIBS_DBG)
 
-vararg1: vararg1.c
+vararg1: vararg1.c ${LIB_DBG}
 	${CC_DBG} ${CFLAGS_DBG} ${INCL} ${LFLAGS} -o vararg1 vararg1.c ${LIBS_DBG}
 
-vararg2: vararg2.c
+vararg2: vararg2.c ${LIB_DBG}
 	${CC_DBG} ${CFLAGS_DBG} ${INCL} ${LFLAGS} -o vararg2 vararg2.c ${LIBS_DBG}
 
-vararg3: vararg3.c
+vararg3: vararg3.c ${LIB_DBG}
 	${CC_DBG} ${CFLAGS_DBG} ${INCL} ${LFLAGS} -o vararg3 vararg3.c ${LIBS_DBG}
 
-test-tool: test-tool.c
+test-tool: test-tool.c ${LIB_DBG}
 	$(CC_DBG) $(CFLAGS_DBG) $(INCL) $(LFLAGS) -o test-tool test-tool.c \
 		-L../toolbus -lATB-dbg ${LIBS_DBG}
 
-test-tool2: test-tool2.c tool2.tif.c tool2.tif.h
+test-tool2: test-tool2.c tool2.tif.c tool2.tif.h ${LIB_DBG}
 	$(CC_DBG) $(CFLAGS_DBG) $(INCL) $(LFLAGS) -o test-tool2 test-tool2.c \
 		tool2.tif.c -L../toolbus -lATB-dbg ${LIBS_DBG}
 
