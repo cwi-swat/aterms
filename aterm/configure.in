@@ -51,8 +51,6 @@ AC_AIX
 
 AC_PROG_MAKE_SET([])
 
-# This evokes a warning: AC_ARG_PROGRAM was called before AC_CANONICAL_TARGET
-# if you know a fix, please apply...
 if test "${with_64bit+set}" = set; then
 case "$target_cpu" in
    i*86)
