@@ -177,7 +177,7 @@ PROLOGUE="${APILIB}.pro"
 
 DICTTOC=dicttoc
 
-GENCAPI="java -cp ${CLASSPATH}:${prefix}/classes apigen.c.CGen"
+GENCAPI="java -classpath ${CLASSPATH}:${prefix}/classes apigen.c.CGen"
 
 # }}}
 
@@ -220,6 +220,6 @@ genConfigure "configure.in"
 genMakefile "Makefile.am"
 genReconf "reconf"
 
-${GENCAPI} -input ../${APIFILE} -output ${APILIB}
+${GENCAPI} -prefix SDF -input ../${APIFILE} -output ${APILIB} -prologue ../${PROLOGUE}
 ${DICTTOC} -dict ${APILIB}.dict
 

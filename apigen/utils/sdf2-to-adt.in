@@ -8,6 +8,8 @@ prefix=@prefix@
 exec_prefix=@exec_prefix@
 bindir=@bindir@
 datadir=@datadir@
+SGLRBIN=@SGLRBIN@
+XTBIN=@XTBIN@
 
 # }}}
 
@@ -41,13 +43,15 @@ SDFFILE="$1"
 PROLOGUE="${MODULE}.pro"
 ADTFILE="${MODULE}.adt"
 
-SGLR=sglr
+SGLR=${SGLRBIN}/sglr
 ASOURCE=asource
 
 SDF2TOADT="${bindir}/Sdf2-to-ADT"
 TABLE="${datadir}/Sdf2-to-ADT.trm.tbl"
 
 GENCAPI="${bindir}/gen-c-api"
+
+ADDLABELS="${XTBIN}/add-labels"
 
 # }}}
 
@@ -67,7 +71,7 @@ fi
 
 # }}}
 
-echo "sdf-to-adt(`cat ${SDFFILE}`)" | \
+echo "sdf-to-adt(`${ADDLABELS} ${SDFFILE}`)" | \
 ${SGLR} -1 -p ${TABLE} | \
 ${SDF2TOADT} | \
 ${ASOURCE} > ${ADTFILE}
