@@ -11,8 +11,8 @@ ADTJAVA         = ${top_builddir}/utils/adt-to-java
 
 TESTS			= rolotest listtest peanotest.sh
 
-noinst_PROGRAMS		= rolotest listtest
-noinst_LIBRARIES	= librolodex.a liblist.a 
+check_PROGRAMS		= rolotest listtest
+check_LIBRARIES	= librolodex.a liblist.a 
 
 librolodex_a_SOURCES	= rolodex.c rolodex_dict.c
 liblist_a_SOURCES	= list.c list_dict.c
@@ -29,7 +29,7 @@ javadir = ${top_builddir}/test/classfiles
 JAVAROOT = ${top_builddir}
 CLASSPATH_ENV = CLASSPATH=${top_builddir}:${SHARED_OBJECTS}:${JAVA_ATERM}:${srcdir}/$(JAVAROOT)::$$CLASSPATH
 
-java_JAVA = PeanoTest.java PeanoFactory.java 
+check_JAVA = PeanoTest.java PeanoFactory.java 
 
 CLEANFILES		= ${noinst_PROGRAMS} ${noinst_LIBRARIES} \
 			rolodex*.[ch] rolodex_dict.[ch] \
@@ -58,7 +58,7 @@ peanotest.sh: PeanoTest.java PeanoFactory.java Makefile
 	  echo "export CLASSPATH";\
 	  echo "java test.PeanoTest") > $@ && chmod +x $@
 
-PeanoFactory.java: peano.adt Makefile
+PeanoFactory.java: peano.adt 
 	${ADTJAVA} --input ${top_srcdir}/test/peano.adt \
 	           --output ${top_builddir}/test \
 		   --package test \
