@@ -10,7 +10,7 @@ public class Type
   List   alts;
   Map    fields;
 
-  //{ public Type(String id)
+  //{{{ public Type(String id)
 
   public Type(String id)
   {
@@ -20,27 +20,26 @@ public class Type
     fields = new HashMap();
   }
 
-  //}
-  //{ public String getId()
+  //}}}
+  //{{{ public String getId()
 
   public String getId()
   {
     return id;
   }
 
-  //}
-  //{ public void addAlternative(Alternative alt)
+  //}}}
+  //{{{ public void addAlternative(Alternative alt)
 
   public void addAlternative(Alternative alt)
   {
-    System.out.println("adding alternative: " + alt);
     alts.add(alt);
 
     extractFields(alt.getPattern(), new Location(alt.getId()));
   }
 
-  //}
-  //{ private void extractFields(ATerm t, Location loc)
+  //}}}
+  //{{{ private void extractFields(ATerm t, Location loc)
 
   private void extractFields(ATerm t, Location loc)
   {
@@ -50,7 +49,7 @@ public class Type
 
     switch (t.getType()) {
       case ATerm.APPL:
-	//{ Call 'extractFields' for every argument
+	//{{{ Call 'extractFields' for every argument
 
 	appl = (ATermAppl)t;
 	fun  = appl.getAFun();
@@ -60,11 +59,11 @@ public class Type
 	  extractFields(appl.getArgument(i), newloc);
 	}
 
-	//}
+	//}}}
 	break;
 
       case ATerm.LIST:
-	//{ Call 'extractFields' for every element
+	//{{{ Call 'extractFields' for every element
 
 	list = (ATermList)t;
 	for (int i=0; !list.isEmpty(); i++) {
@@ -74,11 +73,11 @@ public class Type
 	  list = list.getNext();
 	}
 
-	//}
+	//}}}
 	break;
 
       case ATerm.PLACEHOLDER:
-	//{ Add a new field based on this placeholder
+	//{{{ Add a new field based on this placeholder
 
 	ATerm ph = ((ATermPlaceholder)t).getPlaceholder();
 	
@@ -100,7 +99,7 @@ public class Type
 	  throw new RuntimeException("illegal field spec: " + t);
 	}
 
-	//}
+	//}}}
 	break;
 
       default:
@@ -108,8 +107,8 @@ public class Type
     }
   }
 
-  //}
-  //{ private void addField(id, type, location)
+  //}}}
+  //{{{ private void addField(id, type, location)
 
   private void addField(String id, String type, Location location)
   {
@@ -124,9 +123,77 @@ public class Type
     field.addLocation(location);
   }
 
-  //}
+  //}}}
 
-  //{ public String toString()
+  //{{{ public Iterator alternativeIterator()
+
+  public Iterator alternativeIterator()
+  {
+    return alts.iterator();
+  }
+
+  //}}}
+  //{{{ public Iterator fieldIterator()
+
+  public Iterator fieldIterator()
+  {
+    return fields.values().iterator();
+  }
+
+  //}}}
+  //{{{ public Iterator altFieldIterator(final String altId)
+
+  public Iterator altFieldIterator(final String altId)
+  {
+    return new Iterator() {
+      private Iterator iter = fields.values().iterator();
+      private Field next = findNext();
+
+      //{{{ private Field findNext()
+
+      private Field findNext() {
+	while (iter.hasNext()) {
+	  Field next = (Field)iter.next();
+	  if (next.hasAltId(altId)) {
+	    return next;
+	  }
+	}
+	return null;
+      }
+
+      //}}}
+      //{{{ public boolean hasNext()
+
+      public boolean hasNext()
+      {
+	return next != null;
+      }
+
+      //}}}
+      //{{{ public Object next()
+
+      public Object next()
+      {
+	Field result = next;
+	next = findNext();
+	return result;
+      }
+
+      //}}}
+      //{{{ public void remove()
+
+      public void remove()
+      {
+	throw new UnsupportedOperationException();
+      }
+
+      //}}}
+    };
+  }
+
+  //}}}
+
+  //{{{ public String toString()
 
   public String toString()
   {
@@ -134,5 +201,5 @@ public class Type
       ",\n" + fields.toString() + "]";
   }
 
-  //}
+  //}}}
 }

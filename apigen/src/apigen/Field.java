@@ -9,7 +9,7 @@ public class Field
 
   List locations;
 
-  //{ public Field(String id, String type)
+  //{{{ public Field(String id, String type)
 
   public Field(String id, String type)
   {
@@ -19,22 +19,65 @@ public class Field
     locations = new Vector();
   }
 
-  //}
-  //{ public void addLocation(Location loc)
+  //}}}
+
+  //{{{ public String getId()
+
+  public String getId()
+  {
+    return id;
+  }
+
+  //}}}
+  //{{{ public String getType()
+
+  public String getType()
+  {
+    return type;
+  }
+
+  //}}}
+
+  //{{{ public void addLocation(Location loc)
 
   public void addLocation(Location loc)
   {
     locations.add(loc);
   }
 
-  //}
+  //}}}
 
-  //{ public String toString()
+  //{{{ public boolean hasAltId(String altId)
+
+  public boolean hasAltId(String altId)
+  {
+    Iterator locs = locations.iterator();
+    while (locs.hasNext()) {
+      Location loc = (Location)locs.next();
+      if (loc.getAltId().equals(altId)) {
+	return true;
+      }
+    }
+
+    return false;
+  }
+
+  //}}}
+  //{{{ public Iterator locationIterator()
+
+  public Iterator locationIterator()
+  {
+    return locations.iterator();
+  }
+
+  //}}}
+
+  //{{{ public String toString()
 
   public String toString()
   {
     return "field[" + id + ", " + type + "," + locations + "]";
   }
   
-  //}
+  //}}}
 }

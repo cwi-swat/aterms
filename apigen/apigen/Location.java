@@ -8,7 +8,7 @@ public class Location
   String altId;
   List path;
 
-  //{ public Location(String altId)
+  //{{{ public Location(String altId)
 
   public Location(String altId)
   {
@@ -17,16 +17,26 @@ public class Location
     path = new LinkedList();
   }
 
-  //}
-  //{ public void addStep(Step step)
+  //}}}
+
+  //{{{ public String getAltId()
+
+  public String getAltId()
+  {
+    return altId;
+  }
+
+  //}}}
+
+  //{{{ public void addStep(Step step)
 
   public void addStep(Step step)
   {
     path.add(step);
   }
 
-  //}
-  //{ public void makeTail()
+  //}}}
+  //{{{ public void makeTail()
 
   // Turn the last step into a TAIL step
 
@@ -38,9 +48,17 @@ public class Location
     step.makeTail();
   }
 
-  //}
+  //}}}
+  //{{{ public Iterator stepIterator()
 
-  //{ public Object clone()
+  public Iterator stepIterator()
+  {
+    return path.iterator();
+  }
+
+  //}}}
+
+  //{{{ public Object clone()
 
   public Object clone()
   {
@@ -50,15 +68,15 @@ public class Location
     return copy;
   }
 
-  //}
+  //}}}
 
-  //{ public String toString()
+  //{{{ public String toString()
 
   public String toString()
   {
     return "loc[" + altId + ", " + path + "]";
   }
 
-  //}
+  //}}}
 
 }

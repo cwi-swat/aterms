@@ -9,7 +9,7 @@ public class API
 {
   List types;
 
-  //{ public final static void main(String[] args)
+  //{{{ public final static void main(String[] args)
 
   public final static void main(String[] args)
     throws java.io.IOException
@@ -21,9 +21,9 @@ public class API
     API api = new API(adt);
   }
 
-  //}
+  //}}}
 
-  //{ public API(ATerm adt)
+  //{{{ public API(ATerm adt)
 
   public API(ATerm adt)
   {
@@ -54,15 +54,12 @@ public class API
       }
       
       processAlternatives(typeId.toString(), alts);
-      System.out.println("alts: " + alts.toString());
     }
-
-    System.out.println("TYPES: " + types);
   }
 
-  //}
+  //}}}
 
-  //{ private void processAlternatives(String typeId, List alts)
+  //{{{ private void processAlternatives(String typeId, List alts)
 
   private void processAlternatives(String typeId, List alts)
   {
@@ -81,6 +78,14 @@ public class API
     types.add(type);
   }
 
-  //}
+  //}}}
 
+  //{{{ public Iterator typeIterator()
+
+  public Iterator typeIterator()
+  {
+    return types.iterator();
+  }
+
+  //}}}
 }

@@ -1,4 +1,6 @@
 
+SUBDIRS			= c
+
 java_JAVA       = API.java Alternative.java Field.java Location.java \
 		 Step.java Type.java
 

@@ -9,7 +9,7 @@ public class Step
   int type;
   int index;
 
-  //{ public Step(int type, int index)
+  //{{{ public Step(int type, int index)
 
   public Step(int type, int index)
   {
@@ -17,8 +17,8 @@ public class Step
     this.index = index;
   }
 
-  //}
-  //{ public void makeTail()
+  //}}}
+  //{{{ public void makeTail()
 
   public void makeTail()
   {
@@ -29,8 +29,26 @@ public class Step
     type = TAIL;
   }
 
-  //}
-  //{ public String toString()
+  //}}}
+
+  //{{{ public int getType()
+
+  public int getType()
+  {
+    return type;
+  }
+
+  //}}}
+  //{{{ public int getIndex()
+
+  public int getIndex()
+  {
+    return index;
+  }
+
+  //}}}
+
+  //{{{ public String toString()
 
   public String toString()
   {
@@ -45,5 +63,5 @@ public class Step
     }
   }
 
-  //}
+  //}}}
 }
