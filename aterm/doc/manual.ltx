@@ -1438,7 +1438,7 @@ a connection is broken.}
 \Function{ATBwriteTerm}{int}{int fd, ATerm term}
 {Send a term to the \toolbus.}
 \Describe{A term is send using the \toolbus\ connection indicated by
-{\tt fd}. This function is typicall used to generate \toolbus\
+{\tt fd}. This function is typically used to generate \toolbus\
 events, for instance:
 
 {\tt ATBwriteTerm(fd, ATparse("snd-event(some-event)"));}
@@ -1460,7 +1460,7 @@ flow patterns:
 {Check if there is input waiting on any \toolbus\ connection}
 \Describe{If there is input waiting on one of the \toolbus\ 
 connections, the appropriate file-descriptor is returned. Otherwise,
-{\tt -1} is returned. This function provides for some 'fairness' by
+{\tt -1} is returned. This function provides for some `fairness' by
 using a round-robin scheme in traversing the connections between
 calls.}
 
@@ -1983,11 +1983,11 @@ is taken from a list of arguments.}
 \Describe{The arguments should contain at least the
 option {\tt -TB\_TOOL\_NAME <name>} and can optionally contain:
 \begin{itemize}
-\item {\tt -TB\_HOST <host>} indicating the host to connect to.
-\item {\tt -TB\_PORT <port>} indicating the port to connect to.
+\item {\tt -TB\_HOST <host>} indicating the host to connect to;
+\item {\tt -TB\_PORT <port>} indicating the port to connect to;
 \item {\tt -TB\_TOOL\_ID <id>} indicating the tool id when already
-assigned by the \toolbus
-\item {\tt -TB\_VERBOSE} to print debugging information to stderr
+assigned by the \toolbus;
+\item {\tt -TB\_VERBOSE} to print debugging information to {\tt stderr}.
 \end{itemize}
 }
 
@@ -1995,7 +1995,7 @@ The other public methods in this class are:
 
 \Method{connect}{void}{}
 {Connect to a running \toolbus\ instance.}
-\Throws{IOException}{when the connect cannot be established}
+\Throws{IOException}{when the connection cannot be established}
 \Throws{ToolException}{when something goes wrong during the
 handshake with the \toolbus.}
 
@@ -2021,9 +2021,9 @@ to {\tt send(ATerm.parse("snd-event(an-event)"))}.}
 \Throws{ToolException}{when the write to the \toolbus\ fails.}
 \Describe{This method is equivalent to {\tt event}, except that
 events are queued when not yet acknowledged. This means that
-this method can be used to send events regardless whether the
-previouse event of this type has been acknowledged. The event
-will only be send after the acknowledgement of the previous event
+this method can be used to send events regardless of whether the
+previous event of this type has been acknowledged. The event
+will only be sent after the acknowledgement of the previous event
 has been processed.}
 
 \Method{setVerbose}{void}{boolean on}
