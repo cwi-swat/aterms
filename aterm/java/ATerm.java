@@ -9,7 +9,7 @@ import java.util.List;
  * 
  * 
  * @author $Author$
- * @version $Id$
+ * @version $Version$
  */
 public interface ATerm {
 
