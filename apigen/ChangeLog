@@ -1,3 +1,7 @@
+2001/05/07 (jong@cwi.nl)
+ * Renamed AddLabels to new-style naming scheme
+ * added meta.conf to make AddLabels.{sdf,asf} meta-env readable
+
 2001/04/23 (markvdb@cwi.nl)
  * ADT generation based on AsFix2ME.
 
