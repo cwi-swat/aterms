@@ -3,9 +3,13 @@ package apigen.gen.java;
 
 import java.util.List;
 
-public class VisitorGenerator extends JavaGenerator {
+import apigen.adt.ADT;
 
+public class VisitorGenerator extends JavaGenerator {
+    private ADT adt;
+    
 	public VisitorGenerator(
+	    ADT adt,
 		String directory,
 		String filename,
 		String pkg,
@@ -13,7 +17,7 @@ public class VisitorGenerator extends JavaGenerator {
 		boolean verbose,
 		boolean folding) {
 		super(directory, filename, pkg, standardImports, verbose, folding);
-		//TODO
+		this.adt = adt;
 	}
 
     public static String className(String apiName) {
@@ -21,7 +25,7 @@ public class VisitorGenerator extends JavaGenerator {
     }
     
 	protected void generate() {
-//TODO
+//TODO: implement Visitor Generator
 	}
 
 }

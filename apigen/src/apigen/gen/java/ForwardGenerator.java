@@ -30,7 +30,7 @@ public class ForwardGenerator extends JavaGenerator {
 		Iterator types = adt.typeIterator();
 		while(types.hasNext()) {
 			Type type = (Type) types.next();
-			
+			//TODO: implement Forward generator
 		}
 	}
 
