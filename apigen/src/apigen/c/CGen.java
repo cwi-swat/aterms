@@ -42,6 +42,8 @@ public class CGen
   //}}}
 
   public static boolean verbose = false;
+  /* Optimization disabled because of possible presence of annotations! */
+  private static final boolean OPTIMIZE_WITHOUT_ANNOS = false;
 
   private ATermFactory factory;
 
@@ -682,7 +684,9 @@ public class CGen
     int alt_count = type.getAlternativeCount();
     boolean inverted = false;
 
-    if (alt_count == 2 && contains_placeholder) {
+    //{{{ When OPTIMIZE_WITHOUT_ANNOS: check for patterns without holes
+
+    if (OPTIMIZE_WITHOUT_ANNOS && alt_count == 2 && contains_placeholder) {
       Iterator iter = type.alternativeIterator();
       while (iter.hasNext()) {
 	Alternative cur = (Alternative)iter.next();
@@ -694,10 +698,12 @@ public class CGen
       }
     }
 
-    pattern = prefix + "pattern" + type_id + capitalize(buildId(alt.getId()));
+    //}}}
 
-    /* Optimization disabled because of possible presence of annotations! */
-    if (true || contains_placeholder) {
+    //{{{ Create match_code
+
+    pattern = prefix + "pattern" + type_id + capitalize(buildId(alt.getId()));
+    if (!OPTIMIZE_WITHOUT_ANNOS || contains_placeholder) {
       match_code.append("ATmatchTerm((ATerm)arg, " + pattern);
       Iterator fields = type.altFieldIterator(alt.getId());
       while (fields.hasNext()) {
@@ -709,14 +715,17 @@ public class CGen
       match_code.append("ATisEqual((ATerm)arg, " + pattern + ")");
     }
 
+    //}}}
+
     header.println(decl + ";");
 
     printFoldOpen(source, decl);
     source.println(decl);
     source.println("{");
-    if (inverted) {
+    if (OPTIMIZE_WITHOUT_ANNOS && inverted) {
       source.println("  return !(" + match_code + ");");
-    } else if (alt_count != 1 && !contains_placeholder) {
+    } else if (OPTIMIZE_WITHOUT_ANNOS && alt_count != 1
+	       && !contains_placeholder) {
       source.println("  return " + match_code + ";");
     } else {
       AlternativeList alts_left = type.getAlternatives();
@@ -726,12 +735,18 @@ public class CGen
       int pat_type = alt.getPatternType();
       alts_left.keepByType(pat_type);
       if (alts_left.size() != alt_count) {
+	//{{{ Check term types
+
 	source.println("  if (ATgetType((ATerm)arg) != "
 		       + getATermTypeName(pat_type) + ") {");
 	source.println("    return ATfalse;");
 	source.println("  }");
+
+	//}}}
       }
       if (pat_type == ATerm.APPL) {
+	//{{{ Check function symbols
+
 	AFun afun = ((ATermAppl)alt.buildMatchPattern()).getAFun();
 	alt_count = alts_left.size();
 	alts_left.keepByAFun(afun);
@@ -741,6 +756,25 @@ public class CGen
 	  source.println("    return ATfalse;");
 	  source.println("  }");
 	}
+
+	//}}}
+      } else if (pat_type == ATerm.LIST) {
+	//{{{ Check list length
+
+	ATermList matchPattern = (ATermList)alt.buildMatchPattern();
+	if (matchPattern.isEmpty()) {
+	  alts_left.clear();
+	  source.println("  if (!ATisEmpty((ATermList)arg)) {");
+	  source.println("    return ATfalse;");
+	  source.println("  }");
+	} else if (!matchPattern.equals(factory.parse("[<list>]"))) {
+	  alts_left.removeEmptyList();
+	  source.println("  if (ATisEmpty((ATermList)arg)) {");
+	  source.println("    return ATfalse;");
+	  source.println("  }");
+	}
+
+	//}}}
       }
 
       if (alts_left.size() == 0) {
@@ -752,13 +786,16 @@ public class CGen
       } else {
 	source.println("  {");
 	source.println("    static ATerm last_arg = NULL;");
+	source.println("    static int last_gc = -1;");
 	source.println("    static ATbool last_result;");
 	source.println();
 	source.println("    assert(arg != NULL);");
 	source.println();
-	source.println("    if ((ATerm)arg != last_arg) {");
+	source.println("    if (last_gc != ATgetGCCount() || "
+		       + "(ATerm)arg != last_arg) {");
 	source.println("      last_arg = (ATerm)arg;");
 	source.println("      last_result = " + match_code + ";");
+	source.println("      last_gc = ATgetGCCount();");
 	source.println("    }");
 	source.println();
 	source.println("    return last_result;");

@@ -41,6 +41,21 @@ public class AlternativeList
   }
 
   //}}}
+  //{{{ public void removeEmptyList()
+
+  public void removeEmptyList()
+  {
+    Iterator iter = iterator();
+    while (iter.hasNext()) {
+      Alternative alt = (Alternative)iter.next();
+      ATerm pattern = alt.getPattern();
+      if (pattern.getType() == ATerm.LIST && ((ATermList)pattern).isEmpty()) {
+	iter.remove();
+      }
+    }
+  }
+
+  //}}}
 
   //{{{ public Object clone()
 
