@@ -121,6 +121,12 @@ public class AlternativeImplGenerator extends JavaGenerator {
 		  println("    int a = " + goldenratio + ";");
 		  println("    int b = " + goldenratio + ";");
       
+          /* This piece of code generates a number of shifts following the 
+           * algorithm of the Doobs hash functions (Google: Doobs), you can find 
+           * a general implementation in shared.HashFunctions of the shared-objects
+           * library. This code specializes the algorithm for a fixed number of
+           * arguments.
+           */
 		  for (int i = arity - 1; i >= 0; i--) {
 			int shift = (i%4) * 8;
 			println("    " + "aaaabbbbcccc".toCharArray()[i%12] + 

@@ -57,8 +57,7 @@ public class VisitorGenerator extends JavaGenerator {
 
 	private void genVoidVisit() {
 		println("public void voidVisit(jjtraveler.Visitor any) {");
-		println(
-            "if (any instanceof Visitable) {" +            "      ((Visitable) any).accept(this);" +            "    } else {" +            "      throw new jjtraveler.VisitFailure();" +            "    }" +            "  }");
+		println("if (any instanceof Visitable) {");        println("      ((Visitable) any).accept(this);");        println("    } else {");        println("      throw new jjtraveler.VisitFailure();");        println("    }");        println("  }");
 		println("}");
 	}
 

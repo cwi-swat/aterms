@@ -13,11 +13,15 @@ public class MakeRulesGenerator extends  Generator {
 	private static final int MAX_FILES_IN_MAKEFILE_VARIABLE = 50;
     private ADT adt;
     private String name;
+
+    private int bucket;
     
-    public MakeRulesGenerator(ADT adt, String directory, String api_name, boolean verbose) {
+	private String prefix;
+	public MakeRulesGenerator(ADT adt, String directory, String api_name, boolean verbose) {
     	super(directory, StringConversions.makeCapitalizedIdentifier(api_name) + "MakeRules","",verbose,false); 
 		this.name = StringConversions.makeCapitalizedIdentifier(api_name);
 		this.adt = adt;
+		prefix = name + "API";
     }
     
     private static String getClassFileName(String className) {
@@ -25,34 +29,24 @@ public class MakeRulesGenerator extends  Generator {
     }
     
 	protected void generate() {
-		String prefix = name + "API";
-   
 		Iterator types = adt.typeIterator();
-		int bucket = 0;
+		bucket = 0;
 		int i = 0;
+		
 		while(types.hasNext()) {
 		  Type type = (Type) types.next();
       
-		  if (i % MAX_FILES_IN_MAKEFILE_VARIABLE == 0) {
-			println(); println();
-			print(prefix + bucket++ + "=");
-		  }
+		  makeNewBucket(i);
       
-		  print("\\\n" + getClassFileName(TypeGenerator.className(type.getId())));
-		  print(" " + getClassFileName(TypeImplGenerator.className(type)));
+		  printTypeClassFiles(type);
 		  i++;
             
 		  Iterator alts = type.alternativeIterator();
 		  while(alts.hasNext()) {
 			Alternative alt = (Alternative) alts.next();
 
-			if (i % MAX_FILES_IN_MAKEFILE_VARIABLE == 0) {
-			  println(); println();
-			  print(prefix + bucket++ + "=");
-			}
-               
-			print("\\\n" + getClassFileName(AlternativeImplGenerator.className(type.getId(),alt.getId())));
-			print(" " + getClassFileName(AlternativeGenerator.className(type,alt))); 
+            makeNewBucket(i);         
+			printAlternativeClassFiles(type, alt);
 			i++;
 		  }
 		}
@@ -60,6 +54,10 @@ public class MakeRulesGenerator extends  Generator {
 		println();
 		println();
     
+		printAccumulatedVariable();
+	  }
+
+	protected void printAccumulatedVariable() {
 		print(prefix + "=\\\n" + 
 		getClassFileName(FactoryGenerator.className(name)) + " " + 
 		getClassFileName(GenericConstructorGenerator.getConstructorClassName(name)) + "\\\n");
@@ -67,5 +65,25 @@ public class MakeRulesGenerator extends  Generator {
 		while(--bucket >= 0) {
 		  print("${" + prefix + bucket + "} ");
 		}
-	  }
+	}
+
+	protected void printAlternativeClassFiles(Type type, Alternative alt) {
+		print("\\\n" + getClassFileName(AlternativeImplGenerator.className(type.getId(),alt.getId())));
+		print(" " + getClassFileName(AlternativeGenerator.className(type,alt))); 
+	}
+
+	protected void printTypeClassFiles(Type type) {
+			print("\\\n" + getClassFileName(TypeGenerator.className(type.getId())));
+			  print(" " + getClassFileName(TypeImplGenerator.className(type)));
+	}
+		
+	protected void makeNewBucket(int i) {
+		if (i % MAX_FILES_IN_MAKEFILE_VARIABLE == 0) {
+			println(); println();
+			print(prefix + bucket + "=");
+			bucket++;
+		  }
+	}
+
+	
 }
