@@ -109,6 +109,14 @@
 }{% end-comment
 }%
  \CFGFUN{% context-free function
+%           AReal                      -> AFun
+\SORT{AReal}}{% result sort
+\SORT{AFun}% index information
+\CFGFUNINDEX{\SORT{AReal}}{\SORT{AFun}}{}
+}{% attributes
+}{% end-comment
+}%
+ \CFGFUN{% context-free function
 %
 %
 %           Literal                   -> AFun
@@ -225,38 +233,6 @@
 }%
 \CFGEND{}
 %
- \VARIABLESBEGIN{}%
-\VARDECL{%
-\DQLEX{\LEX{Ts}%
-}%
- \LEX{\SLEX{[}0-9\SLEX{\,']}}%
-\LEX{\SLEX{*}}%
-}{\SORT{ATerms}}
- \VARDECL{%
-\DQLEX{\LEX{Tl}%
-}%
- \LEX{\SLEX{[}0-9\SLEX{\,']}}%
-\LEX{\SLEX{*}}%
-}{\SORT{ATermList}}
- \VARDECL{%
-\DQLEX{\LEX{AFun}%
-}%
- \LEX{\SLEX{[}0-9\SLEX{\,']}}%
-\LEX{\SLEX{*}}%
-}{\SORT{AFun}}
- \VARDECL{%
-\DQLEX{\LEX{T}%
-}%
- \LEX{\SLEX{[}0-9\SLEX{\,']}}%
-\LEX{\SLEX{*}}%
-}{\SORT{ATerm}}
- \VARDECL{%
-\DQLEX{\LEX{Ann}%
-}%
- \LEX{\SLEX{[}0-9\SLEX{\,']}}%
-\LEX{\SLEX{*}}%
-}{\SORT{Ann}}
-\VARIABLESEND{}
 %
 \EXPORTSEND{}
 %
