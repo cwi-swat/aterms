@@ -1,3 +1,8 @@
+$Id$
+
+Tue Feb 25 16:16:51 CET 2003 <jong@cwi.nl>
+ * Removed unused fields,variables and methods as reported by Eclipse
+
 2003-01-22    <jurgenv@cwi.nl>
   * Release 1.1 under LGPL
 
