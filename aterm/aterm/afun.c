@@ -282,6 +282,29 @@ void AT_freeSymbol(SymEntry sym)
 }
 
 /*}}}  */
+/*{{{  ATbool AT_findSymbol(char *name, int arity, ATbool quoted) */
+
+/**
+	* Check for the existence of a symbol
+	*/
+
+ATbool AT_findSymbol(char *name, int arity, ATbool quoted)
+{
+  header_type   header = SYMBOL_HEADER(arity, quoted);
+  unsigned int  hash_val = AT_hashSymbol(name, arity) % table_size;
+  SymEntry      cur;
+  
+  assert(arity < MAX_ARITY);
+
+  /* Find symbol in table */
+  cur = hash_table[hash_val];
+  while (cur && (cur->header != header || !streq(cur->name, name)))
+    cur = cur->next;
+  
+  return (cur == NULL) ? ATfalse : ATtrue;
+}
+
+/*}}}  */
 
 #if 0
 Replaced by ATgetArity macro
