@@ -3,7 +3,9 @@
 %{{{ LaTeX configuration
 
 \usepackage{epsfig}
+\usepackage{latexsym}
 \usepackage{ASF+SDF}
+\usepackage{ASF+SDF-options}
 
 \newcommand{\ATerm}{ATerm}
 \newcommand{\ATerms}{ATerms}
@@ -125,7 +127,7 @@ binary format for the exchange of \ATerms\ in a format that is only
 suitable for processing by a machine.
 
 \vspace{0.4cm}
-\input{ATerms.mtx}
+\input{spec/ATerm.mtx}
 \vspace{0.4cm}
 Note that there is no concrete syntax defined for blobs, because 
 a humanly readable representation of blobs depends on the type

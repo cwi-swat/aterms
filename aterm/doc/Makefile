@@ -12,7 +12,7 @@ all: at.ps manual.ps
 at.ps: at.dvi $(PICS)
 	dvips at.dvi
 
-at.dvi: at.ltx ATerms.mtx $(CHAPS) $(PICS)
+at.dvi: at.ltx spec/ATerm.mtx $(CHAPS) $(PICS)
 
 manual.ps: manual.dvi
 	dvips manual.dvi
