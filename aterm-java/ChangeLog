@@ -1,3 +1,7 @@
+2004-04-08  pem  <pem@polly.loria.fr>
+
+ * aterm/pure/PureFactory.java: make the parseId function compatible with the C version of the ATerm library
+
 $Id$
 
 Tue Feb 10 15:27:49 CET 2004 <m336@cwi.nl>

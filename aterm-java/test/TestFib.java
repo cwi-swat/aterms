@@ -55,6 +55,8 @@ public class TestFib {
 			N = factory.makeAppl(suc, N);
 		}
 		normalizeFib(factory.makeAppl(fib, N));
+		
+		System.out.println(factory);
 	}
 
 	public ATermAppl normalizePlus(ATermAppl t) {

@@ -360,7 +360,7 @@ public class PureFactory extends SharedObjectFactory implements ATermFactory {
 			buf.append((char) c);
 			c = reader.read();
 		}
-		while (Character.isLetterOrDigit((char) c) || c == '_' || c == '-');
+		while (Character.isLetterOrDigit((char) c) || c == '_' || c == '-' || c == '+' || c == '*' || c == '$');
 
 		return buf.toString();
 	}
