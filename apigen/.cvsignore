@@ -10,3 +10,8 @@ INSTALL
 install-sh
 missing
 mkinstalldirs
+autom4te-2.53.cache
+apigen-*.pkg
+config.h
+stamp-h
+stamp-h.in

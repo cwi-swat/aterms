@@ -25,3 +25,10 @@ rolodex.[ch]
 rolodex.dict
 rolodex_dict.[ch]
 rolotest
+list.c
+list_dict.c
+list_dict.h
+rolodex_dict.c
+rolodex_dict.h
+rolodex.c
+rolodex.h
