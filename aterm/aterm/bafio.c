@@ -1369,9 +1369,9 @@ ATbool ATwriteToBinaryFile(ATerm t, FILE *file)
 
   if (!initialized) {
     writer.type = FILE_WRITER;
-    writer.u.file_data = file;
     initialized = ATtrue;
   }
+  writer.u.file_data = file;
 
 #ifdef WIN32
   if( _setmode( _fileno( file ), _O_BINARY ) == -1 ) {
