@@ -157,9 +157,56 @@ public class FactoryGenerator extends JavaGenerator {
                         empty);
                     genFactoryMakeManySeparatedList(lType, className, elementClassName);
                     genFactoryMakeManySeparatedTermList(lType, className);
+                    genFactoryReverseSeparated(lType, className, elementClassName);
                 }
             }
         }
+    }
+
+    private void genFactoryReverseSeparated(
+        SeparatedListType type,
+        String className,
+        String elementClassName) {
+        String classNameImpl = TypeImplGenerator.className(type);
+        String makeClassName = "make" + className;
+
+        println("  public " + className + " reverse(" + className + " arg) {");
+        println("    if (arg.isEmpty() || arg.isSingle()) {");
+        println("         return arg;");
+        println("    }");
+        println();
+        println("    int length = arg.getLength();");
+        println("    " + className + "[] nodes = new " + className + "[length];");
+        println();
+        println("    for (int i = 0; i < length; i++) {");
+        println("      nodes[i] = arg;");
+        println("      arg = arg.getTail();");
+        println("    }");
+        println();
+        println("    " + className + " result = " + makeClassName + "(nodes[0].getHead());");
+        println();
+        println("    for (int i = 1; i < length; i++) {");
+        println("      Module _head = nodes[i].getHead();");
+
+        Iterator separators = type.separatorFieldIterator();
+        while (separators.hasNext()) {
+            Field separator = (Field) separators.next();
+            String fieldId = separator.getId();
+            String fieldName = AlternativeImplGenerator.getFieldId(fieldId);
+            String fieldType = TypeGenerator.className(separator.getType());
+            String capitalizedFieldId =
+              StringConversions.makeCapitalizedIdentifier(fieldId);
+            String fieldGetter = "get" + capitalizedFieldId + "()";
+            println("    " + fieldType + " " + fieldName + " = nodes[i-1]." + fieldGetter + ";");
+        }
+
+        String seps = buildOptionalSeparatorArguments(type);
+        println(
+            "        result = make" + className + "(_head, " + seps + "result);");
+        println("    }");
+        println();
+        println("    return result;");
+        println("  }");
     }
 
     private void genFactoryMakeManyTermList(String className) {
@@ -851,17 +898,23 @@ public class FactoryGenerator extends JavaGenerator {
 
         genFromTermSeparatorFieldAssigments(type);
 
-        Iterator separatorFields = type.separatorFieldIterator();
-        String separatorArgs = buildActualTypedAltArgumentList(separatorFields);
-        if (separatorArgs.length() > 0) {
-            separatorArgs += ", ";
-        }
+        String separatorArgs = buildOptionalSeparatorArguments(type);
+
         println(
             "       result = " + makeClassName + "(head, " + separatorArgs + "result);");
         println("   }");
         println();
         println("   return result;");
         println(" }");
+    }
+
+    private String buildOptionalSeparatorArguments(SeparatedListType type) {
+        Iterator separatorFields = type.separatorFieldIterator();
+        String separatorArgs = buildActualTypedAltArgumentList(separatorFields);
+        if (separatorArgs.length() > 0) {
+            separatorArgs += ", ";
+        }
+        return separatorArgs;
     }
 
     private void genSeparatedListToTerm(SeparatedListType type) {

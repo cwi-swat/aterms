@@ -93,10 +93,17 @@ public class ListTest {
     termExample = factory.parse(example);
     Module amodule = (Module) factory.makeModule_Default(example);
 
-    ATerm pattern = factory.parse("[\"m1\",l(\"l1\"),\"sep\",l(\"l2\"),\"m2\",l(\"l3\"),\"sep\",l(\"l4\"),\"m3\",l(\"l4\"),\"sep\",l(\"l5\"),\"m4\"]");
+    ATerm pattern = factory.parse("[\"m1\",l(\"l1\"),\"sep\",l(\"l2\"),\"m2\",l(\"l3\"),\"sep\",l(\"l4\"),\"m3\",l(\"l5\"),\"sep\",l(\"l6\"),\"m4\"]");
+
     Separated sep = factory.SeparatedFromTerm(pattern);
     testAssert(sep.toTerm().isEqual(pattern), " fromTerm == toTerm separated lists");
-    
+
+
+    ATerm patternReversed = factory.parse("[\"m4\",l(\"l5\"),\"sep\",l(\"l6\"),\"m3\",l(\"l3\"),\"sep\",l(\"l4\"),\"m2\",l(\"l1\"),\"sep\",l(\"l2\"),\"m1\"]");
+    Separated sepReversed = factory.SeparatedFromTerm(patternReversed);
+    testAssert(sep.reverse().isEqual(sepReversed)," separated reverse test");
+    testAssert(sep.reverseSeparated().toTerm().isEqual(patternReversed),"separated reverse toTerm test");
+        
     Module head = sep.getHead();;
     testAssert(head.isEqual(factory.makeModule_Default("m1")), "separator from term test, head");
     Layout l1 = sep.getWsl();
@@ -130,6 +137,8 @@ public class ListTest {
     
     NineSeps ns = factory.makeNineSeps(m,factory.makeNineSeps(m2));
     testAssert(ns.toTerm().isEqual(factory.parse("[\"m\",1,2,3,4,5,6,7,8,9,\"m2\"]")), "many separated toTerm");
+    testAssert(ns.reverse().isEqual(factory.makeNineSeps(m2, factory.makeNineSeps(m))), "many separated reverse");
+    testAssert(ns.reverse().reverse().isEqual(ns), "reverse separated list test");
   }
 
   public final static void main(String[] args) {

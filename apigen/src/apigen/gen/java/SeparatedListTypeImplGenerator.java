@@ -60,10 +60,22 @@ public class SeparatedListTypeImplGenerator extends ListTypeImplGenerator {
         genSharedObjectInterface();
         genGetEmptyMethod();
         genOverrideInsertMethod();
+        genReverseMethod();
         println("}");
     }
 
     
+    private void genReverseMethod() {
+        String className = TypeGenerator.className(type);
+        println("  public aterm.ATermList reverse() {");
+        println("    return reverse" + className + "();");
+        println("  }");
+        println("  public " + className + " reverse" + className + "() {");
+        println("    return " + factoryGetter() + ".reverse((" + className + ")this);");
+        println("  }");
+        
+    }
+
     protected void genToTerm() {
         String factoryName = FactoryGenerator.className(apiName);
 
