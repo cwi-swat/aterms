@@ -579,7 +579,6 @@ ATerm AT_allocate(int size)
     /*printf("alloc_since_gc[%d] = %d, total=%d\n", size,
       alloc_since_gc[size], total);*/
     if(100*(alloc_since_gc[size]/GC_THRESHOLD) <= total) {
-      /*if(1) {*/
       allocate_block(size);
 #ifndef NO_SHARING
       /* Hashtable might need resizing. */
@@ -598,13 +597,13 @@ ATerm AT_allocate(int size)
       }
       alloc_since_gc[size] = 0;
     }
-    }
-
-    at = at_freelist[size];
-    ++alloc_since_gc[size];
-    at_freelist[size] = at_freelist[size]->next;
-    return at;
   }
+
+  at = at_freelist[size];
+  ++alloc_since_gc[size];
+  at_freelist[size] = at_freelist[size]->next;
+  return at;
+}
 
 /*}}}  */
 
