@@ -1316,6 +1316,11 @@ module-db     &		1809  &	      1244  &	31	\\
 {\bf Total }  &  \textbf{25172} &	\textbf{13358}	    & \textbf{47} \\
 \hline
 
+Understandably the biggest gain was achieved in {\tt libasfix}, because
+most of this library is now generated from the SDF definition of SDF itself.
+Only some high level functionality that could not be generated remains in
+this library.
+
 %% in-output     &		 713  &	       812  &  -14	\\
 %% pgen	      &		5226  &	      5226  &	 0	\\
 %% sglr	      &	       10225  &	     10427  &	-2	\\
@@ -1350,23 +1355,50 @@ module-db     &		1809  &	      1244  &	31	\\
 
 
 % }}}
+
 % {{{  COM/Corba IDL compiler
 
 \subsection{(D)COM/Corba IDL compiler}
-\begin{itemize}
-\item Only generate interfaces not implementations
-\item Targeted at distributed environments
-\item Well-defined mappings to specific target languages (whitepapers)
-\item Interface centric instead of datatype centric
-\item No sharing
-\item No garbage collection (in languages without GC)
-\item (D)COM very windows specific
-\end{itemize}
+The two major commercial component architectures, Microsoft's (D)COM and
+OMG's CORBA, both provide IDL compilers that take an interface definition
+written in their respective \emph{interface definition languages} (IDLs), and
+generate communication scaffolding code. The generated code includes
+\emph{stubs} and {skeletons} to make it easy to write clients and
+servers respectively.
+The biggest difference
+with our work is that the target of these systems is to make it
+easy for programmers to build components in a distributed setting
+while we focus on providing an abstraction layer on top of a
+generic exchange format. This means that the IDL compilers generate
+code for marshalling arguments when calling remote procedures and for
+unmarshalling their return values,
+while in our approach we keep the data in the original 'marshalled'
+form until it is actually used. In this sense, you could characterize our
+approach as lazy and the DCOM/CORBA approach as eager.
+
+
+%%\begin{itemize}
+%%\item Only generate interfaces not implementations
+%%\item Targeted at distributed environments
+%%\item Well-defined mappings to specific target languages (whitepapers)
+%%\item Interface centric instead of datatype centric
+%%\item No sharing
+%%\item No garbage collection (in languages without GC)
+%%\item (D)COM very windows specific
+%%\end{itemize}
 
 % }}}
 % {{{  XML access
 
 \subsection{XML access}
+A comparable approach to provide an abstraction layer on top of a generic
+data exchange formalism is used in {\tt jaxb}\cite{jaxb}. This is a tool
+that generates a class hierarchy from an XML DTD. Besides accessor functions
+and constructors, (de)serialization functions to and from XML are generated.
+The actual code generation can be steered using a specification in XML. This
+makes it for instance possible to add interfaces and extra code to the
+generated classes.
+
 Comparable approach: generate classes from schema/DTD representing XML entities.
 Typical example: jaxb (http://java.sun.com/xml/jaxb)
 \begin{itemize}
