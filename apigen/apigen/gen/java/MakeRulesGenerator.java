@@ -91,12 +91,10 @@ public class MakeRulesGenerator extends Generator {
             "\\\n"
                 + getClassFileName(
                     AlternativeGenerator.className(type.getId(), alt.getId())));
-        print(" " + getClassFileName(AlternativeGenerator.className(type, alt)));
     }
 
     protected void printTypeClassFiles(Type type) {
         print("\\\n" + getClassFileName(TypeGenerator.className(type.getId())));
-        print(" " + getClassFileName(TypeGenerator.className(type)));
     }
 
     protected void makeNewBucket(int i) {

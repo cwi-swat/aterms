@@ -1,5 +1,8 @@
 # $Id$
 
+2003/11/09 <jurgenv@cwi.nl>
+ * Changed Makefile generation to not generate every filename twice.
+
 Fri Nov  7 08:31:47 CET 2003 <jong@cwi.nl>
  * fix distcheck issue
 
