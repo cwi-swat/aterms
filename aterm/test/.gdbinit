@@ -60,7 +60,7 @@ end
 
 define termsymbol
   set $type = ($arg0->header & ((1<<5) | (1<<6) | (1<<7))) >> 5
-  print *lookup_table[$arg0->header >> 8]
+  print *at_lookup_table[$arg0->header >> 8]
   if $type != 1
     printf " (warning: not a AT_APPL)"
   end
