@@ -20,6 +20,8 @@
 $Id$
 
 version 1.4.7b
+  retry for daily builds: Mon Feb  5 10:28:23 CET 2001
+  * deprecated Java support removed from distribution
   released: Tue Jan 23 12:57:14 CET 2001
   * Java implementation ready for testing third party testing.
     not yet implemented, c.q. tested: blobs, BAF, annotations
