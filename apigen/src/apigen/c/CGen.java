@@ -14,6 +14,12 @@ import apigen.*;
 
 public class CGen
 {
+  private final static String[] SPECIAL_CHAR_WORDS =
+  { "[BracketOpen", "]BracketClose",
+    "{BraceOpen",   "}BraceClose",
+    "(ParenOpen",   ")ParenClose",
+    "|Bar",         "&Amp"
+  };
   public static boolean verbose = false;
 
   private ATermFactory factory;
@@ -27,6 +33,10 @@ public class CGen
 
   private PrintStream source;
   private PrintStream header;
+
+  private Map specialChars;
+  private char last_special_char;
+  private String last_special_char_word;
 
   //{{{ private static void usage()
 
@@ -45,7 +55,7 @@ public class CGen
   }
 
   //}}}
-  
+
   //{{{ public final static void main(String[] args)
 
   public final static void main(String[] args)
@@ -106,13 +116,19 @@ public class CGen
     this.capOutput = capitalize(output);
     this.prefix    = prefix;
     this.prologue  = prologue;
+    specialChars   = new HashMap();
+
+    for (int i=0; i<SPECIAL_CHAR_WORDS.length; i++) {
+      String word = SPECIAL_CHAR_WORDS[i];
+      specialChars.put(new Character(word.charAt(0)), word.substring(1));
+    }
 
     factory = new PureFactory();
 
     ATerm adt = factory.readFromFile(input);
 
     API api = new API(adt);
-    
+
     String header_name = output + ".h";
     header = new PrintStream(new FileOutputStream(header_name));
 
@@ -223,23 +239,26 @@ public class CGen
     Iterator types = api.typeIterator();
     while (types.hasNext()) {
       Type type = (Type)types.next();
-      String id = buildTypeName(type);
+      String type_id = buildId(type.getId());
+      String type_name = buildTypeName(type);
 
-      //{{{ makeXXXFromTerm(ATerm t)
+      //{{{ PPPmakeXXXFromTerm(ATerm t)
 
-      String decl = id + " make" + id + "FromTerm(ATerm t)";
+      String decl =
+	type_name + " " + prefix + "make" + type_id + "FromTerm(ATerm t)";
       header.println(decl + ";");
       printFoldOpen(source, decl);
       source.println(decl);
       source.println("{");
-      source.println("  return (" + id + ")t;");
+      source.println("  return (" + type_name + ")t;");
       source.println("}");
       printFoldClose(source);
 
       //}}}
-      //{{{ makeTermFromXxx(Xxx arg)
+      //{{{ PPPmakeTermFromXxx(Xxx arg)
 
-      decl = "ATerm makeTermFrom" + id + "(" + id + " arg)";
+      decl = "ATerm " + prefix + "makeTermFrom" + type_id
+	+ "(" + type_name + " arg)";
       header.println(decl + ";");
       printFoldOpen(source, decl);
       source.println(decl);
@@ -262,7 +281,8 @@ public class CGen
     Iterator types = api.typeIterator();
     while (types.hasNext()) {
       Type type = (Type)types.next();
-      String id = buildTypeName(type);
+      String type_id = buildId(type.getId());
+      String type_name = buildTypeName(type);
 
       Iterator alts = type.alternativeIterator();
       while (alts.hasNext()) {
@@ -280,7 +300,8 @@ public class CGen
 	//{{{ Build declaration
 
 	StringBuffer decl = new StringBuffer();
-	decl.append(id + " make" + id + capitalize(alt.getId()) + "(");
+	decl.append(type_name + " " + prefix + "make" + type_id
+		    + capitalize(buildId(alt.getId())) + "(");
 	fields = alt_fields.iterator();
 	boolean first = true;
 	while (fields.hasNext()) {
@@ -290,7 +311,7 @@ public class CGen
 	  } else {
 	    decl.append(", ");
 	  }
-	  decl.append(prefix + field.getType() + " " + field.getId());
+	  decl.append(buildTypeName(field.getType()) + " " + buildId(field.getId()));
 	}
 	decl.append(")");
 
@@ -306,12 +327,13 @@ public class CGen
 	printFoldOpen(source, decl.toString());
 	source.println(decl);
 	source.println("{");
-	source.print("  return (" + id + ")ATmakeTerm(pattern" + id + 
-		       capitalize(alt.getId()));
+	source.print("  return (" + type_name + ")ATmakeTerm("
+		     + prefix + "pattern" + type_id
+		     + capitalize(buildId(alt.getId())));
 	fields = alt_fields.iterator();
 	while (fields.hasNext()) {
 	  Field field = (Field)fields.next();
-	  source.print(", " + field.getId());
+	  source.print(", " + buildId(field.getId()));
 	}
 	source.println(");");
 	source.println("}");
@@ -332,8 +354,9 @@ public class CGen
     Iterator types = api.typeIterator();
     while (types.hasNext()) {
       Type type = (Type)types.next();
-      printFoldOpen(header, type.getId() + " accessor prototypes");
-      printFoldOpen(source, type.getId() + " accessor implementations");
+      String type_name = buildTypeName(type);
+      printFoldOpen(header, type_name + " accessor prototypes");
+      printFoldOpen(source, type_name + " accessor implementations");
 
       genTypeIsValid(type);
 
@@ -361,8 +384,10 @@ public class CGen
 
   private void genTypeIsValid(Type type)
   {
-    String id = prefix + type.getId();
-    String decl = "ATbool isValid" + id + "(" + id + " arg)";
+    String type_id = buildId(type.getId());
+    String type_name = buildTypeName(type);
+    String decl = "ATbool " + prefix + "isValid" + type_id
+      + "(" + type_name + " arg)";
 
     printFoldOpen(source, decl);
 
@@ -379,7 +404,8 @@ public class CGen
       } else {
 	source.print("else ");
       }
-      source.println("if (is" + id + capitalize(alt.getId()) + "(arg)) {");
+      source.println("if (" + prefix + "is" + type_id 
+		     + capitalize(buildId(alt.getId())) + "(arg)) {");
       source.println("    return ATtrue;");
       source.println("  }");
     }
@@ -394,15 +420,18 @@ public class CGen
 
   private void genIsAlt(Type type, Alternative alt)
   {
-    String id = prefix + type.getId();
-    String decl = "ATbool is" + id + capitalize(alt.getId()) + "(" + id + " arg)";
+    String type_id = buildId(type.getId());
+    String type_name = buildTypeName(type);
+    String decl = "ATbool " + prefix + "is" + type_id
+      + capitalize(buildId(alt.getId())) + "(" + type_name + " arg)";
 
     header.println(decl + ";");
 
     printFoldOpen(source, decl);
     source.println(decl);
     source.println("{");
-    source.print("  return ATmatchTerm(arg, pattern" + id + capitalize(alt.getId()));
+    source.print("  return ATmatchTerm(arg, " + prefix + "pattern" + type_id
+		 + capitalize(buildId(alt.getId())));
     Iterator fields = type.altFieldIterator(alt.getId());
     while (fields.hasNext()) {
       fields.next();
@@ -419,8 +448,10 @@ public class CGen
 
   private void genHasField(Type type, Field field)
   {
-    String id = prefix + type.getId();
-    String decl = "ATbool has" + id + capitalize(field.getId()) + "(" + id + " arg)";
+    String type_id = buildId(type.getId());
+    String type_name = buildTypeName(type);
+    String decl = "ATbool " + prefix + "has" + type_id
+      + capitalize(buildId(field.getId())) + "(" + type_name + " arg)";
 
     header.println(decl + ";");
 
@@ -438,7 +469,8 @@ public class CGen
       else {
 	source.print("else ");
       }
-      source.println("if (is" + id + capitalize(loc.getAltId()) + "(arg)) {");
+      source.println("if (" + prefix + "is" + type_id
+		     + capitalize(buildId(loc.getAltId())) + "(arg)) {");
       source.println("    return ATtrue;");
       source.println("  }");
     }
@@ -453,10 +485,12 @@ public class CGen
 
   private void genGetField(Type type, Field field)
   {
-    String id = prefix + type.getId();
-    String fieldType = prefix + field.getType();
-    String decl = fieldType + " get" + id + capitalize(field.getId())
-      + "(" + id + " arg)";
+    String type_id = buildId(type.getId());
+    String type_name = buildTypeName(type);
+    String field_type_name = buildTypeName(field.getType());
+    String fieldId = capitalize(buildId(field.getId()));
+    String decl = field_type_name + " " + prefix + "get" + type_id
+      + fieldId + "(" + type_name + " arg)";
 
     header.println(decl + ";");
 
@@ -474,15 +508,16 @@ public class CGen
       else {
 	source.print("else ");
       }
-      source.println("if (is" + id + capitalize(loc.getAltId()) + "(arg)) {");
-      source.print("    return (" + fieldType + ")");
+      source.println("if (" + prefix + "is" + type_id
+		     + capitalize(buildId(loc.getAltId())) + "(arg)) {");
+      source.print("    return (" + field_type_name + ")");
       Iterator steps = loc.stepIterator();
       genGetterSteps(steps, "arg");
       source.println(";");
       source.println("  }");
     }
     source.println();
-    source.println("  ATabort(\"" + id + " has no " + capitalize(field.getId())
+    source.println("  ATabort(\"" + type_id + " has no " + fieldId
 		   + ": %t\\n\", arg);");
     source.println("  return NULL;");
 
@@ -499,17 +534,18 @@ public class CGen
       Step step = (Step)steps.next();
       switch (step.getType()) {
 	case Step.ARG:
-	  source.print("ATgetArgument((ATermAppl)");
+	  genGetterSteps(steps, "ATgetArgument((ATermAppl)" + arg
+			 + ", " + step.getIndex() + ")");
 	  break;
 	case Step.ELEM:
-	  source.print("ATelementAt((ATermList)");
+	  genGetterSteps(steps, "ATelementAt((ATermList)" + arg
+			 + ", " + step.getIndex() + ")");
 	  break;
 	case Step.TAIL:
-	  source.print("ATgetTail((ATermList)");
+	  genGetterSteps(steps, "ATgetTail((ATermList)" + arg
+			 + ", " + step.getIndex() + ")");
 	  break;
       }
-      genGetterSteps(steps, arg);
-      source.print(", " + step.getIndex() + ")");
     }
     else {
       source.print(arg);
@@ -532,10 +568,13 @@ public class CGen
 
   private void genSetField(Type type, Field field)
   {
-    String id = prefix + type.getId();
-    String fieldType = prefix + field.getType();
-    String decl = id + " set" + id + capitalize(field.getId())
-      + "(" + id + " arg, " + fieldType + " " + field.getId() + ")";
+    String type_id    = buildId(type.getId());
+    String type_name  = buildTypeName(type);
+    String field_id   = buildId(field.getId());
+    String field_type_name = buildTypeName(field.getType());
+    String decl = type_name + " "
+      + prefix + "set" + type_id + capitalize(field_id)
+      + "(" + type_name + " arg, " + field_type_name + " " + field_id + ")";
 
     header.println(decl + ";");
 
@@ -553,16 +592,17 @@ public class CGen
       else {
 	source.print("else ");
       }
-      source.println("if (is" + id + capitalize(loc.getAltId()) + "(arg)) {");
-      source.print("    return (" + id + ")");
+      source.println("if (" + prefix + "is" + type_id
+		     + capitalize(buildId(loc.getAltId())) + "(arg)) {");
+      source.print("    return (" + type_name + ")");
       Iterator steps = loc.stepIterator();
-      genSetterSteps(steps, new LinkedList(), field.getId());
+      genSetterSteps(steps, new LinkedList(), buildId(field.getId()));
       source.println(";");
       source.println("  }");
     }
     source.println();
-    source.println("  ATabort(\"" + id + " has no " + capitalize(field.getId())
-		   + ": %t\\n\", arg);");
+    source.println("  ATabort(\"" + type_id + " has no "
+		   + capitalize(field_id) + ": %t\\n\", arg);");
     source.println("  return NULL;");
 
     source.println("}");
@@ -626,11 +666,75 @@ public class CGen
 
   private String buildTypeName(Type type)
   {
-    return prefix + type.getId();
+    return prefix + buildId(type.getId());
   }
 
   //}}}
+  //{{{ private String buildTypeName(String typeId)
 
+  private String buildTypeName(String typeId)
+  {
+    return prefix + buildId(typeId);
+  }
+
+  //}}}
+  //{{{ private String buildId(String id)
+
+  private String buildId(String id)
+  {
+    StringBuffer buf = new StringBuffer();
+    boolean cap_next = false;
+
+    for (int i=0; i<id.length(); i++) {
+      char c = id.charAt(i);
+      if (isSpecialChar(c)) {
+	buf.append(getSpecialCharWord(c));
+	cap_next = true;
+      } else {
+	switch (c) {
+	  case '-':
+	    cap_next = true;
+	    break;
+
+	  default:
+	    if (cap_next) {
+	      buf.append(Character.toUpperCase(c));
+	      cap_next = false;
+	    } else {
+	      buf.append(c);
+	    }
+	    break;
+	}
+      }
+    }
+
+    return buf.toString();
+  }
+
+  //}}}
+  //{{{ private boolean isSpecialChar(char c)
+
+  private boolean isSpecialChar(char c)
+  {
+    return getSpecialCharWord(c) != null;
+  }
+
+  //}}}
+  //{{{ private String getSpecialCharWord(char c)
+
+  private String getSpecialCharWord(char c)
+  {
+    if (c == last_special_char) {
+      return last_special_char_word;
+    }
+
+    last_special_char = c;
+    last_special_char_word = (String)specialChars.get(new Character(c));
+
+    return last_special_char_word;
+  }
+
+  //}}}
   //{{{ private ATerm buildDictionary(API api)
 
   private ATerm buildDictionary(API api)
@@ -640,12 +744,13 @@ public class CGen
     Iterator types = api.typeIterator();
     while (types.hasNext()) {
       Type type = (Type)types.next();
-      String id = prefix + type.getId();
+      String id = buildId(type.getId());
       Iterator alts = type.alternativeIterator();
       while (alts.hasNext()) {
 	Alternative alt = (Alternative)alts.next();
 	ATerm entry = factory.make("[<appl>,<term>]",
-				   "pattern" + id + capitalize(alt.getId()),
+				   prefix + "pattern" + id
+				   + buildId(capitalize(alt.getId())),
 				   buildDictPattern(alt.getPattern()));
 	entries = factory.makeList(entry, entries);
       }
