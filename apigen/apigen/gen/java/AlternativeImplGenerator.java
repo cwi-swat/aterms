@@ -30,7 +30,7 @@ public class AlternativeImplGenerator extends JavaGenerator {
 		boolean verbose,
 		boolean folding,
 		boolean visitable) {
-		super(directory, className(type.getId(),alt.getId()), pkg, standardImports, verbose, folding);
+		super(directory, className(type.getId(),alt.getId()), pkg, standardImports, verbose);
 		this.type = type;
 		this.alt = alt;
 		this.apiName = apiName;

@@ -12,7 +12,7 @@ public class GenericConstructorGenerator extends JavaGenerator {
     
 	public GenericConstructorGenerator(String directory, String apiName, String pkg, boolean verbose, boolean folding) {
 		
-		super(directory,getConstructorClassName(apiName),pkg,new LinkedList(),verbose,folding); 
+		super(directory,getConstructorClassName(apiName),pkg,new LinkedList(),verbose); 
 		
 		className = getConstructorClassName(apiName);
 		factoryName = FactoryGenerator.className(apiName);

@@ -18,7 +18,7 @@ public class TypeImplGenerator extends JavaGenerator {
 		String apiName,
 		List standardImports,
 		boolean verbose) {
-		super(directory, className(type), pkg, standardImports, verbose, false);
+		super(directory, className(type), pkg, standardImports, verbose);
 		this.type = type;
 		this.apiName = apiName;
 	}

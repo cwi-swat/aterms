@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import apigen.adt.ADT;
+import apigen.adt.Alternative;
 import apigen.adt.Type;
 import apigen.gen.StringConversions;
 
@@ -19,7 +20,7 @@ public class ForwardGenerator extends JavaGenerator {
 		List standardImports,
 		boolean verbose,
 		boolean folding) {
-		super(directory, className(apiName), pkg, standardImports, verbose, folding);
+		super(directory, className(apiName), pkg, standardImports, verbose);
 		this.adt = adt;
 	}
 
@@ -27,18 +28,42 @@ public class ForwardGenerator extends JavaGenerator {
 		  return StringConversions.capitalize(apiName + "Fwd");
 	}
 	 
-	protected void foreachType(ADT adt) {
+	protected void genVisits(ADT adt) {
 		Iterator types = adt.typeIterator();
 		while(types.hasNext()) {
 			Type type = (Type) types.next();
-			//TODO: implement Forward generator
+			Iterator alts = type.alternativeIterator();
+            while (alts.hasNext()) {
+                Alternative alt = (Alternative) alts.next();
+                genVisit(type, alt);
+            }
 		}
+	}
+
+	private void genVisit(Type type, Alternative alt) {
+        String className =  AlternativeGenerator.className(type,alt);
+		println("public void visit_" + className + "(" + className + " arg ) throws jjtraveler.VisitFailure {");
+        println("  any.visit(arg);");
+        println("}");
+		
 	}
 
 	protected void generate() {
 		printPackageDecl();
 		printImports();
-		foreachType(adt);
+        
+        println("class Fwd extends Visitor implements jjtraveler.Visitor);");
+        println("{");
+        genConstructor();
+		genVisits(adt);
+        println("}");
+	}
+
+	private void genConstructor() {
+       println("private jjtraveler.Visitor any;");
+       println("public Fwd (jjtraveler.Visitor v) {");
+       println("this.any = v;");
+       println("}");
 	}
 
 }

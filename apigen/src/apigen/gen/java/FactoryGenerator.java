@@ -13,7 +13,7 @@ public class FactoryGenerator extends JavaGenerator {
     
 	public FactoryGenerator(ADT adt, String directory, String apiName, String pkg, List standardImports, 
 	                                    boolean verbose, boolean folding) {
-		super(directory,className(apiName),pkg,standardImports,verbose,folding);
+		super(directory,className(apiName),pkg,standardImports,verbose);
 		this.className = className(apiName);
 		this.adt = adt;
 	}

@@ -18,7 +18,7 @@ public class AlternativeGenerator extends JavaGenerator {
 		List standardImports,
 		boolean verbose,
 		boolean folding) {
-		super(directory, className(type, alt), pkg, standardImports, verbose, folding);
+		super(directory, className(type, alt), pkg, standardImports, verbose);
 		this.type = type;
 		this.alt = alt;
 	}

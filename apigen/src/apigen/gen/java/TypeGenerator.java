@@ -19,7 +19,7 @@ public class TypeGenerator extends JavaGenerator {
 		List standardImports,
 		boolean verbose,
 		boolean folding) {
-		super(directory, className(type), pkg, standardImports, verbose, folding);
+		super(directory, className(type), pkg, standardImports, verbose);
 		this.type = type;
 		className = className(type);
 	}

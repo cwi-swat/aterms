@@ -24,9 +24,8 @@ public abstract class JavaGenerator extends Generator {
 		String filename,
 		String pkg,
 		List standardImports,
-		boolean verbose,
-		boolean folding) {
-		super(directory, filename, ".java", verbose, folding);
+		boolean verbose) {
+		super(directory, filename, ".java", verbose, false);
 		this.pkg = pkg;
 	    this.imports = standardImports;
 	}
