@@ -4,6 +4,7 @@
 #include <sys/times.h>
 #include <limits.h>
 #include <assert.h>
+#include <setjmp.h>
 
 #include "_aterm.h"
 #include "symbol.h"
@@ -51,6 +52,18 @@ void mark_phase()
   ATerm topOfStack;
   ATerm *stackTop = &topOfStack;
   ATerm *start, *stop, *cur;
+	jmp_buf env;
+
+	/* Traverse possible register variables */
+	setjmp(env);
+	start = (ATerm *)env;
+	stop  = ((ATerm *)(((char *)env) + sizeof(jmp_buf)));
+	for(cur=start; cur<stop; cur++) {
+		if (AT_isValidTerm(*cur))
+			AT_markTerm(*cur);
+		if (AT_isValidSymbol((Symbol)*cur))
+			AT_markSymbol((Symbol)*cur);
+	}
 
   /* Determine stack orientation */
   start = MIN(stackTop, stackBot);
@@ -63,10 +76,10 @@ void mark_phase()
 
   /* Traverse the stack */
   for(cur=start; cur<stop; cur++) {
-	if (AT_isValidTerm(*cur))
-	  AT_markTerm(*cur);
-	if (AT_isValidSymbol((Symbol)*cur))
-	  AT_markSymbol((Symbol)*cur);
+		if (AT_isValidTerm(*cur))
+			AT_markTerm(*cur);
+		if (AT_isValidSymbol((Symbol)*cur))
+			AT_markSymbol((Symbol)*cur);
   }
 }
 
@@ -82,19 +95,20 @@ void sweep_phase()
   int size, idx;
 
   for(size=MIN_TERM_SIZE; size<MAX_TERM_SIZE; size++) {
-	Block *block = at_blocks[size];
-	while(block) {
-	  assert(block->size == size);
-	  for(idx=0; idx<BLOCK_SIZE; idx+=size) {
-		ATerm t = (ATerm)&block->data[idx];
-		if(IS_MARKED(t->header)) {
-		  CLR_MARK(t->header);
-		} else if(ATgetType(t) != AT_FREE) {
-		  AT_free(size, t);
+		Block *block = at_blocks[size];
+		int end = BLOCK_SIZE-size;
+		while(block) {
+			assert(block->size == size);
+			for(idx=0; idx<end; idx+=size) {
+				ATerm t = (ATerm)&block->data[idx];
+				if(IS_MARKED(t->header)) {
+					CLR_MARK(t->header);
+				} else if(ATgetType(t) != AT_FREE) {
+					AT_free(size, t);
+				}
+			}
+			block = block->next_by_size;
 		}
-	  }
-	  block = block->next_by_size;
-	}
   }
 }
 
@@ -111,17 +125,17 @@ void AT_collect(int size)
   struct tms start, mark, sweep;
   clock_t user;
 
-  fprintf(stderr, "collecting garbage...");
+  fprintf(stderr, "collecting garbage...\n");
   times(&start);
   mark_phase();
   times(&mark);
   user = mark.tms_utime - start.tms_utime;
-  fprintf(stderr, "marking took %f seconds\n", 
+  fprintf(stderr, "marking took %.2f seconds\n", 
 		  ((double)user)/(double)CLK_TCK);
   sweep_phase();
   times(&sweep);
   user = sweep.tms_utime - mark.tms_utime;
-  fprintf(stderr, "sweeping took %f seconds\n",
+  fprintf(stderr, "sweeping took %.2f seconds\n",
 		  ((double)user)/(double)CLK_TCK);
 }
 

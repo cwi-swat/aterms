@@ -218,6 +218,7 @@ int ATvfprintf(FILE *stream, const char *format, va_list args)
 	char fmt[16];
 	int result = 0;
 	ATerm t;
+	ATermList l;
 
 	for (p = format; *p; p++)
     {
@@ -263,11 +264,24 @@ int ATvfprintf(FILE *stream, const char *format, va_list args)
 						
 						/* ATerm specifics start here:
 						 * "%t" to print an ATerm;
-						 * "%y" to print a Symbol.
+						 * "%l" to print a list;
+						 * "%y" to print a Symbol;
 						 * "%n" to print a single ATerm node
 						 */
 					case 't':
 						ATwriteToTextFile(va_arg(args, ATerm), stream);
+						break;
+					case 'l':
+						l = va_arg(args, ATermList);
+						fmt[strlen(fmt)-1] = '\0'; /* Remove 'l' */
+						while(!ATisEmpty(l)) {
+							ATwriteToTextFile(ATgetFirst(l), stream);
+							/*ATfprintf(stream, "\nlist node: %n\n", l);
+							ATfprintf(stream, "\nlist element: %n\n", ATgetFirst(l));*/
+							l = ATgetNext(l);
+							if(!ATisEmpty(l))
+								fputs(fmt+1, stream);
+						}
 						break;
 					case 'y':
 						AT_printSymbol(va_arg(args, Symbol), stream);
@@ -292,6 +306,12 @@ int ATvfprintf(FILE *stream, const char *format, va_list args)
 
 							case AT_APPL:
 								fprintf(stream, "<appl>(...(%d))", GET_ARITY(t->header));
+								break;
+							case AT_FREE:
+								fprintf(stream, "@");
+								break;
+						  default:
+								fprintf(stream, "#");
 								break;
 						}
 						break;

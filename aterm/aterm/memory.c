@@ -202,14 +202,15 @@ void AT_initMemory(int argc, char *argv[])
   }
 
   for(i=0; i<BLOCK_TABLE_SIZE; i++) {
-	block_table[i].first_before = NULL;
-	block_table[i].first_after  = NULL;
+		block_table[i].first_before = NULL;
+		block_table[i].first_after  = NULL;
   }
 
   ATempty = (ATermList)AT_allocate(TERM_SIZE_LIST);
   ATempty->header = EMPTY_HEADER(0);
   ATempty->next = NULL;
   hashtable[EMPTY_HASH_NR % table_size] = (ATerm)ATempty;
+	ATprotect((ATerm *)&ATempty);
 }
 
 /*}}}  */
@@ -262,15 +263,23 @@ static void allocate_block(int size)
 
 ATerm AT_allocate(int size)
 {
-    int i;
+	int i;
 	ATerm at;
 
 	while (!at_freelist[size])
 	{
+#ifdef GC_ON
 		int total = at_nrblocks[size]*(BLOCK_SIZE/size);
+		printf("alloc_since_gc[%d] = %d, total=%d\n", size,
+					 alloc_since_gc[size], total);
 		if((100*alloc_since_gc[size]) <= GC_THRESHOLD*total) {
+#else
+			if(1) {
+#endif
+				printf("allocating new block of size %d\n", size);
 				allocate_block(size);
 		} else {
+			printf("collecting for size %d\n", size);
 			AT_collect(size);
 			for(i=MIN_TERM_SIZE; i<MAX_TERM_SIZE; i++)
 				alloc_since_gc[size] = 0;
