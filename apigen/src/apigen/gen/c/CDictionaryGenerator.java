@@ -94,6 +94,6 @@ public class CDictionaryGenerator extends Generator {
 			args[j] = factory.parse("x");
 		}
 		ATerm term = factory.makeAppl(afun, args);
-		return factory.make("[" + name + ",<term>]", term);
+		return factory.make("[" + prefix + name + ",<term>]", term);
 	}
 }

@@ -10,12 +10,14 @@ import apigen.gen.StringConversions;
 public class FactoryGenerator extends JavaGenerator {
     private String className;
     private ADT adt;
-    
+    private boolean jtype;
+  
 	public FactoryGenerator(ADT adt, String directory, String apiName, String pkg, List standardImports, 
-	                                    boolean verbose, boolean folding) {
+	                                    boolean verbose, boolean folding, boolean jtype) {
 		super(directory,className(apiName),pkg,standardImports,verbose);
 		this.className = className(apiName);
 		this.adt = adt;
+                this.jtype = jtype;
 	}
 
 	public static String className(String apiName) {
@@ -122,10 +124,17 @@ public class FactoryGenerator extends JavaGenerator {
 		   String protoVar = "proto" + altClassName;
 		   String funVar = "fun" + altClassName;
 
+                   String afunName;
+                   if(jtype) {
+                     afunName = altClassName;
+                   } else {
+                     afunName = StringConversions.makeCapitalizedIdentifier(alt.getId());
+                   }
+                   
 		   println();        
 		   println("    " + altClassName + ".initializePattern();");
 		   println("    " + funVar + " = makeAFun(\"" + 
-				   altClassName + "\", " + type.getAltArity(alt) + ", false);");
+				   afunName + "\", " + type.getAltArity(alt) + ", false);");
 		   println("    " + protoVar + " = new " + altClassName + "();");      
 		 }
 		 println();

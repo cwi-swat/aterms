@@ -6,7 +6,13 @@ import apigen.gen.tom.TomSignatureImplementation;
 
 public class CTomSignatureImplementation implements TomSignatureImplementation {
 	private static TypeConverter converter;
-	
+
+  private String prefix;
+
+  public CTomSignatureImplementation(String prefix) {
+    this.prefix= prefix;
+  }
+
 	static {
 		converter = new TypeConverter(new CTypeConversions());
 	}
@@ -20,7 +26,7 @@ public class CTomSignatureImplementation implements TomSignatureImplementation {
 	}
 
     public String StringName() {
-    	return "String";
+    	return "Str";
     }
     
 	public String StringImpl() {
@@ -44,7 +50,7 @@ public class CTomSignatureImplementation implements TomSignatureImplementation {
 	}
 
     public String IntegerName() {
-    	return "Integer";
+    	return "Int";
     }
     
 	public String IntegerImpl() {
@@ -92,7 +98,7 @@ public class CTomSignatureImplementation implements TomSignatureImplementation {
 	}
 
     public String ATermName() {
-    	return "ATerm";
+    	return "Term";
     }
     
 	public String ATermImpl() {
@@ -139,7 +145,7 @@ public class CTomSignatureImplementation implements TomSignatureImplementation {
 	}
 
 	public String TypeEquals(String type, String arg1, String arg2) {
-		return "isEqual" + buildTypeName(type)
+		return prefix + "isEqual" + buildTypeName(type)
                   + "(" + arg1 + "," + arg2 + ")";
 	}
 
@@ -162,11 +168,11 @@ public class CTomSignatureImplementation implements TomSignatureImplementation {
 	}
 
 	public String OperatorGetSlot(String term, String type, String slot) {
-		return "get" + StringConversions.capitalize(buildAltTypeName(type,slot)) + "(" + term + ")";
+		return prefix + "get" + StringConversions.capitalize(buildAltTypeName(type,slot)) + "(" + term + ")";
 	}
 
 	public String OperatorMake(String type, String alt, String arguments) {
-		return "make"
+		return prefix + "make"
 			+ buildAltTypeName(type, alt)
 			+ arguments;
 	}

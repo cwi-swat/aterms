@@ -11,6 +11,7 @@ import apigen.gen.tom.TomSignatureGenerator;
 public class Main {
 	private static boolean verbose = false;
 	private static boolean jtom = false;
+	private static boolean jtype = false;
 	private static boolean make_term_compatibility = false;
 	private static String output = null;
 	private static String prologue = null;
@@ -24,6 +25,7 @@ public class Main {
 		System.err.println("\t-output <out>");
 		System.err.println("\t-prologue <prologue>");
 		System.err.println("\t-jtom");
+		System.err.println("\t-jtype");
 		System.err.println("\t-verbose");
 		System.exit(1);
 	}
@@ -54,6 +56,8 @@ public class Main {
 				make_term_compatibility = true;
 			} else if ("-jtom".startsWith(args[i])) {
 				jtom = true;
+			} else if ("-jtype".startsWith(args[i])) {
+				jtype = true;
 			} else {
 				usage();
 			}
@@ -85,7 +89,9 @@ public class Main {
 			APIGenerator apigen = 
 			new APIGenerator(adt, output, prefix, prologue, verbose, true, make_term_compatibility);
 			apigen.run();
-			new TomSignatureGenerator(adt,new CTomSignatureImplementation(),".",output,verbose,true).run();
+                        if (jtom) {
+                          new TomSignatureGenerator(adt,new CTomSignatureImplementation(),".",output,prefix,verbose,true,jtype).run();
+                        }
 			new CDictionaryGenerator(factory, adt, ".", output, prefix,  apigen.getAFunRegister(), verbose, true).run();
 
 		} catch (IOException e) {

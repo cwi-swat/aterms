@@ -28,6 +28,7 @@ Parameters:
   -d | --dicttoc <FILE>   override default dicttoc         [see below]
   -t | --no-timestamp     do not output timestamps         [off]
   -j | --jtom             generate jtom signature          [off]
+  -J | --jtype            generate type-prefix for jtom    [off]
   -v | --verbose          be verbose during generation     [off]
   -h | --help             display this information
 
@@ -77,6 +78,7 @@ require() {
 TIMESTAMPS=1
     COMPAT=0
       JTOM=0
+     JTYPE=0
 
 # data needed
    CGEN=${prefix}/classes
@@ -123,6 +125,9 @@ do
 
     -j | --jtom)
       JTOM=1 ;;
+
+    -J | --jtype)
+      JTYPE=1 ;;
 
     -h | --help)
       usage; exit 0 ;;
@@ -173,6 +178,12 @@ else
   OPTIONAL_JTOM=""
 fi
 
+if [ $JTYPE -gt 0 ]; then
+  OPTIONAL_JTYPE="-jtype"
+else
+  OPTIONAL_JTYPE=""
+fi
+
 # }}}
 
 # {{{  generate C code from ADT
@@ -183,7 +194,8 @@ java  -classpath ${CGEN}:${JAVA_ATERM}:${SHARED_OBJECTS} apigen.gen.c.Main \
 	  ${OPTIONAL_PROLOGUE}	\
 	  ${OPTIONAL_PREFIX}    \
 	  ${OPTIONAL_COMPAT}    \
-	  ${OPTIONAL_JTOM}
+	  ${OPTIONAL_JTOM}      \
+	  ${OPTIONAL_JTYPE}
 
 if [ $TIMESTAMPS -gt 0 ]; then
   ${DICTTOC} -dict ${OUTPUT}.dict

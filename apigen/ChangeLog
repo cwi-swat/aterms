@@ -1,3 +1,10 @@
+2003-03-11  Pierre-Etienne Moreau  <pem@escher.loria.fr>
+
+ * --jtype option added to generate tom constructors with prefix
+ * jtom signature generated only if --jtom is active	  
+ * fix several bugs related to prefix and type conversions
+   (String has been replaced by Str, Integer by Int,...) 
+      
 2003-02-28  (jurgenv@cwi.nl)
  * Big refactoring in C and Java versions to prevent code-cloning
 

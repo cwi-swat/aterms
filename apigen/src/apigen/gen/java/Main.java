@@ -18,6 +18,7 @@ import aterm.pure.PureFactory;
 public class Main {
 	private static boolean visitable = false;
 	private static boolean jtom = false;
+	private static boolean jtype = false;
 	private static boolean folding = false;
 	private static boolean verbose = false;
 
@@ -25,6 +26,7 @@ public class Main {
 	private static String pkg = "";
 	private static List imports = null;
 	private static String apiName = "";
+	private static String prefix = "";
 
 	private static void usage() {
 		System.err.println("usage: JavaGen [options]");
@@ -38,6 +40,7 @@ public class Main {
 		System.err.println("\t-folding                  [off]");
 		System.err.println("\t-visitable                [off]");
 		System.err.println("\t-jtom                     [off]");
+		System.err.println("\t-jtype                    [off]");
 		System.exit(1);
 	}
 
@@ -69,6 +72,8 @@ public class Main {
 				visitable = true;
 			} else if ("-jtom".startsWith(args[i])) {
 				jtom = true;
+			} else if ("-jtype".startsWith(args[i])) {
+				jtype = true;
 			} else if ("-name".startsWith(args[i])) {
 				apiName = args[++i];
 			} else {
@@ -112,7 +117,7 @@ public class Main {
 	}
 
 	static private void generateAPI(ADT adt) throws IOException {
-		new FactoryGenerator(adt, basedir, apiName, pkg, imports, verbose, folding).run();
+		new FactoryGenerator(adt, basedir, apiName, pkg, imports, verbose, folding,jtype).run();
 		new GenericConstructorGenerator(basedir, apiName, pkg, verbose, visitable).run();
 		new MakeRulesGenerator(adt, basedir, apiName, verbose).run();
 
@@ -123,7 +128,7 @@ public class Main {
         
 		if (jtom) {
 			JavaTomSignatureImplementation sigImpl = new JavaTomSignatureImplementation(apiName);
-			new TomSignatureGenerator(adt, sigImpl, basedir, apiName, verbose, folding).run();
+			new TomSignatureGenerator(adt, sigImpl, basedir, apiName, prefix, verbose, folding, jtype).run();
         }
 
 		generateTypeClasses(adt);
