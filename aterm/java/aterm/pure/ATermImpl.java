@@ -12,7 +12,24 @@ public abstract class ATermImpl
 {
   ATermList annotations;
   PureFactory factory;
+  private int hashcode;
 
+  //{{{ public int hashCode()
+
+  public int hashCode()
+  {
+    return hashcode;
+  }
+
+  //}}}
+  //{{{ protected void setHashCode(int hashcode)
+
+  protected void setHashCode(int hashcode)
+  {
+    this.hashcode = hashcode;
+  }
+
+  //}}}
 
   //{{{ public ATermImpl(PureFactory factory)
 

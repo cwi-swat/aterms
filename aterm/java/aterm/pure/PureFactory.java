@@ -25,6 +25,8 @@ public class PureFactory
 
   static protected ATermList empty;
 
+  private int max_length;
+
   //{{{ static boolean isBase64(int c)
 
   static boolean isBase64(int c)
@@ -406,6 +408,7 @@ public class PureFactory
     prev = null;
     cur  = term_table[idx];
     while (cur != null) {
+
       term = (ATerm)cur.get();
       if (term == null) {
 	// Found a reference to a garbage collected term, remove it to speed up lookups.

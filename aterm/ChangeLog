@@ -2,9 +2,13 @@ $Id$
 
 2001/06/25 ({jong,olivierp}@cwi.nl)
  * Version is now 1.6.1
- * Fixed bug in Java in removing of 'empty' weak references
+ * Fixed bug in Java in removing of 'empty' weak references,
+   thanks to Bert Huijben
  * Fixed performance problem in hash function calculation.
  * Added first version of visitor benchmark.
+ * Replaced generic hashfunction with specific HASHNUMBER{3,4} macros,
+   thanks to Pierre-Etienne
+
 
 2001/06/19 (olivierp@cwi.nl)
  * Worked on bringing visitor implementation closer to Joost's official

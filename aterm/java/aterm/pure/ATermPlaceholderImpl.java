@@ -18,14 +18,6 @@ class ATermPlaceholderImpl
 
   //}}}
 
-  //{{{ public int hashCode()
-
-  public int hashCode()
-  {
-    return hashFunction(type, annotations);
-  }
-
-  //}}}
   //{{{ public int getType()
 
   public int getType()
@@ -40,6 +32,7 @@ class ATermPlaceholderImpl
   protected ATermPlaceholderImpl(PureFactory factory, ATerm type, ATermList annos)
   {
     super(factory, annos);
+    setHashCode(hashFunction(type, annotations));
     this.type = type;
   }
 

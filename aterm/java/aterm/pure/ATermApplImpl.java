@@ -26,14 +26,6 @@ class ATermApplImpl
 
   //}}}
 
-  //{{{ public int hashCode()
-
-  public int hashCode()
-  {
-    return hashFunction(fun, args, annotations);
-  }
-
-  //}}}
   //{{{ public int getType()
 
   public int getType()
@@ -49,6 +41,7 @@ class ATermApplImpl
 			  ATermList annos)
   {
     super(factory, annos);
+    setHashCode(hashFunction(fun, args, annotations));
     this.fun  = fun;
     this.args = args;
   }

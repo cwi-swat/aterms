@@ -27,14 +27,6 @@ class ATermListImpl
   }
 
   //}}}
-  //{{{ public int hashCode()
-
-  public int hashCode()
-  {
-    return hashFunction(first, next, annotations);
-  }
-
-  //}}}
   //{{{ public int getType()
 
   public int getType()
@@ -49,6 +41,7 @@ class ATermListImpl
   protected ATermListImpl(PureFactory factory)
   {
     super(factory, null);
+    setHashCode(hashFunction(null, null, null));
     this.annotations = this;
     this.first  = null;
     this.next   = null;
@@ -62,6 +55,7 @@ class ATermListImpl
 			  ATermList annos)
   {
     super(factory, annos);
+    setHashCode(hashFunction(first, next, annotations));
     this.first  = first;
     this.next   = next;
 

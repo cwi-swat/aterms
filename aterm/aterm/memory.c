@@ -41,6 +41,13 @@
 #define COMBINE(hnr,w) ((hnr)<<1 ^ (hnr)>>1 ^ (HashNumber)(FOLD(w)))
 #define FINISH(hnr)	   (hnr)
 
+#define HASHNUMBER3(t)\
+        FINISH(COMBINE(START(((MachineWord*)t)[0]), ((MachineWord*)t)[2]))
+
+#define HASHNUMBER4(t)\
+        FINISH(COMBINE(COMBINE(START(((MachineWord*)t)[0]), \
+	    ((MachineWord*)t)[2]),((MachineWord*)t)[3]))
+
 #ifdef AT_64BIT 
 #define FOLD(w)        ((HN(w)) ^ (HN(w) >> 32))
 #define PTR_ALIGN_SHIFT	4
@@ -1294,7 +1301,7 @@ ATermAppl ATmakeAppl1(Symbol sym, ATerm arg0)
   protoAppl = (ATermAppl) protoTerm;
   protoAppl->header = header;
   arg_buffer[0] = arg0;
-  hnr = hash_number((ATerm) protoAppl, 3);
+  hnr = HASHNUMBER3((ATerm) protoAppl);
 
   prev = NULL;
   hashspot = &(hashtable[hnr & table_mask]);
@@ -1349,7 +1356,7 @@ ATermAppl ATmakeAppl2(Symbol sym, ATerm arg0, ATerm arg1)
   protoAppl->header = header;
   arg_buffer[0] = arg0;
   arg_buffer[1] = arg1;
-  hnr = hash_number((ATerm) protoAppl, 4);
+  hnr = HASHNUMBER4((ATerm) protoAppl);
 
   prev = NULL;
   hashspot = &(hashtable[hnr & table_mask]);
@@ -1778,7 +1785,7 @@ ATermInt ATmakeInt(int val)
   protoInt->header = header;
   protoInt->value  = val;
 
-  hnr = hash_number((ATerm)protoInt, TERM_SIZE_INT);
+  hnr = HASHNUMBER3((ATerm)protoInt);
 
   cur = hashtable[hnr & table_mask];
   while (cur && (cur->header != header || ((ATermInt)cur)->value != val)) {
@@ -1863,7 +1870,7 @@ ATermList ATmakeList1(ATerm el)
   protoList->head = el;
   protoList->tail = ATempty;
 
-  hnr = hash_number((ATerm)protoList, TERM_SIZE_LIST);
+  hnr = HASHNUMBER4((ATerm)protoList);
 
   cur = hashtable[hnr & table_mask];
   while (cur && (cur->header != header
@@ -1908,7 +1915,7 @@ ATermList ATinsert(ATermList tail, ATerm el)
   protoList->head = el;
   protoList->tail = tail;
 
-  hnr = hash_number((ATerm)protoList, TERM_SIZE_LIST);
+  hnr = HASHNUMBER4((ATerm)protoList);
 
   cur = hashtable[hnr & table_mask];
   while (cur && (cur->header != header
