@@ -328,8 +328,10 @@ void generate_header(FILE *f, ATermList tifs, char *tool)
 	fprintf(f, "#include <atb-tool.h>\n\n");
 	generate_declarations(f, tifs);
 
-	fprintf(f, "extern ATerm %s_handler(int conn, ATerm term);\n", tool);
-	fprintf(f, "extern ATerm %s_checker(int conn, ATerm sigs);\n", tool);
+	fprintf(f, "extern ATerm %s_handler(int conn, ATerm term);\n", 
+					ident_to_C(tool));
+	fprintf(f, "extern ATerm %s_checker(int conn, ATerm sigs);\n", 
+					ident_to_C(tool));
 	fprintf(f, "\n#endif\n");
 }
 
