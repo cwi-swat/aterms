@@ -6,7 +6,7 @@
 
 SUBDIRS		= add-labels
 
-bin_PROGRAMS	= Sdf2-to-ADT
+bin_PROGRAMS	= Sdf2-to-ADT Sdf2-to-Imploded-ADT
 
 CFLAGS		= -g -Wall -Wno-unused -O2 -DASF_MAIN
 
@@ -47,6 +47,12 @@ Sdf2_to_ADT_LDADD	= -L$(ASCLIB) -lasc-support-me \
 			-L$(ASF_SUPPORT)/lib -lASFME \
 			-L$(PT_SUPPORT)/lib -lmept \
 			-L$(ATERM)/lib -lATerm
+Sdf2_to_Imploded_ADT_SOURCES = Sdf2-to-Imploded-ADT.c
+Sdf2_to_Imploded_ADT_LDADD = -L$(ASCLIB) -lasc-support-me \
+			-L$(ASF_SUPPORT)/lib -lASFME \
+			-L$(PT_SUPPORT)/lib -lmept \
+			-L$(ATERM)/lib -lATerm
+
 
 Sdf2-to-ADT.trm.tbl: $(SDF2_TO_ADT_SDF) $(SDF2_SPEC_SDF) $(UTILS_SPEC_SDF) 
 	@echo Building parsetable: $@

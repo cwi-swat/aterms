@@ -1,0 +1,77 @@
+module Sdf2-to-Imploded-ADT
+
+imports Build-AsFix2ME-ADT
+
+exports 
+
+context-free syntax
+
+    sdf-to-imploded-adt ( SDF )           -> ATerm
+    sdf-to-imploded-adt ( Module )        -> ATerm
+    sdf-module-to-imploded-adt ( Module ) -> ATerm
+
+hiddens
+  context-free syntax
+    section-to-adt ( ModuleName, Section)		-> ATerms
+    grammar-to-adt ( ModuleName, Grammar)		-> ATerms
+    productions-to-adt ( ModuleName, Production*)	-> ATerms
+    production-to-adt ( ModuleName, Production)	-> ATerms
+    lexicals-to-adt ( ModuleName, Production*)	-> ATerms
+    lexical-to-adt ( ModuleName, Production)	-> ATerms
+
+    build-list-entries ( Symbol* )			-> ATerms
+    build-imploded-args(Symbol*)        -> ATerms
+    build-imploded-arg(Symbol)          -> ATerms
+
+  variables
+    "$ADT"[0-9]*	-> ATerm
+    "$AFArg"		-> ATerm
+    "$Args"[0-9]*		-> { ATerm "," }*
+    "$Args+"[0-9]*		-> { ATerm "," }+
+    "$AFAttr"		-> ATerm
+    "$AFAttr+"[0-9]*	-> { ATerm "," }+
+    "$AFAttr*"[0-9]*	-> { ATerm "," }*
+    "$AFAttrs"		-> ATerm
+    "$AFIter"		-> ATerm
+    "$AFModName"	-> AT-Literal
+    "$AFProd"		-> ATerm
+    "$AFSep"		-> ATerm
+    "$AFSort"		-> AT-Literal
+    "$AltId"		-> AFun
+    "$ATerm"		-> ATerm
+    "$Attr"		-> Attribute
+    "$Attr*"[0-9]*	-> { Attribute "," }*
+    "$Attr+"		-> { Attribute "," }+
+    "$Attributes"	-> Attributes
+    "$Char*"[0-9]*	-> CHAR*
+    "$ConsOption"	-> ConsOption
+    "$ElemSortName"	-> AFun
+    "$ElemType"		-> AFun
+    "$Entries"[0-9]*	-> { ATerm "," }*
+    "$Entry"		-> ATerm
+    "$FieldName"	-> AT-Literal
+    "$FieldId"		-> AFun
+    "$FieldType"	-> AFun
+    "$FieldWs"		-> ATerm
+    "$Grammar"[0-9]*	-> Grammar
+    "$ImpSection*"	-> ImpSection*
+    "$Label"		-> Literal
+    "$ListType"		-> AFun
+    "$Literal"		-> Literal
+    "$ModName"		-> ModuleName
+    "$Module"		-> Module
+    "$Module*"		-> Module*
+    "$Production"	-> Production
+    "$Production*"	-> Production*
+    "$SDF"		-> SDF
+    "$Section"		-> Section
+    "$Section*"		-> Section*
+    "$Sep"		-> Literal
+    "$Sort"		-> Sort
+    "$Symbol"		-> Symbol
+    "$Symbol*"		-> Symbol*
+    "$Symbol+"		-> Symbol+
+    "$TypeId"		-> AFun
+    "$UQLit"		-> UQLiteral
+    "$QLit"		-> Literal
+

@@ -6,3 +6,4 @@ Makefile
 reduct.out
 .deps
 Sdf2-to-ADT
+Sdf2-to-Imploded-ADT

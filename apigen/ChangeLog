@@ -1,3 +1,7 @@
+2001/03/04 (jurgenv@cwi.nl)
+ * Added sdf2-to-imploded-adt tool. 
+ * Bumped to 1.3beta
+
 2001/12/13 (jurgenv@cwi.nl)
  * Added --with-asf-support needed for compiled specifications.
 

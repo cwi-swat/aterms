@@ -1,0 +1,231 @@
+equations
+
+[equ-sdf-to-adt]
+  sdf-to-imploded-adt($SDF) = 
+    sdf-to-imploded-adt($SDF)
+
+[equ-sdf-to-adt-definition-empty]
+  sdf-to-imploded-adt(definition ) = [ ]
+
+[equ-sdf-to-adt-definition-divide]
+  sdf-module-to-imploded-adt($Module) = $ADT1,
+  merge-adts([], $ADT1) = $ADT2,
+  sdf-to-imploded-adt(definition $Module*) = $ADT3,
+  merge-adts($ADT2, $ADT3) = $ADT4
+  ===>
+  sdf-to-imploded-adt(definition $Module $Module*) = $ADT4
+
+[equ-sdf-to-adt-module]
+  sdf-to-imploded-adt($Module) = 
+    sdf-module-to-imploded-adt($Module)
+
+[equ-sdf-module-to-adt-empty]
+  sdf-module-to-imploded-adt(module $ModName $ImpSection*) = [ ]
+
+[equ-sdf-module-to-adt-divide]
+  section-to-adt($ModName, $Section) = $Entries1,
+  sdf-module-to-imploded-adt(module $ModName $ImpSection* $Section*) = [ $Entries2 ]
+  ===>
+  sdf-module-to-imploded-adt(module $ModName $ImpSection* $Section $Section*) = 
+	[ $Entries1, $Entries2 ]
+
+[equ-section-to-adt-exports]
+  section-to-adt($ModName, exports $Grammar) =
+    grammar-to-adt(no-module-name, $Grammar)
+
+[equ-section-to-adt-hiddens]
+  section-to-adt($ModName, hiddens $Grammar) = 
+    grammar-to-adt($ModName, $Grammar)
+
+[default-grammar-to-adt]
+  grammar-to-adt($ModName, $Grammar) =
+
+[equ-grammar-to-adt-divide]
+  grammar-to-adt($ModName, $Grammar1) = $Entries1,
+  grammar-to-adt($ModName, $Grammar2) = $Entries2
+  ===>
+  grammar-to-adt($ModName, $Grammar1 $Grammar2) =
+    $Entries1, $Entries2
+
+[equ-grammar-to-adt-context-free-syntax]
+  grammar-to-adt($ModName, context-free syntax $Production*) = 
+    productions-to-adt($ModName, $Production*)
+
+[equ-grammar-to-adt-lexical-syntax]
+  grammar-to-adt($ModName, lexical syntax $Production*) =
+    lexicals-to-adt($ModName, $Production*)
+
+[equ-productions-to-adt-empty]
+  productions-to-adt($ModName,  ) =
+
+[equ-productions-to-adt-divide]
+  production-to-adt($ModName, $Production) = $Entries1,
+  productions-to-adt($ModName, $Production*) = $Entries2
+  ===>
+  productions-to-adt($ModName, $Production $Production*) =
+    $Entries1, $Entries2
+
+[equ-production-to-adt-args]
+  $Attributes = { $Attr*1, cons(at-literal(""" $Char* """)), $Attr*2 },
+  $AltId   = afun($Char*),
+  $TypeId  = sort-to-afun($Sort),
+  $Args  = build-imploded-args($Symbol*),
+  $Args  = $Args+,
+  $Entry   = [ $TypeId, $AltId, $AltId($Args+) ],
+  $Entries = build-list-entries($Symbol*)
+  ===>
+  production-to-adt($ModName, $Symbol* -> $Sort $Attributes) = 
+    $Entry, $Entries
+
+[equ-production-to-adt-constant]
+  $Attributes = { $Attr*1, cons(at-literal(""" $Char* """)), $Attr*2 },
+  $AltId   = afun($Char*),
+  $TypeId  = sort-to-afun($Sort),
+  $Args  = build-imploded-args($Symbol*),
+  $Args  = ,
+  $Entry   = [ $TypeId, $AltId, $AltId ],
+  $Entries = build-list-entries($Symbol*)
+  ===>
+  production-to-adt($ModName, $Symbol* -> $Sort $Attributes) = 
+    $Entry, $Entries
+
+[default-production-to-adt-args]
+  $TypeId  = sort-to-afun($Sort),
+  $Args  = build-imploded-args($Symbol*),
+  $Args+ = $Args,
+  $Entry   = [ $TypeId, Default, default($Args+) ],
+  $Entries = build-list-entries($Symbol*)
+  ===>
+  production-to-adt($ModName, $Symbol* -> $Sort $Attributes) =
+    $Entry, $Entries
+
+[default-production-to-adt-constant]
+  $TypeId  = sort-to-afun($Sort),
+  $Args  = build-imploded-args($Symbol*),
+  $Args = ,
+  $Entry   = [ $TypeId, Default, default ],
+  $Entries = build-list-entries($Symbol*)
+  ===>
+  production-to-adt($ModName, $Symbol* -> $Sort $Attributes) =
+    $Entry, $Entries
+
+[equ-lexicals-to-adt-empty]
+  lexicals-to-adt($ModName, ) =
+
+[equ-lexicals-to-adt-divide]
+  lexical-to-adt($ModName, $Production) = $Entries1,
+  lexicals-to-adt($ModName, $Production*) = $Entries2
+  ===>
+  lexicals-to-adt($ModName, $Production $Production*) =
+    $Entries1, $Entries2
+
+[equ-lexical-to-adt-LAYOUT]
+  lexical-to-adt($ModName, $Symbol* -> LAYOUT $Attributes) =
+
+[default-lexical-to-adt]
+  $Attributes = { $Attr*1, cons(at-literal(""" $Char* """)), $Attr*2 },
+  $TypeId    = sort-to-afun($Sort)
+  ===>
+  lexical-to-adt($ModName, $Symbol* -> $Sort $Attributes) = 
+      [ $TypeId, $TypeId, <string(str)>]
+
+[equ-build-list-entries-empty]
+  build-list-entries() =
+
+[equ-build-list-entries-divide]
+  build-list-entries($Symbol) = $Entries1,
+  build-list-entries($Symbol+) = $Entries2
+  ===>
+  build-list-entries($Symbol $Symbol+) = $Entries1, $Entries2
+
+[equ-build-list-entries-iter-star]
+  $FieldId = sdflit-to-afun($Label),
+  $ElemType = sort-to-afun($Sort),
+  $ListType = afun-concat($ElemType $FieldId)
+  ===>
+  build-list-entries($Label : $Sort *) = 
+     [$ListType, empty,  []],
+     [$ListType, single, [<head($ElemType)>]],
+     [$ListType, many,   [<head($ElemType)>,
+                         <[tail($ListType)]>]]
+
+[equ-build-list-entries-iter-plus]
+  $FieldId = sdflit-to-afun($Label),
+  $ElemType = sort-to-afun($Sort),
+  $ListType = afun-concat($ElemType $FieldId)
+  ===>
+  build-list-entries($Label : $Sort +) = 
+     [$ListType, single, [<head($ElemType)>]],
+     [$ListType, many,   [<head($ElemType)>,
+                          <[tail($ListType)]>]]
+
+[equ-build-list-entries-iter-sep-star]
+  $FieldId = sdflit-to-afun($Label),
+  $ElemType = sort-to-afun($Sort),
+  $ListType = afun-concat($ElemType $FieldId)
+  ===>
+  build-list-entries($Label : { $Sort $Sep } *) = 
+     [$ListType, empty,[]],
+     [$ListType, single, [<head($ElemType)>]],
+     [$ListType, many,[<head($ElemType)>,
+                       <[tail($ListType)]>]]
+
+[equ-build-list-entries-iter-sep-plus]
+  $FieldId = sdflit-to-afun($Label),
+  $ElemType = sort-to-afun($Sort),
+  $ListType = afun-concat($ElemType $FieldId)
+  ===>
+  build-list-entries($Label : { $Sort $Sep } +) = 
+     [$ListType, single, [<head($ElemType)>]],     
+     [$ListType, many,[<head($ElemType)>,
+                       <[tail($ListType)]>]]
+
+[default-equ-build-list-entries]
+  build-list-entries($Symbol) =
+
+[build-imploded-args-empty]
+ build-imploded-args() =
+
+[build-imploded-args-more]
+  build-imploded-arg($Symbol) = $Args1,
+  build-imploded-args($Symbol*) = $Args2
+  ===>
+  build-imploded-args($Symbol $Symbol*) = $Args1, $Args2
+
+[equ-build-imploded-arg-labeled-literal]
+  build-imploded-arg($Label:$Literal) = 
+
+[equ-build-imploded-arg-unlabeled-literal]
+  build-imploded-arg($Literal) = 
+
+[equ-build-imploded-arg-sort]
+  $FieldId = sdflit-to-afun($Label),
+  $FieldType = sort-to-afun($Sort)
+  ===>
+  build-imploded-arg($Label:$Sort) = <$FieldId($FieldType)>
+
+[equ-build-imploded-arg-iter-star]
+  $FieldId = sdflit-to-afun($Label),
+  $FieldType = afun-concat(sort-to-afun($Sort) $FieldId)
+  ===>
+  build-imploded-arg($Label:$Sort *) = <$FieldId($FieldType)>
+
+[equ-build-imploded-arg-iter-plus]
+  $FieldId = sdflit-to-afun($Label),
+  $FieldType = afun-concat(sort-to-afun($Sort) $FieldId)
+  ===>
+  build-imploded-arg($Label:$Sort +) = <$FieldId($FieldType)>
+
+[equ-build-imploded-arg-iter-sep-star]
+  $FieldId = sdflit-to-afun($Label),
+  $FieldType = afun-concat(sort-to-afun($Sort) $FieldId)
+  ===>
+  build-imploded-arg($Label:{ $Sort $Sep }*) = <$FieldId($FieldType)>
+   
+% Plus-list transformed into star-list because AsFix1 demands this! %
+[equ-build-imploded-arg-iter-sep-plus]
+  $FieldId = sdflit-to-afun($Label),
+  $FieldType = afun-concat(sort-to-afun($Sort) $FieldId)
+  ===>
+  build-imploded-arg($Label:{ $Sort $Sep }+) = <$FieldId($FieldType)>
+    

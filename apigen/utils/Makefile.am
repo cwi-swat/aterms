@@ -8,7 +8,8 @@ include $(top_srcdir)/make_rules
 
 ADT_TO_C		= ${top_builddir}/utils/adt-to-c
 
-bin_SCRIPTS		= sdf2-to-adt adt-to-c adt-to-java
+bin_SCRIPTS		= sdf2-to-adt adt-to-c adt-to-java \
+                          sdf2-to-imploded-adt
 
 lib_LIBRARIES		= libADT.a
 include_HEADERS		= ADT.h ADT_dict.h ADT-utils.h

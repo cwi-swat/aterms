@@ -2,8 +2,6 @@ definition
 
 module Booleans
 
-imports Layout
-
 exports
   sorts Bool BoolList
 
