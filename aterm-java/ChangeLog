@@ -1,5 +1,8 @@
 $Id$
 
+2003/08/12 <{jong,kooiker}@cwi.nl>
+ * aterm/Visitor.java: scrapped folding
+
 2003/08/07 <jurgenv@cwi.nl>
  * Removed old commented out code
  * All classed use PureFactory.getEmpty() instead of PureFactory.empty now to
