@@ -47,7 +47,7 @@ randgen_LDADD      	= $(LDLIBS)
 termstats_SOURCES  	= termstats.c
 termstats_LDADD    	= $(LDLIBS)
 
-test-tool2.c : tool2.tif.h
+test-tool2.o : tool2.tif.h
 
 tool2.tif.o : tool2.tif.c tool2.tif.h
 
@@ -55,8 +55,6 @@ tool2.tif.c tool2.tif.h : test2.tifs
 	$(top_builddir)/toolbus/tifstoc -tool tool2 $<
 
 EXTRA_DIST = termstats.sh test.tb test2.tb Test.asfix test.trms error.trm 
-
-termstats.sh : termstats
 
 test: stress
 	./stress
