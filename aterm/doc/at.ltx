@@ -123,7 +123,7 @@ The abstract definition of this datatype is as follows.
 \item A real constant is an \ATerm.
 \item A list of zero or more \ATerms\ is an \ATerm.
 \item A function application consisting of a function symbol and
-      a list of zero or more \ATerms\ (arguments) is an \ATerm.
+      zero or more \ATerms\ (arguments) is an \ATerm.
       The number of arguments of the function is called
       the \emph{arity} of the function.
 \item A blob (Binary Large data OBject) containing a length indication
@@ -164,11 +164,10 @@ Note that there is no concrete syntax defined for blobs, because
 a humanly readable representation of blobs depends on the type
 of data stored in the blob.
 
-\subsection{Operations}
+\subsection{Constants and Operations}
 \label{operations}
 
-On this \ATerm\ datatype, we have 13 operations. We also introduce
-6 constants that represent the different subtypes:
+Six constants are defined to represent the different subtypes in \ATerms. 
 \begin{itemize}
 \item {\tt INT}:  An integer term.
 \item {\tt REAL}: A real term.
@@ -178,13 +177,22 @@ On this \ATerm\ datatype, we have 13 operations. We also introduce
         brackets.
 \item {\tt BLOB}: A term containing binary data.
 \end{itemize}
+These constants are needed when determining the type of an arbitrary \ATerm.
+
+The \ATerm\ datatype offers thirteen operations to manipulate terms.
+These operations take care of reading and writing terms.
+There is a predicate to check the equality of two terms.
+Two functions {\tt make} and {\tt match} to construct a term
+and to take a terms apart, respectively.
+Both functions use a string pattern containing placeholders or holes.
+These holes determine the places where terms should occur,
+for example ``{\tt and(\%t,\%t)}''.
+Furthermore there are three functions to manipulate the annotations.
+Finally there exists one function to obtain the (sub)type of a term.
 
 The operations are as follows:
 \begin{itemize}
-\item {\tt ATerm make(\emph{pattern}, \emph{args})}: This operation returns a new
-term created by taking the string pattern, parsing it as a term and filling
- the holes in the resulting term with arguments taken from {\tt args}.
- {\tt <HJ> Meer uitleg over patterns}
+
 \item {\tt ATerm readFromString(\emph{string})}: Creates a new term by parsing
 \emph{string}.
 \item {\tt ATerm readFromTextFile(\emph{file})}: Creates a new term by parsing the
@@ -192,14 +200,7 @@ data from \emph{file}.
 \item {\tt ATerm readFromBinaryFile(\emph{file})}: Creates a new term by reading a
 compact, portable, binary representation from \emph{file}. This format
 is discussed in Section \ref{baf}.
-\item {\tt Integer getType(\emph{term})}: Retrieve the type of a term. This
-operation returns one of the constants mentioned above.
-\item {\tt ATbool ATisEqual(\emph{t1},\emph{t2})}: Check if two terms are 
-equal.
-\item {\tt ATermList match(\emph{term}, \emph{pattern})}: Match \emph{term} against
-\emph{pattern}, and return a list of subterms matching with placeholders
-in \emph{pattern}.
- {\tt <HJ> Meer uitleg over patterns}
+
 \item {\tt Boolean writeToTextFile(\emph{term}, \emph{file})}: Write the text
 representation of \emph{term} to \emph{file}. Returns {\tt true} for
 success and {\tt false} for failure.
@@ -207,6 +208,17 @@ success and {\tt false} for failure.
 {\tt true} for success, and {\tt false} for failure (see Section \ref{baf}).
 \item {\tt String writeToString(\emph{term})}: Return the text representation
 of \emph{term} as a string.
+
+\item {\tt ATbool ATisEqual(\emph{t1},\emph{t2})}: Check if two terms are 
+equal.
+
+\item {\tt ATerm make(\emph{pattern}, \emph{args})}: This operation returns a new
+term created by taking the string pattern, parsing it as a term and filling
+ the holes in the resulting term with arguments taken from {\tt args}.
+\item {\tt ATermList match(\emph{term}, \emph{pattern})}: Match \emph{term} against
+\emph{pattern}, and return a list of subterms matching with placeholders
+in \emph{pattern}.
+
 \item {\tt ATerm setAnnotation(\emph{term}, \emph{label}, \emph{annotation})}:
 Return a copy of \emph{term} with annotion labeled by \emph{label} changed
 to \emph{annotation}.
@@ -214,34 +226,47 @@ to \emph{annotation}.
 Retrieve the annotation labeled by \emph{label} of \emph{term}.
 \item {\tt ATerm removeAnnotation(\emph{term}, \emph{label})}: Return a copy
 of \emph{term} with its annotation labeled by \emph{label} removed.
+
+\item {\tt Integer getType(\emph{term})}: Retrieve the type of a term. This
+operation returns one of the constants mentioned above.
 \end{itemize}
- Together these operations form a set of operations that is sufficiently
-powerful for most users, yet is simple enough to learn in a relatively
+Although this may seem a rather restricted set of functions, this set
+is sufficiently powerful for most users to build simple applications
+with the \ATerm\ library, such as XXX voorbeelden XXX
+Yet the set of operations is simple enough to learn in a relatively
 short period of time. We refer to this interface as the \emph{level one}
 interface of the \ATerm\ datatype.
  
-In order to accomodate \ATerm\ `power users',
-we also provide a \emph{level two} interface, which provides a more extensive
+In order to accomodate \ATerm\ ``advanced users'',
+we also provide a \emph{level two} interface, 
+which provides a more sophisticated
 set of datatypes and functions. These extensions are useful only
 when more control over the underlying implementation is needed
 or in situations where some operations that can be implemented using
 level one constructs but can be expressed more concisely and implemented more
 efficiently using level two constructs.
 The level two interface is a strict superset of the level one
-interface. A description of the level two interface
+interface. A detailed description of the level two interface
 can be found in Appendix \ref{level2}.
 
 %}}}
 %{{{ Requirements
 
-\section{Requirements}
+\section{Requirements on the Implementation}
 \label{requirements}
-In this section we will introduce a number of constraints
+
+The \ATerm\ library will be used in tools like programming environments and
+rewriting engines that must process large terms in an efficient way.
+For instance, (abstract) syntax trees contain a lot of redundant 
+information which can easily 
+be shared to reduce the size of these trees.
+In this section we will formulate a number of constraints
 that play an important role in the design and implementation of the
 \ATerm\ datatype.
 
-The implementations we have in mind must be able to handle
-large amounts of terms. This observation makes it possible to
+The applications we have in mind must be able to handle
+large amounts of terms as well as huge terms. 
+This observation makes it possible to
 formulate a number of efficiency requirements on the implementation of
 the \ATerm\ datatype:
 
@@ -263,10 +288,11 @@ of the \ATerm\ datatype is easy to use:
 \item Automatic garbage collection is very important so users of this
       datatype do not need to deallocate \ATerm\ objects explicitly.
 \item The interface of the library should
-      be intuitive, and be as small as possible to avoid a steep
+      be intuitive and it should be as small as possible to avoid a steep
       learning curve. This is among others realized by restricting the 
       level one
-      interface to the 12 operations presented in Section \ref{operations}.
+      interface to the thirteen operations presented in 
+      Section \ref{operations}.
 \end{itemize}
 
 Besides these requirements there are a number of practical 
@@ -325,9 +351,9 @@ This design decision has a number of important consequences:
 \end{itemize}
 
 The maximal sharing of terms can only be maintained when we check
-at term creation time if a particular term already exists. This term
-lookup must be executed \emph{extremely fast}, in order to implement term
-creation efficiently. We decided to use the fastest algorithm available
+at term creation time whether a particular term already exists. The
+lookup must be \emph{extremely fast}, in order to ensure efficient term
+creation. We use the fastest technique available
 in this situation, namely hashing. Using a hash function that depends on the
 \emph{addresses} of the function symbol and the arguments of a function
 application, we can quickly search the term database to find a function 
@@ -343,6 +369,7 @@ overhead of about 25 percent. Other solutions for collision
 resolution will either increase the memory requirements (e.g.
 binary tree chaining), or the CPU requirements for insertions
 or deletions (open addressing, see \cite{Knuth73}).
+We use the linear hash chaining in our implementation. 
 
 \subsubsection{Direct or indirect hashing}
 Another issue is whether to store all terms directly in
@@ -417,8 +444,8 @@ this strategy has merits, it is unusable in our situation.
 Mark-compact garbage collection assumes that objects
 can be relocated to a different memory location, requiring that
 all references to objects can be updated.
-But when using C as implementation language, we cannot be sure to relyably 
-find all references to an object without support from the programmer.
+But when using C as implementation language, we cannot be sure to 
+find \emph{all} references to an object without support from the programmer.
 
 \subsubsection{Mark-sweep garbage collection}
 
