@@ -138,6 +138,8 @@ writeIntToBuf(unsigned int val, unsigned char *buf)
 /*}}}  */
 /*{{{  static int readIntFromBuf(unsigned int *val, unsigned char *buf) */
 
+#if 0
+
 static
 int
 readIntFromBuf(unsigned int *val, unsigned char *buf)
@@ -170,6 +172,8 @@ readIntFromBuf(unsigned int *val, unsigned char *buf)
 	*val = buf[4] + (buf[3] << 8) + (buf[2] << 16) + (buf[1] << 24);
 	return 5;
 }
+
+#endif
 
 /*}}}  */
 /*{{{  static int writeIntToFile(unsigned int val, FILE *file) */

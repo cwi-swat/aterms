@@ -34,6 +34,8 @@ LFLAGS_GCC	= @LFLAGS_GCC@
 LFLAGS_DBG	= @LFLAGS_DBG@
 LFLAGS_PROF	= @LFLAGS_PROF@
 
+LIBS		= @LIBS@
+
 AR		= @AR@
 AR_FLAGS	= cr
 
@@ -101,10 +103,10 @@ libATerm-prof.a: ${OBJ_PROF}
 	${AR} ${AR_FLAGS} $@ ${OBJ_PROF}
 
 baffle: baffle.c libATerm-cc.a
-	${CC_CC} ${CFLAGS_CC} -o $@ $< -L. -lATerm-cc
+	${CC_CC} ${CFLAGS_CC} -o $@ $< -L. -lATerm-cc ${LIBS}
 
 termsize: termsize.c libATerm-cc.a
-	${CC_CC} ${CFLAGS_CC} -o $@ $< -L. -lATerm-cc
+	${CC_CC} ${CFLAGS_CC} -o $@ $< -L. -lATerm-cc ${LIBS}
 
 tag:
 	ctags *.[ch]

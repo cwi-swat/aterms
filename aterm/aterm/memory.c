@@ -30,8 +30,6 @@
 
 #define CHECK_ARITY(ari1,ari2) DBG_ARITY(assert((ari1) == (ari2)))
 
-#define EMPTY_HASH_NR 12347
-
 #define INFO_HASHING    1
 #define MAX_INFO_SIZES 256
 
@@ -42,41 +40,13 @@
 #define CSTEP(crc,c)   ((((crc)>>8) & 0x00FFFFFFL) ^ \
 												CRC_TABLE[((int)crc^(c))&0xFF])
 
-/*#define CNOISE(w)      CSTEP(CSTEP(CSTEP(CSTEP(0xFFFFFFFFL, \
-												 (w)), (w)>>8), (w)>>16), (w)>>24)*/
-/*#define CNOISE(w)      CSTEP(CSTEP(0xFFFFFFFFL, \
-												 (((w)>>8) ^ (w))), (w)>>16)
 #define CNOISE(w)        CSTEP(0xFFFFFFFFL, ((w)>>24)^((w)>>16)^((w)>>8)^w) 
-*/
-#define CNOISE(w)        CSTEP(0xFFFFFFFFL, ((w)>>24)^((w)>>16)^((w)>>8)^w) 
-
-/* Best sofar with noise:
-#define S(w)           (UI(w))
-#define C(hnr,w)       ((UI(hnr)>>1) ^ (UI(w)))
-#define F(hnr)         ((UI(hnr) ^ (CNOISE(hnr))) & table_mask)
-*/
-
-/* Best sofar without noise */
-/*
-#define S(w)           (UI(w) ^ (UI(w)>>8))
-#define C(hnr,w)       ((UI(hnr)>>1) ^ (UI(w)))
-#define F(hnr)         (UI(hnr) & table_mask)
-*/
 
 #define S(w)           ((UI(w)>>8))
 #define C(hnr,w)       ((UI(hnr)>>1) ^ (UI(w)))
-#define F(hnr)         (UI(hnr) & table_mask)
+/*#define F(hnr)         (UI(hnr) & table_mask)*/
+#define F(hnr)         (UI(hnr))
 
-
-/*
-#define HNUM1(h)                   F(S(h))
-#define HNUM2(h,w0)                F(C(S(h),w0))
-#define HNUM3(h,w0,w1)             F(C(C(S(h),w0),w1))
-#define HNUM4(h,w0,w1,w2)          F(C(C(C(S(h),w0),w1),w2))
-#define HNUM5(h,w0,w1,w2,w3)       F(C(C(C(C(S(h),w0),w1),w2),w3))
-#define HNUM6(h,w0,w1,w2,w3,w4)    F(C(C(C(C(C(S(h),w0),w1),w2),w3),w4))
-#define HNUM7(h,w0,w1,w2,w3,w4,w5) F(C(C(C(C(C(C(S(h),w0),w1),w2),w3),w4),w5))
-*/
 #define HNUM1(h)                   F(S(h))
 #define HNUM2(h,w0)                F(C(w0,S(h)))
 #define HNUM3(h,w0,w1)             F(C(C(w1,w0),S(h)))
@@ -98,11 +68,13 @@ Block *at_blocks[MAX_TERM_SIZE]  = { NULL };
 int at_nrblocks[MAX_TERM_SIZE]   = { 0 };
 ATerm at_freelist[MAX_TERM_SIZE] = { NULL };
 BlockBucket block_table[BLOCK_TABLE_SIZE] = { { NULL, NULL } };
+int total_nodes = 0;
 
 static int alloc_since_gc[MAX_TERM_SIZE] = { 0 };
 static unsigned int table_class = 14;
 static unsigned int table_size;
 static unsigned int table_mask;
+static int maxload = 80;
 static ATerm *hashtable;
 
 static int destructor_count = 0;
@@ -125,12 +97,8 @@ static int hash_info_after_gc[MAX_INFO_SIZES][3];
 static unsigned int hash_number(unsigned int header, int n, ATerm w[])
 {
   int i;
-/*  unsigned int hnr = S(header);
-
-  for(i=0; i<n; i++)
-		hnr = C(hnr, w[i]);
-*/
 	unsigned int hnr;
+
 	if(n>0) {
 		hnr = UI(w[n-1]);
 		for(i=n-2; i>=0; i--)
@@ -148,15 +116,6 @@ static unsigned int hash_number(unsigned int header, int n, ATerm w[])
 
 static unsigned int hash_number_anno(unsigned int header, int n, ATerm w[], ATerm anno)
 {
-/*  int i;
-  unsigned int hnr = S(header);
-
-  for(i=0; i<n; i++)
-    hnr = C(hnr, w[i]);
-  hnr = C(hnr, anno);
-
-  return F(hnr);
-*/
 	int i;
 
 	unsigned int hnr = UI(anno);
@@ -200,6 +159,86 @@ static void hash_info(int stats[MAX_INFO_SIZES][3])
 }
 
 /*}}}  */
+/*{{{  static int term_size(ATerm t) */
+
+/**
+  * Calculate the size (in words) of a term.
+  */
+
+static int term_size(ATerm t)
+{
+  int size = (HAS_ANNO(t->header) ? 3 : 2);
+
+  switch(ATgetType(t)) {
+    case AT_INT:
+    case AT_PLACEHOLDER:
+      size += 1;
+      break;
+    case AT_REAL:
+    case AT_LIST:
+			size += 2;
+			break;
+    case AT_BLOB:
+      size += 1;
+      break;
+    case AT_APPL:
+      size += ATgetArity(ATgetSymbol(t));
+      break;
+  }
+  return size;
+}
+
+/*}}}  */
+/*{{{  static void resize_hashtable() */
+
+/**
+	* Resize the hashtable
+	*/
+
+void resize_hashtable()
+{
+	ATerm *oldtable;
+	int i, oldsize;
+
+	oldtable = hashtable;
+	oldsize = table_size;
+
+	table_class++;
+	table_size = 1<<table_class;
+	table_mask = table_size-1;
+	fprintf(stderr, "resizing hashtable, class = %d\n", table_class);
+
+	/*{{{  Create new term table */
+
+  hashtable = (ATerm *)calloc(table_size, sizeof(ATerm));
+  if(!hashtable) {
+    ATerror("AT_initMemory: cannot re-allocate term table of size %d\n", 
+						table_size);
+  }
+
+	/*}}}  */
+	/*{{{  Rehash all old elements */
+
+	for(i=0; i<oldsize; i++) {
+		ATerm cur, next;
+		unsigned int hnr;
+
+		cur = oldtable[i];
+		while(cur) {
+			next = cur->next;
+			hnr  = hash_number(cur->header, term_size(cur)-2, (ATerm *)(cur+1));
+			hnr &= table_mask;
+			cur->next = hashtable[hnr];
+			hashtable[hnr] = cur;
+			cur  = next;
+		}
+	}
+
+	/*}}}  */
+}
+
+
+/*}}}  */
 
 /*{{{  void AT_initMemory(int argc, char *argv[]) */
 
@@ -210,6 +249,7 @@ static void hash_info(int stats[MAX_INFO_SIZES][3])
 void AT_initMemory(int argc, char *argv[])
 {
   int i;
+	unsigned int hnr;
 
 	table_class = 16;
 
@@ -224,8 +264,10 @@ void AT_initMemory(int argc, char *argv[])
 
 	/*}}}  */
 
+	table_class = 16;
 	table_size  = 1<<table_class;
 	table_mask  = table_size-1;
+
 
 	/*{{{  Initialize blocks */
 
@@ -254,7 +296,8 @@ void AT_initMemory(int argc, char *argv[])
   ATempty = (ATermList)AT_allocate(TERM_SIZE_LIST);
   ATempty->header = EMPTY_HEADER(0);
   ATempty->next = NULL;
-  hashtable[EMPTY_HASH_NR % table_size] = (ATerm)ATempty;
+	hnr = hash_number(ATempty->header, 0, NULL);
+  hashtable[hnr & table_mask] = (ATerm)ATempty;
 	ATprotect((ATerm *)&ATempty);
 
 	/*}}}  */
@@ -382,6 +425,8 @@ static void allocate_block(int size)
 	idx = (idx+1) % BLOCK_TABLE_SIZE;
 	newblock->next_before = block_table[idx].first_before;
 	block_table[idx].first_before = newblock;
+
+	total_nodes += BLOCK_SIZE/size;
 }
 
 /*}}}  */
@@ -403,6 +448,8 @@ ATerm AT_allocate(int size)
 					 alloc_since_gc[size], total);*/
 		if((100*alloc_since_gc[size]) <= GC_THRESHOLD*total) {
 				allocate_block(size);
+				if(total_nodes*100 > table_size*maxload)
+					resize_hashtable();
 		} else {
 			gc_count++;
 			if(infoflags & INFO_HASHING)
@@ -434,10 +481,14 @@ void AT_freeTerm(int size, ATerm t)
 	int idx, nrargs = size-ARG_OFFSET;
 
 	/* Remove the node from the hashtable */
-	unsigned int hnr = hash_number(t->header, nrargs, (ATerm *)(t+1));
+	unsigned int hnr = hash_number(t->header, nrargs, (ATerm *)(t+1)) & table_mask;
 	ATerm prev = NULL, cur = hashtable[hnr];
 
 	while(1) {
+		assert(cur);
+		/*if(!cur)
+			ATerror("### cannot find term %n at %p in hashtable at pos %d"
+							", header = %d\n", t, t, hnr, t->header);*/
 		if(t->header == cur->header) {
 			found = ATtrue;
 			for(idx=0; idx<nrargs; idx++) {
@@ -499,7 +550,7 @@ ATermAppl ATmakeAppl(Symbol sym, ...)
 		MAX_INLINE_ARITY+1 : arity, sym);
 
   hnr = hash_number(header, arity, arg_buffer);
-  cur = hashtable[hnr];
+  cur = hashtable[hnr & table_mask];
 
   while(cur) {
     if(cur->header == header) {
@@ -519,6 +570,8 @@ ATermAppl ATmakeAppl(Symbol sym, ...)
 
   if(!cur) {
     cur = AT_allocate(arity + ARG_OFFSET);
+		/* Delay masking until after AT_allocate */
+		hnr &= table_mask;
     cur->header = header;
     for(i=0; i<arity; i++) {
       ATgetArgument(cur, i) = arg_buffer[i];
@@ -547,7 +600,7 @@ ATermAppl ATmakeAppl0(Symbol sym)
   
   CHECK_ARITY(ATgetArity(sym), 0);
 
-  cur = hashtable[hnr];
+  cur = hashtable[hnr & table_mask];
   while(cur) {
 		if(cur->header == header)
 			return (ATermAppl)cur;
@@ -555,6 +608,8 @@ ATermAppl ATmakeAppl0(Symbol sym)
 	}
 
 	cur = AT_allocate(ARG_OFFSET);
+	/* Delay masking until after AT_allocate */
+	hnr &= table_mask;
 	cur->header = header;
 	cur->next = hashtable[hnr];
 	hashtable[hnr] = cur;
@@ -577,7 +632,7 @@ ATermAppl ATmakeAppl1(Symbol sym, ATerm arg0)
  
   CHECK_ARITY(ATgetArity(sym), 1);
  
-  cur = hashtable[hnr];
+  cur = hashtable[hnr & table_mask];
   while(cur) {
     if(cur->header == header && ATgetArgument(cur, 0) == arg0)
 			return (ATermAppl)cur;
@@ -585,6 +640,8 @@ ATermAppl ATmakeAppl1(Symbol sym, ATerm arg0)
 	}
 
 	cur = AT_allocate(ARG_OFFSET+1);
+	/* Delay masking until after AT_allocate */
+	hnr &= table_mask;
 	cur->header = header;
 	ATgetArgument(cur, 0) = arg0;
 	cur->next = hashtable[hnr];
@@ -608,7 +665,7 @@ ATermAppl ATmakeAppl2(Symbol sym, ATerm arg0, ATerm arg1)
   
   CHECK_ARITY(ATgetArity(sym), 2);
 
-  cur = hashtable[hnr];
+  cur = hashtable[hnr & table_mask];
   while(cur) {
 		if(cur->header == header &&	ATgetArgument(cur, 0) == arg0 &&
 			 ATgetArgument(cur, 1) == arg1)
@@ -617,6 +674,8 @@ ATermAppl ATmakeAppl2(Symbol sym, ATerm arg0, ATerm arg1)
 	}
 
 	cur = AT_allocate(ARG_OFFSET+2);
+	/* Delay masking until after AT_allocate */
+	hnr &= table_mask;
 	cur->header = header;
 	ATgetArgument(cur, 0) = arg0;
 	ATgetArgument(cur, 1) = arg1;
@@ -641,7 +700,7 @@ ATermAppl ATmakeAppl3(Symbol sym, ATerm arg0, ATerm arg1, ATerm arg2)
   
   CHECK_ARITY(ATgetArity(sym), 3);
 
-  cur = hashtable[hnr];
+  cur = hashtable[hnr & table_mask];
   while(cur && (cur->header != header ||
 		ATgetArgument(cur, 0) != arg0 ||
 		ATgetArgument(cur, 1) != arg1 ||
@@ -650,6 +709,8 @@ ATermAppl ATmakeAppl3(Symbol sym, ATerm arg0, ATerm arg1, ATerm arg2)
 
   if(!cur) {
     cur = AT_allocate(ARG_OFFSET+3);
+		/* Delay masking until after AT_allocate */
+		hnr &= table_mask;
     cur->header = header;
     ATgetArgument(cur, 0) = arg0;
     ATgetArgument(cur, 1) = arg1;
@@ -676,7 +737,7 @@ ATermAppl ATmakeAppl4(Symbol sym, ATerm arg0, ATerm arg1, ATerm arg2, ATerm arg3
   
   CHECK_ARITY(ATgetArity(sym), 4);
 
-  cur = hashtable[hnr];
+  cur = hashtable[hnr & table_mask];
   while(cur && (cur->header != header ||
 		ATgetArgument(cur, 0) != arg0 ||
 		ATgetArgument(cur, 1) != arg1 ||
@@ -686,6 +747,8 @@ ATermAppl ATmakeAppl4(Symbol sym, ATerm arg0, ATerm arg1, ATerm arg2, ATerm arg3
 
   if(!cur) {
     cur = AT_allocate(ARG_OFFSET+4);
+		/* Delay masking until after AT_allocate */
+		hnr &= table_mask;
     cur->header = header;
     ATgetArgument(cur, 0) = arg0;
     ATgetArgument(cur, 1) = arg1;
@@ -714,7 +777,7 @@ ATermAppl ATmakeAppl5(Symbol sym, ATerm arg0, ATerm arg1, ATerm arg2,
   
   CHECK_ARITY(ATgetArity(sym), 5);
 
-  cur = hashtable[hnr];
+  cur = hashtable[hnr & table_mask];
   while(cur && (cur->header != header ||
 		ATgetArgument(cur, 0) != arg0 ||
 		ATgetArgument(cur, 1) != arg1 ||
@@ -725,6 +788,8 @@ ATermAppl ATmakeAppl5(Symbol sym, ATerm arg0, ATerm arg1, ATerm arg2,
 
   if(!cur) {
     cur = AT_allocate(ARG_OFFSET+5);
+		/* Delay masking until after AT_allocate */
+		hnr &= table_mask;
     cur->header = header;
     ATgetArgument(cur, 0) = arg0;
     ATgetArgument(cur, 1) = arg1;
@@ -754,7 +819,7 @@ ATermAppl ATmakeAppl6(Symbol sym, ATerm arg0, ATerm arg1, ATerm arg2,
   
   CHECK_ARITY(ATgetArity(sym), 6);
 
-  cur = hashtable[hnr];
+  cur = hashtable[hnr & table_mask];
   while(cur && (cur->header != header ||
 		ATgetArgument(cur, 0) != arg0 ||
 		ATgetArgument(cur, 1) != arg1 ||
@@ -766,6 +831,8 @@ ATermAppl ATmakeAppl6(Symbol sym, ATerm arg0, ATerm arg1, ATerm arg2,
 
   if(!cur) {
     cur = AT_allocate(ARG_OFFSET+6);
+		/* Delay masking until after AT_allocate */
+		hnr &= table_mask;
     cur->header = header;
     ATgetArgument(cur, 0) = arg0;
     ATgetArgument(cur, 1) = arg1;
@@ -805,7 +872,7 @@ ATermAppl ATmakeApplList(Symbol sym, ATermList args)
   }
 
 	hnr = hash_number(header, arity, arg_buffer);
-  cur = hashtable[hnr];
+  cur = hashtable[hnr & table_mask];
 
   while(cur)
 	{
@@ -830,6 +897,8 @@ ATermAppl ATmakeApplList(Symbol sym, ATermList args)
   if(!cur)
 	{
     cur = AT_allocate(ARG_OFFSET + arity);
+		/* Delay masking until after AT_allocate */
+		hnr &= table_mask;
     cur->header = header;
     for(i=0; i<arity; i++) {
       ATgetArgument(cur, i) = arg_buffer[i];
@@ -865,7 +934,7 @@ ATermAppl ATmakeApplArray(Symbol sym, ATerm args[])
   }
 
 	hnr = hash_number(header, arity, arg_buffer);
-  cur = hashtable[hnr];
+  cur = hashtable[hnr & table_mask];
 
   while(cur) {
     if(cur->header == header) {
@@ -885,6 +954,8 @@ ATermAppl ATmakeApplArray(Symbol sym, ATerm args[])
 
   if(!cur) {
     cur = AT_allocate(ARG_OFFSET + arity);
+		/* Delay masking until after AT_allocate */
+		hnr &= table_mask;
     cur->header = header;
     for(i=0; i<arity; i++) {
       ATgetArgument(cur, i) = arg_buffer[i];
@@ -933,12 +1004,14 @@ ATermInt ATmakeInt(int val)
   header_type header = INT_HEADER(0);
   unsigned int hnr = HNUM2(header, val);
  
-  cur = hashtable[hnr];
+  cur = hashtable[hnr & table_mask];
   while(cur && (cur->header != header || ((ATermInt)cur)->value != val))
     cur = cur->next;
 
   if(!cur) {
     cur = AT_allocate(3);
+		/* Delay masking until after AT_allocate */
+		hnr &= table_mask;
     cur->header = header;
 		((ATermInt)cur)->value = val;
     cur->next = hashtable[hnr];
@@ -961,12 +1034,14 @@ ATermReal ATmakeReal(double val)
   header_type header = REAL_HEADER(0);
   unsigned int hnr = HNUM3(header, *((ATerm *)&val), *(((ATerm *)&val)+1));
 
-  cur = hashtable[hnr];
+  cur = hashtable[hnr & table_mask];
   while(cur && (cur->header != header || ((ATermReal)cur)->value != val))
     cur = cur->next;
 
   if(!cur) {
     cur = AT_allocate(4);
+		/* Delay masking until after AT_allocate */
+		hnr &= table_mask;
     cur->header = header;
 		((ATermReal)cur)->value = val;
     cur->next = hashtable[hnr];
@@ -1029,7 +1104,7 @@ ATermList ATmakeList1(ATerm el)
   header_type header = LIST_HEADER(0, 1);
   unsigned int hnr = HNUM3(header, el, ATempty);
 
-  cur = hashtable[hnr];
+  cur = hashtable[hnr & table_mask];
   while(cur && (cur->header != header || 
 		ATgetFirst((ATermList)cur) != el ||
 		ATgetNext((ATermList)cur) != ATempty))
@@ -1037,6 +1112,8 @@ ATermList ATmakeList1(ATerm el)
 
   if(!cur) {
     cur = AT_allocate(TERM_SIZE_LIST);
+		/* Delay masking until after AT_allocate */
+		hnr &= table_mask;
     cur->header = header;
     ATgetFirst((ATermList)cur) = el;
     ATgetNext((ATermList)cur) = ATempty;
@@ -1061,7 +1138,7 @@ ATermList ATinsert(ATermList tail, ATerm el)
 
   unsigned int hnr = HNUM3(header, el, tail);
 
-  cur = hashtable[hnr];
+  cur = hashtable[hnr & table_mask];
   while(cur && (cur->header != header || 
 		ATgetFirst((ATermList)cur) != el || 
 		ATgetNext((ATermList)cur) != tail))
@@ -1069,13 +1146,15 @@ ATermList ATinsert(ATermList tail, ATerm el)
 
   if(!cur) {
     cur = AT_allocate(TERM_SIZE_LIST);
+		/* Hashtable might be resized, so delay masking until after AT_allocate */
+		hnr &= table_mask; 
     cur->header = header;
     ATgetFirst((ATermList)cur) = el;
     ATgetNext((ATermList)cur) = tail;
     cur->next = hashtable[hnr];
     hashtable[hnr] = cur;
   }
-
+	
   return (ATermList) cur;
 }
 
@@ -1094,13 +1173,15 @@ ATermPlaceholder ATmakePlaceholder(ATerm type)
 
   unsigned int hnr = HNUM2(header, type);
 
-  cur = hashtable[hnr];
+  cur = hashtable[hnr & table_mask];
   while(cur && (cur->header != header || 
 		ATgetPlaceholder((ATermPlaceholder)cur) != type))
     cur = cur->next;
 
   if(!cur) {
     cur = AT_allocate(3);
+		/* Delay masking until after AT_allocate */
+		hnr &= table_mask;
     cur->header = header;
     ((ATermPlaceholder)cur)->ph_type = type;
     cur->next = hashtable[hnr];
@@ -1125,13 +1206,15 @@ ATermBlob ATmakeBlob(int size, void *data)
   header_type header = BLOB_HEADER(0, size);
 
   unsigned int hnr = HNUM2(header, data);
-
-  cur = hashtable[hnr];
+	
+  cur = hashtable[hnr & table_mask];
   while(cur && (cur->header != header || ((ATermBlob)cur)->data != data))
     cur = cur->next;
 
   if(!cur) {
     cur = AT_allocate(3);
+		/* Delay masking until after AT_allocate */
+		hnr &= table_mask;
     cur->header = header;
     ((ATermBlob)cur)->data = data;
     cur->next = hashtable[hnr];
@@ -1191,38 +1274,6 @@ void ATunregisterBlobDestructor(ATbool (*destructor)(ATermBlob))
 
 /*}}}  */
 
-/*{{{  static int term_size(ATerm t) */
-
-/**
-  * Calculate the size (in words) of a term.
-  */
-
-static int term_size(ATerm t)
-{
-  int size = (HAS_ANNO(t->header) ? 3 : 2);
-  int arity;
-  Symbol sym;
-
-  switch(ATgetType(t)) {
-    case AT_INT:
-    case AT_PLACEHOLDER:
-      size++;
-      break;
-    case AT_REAL:
-    case AT_LIST:
-    case AT_BLOB:
-      size += 2;
-      break;
-    case AT_APPL:
-      sym = ATgetSymbol(t);
-      arity = ATgetArity(sym);
-      size += (arity > MAX_INLINE_ARITY ? arity+1 : arity);
-      break;
-  }
-  return size;
-}
-
-/*}}}  */
 /*{{{  ATermList AT_getAnnotations(ATerm t) */
 
 /**
@@ -1260,7 +1311,7 @@ ATerm AT_setAnnotations(ATerm t, ATerm annos)
     SET_ANNO(header);
 
   hnr = hash_number_anno(header, size-2, ((ATerm *)t)+2, annos);
-  cur = hashtable[hnr];
+  cur = hashtable[hnr & table_mask];
   found = ATfalse;
   
   /* Look through the hashtable for an identical term */
@@ -1289,6 +1340,8 @@ ATerm AT_setAnnotations(ATerm t, ATerm annos)
   if(!found) {
     /* We need to create a new term */
     cur = AT_allocate(size+1);
+		/* Delay masking until after AT_allocate */
+		hnr &= table_mask;
     cur->header = header;
     cur->next   = hashtable[hnr];
     hashtable[hnr] = cur;
@@ -1323,7 +1376,7 @@ ATerm AT_removeAnnotations(ATerm t)
   size = term_size(t)-1;
 
   hnr = hash_number(header, size-2, ((ATerm *)t)+2);
-  cur = hashtable[hnr];
+  cur = hashtable[hnr & table_mask];
   found = ATfalse;
   
   /* Look through the hashtable for an identical term */
@@ -1336,22 +1389,24 @@ ATerm AT_removeAnnotations(ATerm t)
 
       /* check if other components are equal */
       for(i=2; i<size; i++) {
-	if(((ATerm *)cur)[i] != ((ATerm *)t)[i]) {
-	  rest_equal = ATfalse;
-	  break;
-	}
+				if(((ATerm *)cur)[i] != ((ATerm *)t)[i]) {
+					rest_equal = ATfalse;
+					break;
+				}
       }
 
       if(rest_equal)
-	found = ATtrue;
+				found = ATtrue;
       else
-	cur = cur->next;
+				cur = cur->next;
     }
   }
 
   if(!found) {
     /* We need to create a new term */
     cur = AT_allocate(size);
+		/* Delay masking until after AT_allocate */
+		hnr &= table_mask;
     cur->header = header;
     cur->next   = hashtable[hnr];
     hashtable[hnr] = cur;
