@@ -1,0 +1,12 @@
+*.jar
+*.tar.gz
+Makefile
+Makefile.in
+aclocal.m4
+config.*
+configure
+COPYING
+INSTALL
+install-sh
+missing
+mkinstalldirs

@@ -1,0 +1,11 @@
+dnl $Id$
+
+AC_INIT(configure.in)
+AM_INIT_AUTOMAKE(shared-objects, 1.0beta)
+
+AC_SET_MAKE
+
+AC_OUTPUT(
+  Makefile
+  shared/Makefile
+)
