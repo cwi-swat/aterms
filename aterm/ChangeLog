@@ -1,5 +1,8 @@
 $Id$
 
+2001/06/08 (olivierp@cwi.nl)
+ * Fixed implementation of AT(un)registerBlobDestructor
+
 2001/06/01 (olivierp@cwi.nl)
  * Added ATprotectMemory/ATunprotectMemory functions requested by
    Pierre-Etienne Moreau

@@ -1087,8 +1087,17 @@ void AT_freeTerm(int size, ATerm t)
 
   /* The data of a blob needs to be freed!!! */
   if (ATgetType(t) == AT_BLOB) {
+    ATbool destructed = ATfalse;
     /*ATfprintf(stderr, "freeing blob %p (%p): %t\n", t, ATgetBlobData((ATermBlob)t), t);*/
-    free(ATgetBlobData((ATermBlob)t));
+    for (i=0; i<destructor_count; i++) {
+      if ((destructors[i])((ATermBlob)t)) {
+	destructed = ATtrue;
+	break;
+      }
+    }
+    if (!destructed) {
+      free(ATgetBlobData((ATermBlob)t));
+    }
   }
 
   /* Remove the node from the hashtable */
@@ -2241,16 +2250,8 @@ ATermList ATmakeList(int n, ...)
 
 void ATregisterBlobDestructor(ATbool (*destructor)(ATermBlob))
 {
-  int i;
-
-  for(i=0; i<MAX_DESTRUCTORS; i++) {
-    if(destructors[i] == NULL) {
-      destructors[i] = destructor;
-      if(i>=destructor_count)
-	destructor_count = i+1;
-      return;
-    }
-  }
+  assert(destructor_count < MAX_DESTRUCTORS);
+  destructors[destructor_count++] = destructor;
 }
 
 /*}}}  */
@@ -2264,17 +2265,11 @@ void ATunregisterBlobDestructor(ATbool (*destructor)(ATermBlob))
 {
   int i;
 
-  for(i=0; i<MAX_DESTRUCTORS; i++) {
+  for(i=0; i<destructor_count; i++) {
     if(destructors[i] == destructor) {
-      destructors[i] = NULL;
+      destructors[i] = destructors[--destructor_count];
+      destructors[destructor_count] = 0;
       break;
-    }
-  }
-
-  for(i=MAX_DESTRUCTORS-1; i>=0; i--) {
-    if(destructors[i] != NULL) {
-      destructor_count = i+1;
-      return;
     }
   }
 }

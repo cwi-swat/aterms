@@ -7,6 +7,7 @@
 #include <unistd.h>
 #endif
 #include <stdio.h>
+#include <stdlib.h>
 #include <assert.h>
 #include "_aterm.h"
 #include "memory.h"
@@ -143,10 +144,26 @@ testSymbol(void)
 /*}}}  */
 /*{{{  void testBlob() */
 
+static ATbool destructor_false_count = 0;
+static ATbool destructor_true_count = 0;
+
+static ATbool blob_destructor_false(ATermBlob blob)
+{
+  destructor_false_count++;
+  return ATfalse;
+}
+
+static ATbool blob_destructor_true(ATermBlob blob)
+{
+  destructor_true_count++;
+  free(ATgetBlobData(blob));
+  return ATtrue;
+}
+
 void testBlob()
 {
 	char *ptr;
-	ATermBlob b[10];
+	static ATermBlob b[10];
 	FILE *file;
 
 	b[0] = ATmakeBlob(4, strdup("abc"));
@@ -163,6 +180,27 @@ void testBlob()
 	fseek(file, 0, SEEK_SET);
 	b[2] = (ATermBlob)ATreadFromTextFile(file);
 	test_assert("blob", 1, strcmp(ATgetBlobData(b[0]), ATgetBlobData(b[2])) == 0);
+
+	ATregisterBlobDestructor(blob_destructor_false);
+	ATregisterBlobDestructor(blob_destructor_false);
+	ATregisterBlobDestructor(blob_destructor_true);
+	ATregisterBlobDestructor(blob_destructor_false);
+
+	b[0] = NULL;
+	b[1] = NULL;
+	b[2] = NULL;
+
+	AT_collect(2);
+	ATfprintf(stderr, "destr_false_count=%d, destr_true_count=%d\n",
+		  destructor_false_count, destructor_true_count);
+	assert(destructor_false_count == 2*destructor_true_count);
+
+	assert(b[0] == NULL && b[1] == NULL && b[2] == NULL);
+
+	ATunregisterBlobDestructor(blob_destructor_false);
+	ATunregisterBlobDestructor(blob_destructor_true);
+	ATunregisterBlobDestructor(blob_destructor_false);
+	ATunregisterBlobDestructor(blob_destructor_false);
 
 	fclose(file);
 }
