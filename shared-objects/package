@@ -1,7 +1,7 @@
 package
 identification
-  name=__PACKAGE__
-  version=__VERSION__
+  name=shared-objects
+  version= 1.4
   location=http://www.cwi.nl/projects/MetaEnv/shared-objects
   info=http://www.cwi.nl/projects/MetaEnv/shared-objects
   description='A Java Class implementing a core factory for maximal sharing

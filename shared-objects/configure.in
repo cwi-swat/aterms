@@ -2,7 +2,7 @@ dnl $Id$
 
 AC_INIT
 AC_CONFIG_SRCDIR([configure.in])
-AM_INIT_AUTOMAKE(shared-objects, 1.4)
+GLT_INIT_PACKAGE
 AC_PREREQ(2.59)
 
 AC_PROG_MAKE_SET([])
