@@ -1,6 +1,4 @@
-dnl
 dnl $Id$
-dnl
 
 dnl Process this file with autoconf to produce a configure script.
 AC_INIT(configure.in)
@@ -86,7 +84,6 @@ apigen/gen/java/Makefile
 apigen/gen/tom/Makefile
 test/Makefile
 doc/Makefile
-doc/paper/Makefile
 ,
 chmod +x utils/adt-to-c utils/adt-to-java
 )

@@ -1,1 +1,1 @@
-SUBDIRS = paper
+SUBDIRS =

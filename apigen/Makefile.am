@@ -1,14 +1,14 @@
-SUBDIRS		= apigen lib-1.0 lib-2.0 utils test doc
+SUBDIRS = apigen lib-1.0 lib-2.0 utils test doc
 
-DISTFILE	= ${distdir}.tar.gz
-WWWDIR		= /hosts/www/projects/MetaEnv/apigen
+DISTFILE = ${distdir}.tar.gz
+WWWDIR = /hosts/www/projects/MetaEnv/apigen
 
 www-dist: ${DISTFILE}
 	cp ${DISTFILE} ${WWWDIR}
 	chgrp sen ${WWWDIR}/${DISTFILE}
 	chmod g+w ${WWWDIR}/${DISTFILE}
 
-EXTRA_DIST=make_rules $(wildcard *.pkg)
+EXTRA_DIST = make_rules $(wildcard *.pkg)
 
 noinst_SCRIPTS = ${PACKAGE}-${VERSION}.pkg
 
