@@ -14,10 +14,10 @@ class JavaTomGenerationParameters extends JavaGenerationParameters {
 		Iterator iter = args.iterator();
 		while (iter.hasNext()) {
 			String arg = (String) iter.next();
-			if ("--jtype".startsWith(arg)) {
+			if (arg.startsWith("--jtype")) {
 				shift(iter);
 				setJtype(true);
-			} else if ("--javagen".startsWith(arg)){
+			} else if (arg.startsWith("--javagen")){
 				shift(iter);
 				setJavaGen(true);
 			}
@@ -45,6 +45,7 @@ class JavaTomGenerationParameters extends JavaGenerationParameters {
 	}
 
 	public void setJtype(boolean jtype) {
+	    System.out.println("Setting JType to "+jtype);
 		this.jtype = jtype;
 	}
 	

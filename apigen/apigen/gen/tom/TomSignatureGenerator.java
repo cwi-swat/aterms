@@ -224,7 +224,6 @@ public class TomSignatureGenerator extends Generator {
 	private void genTomAltOperator(Type type, Alternative alt) {
 		String class_name = impl.TypeName(type.getId());
 		String operator_name = impl.OperatorName(type.getId(), alt.getId());
-
 		print("%op " + impl.TypeName(type.getId()) + " " + operator_name);
 
 		Iterator fields = type.altFieldIterator(alt.getId());

@@ -19,19 +19,19 @@ public class GenerationParameters {
 		Iterator iter = args.iterator();
 		while (iter.hasNext()) {
 			String arg = (String) iter.next();
-			if ("--input".startsWith(arg) || "-i".startsWith(arg)) {
+			if (arg.startsWith("--input") || arg.startsWith("-i")) {
 				shift(iter);
 				addInputFile(shiftArgument(iter));
 			}
-			else if ("--output".startsWith(arg) || "-o".startsWith(arg)) {
+			else if (arg.startsWith("--output") || arg.startsWith("-o")) {
 				shift(iter);
 				setOutputDirectory(shiftArgument(iter));
 			}
-			else if ("--name".startsWith(arg) || "-n".startsWith(arg)) {
+			else if (arg.startsWith("--name") || arg.startsWith("-n")) {
 				shift(iter);
 				setApiName(shiftArgument(iter));
 			}
-			else if ("--verbose".startsWith(arg) || "-v".startsWith(arg)) {
+			else if (arg.startsWith("--verbose") || arg.startsWith("-v")) {
 				shift(iter);
 				setVerbose(true);
 			}

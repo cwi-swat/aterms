@@ -23,19 +23,19 @@ public class JavaGenerationParameters extends GenerationParameters {
 		Iterator iter = args.iterator();
 		while (iter.hasNext()) {
 			String arg = (String) iter.next();
-			if ("--package".startsWith(arg) || "-p".startsWith(arg)) {
+			if (arg.startsWith("--package") || arg.startsWith("-p")) {
 				shift(iter);
 				setPackageName(shiftArgument(iter));
-			}	else if ("--import".startsWith(arg) || "-m".startsWith(arg)) {
+			}	else if (arg.startsWith("--import") || arg.startsWith("-m")) {
 				shift(iter);
 				addImport(shiftArgument(iter));
-			} else if ("--visitable".startsWith(arg) || "-t".startsWith(arg)) {
+			} else if (arg.startsWith("--visitable") || arg.startsWith("-t")) {
 				shift(iter);
 				setVisitable(true);
-			} else if ("--nojar".startsWith(arg)) {
+			} else if (arg.startsWith("--nojar")) {
 				shift(iter);
 				setGenerateJar(false);
-			} else if ("--version".startsWith(arg) || "-V".startsWith(arg)) {
+			} else if (arg.startsWith("--version") || arg.startsWith("-V")) {
 				shift(iter);
 				setVersion(shiftArgument(iter));
 			}

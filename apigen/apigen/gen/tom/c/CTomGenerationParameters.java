@@ -6,7 +6,7 @@ import java.util.List;
 import apigen.gen.c.CGenerationParameters;
 
 
-class CTomGenerationParameters extends CGenerationParameters  implements Cloneable {
+class CTomGenerationParameters extends CGenerationParameters {
 	private boolean jtype;
 	private boolean CGenStuff;
 	
@@ -14,10 +14,10 @@ class CTomGenerationParameters extends CGenerationParameters  implements Cloneab
 		Iterator iter = args.iterator();
 		while (iter.hasNext()) {
 			String arg = (String) iter.next();
-			if ("--jtype".startsWith(arg)) {
+			if (arg.startsWith("--jtype")) {
 				shift(iter);
 				setJtype(true);
-			} else if ("--javagen".startsWith(arg)){
+			} else if (arg.startsWith("--javagen")){
 				shift(iter);
 				setCGen(true);
 			}
@@ -48,14 +48,5 @@ class CTomGenerationParameters extends CGenerationParameters  implements Cloneab
 	public void setJtype(boolean jtype) {
 		this.jtype = jtype;
 	}
-	
-	public Object clone() {
-		try {
-			return super.clone();
-		} catch (CloneNotSupportedException e) {
-			System.err.println(e.getMessage());
-		}
-		return null; 
- 	}
 	
 } 

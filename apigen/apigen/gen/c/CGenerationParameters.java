@@ -14,19 +14,19 @@ public class CGenerationParameters extends GenerationParameters {
 		Iterator iter = args.iterator();
 		while (iter.hasNext()) {
 			String arg = (String) iter.next();
-			if ("--prefix".startsWith(arg)) {
+			if (arg.startsWith("--prefix")) {
 				shift(iter);
 				setPrefix(shiftArgument(iter));
 			}
-			else if ("--folding".startsWith(arg) || "-f".startsWith(arg)) {
+			else if (arg.startsWith("--folding") || arg.startsWith("-f")) {
 				shift(iter);
 				setFolding(true);
 			}
-			else if ("--prologue".startsWith(arg)) {
+			else if (arg.startsWith("--prologue")) {
 				shift(iter);
 				setPrologue(shiftArgument(iter));
 			}
-			else if ("--term-compatibility".equals(arg)) {
+			else if (arg.equals("--term-compatibility")) {
 				shift(iter);
 				setTermCompatibility(true);
 			}
