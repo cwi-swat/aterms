@@ -42,71 +42,6 @@ ATERMBIN="${ATERM}/bin"
 AC_SUBST(ATERMBIN)
 
 dnl }}}
-dnl {{{ Handle --with-asc-support
-
-AC_PACKAGE_REQUIRE(asc-support, asc-support-config,
-	[  --with-asc-support=DIR  asc-support is in DIR])
-
-ASCINC=${ASC_SUPPORT}/include
-AC_SUBST(ASCINC)
-
-ASCLIB=${ASC_SUPPORT}/lib
-AC_SUBST(ASCLIB)
-
-dnl }}}
-dnl {{{ Handle --with-pgen
-
-AC_PACKAGE_REQUIRE(pgen, sdf2table,
-	[  --with-pgen=DIR         pgen is in DIR (developers only)])
-AC_SUBST(PGEN)
-
-PGENBIN=${PGEN}/bin
-AC_SUBST(PGENBIN)
-
-dnl }}}
-dnl {{{ Handle --with-pt-support
- 
-AC_PACKAGE_REQUIRE(pt-support, unparsePT,
-      [  --with-pt-support=DIR   ParseTree is in DIR])
-AC_SUBST(PT_SUPPORT)
- 
-dnl PTINC=${PT_SUPPORT}/include
-dnl AC_SUBST(PTINC)
-dnl 
-dnl PTLIB=${PT_SUPPORT}/lib
-dnl AC_SUBST(PTLIB)
- 
-PTBIN=${PT_SUPPORT}/bin
-AC_SUBST(PTBIN)
- 
-dnl }}}
-dnl {{{ Handle --with-asf-support
-
-AC_PACKAGE_REQUIRE(asf-support, asf-support-config,
-	[  --with-asf-support=DIR  asf-support is in DIR])
-AC_SUBST(ASF_SUPPORT)
-
-dnl }}}
-dnl {{{ Handle --with-sglr
-
-AC_PACKAGE_REQUIRE(sglr, sglr,
-	[  --with-sglr=DIR         sglr is in DIR])
-AC_SUBST(SGLR)
-
-SGLRBIN=${SGLR}/bin
-AC_SUBST(SGLRBIN)
-
-dnl }}}
-dnl {{{ Handle --with-asfe
-
-AC_PACKAGE_REQUIRE(asfe, asfe,
-	[  --with-asfe=DIR         asf-evaluator is in DIR])
-AC_SUBST(ASFE)
-
-ASFBIN=${ASFE}/bin
-AC_SUBST(ASFBIN)
-
-dnl }}}
 dnl {{{ Handle --with-cflags
 
 AC_ARG_WITH(cflags,
@@ -128,7 +63,6 @@ AC_OUTPUT(
 Makefile
 spec/Makefile
 utils/Makefile
-utils/sdf2-to-adt
 utils/adt-to-c
 utils/adt-to-java
 apigen/Makefile
@@ -139,7 +73,6 @@ apigen/gen/java/Makefile
 test/Makefile
 doc/Makefile
 doc/paper/Makefile
-spec/add-labels/Makefile
 ,
 chmod +x utils/sdf2-to-adt utils/sdf2-to-adt utils/adt-to-c utils/adt-to-java
 )

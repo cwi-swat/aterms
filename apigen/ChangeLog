@@ -1,7 +1,12 @@
+2002/09/31 (vinju@loria.fr)
+ * Removed sdf2 dependencies by creating a new package sdf-apigen which contains
+   sdf2-to-adt and all that is related to it. 
+
 2002/09/24 (vinju@loria.fr)
  * Renamed API class to ADT class (eclipse rules!)
- * Made deeper package hierarchy in apigen to be able to reuse more code in the near future
- * Extracted common functionality out of CGen en JavaGEN into a Generator superclass 
+ * Made deeper package hierarchy in apigen to be able to reuse more code 
+ * Extracted common functionality out of CGen en JavaGEN into a Generator 
+   superclass 
  
 2002/09/23 (vinju@loria.fr)
  * Partly re-implemented and finished initial functionality of adt-to-java
