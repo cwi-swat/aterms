@@ -189,8 +189,8 @@ AC_OUTPUT(
 Makefile
 spec/Makefile
 utils/Makefile
-utils/gen-c-api
 utils/sdf2-to-adt
+utils/adt-to-c
 apigen/Makefile
 apigen/c/Makefile
 test/Makefile
@@ -198,8 +198,9 @@ doc/Makefile
 doc/paper/Makefile
 spec/gen-c-api/Makefile
 spec/sdf2-to-adt/Makefile
+sdf/Makefile
 ,
-chmod +x utils/gen-c-api utils/sdf2-to-adt
+chmod +x utils/sdf2-to-adt utils/adt-to-c
 )
 
 dnl }}}

@@ -17,8 +17,8 @@ XTBIN=@XTBIN@
 
 usage() {
 cat << ENDCAT >&2
-Usage: $PRG <module-name> <version>
-Example: $PRG Rolodex 1.0
+Usage: $PRG <SDF2-module>
+Example: $PRG Booleans.sdf
 ENDCAT
 }
 
@@ -26,7 +26,7 @@ ENDCAT
 
 # {{{ check argument count
 
-if test $# != 2
+if test $# != 1
 then
   usage
   exit 1
@@ -36,11 +36,10 @@ fi
 
 # {{{ Variable section
 
-MODULE=`basename $1 .sdf`
+MODULE=$1
+MODULE=`basename $MODULE .sdf`
 MODULE=`basename $MODULE .sdf2`
-VERSION=$2
 SDFFILE="$1"
-PROLOGUE="${MODULE}.pro"
 ADTFILE="${MODULE}.adt"
 
 SGLR=${SGLRBIN}/sglr
@@ -48,8 +47,6 @@ ASOURCE=asource
 
 SDF2TOADT="${bindir}/Sdf2-to-ADT"
 TABLE="${datadir}/Sdf2-to-ADT.trm.tbl"
-
-GENCAPI="${bindir}/gen-c-api"
 
 ADDLABELS="${XTBIN}/add-labels"
 
@@ -75,6 +72,4 @@ echo "sdf-to-adt(`${ADDLABELS} ${SDFFILE}`)" | \
 ${SGLR} -1 -p ${TABLE} | \
 ${SDF2TOADT} | \
 ${ASOURCE} > ${ADTFILE}
-
-${GENCAPI} ${MODULE} ${VERSION}
 

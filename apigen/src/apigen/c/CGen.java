@@ -42,7 +42,12 @@ public class CGen
 
   private static void usage()
   {
-    System.err.println("usage: CGen -prefix <prefix> -input <in> -output <out>");
+    System.err.println("usage: CGen [options]");
+    System.err.println("options:");
+    System.err.println("\t-prefix <prefix>          [\"\"]");
+    System.err.println("\t-input <in>               [-]");
+    System.err.println("\t-output <out>");
+    System.err.println("\t-prologue <prologue>");
     System.exit(1);
   }
 
@@ -218,13 +223,14 @@ public class CGen
 
   private void genInitFunction(API api)
   {
-    String decl = "void " + prefix + "init" + capOutput + "Api(void)";
+    String decl = "void " + prefix
+      + "init" + buildId(capOutput) + "Api(void)";
     header.println(decl + ";");
 
     printFoldOpen(source, decl);
     source.println(decl);
     source.println("{");
-    source.println("  init_" + output + "_dict();");
+    source.println("  init_" + buildId(output) + "_dict();");
     source.println("}");
     printFoldClose(source);
     source.println();
