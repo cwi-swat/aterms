@@ -9,14 +9,13 @@
 % {{{  packages
 
 \usepackage{verbatim}
-\usepackage{ASF+SDF}
-\usepackage{ASF+SDF-options}
 
 % }}}
 % {{{  commands
 
 \newcommand{\C}{\mbox{\sc C}}
 \newcommand{\adt}{\mbox{\sc adt}}
+\newcommand{\afun}{\texttt{AFun}}
 \newcommand{\api}{\mbox{\sc api}}
 \newcommand{\asdf}{\mbox{\sc Asf+Sdf}}
 \newcommand{\asfix}{\mbox{AsFix}}
@@ -357,16 +356,17 @@ string over multiple lines.
 \subsection{Accessing Parse Trees using the Level Two interface}
 \label{sec:aterm-lvl2}
 
-Extracting information from an \aterm\ using the \texttt{ATmatch} is
-inefficient. Each time the function is invoked, the pattern has to be
-parsed before any matching can be done. Also, if you \emph{know} which
-part of the \aterm\ you need, there is really no need to build any sort
-of matching automaton. Instead you can just \emph{get} the element you
-are looking for. In our boolean example, if we \emph{know} for sure that
-we have a valid \texttt{and}-term, we can directly extract its left-hand
-side. If, however, our incoming term can be any arbitrary \aterm, we can
-no longer safely extract a subterm, we have to match the term against the
-pattern for an \texttt{and}-term, to see if it even has a left-hand side.
+Extracting information from an \aterm\ using \texttt{ATmatch} is
+inefficient. Each time the function is invoked, the match-pattern has
+to be parsed before any matching can be done. Also, if you \emph{know}
+which part of the \aterm\ you need, there is really no need to build
+any sort of matching automaton. Instead you can just \emph{get} the
+element you are looking for. In our boolean example, if we \emph{know}
+for sure that we have a valid \texttt{and}-term, we can directly extract
+its left-hand side. If, however, our incoming term can be any arbitrary
+\aterm, we can no longer safely extract a subterm, we have to match the
+term against the pattern for an \texttt{and}-term, to see if it even
+has a left-hand side.
 
 Therefore, if we assume as a precondition to our function that it will
 always be called with a valid boolean \texttt{and}-term, we can use
@@ -374,8 +374,8 @@ more direct \aterm-calls, such as \texttt{ATgetFirst} to get the head
 of a list, and \texttt{ATgetArgument} to get a specific argument from
 a function application.
 
-In particular, recalling that in \asfix, we are dealing with
-\texttt{appl(prod, [args])} patterns, the \texttt{args} are always the
+In particular, recalling that in \asfix\ we are dealing with
+\texttt{appl(prod,[args])} patterns, the \texttt{args} are always the
 second argument of the \texttt{appl}. If we look closely at the \asfix\
 pattern for our \texttt{and}-terms, we notice that the left-hand side
 is the first element from this list of \texttt{args}. The extraction
@@ -400,41 +400,58 @@ function can now be simplified to the more efficient:
 \subsection{Maintenance issues}
 \label{sec:maintenance}
 
-There are several fundamental maintenance issues inherent in using the \atlib\
-to access parse trees. These issues are fundamental as long as 
+There are several fundamental maintenance issues inherent in the use
+of \aterms\ as a data structure implementation in hand-crafted tools.
 
 \begin{itemize}
 
 \item The esoteric art of writing down multi-line, quote-escaped string
-patterns and substituting parts of these patterns into the correct
-placeholders is so error prone that it is guaranteed to go wrong
-somewhere. Practical experience in the \metaenv\ has proven this many
-times. Handwritten \aterm-patterns proliferate through various versions of
-different tools, and after a while all sorts of ``mysterious'' bugs appear
-where one tool cannot handle the output of another tool, often due to some
-pattern mismatch, or a typo in the escaping of one of the many quotes.
+patterns and the subsequent substitution of parts of these patterns to
+contain the desired placeholders at the correct locations, is so error
+prone that it is almost guaranteed to go wrong somewhere. Practical
+experience in the \metaenv\ has proven this many times over. Handcrafted
+\aterm-patterns proliferate through numerous versions of various tools,
+and after a while all sorts of ``mysterious'' bugs creep up where one tool
+cannot handle the output of another tool, or simply bails out reporting
+that deep down some part of an input term does not satisfy a particular
+assertion. Obviously, these errors are often due to pattern mismatches,
+misplaced placeholders, or ill-escaped quotes.
 
-\item Even if the patterns are written down correctly, or when the Level
-Two interface, which doesn't use \aterm-patterns, is used, there is much
-work to be done when the original syntax changes. If our example syntax of
-the boolean conjunction is changed into: {\footnotesize\texttt{"[" Bool
-"and" Bool "]" -> Bool \{left\}} } then all of a sudden, the left-hand
-side is \emph{not} at the same location in the parse tree anymore and we
-need to adjust our extraction function, even though, conceptually, nothing
-changed. All we did was put square brackets around our conjunction.
+\item Even when the patterns are written down correctly, or if the Level
+Two interface is used (which doesn't use \aterm-patterns), there is
+much work to be done when the application syntax changes.
 
-\item What happens if the representation of parse trees \emph{itself}
-changes? We wanted to get rid of some legacy constructions in \asfix,
-as well as be able to change it, without having to patch all our tools
-every time we decided on an upgrade of the parse tree format.
+Suppose for example that the syntax of our boolean conjunction
+changes from {\footnotesize\texttt{Bool "and" Bool -> Bool}} into
+{\footnotesize\texttt{"and" "(" Bool, Bool ")" -> Bool}}.  Conceptually
+nothing has changed: we mean exactly the same arguments when we address
+them as the lhs, rhs, and result terms in both syntaxes.  However,
+in the underlying parse tree the location of \emph{all three} subterms
+has changed, which in turn means that all accessor functions we might
+have written to work on boolean conjunction terms, must be adapted to
+reflect these positional changes.
+
+In fact, there is hardly any room for flexibility with respect to changes
+in the syntax, unless the arguments happen to remain at their original
+position. Every tool based on the modified \emph{application syntax}
+has to be updated.
+
+\item With such inflexibility with respect to the application syntax
+in mind, imagine what would happen if the structure of the parse
+trees (\asfix) \emph{itself} were to change! Every tool based on the
+\emph{\asfix\ representation} of parse trees would have to be updated to
+reflect the structural changes in the format. In our practical case of
+the \metaenv\ where we wanted to rid \asfix\ of some legacy constructs
+and in general needed to upgrade the format, this would have meant some
+sort of modification to virtually \emph{every} tool in the \metaenv\
+--- an arduous task indeed!
 
 \end{itemize}
 
-These maintenance issues are not specific to the access of elements of
-parse trees. They are fundamental to each application that needs access
-to an \aterm\ with more information about the location of subterms than
-can be expressed in general \aterm access functions. This paper will
-addresses these issues from a parse tree point of view.
+Although this article uses tools from the \metaenv\ as a running example,
+the maintenance issues addressed here are not specific to parse trees
+at all. The issues are fundamental to all applications that use \aterms\
+as its data structure representation.
 
 % }}}
 
@@ -506,10 +523,10 @@ has five alternatives: \texttt{true}, \texttt{false}, \texttt{not},
 \texttt{and}, \texttt{or}.
 
 \item The actual \aterm-\emph{pattern} representation of the rule.
-In this pattern, each non-terminal from the syntax rule is replaced by
-a typed placeholder, containing, the \emph{sort} of the non-terminal
-and a \emph{descriptive name}. For the \texttt{and} rule we could use
-\texttt{lhs}, and \texttt{rhs}, both of type \texttt{Bool}.
+In this pattern, each \emph{field} (non-terminal in the syntax rule)
+is replaced by a typed placeholder containing the \emph{sort} of the
+non-terminal and a \emph{descriptive name}. For the \texttt{and} rule
+we could use \texttt{lhs}, and \texttt{rhs}, both of type \texttt{Bool}.
 
 \end{itemize}
 
@@ -598,13 +615,14 @@ So, finally our \texttt{and} syntax rule becomes:
 {\small {\texttt{lhs:Bool "and" rhs:Bool -> Bool \{left, cons("and")\}} }
 
 % }}}
-
 % {{{  Code generation from \adt\ to \C
 
 \section{Code generation from \adt\ to \C}
 \label{sec:adt-to-c}
 
+\subsection{Generated types and functions}
 For each sortname in an \adt, we generate:
+% {{{  Generated items
 
 \begin{itemize}
 
@@ -632,7 +650,66 @@ For each sortname in an \adt, we generate:
       that checks if the current object is an instance of that particular
       alternative.
 
+\item For each field used in any of the alternatives of the sort,
+      a \texttt{hasField} function that checks if the current object is
+      an instance of an alternative that has that non-terminal.
+
+\item Similarly, a \texttt{getField} and \texttt{setField} method for
+      each of the fields in a sort.
+
 \end{itemize}
+
+% }}}
+
+\subsection{Implementation}
+
+In order to isolate the \aterm-patterns as much as possible from
+the actual code, we generate a separate \C\ file for them. This
+\emph{dictionary} file declares a separate \afun\ variable for each
+\aterm\ function symbol, as well as a separate \aterm\ variable for each
+possible pattern. An initialization function is also generated which
+takes care of the proper initialization of all these variables, and
+which protects them from garbage collection by the built-in collector.
+A verbatim dump of all the patterns is included in a comment section in
+the generated code, to provide debugging feedback when necessary.
+
+The actual implementation of the \api\ functions is generated in its own
+\C\ file, accompanied by a header file containing the signatures of all
+exported \api\ functions.
+
+% {{{  fig:Bool.c
+
+\begin{figure}
+\hrulefill
+\begin{scriptsize}
+\begin{verbatim}
+  typedef struct _Bool *Bool;                  // opaque type
+ 
+  Bool  BoolFromTerm(ATerm t);                 // conversion functions
+  ATerm BoolToTerm(Bool arg);
+ 
+  ATbool isEqualBool(Bool arg0, Bool arg1);    // equality function
+ 
+  ATbool isValidBool(Bool arg);                // validity test
+ 
+  ATbool isBoolTrue(Bool arg);                 // inspectors
+  ATbool isBoolOr(Bool arg);
+  ...
+  ATbool hasBoolLhs(Bool arg);                 // query accessors
+  ATbool hasBoolRhs(Bool arg);
+  ..
+  Bool getBoolLhs(Bool arg);                   // get/set accessors
+  Bool setBoolLhs(Bool arg, Bool lhs);
+\end{verbatim}
+\caption{
+  \label{fig:Bool.c}
+  Part of the generated \C\ code \texttt{Bool.c}
+}
+\end{scriptsize}
+\hrulefill
+\end{figure}
+
+% }}}
 
 % }}}
 
