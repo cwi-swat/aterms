@@ -19,28 +19,32 @@
 
 $Id$
 
-2000/02/18 (jong@cwi.nl)
+2001/02/19 ({jong,olivierp}@cwi.nl)
+ * Fixed dates in ChangeLog
+ * Added generation of separate xxxTif and xxxBridge java code
+
+2001/02/18 (jong@cwi.nl)
  * Improved checks for lrand48() and srand48() by letting configure.in
    find this out for us, rather than having to #define _APPLE_ (Hi js!)
    This should make test/randgen.c compile under CygWin.
 
-2000/02/15 (olivierp@cwi.nl)
+2001/02/15 (olivierp@cwi.nl)
  * Implemented first layer of Java ToolBus support
 
-2000/02/05 (jong@cwi.nl)
+2001/02/05 (jong@cwi.nl)
  * TODO file removed as we never us it anyway
  * CWI-phonenumbers removed from several info files
  * Some lingering AsFix remnants removed
  * .depend files removed as automake uses its own depency mechanism
 
-2000/01/22 (jong@cwi.nl)
+2001/01/22 (jong@cwi.nl)
  * Fixed bug in utils/dicttoc.c which caused 'make distcheck' to fail
  * Version 1.4.7b released for testing.
 
-2000/01/16 (jong@cwi.nl)
+2001/01/16 (jong@cwi.nl)
  * contracted separate isLetter() and isDigit() to Java's isLetterOrDigit()
 
-2000/01/11 (jong@cwi.nl)
+2001/01/11 (jong@cwi.nl)
  * fixed bug in parsing of unquoted afuns (digits were ignored)                  
 2001/01/11 (jong@cwi.nl)
  * Version 1.4.6pl1 released. An omission in configure.in degraded

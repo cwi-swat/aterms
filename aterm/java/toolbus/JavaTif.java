@@ -15,6 +15,11 @@ public class JavaTif
   private Hashtable otherEvents = null;
   private boolean found_one = false;
 
+  private String package_name;
+  private String tool_interface;
+  private String tool_class;
+  private String tool_bridge;
+
   //{{{ static void usage()
 
   static void usage()
@@ -28,10 +33,11 @@ public class JavaTif
   //{{{ public static void main(String[] args)
 
   public static void main(String[] args)
-    throws IOException, ParseError
+    throws IOException
     {
       String tool = null, tifsfile = null;
-      String pkg = null, javaclass = null;
+      String package_name = null, tool_interface = null, tool_class = null;
+      String tool_bridge = null;
       String output = null;
 
       for(int i=0; i<args.length; i++) {
@@ -42,37 +48,59 @@ public class JavaTif
 	} else if (args[i].equals("-tifs")) {
 	  tifsfile = args[++i];
 	} else if (args[i].equals("-package")) {
-	  pkg = args[++i];
-	} else if (args[i].equals("-class")) {
-	  javaclass = args[++i];
+	  package_name = args[++i];
+	} else if (args[i].equals("-tool-interface")) {
+	  tool_interface = args[++i];
+	} else if (args[i].equals("-tool-class")) {
+	  tool_class = args[++i];
+	} else if (args[i].equals("-tool-bridge")) {
+	  tool_bridge = args[++i];
 	}
       }
 
       if (tool == null || tifsfile == null) {
 	usage();
       } else {
-	if (javaclass == null)
-	  javaclass = JavaTif.capitalize(tool, true) + "Tif";
-	JavaTif gen = new JavaTif();
+	String tool_name = JavaTif.capitalize(tool, true);
+	if (tool_interface == null) {
+	  tool_interface = tool_name + "Tif";
+	}
+	if (tool_class == null) {
+	  tool_class = tool_name + "Tool";
+	}
+	if (tool_bridge == null) {
+	  tool_bridge = tool_name + "Bridge";
+	}
+
+	JavaTif gen = new JavaTif(package_name, tool_interface,
+				  tool_class, tool_bridge);
 	gen.readTifs(tifsfile);
 	gen.selectTifs(tool);
 	if (!gen.found_one) {
 	  System.err.println("warning: no tifs found for tool " + tool);
 	}
-	gen.genJavaTif(pkg, javaclass);
+	gen.genTif();
+	gen.genTool();
+	gen.genBridge();
       }
     }
 
   //}}}
 
-  //{{{ public JavaTif()
+  //{{{ public JavaTif(pkg_name, tool_interface, tool_class, tool_bridge)
 
-  public JavaTif()
+  public JavaTif(String pkg_name, String tool_interface,
+		 String tool_class, String tool_bridge)
   {
     doEvents = new Hashtable();
     evalEvents = new Hashtable();
     otherEvents = new Hashtable();
     factory = new aterm.pure.PureFactory();
+    
+    this.package_name = pkg_name;
+    this.tool_interface = tool_interface;
+    this.tool_class = tool_class;
+    this.tool_bridge = tool_bridge;
   }
 
   //}}}
@@ -100,7 +128,7 @@ public class JavaTif
   //{{{ public void readTifs(String tifsfile)
 
   public void readTifs(String tifsfile)
-    throws IOException, ParseError
+    throws IOException
     {
       tifs = factory.makeList();
       ATermAppl appl = null;
@@ -119,7 +147,7 @@ public class JavaTif
   //{{{ public void selectTifs(String tool)
 
   public void selectTifs(String tool)
-    throws ParseError, IOException
+    throws IOException
     {
       ATermList list = tifs;
       AFun fun = factory.makeAFun(tool, 0, false);
@@ -169,27 +197,70 @@ public class JavaTif
 
   //}}}
 
-  //{{{ public void genJavaTif(String pkg, String javaclass)
+  //{{{ public void genTif()
 
-  public void genJavaTif(String pkg, String javaclass)
+  public void genTif()
+    throws IOException
+  {
+    PrintWriter out =
+      new PrintWriter(new FileOutputStream(tool_interface + ".java"));
+    genTifHeader(out);
+    genMethods(out, false);
+    out.println("}");
+    out.close();
+  }
+
+  //}}}
+  //{{{ private void genTifHeader(PrintWriter out)
+
+  private void genTifHeader(PrintWriter out)
     throws IOException
     {
-      PrintWriter out = new PrintWriter(new FileOutputStream(javaclass + ".java"));
+      out.println("// Java tool interface " + tool_interface);
+      out.println("// This file is generated automatically, please do not edit!");
+      out.print("// generation time: ");
+      out.println(DateFormat.getDateTimeInstance().format(new Date()));
+
+      out.println();
+      if (package_name != null) {
+	out.println("package " + package_name + ";");
+      }
+      out.println();
+      out.println("import aterm.*;");
+      out.println("import toolbus.*;");
+      out.println();
+      out.println("public interface " + tool_interface);
+      out.println("{");
+    }
+
+  //}}}
+
+  //{{{ public void genTool()
+
+  public void genTool()
+    throws IOException
+    {
+      PrintWriter out = new PrintWriter(new FileOutputStream(tool_class
+							     + ".java"));
       System.out.println("generating header");
-      genHeader(pkg, javaclass, out);
+      genHeader(out);
 
       System.out.println("generating sig table");
       genSigTable(out);
       genPatternAttribs(out);
+      out.println();
 
-      genConstructor(out, javaclass);
+      genConstructor(out);
+      out.println();
+
       genInitSigTable(out);
       genInitPatterns(out);
-      genMethods(out);
+      out.println();
+
       genHandler(out);
       genCheckInputSignature(out);
       genNotInInputSignature(out);
-      out.println("}\n");
+      out.println("}");
       out.close();
     }
 
@@ -199,28 +270,34 @@ public class JavaTif
   private void genSigTable(PrintWriter out)
   {
     out.println("  // This table will hold the complete input signature");
-    out.println("  private Map sigTable = new HashMap();\n");
+    out.println("  private Map sigTable = new HashMap();");
+    out.println();
   }
 
   //}}}
-  //{{{ private void genHeader(String pkg, String javaclass, PrintWriter out)
+  //{{{ private void genHeader(PrintWriter out)
 
-  private void genHeader(String pkg, String javaclass, PrintWriter out)
+  private void genHeader(PrintWriter out)
     throws IOException
     {
-      out.println("// Java tool interface class " + javaclass);
+      out.println("// Java tool interface class " + tool_class);
       out.println("// This file is generated automatically, please do not edit!");
       out.print("// generation time: ");
       out.println(DateFormat.getDateTimeInstance().format(new Date()));
 
-      out.println("");
-      if (pkg != null)
-	out.println("package " + pkg + ";");
+      out.println();
+      if (package_name != null) {
+	out.println("package " + package_name + ";");
+      }
+      out.println();
       out.println("import aterm.*;");
       out.println("import toolbus.*;");
       out.println("import java.net.*;");
       out.println("import java.util.*;");
-      out.println("abstract public class " + javaclass + " extends AbstractTool");
+      out.println();
+      out.println("abstract public class " + tool_class);
+      out.println("  extends AbstractTool");
+      out.println("  implements " + tool_interface);
       out.println("{");
     }
 
@@ -230,7 +307,7 @@ public class JavaTif
   private void genPatternAttribs(PrintWriter out)
     throws IOException
     {
-      out.println("  // Declare the patterns that are used to match against incoming terms");
+      printFoldOpen(out, "Patterns that are used to match against incoming terms");
       Enumeration en = doEvents.keys();
       while(en.hasMoreElements()) {
 	String key = (String)en.nextElement();
@@ -251,24 +328,25 @@ public class JavaTif
 	SpecOrderVector v = (SpecOrderVector)otherEvents.get(key);
 	v.genPatternAttribs(out, capitalize(key, false));
       }
-      out.println("");
+      printFoldClose(out);
     }
 
   //}}}
-  //{{{ private void genConstructor(PrintWriter out, String javaclass)
+  //{{{ private void genConstructor(PrintWriter out)
 
-  private void genConstructor(PrintWriter out, String javaclass)
+  private void genConstructor(PrintWriter out)
     throws IOException
     {
-      String hdr = "  protected " + javaclass;
+      String decl = "protected " + tool_class + "(ATermFactory factory)";
+      printFoldOpen(out, decl);
       out.println("  // Mimic the constructor from the AbstractTool class");
-      out.println("  protected " + javaclass + "(ATermFactory factory)");
+      out.println("  " + decl);
       out.println("  {");
       out.println("    super(factory);");
       out.println("    initSigTable();");
       out.println("    initPatterns();");
       out.println("  }");
-      out.println("");
+      printFoldClose(out);
     }
 
   //}}}
@@ -276,20 +354,21 @@ public class JavaTif
 
   private void genInitSigTable(PrintWriter out)
   {
+    String decl = "private void initSigTable()";
+    printFoldOpen(out, decl);
     out.println("  // This method initializes the table with input signatures");
-    out.println("  private void initSigTable()");
+    out.println("  " + decl);
     out.println("  {");
     ATermList sigs = tifs;
-    out.println("    try {");
     while(!sigs.isEmpty()) {
       ATerm sig = sigs.getFirst();
       sigs = sigs.getNext();
-      out.print("      sigTable.put(factory.parse(\"");
+      out.print("    sigTable.put(factory.parse(\"");
       out.print(sig.toString());
       out.println("\"), new Boolean(true));");
     }
-    out.println("    } catch (ParseError e) { }");
-    out.println("  }\n");
+    out.println("  }");
+    printFoldClose(out);
   }
 
   //}}}
@@ -298,8 +377,10 @@ public class JavaTif
   private void genInitPatterns(PrintWriter out)
     throws IOException
     {
+      String decl = "private void initPatterns()";
+      printFoldOpen(out, decl);
       out.println("  // Initialize the patterns that are used to match against incoming terms");
-      out.println("  private void initPatterns()");
+      out.println("  " + decl);
       out.println("  {");
       Enumeration e = doEvents.keys();
       while(e.hasMoreElements()) {
@@ -321,7 +402,8 @@ public class JavaTif
 	SpecOrderVector v = (SpecOrderVector)otherEvents.get(key);
 	v.genPatterns(out, capitalize(key, false), null);
       }
-      out.println("  }\n");
+      out.println("  }");
+      printFoldClose(out);
     }
 
   //}}}
@@ -329,10 +411,13 @@ public class JavaTif
 
   private void genHandler(PrintWriter out)
   {
+    String decl = "public ATerm handler(ATerm term)";
+    printFoldOpen(out, decl);
     out.println("  // The generic handler calls the specific handlers");
-    out.println("  public ATerm handler(ATerm term)");
-    out.println("  {\n    List result;");
-    out.println("");
+    out.println("  " + decl);
+    out.println("  {");
+    out.println("    List result;");
+    out.println();
 
     Enumeration e = doEvents.keys();
     while(e.hasMoreElements()) {
@@ -354,38 +439,38 @@ public class JavaTif
       SpecOrderVector v = (SpecOrderVector)otherEvents.get(key);
       v.genCalls(out, capitalize(key, false), false);
     }
-    out.println("\n      notInInputSignature(term);");
+    out.println();
+    out.println("      notInInputSignature(term);");
     out.println("    return null;");
-    out.println("  }\n");
+    out.println("  }");
+    printFoldClose(out);
   }
 
   //}}}
-  //{{{ private void genMethods(PrintWriter out)
+  //{{{ private void genMethods(PrintWriter out, boolean gen_impl)
 
-  private void genMethods(PrintWriter out)
+  private void genMethods(PrintWriter out, boolean gen_impl)
   {
-    out.println("\n  // Override these abstract methods to handle incoming ToolBus terms");
     Enumeration en = doEvents.keys();
     while(en.hasMoreElements()) {
       String key = (String)en.nextElement();
       SpecOrderVector v = (SpecOrderVector)doEvents.get(key);
-      v.genMethods(out, capitalize(key, false), false);
+      v.genMethods(out, capitalize(key, false), false, gen_impl);
     }
 
     en = evalEvents.keys();
     while(en.hasMoreElements()) {
       String key = (String)en.nextElement();
       SpecOrderVector v = (SpecOrderVector)evalEvents.get(key);
-      v.genMethods(out, capitalize(key, false), true);
+      v.genMethods(out, capitalize(key, false), true, gen_impl);
     }
 
     en = otherEvents.keys();
     while(en.hasMoreElements()) {
       String key = (String)en.nextElement();
       SpecOrderVector v = (SpecOrderVector)otherEvents.get(key);
-      v.genMethods(out, capitalize(key, false), false);
+      v.genMethods(out, capitalize(key, false), false, gen_impl);
     }
-    out.println("");
   }
 
   //}}}
@@ -393,8 +478,10 @@ public class JavaTif
 
   private void genCheckInputSignature(PrintWriter out)
   {
+    String decl = "public void checkInputSignature(ATermList sigs)";
+    printFoldOpen(out, decl);
     out.println("  // Check the input signature");
-    out.println("  public void checkInputSignature(ATermList sigs)");
+    out.println("  " + decl);
     out.println("  {");
     out.println("    while(!sigs.isEmpty()) {");
     out.println("      ATermAppl sig = (ATermAppl)sigs.getFirst();");
@@ -404,7 +491,8 @@ public class JavaTif
     out.println("        notInInputSignature(sig);");
     out.println("      }");
     out.println("    }");
-    out.println("  }\n");
+    out.println("  }");
+    printFoldClose(out);
   }
 
   //}}}
@@ -412,14 +500,70 @@ public class JavaTif
 
   private void genNotInInputSignature(PrintWriter out)
   {
+    String decl = "void notInInputSignature(ATerm t)";
+    printFoldOpen(out, decl);
     out.println("  // This function is called when an input term");
     out.println("  // was not in the input signature.");
-    out.println("  void notInInputSignature(ATerm t)");
+    out.println("  " + decl);
     out.println("  {");
     out.println("    throw new RuntimeException("
 		+ "\"term not in input signature: \"+t);");
     out.println("  }");
+    printFoldClose(out);
   }
+
+  //}}}
+
+  //{{{ private void genBridge()
+
+  private void genBridge()
+    throws IOException
+  {
+    PrintWriter out =
+      new PrintWriter(new FileOutputStream(tool_bridge + ".java"));
+    genBridgeHeader(out);
+
+    out.println("  private " + tool_interface + " tool;");
+    out.println();
+    String decl = "public " + tool_bridge + "(ATermFactory factory, "
+      + tool_interface + " tool)";
+    printFoldOpen(out, decl);
+    out.println("  " + decl);
+    out.println("  {");
+    out.println("    super(factory);");
+    out.println("    this.tool = tool;"); 
+    out.println("  }");
+    printFoldClose(out);
+    out.println();
+
+    genMethods(out, true);
+    out.println("}");
+    out.close();
+  }
+
+  //}}}
+  //{{{ private void genBridgeHeader(PrintWriter out)
+
+  private void genBridgeHeader(PrintWriter out)
+    throws IOException
+    {
+      out.println("// Java tool bridge " + tool_bridge);
+      out.println("// This file is generated automatically, please do not edit!");
+      out.print("// generation time: ");
+      out.println(DateFormat.getDateTimeInstance().format(new Date()));
+
+      out.println();
+      if (package_name != null) {
+	out.println("package " + package_name + ";");
+      }
+      out.println();
+      out.println("import aterm.*;");
+      out.println("import toolbus.*;");
+      out.println();
+      out.println("public class " + tool_bridge);
+      out.println("  extends " + tool_class);
+      out.println("{");
+    }
 
   //}}}
 
@@ -463,6 +607,24 @@ public class JavaTif
       }
     }
     return factory.makeAppl(appl.getAFun(), args);    
+  }
+
+  //}}}
+  //{{{ static void printFoldOpen(PrintWriter out, String comment)
+
+  static void printFoldOpen(PrintWriter out, String comment)
+  {
+    out.println("  //{{" + "{  " + comment);
+    out.println();
+  }
+
+  //}}}
+  //{{{ static void printFoldClose(PrintWriter out)
+
+  static void printFoldClose(PrintWriter out)
+  {
+    out.println();
+    out.println("  //}}" + "}");
   }
 
   //}}}
@@ -589,20 +751,23 @@ class SpecOrderVector extends Vector
 
   public void genCalls(PrintWriter out, String base, boolean ret)
   {
-    for(int i=0; i<size(); i++) {
+    for (int i=0; i<size(); i++) {
       ATermAppl appl = ((ATermAppl)elementAt(i));
       out.println("    result = term.match(P" + base + i + ");");
       out.println("    if (result != null) {");
-      if (ret)
+      if (ret) {
 	out.print("      return " + base + "(");
-      else
+      }
+      else {
 	out.print("      " + base + "(");
+      }
 
       genArgs(out, appl.getArguments());
       out.println(");");
-      if (!ret)
+      if (!ret) {
 	out.println("      return null;");
-      out.println("    }\n");
+      }
+      out.println("    }");
     }
   }
 
@@ -638,49 +803,132 @@ class SpecOrderVector extends Vector
   }
 
   //}}}
-  //{{{ public void genMethods(PrintWriter out, String base, boolean ret)
+  //{{{ public void genMethods(PrintWriter out, String base, ret, gen_impl)
 
-  public void genMethods(PrintWriter out, String base, boolean ret)
+  public void genMethods(PrintWriter out, String base, boolean ret,
+			 boolean gen_impl)
   {
     for(int i=0; i<size(); i++) {
       ATermAppl appl = ((ATermAppl)elementAt(i));
-      if (ret)
-	out.print("  abstract ATerm " + base + "(");
-      else
-	out.print("  abstract void " + base + "(");
-      genFormals(out, appl.getArguments());
-      out.println(");");
+
+      String decl;
+     
+      if (ret) {
+        decl = "public ATerm " + base + "(";
+      }
+      else {
+	decl = "public void " + base + "(";
+      }
+
+
+      decl += buildFormals(appl.getArguments());
+      decl += ")";
+
+      if (gen_impl) {
+	JavaTif.printFoldOpen(out, decl);
+      }
+
+      out.print("  " + decl);
+
+      if (gen_impl) {
+	out.println();
+	out.println("  {");
+	out.println("    if (tool != null) {");
+	out.print(  "      " + (ret ? "return " : "") + "tool." + base + "(");
+	genActuals(out, appl.getArguments());
+	out.println(");");
+	out.println("    }");
+	out.println("    else {");
+	out.print(  "      throw new UnsupportedOperationException(");
+	out.println("\"method `" + base + "' not supported.\");");
+	out.println("    }");
+	out.println("  }");
+	JavaTif.printFoldClose(out);
+      } else {
+	out.println(";");
+      }
     }
   }
 
   //}}}
-  //{{{ private static void genFormals(PrintWriter out, ATermList args)
+  //{{{ private static String buildFormals(ATermList args)
 
-  private static void genFormals(PrintWriter out, ATermList args)
+  private static String buildFormals(ATermList args)
   {
     int idx = 0;
+    StringBuffer result = new StringBuffer();
 
-    while(!args.isEmpty()) {
+    while (!args.isEmpty()) {
       ATermPlaceholder ph = (ATermPlaceholder)args.getFirst();
       String fun = ((ATermAppl)ph.getPlaceholder()).getName();
       args = args.getNext();
-      if (fun.equals("int"))
-	out.print("int i" + idx);
-      else if (fun.equals("real"))
-	out.print("double d" + idx);
-      else if (fun.equals("term"))
-	out.print("ATerm t" + idx);
-      else if (fun.equals("appl"))
-	out.print("ATermAppl a" + idx);
-      else if (fun.equals("list"))
-	out.print("ATermList l" + idx);
-      else if (fun.equals("str"))
-	out.print("String s" + idx);
-      else
-	out.print("ATermAppl a" + idx);
+      if (fun.equals("int")) {
+	result.append("int i" + idx);
+      }
+      else if (fun.equals("real")) {
+	result.append("double d" + idx);
+      }
+      else if (fun.equals("term")) {
+	result.append("ATerm t" + idx);
+      }
+      else if (fun.equals("appl")) {
+	result.append("ATermAppl a" + idx);
+      }
+      else if (fun.equals("list")) {
+	result.append("ATermList l" + idx);
+      }
+      else if (fun.equals("str")) {
+	result.append("String s" + idx);
+      }
+      else {
+	result.append("ATermAppl a" + idx);
+      }
 
-      if (!args.isEmpty())
+      if (!args.isEmpty()) {
+	result.append(", ");
+      }
+      idx++;
+    }
+
+    return result.toString();
+  }
+
+  //}}}
+  //{{{ private static void genActuals(PrintWriter out, ATermList args)
+
+  private static void genActuals(PrintWriter out, ATermList args)
+  {
+    int idx = 0;
+
+    while (!args.isEmpty()) {
+      ATermPlaceholder ph = (ATermPlaceholder)args.getFirst();
+      String fun = ((ATermAppl)ph.getPlaceholder()).getName();
+      args = args.getNext();
+      if (fun.equals("int")) {
+	out.print("i" + idx);
+      }
+      else if (fun.equals("real")) {
+	out.print("d" + idx);
+      }
+      else if (fun.equals("term")) {
+	out.print("t" + idx);
+      }
+      else if (fun.equals("appl")) {
+	out.print("a" + idx);
+      }
+      else if (fun.equals("list")) {
+	out.print("l" + idx);
+      }
+      else if (fun.equals("str")) {
+	out.print("s" + idx);
+      }
+      else {
+	out.print("a" + idx);
+      }
+
+      if (!args.isEmpty()) {
 	out.print(", ");
+      }
       idx++;
     }
   }

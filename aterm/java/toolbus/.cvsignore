@@ -3,4 +3,7 @@ Makefile
 *.class
 classjava.stamp
 test.tifs
-TestTifs.java
+TestingTif.java
+TestingTool.java
+TestingBridge.java
+
