@@ -11,7 +11,7 @@ AC_SET_MAKE
 
 AC_PACKAGE_REQUIRE(shared-objects, shared-objects-config,
    [ --with-shared-objects=DIR       installation directory of shared-objects])
-SHARED_OBJECTS=`shared-objects-config`
+SHARED_OBJECTS=`${SHARED_OBJECTS}/bin/shared-objects-config`
 AC_SUBST(SHARED_OBJECTS)
 
 AC_OUTPUT(
