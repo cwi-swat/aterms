@@ -277,24 +277,24 @@ public class JavaGen
 
   private void genAccessors(Type type)
   {
-    printFoldOpen("Accessor methods");
-
+    printFoldOpen("abstract isXXX() methods");
     Iterator alts = type.alternativeIterator();
     while (alts.hasNext()) {
       Alternative alt = (Alternative)alts.next();
       String methodName = buildId("is-" + alt.getId());
       println("  abstract public boolean " + methodName + "();");
     }
-    println();
+    printFoldClose();
 
+    printFoldOpen("abstract hasXXX() methods");
     Iterator fields = type.fieldIterator();
     while (fields.hasNext()) {
       Field field = (Field)fields.next();
       String methodName = buildId("has-" + field.getId());
       println("  abstract public boolean " + methodName + "();");
     }
-
     printFoldClose();
+    println();
   }
 
   //}}}
