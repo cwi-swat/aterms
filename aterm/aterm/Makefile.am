@@ -45,7 +45,7 @@ ALLINCLUDES		= ${PUBLIC_INCL} ${PRIVATE_INCL}
 
 include_HEADERS		= $(PUBLIC_INCL)
 
-EXTRA_DIST		= $(ALLSRCS)
+EXTRA_DIST		= $(ALLSRCS) $(PRIVATE_INCL)
 
 # static only libraries
 libATerm_a_SOURCES	=
