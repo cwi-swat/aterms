@@ -1,5 +1,8 @@
 package apigen.gen.java;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -44,7 +47,12 @@ public class Main {
 
 	private static void checkParameters(JavaGenerationParameters params) {
 		if (params.getApiName() == null) {
-			throw new IllegalArgumentException("No API name specified");
+			System.err.println("warning: no API name specified");
+			params.setApiName("unknown_api");
+		}
+		if (params.getVersion() == null) {
+			System.err.println("warning: no API version specified.");
+			params.setVersion("0.0.0");
 		}
 	}
 
@@ -74,19 +82,37 @@ public class Main {
 		}
 
 		generateTypeClasses(adt, params, l);
-		showGeneratedFiles(l.getGeneratedFiles());
+		showGeneratedFiles(params, l.getGeneratedFiles());
 	}
 
-	private static void showGeneratedFiles(List generatedFiles) {
+	private static void showGeneratedFiles(
+		JavaGenerationParameters params,
+		List generatedFiles) {
+		StringBuffer buf = new StringBuffer();
 		Iterator iter = generatedFiles.iterator();
 		while (iter.hasNext()) {
 			String fileName = (String) iter.next();
-			System.err.println("generated java file: " + fileName);
+			buf.append(fileName);
+			if (iter.hasNext()) {
+				buf.append(' ');
+			}
+		}
+		
+		try {
+			PrintStream out = new PrintStream(new FileOutputStream("apigen.env"));
+			out.println("APINAME=" + params.getApiName());
+			out.println("VERSION=" + params.getVersion());
+			out.println("DIRECTORY=" + params.getOutputDirectory());
+			out.println("FILES=\"" + buf.toString() + '"');
+			out.close();
+		}
+		catch (FileNotFoundException e) {
+			e.printStackTrace();
 		}
 	}
 
 	private static void run(Generator generator, GenerationObserver l) {
-		generator.addGenerationListener(l);
+		generator.addGenerationObserver(l);
 		generator.run();
 	}
 

@@ -18,6 +18,9 @@ public abstract class Generator {
 
 	public Generator(GenerationParameters params) {
 		this.params = params;
+		if (params.isVerbose()) {
+			addGenerationObserver(new VerboseGenerationObserver(System.err));
+		}
 	}
 
 	public GenerationParameters getGenerationParameters() {
@@ -25,7 +28,6 @@ public abstract class Generator {
 	}
 
 	public void run() {
-		info("generating " + getFileName() + getExtension());
 		stream = createStream(getDirectory(), getFileName(), getExtension());
 		fireFileCreated(getDirectory(), getFileName(), getExtension());
 		generate();
@@ -44,12 +46,6 @@ public abstract class Generator {
 
 	public void print(String msg) {
 		stream.print(msg);
-	}
-
-	public void info(String msg) {
-		if (params.isVerbose()) {
-			System.err.println(msg);
-		}
 	}
 
 	protected void closeStream(PrintStream stream) {
@@ -115,15 +111,15 @@ public abstract class Generator {
 	public void setFileName(String fileName) {
 		this.fileName = fileName;
 	}
-
-	public void addGenerationListener(GenerationObserver aListener) {
+	
+	public void addGenerationObserver(GenerationObserver aListener) {
 		if (listeners == null) {
 			listeners = new LinkedList();
 		}
 		listeners.add(aListener);
 	}
 
-	public void removeGenerationListener(GenerationObserver aListener) {
+	public void removeGenerationObserver(GenerationObserver aListener) {
 		if (listeners != null) {
 			listeners.remove(aListener);
 		}

@@ -9,6 +9,7 @@ java_JAVA = \
 	AlternativeGenerator.java \
 	FactoryGenerator.java \
 	ForwardGenerator.java \
+	GeneratedJavaFileCollector.java \
 	GenericConstructorGenerator.java \
 	JavaGenerationParameters.java \
 	JavaGenerator.java \

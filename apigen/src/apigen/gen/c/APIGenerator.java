@@ -45,8 +45,6 @@ public class APIGenerator extends CGenerator {
 	}
 
 	protected void generate() {
-		info("generating " + apiName + ".[ch]");
-
 		genPrologue();
 		genTypes(adt);
 		genInitFunction();

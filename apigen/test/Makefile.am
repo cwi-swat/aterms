@@ -52,7 +52,7 @@ CLEANFILES = \
 	rolodex.[ch] rolodex_dict.[ch] \
 	list.[ch] list_dict.[ch] \
 	builtins.[ch] builtins_dict.[ch] \
-	*.java.sh *.class
+	*.java.sh *.class *.jar
 
 EXTRA_DIST = \
 	BuiltinsTest.java \
@@ -95,6 +95,7 @@ builtins.c builtins.h: builtins.adt
 		--name $* \
 		--output ${top_srcdir} \
 		--package test \
+		--version 0.1 \
 		--visitable
 	$(JAVAC) \
 		-classpath ${top_srcdir}:${JAVA_ATERM} \

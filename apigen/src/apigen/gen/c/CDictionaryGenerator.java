@@ -28,9 +28,6 @@ public class CDictionaryGenerator extends Generator {
 	}
 
 	protected void generate() {
-		String apiName = getGenerationParameters().getApiName();
-		info("generating " + apiName + ".dict");
-
 		try {
 			buildDictionary(adt).writeToTextFile(getStream());
 		}
