@@ -29,13 +29,14 @@
 
 #define ROW_LENGTH 16
 
-static char *prefix = NULL;
+static char *code_prefix = NULL;
+static char *file_prefix = NULL;
 
 /*{{{  static void usage(char *prg, int exit_code) */
 
 static void usage(char *prg, int exit_code)
 {
-  fprintf(stderr, "usage: %s -dict <dict-file> [-prefix <prefix>]\n", prg);
+  fprintf(stderr, "usage: %s -dict <dict-file> [-code_prefix <code_prefix>]\n", prg);
   fprintf(stderr, "<dict-file> must be of the following format:\n");
   fprintf(stderr, "\t[afuns([alias3,symbol1],[alias4,symbol2]),\n");
   fprintf(stderr, "\t terms([[alias1,term1],[alias2,term2],...])]\n");
@@ -82,8 +83,8 @@ static void generateHeader(FILE *file, ATermList terms, ATermList afuns)
   fprintf(file, "/*\n * Generated at %s", ctime(&now));
   fprintf(file, " */\n\n");
 
-  fprintf(file, "#ifndef __%s_H\n", prefix);
-  fprintf(file, "#define __%s_H\n\n", prefix);
+  fprintf(file, "#ifndef __%s_H\n", code_prefix);
+  fprintf(file, "#define __%s_H\n\n", code_prefix);
   fprintf(file, "#include <aterm2.h>\n\n");
 
   while (!ATisEmpty(afuns)) {
@@ -117,9 +118,9 @@ static void generateHeader(FILE *file, ATermList terms, ATermList afuns)
     ATfprintf(file, "extern ATerm %t;\n", alias);
   }
 
-  fprintf(file, "\nextern void init_%s();\n", prefix);
+  fprintf(file, "\nextern void init_%s();\n", code_prefix);
 
-  fprintf(file, "\n#endif /* __%s_H */\n", prefix);
+  fprintf(file, "\n#endif /* __%s_H */\n", code_prefix);
 }
 
 /*}}}  */
@@ -137,7 +138,7 @@ static void generateSource(FILE *file, ATermList terms, ATermList afuns)
   fprintf(file, "/*\n * Generated at %s", ctime(&now));
   fprintf(file, " */\n\n");
 
-  fprintf(file, "#include \"%s.h\"\n\n", prefix);
+  fprintf(file, "#include \"%s.h\"\n\n", code_prefix);
 
   /*{{{  unzip term and afun lists */
 
@@ -229,13 +230,13 @@ static void generateSource(FILE *file, ATermList terms, ATermList afuns)
   ATfprintf(file, " *\n");
   ATfprintf(file, " */\n");
 
-  ATfprintf(file, "\nstatic ATermList _%s = NULL;\n\n", prefix);
+  ATfprintf(file, "\nstatic ATermList _%s = NULL;\n\n", code_prefix);
 
   all = ATmake("[<term>,<term>]", afun_values, term_values);
   data = (unsigned char *)ATwriteToBinaryString(all, &len);
 
-  ATfprintf(file, "#define _%s_LEN %d\n\n", prefix, len);
-  ATfprintf(file, "static char _%s_baf[_%s_LEN] = {\n", prefix, prefix, len);
+  ATfprintf(file, "#define _%s_LEN %d\n\n", code_prefix, len);
+  ATfprintf(file, "static char _%s_baf[_%s_LEN] = {\n", code_prefix, code_prefix, len);
   
   index = 0;
  
@@ -254,15 +255,15 @@ static void generateSource(FILE *file, ATermList terms, ATermList afuns)
   /*}}}  */
   /*{{{  generate init function */
 
-  ATfprintf(file, "void init_%s()\n", prefix);
+  ATfprintf(file, "void init_%s()\n", code_prefix);
   ATfprintf(file, "{\n");
   ATfprintf(file, "  ATermList afuns, terms;\n\n");
 
   ATfprintf(file, "  _%s = (ATermList)ATreadFromBinaryString(_%s_baf, _%s_LEN);\n\n", 
-	    prefix, prefix, prefix);
-  ATfprintf(file, "  ATprotect((ATerm *)&_%s);\n\n", prefix);
+	    code_prefix, code_prefix, code_prefix);
+  ATfprintf(file, "  ATprotect((ATerm *)&_%s);\n\n", code_prefix);
 
-  ATfprintf(file, "  afuns = (ATermList)ATelementAt(_%s, 0);\n\n", prefix);
+  ATfprintf(file, "  afuns = (ATermList)ATelementAt(_%s, 0);\n\n", code_prefix);
 
   list = afuns;
   while (!ATisEmpty(list)) {
@@ -274,7 +275,7 @@ static void generateSource(FILE *file, ATermList terms, ATermList afuns)
     ATfprintf(file, "  afuns = ATgetNext(afuns);\n");
   }
 
-  ATfprintf(file, "\n  terms = (ATermList)ATelementAt(_%s, 1);\n\n", prefix);
+  ATfprintf(file, "\n  terms = (ATermList)ATelementAt(_%s, 1);\n\n", code_prefix);
 
   list = terms;
   index = 0;
@@ -303,8 +304,8 @@ static void generateCode(ATermList terms, ATermList afuns)
   char path_source[BUFSIZ];
   char path_header[BUFSIZ];
 
-  sprintf(path_source, "%s.c", prefix);
-  sprintf(path_header, "%s.h", prefix);
+  sprintf(path_source, "%s.c", file_prefix);
+  sprintf(path_header, "%s.h", file_prefix);
 
   source = fopen(path_source, "w");
   header = fopen(path_header, "w");
@@ -333,15 +334,18 @@ int main(int argc, char *argv[])
   char *dict_name = NULL;
   ATerm dict;
   ATermList terms, afuns;
-  static char buf[BUFSIZ];
+  static char code_buf[BUFSIZ];
+  static char file_buf[BUFSIZ];
 
   for (i=1; i<argc; i++) {
     if (strcmp(argv[i], "-h") == 0) {
       usage(argv[0], 0);
     } else if(strcmp(argv[i], "-dict") == 0) {
       dict_name = argv[++i];
-    } else if(strcmp(argv[i], "-prefix") == 0) {
-      prefix = argv[++i];
+    } else if(strcmp(argv[i], "-code-prefix") == 0) {
+      code_prefix = argv[++i];
+    } else if (strcmp(argv[i], "-file-prefix") == 0) {
+      file_prefix = argv[++i];
     }
   }
 
@@ -349,22 +353,52 @@ int main(int argc, char *argv[])
     usage(argv[0], 1);
   }
 
-  if (prefix == NULL) {
-    char *ptr = strrchr(dict_name, '/');
+  /*{{{  Build code prefix */
 
-    if (ptr) {
-      strcpy(buf, ptr+1);
-    } else {
-      strcpy(buf, dict_name);
+  if (code_prefix == NULL) {
+    char *ptr = strrchr(dict_name, '/');
+    int index = 0;
+
+    if (!ptr) {
+      ptr = dict_name;
     }
 
-    prefix = buf;
-    for (ptr=buf; *ptr; ptr++) {
-      if (!isalnum((int)*ptr)) {
-	*ptr = '_';
+    for(; *ptr; ptr++) {
+      if (*ptr != '-') {
+	if (!isalnum((int)*ptr)) {
+	  code_buf[index++] = '_';
+	} else {
+	  code_buf[index++] = *ptr;
+	}
       }
     }
+    code_buf[index++] = '\0';
+    code_prefix = code_buf;
   }
+
+  /*}}}  */
+  /*{{{  Build file prefix */
+
+  if (file_prefix == NULL) {
+    char *ptr = strrchr(dict_name, '/');
+    int index = 0;
+
+    if (!ptr) {
+      ptr = dict_name;
+    }
+
+    for(; *ptr; ptr++) {
+      if (!isalnum((int)*ptr) && *ptr != '-') {
+	file_buf[index++] = '_';
+      } else {
+	file_buf[index++] = *ptr;
+      }
+    }
+    file_buf[index++] = '\0';
+    file_prefix = file_buf;
+  }
+
+  /*}}}  */
 
   ATinit(argc, argv, &bottomOfStack);
 
