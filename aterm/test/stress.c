@@ -151,9 +151,9 @@ testOther(void)
 	t[0] = ATparse("f(1,[2,3],<[a,b]>,1.243,g(h(i(a,a),a),a,a))");
 	t[1] = ATparse("1");
 	t[2] = ATparse("f(1,2)");
-	ATprintf("ATinternalSize(%t) = %d\n", t[0], ATinternalSize(t[0]));
-	ATprintf("ATinternalSize(%t) = %d\n", t[1], ATinternalSize(t[1]));
-	ATprintf("ATinternalSize(%t) = %d\n", t[2], ATinternalSize(t[2]));
+	ATprintf("AT_calcCoreSize(%t) = %d\n", t[0], AT_calcCoreSize(t[0]));
+	ATprintf("AT_calcCoreSize(%t) = %d\n", t[1], AT_calcCoreSize(t[1]));
+	ATprintf("AT_calcCoreSize(%t) = %d\n", t[2], AT_calcCoreSize(t[2]));
 }
 
 /*}}}  */

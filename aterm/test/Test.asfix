@@ -1,1 +1,19 @@
-module(l("module"),w(" "),id("AUX-Booleans1"),w("\n"),[exports(l("exports"),w("\n"),[context-free-syntax(l("context-free syntax"),w("\n"),[prod(id("Booleans"),w(""),[sort("BOOL"),w(" "),ql("|"),w(" "),sort("BOOL")],w("                     "),l("->"),w(" "),sort("BOOL"),w(" "),attrs(l("{"),w(""),[l("left")],w(""),l("}")))])])],w("\n"),equations(l("equations"),w("\n"),[ceq-equ(id("Booleans"),w(""),l("[B1]"),w("  "),appl(prod(id("Booleans"),w(""),[sort("BOOL"),w(""),ql("|"),w(""),sort("BOOL")],w(""),l("->"),w(""),sort("BOOL"),w(""),attrs(l("{"),w(""),[l("left")],w(""),l("}"))),w(""),[appl(prod(id("Booleans"),w(""),[l("true")],w(""),l("->"),w(""),sort("BOOL"),w(""),no-attrs),w(""),[l("true")]),w("  "),l("|"),w(" "),var("Bool",sort("BOOL"))]),w(" "),l("="),w(" "),appl(prod(id("Booleans"),w(""),[l("true")],w(""),l("->"),w(""),sort("BOOL"),w(""),no-attrs),w(""),[l("true")])),w("\n"),ceq-equ(id("Booleans"),w(""),l("[B2]"),w("  "),appl(prod(id("Booleans"),w(""),[sort("BOOL"),w(""),ql("|"),w(""),sort("BOOL")],w(""),l("->"),w(""),sort("BOOL"),w(""),attrs(l("{"),w(""),[l("left")],w(""),l("}"))),w(""),[appl(prod(id("Booleans"),w(""),[l("false")],w(""),l("->"),w(""),sort("BOOL"),w(""),no-attrs),w(""),[l("false")]),w(" "),l("|"),w(" "),var("Bool",sort("BOOL"))]),w(" "),l("="),w(" "),var("Bool",sort("BOOL")))]),w(""),abbreviations([]))
+module(l("module"),w(" "),id("Test"),w("\n%%  Test\n\n"),
+[exports(l("exports"),w("\n  "),
+[sorts(l("sorts"),w(" "),[sort("L")]),w("\n  "),
+lexical-syntax(l("lexical syntax"),w("\n    "),
+[prod(id("Test"),w(""),[char-class("[ \\n\\t]")],w(" "),l("->"),w(" "),sort("LAYOUT"),w(""
+),no-attrs),w("\n    "),
+prod(id("Test"),w(""),[ql("\\\""),w(" "),iter(char-class("[a-z]"),w(""),l("+")),
+w(" "),ql("\\\"")],w("  "),l("->"),w(" "),sort("L"),w(""),no-attrs)])]
+)
+], w("\n"),
+equations(l("equations"),w("\n\n"),[
+ceq-equ(id("Test"),w(""),l("[1]"),w(" "),
+lex("\"a\"",sort("L")),w(" "),l("="),w(" "),
+lex("\"b\"",sort("L")))]),w("\n"),
+abbreviations([
+
+])
+
+)

@@ -12,21 +12,23 @@ int main(int argc, char **argv)
 
   ATerm bottomOfStack;
 
-  fname = "/home/markvdb/NEW-META/aterm/test/Test.asfix";
+  fname = "Test.asfix";
 
   AFinit(argc, argv, &bottomOfStack);
   AFinitExpansionTerms();
   AFinitAsFixPatterns();
 
   input = fopen(fname,"r");
-  if(input) {
-    mod = ATreadFromTextFile(input);
-    fclose(input);
-  }
-  fname = "/home/markvdb/NEW-META/aterm/test/Test.asfix.asfix";
+  if(!input)
+	ATerror("cannot open file %s for reading, giving up.\n", fname);
+  mod = ATreadFromTextFile(input);
+  fclose(input);
+  fname = "Test.asfix.asfix";
   expmod = AFexpandModuleToAsFix(mod,fname);
   ATprintf("Writing: %s\n", fname);
   output = fopen(fname,"w");
+  if(!output)
+    ATerror("cannot open file %s for writing, giving up.\n", fname);
   ATwriteToTextFile(expmod, output);
   fclose(output);
 
