@@ -10,6 +10,7 @@ Both versions:
 * support list of builtin types
 
 C version:
+* generate makeSingle for separated and normal lists in C
 
 
 Java version:
