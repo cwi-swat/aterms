@@ -11,23 +11,11 @@ public class ListType extends Type {
 		this.factory = factory;
 		this.elementType = elementType;
         
-    addAlternative(makeEmptyListConstructor());
-    addAlternative(makeManyListConstructor());
+    	addAlternative(Alternative.makeManyListConstructor(this.factory,getId(),getElementType()));
+    	addAlternative(Alternative.makeEmptyListConstructor(this.factory));
 	}
 
-	private Alternative makeManyListConstructor() {
-		Alternative many =
-			new Alternative(
-				"many",
-				factory.parse("[<head(" + getElementType() + ")>,<[tail(" + getId() + ")]>]"));
 
-		return many;
-	}
-
-	private Alternative makeEmptyListConstructor() {
-		Alternative empty = new Alternative("empty", factory.parse("[]"));
-		return empty;
-	}
 
 	public String getElementType() {
 		return elementType;

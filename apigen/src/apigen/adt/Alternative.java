@@ -5,6 +5,8 @@ import aterm.ATerm;
 import aterm.ATermAppl;
 import aterm.ATermList;
 import aterm.ATermPlaceholder;
+import aterm.ATermFactory;
+import java.util.*;
 
 public class Alternative {
 
@@ -134,6 +136,60 @@ public class Alternative {
 			default :
 				return t;
 		}
+	}
+	
+	protected static Alternative makeEmptyListConstructor(ATermFactory factory) {
+			Alternative empty = new Alternative("empty", factory.parse("[]"));
+			return empty;
+	}
+		
+	protected static Alternative makeManyListConstructor(ATermFactory factory, String ListType, String ElementType) {
+		Alternative many =
+			new Alternative(
+				"many",
+				factory.parse("[<head(" + ElementType + ")>,<[tail(" + ListType + ")]>]"));
+
+		return many;
+	}
+
+	public boolean isEmpty() {
+		List subst = getPattern().match("[]");
+		return getId().equals("empty") && (subst != null);
+	}
+	
+	public boolean isMany() {
+		if(getPattern().getType() == ATerm.LIST) {
+			ATermList l = (ATermList) getPattern();
+			ATerm headPh = l.getFirst();
+			ATerm tailList = l. getNext(); 
+		
+			if(headPh != null 
+			   && headPh.getType() == ATerm.PLACEHOLDER 
+			   && tailList.getType() == ATerm.LIST) {
+				ATerm head = ((ATermPlaceholder)headPh).getPlaceholder();
+				ATerm tailPh = ((ATermList)tailList).getFirst();
+				if(tailPh != null && tailPh.getType() == ATerm.PLACEHOLDER) {
+					ATerm tail = ((ATermPlaceholder)tailPh).getPlaceholder();
+				
+					ATerm headPattern = getPattern().getFactory().parse("head(<term>)");
+					ATerm tailPattern = getPattern().getFactory().parse("[tail(<term>)]");
+		
+					List subst1 = head.match(headPattern);
+					List subst2 = tail.match(tailPattern);
+					//System.out.println("head = " + head);	
+					//System.out.println("tail = " + tail);	
+		
+					//System.out.println("headMatch = "+ subst1);
+					//System.out.println("tailMatch = "+ subst2);
+					
+					if(getId().equals("many") && (subst1!=null) && (subst2!=null)) {
+						return true;
+					}
+					
+				}
+			}
+		}
+		return false;
 	}
 
 	public static boolean isReservedType(String type) {

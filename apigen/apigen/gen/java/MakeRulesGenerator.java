@@ -44,10 +44,11 @@ public class MakeRulesGenerator extends  Generator {
 		  Iterator alts = type.alternativeIterator();
 		  while(alts.hasNext()) {
 			Alternative alt = (Alternative) alts.next();
-
-            makeNewBucket(i);         
-			printAlternativeClassFiles(type, alt);
-			i++;
+			if(!alt.isEmpty() && !alt.isMany()) {
+            	makeNewBucket(i);         
+				printAlternativeClassFiles(type, alt);
+				i++;
+			}
 		  }
 		}
     
