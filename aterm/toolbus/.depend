@@ -1,0 +1,4 @@
+atb-tool-cc.o: atb-tool.c atb-tool.h
+atb-tool-gcc.o: atb-tool.c atb-tool.h
+atb-tool-dbg.o: atb-tool.c atb-tool.h
+atb-tool-prof.o: atb-tool.c atb-tool.h

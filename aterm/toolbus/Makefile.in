@@ -1,5 +1,3 @@
-# @configure_input@
-
 PRODUCT		= @PRODUCT@
 VERSION		= @VERSION@
 
@@ -43,9 +41,9 @@ INSTALL		= @INSTALL@
 INSTALL_PRG	= @INSTALL_PRG@
 INSTALL_DAT	= @INSTALL_DAT@
 
-ATBSRCS		= atb-tool.c ctif.c
+ATBSRCS		= atb-tool.c tifstoc.c
 ATBLIBS		= libATB-gcc.a libATB-cc.a libATB-dbg.a libATB-prof.a
-PROGS		= ctif
+PROGS		= tifstoc
 PUBLIC_INCL	= atb-tool.h
 PRIVATE_INCL	=
 ATBINCL		= ${PUBLIC_INCL} ${PRIVATE_INCL}
@@ -99,25 +97,14 @@ libATB-dbg.a: ${OBJ_DBG}
 libATB-prof.a: ${OBJ_PROF}
 	${AR} ${AR_FLAGS} $@ ${OBJ_PROF}
 
-ctif: ctif.c atb-tool.h ../aterm/libATerm-dbg.a libATB-dbg.a
-	${CC_DBG} ${CFLAGS_DBG} -I../aterm -o ctif ctif.c \
+tifstoc: tifstoc.c atb-tool.h ../aterm/libATerm-dbg.a libATB-dbg.a
+	${CC_DBG} ${CFLAGS_DBG} -I../aterm -o tifstoc tifstoc.c \
 			-L../aterm -lATerm-dbg -L. -lATB-dbg -lsocket -lnsl
 
 tag:
 	ctags -t *.[ch]
 
 depend:
-	$(CC_GCC) -MM $(DEFS_CC) $(INCL_CC) -I../aterm $(ATBSRCS) > /tmp/.gendep
-	cat /tmp/.gendep | sed "s/.o:/-cc.o:/"   >  .depend
-	$(CC_GCC) -MM $(DEFS_GCC) $(INCL_GCC) -I../aterm $(ATBSRCS) > /tmp/.gendep
-	cat /tmp/.gendep | sed "s/.o:/-gcc.o:/"  >> .depend
-	$(CC_GCC) -MM $(DEFS_DBG) $(INCL_DBG) -I../aterm $(ATBSRCS) > /tmp/.gendep
-	cat /tmp/.gendep | sed "s/.o:/-dbg.o:/"  >> .depend
-	$(CC_GCC) -MM $(DEFS_PROF) $(INCL_PROF) -I../aterm $(ATBSRCS) > /tmp/.gendep
-	cat /tmp/.gendep | sed "s/.o:/-prof.o:/" >> .depend
-	rm -f /tmp/.gendep
-
-.depend:
 	$(CC_GCC) -MM $(DEFS_CC) $(INCL_CC) -I../aterm $(ATBSRCS) > /tmp/.gendep
 	cat /tmp/.gendep | sed "s/.o:/-cc.o:/"   >  .depend
 	$(CC_GCC) -MM $(DEFS_GCC) $(INCL_GCC) -I../aterm $(ATBSRCS) > /tmp/.gendep
