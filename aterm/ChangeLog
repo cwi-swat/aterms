@@ -1,5 +1,9 @@
 $Id$
 
+2001/12/11 (mdejonge@cwi.nl)
+ * Makefile.am: added LICENSE to EXTRA_DIST variable because this file was
+   not distributed yet.
+
 2001/11/28 (jong@cwi.nl)
  * version 1.6.6beta started
  * Generated files 'stress_dict.[ch]' moved to MAINTAINERCLEANFILES.
