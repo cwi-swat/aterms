@@ -117,7 +117,7 @@ public class Main {
 	}
 
 	static private void generateAPI(ADT adt) throws IOException {
-		new FactoryGenerator(adt, basedir, apiName, pkg, imports, verbose, folding,jtype).run();
+		new FactoryGenerator(adt, basedir, apiName, pkg, imports, verbose, folding).run();
 		new GenericConstructorGenerator(basedir, apiName, pkg, verbose, visitable).run();
 		new MakeRulesGenerator(adt, basedir, apiName, verbose).run();
 
@@ -127,8 +127,8 @@ public class Main {
         }
         
 		if (jtom) {
-			JavaTomSignatureImplementation sigImpl = new JavaTomSignatureImplementation(apiName);
-			new TomSignatureGenerator(adt, sigImpl, basedir, apiName, prefix, verbose, folding, jtype).run();
+			JavaTomSignatureImplementation sigImpl = new JavaTomSignatureImplementation(apiName, jtype);
+			new TomSignatureGenerator(adt, sigImpl, basedir, apiName, prefix, verbose, folding).run();
         }
 
 		generateTypeClasses(adt);

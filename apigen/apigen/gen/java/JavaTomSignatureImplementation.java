@@ -6,6 +6,7 @@ import apigen.gen.tom.TomSignatureImplementation;
 
 public class JavaTomSignatureImplementation implements TomSignatureImplementation {
 	private static TypeConverter converter;
+    private boolean jtype = false;
 
 	static {
 		converter = new TypeConverter(new JavaTypeConversions());
@@ -13,8 +14,9 @@ public class JavaTomSignatureImplementation implements TomSignatureImplementatio
 
 	private String api_name;
 
-	public JavaTomSignatureImplementation(String api_name) {
+	public JavaTomSignatureImplementation(String api_name, boolean jtype) {
 		this.api_name = api_name;
+        this.jtype = jtype;
 	}
 
 	private String buildAltTypeName(String type, String alt) {
@@ -141,8 +143,14 @@ public class JavaTomSignatureImplementation implements TomSignatureImplementatio
 		return arg1 + ".equals(" + arg2 + ")";
 	}
 
-	public String OperatorName(String id) {
-		return StringConversions.makeIdentifier(id);
+	public String OperatorName(String type, String id) {
+        if (jtype) {
+            return StringConversions.makeIdentifier(type + "_" +
+                        StringConversions.makeIdentifier(id);
+        }
+        else {
+		  return StringConversions.makeIdentifier(id);
+        }
 	}
 
 	public String OperatorType(String type, String id) {

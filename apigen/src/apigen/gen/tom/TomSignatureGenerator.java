@@ -10,16 +10,14 @@ public class TomSignatureGenerator extends Generator {
     protected String apiName = "";
     private TomSignatureImplementation impl;
     private ADT adt;
-    private boolean jtype;
     private String prefix;
 	
 	public TomSignatureGenerator(ADT adt, TomSignatureImplementation impl, 
-	        String directory, String api_name, String prefix, boolean verbose, boolean folding, boolean jtype) {
+	        String directory, String api_name, String prefix, boolean verbose, boolean folding) {
 	   super(directory, StringConversions.makeIdentifier(api_name), ".t", verbose, folding);
 	   this.adt = adt;
 	   this.impl = impl;
-           this.jtype = jtype;
-           this.prefix = prefix;
+       this.prefix = prefix;
 	}
 	
 	public void generate() {
@@ -119,16 +117,10 @@ public class TomSignatureGenerator extends Generator {
 
 	private void genTomAltOperator(Type type, Alternative alt) {
 		String class_name = impl.TypeName(type.getId());
-		String operator_name = impl.OperatorName(alt.getId());
-                String name;
-                if(jtype) {
-                  name = impl.OperatorType(
-                    StringConversions.makeIdentifier(type.getId()),
-                    StringConversions.makeIdentifier(alt.getId()));
-                } else {
-                  name = impl.OperatorName(alt.getId());
-                }
-                print("%op " + impl.TypeName(type.getId()) + " " + name);
+		String operator_name = impl.OperatorName(type.getId(), alt.getId());
+        String name;
+             
+        print("%op " + impl.TypeName(type.getId()) + " " + operator_name);
 
 		Iterator fields = type.altFieldIterator(alt.getId());
 		if (fields.hasNext()) {
