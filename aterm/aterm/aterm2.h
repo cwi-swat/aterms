@@ -207,8 +207,4 @@ void    ATprotectAFun(AFun sym);
 void    ATunprotectAFun(AFun sym);
 #define ATunprotectSymbol ATunprotectAFun
 
-/* C specific version of ATmake */
-ATerm ATvmake(const char *pat, va_list args);
-ATerm ATvmakeTerm(ATerm pat, va_list args);
-
 #endif
