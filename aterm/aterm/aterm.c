@@ -3400,8 +3400,9 @@ ATbool ATisEqualModuloAnnotations(ATerm t1, ATerm t2)
 	AFun sym = ATgetAFun(appl1);
 	int i, arity = ATgetArity(sym);
 
-	if(sym != ATgetAFun(appl2))
+	if (sym != ATgetAFun(appl2)) {
 	  return ATfalse;
+	}
 
 	for(i=0; i<arity; i++)
 	  if(!ATisEqualModuloAnnotations(ATgetArgument(appl1, i), 
@@ -3419,8 +3420,10 @@ ATbool ATisEqualModuloAnnotations(ATerm t1, ATerm t2)
 	}
 
 	while(!ATisEmpty(list1)) {
-	  if(!AT_isEqual(ATgetFirst(list1), ATgetFirst(list2)))
+	  if (!ATisEqualModuloAnnotations(ATgetFirst(list1), 
+					  ATgetFirst(list2))) {
 	    return ATfalse;
+	  }
 
 	  list1 = ATgetNext(list1);
 	  list2 = ATgetNext(list2);
@@ -3442,7 +3445,8 @@ ATbool ATisEqualModuloAnnotations(ATerm t1, ATerm t2)
       break;
 
     case AT_PLACEHOLDER:
-      result = AT_isEqual(ATgetPlaceholder((ATermPlaceholder)t1), 
+      result = ATisEqualModuloAnnotations(
+			  ATgetPlaceholder((ATermPlaceholder)t1), 
 			  ATgetPlaceholder((ATermPlaceholder)t1));
       break;
 

@@ -344,14 +344,7 @@ static HashNumber hash_number_anno(ATerm t, int size, ATerm anno)
 
 
 /*}}}  */
-/*{{{  static HashNumber hash_number_anno(ATerm t, int size, anno) */
-
-/*}}}  */
 /*{{{  HashNumber AT_hashnumber(ATerm t) */
-
-/**
- * Calculate the hashnumber of a term.
- */
 
 HashNumber AT_hashnumber(ATerm t)
 {
@@ -659,7 +652,6 @@ void AT_cleanupMemory()
 }
 
 /*}}}  */
-/*{{{  static void allocate_block(int size_class) */
 
 /**
  * Allocate a new block of a particular size class
@@ -2643,6 +2635,7 @@ ATerm AT_removeAnnotations(ATerm t)
     /* Delay masking until after AT_allocate */
     hnr &= table_mask;
     cur->header = header;
+    SET_AGE(cur->header,YOUNG_AGE);
     CHECK_HEADER(cur->header);
     cur->next   = hashtable[hnr];
     hashtable[hnr] = cur;

@@ -1,5 +1,10 @@
 $Id$
 
+Sat May  1 13:48:03 CEST 2004 <jurgenv@cwi.nl>
+ * Fixed a bug in AT_removeAnnotations. The newly allocated aterm
+   was not initialized at age 0, instead it inherited the age of
+   the aterm with the annotations.
+
 Tue Apr 27 11:09:50 CEST 2004 <jurgenv@cwi.nl>
  * Removed all #ifndef PO directives from the header files
  * Added ATisEqualModuloAnnotations function

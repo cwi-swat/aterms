@@ -1265,7 +1265,6 @@ void testCompare()
   ATerm atplaceholder = ATparse("<term>");
   ATerm atanno = ATmake("f(a){[a,b],[b,d]}");
 
-
   char *data1 = "ik ben data";
   ATerm atblob = (ATerm)ATmakeBlob(strlen(data1)+1, data1);
 
@@ -1321,7 +1320,8 @@ void testCompare()
   test_assert("modulo", 0,  ATisEqualModuloAnnotations(atanno, atappl));
   test_assert("modulo", 1,  ATisEqualModuloAnnotations(atappl, atappl));
   test_assert("modulo", 2,  ATisEqualModuloAnnotations(atanno, atanno));
-  test_assert("modulo", 2,  ATisEqualModuloAnnotations(atreal, atanno) == ATfalse);
+  test_assert("modulo", 3,  
+	      ATisEqualModuloAnnotations(atreal, atanno) == ATfalse);
 
   test_assert("type-cmp", 0,  ATcompare(atappl, atint) < 0);
   test_assert("type-cmp", 1,  ATcompare(atint, atreal) < 0);
