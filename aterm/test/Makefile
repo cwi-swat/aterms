@@ -11,22 +11,20 @@ LIBS		= -L../aterm -lATerm -L$(EFENCE) -lefence
 AR		= ar
 
 EFENCE		= /home/olivierp/ElectricFence-2.0.5
-TESTS		= tst-alloc
-TESTPRGS	= test-alloc
-TESTSRCS	= test-alloc.c
-TESTOBJS	= test-alloc.o
+TESTS		= test-stress
+TESTPRGS	= stress
+TESTSRCS	= stress.c
+TESTOBJS	= stress.o
 
-all: $(TESTPRGS)
+all: clean $(TESTPRGS) $(TESTS)
 
-test-all: clean all $(TESTS)
-
-test-alloc: test-alloc.o
-	$(CC) $(LFLAGS) -o test-alloc test-alloc.o $(LIBS)
+stress: stress.o
+	$(CC) $(LFLAGS) -o stress stress.o $(LIBS)
 
 include ../implicit-rules
 
-tst-alloc: test-alloc
-	test-alloc
+test-stress: stress
+	stress
 
 clean:
 	rm -f $(TESTPRGS) $(TESTOBJS) *~ core
