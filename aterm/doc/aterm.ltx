@@ -91,7 +91,8 @@ First, we will now give a quick overview of \ATerms\
 (Section~\ref{aterms-at-a-glance}).  Next, we discuss implementation issues
 (Section~\ref{implementation}) and give some insight in performance issues
 (Section~\ref{measurements}).
-An overview of applications (Section~\ref{applications}) and a
+An overview of applications (Section~\ref{applications}) and an
+overview of related work and a 
 discussion (Section~\ref{discussion}) conclude this paper.
 
 %}}}
@@ -199,14 +200,15 @@ build simple applications with \ATerms.  We refer to this interface as
 the \emph{level one} interface of the \ATerm\ data type.
 
 To accommodate ``power'' users of \ATerms\ we also provide a
-\emph{level two} interface, which provides a more sophisticated set of
-data types and functions. These extensions are useful only when more
-control over the underlying implementation is needed or in situations
-where some operations that can be implemented using level one
-constructs, can be expressed more concisely and implemented more
-efficiently using level two constructs.  The level two interface is a
-strict superset of the level one interface (see Appendix \ref{level2}
-for further details).
+\emph{level two} interface, which contains a more sophisticated set of
+data types and functions. It is typically used in generated C code
+that calls \ATerm\ primitives or in efficiency critical applications.
+These extensions are useful only when more control over the underlying
+implementation is needed or in situations where some operations that
+can be implemented using level one constructs, can be expressed more
+concisely and implemented more efficiently using level two constructs.
+The level two interface is a strict superset of the level one
+interface (see Appendix \ref{level2} for further details).
 
 Observe that \ATerms\ are a purely functional data type and that no
 destructive updates are possible, see Section \ref{max-sharing} 

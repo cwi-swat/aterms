@@ -57,6 +57,7 @@ ATerm. In practice, we use them in this way frequently.}
 \item[7.] Measurements are only concerned with AsFix-style data.
 
 \item[8.] The claim ``2 bits per node'' is misleading.
+\emph{See issue \#1.}
 
 \item[9.] Precision of integers and reals is not specified.
 
@@ -65,27 +66,32 @@ about the sizes of the integers and reals.}
 
 \item[10.] Mention S-expressions, SGML and XML in section 6.1
 
-\item[11.] Spell ``data structures'' consistently.
+\item[11.] Spell ``data structures'' consistently. \emph{Fixed.}
 
 \item[12.] Period in numbers?
 
-\emph{The periods are changed into commas.}
+\emph{The periods have been changed into commas.}
 
-\item[13.] Typo 25/6/8
+\item[13.] Typo 25/6/8. \emph{Fixed.}
 
-\item[14.] Typo 25/6/9
+\item[14.] Typo 25/6/9. \emph{Fixed.}
 
-\item[15.] Paragraph 4/-2 is vague.
+\item[15.] Paragraph 4/-2 is vague. \emph{Explanation added.}
 
 \item[16.] Section 3.3.1 could be shorter.
 
-\item[17.] Typo 16/5
+\emph{We fully agree that the issues of memory management in
+an unsafe C environment are fully covered by the cited references.
+However, we prefer to keep this section since it makes the paper
+more self-contained.}
 
-\item[18.] Typo 16/-1
+\item[17.] Typo 16/5. \emph{Fixed.}
 
-\item[19.] Typo 27/3/1
+\item[18.] Typo 16/-1. \emph{Fixed.}
 
-\item[20.] Omit Appendix B or condense is.
+\item[19.] Typo 27/3/1. \emph{Fixed.}
+
+\item[20.] Omit Appendix B or condense it.
 
 \end{itemize}
 
@@ -96,24 +102,42 @@ about the sizes of the integers and reals.}
 \item[21.] Comparison with related work is weak (section 6).
 
 \item[22.] Make clearer comparison with related work.
+\emph{See issue \#21.}
 
 \item[23.] Refer to ASDL.
 
-\emph{An entire paragraph is added to the section 6, describing
+\emph{A paragraph has been  added to Section 6, describing
 ASDL and giving some figures to compare the BAF format with
-the ASDL pickles.}
+ASDL pickles.}
 
 \item[24.] Give measurements that compare with other methods.
 
-\item[25.] Typo and question: binary encoding to/from strings.
+\emph{We share the wish of the referee to include performance measurements
+with other approaches. However, this kind of comparisons is very hard
+to make in a completely objective manner even for toy examples:
+writing an application in someone else's system is allways (rightly)
+criticized since the system in question is not used to its full extent
+due to the inexperience with that system. For larger examples (which
+we are more interested in) this becomes even harder. 
+For these reasons, we have have focussed on measurements that
+are mutually comparable (i.e., effect of sharing, compression
+of binary form, and the like).
+However, we have
+now added measurements related to reading/writing ASDL. Also see issue
+\#23.  }
 
-\item[26.] Typo. page 14.
+
+
+\item[25.] Typo and question: binary encoding to/from strings.
+\emph{Typo fixed. Regarding the question ...}
+
+\item[26.] Typo. page 14. \emph{Fixed.}
 
 \item[27.] Example in 3.5.2 is not used consistently.
 
-\emph{The example term is consistently updated through this section.}
+\emph{The example term is consistently updated throughout this section.}
 
-\item[28.] Label axes in Figure 3.
+\item[28.] Label axes in Figure 3. \emph{See issue \#6.}
 
 \item[29.] Which time do you measure?
 
@@ -122,8 +146,7 @@ the ASDL pickles.}
 \emph{An explanation added which is based on the observation that
 reading the Ascii representation involves more matching operations.}
 
-
-\item[31.] Type 4.2
+\item[31.] Typo 4.2. \emph{Fixed.}
 
 \item[32.] Tables 2 and 3 are confusing.
 
@@ -132,22 +155,23 @@ reading the Ascii representation involves more matching operations.}
 \subsection{Third Referee}
 
 \begin{itemize}
-\item [33.] Add pointer to related work (6.1) in introduction.
+\item [33.] Add pointer to related work (6.1) in introduction. \emph{Done.}
 
 \item[34.] What is the relationship between function symbols and function names?
 
 \emph{
-This point is tackled by adding the remark that these
+A remark has been added that these
 3 bytes represent an index in a table containing the function symbols.}
 
 \item[35.] How are integers and reals encoded?
+\emph{See issue \#9.}
 
-\item[36.] Typo on page 16.
+\item[36.] Typo on page 16. \emph{See issue \#18.}
 
 \item[37.] Give better intro to ASF+SDF.
 
 \emph{
-A number of sentences are added to explain briefly ASF+SDF.}
+A number of sentences are added to  briefly explain ASF+SDF.}
 
 \end{itemize}
 
