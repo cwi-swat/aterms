@@ -1,0 +1,17 @@
+module Expr
+
+exports
+  sorts Expr Num
+
+  context-free syntax
+    lhs:Expr "+" rhs:Expr -> Expr {cons("plus")}
+    lhs:Expr "-" rhs:Expr -> Expr {cons("minus")}
+    "-" oper:Expr         -> Expr {cons("neg")}
+    num:Num               -> Expr {cons("num")}
+
+    "(" Expr ")"          -> Expr {bracket}
+
+  lexical syntax
+    [0-9][1-9]*           -> Num {cons("nat")}
+    Num "." Num           -> Num {cons("real")}
+

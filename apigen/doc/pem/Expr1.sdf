@@ -1,0 +1,18 @@
+module Expr
+
+exports
+  sorts Expr Num
+
+  context-free syntax
+    Expr "+" Expr       -> Expr
+    Expr "-" Expr       -> Expr
+    "-" Expr            -> Expr
+    Num                 -> Expr
+
+    "(" Expr ")"        -> Expr {bracket}
+
+  lexical syntax
+    [0-9][1-9]*         -> Num
+    Num "." Num         -> Num
+
+%% Example term: 3-((-4)+1.0)
