@@ -20,37 +20,49 @@
 
 */
 
-#ifndef _ATERM_H
-#define _ATERM_H
+#ifndef BYTEIO_H
+#define BYTEIO_H
 
-#include "aterm2.h"
+#include <stdio.h>
 
-typedef struct ProtEntry
+#define FILE_WRITER   0
+#define STRING_WRITER 1
+
+#define FILE_READER   0
+#define STRING_READER 1
+
+typedef struct
 {
-	struct ProtEntry *next;
-	ATerm *start;
-	int    size;
-} ProtEntry;
+  int type;
+  union {
+    FILE *file_data;
+    struct {
+      char *buf;
+      int   max_size;
+      int   cur_size;
+    } string_data;
+  } u;
+} byte_writer;
 
-#define STRING_MARK 0xFF /* marker for binary strings */
-#define LENSPEC 8
+typedef struct
+{
+  int type;
+  long bytes_read;
+  union {
+    FILE *file_data;
+    struct {
+      char *buf;
+      int   index;
+      int   size;
+    } string_data;
+  } u;
+} byte_reader;
 
-extern ATbool silent;
-extern ProtEntry **at_prot_table;
-extern int at_prot_table_size;
-
-void AT_markTerm(ATerm t);
-void AT_unmarkTerm(ATerm t);
-void AT_unmarkIfAllMarked(ATerm t);
-int  AT_calcTextSize(ATerm t);
-int  AT_calcCoreSize(ATerm t);
-int  AT_calcSubterms(ATerm t);
-int  AT_calcUniqueSubterms(ATerm t);
-int  AT_calcUniqueSymbols(ATerm t);
-int  AT_calcTermDepth(ATerm t);
-void AT_writeToStringBuffer(ATerm t, char *buffer);
-void AT_assertUnmarked(ATerm t);
-void AT_assertMarked(ATerm t);
-int AT_calcAllocatedSize();
+int write_byte(int byte, byte_writer *writer);
+int write_bytes(const char *buf, int count, byte_writer *writer);
+int read_byte(byte_reader *reader);
+int read_bytes(char *buf, int count, byte_reader *reader);
+void init_file_reader(byte_reader *reader, FILE *file);
+void init_string_reader(byte_reader *reader, char *buf, int max_size);
 
 #endif

@@ -41,6 +41,7 @@
 #include "memory.h"
 #include "afun.h"
 #include "util.h"
+#include "byteio.h"
 
 /*}}}  */
 /*{{{  defines */
@@ -73,12 +74,6 @@
 #define SYM_INDEX(n)      (((n)-SYMBOL_OFFSET)/2)
 #define SYM_COMMAND(n)    ((n)*2 + SYMBOL_OFFSET)
 #define PLAIN_CMD(n)      ((n) & ~1)
-
-#define FILE_WRITER   0
-#define STRING_WRITER 1
-
-#define FILE_READER   0
-#define STRING_READER 1
 
 /*}}}  */
 /*{{{  types */
@@ -143,32 +138,6 @@ typedef struct
   int  **topsyms;
 } sym_read_entry;
 
-typedef struct
-{
-  int type;
-  union {
-    FILE *file_data;
-    struct {
-      char *buf;
-      int   max_size;
-      int   cur_size;
-    } string_data;
-  } u;
-} baf_writer;
-
-typedef struct
-{
-  int type;
-  union {
-    FILE *file_data;
-    struct {
-      char *buf;
-      int   index;
-      int   size;
-    } string_data;
-  } u;
-} baf_reader;
-
 /*}}}  */
 /*{{{  variables */
 
@@ -187,26 +156,6 @@ static int  bits_in_buffer = 0; /* how many bits in bit_buffer are used */
 
 /*}}}  */
 
-/*{{{  static void resize_buffer(baf_writer *writer, int delta) */
-
-static void resize_buffer(baf_writer *writer, int delta)
-{
-  int size_needed, new_size;
-
-  assert(writer->type == STRING_WRITER);
-
-  size_needed = writer->u.string_data.cur_size + delta;
-  if (size_needed >= writer->u.string_data.max_size) {
-    new_size = MAX(size_needed, writer->u.string_data.max_size*2);
-    writer->u.string_data.buf = realloc(writer->u.string_data.buf, new_size);
-    if (!writer->u.string_data.buf) {
-      ATerror("bafio: unable to resize buffer to %d bytes.\n", new_size);
-    }
-    writer->u.string_data.max_size = new_size;
-  }
-}
-
-/*}}}  */
 /*{{{  void AT_initBafIO(int argc, char *argv[]) */
 
 /**
@@ -215,111 +164,6 @@ static void resize_buffer(baf_writer *writer, int delta)
 
 void AT_initBafIO(int argc, char *argv[])
 {
-}
-
-/*}}}  */
-
-/*{{{  static int write_byte(int byte, baf_writer *writer) */
-
-static int write_byte(int byte, baf_writer *writer)
-{
-  switch (writer->type) {
-    case STRING_WRITER:
-      resize_buffer(writer, 1);
-      writer->u.string_data.buf[writer->u.string_data.cur_size++] = (char)byte;
-      return byte;
-
-    case FILE_WRITER:
-      return fputc(byte, writer->u.file_data);
-      
-    default:
-      abort();
-  }
-  return EOF;
-}
-
-/*}}}  */
-/*{{{  static int write_bytes(const char *buf, int count, baf_writer *writer) */
-
-static int write_bytes(const char *buf, int count, baf_writer *writer)
-{
-  switch (writer->type) {
-    case STRING_WRITER:
-      resize_buffer(writer, count);
-      memcpy(&writer->u.string_data.buf[writer->u.string_data.cur_size], buf, count);
-      writer->u.string_data.cur_size += count;
-      return count;
-
-    case FILE_WRITER:
-      return fwrite(buf, 1, count, writer->u.file_data);
-      
-    default:
-      abort();
-  }
-  return EOF;
-}
-
-/*}}}  */
-/*{{{  static int read_byte(baf_reader *reader) */
-
-static int read_byte(baf_reader *reader)
-{
-  int index, c;
-
-  c = EOF;
-  switch (reader->type) {
-    case STRING_READER:
-      index = reader->u.string_data.index;
-      if (index >= reader->u.string_data.size) {
-	return EOF;
-      }
-      reader->u.string_data.index++;
-      c = ((int)reader->u.string_data.buf[index]) & 0xFF;
-      break;
-
-    case FILE_READER:
-      c = fgetc(reader->u.file_data);
-      break;
-      
-    default:
-      abort();
-  }
-
-  return c;
-}
-
-/*}}}  */
-/*{{{  static int read_bytes(char *buf, int count, baf_reader *reader) */
-
-static int read_bytes(char *buf, int count, baf_reader *reader)
-{
-  int index, size, left, result;
-
-  result = EOF;
-  switch (reader->type) {
-    case STRING_READER:
-      index = reader->u.string_data.index;
-      size  = reader->u.string_data.size;
-      left  = size-index;
-      if (left <= 0) {
-	return EOF;
-      }
-      if (left < count) {
-	count = left;
-      }
-      memcpy(buf, &reader->u.string_data.buf[index], count);
-      reader->u.string_data.index += count;
-      result = count;
-      break;
-
-    case FILE_READER:
-      result = fread(buf, 1, count, reader->u.file_data);
-      break;
-      
-    default:
-      abort();
-  }
-  return result;
 }
 
 /*}}}  */
@@ -381,11 +225,11 @@ writeIntToBuf(unsigned int val, unsigned char *buf)
 
 /*}}}  */
 
-/*{{{  static int writeBits(unsigned int val, int nr_bits, baf_writer *writer) */
+/*{{{  static int writeBits(unsigned int val, int nr_bits, byte_writer *writer) */
 
 static
 int
-writeBits(unsigned int val, int nr_bits, baf_writer *writer)
+writeBits(unsigned int val, int nr_bits, byte_writer *writer)
 {
   int cur_bit;
 
@@ -406,11 +250,11 @@ writeBits(unsigned int val, int nr_bits, baf_writer *writer)
 }
 
 /*}}}  */
-/*{{{  static int flushBitsToWriter(baf_writer *writer) */
+/*{{{  static int flushBitsToWriter(byte_writer *writer) */
 
 static
 int
-flushBitsToWriter(baf_writer *writer)
+flushBitsToWriter(byte_writer *writer)
 {
   int result = 0;
   if(bits_in_buffer > 0) {
@@ -425,11 +269,11 @@ flushBitsToWriter(baf_writer *writer)
 }
 
 /*}}}  */
-/*{{{  static int readBits(unsigned int *val, int nr_bits, baf_reader *reader) */
+/*{{{  static int readBits(unsigned int *val, int nr_bits, byte_reader *reader) */
 
 static
 int
-readBits(unsigned int *val, int nr_bits, baf_reader *reader)
+readBits(unsigned int *val, int nr_bits, byte_reader *reader)
 {
   int cur_bit, mask = 1;
 
@@ -453,22 +297,22 @@ readBits(unsigned int *val, int nr_bits, baf_reader *reader)
 }
 
 /*}}}  */
-/*{{{  static int flushBitsFromReader(baf_reader *reader) */
+/*{{{  static int flushBitsFromReader(byte_reader *reader) */
 
 static
 int
-flushBitsFromReader(baf_reader *reader)
+flushBitsFromReader(byte_reader *reader)
 {
   bits_in_buffer = 0;
   return 0;
 }
 
 /*}}}  */
-/*{{{  static int writeInt(unsigned int val, baf_writer *writer) */
+/*{{{  static int writeInt(unsigned int val, byte_writer *writer) */
 
 static
 int
-writeInt(unsigned int val, baf_writer *writer)
+writeInt(unsigned int val, byte_writer *writer)
 {
   int nr_items;
   unsigned char buf[8];
@@ -482,11 +326,11 @@ writeInt(unsigned int val, baf_writer *writer)
 }
 
 /*}}}  */
-/*{{{  static int readInt(unsigned int *val, baf_reader *reader) */
+/*{{{  static int readInt(unsigned int *val, byte_reader *reader) */
 
 static
 int
-readInt(unsigned int *val, baf_reader *reader)
+readInt(unsigned int *val, byte_reader *reader)
 {
   int buf[8];
 
@@ -545,11 +389,11 @@ readInt(unsigned int *val, baf_reader *reader)
 }
 
 /*}}}  */
-/*{{{  static int writeString(const char *str, int len, baf_writer *writer) */
+/*{{{  static int writeString(const char *str, int len, byte_writer *writer) */
 
 static
 int
-writeString(const char *str, int len, baf_writer *writer)
+writeString(const char *str, int len, byte_writer *writer)
 {
   /* Write length. */
   if (writeInt(len, writer) < 0)
@@ -564,11 +408,11 @@ writeString(const char *str, int len, baf_writer *writer)
 }
 
 /*}}}  */
-/*{{{  static int readString(baf_reader *reader) */
+/*{{{  static int readString(byte_reader *reader) */
 
 static
 int
-readString(baf_reader *reader)
+readString(byte_reader *reader)
 {
   unsigned int len;
 
@@ -595,13 +439,13 @@ readString(baf_reader *reader)
 
 /*}}}  */
 
-/*{{{  static ATbool write_symbol(Symbol sym, baf_writer *writer) */
+/*{{{  static ATbool write_symbol(Symbol sym, byte_writer *writer) */
 
 /**
  * Write a symbol to file.
  */
 
-static ATbool write_symbol(Symbol sym, baf_writer *writer)
+static ATbool write_symbol(Symbol sym, byte_writer *writer)
 {
   char *name = ATgetName(sym);
   if(writeString(name, strlen(name), writer) < 0)
@@ -928,13 +772,13 @@ static void collect_terms(ATerm t)
 }
 
 /*}}}  */
-/*{{{  static ATbool write_symbols(baf_writer *writer) */
+/*{{{  static ATbool write_symbols(byte_writer *writer) */
 
 /**
  * Write all symbols in a term to file.
  */
 
-static ATbool write_symbols(baf_writer *writer)
+static ATbool write_symbols(byte_writer *writer)
 {
   int sym_idx, arg_idx, top_idx;
 	
@@ -1010,14 +854,14 @@ static top_symbol *find_top_symbol(top_symbols *syms, AFun sym)
 /*{{{  static ATbool write_arg(sym_entry *trm_sym, ATerm arg, arg_idx, writer, anno_done) */
 
 /**
- * Write an argument using a baf_writer.
+ * Write an argument using a byte_writer.
  */
 
 /* forward declaration */
-static ATbool write_term(ATerm, baf_writer *, ATbool);
+static ATbool write_term(ATerm, byte_writer *, ATbool);
 
 static ATbool write_arg(sym_entry *trm_sym, ATerm arg, int arg_idx, 
-			baf_writer *writer, ATbool anno_done)
+			byte_writer *writer, ATbool anno_done)
 {
   top_symbol *ts;
   sym_entry *arg_sym;
@@ -1053,13 +897,13 @@ fprintf(stderr, "write_term in write_arg failed\n");
 }
 
 /*}}}  */
-/*{{{  static ATbool write_term(ATerm t, baf_writer *writer, ATbool anno_done) */
+/*{{{  static ATbool write_term(ATerm t, byte_writer *writer, ATbool anno_done) */
 
 /**
  * Write a term using a writer.
  */
 
-static ATbool write_term(ATerm t, baf_writer *writer, ATbool anno_done)
+static ATbool write_term(ATerm t, byte_writer *writer, ATbool anno_done)
 {
   int arg_idx;
   sym_entry *trm_sym = NULL;
@@ -1213,10 +1057,10 @@ static void free_write_space()
 }
 
 /*}}}  */
-/*{{{  ATbool write_baf(ATerm t, baf_writer *writer) */
+/*{{{  ATbool write_baf(ATerm t, byte_writer *writer) */
 
 ATbool
-write_baf(ATerm t, baf_writer *writer)
+write_baf(ATerm t, byte_writer *writer)
 {
   int nr_unique_terms = 0;
   int nr_symbols = AT_symbolTableSize();
@@ -1337,7 +1181,7 @@ write_baf(ATerm t, baf_writer *writer)
 
 char *ATwriteToBinaryString(ATerm t, int *len)
 {
-  static baf_writer writer;
+  static byte_writer writer;
   static ATbool initialized = ATfalse;
 
   if (!initialized) {
@@ -1364,7 +1208,7 @@ char *ATwriteToBinaryString(ATerm t, int *len)
 
 ATbool ATwriteToBinaryFile(ATerm t, FILE *file)
 {
-  static baf_writer writer;
+  static byte_writer writer;
   static ATbool initialized = ATfalse;
 
   if (!initialized) {
@@ -1410,13 +1254,13 @@ ATbool ATwriteToNamedBinaryFile(ATerm t, const char *name)
 
 /*}}}  */
 
-/*{{{  Symbol read_symbol(baf_reader *reader) */
+/*{{{  Symbol read_symbol(byte_reader *reader) */
 
 /**
 	* Read a single symbol from file.
 	*/
 
-Symbol read_symbol(baf_reader *reader)
+Symbol read_symbol(byte_reader *reader)
 {
   unsigned int arity, quoted;
   int len;
@@ -1437,13 +1281,13 @@ Symbol read_symbol(baf_reader *reader)
 
 /*}}}  */
 
-/*{{{  ATbool read_all_symbols(baf_reader *reader) */
+/*{{{  ATbool read_all_symbols(byte_reader *reader) */
 
 /**
  * Read all symbols from file.
  */
 
-ATbool read_all_symbols(baf_reader *reader)
+ATbool read_all_symbols(byte_reader *reader)
 {
   unsigned int val;
   int i, j, k, arity;
@@ -1532,9 +1376,9 @@ ATbool read_all_symbols(baf_reader *reader)
 }
 
 /*}}}  */
-/*{{{  ATerm read_term(sym_read_entry *sym, baf_reader *reader) */
+/*{{{  ATerm read_term(sym_read_entry *sym, byte_reader *reader) */
 
-ATerm read_term(sym_read_entry *sym, baf_reader *reader)
+ATerm read_term(sym_read_entry *sym, byte_reader *reader)
 {
   unsigned int val;
   int i, arity = sym->arity;
@@ -1688,13 +1532,13 @@ static void free_read_space()
 
 /*}}}  */
 
-/*{{{  ATerm read_baf(baf_reader *reader) */
+/*{{{  ATerm read_baf(byte_reader *reader) */
 
 /**
  * Read a term from a BAF reader.
  */
 
-ATerm read_baf(baf_reader *reader)
+ATerm read_baf(byte_reader *reader)
 {
   unsigned int val, nr_unique_terms;
   ATerm result = NULL;
@@ -1767,12 +1611,9 @@ ATerm read_baf(baf_reader *reader)
 
 ATerm ATreadFromBinaryString(char *s, int size)
 {
-  baf_reader reader;
+  byte_reader reader;
 
-  reader.type = STRING_READER;
-  reader.u.string_data.buf   = s;
-  reader.u.string_data.index = 0;
-  reader.u.string_data.size  = size;
+  init_string_reader(&reader, s, size);
 
   return read_baf(&reader);
 }
@@ -1782,10 +1623,9 @@ ATerm ATreadFromBinaryString(char *s, int size)
 
 ATerm ATreadFromBinaryFile(FILE *file)
 {
-  baf_reader reader;
-
-  reader.type = FILE_READER;
-  reader.u.file_data = file;
+  byte_reader reader;
+  
+  init_file_reader(&reader, file);
 
 #ifdef WIN32
   if( _setmode( _fileno( file ), _O_BINARY ) == -1 ) {

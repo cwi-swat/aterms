@@ -29,6 +29,7 @@
 
 #include "atypes.h"
 #include "encoding.h"
+#include "byteio.h"
 
 #define Symbol AFun
 
@@ -62,7 +63,8 @@ extern SymEntry *at_lookup_table;
 
 unsigned int AT_symbolTableSize();
 void AT_initSymbol(int argc, char *argv[]);
-void AT_printSymbol(Symbol sym, FILE *f);
+int AT_printSymbol(Symbol sym, FILE *f);
+int AT_writeAFun(Symbol sym, byte_writer *writer);
 ATbool AT_isValidSymbol(Symbol sym);
 /*void AT_markSymbol(Symbol sym);*/
 #define AT_markSymbol(s)   (at_lookup_table[(s)]->header |= MASK_MARK)

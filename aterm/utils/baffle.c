@@ -32,8 +32,8 @@
  * -v            - Print version information
  * -h            - Display help
  * -ri           - Read BAF and write interpretation
- * -rb, -rt      - Choose between BAF and TEXT input   (Default: -rb)
- * -wb, -wt      - Choose between BAF and TEXT output  (Default: -wb)
+ * -rb, -rt, -rs - Choose between BAF, TEXT, and SHARED-TEXT input   (Default: autodetect)
+ * -wb, -wt, -ws - Choose between BAF, TEXT, and SHARED-TEXT output  (Default: -wb)
  *
  */
 
@@ -46,128 +46,132 @@
 #include "util.h"
 #include "aterm2.h"
 
+#define AUTODETECT  0
+#define TEXT        1
+#define SHARED_TEXT 2
+#define BINARY      3
+
 char baffle_id[] = "$Id$";
 
-static
-void
+static void
 usage(char *prg)
 {
-	fprintf(stderr,
-"Usage: %s [-i <input>] [-o <output> | -c] [-v] [-rb | -rt] [-wb | -wt]\n\n" \
-"    -i <input>    - Read input from file <input>        (Default: stdin)\n" \
-"    -o <output>   - Write output to file <output>       (Default: stdout)\n" \
-"    -c            - Check validity of input-term\n" \
-"    -v            - Print version information\n" \
-"    -h            - Display help\n" \
-"    -ri           - Write interpretation of BAF-input\n" \
-"    -rb, -rt      - Choose between BAF and TEXT input   (Default: -rb)\n" \
-"    -wb, -wt      - Choose between BAF and TEXT output  (Default: -wb)\n" \
-"", prg);
+  fprintf(stderr,
+	  "Usage: %s [-i <input>] [-o <output> | -c] [-v] [-rb | -rt] [-wb | -wt]\n\n"
+	  "    -i <input>    - Read input from file <input>        (Default: stdin)\n"
+	  "    -o <output>   - Write output to file <output>       (Default: stdout)\n"
+	  "    -c            - Check validity of input-term\n"
+	  "    -v            - Print version information\n"
+	  "    -h            - Display help\n"
+	  "    -ri           - Write interpretation of BAF-input\n"
+	  "    -rb, -rt, -rs - Choose between BAF, TEXT, and SHARED-TEXT input   (Default: autodetect)\n"
+	  "    -wb, -wt, -ws - Choose between BAF, TEXT, and SHARED-TEXT output  (Default: -wb)\n", 
+	  prg);
 }
 
 int
 main(int argc, char *argv[])
 {
-	int lcv;
-	ATbool check   = ATfalse;
-	ATbool binary_input  = ATtrue;
-	ATbool binary_output = ATtrue;
-	ATbool interpret = ATfalse;
-	ATbool result = ATfalse;
-	ATerm term = NULL;
-	FILE *input  = stdin;
-	FILE *output = stdout;
-	time_t curtime;
+  int lcv;
+  ATbool check = ATfalse;
+  int input_format = AUTODETECT;
+  int output_format = BINARY;
+  ATbool result = ATfalse;
+  ATerm term = NULL;
+  FILE *input = stdin;
+  FILE *output = stdout;
 
-	/* Initialize ATerm-library */
-	ATerm bottomOfStack;
-	ATinit(argc, argv, &bottomOfStack);
+  /* Initialize ATerm-library */
+  ATerm bottomOfStack;
 
-	/* Make sure <term> doesn't get cleaned up */
-	ATprotect(&term);
+  ATinit(argc, argv, &bottomOfStack);
 
-	/* Parse commandline arguments */
-	for (lcv=1; lcv < argc; lcv++)
-	{
-		if (streq(argv[lcv], "-i"))
-		{
-			input = fopen(argv[++lcv], "rb");
-			if (input == NULL)
-				ATerror("%s: unable to open %s for reading.\n",
-						argv[0], argv[lcv]);
-		}
-		else if(streq(argv[lcv], "-o"))
-		{
-			output = fopen(argv[++lcv], "wb");
-			if (output == NULL)
-				ATerror("%s: unable to open %s for writing.\n",
-						argv[0], argv[lcv]);
-		}
-		else if (streq(argv[lcv], "-c"))
-		{
-			check = ATtrue;
-		}
-		else if (streq(argv[lcv], "-v"))
-		{
-			int major, minor;
-			AT_getBafVersion(&major, &minor);
-			ATfprintf(stderr, "%s - Version: %d.%d\n", argv[0], major, minor);
-			exit (0);
-		}
-		else if (streq(argv[lcv], "-h"))
-		{
-			usage(argv[0]);
-			exit(0);
-		}
-		else if (streq(argv[lcv], "-ri"))
-		{
-			interpret = ATtrue;
-		}
-		else if (streq(argv[lcv], "-rb"))
-		{
-			binary_input = ATtrue;
-		}
-		else if (streq(argv[lcv], "-rt"))
-		{
-			binary_input = ATfalse;
-		}
-		else if (streq(argv[lcv], "-wb"))
-		{
-			binary_output = ATtrue;
-		}
-		else if (streq(argv[lcv], "-wt"))
-		{
-			binary_output = ATfalse;
-		}
-	}
+  /* Make sure <term> doesn't get cleaned up */
+  ATprotect(&term);
 
-	/* Baffle user */
-	if (interpret)
-	{
-		/*AT_interpretBaf(input, output);*/
-		exit(0);
-	}
+  /* Parse commandline arguments */
+  for (lcv = 1; lcv < argc; lcv++) {
+    if (streq(argv[lcv], "-i")) {
+      input = fopen(argv[++lcv], "rb");
+      if (input == NULL)
+	ATerror("%s: unable to open %s for reading.\n", argv[0], argv[lcv]);
+    }
+    else if (streq(argv[lcv], "-o")) {
+      output = fopen(argv[++lcv], "wb");
+      if (output == NULL)
+	ATerror("%s: unable to open %s for writing.\n", argv[0], argv[lcv]);
+    }
+    else if (streq(argv[lcv], "-c")) {
+      check = ATtrue;
+    }
+    else if (streq(argv[lcv], "-v")) {
+      int major, minor;
 
-	curtime = time(NULL);
-	term = ATreadFromFile(input);
-	
-	if (term == NULL)
-		ATerror("%s: illegal input!\n", argv[0]);
-	
-	if (!check)
-	{
-        curtime = time(NULL);
-		if (binary_output)
-			result = ATwriteToBinaryFile(term, output);
-		else {
-			result = ATwriteToTextFile(term, output);
-			fprintf(output, "\n");
-		}
-        curtime = time(NULL);
+      AT_getBafVersion(&major, &minor);
+      ATfprintf(stderr, "%s - Version: %d.%d\n", argv[0], major, minor);
+      exit(0);
+    }
+    else if (streq(argv[lcv], "-h")) {
+      usage(argv[0]);
+      exit(0);
+    }
+    else if (streq(argv[lcv], "-rb")) {
+      input_format = BINARY;
+    }
+    else if (streq(argv[lcv], "-rt")) {
+      input_format = TEXT;
+    }
+    else if (streq(argv[lcv], "-rs")) {
+      input_format = SHARED_TEXT;
+    }
+    else if (streq(argv[lcv], "-wb")) {
+      output_format = BINARY;
+    }
+    else if (streq(argv[lcv], "-wt")) {
+      output_format = TEXT;
+    }
+    else if (streq(argv[lcv], "-ws")) {
+      output_format = SHARED_TEXT;
+    }
+  }
 
-		if (!result)
-			ATerror("%s: write failed!\n", argv[0]);
-	}
+  switch (input_format) {
+    case AUTODETECT:
+      term = ATreadFromFile(input);
+      break;
+    case TEXT:
+      term = ATreadFromTextFile(input);
+      break;
+    case SHARED_TEXT:
+      term = ATreadFromSharedTextFile(input);
+      break;
+    case BINARY:
+      term = ATreadFromBinaryFile(input);
+      break;
+  }
 
-	return 0;
+  if (term == NULL) {
+    ATerror("%s: illegal input!\n", argv[0]);
+  }
+
+  if (!check) {
+    switch (output_format) {
+      case BINARY:
+	result = ATwriteToBinaryFile(term, output);
+	break;
+      case TEXT:
+	result = ATwriteToTextFile(term, output);
+	fprintf(output, "\n");
+	break;
+      case SHARED_TEXT:
+	result = ATwriteToSharedTextFile(term, output) > 0;
+	break;
+    }
+
+    if (!result) {
+      ATerror("%s: write failed!\n", argv[0]);
+    }
+  }
+
+  return 0;
 }

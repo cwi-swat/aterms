@@ -19,38 +19,13 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 
 */
+#ifndef TAFIO_H
+#define TAFIO_H
 
-#ifndef _ATERM_H
-#define _ATERM_H
+#include "aterm1.h"
 
-#include "aterm2.h"
+#define START_OF_SHARED_TEXT_FILE '!'
 
-typedef struct ProtEntry
-{
-	struct ProtEntry *next;
-	ATerm *start;
-	int    size;
-} ProtEntry;
+extern ATerm AT_readFromSharedTextFile(int *c, FILE *f);
 
-#define STRING_MARK 0xFF /* marker for binary strings */
-#define LENSPEC 8
-
-extern ATbool silent;
-extern ProtEntry **at_prot_table;
-extern int at_prot_table_size;
-
-void AT_markTerm(ATerm t);
-void AT_unmarkTerm(ATerm t);
-void AT_unmarkIfAllMarked(ATerm t);
-int  AT_calcTextSize(ATerm t);
-int  AT_calcCoreSize(ATerm t);
-int  AT_calcSubterms(ATerm t);
-int  AT_calcUniqueSubterms(ATerm t);
-int  AT_calcUniqueSymbols(ATerm t);
-int  AT_calcTermDepth(ATerm t);
-void AT_writeToStringBuffer(ATerm t, char *buffer);
-void AT_assertUnmarked(ATerm t);
-void AT_assertMarked(ATerm t);
-int AT_calcAllocatedSize();
-
-#endif
+#endif /* BAFIO_H */

@@ -202,10 +202,10 @@ ATermIndexedSet
 void       ATindexedSetDestroy(ATermIndexedSet set);
 void       ATindexedSetReset(ATermIndexedSet set);
 long       ATindexedSetPut(ATermIndexedSet set, ATerm key, ATbool *new);
-long       ATindexedSetGet(ATermIndexedSet set, ATerm key);
+long       ATindexedSetGetIndex(ATermIndexedSet set, ATerm key);
 void       ATindexedSetRemove(ATermIndexedSet set, ATerm key);
 ATermList  ATindexedSetKeys(ATermIndexedSet set);
-ATerm      ATgetKeyAtIndex(ATermIndexedSet set, long index);
+ATerm      ATindexedSetGetElem(ATermIndexedSet set, long index);
 
 /* Einde wijziging JFG */
 

@@ -59,11 +59,13 @@ typedef struct ATerm
 
 ATerm ATmake(const char *pattern, ...);
 ATbool ATmatch(ATerm t, const char *pattern, ...);
-ATerm ATreadFromString(const char *string);
 ATerm ATreadFromTextFile(FILE *file);
+ATerm ATreadFromSharedTextFile(FILE *f);
 ATerm ATreadFromBinaryFile(FILE *file);
 ATerm ATreadFromFile(FILE *file);
 ATerm ATreadFromNamedFile(const char *name);
+ATerm ATreadFromString(const char *string);
+ATerm ATreadFromSharedString(char *s, int size);
 ATerm ATreadFromBinaryString(char *s, int size);
 
 /* Abbreviation for ATreadFromString */
@@ -83,12 +85,13 @@ extern ATbool AT_isEqual(ATerm t1, ATerm t2);
 #define ATisEqual(t1,t2) ((ATbool)((ATerm)(t1) == (ATerm)(t2)))
 #endif
 
-
 ATbool ATwriteToTextFile(ATerm t, FILE *file);
+long   ATwriteToSharedTextFile(ATerm t, FILE *f);
 ATbool ATwriteToBinaryFile(ATerm t, FILE *file);
 ATbool ATwriteToNamedTextFile(ATerm t, const char *name);
 ATbool ATwriteToNamedBinaryFile(ATerm t, const char *name);
 char  *ATwriteToString(ATerm t);
+char  *ATwriteToSharedString(ATerm t, int *len);
 char  *ATwriteToBinaryString(ATerm t, int *len);
 ATerm  ATsetAnnotation(ATerm t, ATerm label, ATerm anno);
 ATerm  ATgetAnnotation(ATerm t, ATerm label);

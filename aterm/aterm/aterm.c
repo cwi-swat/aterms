@@ -42,6 +42,7 @@
 #include "bafio.h"
 #include "version.h"
 #include "atypes.h"
+#include "tafio.h"
 
 /*}}}  */
 /*{{{  defines */
@@ -67,9 +68,6 @@
 #define PROTECT_ARRAY_EXPAND_SIZE  256
 
 #define HASH_PRIME 12007
-
-#define STRING_MARK 0xFF /* marker for binary strings */
-#define LENSPEC 8
 
 /*}}}  */
 /*{{{  globals */
@@ -109,7 +107,6 @@ int             nr_marks = 0;
 /*}}}  */
 /*{{{  function declarations */
 
-/* extern char    *strdup(const char *s); */
 static ATerm    fparse_term(int *c, FILE * f);
 static ATerm    sparse_term(int *c, char **s);
 
@@ -118,8 +115,8 @@ static ATerm    sparse_term(int *c, char **s);
 /*{{{  void AT_cleanup() */
 
 /**
-	* Perform necessary cleanup.
-	*/
+ * Perform necessary cleanup.
+ */
 
 void
 AT_cleanup(void)
@@ -672,7 +669,7 @@ resize_buffer(int n)
   buffer_size = n;
   buffer = (char *) realloc(buffer, buffer_size);
   if (!buffer)
-    ATerror("ATinit: cannot allocate string buffer of size %d\n", buffer_size);
+    ATerror("resize_buffer(aterm.c): cannot allocate string buffer of size %d\n", buffer_size);
 }
 
 /*}}}  */
@@ -767,7 +764,7 @@ writeToTextFile(ATerm t, FILE * f)
       return ATfalse;
 
     case AT_SYMBOL:
-      ATerror("ATwriteToTextFile: not a term but a symbol: %y\n", t);
+      ATerror("ATwriteToTextFile: not a term but an afun: %y\n", t);
       return ATfalse;
     }
 
@@ -1616,8 +1613,8 @@ fparse_term(int *c, FILE * f)
 /*{{{  ATerm readFromTextFile(FILE *file) */
 
 /**
-	* Read a term from a text file. The first character has been read.
-	*/
+ * Read a term from a text file. The first character has been read.
+ */
 
 ATerm
 readFromTextFile(int *c, FILE *file)
@@ -1674,8 +1671,8 @@ ATreadFromTextFile(FILE * file)
 /*{{{  ATerm ATreadFromFile(FILE *file) */
 
 /**
-	* Read an ATerm from a file that could be binary or text.
-	*/
+ * Read an ATerm from a file that could be binary or text.
+ */
 
 ATerm ATreadFromFile(FILE *file)
 {
@@ -1685,8 +1682,16 @@ ATerm ATreadFromFile(FILE *file)
   if(c == 0) {
     /* Might be a BAF file */
     return ATreadFromBinaryFile(file);
+  } else if (c == START_OF_SHARED_TEXT_FILE) {
+    /* Might be a shared text file */
+    return AT_readFromSharedTextFile(&c, file);
   } else {
     /* Probably a text file */
+    line = 0;
+    col = 0;
+    error_idx = 0;
+    memset(error_buf, 0, ERROR_SIZE);
+
     return readFromTextFile(&c, file);
   }
 }

@@ -454,38 +454,38 @@ static long keyPut(ATermIndexedSet hashset, ATerm key,
 }
 
 /*}}}  */
-/*{{{  long ATindexedSetPut(ATermIndexedSet hashset, key, *new) */
+/*{{{  long ATindexedSetPut(ATermIndexedSet hashset, elem, *new) */
 
 /**
- * insert entry key into the hashtable, and deliver
- * an index. If key is already in the set, deliver 0 
+ * insert entry elem into the hashtable, and deliver
+ * an index. If elem is already in the set, deliver 0 
  */
 
-long ATindexedSetPut(ATermIndexedSet hashset, ATerm key, ATbool *new)
+long ATindexedSetPut(ATermIndexedSet hashset, ATerm elem, ATbool *new)
 {
-	return keyPut(hashset, key, NULL, new);
+  return keyPut(hashset, elem, NULL, new);
 }
 
 /*}}}  */
-/*{{{  long ATindexedSetGet(ATermIndexedSet hashset, ATerm key) */
+/*{{{  long ATindexedSetGetIndex(ATermIndexedSet hashset, ATerm key) */
 
-long ATindexedSetGet(ATermIndexedSet hashset, ATerm key)
+long ATindexedSetGetIndex(ATermIndexedSet hashset, ATerm elem)
 { 
-	long c,v;
+  long c,v;
 
-	c = hashcode(key, hashset->sizeMinus1);
+  c = hashcode(elem, hashset->sizeMinus1);
   while(1) {
-		v=hashset->hashtable[c];
-		if(v == EMPTY) {
-			return -1;
-		}
-
-		if(v != DELETED && key == tableGet(hashset->keys, v)) {
-			return v;
-		}
-		
-		c = (c+STEP) & hashset->sizeMinus1;
-	}
+    v=hashset->hashtable[c];
+    if(v == EMPTY) {
+      return -1;
+    }
+    
+    if(v != DELETED && elem == tableGet(hashset->keys, v)) {
+      return v;
+    }
+    
+    c = (c+STEP) & hashset->sizeMinus1;
+  }
 }
 
 /*}}}  */
@@ -505,11 +505,11 @@ ATermList ATindexedSetKeys(ATermIndexedSet hashset)
 }
 
 /*}}}  */
-/*{{{  ATerm ATgetKeyAtIndex(ATermIndexedSet hashset, long index) */
+/*{{{  ATerm ATindexedSetGetElem(ATermIndexedSet hashset, long index) */
 
-ATerm ATgetKeyAtIndex(ATermIndexedSet hashset, long index)
+ATerm ATindexedSetGetElem(ATermIndexedSet hashset, long index)
 { 
-	assert((index>=0) && (hashset->nr_entries>index));
+  assert((index>=0) && (hashset->nr_entries>index));
   return tableGet(hashset->keys, index);
 }
 
@@ -616,12 +616,12 @@ void ATtablePut(ATermTable table, ATerm key, ATerm value)
 
 ATerm ATtableGet(ATermTable table, ATerm key)
 { 
-	long v;
+  long v;
 
-  v = ATindexedSetGet(table, key);
+  v = ATindexedSetGetIndex(table, key);
   if(v<0) {
-		return NULL;
-	}
+    return NULL;
+  }
   return tableGet(table->values, v);
 }
 

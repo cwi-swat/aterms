@@ -19,6 +19,12 @@
 
 $Id$
 
+2000/8/8
+  * Version is now 1.4.0
+  * Added shared textual aterm format (.taf files)
+  * Improved naming of ATindexedSet functions (sets have elements, not keys)
+  * Baffle only autodetects when no -rx option was given.
+
 2000/7/27 ({jong,olivierp}@cwi.nl)
   * Release 1.3.4
   * Bugfix which could cause symbol to be unprotected under very

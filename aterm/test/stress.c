@@ -936,7 +936,7 @@ void testIndexedSet()
 
   for(i=0 ; i<MAX_ELEM ; i++)
     { 
-      if (ATindexedSetGet(set,ATmake("f(<int>)",i))<0)
+      if (ATindexedSetGetIndex(set,ATmake("f(<int>)",i))<0)
 	ATerror("Problem1\n");
     }
 
@@ -950,7 +950,7 @@ void testIndexedSet()
   
   for(i=0 ; i<MAX_ELEM ; i++)
     {
-      if (ATindexedSetGet(set,ATmake("f(<int>)",i))>=0)
+      if (ATindexedSetGetIndex(set,ATmake("f(<int>)",i))>=0)
 	ATerror("Problem4\n");
     }
 
@@ -962,7 +962,7 @@ void testIndexedSet()
 
   for(i=0 ; i<MAX_ELEM ; i++)
     { 
-      if (ATindexedSetGet(set,ATmake("f(<int>)",i+MAX_ELEM))<0)
+      if (ATindexedSetGetIndex(set,ATmake("f(<int>)",i+MAX_ELEM))<0)
 	ATerror("Problem5\n");
     }
 
@@ -1002,6 +1002,60 @@ void testTBLegacy()
   test_assert("TB-legacy", 1, ATisEqual(t[0],t[1]));
 
   printf("TB legacy tests ok.\n");
+}
+
+/*}}}  */
+/*{{{  void testTaf() */
+
+void testTaf()
+{
+  ATerm t[8];
+  char *ptr;
+  int len;
+  FILE *file;
+  
+  char *input = "f(\"Lang functiesymbool\",\"Lang functiesymbool2\","
+    "\"Lang functiesymbool2\",\"Lang functiesymbool\")";
+  char *expected = "f(\"Lang functiesymbool\",\"Lang functiesymbool2\",#B,#A)";
+
+  t[0] = ATparse(input);
+  t[1] = ATmake("g(<term>,x,<term>)", t[0], t[0]);
+
+  t[2] = ATreadFromSharedString(input, strlen(input));
+
+  ptr = ATwriteToSharedString(t[0], &len);
+  t[3] = ATreadFromSharedString(ptr, len);
+  t[4] = ATparse("<ph(<ph2>)>");
+  t[5] = ATparse("[]");
+  t[6] = ATmake("h(<term>,1,2,1,3.14,[<term>,<term>,<term>],<term>)", 
+		t[1], t[4],t[4], t[5], t[5]);
+
+  test_assert("taf", 0, strcmp(ptr, expected) == 0);
+  test_assert("taf", 1, len == strlen(expected));
+  test_assert("taf", 2, ATisEqual(t[0], t[2]));
+  test_assert("taf", 3, ATisEqual(t[3], t[0]));
+  
+  file = fopen("test.taf", "w");
+  if (!file) {
+    ATerror("could not open file: test.taf for writing\n");
+  }
+
+  test_assert("taf", 4, ATwriteToSharedTextFile(t[6], file) >= 0);
+
+  fclose(file);
+
+  file = fopen("test.taf", "r");
+  if (!file) {
+    ATerror("could not open file: test.taf for reading\n");
+  }
+
+  t[7] = ATreadFromSharedTextFile(file);
+  test_assert("taf", 5, ATisEqual(t[6], t[7]));
+
+  fclose(file);
+  /*unlink("test.taf");*/
+
+  printf("taf tests ok.\n");
 }
 
 /*}}}  */
@@ -1067,6 +1121,7 @@ int main(int argc, char *argv[])
   testMake();
   testMatch();
   testBaffle();
+  testTaf();
   testGC();
   testProtect();
   testMark();

@@ -148,20 +148,22 @@ void AT_initSymbol(int argc, char *argv[])
 }
 /*}}}  */
 
-/*{{{  void AT_printSymbol(Symbol sym, FILE *f) */
+/*{{{  int AT_printSymbol(Symbol sym, FILE *f) */
 
 /**
-  * Print a symbol.
+  * Print an afun.
   */
 
-void AT_printSymbol(Symbol sym, FILE *f)
+int AT_printSymbol(AFun fun, FILE *f)
 {
-  SymEntry entry = at_lookup_table[sym];
+  SymEntry entry = at_lookup_table[fun];
   char *id = entry->name;
+  int size = 0;
 
   if (IS_QUOTED(entry->header)) {
-    /* This symbol needs quotes */
+    /* This function symbol needs quotes */
     fputc('"', f);
+    size++;
     while(*id) {
       /* We need to escape special characters */
       switch(*id) {
@@ -169,28 +171,93 @@ void AT_printSymbol(Symbol sym, FILE *f)
       case '"':
 	fputc('\\', f);
 	fputc(*id, f);
+	size += 2;
 	break;
       case '\n':
 	fputc('\\', f);
 	fputc('n', f);
+	size += 2;
 	break;
       case '\t':
 	fputc('\\', f);
 	fputc('t', f);
+	size += 2;
 	break;
       case '\r':
 	fputc('\\', f);
 	fputc('r', f);
+	size += 2;
 	break;
       default:
 	fputc(*id, f);
+	size++;
       }
       id++;
     }
     fputc('"', f);
-  } else
-    fprintf(f, "%s", id);
+    size++;
+  } else {
+    fputs(id, f);
+    size += strlen(id);
+  }
+  return size;
 }
+
+/*}}}  */
+/*{{{  int AT_writeAFun(AFun fun, byte_writer *writer) */
+
+/**
+  * Print an afun.
+  */
+
+int AT_writeAFun(AFun fun, byte_writer *writer)
+{
+  SymEntry entry = at_lookup_table[fun];
+  char *id = entry->name;
+  int size = 0;
+
+  if (IS_QUOTED(entry->header)) {
+    /* This function symbol needs quotes */
+    write_byte('"', writer);
+    size++;
+    while(*id) {
+      /* We need to escape special characters */
+      switch(*id) {
+      case '\\':
+      case '"':
+	write_byte('\\', writer);
+	write_byte(*id, writer);
+	size += 2;
+	break;
+      case '\n':
+	write_byte('\\', writer);
+	write_byte('n', writer);
+	size += 2;
+	break;
+      case '\t':
+	write_byte('\\', writer);
+	write_byte('t', writer);
+	size += 2;
+	break;
+      case '\r':
+	write_byte('\\', writer);
+	write_byte('r', writer);
+	size += 2;
+	break;
+      default:
+	write_byte(*id, writer);
+	size++;
+      }
+      id++;
+    }
+    write_byte('"', writer);
+    size++;
+  } else {
+    size += write_bytes(id, strlen(id), writer);
+  }
+  return size;
+}
+
 /*}}}  */
 
 /*{{{  ShortHashNumber AT_hashSymbol(char *name, int arity) */
