@@ -61,7 +61,7 @@ static int default_tid  = -1;
 
 static Connection *connections[FD_SETSIZE] = { NULL };
 
-static Symbol symbol_rec_do = NULL;
+static Symbol symbol_rec_do = (Symbol) NULL;
 static ATerm term_snd_void = NULL;
 
 /* term buffer */

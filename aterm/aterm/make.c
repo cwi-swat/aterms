@@ -47,7 +47,8 @@ static Symbol symbol_placeholder;
 static Symbol symbol_term;
 static at_entry pattern_table[TABLE_SIZE];
 
-static va_list args;
+static va_list theargs;
+static va_list *args = (va_list *) &theargs;
 
 /*}}}  */
 /*{{{  function declarations */
@@ -67,9 +68,9 @@ ATbool ATvmatchTerm(ATerm t, ATerm pat);
 /*}}}  */
 /*{{{  void AT_vmakeSetArgs(va_list args) */
 
-void AT_vmakeSetArgs(va_list newargs)
+void AT_vmakeSetArgs(va_list *newargs)
 {
-  args = newargs;	
+  args = newargs;
 }
 
 /*}}}  */
@@ -142,9 +143,9 @@ ATerm ATmake(const char *pat, ...)
 {
 	ATerm t;
 
-	va_start(args, pat);
+	va_start(*args, pat);
 	t = ATvmake(pat);
-	va_end(args);
+	va_end(*args);
 
 	return t;
 }
@@ -155,9 +156,9 @@ ATerm ATmakeTerm(ATerm pat, ...)
 {
 	ATerm t;
 
-	va_start(args, pat);
+	va_start(*args, pat);
 	t = AT_vmakeTerm(pat);
-	va_end(args);
+	va_end(*args);
 
 	return t;
 }
@@ -234,7 +235,7 @@ AT_vmakeTerm(ATerm pat)
 				if (ATgetType(type) == AT_APPL &&
 					ATgetSymbol((ATermAppl)type) == symbol_list)
 				{
-					list = va_arg(args, ATermList);
+					list = va_arg(*args, ATermList);
 				}
 				else
 					list = ATmakeList1(AT_vmakeTerm(term));
@@ -289,7 +290,7 @@ makeArguments(ATermAppl appl, Symbol name)
 			type = ATgetPlaceholder((ATermPlaceholder)terms[nr_args]);
 			if (ATgetType(type) == AT_APPL &&
 					ATgetSymbol((ATermAppl)type) == symbol_list) {
-				list = va_arg(args, ATermList);
+				list = va_arg(*args, ATermList);
 				for (--cur; cur >= 0; cur--)
 					list = ATinsert(list, terms[cur]);
 				if(ATgetArity(name) == ATgetLength(list))
@@ -319,7 +320,7 @@ makeArguments(ATermAppl appl, Symbol name)
 		if (ATgetType(type) == AT_APPL &&
 				ATgetSymbol((ATermAppl)type) == symbol_list)
 			{
-				list = va_arg(args, ATermList);
+				list = va_arg(*args, ATermList);
 		}
 	}
 	if (list == NULL)
@@ -351,17 +352,17 @@ makePlaceholder(ATermPlaceholder pat)
 		ATermAppl appl = (ATermAppl) type;
 		Symbol sym = ATgetSymbol(appl);
 		if (sym == symbol_int && ATgetArity(sym) == 0)
-			return (ATerm) ATmakeInt(va_arg(args, int));
+			return (ATerm) ATmakeInt(va_arg(*args, int));
 		else if (sym == symbol_real && ATgetArity(sym) == 0)
-			return (ATerm) ATmakeReal(va_arg(args, double));
+			return (ATerm) ATmakeReal(va_arg(*args, double));
 		else if (sym == symbol_blob) {
-			int len = va_arg(args, int);
-			void *data = va_arg(args, void *);
+			int len = va_arg(*args, int);
+			void *data = va_arg(*args, void *);
 			return (ATerm) ATmakeBlob(len, data);
 		} else if(sym == symbol_placeholder)
-			return (ATerm) ATmakePlaceholder(va_arg(args, ATerm));
+			return (ATerm) ATmakePlaceholder(va_arg(*args, ATerm));
 		else if(sym == symbol_term)
-			return va_arg(args, ATerm);
+			return va_arg(*args, ATerm);
 		else {
 			ATbool makeAppl = ATfalse, quoted = ATfalse;
 			char *name = ATgetName(sym);
@@ -373,7 +374,7 @@ makePlaceholder(ATermPlaceholder pat)
 				quoted = ATtrue;
 			}
 			if(makeAppl) {
-				sym = ATmakeSymbol(va_arg(args, char *), 0, quoted);
+				sym = ATmakeSymbol(va_arg(*args, char *), 0, quoted);
 				return (ATerm) makeArguments(appl, sym);
 			}
 		}
@@ -406,9 +407,9 @@ ATbool ATmatch(ATerm t, const char *pat, ...)
 {
   ATbool result;
 
-  va_start(args, pat);
+  va_start(*args, pat);
   result = ATvmatch(t, pat);
-  va_end(args);
+  va_end(*args);
 
   return result;
 }
@@ -424,9 +425,9 @@ ATbool ATmatchTerm(ATerm t, ATerm pat, ...)
 {
   ATbool result;
 
-  va_start(args, pat);
+  va_start(*args, pat);
   result = ATvmatchTerm(t, pat);
-  va_end(args);
+  va_end(*args);
 
   return result;
 }
@@ -505,7 +506,7 @@ ATbool AT_vmatchTerm(ATerm t, ATerm pat)
 		ATerm type = ATgetPlaceholder((ATermPlaceholder)pat);
 		if(ATgetType(type) == AT_APPL && 
 		   ATgetSymbol((ATermAppl)type) == symbol_list) {
-		  ATermList *listarg = va_arg(args, ATermList *);
+		  ATermList *listarg = va_arg(*args, ATermList *);
 		  if(listarg)
 			*listarg = list;
 		  return ATtrue;
@@ -557,7 +558,7 @@ static ATbool matchArguments(ATermAppl appl, ATermAppl applpat)
 	if(ATgetType(type) == AT_APPL &&
 	   ATgetSymbol((ATermAppl)type) == symbol_list)
 	{
-	  ATermList *listarg = va_arg(args, ATermList *);
+	  ATermList *listarg = va_arg(*args, ATermList *);
 	  if(listarg) {
 		*listarg = ATmakeList0();
 		for(i=arity-1; i>=parity; i--) {
@@ -596,7 +597,7 @@ static ATbool matchPlaceholder(ATerm t, ATermPlaceholder pat)
 			/*{{{  handle pattern <int> */
 
 			if(ATgetType(t) == AT_INT) {
-				int *iarg = va_arg(args, int *);
+				int *iarg = va_arg(*args, int *);
 				if(iarg)
 					*iarg = ATgetInt((ATermInt)t);
 				return ATtrue;
@@ -608,7 +609,7 @@ static ATbool matchPlaceholder(ATerm t, ATermPlaceholder pat)
 			/*{{{  handle pattern <real> */
 
 			if(ATgetType(t) == AT_REAL) {
-				double *darg = va_arg(args, double *);
+				double *darg = va_arg(*args, double *);
 				if(darg)
 					*darg = ATgetReal((ATermReal)t);
 				return ATtrue;
@@ -620,8 +621,8 @@ static ATbool matchPlaceholder(ATerm t, ATermPlaceholder pat)
 			/*{{{  handle pattern <blob> */
 
 			if(ATgetType(t) == AT_BLOB) {
-				int *size  = va_arg(args, int *);
-				void **data = va_arg(args, void **);
+				int *size  = va_arg(*args, int *);
+				void **data = va_arg(*args, void **);
 				if(size)
 					*size = ATgetBlobSize((ATermBlob)t);
 				if(data)
@@ -635,7 +636,7 @@ static ATbool matchPlaceholder(ATerm t, ATermPlaceholder pat)
 			/*{{{  handle pattern <placeholder> */
 
 			if(ATgetType(t) == AT_PLACEHOLDER) {
-				ATerm *type = va_arg(args, ATerm *);
+				ATerm *type = va_arg(*args, ATerm *);
 				if(type)
 					*type = ATgetPlaceholder((ATermPlaceholder)t);
 				return ATtrue;
@@ -644,7 +645,7 @@ static ATbool matchPlaceholder(ATerm t, ATermPlaceholder pat)
 			
 			/*}}}  */
 		} else if(psym == symbol_term) {
-			ATerm *term = va_arg(args, ATerm *);
+			ATerm *term = va_arg(*args, ATerm *);
 			if(term)
 				*term = t;
 			return ATtrue;
@@ -680,7 +681,7 @@ static ATbool matchPlaceholder(ATerm t, ATermPlaceholder pat)
 				return ATfalse;
 			}
 
-			name = va_arg(args, char **);
+			name = va_arg(*args, char **);
 			if(name)
 				*name = ATgetName(sym);
 
