@@ -1,5 +1,8 @@
 $Id$
 
+2002-07-24 (jurgenv@cwi.nl)
+  * Release 0.1
+
 2002-07-10 (jong@cwi.nl)
   * Fix configuration bug: look for xml2-config, not xml-config
   * Fix dates in ChangeLog: format yyyy-mm-dd
