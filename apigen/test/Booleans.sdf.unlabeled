@@ -6,13 +6,15 @@ imports Booleans
 module Booleans
 
 exports
-  sorts Bool
+  sorts Bool BoolList
 
   context-free syntax
     true			-> Bool {cons(true)}
     false			-> Bool {cons(false)}
     Bool "&" Bool		-> Bool {cons(and),left}
     Bool "|" Bool		-> Bool {cons(or),left}
+
+    "[" { Bool ";" }* "]"	-> BoolList {cons(list)}
 
    context-free priorities
     Bool "&" Bool -> Bool > Bool "|" Bool -> Bool

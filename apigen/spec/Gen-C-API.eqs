@@ -45,7 +45,7 @@ equations
 
 [equ-gen-fun-decls-divide]
   gen-term-decls($Type) = $FunDeclList1,
-  gen-constructor-decls($Type) = $FunDeclList2,
+  gen-constructor-decls-top($Type) = $FunDeclList2,
   gen-valid-decl($Type) = $FunDeclList3,
   gen-check-decls($Type) = $FunDeclList4,
   gen-access-decls($Type) = $FunDeclList5,
@@ -54,6 +54,13 @@ equations
   gen-fun-decls(api [ $Type $Type* ]) = 
 	$FunDeclList1 $FunDeclList2 $FunDeclList3 
         $FunDeclList4 $FunDeclList5 $FunDeclList6
+
+[equ-gen-constructor-decls-top-single]
+  gen-constructor-decls-top(type [ $TypeId, $Alt, $Field* ]) =
+	extern gen-constructor-decl-single($TypeId, $Field*);
+
+[default-gen-constructor-decls-top]
+  gen-constructor-decls-top($Type) = gen-constructor-decls($Type)
 
 [equ-gen-constructor-decls-single]
   gen-constructor-decls(type [ $TypeId, alt [ $AltId, $Pattern ], $Field* ]) = 
@@ -64,6 +71,13 @@ equations
   gen-constructor-decls(type [ $TypeId, $Alt+, $Field*]) = $FunDeclList2
   ===>
   gen-constructor-decls(type [ $TypeId, $Alt $Alt+, $Field* ]) = $FunDeclList1 $FunDeclList2
+
+[equ-gen-constructor-decl-single]
+  sort-fields($Field*) = $SortedField*,
+  build-formal-args-list($SortedField*) = $FormalArg*
+  ===>
+  gen-constructor-decl-single($TypeId, $Field*) = 
+	build-c-id($TypeId) build-c-id(make $TypeId) ( $FormalArg* )
 
 [equ-gen-constructor-decl]
   get-fields-for-alt($AltId, $Field*) = $AltField*,
@@ -102,7 +116,7 @@ equations
 
 [equ-gen-term-decls]
   gen-term-decls(type [ $TypeId, $Alt+, $Field* ]) =
-    extern build-c-id($TypeId) build-c-id(make $TypeId from term)(ATerm t);
+    extern build-c-id($TypeId) build-c-id(make $TypeId from term)(ATerm arg);
     extern ATerm build-c-id(make term from $TypeId)(build-c-id($TypeId) arg);
 
 [equ-gen-source]
@@ -136,7 +150,7 @@ equations
 
 [equ-gen-fun-impls-divide]
   gen-term-impls($Type) = $FunImplList1,
-  gen-constructor-impls($Type) = $FunImplList2,
+  gen-constructor-impls-top($Type) = $FunImplList2,
   gen-valid-impl($Type) = $FunImplList3,
   gen-check-impls($Type) = $FunImplList4,
   gen-access-impls($Type) = $FunImplList5,
@@ -145,6 +159,13 @@ equations
   gen-fun-impls(api [ $Type $Type* ]) = 
 	$FunImplList1 $FunImplList2 $FunImplList3 
 	$FunImplList4 $FunImplList5 $FunImplList6
+
+[equ-gen-constructor-impls-top-single]
+  gen-constructor-impls-top(type [ $TypeId, alt [ $AltId, $Pattern ], $Field* ]) =
+	gen-constructor-impl-single($TypeId, $AltId, $Field*)
+
+[default-gen-constructor-impls-top]
+  gen-constructor-impls-top($Type) = gen-constructor-impls($Type)
 
 [equ-gen-constructor-impls-single]
   gen-constructor-impls(type [ $TypeId, alt [ $AltId, $Pattern ], $Field* ]) = 
@@ -155,6 +176,12 @@ equations
   gen-constructor-impls(type [ $TypeId, $Alt+, $Field* ]) = $FunImplList2
   ===>
   gen-constructor-impls(type [ $TypeId, $Alt $Alt+, $Field* ]) = $FunImplList1 $FunImplList2
+
+[equ-gen-constructor-impl-single]
+  gen-constructor-decl-single($TypeId, $Field*) = $FunDecl,
+  gen-constructor-body($TypeId, $AltId, $Field*) = $FunBody
+  ===>
+  gen-constructor-impl-single($TypeId, $AltId, $Field*) = $FunDecl { $FunBody }
 
 [equ-gen-constructor-impl]
   gen-constructor-decl($TypeId, $AltId, $Field*) = $FunDecl,
@@ -229,8 +256,8 @@ equations
   build-c-id($TypeId) = $Id
   ===>
   gen-term-impls(type [ $TypeId, $Alt+, $Field* ]) =
-    $Id build-c-id(make $TypeId from term)(ATerm t) {
-      return ($Id)t;
+    $Id build-c-id(make $TypeId from term)(ATerm arg) {
+      return ($Id)arg;
     }
     ATerm build-c-id(make term from $TypeId)($Id arg) {
       return (ATerm)arg;
@@ -295,6 +322,12 @@ equations
 [equ-build-get-expr-empty]
   build-get-expr( , $GetExpr) = $GetExpr
 
+[equ-build-get-expr-tail]
+  $GetExpr2 = ATgetTail((ATermList)$GetExpr1, build-c-int($Index))
+  ===>
+  build-get-expr(tail:$Index -> $Path, $GetExpr1) = 
+	build-get-expr($Path, $GetExpr2)
+
 [equ-build-get-expr-elem]
   $GetExpr2 = ATelementAt((ATermList)$GetExpr1, build-c-int($Index))
   ===>
@@ -341,6 +374,13 @@ equations
 
 [equ-build-set-expr-empty]
   build-set-expr($FieldId, $Parent, ) = (ATerm)build-c-id($FieldId)
+
+[equ-build-set-expr-tail]
+  $GetExpr = build-get-expr($Parent, build-c-id(arg)),
+  $SetExpr1 = build-set-expr($FieldId, $Parent -> tail:$Index, $Path),
+  $SetExpr2 = (ATerm)ATreplaceTail((ATermList)$GetExpr, (ATermList)$SetExpr1, build-c-int($Index))
+  ===>
+  build-set-expr($FieldId, $Parent, tail:$Index -> $Path) = $SetExpr2
 
 [equ-build-set-expr-elem]
   $GetExpr = build-get-expr($Parent, build-c-id(arg)),

@@ -1,13 +1,15 @@
 module Booleans
 
 exports
-  sorts Bool
+  sorts Bool BoolList
 
   context-free syntax
     true			-> Bool {cons(true)}
     false			-> Bool {cons(false)}
     lop:Bool and:"&" rop:Bool	-> Bool {cons(and),left}
     lop:Bool or:"|" rop:Bool	-> Bool {cons(or),left}
+
+    open:"[" elems:{ Bool ";" }* close:"]" -> BoolList {cons(list)}
 
    context-free priorities
     Bool "&" Bool -> Bool

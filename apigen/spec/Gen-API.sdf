@@ -67,6 +67,7 @@ hiddens
     "$Field*"[0-9]*	-> API-Field*
     "$FieldId"[0-9]*	-> AFun
     "$FieldType"[0-9]*	-> AFun
+    "$Index"		-> Nat
     "$JoinedType"	-> API-Type
     "$Loc"		-> API-Location
     "$Loc*"[0-9]	-> API-Location*

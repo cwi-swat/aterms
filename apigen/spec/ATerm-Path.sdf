@@ -7,6 +7,7 @@ exports
   context-free syntax
    "arg" ":" Nat			-> ATerm-Path-Node
    "elem" ":" Nat			-> ATerm-Path-Node
+   "tail" ":" Nat			-> ATerm-Path-Node
    { ATerm-Path-Node "->" }*		-> ATerm-Path
 
    "succ" "(" ATerm-Path-Node ")"	-> ATerm-Path-Node

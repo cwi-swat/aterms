@@ -17,6 +17,7 @@ CLEANFILES		= librolodex.a libBooleans.a booltest.af1 \
 INCLUDES		= -I${ATERMINC} -Irolodex -IBooleans -Ilist
 LDFLAGS			= -L${ATERMLIB}
 LDADD			= -lATerm
+CFLAGS			= -Wall -g
 
 EXTRA_DIST		= rolodex.adt rolodex.pro Booleans.sdf Booleans.pro \
 			list.adt list.pro

@@ -15,12 +15,16 @@ hiddens
     build-asfix-prod ( ModuleName , Symbol* , Symbol , Attributes) -> ATerm
     build-asfix-prod-args ( Symbol* )			-> ATerms
     build-asfix-prod-arg ( Symbol )			-> ATerm
+    build-list-entries ( Symbol* )			-> ATerms
     modname-to-lit ( ModuleName )			-> AT-Literal
     sort-to-lit ( Sort )				-> AT-Literal
     sort-to-afun ( Sort )				-> AFun
     sdflit-to-lit ( Literal )				-> AT-Literal
     sdflit-to-afun ( Literal )				-> AFun
     
+    build-asfix-iter(Sort, ATerm)			-> ATerm
+    build-asfix-iter-sep(Sort, Literal, ATerm)		-> ATerm
+
     build-asfix-appl-args ( Symbol* )			-> ATerms
     build-asfix-appl-arg ( Symbol )			-> ATerm
 
@@ -34,8 +38,10 @@ hiddens
     "$AFAttr"		-> ATerm
     "$AFAttr+"		-> { ATerm "," }+
     "$AFAttrs"		-> ATerm
+    "$AFIter"		-> ATerm
     "$AFModName"	-> AT-Literal
     "$AFProd"		-> ATerm
+    "$AFSep"		-> ATerm
     "$AFSort"		-> AT-Literal
     "$AltId"		-> AFun
     "$ATerm"		-> ATerm
@@ -43,20 +49,25 @@ hiddens
     "$Attr*"[0-9]*	-> { Attribute "," }*
     "$Attr+"		-> { Attribute "," }+
     "$Attributes"	-> Attributes
-    "$Char*"		-> CHAR*
+    "$Char*"[0-9]*	-> CHAR*
+    "$ElemSortName"	-> AFun
+    "$ElemType"		-> AFun
     "$Entries"[0-9]*	-> { ATerm "," }*
+    "$Entry"		-> ATerm
     "$FieldId"		-> AFun
     "$FieldType"	-> AFun
     "$FieldWs"		-> ATerm
     "$Grammar"[0-9]*	-> Grammar
     "$ImpSection*"	-> ImpSection*
     "$Label"		-> UQLiteral
+    "$ListType"		-> AFun
     "$Literal"		-> Literal
     "$ModName"		-> ModuleName
     "$Production"	-> Production
     "$Production*"	-> Production*
     "$Section"		-> Section
     "$Section*"		-> Section*
+    "$Sep"		-> Literal
     "$Sort"		-> Sort
     "$Symbol"		-> Symbol
     "$Symbol*"		-> Symbol*

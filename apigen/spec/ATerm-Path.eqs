@@ -6,6 +6,9 @@ equations
 [equ-succ-node-elem]
   succ(elem:$Nat) = elem:succ($Nat)
 
+[equ-succ-node-tail]
+  succ(tail:$Nat) = tail:succ($Nat)
+
 [equ-next-sibling]
   next-sibling($Path -> $Node) = $Path -> succ($Node)
 
@@ -29,4 +32,27 @@ equations
 
 [equ-first-node-elem]
   first-node(elem:$Nat1, elem:$Nat2) = elem:lowest($Nat1,$Nat2)
+
+[equ-first-node-elem-tail]
+  lowest($Nat1,$Nat2) = $Nat1
+  ===>
+  first-node(elem:$Nat1, tail:$Nat2) = elem:$Nat1
+
+[equ-first-node-elem-tail]
+  lowest($Nat1,$Nat2) = $Nat2
+  ===>
+  first-node(elem:$Nat1, tail:$Nat2) = tail:$Nat2
+
+[equ-first-node-elem-tail]
+  lowest($Nat1,$Nat2) = $Nat1
+  ===>
+  first-node(tail:$Nat1, elem:$Nat2) = tail:$Nat1
+
+[equ-first-node-elem-tail]
+  lowest($Nat1,$Nat2) = $Nat2
+  ===>
+  first-node(tail:$Nat1, elem:$Nat2) = elem:$Nat2
+
+[equ-first-node-tail]
+  first-node(tail:$Nat1, tail:$Nat2) = tail:lowest($Nat1,$Nat2)
 

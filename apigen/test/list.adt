@@ -1,6 +1,14 @@
 [
-  [Modules, Empty, empty-modules],
-  [Modules, List, modules([<first(Module)>,<[next(Modules)]>])],
-  [Modules, Body, [<first(Module)>,<[next(Modules)]>]],
+  [Modules, List, modules([<list(ModuleList)>])],
+  
+
+  [ModuleList, [], [<Module>]],
+
+  ["{Module \",\"}*", Empty, []],
+  ["{Module \",\"}*", Body, [<first(Module)>,w(<wsAfterFirst(SDFWhiteSpace)>),
+		   sep(<sep(SDFSeparator)>),w(<wsAfterSep(SDFWhiteSpace)>),
+                   <[next("{Module \",\"}*")]>]],
   [ModuleList, Modules, list(<modules(Modules)>)]
 ]
+
+

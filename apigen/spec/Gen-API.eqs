@@ -34,8 +34,8 @@ equations
 	field [ $FieldId, $FieldType, loc [ $AltId, $Path ] ]
 
 [equ-gen-fields-placeholder-list]
-  gen-fields($AltId, $Path, <[$FieldId($FieldType)]>) = 
-	field [ $FieldId, $FieldType, loc [ $AltId, $Path ] ]
+  gen-fields($AltId, $Path -> elem : $Index, <[$FieldId($FieldType)]>) = 
+	field [ $FieldId, $FieldType, loc [ $AltId, $Path -> tail : $Index] ]
 
 [equ-gen-fields-terms-divide]
   gen-fields($AltId, $Path1, $Elem)  = $Field*1,

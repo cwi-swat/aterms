@@ -22,8 +22,10 @@ module Gen-C-API
       gen-typedefs(API)					-> C-CONSTRUCTS
       gen-typedef(API-Type)				-> C-CONSTRUCT
       gen-fun-decls(API)				-> C-CONSTRUCTS
-      gen-constructor-decl(AFun, AFun, API-Field*)	-> C-FUNCTION-DECL
+      gen-constructor-decls-top(API-Type)		-> C-CONSTRUCTS
       gen-constructor-decls(API-Type)			-> C-CONSTRUCTS
+      gen-constructor-decl-single(AFun, API-Field*)	-> C-FUNCTION-DECL
+      gen-constructor-decl(AFun, AFun, API-Field*)	-> C-FUNCTION-DECL
       gen-valid-decl(API-Type)				-> C-CONSTRUCT
       gen-valid-impl(API-Type)				-> C-CONSTRUCT
       gen-valid-body(AFun, API-Alt*)			-> C-SERIES
@@ -41,8 +43,10 @@ module Gen-C-API
       gen-dict-alts(API-Type)				-> ATerms
 
       gen-fun-impls(API)				-> C-CONSTRUCTS
-      gen-constructor-impl(AFun, AFun, API-Field*)	-> C-CONSTRUCT
+      gen-constructor-impls-top(API-Type)		-> C-CONSTRUCTS
       gen-constructor-impls(API-Type)			-> C-CONSTRUCTS
+      gen-constructor-impl-single(AFun, AFun, API-Field*) -> C-CONSTRUCT
+      gen-constructor-impl(AFun, AFun, API-Field*)	-> C-CONSTRUCT
       gen-constructor-body(AFun, AFun, API-Field*)	-> C-SERIES
       gen-check-impls(API-Type)				-> C-CONSTRUCTS
       gen-check-impl(AFun, AFun, API-Field*)		-> C-CONSTRUCT

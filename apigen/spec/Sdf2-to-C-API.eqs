@@ -4,7 +4,10 @@ equations
   $Module = module $ModName $ImpSection* $Section*,
   sdf-module-to-adt($Module) = $ADT,
   modname-to-filename($ModName) = $FileName,
-  c-api : $FileName, typedef ATerm SDFWhiteSpace;, $ADT = $CAPI
+  c-api : $FileName, 
+          typedef ATerm SDFWhiteSpace;
+          typedef ATerm SDFSeparator;
+        , $ADT = $CAPI
   ===>
   sdf2-to-c-api : $Module = $CAPI
 

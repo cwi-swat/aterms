@@ -4,14 +4,22 @@
 
 #include "Booleans.h"
 
-static void testBooleans(Bool b)
+static void testBooleans(BoolList l)
 {
-  Bool left, right, bool[2];
+  Bool b, left, right, bool[2];
+  BoolElems elems;
   SDFWhiteSpace ws;
 
-  /*ATfprintf(stderr, "b=%t\n", b);*/
+  /*ATfprintf(stderr, "l=%t\n", l);*/
 
-  bool[0] = b;
+  assert(isValidBoolList(l));
+  assert(hasBoolListElems(l));
+
+  elems = getBoolListElems(l);
+  assert(isBoolElemsMany(elems));
+  bool[0] = getBoolElemsHead(elems);
+  b = bool[0];
+
   assert(isValidBool(b));
   assert(isBoolOr(b));
 
@@ -42,11 +50,14 @@ static void testBooleans(Bool b)
 
   bool[1] = makeBoolOr(makeBoolAnd(makeBoolTrue(),ws,ws,makeBoolFalse()),ws,ws,makeBoolTrue());
   assert(ATisEqual(bool[0], bool[1]));
+
+  elems = getBoolElemsTail(elems);
+  assert(isBoolElemsSingle(elems));
+  assert(!hasBoolElemsTail(elems));
 }
 
 int main(int argc, char *argv[])
 {
-  FILE *f;
   ATerm bottomOfStack;
   ATerm term;
 
@@ -57,7 +68,7 @@ int main(int argc, char *argv[])
   assert(term);
   ATprotect(&term);
 
-  testBooleans(makeBoolFromTerm(ATgetArgument((ATermAppl)term, 6)));
+  testBooleans(makeBoolListFromTerm(ATgetArgument((ATermAppl)term, 6)));
 
   return 0;
 }
