@@ -1,11 +1,13 @@
 $Id$
 
+2003-05-15 <jurgenv@cwi.nl>
+ * Changed getId() to getUniqueIdentifier() (also for setId)
+ * Bumped to 1.3beta
+
 2003-05-15 <Julien.Guyon@loria.fr>
  * Add identifiable interface (with getId) to ATerm
  * AtermImpl implements SharedObjectWithId
  * Now each ATerm has a unique identifier
- * Changed getId() to getUniqueIdentifier() (also for setId)
- * Bumped to 1.3beta
 
 2003-04-23 julien Guyon <julien.guyon@loria.fr>
  * Release 1.2
