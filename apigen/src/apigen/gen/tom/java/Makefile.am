@@ -7,4 +7,5 @@ JAVAROOT = ${top_builddir}
 
 java_JAVA = \
 	JavaTomSignatureImplementation.java \
+	JavaTomGenerationParameters.java \
 	Main.java

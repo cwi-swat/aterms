@@ -25,7 +25,7 @@ public class Main {
 		List args = new LinkedList(Arrays.asList(arguments));
 		if (args.size() == 0) {
 			usage(params);
-			System.exit(1);
+			return;
 		}
 		else if (args.contains("-h") || args.contains("--help")) {
 			usage(params);
@@ -34,26 +34,15 @@ public class Main {
 
 		try {
 			params.parseArguments(args);
-			checkParameters(params);
+			params.check();
 		}
 		catch (IllegalArgumentException e) {
 			System.err.println(e.getMessage());
 			usage(params);
-			System.exit(1);
+			return;
 		}
 
 		generateAPI(ADTReader.readADT(params), params);
-	}
-
-	private static void checkParameters(JavaGenerationParameters params) {
-		if (params.getApiName() == null) {
-			System.err.println("warning: no API name specified");
-			params.setApiName("unknown_api");
-		}
-		if (params.getVersion() == null) {
-			System.err.println("warning: no API version specified.");
-			params.setVersion("0.0.0");
-		}
 	}
 
 	private static JavaGenerationParameters buildDefaultParameters() {
@@ -70,7 +59,7 @@ public class Main {
 		System.err.print(params.usage());
 	}
 
-	private static void generateAPI(ADT adt, JavaGenerationParameters params) {
+	public static void generateAPI(ADT adt, JavaGenerationParameters params) {
 		GeneratedJavaFileCollector l = new GeneratedJavaFileCollector();
 
 		run(new FactoryGenerator(adt, params), l);
