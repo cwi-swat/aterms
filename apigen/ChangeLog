@@ -1,5 +1,10 @@
 # $Id$
 
+Thu Dec  4 13:38:22 CET 2003 <{jong,jurgenv}@cwi.nl>
+ * Separated lists with builtins fixed in Java. We are planning to 
+   reduce normal lists to separated lists with no separators in the near
+   future (normal lists with builtins are now still broken).
+   
 Tue Dec  2 10:54:54 CET 2003 <{jong,jurgenv}@cwi.nl>
  * generated jar-file now also contains the java sources
  * gen/c/CGenerationParameters: also show super.usage()

@@ -19,4 +19,5 @@ java_JAVA = \
 	MakeRulesGenerator.java \
 	SeparatedListTypeGenerator.java \
 	TypeGenerator.java \
-	VisitorGenerator.java
+	VisitorGenerator.java \
+	EquivalentBuilder.java

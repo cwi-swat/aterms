@@ -23,4 +23,36 @@ public class CTypeConversions implements TypeConversions {
 	public String getStringType() {
 		return "char*";
 	}
+
+    public String makeIntegerToATermConversion(String expression) {
+        return "(ATerm) ATmakeInt(" + expression + ")";
+    }
+
+    public String makeRealToATermConversion(String expression) {
+        return "(ATerm) ATmakeReal(" + expression + ")";
+    }
+
+    public String makeStringToATermConversion(String expression) {
+        return "(ATerm) ATmakeAppl(ATmakeAFun(" + expression + ", 0, ATfalse)";
+    }
+
+    public String makeListToATermConversion(String expression) {
+       return "(ATerm) " + expression;
+    }
+
+    public String makeATermToIntegerConversion(String expression) {
+        return "ATgetInt((ATermInt) " + expression + ")";
+    }
+
+    public String makeATermToRealConversion(String expression) {
+        return "ATgetReal((ATermReal) " + expression + ")";
+    }
+
+    public String makeATermToStringConversion(String expression) {
+        return "ATgetName(ATgetAFun((ATermAppl) " + expression + "))";
+    }
+
+    public String makeATermToListConversion(String expression) {
+        return "(ATermList) " + expression;
+    }
 }

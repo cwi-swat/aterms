@@ -1,10 +1,11 @@
-package apigen.gen.java;
+ package apigen.gen.java;
 
 import java.util.Iterator;
 
 import apigen.adt.Field;
 import apigen.adt.SeparatedListType;
 import apigen.gen.StringConversions;
+import apigen.gen.TypeConverter;
 
 public class SeparatedListTypeGenerator extends ListTypeGenerator {
 	private SeparatedListType listType;
@@ -120,18 +121,21 @@ public class SeparatedListTypeGenerator extends ListTypeGenerator {
 		}
 	}
 
+    private String buildSeparatorFieldGetter(Field field) {
+        String fieldName = StringConversions.makeCapitalizedIdentifier(field.getId());
+        return "get" + fieldName + "()";
+    }
+    
 	private void genSeparatorGetterAndSetter(Field field) {
 		String fieldName = StringConversions.makeCapitalizedIdentifier(field.getId());
 		String fieldClass = TypeGenerator.qualifiedClassName(getJavaGenerationParameters(), field.getType());
 		String fieldId = JavaGenerator.getFieldId(field.getId());
+        String fieldGetter = buildSeparatorFieldGetter(field);
 
-		if (getConverter().isReserved(field.getType())) {
 			// TODO: find a way to reuse generation of getters in
-			// AlternativeGenerator
-			throw new UnsupportedOperationException("separators with builtin types not yet supported");
-		}
+			// AlternativeGenerator for lists of builtins
 
-		println("  public " + fieldClass + " get" + fieldName + "() {");
+		println("  public " + fieldClass + " " + fieldGetter + " {");
 		println("    if (!isEmpty() && !isSingle()) {");
 		println("      return " + fieldId + ";");
 		println("    }");
@@ -173,8 +177,9 @@ public class SeparatedListTypeGenerator extends ListTypeGenerator {
 	}
 
 	protected void genEquivalentMethod() {
-		println("  public boolean equivalent(shared.SharedObject peer) {");
-		println("    if (peer instanceof " + getClassName() + ") {");
+		println("  public boolean equivalent(shared.SharedObject object) {");
+		println("    if (object instanceof " + getClassName() + ") {");
+        println("      " + getClassName() + " peer = (" + getClassName() + ") object;");
 		println("      if (isEmpty() || isSingle()) {");
 		println("        return super.equivalent(peer); ");
 		println("      }");
@@ -220,7 +225,11 @@ public class SeparatedListTypeGenerator extends ListTypeGenerator {
 		while (fields.hasNext()) {
 			Field field = (Field) fields.next();
 			String fieldId = JavaGenerator.getFieldId(field.getId());
-			print(" && " + fieldId + ".equivalent(((" + getClassName() + ")peer)." + fieldId + ")");
+            TypeConverter converter = getConverter();
+            String fieldType = field.getType();
+            String fieldGetter = buildSeparatorFieldGetter(field);
+            String equivalenceTest = EquivalentBuilder.buildEquivalent(fieldType, fieldId, "peer." + fieldGetter);
+			print(" && " + equivalenceTest);
 		}
 	}
 

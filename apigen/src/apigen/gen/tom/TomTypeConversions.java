@@ -23,4 +23,44 @@ public class TomTypeConversions implements TypeConversions {
 	public String getStringType() {
 		return "String";
 	}
+
+    public String makeIntegerToATermConversion(String expression) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public String makeRealToATermConversion(String expression) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public String makeStringToATermConversion(String expression) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public String makeListToATermConversion(String expression) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public String makeATermToIntegerConversion(String expression) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public String makeATermToRealConversion(String expression) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public String makeATermToStringConversion(String expression) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public String makeATermToListConversion(String expression) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }
