@@ -8,4 +8,5 @@ AC_SET_MAKE
 AC_OUTPUT(
   Makefile
   shared/Makefile
+  config/Makefile
 )

@@ -1,4 +1,4 @@
-SUBDIRS = shared .
+SUBDIRS = shared config .
 
 JARFILE = shared-objects-${VERSION}.jar
 

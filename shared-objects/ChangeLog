@@ -1,0 +1,4 @@
+
+2002-10-29    <vinju@loria.fr>
+  * Added ugly config script in order to detect the location of this 
+    package easily in the aterm-java package
