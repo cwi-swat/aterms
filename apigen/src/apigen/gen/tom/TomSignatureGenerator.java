@@ -10,12 +10,15 @@ import apigen.adt.Type;
 import apigen.gen.GenerationParameters;
 import apigen.gen.Generator;
 import apigen.gen.StringConversions;
+import apigen.gen.java.JavaGenerationParameters;
+import apigen.gen.java.TypeGenerator;
 
 public class TomSignatureGenerator extends Generator {
 	protected String apiName = "";
 	private TomSignatureImplementation impl;
 	private ADT adt;
 	private String prefix;
+	private String packagePrefix;
 
 	public TomSignatureGenerator(ADT adt, TomSignatureImplementation impl, GenerationParameters params) {
 		super(params);
@@ -25,6 +28,14 @@ public class TomSignatureGenerator extends Generator {
 		this.adt = adt;
 		this.impl = impl;
 		this.prefix = params.getPrefix();
+
+    if(params instanceof JavaGenerationParameters) {
+      JavaGenerationParameters javaParams = (JavaGenerationParameters) params;
+      this.packagePrefix = javaParams.getPackageName() + "." + javaParams.getApiName() + "." + TypeGenerator.packageName() + ".";
+    } else {
+      this.packagePrefix = "";
+    }
+
 	}
 	
 	public void generate() {
@@ -141,7 +152,7 @@ public class TomSignatureGenerator extends Generator {
 			println(
 				TypeListTemplate(
 					impl.TypeName(type.getId()),
-					impl.TypeImpl(prefix + type.getId()),
+					impl.TypeImpl(packagePrefix + prefix + type.getId()),
 					impl.TypeGetFunSym("t"),
 					impl.TypeCmpFunSym("s1", "s2"),
 					impl.TypeEquals(type.getId(), "t1", "t2"),
@@ -159,7 +170,7 @@ public class TomSignatureGenerator extends Generator {
 			println(
 				TypeTermTemplate(
 					impl.TypeName(type.getId()),
-					impl.TypeImpl(prefix + type.getId()),
+					impl.TypeImpl(packagePrefix + prefix + type.getId()),
 					impl.TypeGetFunSym("t"),
 					impl.TypeCmpFunSym("s1", "s2"),
 					impl.TypeGetSubTerm("t", "n"),
