@@ -117,7 +117,7 @@ The data type of \ATerms\ ({\tt ATerm}) is defined as follows:
 These integers are 32-bits integers\footnote{The \aterm\ library
 will be upgraded to support 64-bits architectures as well.}.
 
-\item {\tt REAL} A real constant is an \ATerm.
+\item {\tt REAL}: A real constant is an \ATerm.
 The reals are 64-bits reals.
 
 \item {\tt APPL}: A function application consisting of a function symbol and
@@ -263,7 +263,7 @@ The function returns {\tt true} when the match succeeds,
 \end{sloppypar}
 
 \item {\tt Boolean ATisEqual(ATerm $t_1$, ATerm $t_2$)}: 
-Check if two \ATerms\ are 
+Check whether two \ATerms\ are 
 equal. The annotations of $t_1$ and $t_2$ must be equal as well.
 
 \item {\tt Integer ATgetType(ATerm $t$)}: Retrieves the type of an
@@ -283,7 +283,7 @@ earlier in Section~\ref{aterm-datatype} and Appendix
 space-inefficient, and any implicit sharing in terms is lost since
 this cannot be expressed in a pure textual representation.  The
 unnecessary size explosion could be avoided by extending the textual
-correrepresentation with a mechanism for labelling and refering to terms.
+representation with a mechanism for labelling and refering to terms.
 Instead of \texttt{f(g(a),g(a))}, one could then write
 \texttt{f(1:g(a), \#1)}. The first occurrence of \texttt{g(a)}
 is labelled with ``\texttt{1}'', and the second occurrence refers to
@@ -413,7 +413,7 @@ With these considerations in mind, we will now discuss
 maximal sharing of terms (Section~\ref{max-sharing}),
 garbage collection (Section~\ref{garbage-collection}),
 the encoding of terms (Section~\ref{term-encoding}), and
-the Binary Term Format (Section~\ref{baf}).
+the Binary ATerm Format (Section~\ref{baf}).
      
 %}}}
 %{{{ Design
@@ -699,7 +699,7 @@ The very concise encoding of \ATerms\ we use is as follows.
 Assume that one machine word consists of four bytes, which is
 typical for modern architectures.  Every \ATerm\ object is stored in
 two or more machine words.  The first byte of the first word is called
-the \emph{header} of the object, and consists of three fields (see
+the \emph{header} of the object, and consists of four fields (see
 Figure \ref{header}):
 
 \begin{figure}[tb]
@@ -792,8 +792,10 @@ word contains a pointer to the placeholder type.
 
 \paragraph{BLOB encoding}
 The length of the data contained in a BLOB term is stored in
-the three bytes after the header. A pointer to the actual data
-is stored in the third word.
+the three bytes after the header. 
+This means that upto 16,777,200 bytes can be encoded in a single
+BLOB term.
+A pointer to the actual data is stored in the third word.
 
 \paragraph{Annotations}
 In all cases, annotations are represented using an extra word
@@ -1015,6 +1017,7 @@ details.
 \item[Risla library:] a parse tree of the component library for the Risla
 language, a domain specific language for describing financial products
 \cite{ADR95}.
+This component library consists of 10832 lines of code.
 
 \item[LPO:] a linear process operator (LPO) describing the ``firewire''
 protocol with 1 bus and 9 links \cite{GL99, Lut99}.
@@ -1026,7 +1029,6 @@ An LPO is a structured process, where the state consists of an assignment
 to a sequence of typed data variables and its behaviour is described
 by condition, action and effect functions.
 These states are represented as \aterms, and are rather complex.
-*** MISSCHIEN WAT MEER DETAILS PRESENTEREN??? ***
 
 \end{description}
 
@@ -1622,14 +1624,18 @@ tree data structures and is used as intermediate representation language
 between the various phases of a compiler \cite{Han99}. 
 The goals of ASDL and \aterms\
 are in fact quite similar, exchanging syntax trees between tools,
-although that \aterms\ are more general in the sense that other information
-*** ANDER WOORD *** can also be represented as an \aterm.
+although that \aterms\ are more general in the sense that other 
+types of information, such as parse tables,
+can also be represented as an \aterm.
 The ASDL pickles and the \aterms\ BAF format are comparable
 with respect to functionality, both are binary representations
 of among others syntax trees. But before a tool can process a tree
 obtained as an ASDL pickle, it has to unpickle it, which may take
 quite some memory. Tools processing \aterms\ can process \aterms\ in
 BAF format with preserving the sharing internally.
+Furthermore, the pickle and unpickle functions are generated from
+the ASDL description and are thus application specific whereas
+the reading and writing of BAF is entirely generic.
 
 In fact there are three different levels of comparison:
 \begin{enumerate}
@@ -1637,8 +1643,7 @@ In fact there are three different levels of comparison:
 \item ASDL pickle versus arbitrary structured information 
 represented as an \aterm.
 \item ASDL pickle versus the parse tree represented as an 
-\aterm (or what we call
-\asfix).
+\aterm\ (or what we call \asfix).
 \end{enumerate} 
 The first level the structured information stored in the \aterm\ is ignored,
 in Table \ref{asdlaterm1} the sizes of COBOL parse table are given, where
@@ -1656,15 +1661,16 @@ COBOL Parse Table & 4212633 & 213683 & 2507957 \\ \hline
 
 The second level we define the structure information coded in the
 \aterm\ explicit in the ASDL definition, so we have to give
-the ASDL definition of the parse tables and use this structured information
-when pickling, see Table \ref{asdlaterm2} for the resulting sizes with
+the ASDL definition of the AsFix and use this structured information
+when pickling the \asfix\ representation of a parsed COBOL program,
+see Table \ref{asdlaterm2} for the resulting sizes with
 respect to the structured information of \asfix.
 
 \begin{table}[tb]
 \begin{center}
 \begin{tabular}{|l||r|r|r|} \hline
  Term                 & \ascii  & BAF    & ASDL pickle \\ \hline
-COBOL Parse Table & 6778877 & 41087 & 1836850 \\ \hline    
+COBOL program in \asfix & 6778877 & 41087 & 1836850 \\ \hline    
 \end{tabular}
 \caption{Sizes of an \asfix\ term} \label{asdlaterm2}
 \end{center}
