@@ -450,17 +450,17 @@ is:
   prod([lit("true")],cf(sort("Bool")),no-attrs)
 \end{verbatim}
 \medskip
-The \texttt{prod} symbol declares this to be a grammar production. It
-has three arguments: the first is a list of sorts of the elements of
-the left-hand side of the production, the second argument is the sort
-of the right-hand side, and the third argument contains the attributes
-(e.g. left associativity) of the production.
+The \texttt{prod} symbol declares this to be a grammar production. It has
+three arguments: the first is a list of terminals and non-terminals that
+occur in the left-hand side of the production, the second argument is
+the non-terminal of the right-hand side, and the third argument contains
+the attributes (e.g. left associativity) of the production.
 
 In this example, the literal (denoted by the symbol \texttt{lit})
 \texttt{true} is the only element in the left-hand side of the
 production. It is injected into the context-free (denoted by the symbol
-\texttt{cf}) sort \texttt{Bool}. The production has no specific attributes
-(\texttt{no-attrs}).
+\texttt{cf}) non-terminal \texttt{Bool}. The production has no specific
+attributes (\texttt{no-attrs}).
 
 
 \hrulefill\nopagebreak
@@ -476,7 +476,7 @@ The \asfix\ representation of the grammar production
 \end{quote}
 
 looks like this:
-
+\pagebreak %% HACK to prevent snippet from being chopped up by pagebreak
 \begin{snippet}
 \begin{verbatim}
  1  prod([cf(sort("Bool")),cf(opt(layout)),lit("and"),cf(opt(layout)),cf(sort("Bool"))],
