@@ -9,9 +9,12 @@ include ${top_srcdir}/make_rules
 ADTC		= ${top_builddir}/utils/adt-to-c
 ADTJAVA         = ${top_builddir}/utils/adt-to-java
 
-TESTS			= rolotest listtest peanotest.sh
+JAVATESTS = PeanoTest
+TESTS		= rolotest listtest \
+	          $(foreach j, ${JAVATESTS}, ${j}.java.sh)
+CLEANFILES+=*.java.sh
 
-check_PROGRAMS		= rolotest listtest
+check_PROGRAMS	= rolotest listtest
 check_LIBRARIES	= librolodex.a liblist.a 
 
 librolodex_a_SOURCES	= rolodex.c rolodex_dict.c
@@ -27,12 +30,16 @@ listtest_DEPENDENCIES	= liblist.a
 
 javadir = ${top_builddir}/test/classfiles
 JAVAROOT = ${top_builddir}
-CLASSPATH_ENV = CLASSPATH=${top_builddir}:${SHARED_OBJECTS}:${JAVA_ATERM}:$(JAVAROOT)::$$CLASSPATH
+CLASSPATH_ENV = CLASSPATH=${top_builddir}:${SHARED_OBJECTS}:${JAVA_ATERM}:${srcdir}/$(JAVAROOT)::$$CLASSPATH
 
-# The order of the following list is important
-check_JAVA = PeanoFactory.java PeanoTest.java
+PeanoTestAPI = Nat.java Nat_SucImpl.java  PeanoConstructor.java \
+               NatImpl.java  Nat_Zero.java PeanoFactory.java \
+               Nat_Suc.java  Nat_ZeroImpl.java
 
-CLEANFILES		= ${noinst_PROGRAMS} ${noinst_LIBRARIES} \
+check_JAVA = ${PeanoTestAPI} PeanoTest.java
+BUILT_SOURCES = ${PeanoTestAPI}
+
+CLEANFILES		= ${check_PROGRAMS} ${check_LIBRARIES} \
 			rolodex*.[ch] rolodex_dict.[ch] \
 			list.[ch] list_dict.[ch] \
 			PeanoFactory.java PeanoConstructor.java \
@@ -53,13 +60,13 @@ list.c list.h: list.adt list.pro
 		--compat-term \
 		--classpath ${top_builddir}:${JAVA_ATERM}:${SHARED_OBJECTS}
 
-peanotest.sh: PeanoTest.java PeanoFactory.java Makefile
+%.java.sh: %.java Makefile
 	@(echo "#! /bin/sh";\
 	  echo "CLASSPATH=${top_builddir}:${JAVA_ATERM}:${SHARED_OBJECTS}";\
 	  echo "export CLASSPATH";\
-	  echo "java test.PeanoTest") > $@ && chmod +x $@
+	  echo "java test.$*") > $@ && chmod +x $@
 
-PeanoFactory.java: peano.adt 
+${PeanoTestAPI}: peano.adt
 	${ADTJAVA} --input ${top_srcdir}/test/peano.adt \
 	           --output ${top_builddir}/test \
 		   --package test \
