@@ -1,0 +1,324 @@
+
+definition
+module basic/BytesCon
+
+%% This module defines a lexical sort Bytes without defining any
+%% particular syntax for it. The Bytes sort is used to store any
+%% characters using lexical constructor functions.
+
+exports 
+  sorts Bytes Byte
+
+%% It is essential to hide this the following syntax,
+%% since ~[] is ambiguous with all languages
+
+hiddens 
+  lexical syntax
+    ~[]   -> Byte  {cons("byte")}
+    Byte* -> Bytes {cons("bytes")}
+
+context-free start-symbols
+  Bytes
+module basic/Bytes
+
+imports basic/Strings
+imports	basic/Integers	
+imports basic/BytesCon
+
+exports sorts Bytes
+
+exports
+  context-free syntax
+    string-to-bytes(String) -> Bytes 
+
+     bytes-to-string(Bytes) -> String 
+
+     num-of-bytes(Bytes)        -> Integer 
+
+     Bytes "<"  Bytes  -> Boolean
+     Bytes "<=" Bytes  -> Boolean
+     Bytes ">"  Bytes  -> Boolean
+     Bytes ">=" Bytes  -> Boolean
+
+     ascii-compare(Bytes,Bytes) -> Integer 
+
+hiddens
+  imports basic/Comments
+
+  context-free syntax
+    chars-to-bytes(String) -> Bytes 
+
+    octal-to-byte(Integer) -> Byte {memo}
+
+    bytes-to-chars(Bytes)    -> String  
+    octal-to-string(Integer) -> String 
+
+    byte-to-octal(Byte) -> Integer {memo}
+
+  variables
+    "string"[0-9\']* -> String
+    "bytes"[0-9\']* -> Bytes
+    "char*"[0-9\']* -> CHAR*
+    "char+"[0-9\']* -> CHAR+
+    "char"[0-9\']* -> CHAR
+    "n"[0-9\']* -> Integer
+	
+
+module basic/StrCon
+
+exports
+
+sorts StrCon Normal Escaped
+
+
+lexical syntax
+    ~[\0-\31\"\\\n] -> Normal {cons("default")}
+
+    "\\n" | "\\t" |  "\\\"" | "\\\\" -> Escaped {cons("special-character")}
+    "\\" [0-7][0-7][0-7]             -> Escaped {cons("octal")}
+
+    "\"" (Normal | Escaped)* ("\\\n" (Normal | Escaped)*)* "\"" 
+       -> StrCon {cons("default")}
+module basic/Strings
+
+%% This module defines strings with continuations and escaped newlines, 
+%% tabs and backslashes
+
+
+imports basic/StrCon
+imports basic/Integers
+imports	basic/Bytes
+
+hiddens 
+  sorts Escaped Normal
+
+  context-free start-symbols 
+    String
+  
+exports
+  sorts String
+
+  context-free syntax
+    StrCon             -> String {constructor}
+    String "||" String -> String {left}
+    "(" String ")"     -> String {bracket}
+   
+    String "<"  String  -> Boolean
+    String "<=" String  -> Boolean
+    String ">"  String  -> Boolean
+    String ">=" String  -> Boolean
+
+  context-free syntax
+    remove-continuations(String) -> String
+
+    length(String)         -> Integer
+
+hiddens
+  imports
+    basic/Whitespace
+
+  variables
+    "Chars" [0-9]* -> CHAR*
+
+  variables
+    "Str-con" [0-9\']* -> StrCon
+    "Str" [0-9\']*     -> String
+
+module basic/BoolCon
+
+exports
+
+sorts BoolCon
+context-free syntax
+
+    "true"  -> BoolCon {cons("true")}
+    "false" -> BoolCon {cons("false")}
+
+hiddens
+context-free start-symbols
+  BoolCon
+module basic/Booleans
+
+imports basic/BoolCon
+exports
+  sorts Boolean
+
+  context-free syntax
+    BoolCon                     -> Boolean {cons("constant")}
+    lhs:Boolean "|" rhs:Boolean -> Boolean {left, cons("or")}
+    lhs:Boolean "&" rhs:Boolean -> Boolean {left, cons("and")}
+    "not" "(" Boolean ")" 	-> Boolean {cons("not")}
+    "(" Boolean ")"       	-> Boolean {bracket, cons("bracket")}
+
+  context-free priorities
+    Boolean "&" Boolean -> Boolean >
+    Boolean "|" Boolean -> Boolean
+
+hiddens
+  context-free start-symbols Boolean
+
+  imports
+    basic/Comments
+  variables
+    "Bool"[0-9]* 	-> Boolean
+    "Bool-con"[0-9]* 	-> BoolCon
+
+
+module basic/NatCon
+
+exports
+
+sorts NatCon
+
+lexical syntax
+  
+ [0-9]+ -> NatCon {cons("default")}
+
+lexical restrictions
+
+ NatCon -/- [0-9]
+module basic/Comments
+
+imports
+  basic/Whitespace
+
+exports
+  lexical syntax
+    "%%" ~[\n]* "\n"	-> LAYOUT
+    "%" ~[\%\n]+ "%"	-> LAYOUT
+  context-free restrictions
+    LAYOUT? -/- [\%]
+module basic/Integers
+
+imports basic/NatCon
+imports
+  basic/Booleans
+
+hiddens
+   context-free start-symbols 
+     Natural Integer
+
+exports
+  sorts Natural Integer
+
+  context-free syntax
+     NatCon           		-> Natural
+     Natural "-/" Natural	-> Natural {left}
+     "(" Natural ")"       	-> Natural {bracket}
+     Natural               	-> Integer
+     "+" Natural           	-> Integer
+     "-" Natural           	-> Integer
+     Integer "+" Integer       	-> Integer {left}
+     Integer "-" Integer       	-> Integer {left}
+     Integer "*" Integer       	-> Integer {left}
+     Integer "/" Integer        -> Integer {left}
+     Integer "mod" Integer        -> Integer {left}
+     Integer ">" Integer       	-> Boolean
+     Integer ">=" Integer      	-> Boolean
+     Integer "<" Integer       	-> Boolean
+     Integer "<=" Integer      	-> Boolean
+     even(Integer)              -> Boolean
+     odd(Integer)               -> Boolean
+
+     max(Integer, Integer)      -> Integer
+     quotrem(Integer,Integer)   -> (Integer "rem" Integer)
+
+     "(" Integer ")"       	-> Integer {bracket}
+
+  context-free priorities
+    {left: Integer "*" Integer -> Integer
+           Integer "/" Integer -> Integer 
+           Integer "mod" Integer -> Integer 
+    } >
+    {left: Integer "+" Integer -> Integer
+           Integer "-" Integer -> Integer}
+
+
+
+hiddens
+  imports basic/Comments
+   
+  context-free start-symbols
+    Integer (Integer "rem" Integer) Boolean
+
+  context-free syntax
+    "gt" "(" Natural "," Natural ")" -> Boolean
+    Natural "-//" Natural          -> Natural
+    Natural ">-" Natural           -> Natural
+
+  variables
+    "Nat" [0-9\']*      -> Natural 
+    "Nat-con" [0-9\']*  -> NatCon
+    "Int" [0-9\']*      -> Integer
+
+  variables 
+    "n" [0-9]* -> NatCon
+    "c" [0-9]* -> CHAR
+    "x" [0-9]* -> CHAR*
+    "y" [0-9]* -> CHAR+
+
+module languages/pico/syntax/Pico-Types
+
+exports
+  sorts TYPE
+  context-free syntax
+    "natural"     -> TYPE {cons("nat-type")}
+    "string"      -> TYPE {cons("str-type")}
+    "nil-type"    -> TYPE {cons("nil-type")}
+module basic/Whitespace
+
+exports
+  lexical syntax
+    [\ \t\n\r]	-> LAYOUT
+  context-free restrictions
+    LAYOUT? -/- [\ \t\n\r]
+module languages/pico/syntax/Pico-Identifiers
+
+imports basic/Whitespace
+
+exports
+  sorts PICO-ID
+  lexical syntax
+    [a-z] [a-z0-9]* -> PICO-ID
+
+
+module languages/pico/syntax/Pico-Syntax
+
+imports languages/pico/syntax/Pico-Identifiers 
+imports languages/pico/syntax/Pico-Types
+imports basic/Integers 
+imports basic/Strings 
+
+hiddens
+  context-free start-symbols 
+    PROGRAM
+
+exports
+
+  sorts PROGRAM DECLS ID-TYPE STATEMENT EXP
+
+  context-free syntax
+    
+    "begin" DECLS {STATEMENT";" }* "end"                          -> PROGRAM {cons("program")}
+    "declare" {ID-TYPE "," }*";"                                  -> DECLS {cons("decls")}
+    PICO-ID ":" TYPE                                              -> ID-TYPE {cons("id-type")}
+
+  context-free syntax
+    PICO-ID ":=" EXP                                              -> STATEMENT {cons("assign")}
+    "if" EXP "then" {STATEMENT";" }* "else" {STATEMENT";" }* "fi" -> STATEMENT {cons("if")}
+    "while" EXP "do" {STATEMENT ";" }* "od"                       -> STATEMENT {cons("while")}
+ 
+  context-free syntax 
+    PICO-ID       -> EXP {cons("id")}
+    NatCon        -> EXP {cons("nat")}
+    StrCon        -> EXP {cons("str")}
+    EXP "+" EXP   -> EXP {left, cons("plus")}
+    EXP "-" EXP   -> EXP {left, cons("minus")}
+    EXP "||" EXP  -> EXP {left, cons("cat")}
+    "(" EXP ")"   -> EXP {bracket}
+
+  context-free priorities
+    EXP "||" EXP -> EXP >
+    EXP "-" EXP -> EXP >
+    EXP "+" EXP -> EXP
+
