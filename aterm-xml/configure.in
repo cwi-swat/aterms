@@ -31,7 +31,8 @@ dnl Require Xml library
 AC_PACKAGE_REQUIRE(xml, xml-config,
    [  --with-xml=DIR          XML library is in DIR])
 XMLLIB=`${XML}/bin/xml2-config --libs`
-XMLINCLUDE=`${XML}/bin/xml2-config --cflags`
+XMLINCLUDE=`${XML}/bin/xml2-config --cflags`/libxml
+XMLINCLUDE="${XMLINCLUDE} `${XML}/bin/xml2-config --cflags`"
 AC_SUBST(XML)
 AC_SUBST(XMLLIB)
 AC_SUBST(XMLINCLUDE)
