@@ -1,13 +1,17 @@
 $Id$
 
-2002-04-07 (kasperh@science.uva.nl, jurgenv@cwi.nl)
+2002-07-10 (jong@cwi.nl)
+  * Fix configuration bug: look for xml2-config, not xml-config
+  * Fix dates in ChangeLog: format yyyy-mm-dd
+
+2002-07-04 (kasperh@science.uva.nl, jurgenv@cwi.nl)
   * Put aterm-xml in the CVS repository
 
-2002-01-05 (kasperh@science.uva.nl)
+2002-05-01 (kasperh@science.uva.nl)
   * rewrote some functions to make better use of the ATerm
     library.
 
-2002-01-03 (jurgenv@cwi.nl)
+2002-03-01 (jurgenv@cwi.nl)
   * added --with-xml option. If config-xml is your PATH
     the configure scripts finds out automatically where the xml
     library is. If if it is not in your PATH you need to set
@@ -15,5 +19,5 @@ $Id$
   * added --with-aterm option.
   * added tests
 
-2002-01-03 (kasperh@science.uva.nl)
+2002-03-01 (kasperh@science.uva.nl)
   * initial version 0.1
