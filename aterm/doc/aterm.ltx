@@ -103,7 +103,7 @@ the operations defined on it (Section~\ref{operations}).
 %{{{ The ATerm datatype
 
 \subsection{The \ATerm\ Data type}
-\label{aterm}
+\label{aterm-datatype}
 
 The data type of \ATerms\ ({\tt ATerm}) is defined as follows:
 
@@ -242,7 +242,7 @@ equal. The annotations of {\emph t1} and {\emph t2} must also be equal.
 
 \item {\tt Integer getType(\emph{term})}: Retrieves the type of an
 \ATerm. This operation returns one of the subtypes mentioned before in
-Section~\ref{aterm}.
+Section~\ref{aterm-datatype}.
 
 \end{itemize}
 
@@ -252,7 +252,7 @@ For reasons of efficiency and conciseness, reading and writing can
 take place in two forms: using ordinary text files and using special
 binary files.  In the first form, files are read and written in a
 format that is identical to the textual representation discussed
-earlier in Section~\ref{aterms}.  This format is human-readable,
+earlier in Section~\ref{aterm}.  This format is human-readable,
 space-inefficient, and any sharing in terms is lost.  In the second
 form, a dedicated binary format is used (Binary ATerm Format, see
 Section~\ref{baf}). This portable format is machine-readable, very
