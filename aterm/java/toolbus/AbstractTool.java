@@ -13,7 +13,7 @@ abstract public class AbstractTool
   private final static int MAX_HANDSHAKE = 512;
   private final static int MIN_MSG_SIZE  = 128;
 
-  private ATermFactory factory;
+  protected ATermFactory factory;
   private boolean verbose = true;
   private Socket  socket;
   private InputStream inputStream;

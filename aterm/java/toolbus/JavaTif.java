@@ -13,6 +13,7 @@ public class JavaTif
   private Hashtable doEvents = null;
   private Hashtable evalEvents = null;
   private Hashtable otherEvents = null;
+  private boolean found_one = false;
 
   //{{{ static void usage()
 
@@ -34,27 +35,30 @@ public class JavaTif
       String output = null;
 
       for(int i=0; i<args.length; i++) {
-	if(args[i].equals("-h")) {
+	if (args[i].equals("-h")) {
 	  usage();
-	} else if(args[i].equals("-tool")) {
+	} else if (args[i].equals("-tool")) {
 	  tool = args[++i];
-	} else if(args[i].equals("-tifs")) {
+	} else if (args[i].equals("-tifs")) {
 	  tifsfile = args[++i];
-	} else if(args[i].equals("-package")) {
+	} else if (args[i].equals("-package")) {
 	  pkg = args[++i];
-	} else if(args[i].equals("-class")) {
+	} else if (args[i].equals("-class")) {
 	  javaclass = args[++i];
 	}
       }
 
-      if(tool == null || tifsfile == null) {
+      if (tool == null || tifsfile == null) {
 	usage();
       } else {
-	if(javaclass == null)
+	if (javaclass == null)
 	  javaclass = JavaTif.capitalize(tool, true) + "Tif";
 	JavaTif gen = new JavaTif();
 	gen.readTifs(tifsfile);
 	gen.selectTifs(tool);
+	if (!gen.found_one) {
+	  System.err.println("warning: no tifs found for tool " + tool);
+	}
 	gen.genJavaTif(pkg, javaclass);
       }
     }
@@ -79,10 +83,10 @@ public class JavaTif
   {
     StringBuffer name = new StringBuffer();
     for(int i=0; i<str.length(); i++) {
-      if(str.charAt(i) == '-')
+      if (str.charAt(i) == '-')
 	firstCap = true;
       else {
-	if(firstCap) {
+	if (firstCap) {
 	  name.append(Character.toUpperCase(str.charAt(i)));
 	  firstCap = false;
 	} else
@@ -123,22 +127,23 @@ public class JavaTif
 
       while(!list.isEmpty()) {
 	ATermAppl appl = (ATermAppl)list.getFirst();
-	if(!appl.getArguments().isEmpty() && appl.getName().startsWith("rec-") &&
+	if (!appl.getArguments().isEmpty() && appl.getName().startsWith("rec-") &&
 	   appl.getArguments().getFirst().equals(T)) {
-	  if(appl.getName().equals("rec-do")) {
+	  found_one = true;
+	  if (appl.getName().equals("rec-do")) {
 	    appl = (ATermAppl)appl.getArguments().getNext().getFirst();
 	    appl = normalize(appl);
 	    SpecOrderVector v = (SpecOrderVector)doEvents.get(appl.getName());
-	    if(v == null) {
+	    if (v == null) {
 	      v = new SpecOrderVector();
 	      doEvents.put(appl.getName(), v);
 	    }
 	    v.insert(appl);
-	  } else if(appl.getName().equals("rec-eval")) {
+	  } else if (appl.getName().equals("rec-eval")) {
 	    appl = (ATermAppl)appl.getArguments().getNext().getFirst();
 	    appl = normalize(appl);
 	    SpecOrderVector v = (SpecOrderVector)evalEvents.get(appl.getName());
-	    if(v == null) {
+	    if (v == null) {
 	      v = new SpecOrderVector();
 	      evalEvents.put(appl.getName(), v);
 	    }
@@ -151,7 +156,7 @@ public class JavaTif
 	    appl = factory.makeAppl(newfun, appl.getArguments().getNext());
 	    appl = normalize(appl);
 	    SpecOrderVector v = (SpecOrderVector)otherEvents.get(appl.getName());
-	    if(v == null) {
+	    if (v == null) {
 	      v = new SpecOrderVector();
 	      otherEvents.put(appl.getName(), v);
 	    }
@@ -177,7 +182,8 @@ public class JavaTif
       genSigTable(out);
       genPatternAttribs(out);
 
-      genConstructors(out, javaclass);
+      genConstructor(out, javaclass);
+      genInitSigTable(out);
       genInitPatterns(out);
       genMethods(out);
       genHandler(out);
@@ -193,7 +199,7 @@ public class JavaTif
   private void genSigTable(PrintWriter out)
   {
     out.println("  // This table will hold the complete input signature");
-    out.println("  private Hashtable sigTable = new Hashtable();\n");
+    out.println("  private Map sigTable = new HashMap();\n");
   }
 
   //}}}
@@ -208,14 +214,12 @@ public class JavaTif
       out.println(DateFormat.getDateTimeInstance().format(new Date()));
 
       out.println("");
-      if(pkg != null)
+      if (pkg != null)
 	out.println("package " + pkg + ";");
       out.println("import aterm.*;");
       out.println("import toolbus.*;");
-      out.println("import java.net.UnknownHostException;");
-      out.println("import java.net.InetAddress;");
-      out.println("import java.util.Vector;");
-      out.println("import java.util.Hashtable;\n\n");
+      out.println("import java.net.*;");
+      out.println("import java.util.*;");
       out.println("abstract public class " + javaclass + " extends AbstractTool");
       out.println("{");
     }
@@ -227,23 +231,23 @@ public class JavaTif
     throws IOException
     {
       out.println("  // Declare the patterns that are used to match against incoming terms");
-      Enumeration enum = doEvents.keys();
-      while(enum.hasMoreElements()) {
-	String key = (String)enum.nextElement();
+      Enumeration en = doEvents.keys();
+      while(en.hasMoreElements()) {
+	String key = (String)en.nextElement();
 	SpecOrderVector v = (SpecOrderVector)doEvents.get(key);
 	v.genPatternAttribs(out, capitalize(key, false));
       }
 
-      enum = evalEvents.keys();
-      while(enum.hasMoreElements()) {
-	String key = (String)enum.nextElement();
+      en = evalEvents.keys();
+      while(en.hasMoreElements()) {
+	String key = (String)en.nextElement();
 	SpecOrderVector v = (SpecOrderVector)evalEvents.get(key);
 	v.genPatternAttribs(out, capitalize(key, false));
       }
 
-      enum = otherEvents.keys();
-      while(enum.hasMoreElements()) {
-	String key = (String)enum.nextElement();
+      en = otherEvents.keys();
+      while(en.hasMoreElements()) {
+	String key = (String)en.nextElement();
 	SpecOrderVector v = (SpecOrderVector)otherEvents.get(key);
 	v.genPatternAttribs(out, capitalize(key, false));
       }
@@ -268,6 +272,27 @@ public class JavaTif
     }
 
   //}}}
+  //{{{ private void genInitSigTable(PrintWriter out)
+
+  private void genInitSigTable(PrintWriter out)
+  {
+    out.println("  // This method initializes the table with input signatures");
+    out.println("  private void initSigTable()");
+    out.println("  {");
+    ATermList sigs = tifs;
+    out.println("    try {");
+    while(!sigs.isEmpty()) {
+      ATerm sig = sigs.getFirst();
+      sigs = sigs.getNext();
+      out.print("      sigTable.put(factory.parse(\"");
+      out.print(sig.toString());
+      out.println("\"), new Boolean(true));");
+    }
+    out.println("    } catch (ParseError e) { }");
+    out.println("  }\n");
+  }
+
+  //}}}
   //{{{ private void genInitPatterns(PrintWriter out)
 
   private void genInitPatterns(PrintWriter out)
@@ -276,23 +301,23 @@ public class JavaTif
       out.println("  // Initialize the patterns that are used to match against incoming terms");
       out.println("  private void initPatterns()");
       out.println("  {");
-      Enumeration enum = doEvents.keys();
-      while(enum.hasMoreElements()) {
-	String key = (String)enum.nextElement();
+      Enumeration e = doEvents.keys();
+      while(e.hasMoreElements()) {
+	String key = (String)e.nextElement();
 	SpecOrderVector v = (SpecOrderVector)doEvents.get(key);
 	v.genPatterns(out, capitalize(key, false), "rec-do");
       }
 
-      enum = evalEvents.keys();
-      while(enum.hasMoreElements()) {
-	String key = (String)enum.nextElement();
+      e = evalEvents.keys();
+      while(e.hasMoreElements()) {
+	String key = (String)e.nextElement();
 	SpecOrderVector v = (SpecOrderVector)evalEvents.get(key);
 	v.genPatterns(out, capitalize(key, false), "rec-eval");
       }
 
-      enum = otherEvents.keys();
-      while(enum.hasMoreElements()) {
-	String key = (String)enum.nextElement();
+      e = otherEvents.keys();
+      while(e.hasMoreElements()) {
+	String key = (String)e.nextElement();
 	SpecOrderVector v = (SpecOrderVector)otherEvents.get(key);
 	v.genPatterns(out, capitalize(key, false), null);
       }
@@ -305,27 +330,27 @@ public class JavaTif
   private void genHandler(PrintWriter out)
   {
     out.println("  // The generic handler calls the specific handlers");
-    out.println("  protected ATerm handler(ATerm term)");
-    out.println("\tthrows ToolException");
-    out.print("  {\n    Vector result;\n    ");
+    out.println("  public ATerm handler(ATerm term)");
+    out.println("  {\n    List result;");
+    out.println("");
 
-    Enumeration enum = doEvents.keys();
-    while(enum.hasMoreElements()) {
-      String key = (String)enum.nextElement();
+    Enumeration e = doEvents.keys();
+    while(e.hasMoreElements()) {
+      String key = (String)e.nextElement();
       SpecOrderVector v = (SpecOrderVector)doEvents.get(key);
       v.genCalls(out, capitalize(key, false), false);
     }
 
-    enum = evalEvents.keys();
-    while(enum.hasMoreElements()) {
-      String key = (String)enum.nextElement();
+    e = evalEvents.keys();
+    while(e.hasMoreElements()) {
+      String key = (String)e.nextElement();
       SpecOrderVector v = (SpecOrderVector)evalEvents.get(key);
       v.genCalls(out, capitalize(key, false), true);
     }
 
-    enum = otherEvents.keys();
-    while(enum.hasMoreElements()) {
-      String key = (String)enum.nextElement();
+    e = otherEvents.keys();
+    while(e.hasMoreElements()) {
+      String key = (String)e.nextElement();
       SpecOrderVector v = (SpecOrderVector)otherEvents.get(key);
       v.genCalls(out, capitalize(key, false), false);
     }
@@ -340,23 +365,23 @@ public class JavaTif
   private void genMethods(PrintWriter out)
   {
     out.println("\n  // Override these abstract methods to handle incoming ToolBus terms");
-    Enumeration enum = doEvents.keys();
-    while(enum.hasMoreElements()) {
-      String key = (String)enum.nextElement();
+    Enumeration en = doEvents.keys();
+    while(en.hasMoreElements()) {
+      String key = (String)en.nextElement();
       SpecOrderVector v = (SpecOrderVector)doEvents.get(key);
       v.genMethods(out, capitalize(key, false), false);
     }
 
-    enum = evalEvents.keys();
-    while(enum.hasMoreElements()) {
-      String key = (String)enum.nextElement();
+    en = evalEvents.keys();
+    while(en.hasMoreElements()) {
+      String key = (String)en.nextElement();
       SpecOrderVector v = (SpecOrderVector)evalEvents.get(key);
       v.genMethods(out, capitalize(key, false), true);
     }
 
-    enum = otherEvents.keys();
-    while(enum.hasMoreElements()) {
-      String key = (String)enum.nextElement();
+    en = otherEvents.keys();
+    while(en.hasMoreElements()) {
+      String key = (String)en.nextElement();
       SpecOrderVector v = (SpecOrderVector)otherEvents.get(key);
       v.genMethods(out, capitalize(key, false), false);
     }
@@ -369,13 +394,12 @@ public class JavaTif
   private void genCheckInputSignature(PrintWriter out)
   {
     out.println("  // Check the input signature");
-    out.println("  protected void checkInputSignature(ATermList sigs)");
-    out.println("         throws ToolException");
+    out.println("  public void checkInputSignature(ATermList sigs)");
     out.println("  {");
     out.println("    while(!sigs.isEmpty()) {");
     out.println("      ATermAppl sig = (ATermAppl)sigs.getFirst();");
     out.println("      sigs = sigs.getNext();");
-    out.println("      if(!sigTable.containsKey(sig)) {");
+    out.println("      if (!sigTable.containsKey(sig)) {");
     out.println("        // Sorry, but the term is not in the input signature!");
     out.println("        notInInputSignature(sig);");
     out.println("      }");
@@ -391,10 +415,9 @@ public class JavaTif
     out.println("  // This function is called when an input term");
     out.println("  // was not in the input signature.");
     out.println("  void notInInputSignature(ATerm t)");
-    out.println("        throws ToolException");
     out.println("  {");
-    out.println("    throw new ToolException(this, " +
-		"\"term not in input signature\", t);");
+    out.println("    throw new RuntimeException("
+		+ "\"term not in input signature: \"+t);");
     out.println("  }");
   }
 
@@ -415,25 +438,23 @@ public class JavaTif
 	args = args.getNext();
 	switch (arg.getType()) {
 	  case ATerm.APPL:
-	    type = "appl";
+	    type = "<term>";
 	    break;
 	  case ATerm.LIST:
-	    type = "list";
+	    type = "<list>";
 	    break;
 	  case ATerm.INT:
-	    type = "int";
+	    type = "<int>";
 	    break;
 	  case ATerm.REAL:
-	    type = "real";
+	    type = "<real>";
 	    break;
 	  case ATerm.PLACEHOLDER:
 	    newargs[i] = arg;
 	    break;
 	}
 	if (newargs[i] == null) {
-	  AFun fun = factory.makeAFun(type, 0, false);
-	  newargs[i] = factory.makePlaceholder(factory.makeAppl(fun,
-								factory.makeList()));
+	  newargs[i] = factory.parse(type);
 	}
       }
       args = factory.makeList();
@@ -455,7 +476,7 @@ class SpecOrderVector extends Vector
   public void insert(ATermAppl appl)
   {
     for(int i=0; i<size(); i++) {
-      if(moreSpecific(appl, (ATermAppl)elementAt(i))) {
+      if (moreSpecific(appl, (ATermAppl)elementAt(i))) {
 	insertElementAt(appl, i);
 	return;
       }
@@ -468,21 +489,21 @@ class SpecOrderVector extends Vector
 
   private boolean moreSpecific(ATerm a, ATerm b)
   {
-    if(a == b)
+    if (a == b)
       return true;
-    if(a.equals(b))
+    if (a.equals(b))
       return true;
-    if(a.getType() > b.getType())
+    if (a.getType() > b.getType())
       return true;
-    if(a.getType() < b.getType())
+    if (a.getType() < b.getType())
       return false;
     switch(a.getType()) {
       case ATerm.APPL:
 	ATermAppl appl1 = (ATermAppl)a;
 	ATermAppl appl2 = (ATermAppl)b;
-	if(appl1.getName().equals(appl2.getName()))
+	if (appl1.getName().equals(appl2.getName()))
 	  return moreSpecific(appl1.getArguments(), appl2.getArguments());
-	if(moreSpecific(appl1.getName(), appl2.getName()))
+	if (moreSpecific(appl1.getName(), appl2.getName()))
 	  return true;
 	return false;
       case ATerm.PLACEHOLDER:
@@ -492,11 +513,11 @@ class SpecOrderVector extends Vector
       case ATerm.LIST:
 	ATermList terms1 = (ATermList)a;
 	ATermList terms2 = (ATermList)b;
-	if(terms1.isEmpty())
+	if (terms1.isEmpty())
 	  return true;
-	if(terms2.isEmpty())
+	if (terms2.isEmpty())
 	  return false;
-	if(terms1.getFirst().equals(terms2.getFirst()))
+	if (terms1.getFirst().equals(terms2.getFirst()))
 	  return moreSpecific(terms1.getNext(), terms2.getNext());
 	return moreSpecific(terms1.getFirst(), terms2.getFirst());
     }
@@ -510,9 +531,9 @@ class SpecOrderVector extends Vector
   {
     int i;
     for(i=0; i<a.length(); i++) {
-      if(i > b.length())
+      if (i > b.length())
 	return true;
-      if(a.charAt(i) < b.charAt(i))
+      if (a.charAt(i) < b.charAt(i))
 	return true;
     }
     return false;
@@ -542,7 +563,7 @@ class SpecOrderVector extends Vector
 	if (func != null) {
 	  out.print(func + "(");
 	}
-	out.println(elementAt(i).toString());
+	out.print(elementAt(i).toString());
 	if (func != null) {
 	  out.print(")");
 	}
@@ -571,15 +592,15 @@ class SpecOrderVector extends Vector
     for(int i=0; i<size(); i++) {
       ATermAppl appl = ((ATermAppl)elementAt(i));
       out.println("    result = term.match(P" + base + i + ");");
-      out.println("    if(result != null) {");
-      if(ret)
+      out.println("    if (result != null) {");
+      if (ret)
 	out.print("      return " + base + "(");
       else
 	out.print("      " + base + "(");
 
       genArgs(out, appl.getArguments());
       out.println(");");
-      if(!ret)
+      if (!ret)
 	out.println("      return null;");
       out.println("    }\n");
     }
@@ -596,21 +617,21 @@ class SpecOrderVector extends Vector
       ATermPlaceholder ph = (ATermPlaceholder)args.getFirst();
       String fun = ((ATermAppl)ph.getPlaceholder()).getName();
       args = args.getNext();
-      if(fun.equals("int"))
-	out.print("((Integer)result.elementAt(" + idx + ")).intValue()");
-      else if(fun.equals("real"))
-	out.print("((Double)result.elementAt(" + idx + ")).doubleValue()");
-      else if(fun.equals("term"))
-	out.print("(ATerm)result.elementAt(" + idx + ")");
-      else if(fun.equals("appl"))
-	out.print("(ATermAppl)result.elementAt(" + idx + ")");
-      else if(fun.equals("list"))
-	out.print("(ATermList)result.elementAt(" + idx + ")");
-      else if(fun.equals("str"))
-	out.print("(String)result.elementAt(" + idx + ")");
+      if (fun.equals("int"))
+	out.print("((Integer)result.get(" + idx + ")).intValue()");
+      else if (fun.equals("real"))
+	out.print("((Double)result.get(" + idx + ")).doubleValue()");
+      else if (fun.equals("term"))
+	out.print("(ATerm)result.get(" + idx + ")");
+      else if (fun.equals("appl"))
+	out.print("(ATermAppl)result.get(" + idx + ")");
+      else if (fun.equals("list"))
+	out.print("(ATermList)result.get(" + idx + ")");
+      else if (fun.equals("str"))
+	out.print("(String)result.get(" + idx + ")");
       else
-	out.print("(ATermAppl)result.elementAt(" + idx + ")");
-      if(!args.isEmpty())
+	out.print("(ATermAppl)result.get(" + idx + ")");
+      if (!args.isEmpty())
 	out.print(", ");
       idx++;
     }
@@ -623,12 +644,12 @@ class SpecOrderVector extends Vector
   {
     for(int i=0; i<size(); i++) {
       ATermAppl appl = ((ATermAppl)elementAt(i));
-      if(ret)
+      if (ret)
 	out.print("  abstract ATerm " + base + "(");
       else
 	out.print("  abstract void " + base + "(");
       genFormals(out, appl.getArguments());
-      out.println(") throws ToolException;");
+      out.println(");");
     }
   }
 
@@ -643,22 +664,22 @@ class SpecOrderVector extends Vector
       ATermPlaceholder ph = (ATermPlaceholder)args.getFirst();
       String fun = ((ATermAppl)ph.getPlaceholder()).getName();
       args = args.getNext();
-      if(fun.equals("int"))
+      if (fun.equals("int"))
 	out.print("int i" + idx);
-      else if(fun.equals("real"))
+      else if (fun.equals("real"))
 	out.print("double d" + idx);
-      else if(fun.equals("term"))
+      else if (fun.equals("term"))
 	out.print("ATerm t" + idx);
-      else if(fun.equals("appl"))
+      else if (fun.equals("appl"))
 	out.print("ATermAppl a" + idx);
-      else if(fun.equals("list"))
+      else if (fun.equals("list"))
 	out.print("ATermList l" + idx);
-      else if(fun.equals("str"))
+      else if (fun.equals("str"))
 	out.print("String s" + idx);
       else
 	out.print("ATermAppl a" + idx);
 
-      if(!args.isEmpty())
+      if (!args.isEmpty())
 	out.print(", ");
       idx++;
     }
