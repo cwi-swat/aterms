@@ -4,15 +4,22 @@
 
 #include "aterm2.h"
 
+typedef struct ProtEntry
+{
+	struct ProtEntry *next;
+	ATerm *term;
+} ProtEntry;
+
 typedef struct
 {
 	ATerm *start;
 	int    size;
 } ProtectedArray;
 
+
 extern ATbool silent;
-extern ATerm **at_protected;
-extern int at_nrprotected;
+extern ProtEntry **at_prot_table;
+extern int at_prot_table_size;
 extern ProtectedArray *at_protected_arrays;
 extern int at_nrprotected_arrays;
 

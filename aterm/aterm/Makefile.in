@@ -49,6 +49,8 @@ LFLAGS_PROF	= @LFLAGS_PROF@
 LFLAGS_NS	= @LFLAGS_CC@
 
 LIBS		= @LIBS@
+LIB_CC64	= @LIB_CC64@
+LIB_SHARED	= @LIB_SHARED@
 
 AR		= @AR@
 AR_FLAGS	= cr
@@ -65,7 +67,7 @@ PROGSRCS	= termsize.c baffle.c
 ATERMSRCS	= aterm.c list.c make.c memory.c afun.c gc.c bafio.c \
 		version.c
 ATERMLIBS	= libATerm-gcc.a libATerm-cc.a libATerm-dbg.a libATerm-prof.a \
-		libATerm-ns.a ${LIB_CC64}
+		libATerm-ns.a ${LIB_CC64} ${LIB_SHARED}
 PUBLIC_INCL	= abool.h aterm1.h aterm2.h deprecated.h encoding.h afun.h
 PRIVATE_INCL	= _aterm.h debug.h gc.h list.h make.h memory.h util.h bafio.h \
 		version.h
@@ -79,6 +81,7 @@ OBJ_GCC		= $(patsubst %.c,%-gcc.o,$(ATERMSRCS))
 OBJ_DBG		= $(patsubst %.c,%-dbg.o,$(ATERMSRCS))
 OBJ_PROF	= $(patsubst %.c,%-prof.o,$(ATERMSRCS))
 OBJ_NS		= $(patsubst %.c,%-ns.o,$(ATERMSRCS))
+OBJ_SHARED	= $(patsubst %.c,%-sh.o,$(ATERMSRCS))
 
 all: $(ATERMLIBS) $(PROGS)
 
@@ -117,6 +120,9 @@ install: all ${PUBLIC_INCL}
 %-ns.o: %.c
 	${CC_NS} ${CFLAGS_NS} ${DEFS_NS} -c -o $@ $<
 
+%-sh.o: %.c
+	${CC_DBG} ${CFLAGS_GCC} -fpic -c -o $@ $<
+
 libATerm-cc.a: ${OBJ_CC}
 	${AR} ${AR_FLAGS} $@ ${OBJ_CC}
 	${RANLIB} $@
@@ -140,6 +146,9 @@ libATerm-prof.a: ${OBJ_PROF}
 libATerm-ns.a: ${OBJ_NS}
 	${AR} ${AR_FLAGS} $@ ${OBJ_NS}
 	${RANLIB} $@
+
+libATerm.so: ${OBJ_SHARED}
+	${CC_DBG} -shared -o $@ ${OBJ_SHARED}
 
 baffle: baffle.c libATerm-cc.a
 	${CC_CC} ${CFLAGS_CC} -o $@ $< -L. -lATerm-cc ${LIBS}

@@ -72,6 +72,24 @@ void AT_initGC(int argc, char *argv[], ATerm *bottomOfStack)
 }
 
 /*}}}  */
+/*{{{  void AT_setBottomOfStack(ATerm *bottomOfStack) */
+
+/**
+	* This function can be used to change the bottom of the stack.
+	* Note that we only have one application that uses this fuction:
+	* the Java ATerm wrapper interface, because here the garbage collector
+	* can be called from different (but synchronized) threads, so at
+	* the start of any operation that could start the garbage collector,
+	* the bottomOfStack must be adjusted to point to the stack of
+	* the calling thread.
+	*/
+
+void AT_setBottomOfStack(ATerm *bottomOfStack)
+{
+	stackBot = bottomOfStack;
+}
+
+/*}}}  */
 
 /*{{{  ATerm *stack_top() */
 
@@ -236,10 +254,14 @@ void mark_phase()
 	STATS(stack_symbols, nr_stack_syms);
 
   /* Traverse protected terms */
-  for(i=0; i<at_nrprotected; i++)
-		if(*at_protected[i]) {
-			AT_markTerm(*at_protected[i]);
+  for(i=0; i<at_prot_table_size; i++) {
+		ProtEntry *cur = at_prot_table[i];
+		while(cur) {
+			if(*cur->term)
+				AT_markTerm(*cur->term);
+			cur = cur->next;
 		}
+	}
 
 	/* Traverse protected arrays */
 	for(i=0; i<at_nrprotected_arrays; i++) {
