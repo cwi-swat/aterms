@@ -14,6 +14,13 @@ public class TestFibInterpreted {
   private ATerm lhs[];
   private ATerm rhs[];
 
+  public final static void main(String[] args) {
+    TestFibInterpreted t = new TestFibInterpreted(new PureFactory());
+
+    t.initRules();
+    t.test1(5);
+  }
+
   public TestFibInterpreted(ATermFactory factory) {
     this.factory = factory;
 
@@ -210,7 +217,7 @@ public class TestFibInterpreted {
 
   
   public void test1(int n) {
-    System.out.println("test1: " + n);
+    // System.out.println("test1: " + n);
     ATermAppl N = tzero;
     for(int i=0 ; i<n ; i++) {
       N = factory.makeAppl(suc,N);
@@ -224,7 +231,7 @@ public class TestFibInterpreted {
     long end   = System.currentTimeMillis();
 
       //System.out.println("fib(" + n + ") = " + res);
-    System.out.println("fib(" + n + ") in " + (end-start) + " ms");
+    //System.out.println("fib(" + n + ") in " + (end-start) + " ms");
 
       //System.out.println(factory);
     

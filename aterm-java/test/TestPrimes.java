@@ -4,7 +4,25 @@ import aterm.pure.*;
 public class TestPrimes {
 
   private ATermFactory factory;
-  
+
+  void assertTrue(boolean condition) {
+    if(!condition) {
+      throw new RuntimeException("assertion failed.");
+    }
+  }
+
+  public final static void main(String[] args) {
+    TestPrimes t = new TestPrimes(new PureFactory());
+
+    t.test1();
+  }
+
+  public void test1() 
+  {
+    assertTrue(getPrimes(30) ==
+	       factory.parse("[1,2,3,5,7,11,13,17,19,23,29]"));
+  }
+
   public TestPrimes(ATermFactory factory) {
     this.factory = factory;
   }
