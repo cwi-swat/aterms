@@ -5,8 +5,8 @@
 #
 
 include ${top_srcdir}/make_rules
-include ${srcdir}/PeanoMakeRules
-include ${srcdir}/ListMakeRules
+include PeanoMakeRules.am
+include ListMakeRules.am
 
 ADTC		= ${top_builddir}/utils/adt-to-c
 ADTJAVA         = ${top_builddir}/utils/adt-to-java
@@ -35,14 +35,13 @@ javadir = ${top_builddir}/test/classfiles
 JAVAROOT = ${top_builddir}
 CLASSPATH_ENV = CLASSPATH=${top_builddir}:${SHARED_OBJECTS}:${JAVA_ATERM}:${srcdir}/$(JAVAROOT)::$$CLASSPATH
 
-
 check_JAVA = ${PeanoAPI} PeanoTest.java \
 	     ${ListAPI} ListTest.java
 
 CLEANFILES		= ${check_PROGRAMS} ${check_LIBRARIES} \
 			rolodex*.[ch] rolodex_dict.[ch] \
 			list.[ch] list_dict.[ch] \
-			${PeanoTestAPI} ${ListTestAPI} \
+			${PeanoAPI} ${ListAPI} \
 			*.java.sh
 
 EXTRA_DIST		= rolodex.adt list.adt list.pro peano.adt
@@ -73,6 +72,7 @@ ${PeanoAPI}: peano.adt
 		   --package test \
 		   --name peano \
 		   --classpath ${top_builddir}
+	mv ${srcdir}/PeanoMakeRules ${srcdir}/PeanoMakeRules.am
 
 ${ListAPI}: list.adt
 	${ADTJAVA} --input ${top_srcdir}/test/list.adt \
@@ -80,3 +80,4 @@ ${ListAPI}: list.adt
 		   --package test \
 		   --name list \
 		   --classpath ${top_builddir} 
+	mv ${srcdir}/ListMakeRules ${srcdir}/ListMakeRules.am
