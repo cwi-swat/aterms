@@ -1,6 +1,8 @@
 package apigen.gen.c;
 
 import java.io.*;
+
+import aterm.ATermFactory;
 import aterm.pure.PureFactory;
 
 import apigen.adt.*;
@@ -15,13 +17,14 @@ public class Main {
 	private static String prefix = "";
 
 	private static void usage() {
-		System.err.println("usage: CGen [options]");
+		System.err.println("usage: apigen.gen.c.Main [options]");
 		System.err.println("options:");
 		System.err.println("\t-prefix <prefix>          [\"\"]");
 		System.err.println("\t-input <in>               [-]");
 		System.err.println("\t-output <out>");
 		System.err.println("\t-prologue <prologue>");
 		System.err.println("\t-jtom");
+		System.err.println("\t-verbose");
 		System.exit(1);
 	}
 
@@ -76,10 +79,12 @@ public class Main {
 		ADT adt;
 
 		try {
-			adt = new ADT(new PureFactory().readFromFile(input));
+			ATermFactory factory = new PureFactory();
+			
+			adt = new ADT(factory.readFromFile(input));
 			new APIGenerator(adt, output, prefix, verbose, true);
 			new TomSignatureGenerator(adt,new CTomSignatureImplementation(),".",output,verbose,true).run();
-			new CDictionaryGenerator(adt, ".", output, prefix, verbose, true).run();
+			new CDictionaryGenerator(factory, adt, ".", output, prefix, verbose, true).run();
 
 		} catch (IOException e) {
 			System.out.println("Failed to read ADT from file");

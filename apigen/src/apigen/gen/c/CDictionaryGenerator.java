@@ -9,31 +9,30 @@ import apigen.adt.*;
 import apigen.gen.Generator;
 import apigen.gen.StringConversions;
 import aterm.*;
-import aterm.pure.PureFactory;
 
 public class CDictionaryGenerator extends Generator {
 	private ADT adt;
 	private String prefix;
 	private String apiName;
-
-	private ATermFactory factory;
-
+    
 	private Map afuns_by_afun;
 	private int nextAFun;
 	private Map afuns_by_name;
 
+    private ATermFactory factory;
+    
 	public CDictionaryGenerator(
+		ATermFactory factory,
 		ADT adt,
 		String directory,
 		String apiName,
 		String prefix,
-		boolean verbose,
-		boolean folding) {
+		boolean verbose, boolean folding) {
 		super(directory, apiName, ".dict", verbose, folding);
 		this.adt = adt;
 		this.apiName = apiName;
 		this.prefix = prefix;
-		this.factory = new PureFactory();
+		this.factory = factory;
 		
 		afuns_by_name = new HashMap();
 		afuns_by_afun = new HashMap();
