@@ -18,8 +18,13 @@ public class CGen
   { "[BracketOpen", "]BracketClose",
     "{BraceOpen",   "}BraceClose",
     "(ParenOpen",   ")ParenClose",
+    "<LessThan",    ">GreaterThan",
     "|Bar",         "&Amp",
     "+Plus",	    ",Comma",
+    ".Period",	    "~Tilde",
+    ":Colon",	    ";SemiColon",
+    "=Equals",	    "#Hash",
+    "/Slash",	    "\\Backslash",
   };
   public static boolean verbose = false;
 
@@ -146,6 +151,7 @@ public class CGen
     genInitFunction(api);
     genTermConversions(api);
     genConstructors(api);
+    genIsEquals(api);
     genAccessors(api);
     genEpilogue(api);
 
@@ -310,6 +316,38 @@ public class CGen
   }
 
   //}}}
+  //{{{ private void genIsEquals(API api)
+
+  private void genIsEquals(API api)
+  {
+    Iterator types = api.typeIterator();
+    printFoldOpen(header, "equality functions");
+    printFoldOpen(source, "equality functions");
+
+    while (types.hasNext()) {
+      Type type = (Type)types.next();
+      String type_id = buildId(type.getId());
+      String type_name = buildTypeName(type);
+
+      String decl = "ATbool " + prefix + "isEqual" + type_id
+	+ "(" + type_name + " arg0, " + type_name + " arg1)";
+
+      header.println(decl + ";");
+
+      source.println(decl);
+      source.println("{");
+      source.println("  return ATisEqual((ATerm)arg0, (ATerm)arg1);");
+      source.println("}");
+      if (types.hasNext()) {
+	source.println();
+      }
+    }
+
+    printFoldClose(source);
+    printFoldClose(header);
+  }
+
+  //}}}
   //{{{ private void genConstructors(API api)
 
   private void genConstructors(API api)
@@ -347,7 +385,8 @@ public class CGen
 	  } else {
 	    decl.append(", ");
 	  }
-	  decl.append(buildTypeName(field.getType()) + " " + buildId(field.getId()));
+	  decl.append(buildTypeName(field.getType()) + " "
+		      + buildId(field.getId()));
 	}
 	decl.append(")");
 
