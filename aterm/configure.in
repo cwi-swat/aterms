@@ -36,12 +36,6 @@ CFLAGS_CC64="-64 -DAT_64BIT"
 LFLAGS_CC64="-64"
 INCL_CC64=""
 
-CC_SHARED=gcc
-CFLAGS_SHARED="-Wall"
-LFLAGS_SHARED=""
-DEFS_SHARED="\$(DEFS)"
-INCL_SHARED=""
-
 AC_PROG_CC
 
 CURDATE=`date`
@@ -54,56 +48,29 @@ AC_AIX
 
 AC_SET_MAKE
 
-AC_ARG_WITH(toolbus, 
-   [  --with-toolbus           Specify location of the ToolBus (developers only)], 
-   TOOLBUS=$withval)
-
-if test "a${TOOLBUS}" = "a"; then
- dnl Try to find the location of the toolbus
- AC_CHECK_PROG(TOOLBUS,toolbus,toolbus,false)
- if test ${TOOLBUS} = "false" 
- then
-   #echo "Warning: toolbus not found. You might need it when developing the ATerm library." >&2
-   TOOLBUS="true"
- fi
-fi
-
 AC_ARG_WITH(gcc,
    [  --with-gcc               create gcc version (libATerm-gcc.a)],
-      ATERM_LIB_GCC=libATerm-gcc.a
-      TOOLBUS_LIB_GCC=libATB-gcc.a,)
+      ATERM_LIB_GCC=libATerm-gcc.a,)
 
 AC_ARG_WITH(cc,
    [  --with-cc                create cc version (libATerm-cc.a)],
-      ATERM_LIB_CC=libATerm-cc.a
-      TOOLBUS_LIB_CC=libATB-cc.a,)
+      ATERM_LIB_CC=libATerm-cc.a,)
 
 AC_ARG_WITH(dbg,
    [  --with-dbg               create debug version (libATerm-dbg.a)],
-      ATERM_LIB_DBG=libATerm-dbg.a
-      TOOLBUS_LIB_DBG=libATB-dbg.a,)
+      ATERM_LIB_DBG=libATerm-dbg.a,)
 
 AC_ARG_WITH(prof,
    [  --with-prof              create profiling version (libATerm-prof.a)],
-      ATERM_LIB_PROF=libATerm-prof.a
-      TOOLBUS_LIB_PROF=libATB-prof.a,)
+      ATERM_LIB_PROF=libATerm-prof.a,)
 
-
-#AC_ARG_WITH(shared,
-#   [  --with-shared         create a shared-library version (libATerm-shared.so.${VERSION})],
-#      ATERM_LIB_SHARED=libATerm-shared.so.${VERSION}
-#      TOOLBUS_LIB_SHARED=libATB-shared.so.${VERSION},)
 
 AC_ARG_WITH(all,
    [  --with-all               convenience alias for --with-{gcc,cc,dbg,prof} ],
       ATERM_LIB_GCC=libATerm-gcc.a
-      TOOLBUS_LIB_GCC=libATB-gcc.a
       ATERM_LIB_CC=libATerm-cc.a
-      TOOLBUS_LIB_CC=libATB-cc.a
       ATERM_LIB_DBG=libATerm-dbg.a
-      TOOLBUS_LIB_DBG=libATB-dbg.a
-      ATERM_LIB_PROF=libATerm-prof.a
-      TOOLBUS_LIB_PROF=libATB-prof.a,)
+      ATERM_LIB_PROF=libATerm-prof.a,)
 
 AC_ARG_WITH(64bit,
    [  --with-64bit             create 64 bit cc version (libATerm-cc64.a)],
@@ -137,13 +104,6 @@ AC_SUBST(ATERM_LIB_GCC)
 AC_SUBST(ATERM_LIB_CC)
 AC_SUBST(ATERM_LIB_DBG)
 AC_SUBST(ATERM_LIB_PROF)
-AC_SUBST(ATERM_LIB_SHARED)
-
-AC_SUBST(TOOLBUS_LIB_GCC)
-AC_SUBST(TOOLBUS_LIB_CC)
-AC_SUBST(TOOLBUS_LIB_DBG)
-AC_SUBST(TOOLBUS_LIB_PROF)
-AC_SUBST(TOOLBUS_LIB_SHARED)
 
 AC_SUBST(XDEFS)
 
@@ -151,31 +111,26 @@ AC_SUBST(CC_GCC)
 AC_SUBST(CC_CC)
 AC_SUBST(CC_DBG)
 AC_SUBST(CC_PROF)
-AC_SUBST(CC_SHARED)
 
 AC_SUBST(CFLAGS_CC)
 AC_SUBST(CFLAGS_GCC)
 AC_SUBST(CFLAGS_DBG)
 AC_SUBST(CFLAGS_PROF)
-AC_SUBST(CFLAGS_SHARED)
 
 AC_SUBST(DEFS_CC)
 AC_SUBST(DEFS_GCC)
 AC_SUBST(DEFS_DBG)
 AC_SUBST(DEFS_PROF)
-AC_SUBST(DEFS_SHARED)
 
 AC_SUBST(INCL_CC)
 AC_SUBST(INCL_GCC)
 AC_SUBST(INCL_DBG)
 AC_SUBST(INCL_PROF)
-AC_SUBST(INCL_SHARED)
 
 AC_SUBST(LFLAGS_CC)
 AC_SUBST(LFLAGS_GCC)
 AC_SUBST(LFLAGS_DBG)
 AC_SUBST(LFLAGS_PROF)
-AC_SUBST(LFLAGS_SHARED)
 
 AC_HAVE_FUNCS(strdup)
 
