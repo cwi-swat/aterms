@@ -21,7 +21,7 @@ EXAMPLES     = $(patsubst %,$(EXAMPLEDIR)/%,$(EXAMPLEFILES))
 
 JAVA_CLASSES	= AFun ATerm ATermInt ATermReal ATermBlob ATermAppl \
 		ATermList ATermPlaceholder ATermFactory
-JAVA_FILES	= $(patsubst %,../java/aterm/%.java,$(JAVA_CLASSES))
+JAVA_FILES	= $(patsubst %,${top_srcdir}/java/aterm/%.java,$(JAVA_CLASSES))
 
 doc: at.ps manual.ps java-api.ps
 

@@ -1891,14 +1891,15 @@ As you can see, three files are generated for our Example tool:
 \begin{itemize}
   \item {\tt ExampleTif.java}
     the Java interface describing our Tool's functionality.
-  \item {\tt ExampleTif.java}
+  \item {\tt ExampleTool.java}
     an \emph{abstract} implementation of {\tt ExampleTif.java}
     containing just enough code to check the input/output signature
     of our tool and handle incoming messages by dispatching them
     to the correct method.
   \item {\tt ExampleBridge.java}
-    a \emph{concrete} class which can be used in your programs as
-    a bridge between your tool and the ToolBus.
+    a \emph{concrete} class extending {\tt ExampleTool.java}
+    which can be used as a bridge between your Tool class and
+    the ToolBus.
 \end{itemize}
 
 Remember that Java only allows extention of a single class, but
