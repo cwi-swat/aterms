@@ -9,7 +9,7 @@
 #include <stdlib.h>
 #include <assert.h>
 #include "aterm2.h"
-#include "asymbol.h"
+#include "afun.h"
 #include "memory.h"
 #include "util.h"
 #include "debug.h"
@@ -33,7 +33,7 @@
 /*}}}  */
 /*{{{  globals */
 
-char symbol_id[] = "$Id$";
+char afun_id[] = "$Id$";
 
 static unsigned int table_size = 0;
 static SymEntry *hash_table = NULL;

@@ -1,16 +1,16 @@
 atb-tool-cc.o: atb-tool.c atb-tool.h ../aterm/_aterm.h ../aterm/aterm2.h \
- ../aterm/asymbol.h
+ ../aterm/afun.h
 tifstoc-cc.o: tifstoc.c ../aterm/aterm2.h ../aterm/aterm1.h \
- ../aterm/encoding.h ../aterm/abool.h ../aterm/asymbol.h atb-tool.h
+ ../aterm/encoding.h ../aterm/abool.h ../aterm/afun.h atb-tool.h
 atb-tool-gcc.o: atb-tool.c atb-tool.h ../aterm/_aterm.h ../aterm/aterm2.h \
- ../aterm/asymbol.h
+ ../aterm/afun.h
 tifstoc-gcc.o: tifstoc.c ../aterm/aterm2.h ../aterm/aterm1.h \
- ../aterm/encoding.h ../aterm/abool.h ../aterm/asymbol.h atb-tool.h
+ ../aterm/encoding.h ../aterm/abool.h ../aterm/afun.h atb-tool.h
 atb-tool-dbg.o: atb-tool.c atb-tool.h ../aterm/_aterm.h ../aterm/aterm2.h \
- ../aterm/asymbol.h
+ ../aterm/afun.h
 tifstoc-dbg.o: tifstoc.c ../aterm/aterm2.h ../aterm/aterm1.h \
- ../aterm/encoding.h ../aterm/abool.h ../aterm/asymbol.h atb-tool.h
+ ../aterm/encoding.h ../aterm/abool.h ../aterm/afun.h atb-tool.h
 atb-tool-prof.o: atb-tool.c atb-tool.h ../aterm/_aterm.h ../aterm/aterm2.h \
- ../aterm/asymbol.h
+ ../aterm/afun.h
 tifstoc-prof.o: tifstoc.c ../aterm/aterm2.h ../aterm/aterm1.h \
- ../aterm/encoding.h ../aterm/abool.h ../aterm/asymbol.h atb-tool.h
+ ../aterm/encoding.h ../aterm/abool.h ../aterm/afun.h atb-tool.h

@@ -1,64 +1,64 @@
-aterm-cc.o: aterm.c _aterm.h aterm2.h aterm1.h encoding.h abool.h \
- asymbol.h memory.h list.h make.h gc.h util.h bafio.h version.h
-list-cc.o: list.c memory.h aterm2.h aterm1.h encoding.h abool.h asymbol.h \
+aterm-cc.o: aterm.c _aterm.h aterm2.h aterm1.h encoding.h abool.h afun.h \
+ memory.h list.h make.h gc.h util.h bafio.h version.h
+list-cc.o: list.c memory.h aterm2.h aterm1.h encoding.h abool.h afun.h \
  list.h debug.h
-make-cc.o: make.c aterm2.h aterm1.h encoding.h abool.h asymbol.h make.h \
+make-cc.o: make.c aterm2.h aterm1.h encoding.h abool.h afun.h make.h \
  deprecated.h util.h
 memory-cc.o: memory.c _aterm.h aterm2.h aterm1.h encoding.h abool.h \
- asymbol.h memory.h util.h debug.h
-asymbol-cc.o: asymbol.c aterm2.h aterm1.h encoding.h abool.h asymbol.h \
- memory.h util.h debug.h
-gc-cc.o: gc.c _aterm.h aterm2.h aterm1.h encoding.h abool.h asymbol.h \
+ afun.h memory.h util.h debug.h
+afun-cc.o: afun.c aterm2.h aterm1.h encoding.h abool.h afun.h memory.h \
+ util.h debug.h
+gc-cc.o: gc.c _aterm.h aterm2.h aterm1.h encoding.h abool.h afun.h \
  memory.h util.h gc.h debug.h
-bafio-cc.o: bafio.c _aterm.h aterm2.h aterm1.h encoding.h abool.h \
- asymbol.h memory.h
+bafio-cc.o: bafio.c _aterm.h aterm2.h aterm1.h encoding.h abool.h afun.h \
+ memory.h util.h
 version-cc.o: version.c version.h
-aterm-gcc.o: aterm.c _aterm.h aterm2.h aterm1.h encoding.h abool.h \
- asymbol.h memory.h list.h make.h gc.h util.h bafio.h version.h
-list-gcc.o: list.c memory.h aterm2.h aterm1.h encoding.h abool.h asymbol.h \
+aterm-gcc.o: aterm.c _aterm.h aterm2.h aterm1.h encoding.h abool.h afun.h \
+ memory.h list.h make.h gc.h util.h bafio.h version.h
+list-gcc.o: list.c memory.h aterm2.h aterm1.h encoding.h abool.h afun.h \
  list.h debug.h
-make-gcc.o: make.c aterm2.h aterm1.h encoding.h abool.h asymbol.h make.h \
+make-gcc.o: make.c aterm2.h aterm1.h encoding.h abool.h afun.h make.h \
  deprecated.h util.h
 memory-gcc.o: memory.c _aterm.h aterm2.h aterm1.h encoding.h abool.h \
- asymbol.h memory.h util.h debug.h
-asymbol-gcc.o: asymbol.c aterm2.h aterm1.h encoding.h abool.h asymbol.h \
- memory.h util.h debug.h
-gc-gcc.o: gc.c _aterm.h aterm2.h aterm1.h encoding.h abool.h asymbol.h \
+ afun.h memory.h util.h debug.h
+afun-gcc.o: afun.c aterm2.h aterm1.h encoding.h abool.h afun.h memory.h \
+ util.h debug.h
+gc-gcc.o: gc.c _aterm.h aterm2.h aterm1.h encoding.h abool.h afun.h \
  memory.h util.h gc.h debug.h
-bafio-gcc.o: bafio.c _aterm.h aterm2.h aterm1.h encoding.h abool.h \
- asymbol.h memory.h
+bafio-gcc.o: bafio.c _aterm.h aterm2.h aterm1.h encoding.h abool.h afun.h \
+ memory.h util.h
 version-gcc.o: version.c version.h
-aterm-dbg.o: aterm.c _aterm.h aterm2.h aterm1.h encoding.h abool.h \
- asymbol.h memory.h list.h make.h gc.h util.h bafio.h version.h
-list-dbg.o: list.c memory.h aterm2.h aterm1.h encoding.h abool.h asymbol.h \
+aterm-dbg.o: aterm.c _aterm.h aterm2.h aterm1.h encoding.h abool.h afun.h \
+ memory.h list.h make.h gc.h util.h bafio.h version.h
+list-dbg.o: list.c memory.h aterm2.h aterm1.h encoding.h abool.h afun.h \
  list.h debug.h
-make-dbg.o: make.c aterm2.h aterm1.h encoding.h abool.h asymbol.h make.h \
+make-dbg.o: make.c aterm2.h aterm1.h encoding.h abool.h afun.h make.h \
  deprecated.h util.h
 memory-dbg.o: memory.c _aterm.h aterm2.h aterm1.h encoding.h abool.h \
- asymbol.h memory.h util.h debug.h
-asymbol-dbg.o: asymbol.c aterm2.h aterm1.h encoding.h abool.h asymbol.h \
- memory.h util.h debug.h
-gc-dbg.o: gc.c _aterm.h aterm2.h aterm1.h encoding.h abool.h asymbol.h \
+ afun.h memory.h util.h debug.h
+afun-dbg.o: afun.c aterm2.h aterm1.h encoding.h abool.h afun.h memory.h \
+ util.h debug.h
+gc-dbg.o: gc.c _aterm.h aterm2.h aterm1.h encoding.h abool.h afun.h \
  memory.h util.h gc.h debug.h
-bafio-dbg.o: bafio.c _aterm.h aterm2.h aterm1.h encoding.h abool.h \
- asymbol.h memory.h
+bafio-dbg.o: bafio.c _aterm.h aterm2.h aterm1.h encoding.h abool.h afun.h \
+ memory.h util.h
 version-dbg.o: version.c version.h
-aterm-prof.o: aterm.c _aterm.h aterm2.h aterm1.h encoding.h abool.h \
- asymbol.h memory.h list.h make.h gc.h util.h bafio.h version.h
-list-prof.o: list.c memory.h aterm2.h aterm1.h encoding.h abool.h asymbol.h \
+aterm-prof.o: aterm.c _aterm.h aterm2.h aterm1.h encoding.h abool.h afun.h \
+ memory.h list.h make.h gc.h util.h bafio.h version.h
+list-prof.o: list.c memory.h aterm2.h aterm1.h encoding.h abool.h afun.h \
  list.h debug.h
-make-prof.o: make.c aterm2.h aterm1.h encoding.h abool.h asymbol.h make.h \
+make-prof.o: make.c aterm2.h aterm1.h encoding.h abool.h afun.h make.h \
  deprecated.h util.h
 memory-prof.o: memory.c _aterm.h aterm2.h aterm1.h encoding.h abool.h \
- asymbol.h memory.h util.h debug.h
-asymbol-prof.o: asymbol.c aterm2.h aterm1.h encoding.h abool.h asymbol.h \
- memory.h util.h debug.h
-gc-prof.o: gc.c _aterm.h aterm2.h aterm1.h encoding.h abool.h asymbol.h \
+ afun.h memory.h util.h debug.h
+afun-prof.o: afun.c aterm2.h aterm1.h encoding.h abool.h afun.h memory.h \
+ util.h debug.h
+gc-prof.o: gc.c _aterm.h aterm2.h aterm1.h encoding.h abool.h afun.h \
  memory.h util.h gc.h debug.h
-bafio-prof.o: bafio.c _aterm.h aterm2.h aterm1.h encoding.h abool.h \
- asymbol.h memory.h
+bafio-prof.o: bafio.c _aterm.h aterm2.h aterm1.h encoding.h abool.h afun.h \
+ memory.h util.h
 version-prof.o: version.c version.h
 termsize.o: termsize.c _aterm.h aterm2.h aterm1.h encoding.h abool.h \
- asymbol.h
+ afun.h
 baffle.o: baffle.c bafio.h aterm1.h encoding.h abool.h util.h aterm2.h \
- asymbol.h
+ afun.h

@@ -10,7 +10,7 @@
 #include <setjmp.h>
 
 #include "_aterm.h"
-#include "asymbol.h"
+#include "afun.h"
 #include "memory.h"
 #include "util.h"
 #include "gc.h"

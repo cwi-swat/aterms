@@ -13,7 +13,7 @@
   */
 
 #include "aterm1.h"
-#include "asymbol.h"
+#include "afun.h"
 #include "abool.h"
 
 /**
@@ -88,20 +88,21 @@ ATermReal ATmakeReal(double value);
 #define ATgetReal(t) ((t)->value)
 
 /* The ATermAppl type */
-ATermAppl ATmakeAppl(Symbol sym, ...);
-ATermAppl ATmakeAppl0(Symbol sym);
-ATermAppl ATmakeAppl1(Symbol sym, ATerm arg0);
-ATermAppl ATmakeAppl2(Symbol sym, ATerm arg0, ATerm arg1);
-ATermAppl ATmakeAppl3(Symbol sym, ATerm arg0, ATerm arg1, ATerm arg2);
-ATermAppl ATmakeAppl4(Symbol sym, ATerm arg0, ATerm arg1, ATerm arg2,
+ATermAppl ATmakeAppl(AFun sym, ...);
+ATermAppl ATmakeAppl0(AFun sym);
+ATermAppl ATmakeAppl1(AFun sym, ATerm arg0);
+ATermAppl ATmakeAppl2(AFun sym, ATerm arg0, ATerm arg1);
+ATermAppl ATmakeAppl3(AFun sym, ATerm arg0, ATerm arg1, ATerm arg2);
+ATermAppl ATmakeAppl4(AFun sym, ATerm arg0, ATerm arg1, ATerm arg2,
 		       ATerm arg3);
-ATermAppl ATmakeAppl5(Symbol sym, ATerm arg0, ATerm arg1, ATerm arg2,
+ATermAppl ATmakeAppl5(AFun sym, ATerm arg0, ATerm arg1, ATerm arg2,
 		       ATerm arg4, ATerm arg5);
-ATermAppl ATmakeAppl6(Symbol sym, ATerm arg0, ATerm arg1, ATerm arg2,
+ATermAppl ATmakeAppl6(AFun sym, ATerm arg0, ATerm arg1, ATerm arg2,
 		       ATerm arg4, ATerm arg5, ATerm arg6);
 
-/*Symbol    ATgetSymbol(ATermAppl appl);*/
-#define ATgetSymbol(appl) GET_SYMBOL((appl)->header)
+/*AFun    ATgetAFun(ATermAppl appl);*/
+#define ATgetAFun(appl) GET_SYMBOL((appl)->header)
+#define ATgetSymbol ATgetAFun
 
 /* ATerm     ATgetArgument(ATermAppl appl, int arg); */
 #define ATgetArgument(appl,arg) (*((ATerm *)(appl) + ARG_OFFSET + (arg)))
@@ -109,8 +110,8 @@ ATermAppl ATsetArgument(ATermAppl appl, ATerm arg, int n);
 
 /* Portability */
 ATermList ATgetArguments(ATermAppl appl);
-ATermAppl ATmakeApplList(Symbol sym, ATermList args);
-ATermAppl ATmakeApplArray(Symbol sym, ATerm args[]);
+ATermAppl ATmakeApplList(AFun sym, ATermList args);
+ATermAppl ATmakeApplArray(AFun sym, ATerm args[]);
 
 /* The ATermList type */
 extern ATermList ATempty;
@@ -191,16 +192,20 @@ ATermBlob ATmakeBlob(int size, void *data);
 void    ATregisterBlobDestructor(ATbool (*destructor)(ATermBlob));
 void    ATunregisterBlobDestructor(ATbool (*destructor)(ATermBlob));
 
-Symbol  ATmakeSymbol(char *name, int arity, ATbool quoted);
-/*char   *ATgetName(Symbol sym);*/
+AFun  ATmakeAFun(char *name, int arity, ATbool quoted);
+#define ATmakeSymbol ATmakeAFun
+
+/*char   *ATgetName(AFun sym);*/
 #define ATgetName(sym) (lookup_table[(sym)]->name)
-/*int     ATgetArity(Symbol sym);*/
+/*int     ATgetArity(AFun sym);*/
 #define ATgetArity(sym) GET_LENGTH(lookup_table_alias[(sym)]->header)
-/*ATbool  ATisQuoted(Symbol sym);*/
+/*ATbool  ATisQuoted(AFun sym);*/
 #define ATisQuoted(sym) IS_QUOTED(lookup_table_alias[(sym)]->header)
 
-void    ATprotectSymbol(Symbol sym);
-void    ATunprotectSymbol(Symbol sym);
+void    ATprotectAFun(AFun sym);
+#define ATprotectSymbol ATprotectAFun
+void    ATunprotectAFun(AFun sym);
+#define ATunprotectSymbol ATunprotectAFun
 
 /* C specific version of ATmake */
 ATerm ATvmake(const char *pat, va_list args);

@@ -1,16 +1,17 @@
 
 /**
-  * asymbol.h
+  * afun.h
   */
 
-#ifndef ASYMBOL_H
-#define ASYMBOL_H
+#ifndef AFUN_H
+#define AFUN_H
 
 #include "abool.h"
 #include "encoding.h"
 
+#define Symbol AFun
 
-typedef int Symbol;
+typedef int AFun;
 
 /* The Symbol type */
 typedef struct SymEntry
