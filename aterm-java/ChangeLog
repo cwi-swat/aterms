@@ -1,7 +1,9 @@
 $Id$
 
 2003/08/07 <jurgenv@cwi.nl>
- * Made aterm.pure.ATermListImpl public such that it can be inherited from
+ * Made aterm.pure.ATermListImpl public such that it can be inherited from.
+ * Changed visibitity of init functions of ATermListImpl in order to be able to
+   use them in classes that extend ATermListImpl.
  * Bumped to 1.4
 
 2003/08/01 <jurgenv@cwi.nl>

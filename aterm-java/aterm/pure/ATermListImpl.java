@@ -42,7 +42,7 @@ public class ATermListImpl extends ATermImpl implements ATermList {
     return ATerm.LIST;
   }
 
-  protected void init(int hashCode, ATermList annos, ATerm first, ATermList next) {
+  public void init(int hashCode, ATermList annos, ATerm first, ATermList next) {
     super.init(hashCode, annos);
     this.first = first;
     this.next = next;
@@ -54,7 +54,7 @@ public class ATermListImpl extends ATermImpl implements ATermList {
     }
   }
 
-  protected void initHashCode(ATermList annos, ATerm first, ATermList next) {
+  public void initHashCode(ATermList annos, ATerm first, ATermList next) {
     this.first = first;
     this.next = next;
     this.internSetAnnotations(annos);
