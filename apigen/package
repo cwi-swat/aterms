@@ -13,7 +13,7 @@ identification
 configuration interface
 
 requires
-  aterm 2.3
+  aterm 2.3.1
 
 aterm-java 1.6
 
