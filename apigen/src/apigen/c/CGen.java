@@ -52,6 +52,7 @@ public class CGen
     throws IOException
   {
     String prefix = "";
+    String input  = "-";
     String output = null;
     String prologue = null;
     InputStream inputStream;
@@ -72,24 +73,25 @@ public class CGen
       } else if ("-prologue".startsWith(args[i])) {
 	prologue = args[++i];
       } else if ("-input".startsWith(args[i])) {
-	String input = args[++i];
-	if (input.equals("-")) {
-	  inputStream = System.in;
-	  if (output == null) {
-	    usage();
-	  }
-	} else {
-	  inputStream = new FileInputStream(input);
-	  if (output == null) {
-	    int extIndex = input.lastIndexOf((int)'.');
-	    output = input.substring(0, extIndex);
-	  }
-	}
-	CGen gen = new CGen(inputStream, output, prefix, prologue);
+	input = args[++i];
       } else {
 	usage();
       }
     }
+
+    if (input.equals("-")) {
+      inputStream = System.in;
+      if (output == null) {
+	usage();
+      }
+    } else {
+      inputStream = new FileInputStream(input);
+      if (output == null) {
+	int extIndex = input.lastIndexOf((int)'.');
+	output = input.substring(0, extIndex);
+      }
+    }
+    CGen gen = new CGen(inputStream, output, prefix, prologue);
   }
 
   //}}}
@@ -200,7 +202,7 @@ public class CGen
 
   private void genInitFunction(API api)
   {
-    String decl = "void " + prefix + "init" + capOutput + "API(void)";
+    String decl = "void " + prefix + "init" + capOutput + "Api(void)";
     header.println(decl + ";");
 
     printFoldOpen(source, decl);
@@ -644,12 +646,59 @@ public class CGen
 	Alternative alt = (Alternative)alts.next();
 	ATerm entry = factory.make("[<appl>,<term>]",
 				   "pattern" + id + capitalize(alt.getId()),
-				   alt.getPattern());
+				   buildDictPattern(alt.getPattern()));
 	entries = factory.makeList(entry, entries);
       }
     }
 
     return factory.make("[afuns([]),terms(<term>)]", entries);
+  }
+
+  //}}}
+  //{{{ private ATerm buildDictPattern(ATerm t)
+
+  private ATerm buildDictPattern(ATerm t)
+  {
+    switch (t.getType()) {
+      case ATerm.APPL:
+	{
+	  ATermAppl appl = (ATermAppl)t;
+	  AFun fun = appl.getAFun();
+	  ATerm[] newargs = new ATerm[fun.getArity()];
+	  for (int i=0; i<fun.getArity(); i++) {
+	    newargs[i] = buildDictPattern(appl.getArgument(i));
+	  }
+	  return factory.makeAppl(fun, newargs);
+	}
+	
+      case ATerm.LIST:
+	{
+	  ATermList list = (ATermList)t;
+	  ATerm[] elems = new ATerm[list.getLength()];
+	  int i = 0;
+	  while (!list.isEmpty()) {
+	    elems[i++] = buildDictPattern(list.getFirst());
+	    list = list.getNext();
+	  }
+	  for (i=elems.length-1; i>=0; i--) {
+	    list = list.insert(elems[i]);
+	  }
+	  return list;
+	}
+
+      case ATerm.PLACEHOLDER:
+	{
+	  ATerm ph = ((ATermPlaceholder)t).getPlaceholder();
+	  if (ph.getType() == ATerm.LIST) {
+	    return factory.parse("<list>");
+	  } else {
+	    return factory.parse("<term>");
+	  }
+	}
+
+      default:
+	return t;
+    }
   }
 
   //}}}

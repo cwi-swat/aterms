@@ -51,15 +51,23 @@ public class Field
 
   public boolean hasAltId(String altId)
   {
+    return getLocation(altId) != null;
+  }
+
+  //}}}
+  //{{{ public Location getLocation(String altId)
+
+  public Location getLocation(String altId)
+  {
     Iterator locs = locations.iterator();
     while (locs.hasNext()) {
       Location loc = (Location)locs.next();
       if (loc.getAltId().equals(altId)) {
-	return true;
+	return loc;
       }
     }
 
-    return false;
+    return null;
   }
 
   //}}}

@@ -145,50 +145,60 @@ public class Type
 
   public Iterator altFieldIterator(final String altId)
   {
-    return new Iterator() {
-      private Iterator iter = fields.values().iterator();
-      private Field next = findNext();
+    Comparator comp;
 
-      //{{{ private Field findNext()
+    //{{{ comp = new Comparator() { ... }
 
-      private Field findNext() {
-	while (iter.hasNext()) {
-	  Field next = (Field)iter.next();
-	  if (next.hasAltId(altId)) {
-	    return next;
+    comp = new Comparator() {
+      public int compare(Object o1, Object o2) {
+	Field field1 = (Field)o1;
+	Field field2 = (Field)o2;
+
+	Iterator path1 = field1.getLocation(altId).stepIterator();
+	Iterator path2 = field2.getLocation(altId).stepIterator();
+
+	while (path1.hasNext()) {
+	  if (!path2.hasNext()) {
+	    throw new RuntimeException("incompatible paths: "
+				       + field1 + "," + field2);
+	  }
+	  Step step1 = (Step)path1.next();
+	  Step step2 = (Step)path2.next();
+	  if (step1.getType() != step2.getType()) {
+	    throw new RuntimeException("incompatible paths: "
+				       + field1 + "," + field2);
+	  }
+	  if (step1.getIndex() < step2.getIndex()) {
+	    return -1;
+	  }
+	  if (step1.getIndex() > step2.getIndex()) {
+	    return 1;
 	  }
 	}
-	return null;
+	if (path2.hasNext()) {
+	  throw new RuntimeException("incompatible paths: " 
+				     + field1 + "," + field2);
+	}
+	if (o1 != o2) {
+	  throw new RuntimeException("asjemenou?");
+	}
+	return 0;
       }
-
-      //}}}
-      //{{{ public boolean hasNext()
-
-      public boolean hasNext()
-      {
-	return next != null;
-      }
-
-      //}}}
-      //{{{ public Object next()
-
-      public Object next()
-      {
-	Field result = next;
-	next = findNext();
-	return result;
-      }
-
-      //}}}
-      //{{{ public void remove()
-
-      public void remove()
-      {
-	throw new UnsupportedOperationException();
-      }
-
-      //}}}
     };
+
+    //}}}
+
+    SortedSet sortedAltFields = new TreeSet(comp);
+
+    Iterator iter = fields.values().iterator();
+    while (iter.hasNext()) {
+      Field field = (Field)iter.next();
+      if (field.hasAltId(altId)) {
+	sortedAltFields.add(field);
+      }
+    }
+
+    return sortedAltFields.iterator();
   }
 
   //}}}
@@ -203,3 +213,4 @@ public class Type
 
   //}}}
 }
+
