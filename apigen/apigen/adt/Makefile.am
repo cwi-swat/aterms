@@ -6,7 +6,8 @@
 
 CLASSPATH_ENV	= CLASSPATH=${top_srcdir}:$(ATERM)/classes
 
-java_JAVA       = $(wildcard *.java)
+java_JAVA       = ADT.java Alternative.java AlternativeList.java Field.java \
+                  Location.java Step.java Type.java
 
 javadir         = ${prefix}/classes/apigen/adt
 JAVAROOT	= ${top_builddir}

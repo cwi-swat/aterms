@@ -8,7 +8,7 @@ SUBDIRS = . c java
 
 CLASSPATH_ENV	= CLASSPATH=${top_srcdir}:$(ATERM)/classes
 
-java_JAVA       = $(wildcard *.java)
+java_JAVA       = Generator.java
 
 javadir         = ${prefix}/classes/apigen/gen
 JAVAROOT	= ${top_builddir}
