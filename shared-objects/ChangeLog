@@ -1,4 +1,10 @@
-
+2002-11-19    <vinju@loria.fr>
+  * Release 1.0
+  
 2002-10-29    <vinju@loria.fr>
   * Added ugly config script in order to detect the location of this 
     package easily in the aterm-java package
+    
+2002-10-??    <{jong,olivierp}@cwi.nl> <{vinju,moreau}@loria.fr>
+  * Created new package shared-objects. This was the kernel of the ATerm PureFactory
+    that can now be used to create factories for maximally shared objects of any type
