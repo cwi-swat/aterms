@@ -13,7 +13,7 @@ identification
 configuration interface
 
 requires
-  aterm PARSE_ERROR_IN_PACKAGE_DEF
+  aterm 2.3
 
 aterm-java 1.6
 
