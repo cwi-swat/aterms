@@ -31,7 +31,8 @@ listtest_LDADD		= -L. -llist -lATerm
 listtest_DEPENDENCIES	= liblist.a
 
 booltest_SOURCES	= booltest.c
-booltest_LDADD		= -L. -lBooleans -L$(PT_SUPPORT)/include -lmept -L$(ATERM)/include -lATerm
+booltest_LDADD		= -L. -lBooleans -L$(PT_SUPPORT)/lib -lmept \
+			-L$(ATERM)/lib -lATerm
 booltest_DEPENDENCIES	= booltest.pt libBooleans.a
 
 CLEANFILES		= ${noinst_PROGRAMS} ${noinst_LIBRARIES} \
