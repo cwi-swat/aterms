@@ -188,7 +188,7 @@ void AT_collect(int size)
   clock_t user;
 
 	gc_count++;
-
+  fprintf(stderr, "collecting garbage...\n");
   times(&start);
   mark_phase();
   times(&mark);

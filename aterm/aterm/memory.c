@@ -13,7 +13,6 @@
 #include "memory.h"
 #include "util.h"
 #include "debug.h"
-#include "crc_table.h"
 
 /*}}}  */
 /*{{{  defines */

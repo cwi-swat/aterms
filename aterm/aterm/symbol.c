@@ -17,7 +17,7 @@
 /*}}}  */
 /*{{{  defines */
 
-#define SYMBOL_HASH_SIZE	65353	/* nextprime(16384) */
+#define SYMBOL_HASH_SIZE	65353	/* nextprime(65335) */
 #define SYMBOL_HASH_OPT		"-symboltable"
 
 #define SYM_ARITY	16
