@@ -198,6 +198,7 @@ static void mark_memory_young(ATerm *start, ATerm *stop) {
 #endif
 
 /*}}}  */
+
 /*{{{  void mark_phase() */
 
 /**
@@ -251,11 +252,6 @@ VOIDCDECL mark_phase()
   reg[5] = (ATerm) r_edi;
   reg[6] = (ATerm) r_esp;
   reg[7] = (ATerm) r_ebp;
-
-  nr_stack_terms = 0;
-  nr_stack_syms  = 0;
-  nr_reg_terms   = 0;
-  nr_reg_syms    = 0;
 
   for(i=0; i<8; i++) {
     real_term = AT_isInsideValidTerm(reg[i]);
@@ -385,11 +381,6 @@ VOIDCDECL mark_phase_young() {
   reg[6] = (ATerm) r_esp;
   reg[7] = (ATerm) r_ebp;
 
-  nr_stack_terms = 0;
-  nr_stack_syms  = 0;
-  nr_reg_terms   = 0;
-  nr_reg_syms    = 0;
-
   for(i=0; i<8; i++) {
     real_term = AT_isInsideValidTerm(reg[i]);
     if (real_term != NULL) {
@@ -478,8 +469,6 @@ VOIDCDECL mark_phase_young() {
 #endif
 
 /*}}}  */
-
-
 /*{{{  void sweep_phase() */
 
 /**
@@ -1390,7 +1379,6 @@ void AT_collect_minor()
 
 
 /*}}}  */
-
 /*{{{  void AT_cleanupGC() */
 
 /**
@@ -1449,4 +1437,3 @@ void AT_cleanupGC()
 }
 
 /*}}}  */
-

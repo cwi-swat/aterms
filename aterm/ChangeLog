@@ -1,5 +1,11 @@
 $Id$
 
+Tue Sep  2 15:08:51 CEST 2003 <jong@cwi.nl>
+ * configure.in: version bump to 2.0.4
+ * aterm/gc.c:
+   - removed several unused variables in WIN32 specific code.
+     Closes: "Missing declarations in gc.c" by J.W.Wesselink@TUE.nl
+
 2003-08-01  Jurgen Vinju <jurgenv@cwi.nl>
  * Rewrote use AC_COMPILE_IFELSE to AC_TRY_COMPILE
  * Released dependency on autoconf 2.52 to autoconf 2.13

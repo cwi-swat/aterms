@@ -5,7 +5,7 @@
 
 AC_INIT(configure)
 AM_CONFIG_HEADER(config.h)
-AM_INIT_AUTOMAKE(aterm, 2.0.3)
+AM_INIT_AUTOMAKE(aterm, 2.0.4)
 AC_PREREQ(2.13)
 
 AC_PROG_CC
