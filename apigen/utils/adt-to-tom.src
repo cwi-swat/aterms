@@ -1,8 +1,0 @@
-#! /bin/sh
-
-set -e
-
-APIGEN=apigen.gen.tom.java.Main
-CLASSPATH=__APIGEN_CLASSES__:__JAVA_ATERM__
-
-java -classpath ${CLASSPATH} ${APIGEN} $*
