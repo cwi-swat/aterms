@@ -101,7 +101,7 @@ public class CTomSignatureImplementation implements TomSignatureImplementation {
 	}
 
     public String ATermName() {
-    	return "Term";
+    	return "ATerm";
     }
     
 	public String ATermImpl() {
@@ -127,6 +127,29 @@ public class CTomSignatureImplementation implements TomSignatureImplementation {
 		return "ATisEqual(" + s1 + "," + s2 + ")";
 	}
 
+
+  public String ATermListName() {
+    	return "ATermList";
+    }
+    
+	public String ATermListImpl() {
+		return converter.TermType();
+	}
+
+	public String ATermListGetFunSym(String arg) {
+		return "((ATgetType("
+                  + arg + ") == AT_LIST)?ATmakeAFun(\"conc\",1,ATfalse)):NULL)";
+	}
+
+	public String ATermListCmpFunSym(String s1, String s2) {
+		return "ATisEqualAFun(" + s1 + "," + s2 + ")";
+	}
+
+	public String ATermListEquals(String s1, String s2) {
+		return "ATisEqual(" + s1 + "," + s2 + ")";
+	}
+
+  
 	public String TypeName(String type) {
 		return buildTypeName(type);
 	}

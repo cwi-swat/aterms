@@ -17,6 +17,9 @@ public class CTypeConversions implements TypeConversions {
 		return "ATerm";
 	}
 
+	public String ListType() {
+		return "ATermList";
+	}
 	
 	public String StringType() {
 		return "char*";
