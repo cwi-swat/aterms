@@ -3,11 +3,7 @@ dnl Process this file with autoconf to produce a configure script.
 AC_INIT(Makefile.in)
 AM_INIT_AUTOMAKE(aterm, 0.22)
 
-dnl By default generate static libraries only
-AM_DISABLE_SHARED
-
 AC_PROG_CC
-AM_PROG_LIBTOOL
 
 CURDATE=`date`
 
@@ -121,6 +117,8 @@ if test ${SOCKET_FOUND} = no; then
 )
    fi
 fi
+
+AC_CHECK_LIB(dl, dlopen)
 
 GETHOSTNAME_FOUND=no
 AC_CHECK_LIB(sun,gethostname,[GETHOSTNAME_FOUND=yes])

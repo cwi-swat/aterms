@@ -56,25 +56,25 @@ tool2.tif-dbg.o : tool2.tif.c tool2.tif.h
 tool2.tif.c tool2.tif.h : test2.tifs
 	$(top_builddir)/toolbus/tifstoc -tool tool2 $<
 
-LDFLAGS = -L$(top_builddir)/aterm/.libs \
-          -L$(top_builddir)/asfix/.libs \
-          -L$(top_builddir)/toolbus/.libs
+LDFLAGS = -L$(top_builddir)/aterm/ \
+          -L$(top_builddir)/asfix/ \
+          -L$(top_builddir)/toolbus/
 
-CCLIBS  = ${top_builddir}/asfix/libAsFix-cc.a \
-          ${top_builddir}/toolbus/libATB-cc.a \
-          ${top_builddir}/aterm/libATerm-cc.a
+CCLIBS  = -lAsFix-cc \
+          -lATB-cc \
+          -lATerm-cc
 
-GCCLIBS = ${top_builddir}/asfix/libAsFix-gcc.la \
-          ${top_builddir}/toolbus/libATB-gcc.la \
-          ${top_builddir}/aterm/libATerm-gcc.la
+GCCLIBS = -lAsFix-gcc \
+          -lATB-gcc \
+          -lATerm-gcc
 
-DBGLIBS = ${top_builddir}/asfix/libAsFix-dbg.la \
-          ${top_builddir}/toolbus/libATB-dbg.la \
-          ${top_builddir}/aterm/libATerm-dbg.la
+DBGLIBS = -lAsFix-dbg \
+          -lATB-dbg \
+          -lATerm-dbg
 
-NSLIBS  = ${top_builddir}/asfix/libAsFix-ns.a \
-          ${top_builddir}/toolbus/libATB-ns.a \
-          ${top_builddir}/aterm/libATerm-ns.a
+NSLIBS  = -lAsFix-ns \
+          -lATB-ns \
+          -lATerm-ns
 
 EXTRA_DIST = stress.c asfixtest.c primes.c test-tool.c test-tool2.c \
              randgen.c termstats.c termstats.sh vararg1.c vararg2.c vararg3.c \

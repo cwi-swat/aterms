@@ -8,28 +8,20 @@ bin_PROGRAMS             = termsize baffle
 
 termsize_SOURCES         = termsize.c  $(ALLINCLUDES)
 termsize_LDADD           = libATerm-cc.a
-termsize_LDFLAGS         = -static
 
 baffle_SOURCES           = baffle.c  $(ALLINCLUDES)
 baffle_LDADD             = libATerm-cc.a
-baffle_LDFLAGS           = -static
 
 bin_SCRIPTS              = baf2trm trm2baf trmcat
 
 # The following libraries are compiled to static libraries.
 #
-# Because of the inability of libtool (version 1.3.4 and before) to be used
-# in combination with different compilers simultaneously, we can only
-# generate shared libraries using gcc. This means that for some targets we
-# can only generate static libraries.
-lib_LIBRARIES            = libATerm-cc.a libATerm-ns.a @LIB_CC64@
+lib_LIBRARIES            = libATerm-cc.a libATerm-ns.a @LIB_CC64@ \
+                           libATerm-gcc.a \
+                           libATerm-dbg.a \
+                           libATerm-prof.a
 
-EXTRA_LIBRARIES          = libATerm-cc64.a
-
-# These libraries are compiled as static and shared libraries
-lib_LTLIBRARIES          = libATerm-gcc.la \
-                           libATerm-dbg.la \
-                           libATerm-prof.la 
+EXTRA_LIBRARIES          = libATerm-cc64.a 
 
 ALLSRCS                  = aterm.c list.c make.c memory.c afun.c gc.c \
                            hash.c bafio.c version.c
@@ -50,19 +42,16 @@ EXTRA_DIST               = $(ALLSRCS) $(bin_SCRIPTS)
 libATerm_cc_a_SOURCES    =
 libATerm_cc64_a_SOURCES  =
 libATerm_ns_a_SOURCES    =
+libATerm_gcc_a_SOURCES   =
+libATerm_dbg_a_SOURCES   =
+libATerm_prof_a_SOURCES  =
 
 libATerm_cc_a_LIBADD     = $(ALLSRCS:.c=-cc.o)
 libATerm_ns_a_LIBADD     = $(ALLSRCS:.c=-ns.o)
 libATerm_cc64_a_LIBADD   = $(ALLSRCS:.c=-cc64.o)
-
-# static/shared libraries
-libATerm_gcc_la_SOURCES  =
-libATerm_dbg_la_SOURCES  =
-libATerm_prof_la_SOURCES =
-
-libATerm_gcc_la_LIBADD   = $(ALLSRCS:.c=-gcc.lo)
-libATerm_dbg_la_LIBADD   = $(ALLSRCS:.c=-dbg.lo)
-libATerm_prof_la_LIBADD  = $(ALLSRCS:.c=-prof.lo)
+libATerm_gcc_a_LIBADD    = $(ALLSRCS:.c=-gcc.o)
+libATerm_dbg_a_LIBADD    = $(ALLSRCS:.c=-dbg.o)
+libATerm_prof_a_LIBADD   = $(ALLSRCS:.c=-prof.o)
 
 version-cc.o:   version.c $(ALLINCLUDES) $(ALLSRCS)
 version-cc64.o: version.c $(ALLINCLUDES) $(ALLSRCS)
