@@ -41,7 +41,7 @@ dnl {{{ Handle --with-aterm-java
 
 AC_PACKAGE_REQUIRE(aterm-java, aterm-java-config,
 	[  --with-aterm-java=DIR  ATerm-Java-library is in DIR])
-JAVA_ATERM=`${ATERM_JAVA}/bin/aterm-java-config`
+JAVA_ATERM=\`${ATERM_JAVA}/bin/aterm-java-config\`
 AC_SUBST(JAVA_ATERM)
 dnl }}}
 dnl {{{ Handle --with-cflags
