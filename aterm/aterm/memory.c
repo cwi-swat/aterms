@@ -297,8 +297,14 @@ void AT_initMemory(int argc, char *argv[])
   for (i = 1; i < argc; i++) {
     if (streq(argv[i], TERM_HASH_OPT))
       table_class = atoi(argv[++i]);
-		if(streq(argv[i], HASH_INFO_OPT))
+		else if(streq(argv[i], HASH_INFO_OPT))
 			infoflags |= INFO_HASHING;
+		else if(strncmp(argv[i], "-help", strlen(argv[i])) == 0) {
+			fprintf(stderr, "    %-20s: initial termtable size (2^size)\n",
+							TERM_HASH_OPT " <size>");
+			fprintf(stderr, "    %-20s: write information to 'hashing.stats'\n",
+							HASH_INFO_OPT);
+		}
 	}
 
 	/*}}}  */

@@ -106,18 +106,28 @@ void
 ATinit(int argc, char *argv[], ATerm * bottomOfStack)
 {
 	int lcv;
-	static ATbool   initialized = ATfalse;
+	static ATbool initialized = ATfalse;
+  ATbool help = ATfalse;
 
 	if (initialized)
 		return;
 
-	for (lcv=1; lcv < argc; lcv++)
-		if (streq(argv[lcv], SILENT_FLAG))
+	for (lcv=1; lcv < argc; lcv++) {
+		if (streq(argv[lcv], SILENT_FLAG)) {
 			silent = ATtrue;
+		} else if(strncmp(argv[lcv], "-help", strlen(argv[lcv])) == 0)
+			help = ATtrue;
+	}
 
 	if (!silent)
 		ATfprintf(stderr, "  ATerm Library, version %s, built: %s\n",
 							VERSION, CURDATE);
+
+	if(help) {
+		fprintf(stderr, "    %-20s: print this help info\n", "-help");
+		fprintf(stderr, "    %-20s: suppress runtime gc information.\n",
+						"-silent");
+	}
 
 	/* Protect novice users that simply pass NULL as bottomOfStack */
 	if (bottomOfStack == NULL)
@@ -171,8 +181,10 @@ ATinit(int argc, char *argv[], ATerm * bottomOfStack)
 
 	atexit(AT_cleanup);
 
-	if (!silent)
-		ATfprintf(stderr, "\n");
+	if(help) {
+		fprintf(stderr, "\n");
+		exit(0);
+	}
 }
 
 /*}}}  */
