@@ -74,6 +74,12 @@
 #define ADDR_TO_BLOCK_IDX(a) \
 	((((HashNumber)(a))>>(BLOCK_SHIFT+PTR_ALIGN_SHIFT)) % BLOCK_TABLE_SIZE)
 
+#ifdef TERM_CHECK
+#define CHECK_TERM(t) assert(AT_isValidTerm(t) && "term is invalid")
+#else
+#define CHECK_TERM(t)
+#endif
+
 /*}}}  */
 /*{{{  types */
 
@@ -667,11 +673,12 @@ ATermAppl ATmakeAppl1(Symbol sym, ATerm arg0)
   ATerm cur;
   header_type header = APPL_HEADER(0, 1, sym);
  
+  CHECK_TERM(arg0);
   CHECK_ARITY(ATgetArity(sym), 1);
  
-	cur = AT_allocate(ARG_OFFSET+1);
-	cur->header = header;
-	ATgetArgument(cur, 0) = arg0;
+  cur = AT_allocate(ARG_OFFSET+1);
+  cur->header = header;
+  ATgetArgument(cur, 0) = arg0;
 
   return (ATermAppl) cur;  
 }
@@ -688,6 +695,8 @@ ATermAppl ATmakeAppl2(Symbol sym, ATerm arg0, ATerm arg1)
   ATerm cur;
   header_type header = APPL_HEADER(0, 2, sym);
   
+  CHECK_TERM(arg0);
+  CHECK_TERM(arg1);
   CHECK_ARITY(ATgetArity(sym), 2);
 
 	cur = AT_allocate(ARG_OFFSET+2);
@@ -710,6 +719,9 @@ ATermAppl ATmakeAppl3(Symbol sym, ATerm arg0, ATerm arg1, ATerm arg2)
   ATerm cur;
   header_type header = APPL_HEADER(0, 3, sym);
   
+  CHECK_TERM(arg0);
+  CHECK_TERM(arg1);
+  CHECK_TERM(arg2);
   CHECK_ARITY(ATgetArity(sym), 3);
 
 	cur = AT_allocate(ARG_OFFSET+3);
@@ -733,6 +745,10 @@ ATermAppl ATmakeAppl4(Symbol sym, ATerm arg0, ATerm arg1, ATerm arg2, ATerm arg3
   ATerm cur;
   header_type header = APPL_HEADER(0, 4, sym);
   
+  CHECK_TERM(arg0);
+  CHECK_TERM(arg1);
+  CHECK_TERM(arg2);
+  CHECK_TERM(arg3);
   CHECK_ARITY(ATgetArity(sym), 4);
 
 	cur = AT_allocate(ARG_OFFSET+4);
@@ -758,6 +774,11 @@ ATermAppl ATmakeAppl5(Symbol sym, ATerm arg0, ATerm arg1, ATerm arg2,
   ATerm cur;
   header_type header = APPL_HEADER(0, 5, sym);
 
+  CHECK_TERM(arg0);
+  CHECK_TERM(arg1);
+  CHECK_TERM(arg2);
+  CHECK_TERM(arg3);
+  CHECK_TERM(arg4);
   CHECK_ARITY(ATgetArity(sym), 5);
 
 	cur = AT_allocate(ARG_OFFSET+5);
@@ -784,6 +805,12 @@ ATermAppl ATmakeAppl6(Symbol sym, ATerm arg0, ATerm arg1, ATerm arg2,
   ATerm cur;
   header_type header = APPL_HEADER(0, 6, sym);
   
+  CHECK_TERM(arg0);
+  CHECK_TERM(arg1);
+  CHECK_TERM(arg2);
+  CHECK_TERM(arg3);
+  CHECK_TERM(arg4);
+  CHECK_TERM(arg5);
   CHECK_ARITY(ATgetArity(sym), 6);
 
 	cur = AT_allocate(ARG_OFFSET+6);
@@ -810,16 +837,17 @@ ATermAppl ATmakeApplList(Symbol sym, ATermList args)
   int i, arity = ATgetArity(sym);
   ATerm cur;
   header_type header = APPL_HEADER(0, arity > MAX_INLINE_ARITY ?
-																	 MAX_INLINE_ARITY+1 : arity, sym);
-	
+				   MAX_INLINE_ARITY+1 : arity, sym);
+  
+  CHECK_TERM(args);
   assert(arity == ATgetLength(args));
-
-	cur = AT_allocate(ARG_OFFSET + arity);
-	cur->header = header;
-	for(i=0; i<arity; i++) {
-		ATgetArgument(cur, i) = ATgetFirst(args);
-		args = ATgetNext(args);
-	}
+  
+  cur = AT_allocate(ARG_OFFSET + arity);
+  cur->header = header;
+  for(i=0; i<arity; i++) {
+    ATgetArgument(cur, i) = ATgetFirst(args);
+    args = ATgetNext(args);
+  }
   
   return (ATermAppl)cur;
 }
@@ -836,12 +864,14 @@ ATermAppl ATmakeApplArray(Symbol sym, ATerm args[])
   int i, arity = ATgetArity(sym);
   ATerm cur;
   header_type header = APPL_HEADER(0, arity > MAX_INLINE_ARITY ?
-		MAX_INLINE_ARITY+1 : arity, sym);
-
-	cur = AT_allocate(ARG_OFFSET + arity);
-	cur->header = header;
-	for(i=0; i<arity; i++)
-		ATgetArgument(cur, i) = args[i];
+				   MAX_INLINE_ARITY+1 : arity, sym);
+  
+  cur = AT_allocate(ARG_OFFSET + arity);
+  cur->header = header;
+  for(i=0; i<arity; i++) {
+    CHECK_TERM(args[i]);
+    ATgetArgument(cur, i) = args[i];
+  }
   
   return (ATermAppl)cur;
 }
@@ -898,10 +928,11 @@ ATermList ATmakeList1(ATerm el)
   ATerm cur;
   header_type header = LIST_HEADER(0, 1);
 
-	cur = AT_allocate(TERM_SIZE_LIST);
-	cur->header = header;
-	ATgetFirst((ATermList)cur) = el;
-	ATgetNext((ATermList)cur) = ATempty;
+  CHECK_TERM(el);
+  cur = AT_allocate(TERM_SIZE_LIST);
+  cur->header = header;
+  ATgetFirst((ATermList)cur) = el;
+  ATgetNext((ATermList)cur) = ATempty;
 
   return (ATermList) cur;
 }
@@ -918,10 +949,13 @@ ATermList ATinsert(ATermList tail, ATerm el)
   ATerm cur;
   header_type header = LIST_HEADER(0, (GET_LENGTH(tail->header)+1));
 
-	cur = AT_allocate(TERM_SIZE_LIST);
-	cur->header = header;
-	ATgetFirst((ATermList)cur) = el;
-	ATgetNext((ATermList)cur) = tail;
+  CHECK_TERM(tail);
+  CHECK_TERM(el);
+
+  cur = AT_allocate(TERM_SIZE_LIST);
+  cur->header = header;
+  ATgetFirst((ATermList)cur) = el;
+  ATgetNext((ATermList)cur) = tail;
 	
   return (ATermList) cur;
 }
@@ -939,10 +973,12 @@ ATermPlaceholder ATmakePlaceholder(ATerm type)
   ATerm cur;
   header_type header = PLACEHOLDER_HEADER(0);
 
-	cur = AT_allocate(TERM_SIZE_PLACEHOLDER);
-	cur->header = header;
-	((ATermPlaceholder)cur)->ph_type = type;
+  CHECK_TERM(type);
 
+  cur = AT_allocate(TERM_SIZE_PLACEHOLDER);
+  cur->header = header;
+  ((ATermPlaceholder)cur)->ph_type = type;
+  
   return (ATermPlaceholder) cur;
 
 }
@@ -960,10 +996,10 @@ ATermBlob ATmakeBlob(int size, void *data)
   ATerm cur;
   header_type header = BLOB_HEADER(0, size);
 
-	cur = AT_allocate(TERM_SIZE_BLOB);
-	cur->header = header;
-	((ATermBlob)cur)->data = data;
-
+  cur = AT_allocate(TERM_SIZE_BLOB);
+  cur->header = header;
+  ((ATermBlob)cur)->data = data;
+  
   return (ATermBlob)cur;
 }
 
@@ -980,6 +1016,9 @@ ATerm AT_setAnnotations(ATerm t, ATerm annos)
   int i, size = term_size(t);
   header_type header;
   ATerm cur;
+
+  CHECK_TERM(t);
+  CHECK_TERM(annos);
 
   assert(annos != NULL);
 
@@ -1013,19 +1052,20 @@ ATerm AT_removeAnnotations(ATerm t)
   header_type header;
   ATerm cur;
   
+  CHECK_TERM(t); 
   if(!HAS_ANNO(t->header))
     return t;
 
-	header = t->header;
+  header = t->header;
   CLR_ANNO(header);
   size = term_size(t)-1;
 
-	/* We need to create a new term */
-	cur = AT_allocate(size);
-	cur->header = header;
-	for(i=2; i<size; i++)
-		((ATerm *)cur)[i] = ((ATerm *)t)[i];
-
+  /* We need to create a new term */
+  cur = AT_allocate(size);
+  cur->header = header;
+  for(i=2; i<size; i++)
+    ((ATerm *)cur)[i] = ((ATerm *)t)[i];
+  
   return cur;
 }
 
@@ -1734,7 +1774,6 @@ ATermReal ATmakeReal(double val)
     cur->next = hashtable[hnr];
     hashtable[hnr] = cur;
   }
-ATwarning("ATmakeReal(%f): hnr = %d, t = %t\n", (double)val, (int)hnr, cur);
 
   return (ATermReal)cur;  
 }
