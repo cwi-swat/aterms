@@ -1,6 +1,7 @@
 2001/07/04 (jurgenv@cwi.nl)
  * generated lex-to-cf injections no longer inherit the attributes of the
    user defined lexical productions.
+ * Bumped to 0.8.7
 
 2001/06/18 ({jong,jurgenv}@cwi.nl)
  * sdf2-to-adt now uses asfix2me
