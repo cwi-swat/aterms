@@ -124,6 +124,15 @@ AC_ARG_WITH(visitor-pkg,
   VISITOR_PKG=${withval},)
 AC_SUBST(VISITOR_PKG)
 
+TEX_DOCLET=
+JAVA_API_PS=
+AC_ARG_WITH(texdoclet,
+   [  --with-texdoclet         specify location of TexDoclet (default: unused)],
+  TEX_DOCLET=${withval}
+  JAVA_API_PS="java-api.ps",)
+AC_SUBST(TEX_DOCLET)
+AC_SUBST(JAVA_API_PS)
+
 AC_SUBST(ATERM_LIB_GCC)
 AC_SUBST(ATERM_LIB_CC)
 AC_SUBST(ATERM_LIB_DBG)

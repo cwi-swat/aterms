@@ -1,6 +1,11 @@
 $Id$
 
+2001/05/17 (jong@cwi.nl)
+ * added configure option: --with-texdoclet <PATH_TO_JAR> which activates
+   generation of java-api.ltx which is used to build java-api.ps.
+
 2001/05/16 (jong@cwi.nl)
+ * version 1.5.7
  * added --best to gzip on installed documentation
  * added java.pure.PureFactory to generated documentation
  * Made public versions of AT_writeToStringBuffer and AT_calcTextSize to
