@@ -79,7 +79,7 @@ public class TypeGenerator extends JavaGenerator {
 		JavaGenerationParameters params = getJavaGenerationParameters();
 		String classImplName = className(type);
 		String className = TypeGenerator.className(type.getId());
-		String superClassName = GenericConstructorGenerator.qualifiedClassName(params);
+		String superClassName = AbstractTypeGenerator.qualifiedClassName(params);
 
 		println("abstract public class " + classImplName + " extends " + superClassName + " {");
 

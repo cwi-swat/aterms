@@ -1,5 +1,11 @@
 # $Id$
 
+Mon Dec  1 14:12:47 CET 2003 <{jong,jurgenv}@cwi.nl>
+ * apigen/gen/java:
+   - renamed GenericConstructor into AbstractType
+   - remove <Apiname> in <Apiname>Factory.java
+ * apigen/utils/adt-to-java.src: forcefully remove generated apigen.env
+
 Fri Nov 28 10:18:16 CET 2003 <jong@cwi.nl>
  * adt-to-java.src: sunos' /bin/sh does not know "source", only "."
 

@@ -52,8 +52,7 @@ public class SeparatedListTypeGenerator extends ListTypeGenerator {
 	}
 
 	protected void genToTerm() {
-		JavaGenerationParameters params = getJavaGenerationParameters();
-		String getFactoryMethodName = "get" + FactoryGenerator.className(params) + "()";
+		String getFactoryMethodName = "get" + FactoryGenerator.className() + "()";
 		println("  public aterm.ATerm toTerm() {");
 		println("    if (term == null) {");
 		println("      term = " + getFactoryMethodName + ".toTerm(this);");
@@ -150,8 +149,7 @@ public class SeparatedListTypeGenerator extends ListTypeGenerator {
 		println("    if (!isEmpty() && !isSingle()) {");
 		String arglist = buildActualSeparatorArguments(listType);
 		arglist = arglist.replaceAll(fieldId, "arg");
-		JavaGenerationParameters params = getJavaGenerationParameters();
-		String getFactoryMethodName = "get" + FactoryGenerator.className(params) + "()";
+		String getFactoryMethodName = "get" + FactoryGenerator.className() + "()";
 		println(
 			"      return "
 				+ getFactoryMethodName

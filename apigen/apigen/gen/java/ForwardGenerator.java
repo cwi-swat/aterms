@@ -17,7 +17,7 @@ public class ForwardGenerator extends JavaGenerator {
 	public ForwardGenerator(ADT adt, JavaGenerationParameters params) {
 		super(params);
 		this.adt = adt;
-		this.constructor = GenericConstructorGenerator.qualifiedClassName(params);
+		this.constructor = AbstractTypeGenerator.qualifiedClassName(params);
 	}
 
 	public String getClassName() {

@@ -63,7 +63,7 @@ public class Main {
 		GeneratedJavaFileCollector l = new GeneratedJavaFileCollector();
 
 		run(new FactoryGenerator(adt, params), l);
-		run(new GenericConstructorGenerator(adt, params), l);
+		run(new AbstractTypeGenerator(adt, params), l);
 
 		if (params.isVisitable()) {
 			run(new VisitorGenerator(adt, params), l);

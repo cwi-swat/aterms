@@ -6,11 +6,11 @@ javadir = ${prefix}/classes/apigen/gen/java
 JAVAROOT = ${top_builddir}
 
 java_JAVA = \
+	AbstractTypeGenerator.java \
 	AlternativeGenerator.java \
 	FactoryGenerator.java \
 	ForwardGenerator.java \
 	GeneratedJavaFileCollector.java \
-	GenericConstructorGenerator.java \
 	JavaGenerationParameters.java \
 	JavaGenerator.java \
 	JavaTypeConversions.java \

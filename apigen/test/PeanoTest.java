@@ -1,20 +1,20 @@
 package test;
 
 import test.Replace;
-import test.peano.PeanoFactory;
+import test.peano.Factory;
 import test.peano.nat.Nat;
 import aterm.ATerm;
 import aterm.pure.PureFactory;
 
 public class PeanoTest {
 
-	private PeanoFactory factory;
+	private Factory factory;
 
-	public PeanoTest(PeanoFactory factory) {
+	public PeanoTest(Factory factory) {
 		this.factory = factory;
 	}
 
-	public PeanoFactory getPeanoFactory() {
+	public Factory getPeanoFactory() {
 		return factory;
 	}
 
@@ -102,7 +102,7 @@ public class PeanoTest {
 	}
 
 	public final static void main(String[] args) {
-		PeanoTest test = new PeanoTest(new PeanoFactory(new PureFactory()));
+		PeanoTest test = new PeanoTest(new Factory(new PureFactory()));
 		test.run1();
 	}
 

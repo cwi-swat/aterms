@@ -161,7 +161,7 @@ public class ListTypeGenerator extends TypeGenerator {
 	}
 
 	protected String factoryGetter() {
-		return "get" + FactoryGenerator.className(getJavaGenerationParameters()) + "()";
+		return "get" + FactoryGenerator.className() + "()";
 	}
 
 	protected void genGetters() {
@@ -200,9 +200,8 @@ public class ListTypeGenerator extends TypeGenerator {
 	}
 
 	protected void genIsEmpty(String className) {
-		JavaGenerationParameters params = getJavaGenerationParameters();
 		println("  public boolean isEmpty() {");
-		String getFactoryMethodName = "get" + FactoryGenerator.className(params);
+		String getFactoryMethodName = "get" + FactoryGenerator.className();
 		println("    return this == " +  getFactoryMethodName+ "().make" + className + "();");
 		println("  }");
 		println();

@@ -81,9 +81,9 @@ public class MakeRulesGenerator extends Generator {
 		print(
 			prefix
 				+ "=\\\n"
-				+ getClassFileName(FactoryGenerator.className(name))
+				+ getClassFileName(FactoryGenerator.className())
 				+ " "
-				+ getClassFileName(GenericConstructorGenerator.className(name))
+				+ getClassFileName(AbstractTypeGenerator.className())
 				+ "\\\n");
 
 		while (--bucket >= 0) {

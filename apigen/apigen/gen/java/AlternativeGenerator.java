@@ -184,17 +184,15 @@ public class AlternativeGenerator extends JavaGenerator {
 		return -1;
 	}
 
-	private static String buildGetFactoryMethodCall(GenerationParameters params) {
-		String factoryName = FactoryGenerator.className(params);
-		return "get" + factoryName + "()";
+	private String buildGetFactoryMethodCall() {
+		GenerationParameters params = getGenerationParameters();
+		return AbstractTypeGenerator.getFactoryMethodName(params) + "()";
 	}
 
 	private void genAltToTerm() {
-		GenerationParameters params = getGenerationParameters();
-
 		println("  public aterm.ATerm toTerm() {");
 		println("    if (term == null) {");
-		println("      term = " + buildGetFactoryMethodCall(params) + ".toTerm(this);");
+		println("      term = " + buildGetFactoryMethodCall() + ".toTerm(this);");
 		println("    }");
 		println("    return term;");
 		println("  }");
@@ -379,8 +377,7 @@ public class AlternativeGenerator extends JavaGenerator {
 	}
 
 	private void genAltMake(Type type, Alternative alt) {
-		GenerationParameters params = getGenerationParameters();
-		String getFactoryMethod = buildGetFactoryMethodCall(params);
+		String getFactoryMethod = buildGetFactoryMethodCall();
 		String makeMethod = "make" + FactoryGenerator.concatTypeAlt(type, alt);
 
 		println("  protected aterm.ATermAppl make(aterm.AFun fun, aterm.ATerm[] args," + " aterm.ATermList annos) {");
@@ -390,10 +387,10 @@ public class AlternativeGenerator extends JavaGenerator {
 	}
 
 	private void genAltDuplicateMethod(Type type, Alternative alt) {
-		JavaGenerationParameters params = getJavaGenerationParameters();
+		GenerationParameters params = getGenerationParameters();
 		String altClassName = className(alt);
 		println("  public shared.SharedObject duplicate() {");
-		String getFactoryMethodName = "get" + FactoryGenerator.className(params);
+		String getFactoryMethodName = AbstractTypeGenerator.getFactoryMethodName(params);
 		println("    " + altClassName + " clone = new " + altClassName + "(" + getFactoryMethodName + "());");
 		println("    clone.init(hashCode(), getAnnotations(), getAFun(), " + "getArgumentArray());");
 		println("    return clone;");

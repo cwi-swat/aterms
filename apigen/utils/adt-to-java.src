@@ -13,4 +13,4 @@ CLASSES=`echo ${FILES} | sed -e 's/.java/.class/g'`
 JARFILE=${APINAME}-${VERSION}.jar
 javac -classpath ${DIRECTORY}:${CLASSPATH} ${FILES}
 jar cf ${JARFILE} ${FILES} ${CLASSES}
-rm ${PARAMS}
+rm -f ${PARAMS}

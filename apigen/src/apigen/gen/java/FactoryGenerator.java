@@ -10,7 +10,6 @@ import apigen.adt.NormalListType;
 import apigen.adt.SeparatedListType;
 import apigen.adt.Type;
 import apigen.adt.api.Separators;
-import apigen.gen.GenerationParameters;
 import apigen.gen.StringConversions;
 
 public class FactoryGenerator extends JavaGenerator {
@@ -22,19 +21,15 @@ public class FactoryGenerator extends JavaGenerator {
 		super(params);
 		this.adt = adt;
 		this.apiName = params.getApiName();
-		this.className = className(params);
+		this.className = className();
 	}
 
 	public String getClassName() {
 		return className;
 	}
 
-	public static String className(String name) {
-		return StringConversions.capitalize(name) + "Factory";
-	}
-
-	public static String className(GenerationParameters params) {
-		return className(params.getApiName());
+	public static String className() {
+		return "Factory";
 	}
 
 	public static String qualifiedClassName(JavaGenerationParameters params) {
@@ -43,7 +38,7 @@ public class FactoryGenerator extends JavaGenerator {
 		buf.append('.');
 		buf.append(StringConversions.decapitalize(params.getApiName()));
 		buf.append('.');
-		buf.append(className(params.getApiName()));
+		buf.append(className());
 		return buf.toString();
 	}
 
