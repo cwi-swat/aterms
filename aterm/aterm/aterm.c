@@ -1128,17 +1128,19 @@ static void
 fnext_char(int *c, FILE * f)
 {
     *c = fgetc(f);
-    if (*c == '\n')
-    {
-	line++;
-	col = 0;
+    if(*c != EOF) {
+	if (*c == '\n')
+	{
+	    line++;
+	    col = 0;
+	}
+	else
+	{
+	    col++;
+	}
+        error_buf[error_idx++] = *c;
+        error_idx %= ERROR_SIZE;
     }
-    else
-    {
-	col++;
-    }
-    error_buf[error_idx++] = *c;
-    error_idx %= ERROR_SIZE;
 }
 
 /*}}}  */
@@ -1499,8 +1501,8 @@ readFromTextFile(int *c, FILE *file)
 	else
   {
 		int i;
-		fprintf(stderr, "readFromTextFile: parse error at line %d, col %d:\n",
-						line, col);
+		fprintf(stderr, "readFromTextFile: parse error at line %d, col %d%s",
+						line, col, (line||col)?":\n":"");
 		for (i = 0; i < ERROR_SIZE; ++i)
 		{
 			char c = error_buf[(i + error_idx) % ERROR_SIZE];
