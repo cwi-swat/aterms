@@ -650,8 +650,6 @@ be allocated to satisfy allocation requests.
 
 \subsection{Term Encoding} \label{term-encoding}
 
-{\tt <PO> need a reference to ANSI-C!}.
-
 An important issue in the implementation of \ATerms\ is how to
 represent them in such a way that all operations can be performed
 efficiently, without using more memory than is absolutely necessary.
@@ -756,7 +754,11 @@ the three bytes after the header. A pointer to the actual data
 is stored in the third word.
 
 \paragraph{Annotations}
-(*****)
+In all cases, annotations are represented using an extra word
+at the end of the term object. The single annotation bit in the header
+indicates whether or not an annotation is present. Only when this
+bit is set, an extra word is allocated that points to a term
+with type {\tt AT\_LIST}, which represents the list of annotations.
 
 %}}}
 
@@ -1320,8 +1322,6 @@ states as possible. (** ref? **)
 
 \section{Discussion} \label{discussion}
 
-\subsection{History}
-
 \subsection{Related Work}
 
 \paragraph{Intermediate representations in compiler frameworks}
@@ -1392,7 +1392,8 @@ encoding and data compression techniques are in common use in
 telecommunications. For instance, the ASN.1 standard gives detailed
 rules for data encoding~\cite{ASN.1.PER}.
 
-In an earlier project in our group, the Graph Encoding Language (GEL)
+In an earlier project in our group, the Graph Exchange Language 
+(GEL)\cite{Kam94}
 has been developed.  Its is similar in goals as \baf, but \baf\ can
 only represent acyclic directed graph, while GEL can represent
 arbitrary (potentially cyclic) graphs.  The technical approaches are
@@ -1454,6 +1455,6 @@ operations.
 
 %}}}
 
-\section*{Acknowledgments}
+\section*{Acknowledgements}
 ?????
 
