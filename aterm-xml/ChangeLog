@@ -1,5 +1,8 @@
 $Id$
 
+2002-04-07 (kasperh@science.uva.nl, jurgenv@cwi.nl)
+  * Put aterm-xml in the CVS repository
+
 2002-01-05 (kasperh@science.uva.nl)
   * rewrote some functions to make better use of the ATerm
     library.
