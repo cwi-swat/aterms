@@ -1,3 +1,11 @@
+# $Id$
+
+Wed Aug 27 14:23:46 CEST 2003 <{jong,kooiker}@cwi.nl>
+ * cleanup generated code, so it doesn't contain so many warnings for Eclipse
+ * remove all warnings found by Eclipse in the non-generated code 
+ * remove unused imports as noted by Eclipse
+ * banish use of static 'empty' notions
+
 2003/08/21 ({jong,jurgenv}@cwi.nl)
  * Reimplemented fromTerm and toTerm for separated lists. They are correct now!
  * Reimplemented reverse in C and Java for separated lists.
