@@ -51,12 +51,13 @@
 #define INT_HEADER(anno)          ((anno) | AT_INT << SHIFT_TYPE)
 #define REAL_HEADER(anno)         ((anno) | AT_REAL << SHIFT_TYPE)
 #define EMPTY_HEADER(anno)        ((anno) | AT_LIST << SHIFT_TYPE)
-#define LIST_HEADER(anno,len)     ((anno) | AT_LIST << SHIFT_TYPE | \
-				   len << SHIFT_LENGTH | 2 << SHIFT_ARITY)
-#define PLACEHOLDER_HEADER(anno)  ((anno) | AT_PLACEHOLDER << SHIFT_TYPE | \
+#define LIST_HEADER(anno,len)     ((anno) | (AT_LIST << SHIFT_TYPE) | \
+				   (len << SHIFT_LENGTH) | (2 << SHIFT_ARITY))
+#define PLACEHOLDER_HEADER(anno)  ((anno) | (AT_PLACEHOLDER << SHIFT_TYPE) | \
            1 << SHIFT_ARITY)
-#define BLOB_HEADER(anno,len)     ((anno) | AT_BLOB << SHIFT_TYPE | \
-				   len << SHIFT_LENGTH)
+#define BLOB_HEADER(anno,len)     ((anno) | (AT_BLOB << SHIFT_TYPE) | \
+				   (len << SHIFT_LENGTH))
+#define FREE_HEADER               (AT_FREE << SHIFT_TYPE)
 
 #define ARG_OFFSET 2
 

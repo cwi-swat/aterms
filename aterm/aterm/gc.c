@@ -3,6 +3,7 @@
 
 #include <sys/times.h>
 #include <limits.h>
+#include <assert.h>
 
 #include "_aterm.h"
 #include "symbol.h"
@@ -78,10 +79,22 @@ void mark_phase()
 
 void sweep_phase()
 {
-  int i;
+  int size, idx;
 
-  for(i=MIN_TERM_SIZE; i<MAX_TERM_SIZE; i++) {
-	
+  for(size=MIN_TERM_SIZE; size<MAX_TERM_SIZE; size++) {
+	Block *block = at_blocks[size];
+	while(block) {
+	  assert(block->size == size);
+	  for(idx=0; idx<BLOCK_SIZE; idx+=size) {
+		ATerm t = (ATerm)&block->data[idx];
+		if(IS_MARKED(t->header)) {
+		  CLR_MARK(t->header);
+		} else if(ATgetType(t) != AT_FREE) {
+		  AT_free(size, t);
+		}
+	  }
+	  block = block->next_by_size;
+	}
   }
 }
 

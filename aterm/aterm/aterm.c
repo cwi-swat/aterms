@@ -213,70 +213,95 @@ int ATfprintf(FILE *stream, const char *format, ...)
 
 int ATvfprintf(FILE *stream, const char *format, va_list args)
 {
-    const char *p;
-    char *s;
-    char fmt[16];
-    int result = 0;
+	const char *p;
+	char *s;
+	char fmt[16];
+	int result = 0;
+	ATerm t;
 
-    for (p = format; *p; p++)
+	for (p = format; *p; p++)
     {
-	if (*p != '%')
-	{
-	    fputc(*p, stream);
-	    continue;
-	}
+			if (*p != '%')
+				{
+					fputc(*p, stream);
+					continue;
+				}
+			
+			s = fmt;
+			while (!isalpha((int)*p))	/* parse formats %-20s, etc. */
+				*s++ = *p++;
+			*s++ = *p;
+			*s = '\0';
+			
+			switch (*p)
+				{
+					case 'c':
+					case 'd':
+					case 'i':
+					case 'o':
+					case 'u':
+					case 'x':
+					case 'X':
+						fprintf(stream, fmt, va_arg(args, int));
+						break;
+						
+					case 'e':
+					case 'E':
+					case 'f':
+					case 'g':
+					case 'G':
+						fprintf(stream, fmt, va_arg(args, double));
+						break;
+						
+					case 'p':
+						fprintf(stream, fmt, va_arg(args, void *));
+						break;
+						
+					case 's':
+						fprintf(stream, fmt, va_arg(args, char *));
+						break;
+						
+						/* ATerm specifics start here:
+						 * "%t" to print an ATerm;
+						 * "%y" to print a Symbol.
+						 * "%n" to print a single ATerm node
+						 */
+					case 't':
+						ATwriteToTextFile(va_arg(args, ATerm), stream);
+						break;
+					case 'y':
+						AT_printSymbol(va_arg(args, Symbol), stream);
+						break;
+					case 'n':
+						t = va_arg(args, ATerm);
+						switch(ATgetType(t))
+						{
+							case AT_INT:
+							case AT_REAL:
+							case AT_BLOB:
+								ATwriteToTextFile(t, stream);
+								break;
 
-	s = fmt;
-	while (!isalpha((int)*p))	/* parse formats %-20s, etc. */
-	    *s++ = *p++;
-	*s++ = *p;
-	*s = '\0';
+							case AT_PLACEHOLDER:
+								fprintf(stream, "<...>");
+								break;
 
-	switch (*p)
-	{
-	    case 'c':
-	    case 'd':
-	    case 'i':
-	    case 'o':
-	    case 'u':
-	    case 'x':
-	    case 'X':
-		fprintf(stream, fmt, va_arg(args, int));
-	    break;
+							case AT_LIST:
+								fprintf(stream, "[...(%d)]", ATgetLength((ATermList)t));
+								break;
 
-	    case 'e':
-	    case 'E':
-	    case 'f':
-	    case 'g':
-	    case 'G':
-		fprintf(stream, fmt, va_arg(args, double));
-	    break;
+							case AT_APPL:
+								fprintf(stream, "<appl>(...(%d))", GET_ARITY(t->header));
+								break;
+						}
+						break;
 
-	    case 'p':
-		fprintf(stream, fmt, va_arg(args, void *));
-	    break;
-
-	    case 's':
-		fprintf(stream, fmt, va_arg(args, char *));
-	    break;
-
-	    /* ATerm specifics start here:
-	     * "%t" to print an ATerm;
-	     * "%y" to print a Symbol.
-	     */
-	    case 't':
-		ATwriteToTextFile(va_arg(args, ATerm), stream);
-	    break;
-	    case 'y':
-		AT_printSymbol(va_arg(args, Symbol), stream);
-	    break;
-
-		default:
-			fputc(*p, stream);
-		break;
-	}
+					default:
+						fputc(*p, stream);
+						break;
+				}
     }
-    return result;
+	return result;
 }
 
 /*}}}  */

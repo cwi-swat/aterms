@@ -17,11 +17,6 @@
 /*}}}  */
 /*{{{  defines */
 
-/* To change the block size, modify BLOCK_SHIFT only! */
-#define BLOCK_SHIFT      16
-#define BLOCK_SIZE       (1<<BLOCK_SHIFT)
-#define BLOCK_TABLE_SIZE 4099     /* nextprime(4096) */
-
 /* when less than GC_THRESHOLD percent of the terms has been freed by
    the previous garbage collect, a new block will be allocated.
    Otherwise a new garbage collect is started. */
@@ -40,30 +35,16 @@
 /*}}}  */
 /*{{{  types */
 
-typedef struct block
-{
-	int size;
-  struct block *next_by_size;
-  struct block *next_before;
-  struct block *next_after;
-  header_type data[BLOCK_SIZE];
-} block;
-
-typedef struct block_bucket
-{
-  struct block *first_before;
-  struct block *first_after;
-} block_bucket;
 
 /*}}}  */
 /*{{{  globals */
 
 char memory_id[] = "$Id$";
 
-block *at_blocks[MAX_TERM_SIZE]  = { NULL };
+Block *at_blocks[MAX_TERM_SIZE]  = { NULL };
 int at_nrblocks[MAX_TERM_SIZE]   = { 0 };
 ATerm at_freelist[MAX_TERM_SIZE] = { NULL };
-block_bucket block_table[BLOCK_TABLE_SIZE] = { { NULL, NULL } };
+BlockBucket block_table[BLOCK_TABLE_SIZE] = { { NULL, NULL } };
 
 static int alloc_since_gc[MAX_TERM_SIZE] = { 0 };
 static int table_size;
@@ -78,117 +59,7 @@ ATermList ATempty;
 
 /*}}}  */
 
-/*{{{  AT_initMemory(int argc, char *argv[]) */
 
-/**
-  * Initialize memory allocation datastructures
-  */
-
-void AT_initMemory(int argc, char *argv[])
-{
-  int i;
-
-  table_size = 16411;
-  for (i = 1; i < argc; i++)
-    if (streq(argv[i], TERM_HASH_OPT))
-      table_size = atoi(argv[++i]);
-
-  DBG_MEM(fprintf(stderr, "initial term table size = %d\n", table_size));
-
-  for(i=0; i<MAX_TERM_SIZE; i++) {
-    at_nrblocks[i] = 0;
-    at_freelist[i] = NULL;
-  }
-
-  hashtable = (ATerm *)calloc(table_size, sizeof(ATerm ));
-  if(!hashtable) {
-    ATerror("AT_initMemory: cannot allocate term table of size %d\n", 
-	    table_size);
-  }
-
-  for(i=0; i<BLOCK_TABLE_SIZE; i++) {
-	block_table[i].first_before = NULL;
-	block_table[i].first_after  = NULL;
-  }
-
-  ATempty = (ATermList)AT_allocate(TERM_SIZE_LIST);
-  ATempty->header = EMPTY_HEADER(0);
-  ATempty->next = NULL;
-  hashtable[EMPTY_HASH_NR % table_size] = (ATerm)ATempty;
-}
-
-/*}}}  */
-/*{{{  static void allocate_block(int size_class) */
-
-/**
-  * Allocate a new block of a particular size class
-  */
-
-static void allocate_block(int size)
-{
-	int idx, last;
-	block *newblock = (block *)calloc(1, sizeof(block));
-	ATerm data;
-
-	if (newblock == NULL)
-		ATerror("allocate_block: out of memory!\n");
-	at_nrblocks[size]++;
-
-	newblock->size = size;
-	newblock->next_by_size = at_blocks[size];
-	at_blocks[size] = newblock;
-	data = (ATerm)newblock->data;
-
-	/* subtract garbage, and 1xsize */
-	last = BLOCK_SIZE - (BLOCK_SIZE % size) - size;
-	at_freelist[size] = data;
-	for (idx=0; idx < last; idx += size)
-	{
-		((ATerm)(((header_type *)data)+idx))->next =
-			(ATerm)(((header_type *)data)+idx+size);
-	}
-	((ATerm)(((header_type *)data)+idx))->next = NULL;
-
-	/* Place the new block in the block_table */
-	idx = (((unsigned int)newblock) >> BLOCK_SHIFT) % BLOCK_TABLE_SIZE;
-	newblock->next_after = block_table[idx].first_after;
-	block_table[idx].first_after = newblock;
-	idx = (idx+1) % BLOCK_TABLE_SIZE;
-	newblock->next_before = block_table[idx].first_before;
-	block_table[idx].first_before = newblock;
-}
-
-/*}}}  */
-/*{{{  ATerm AT_allocate(int size) */
-
-/**
-  * Allocate a node of a particular size
-  */
-
-ATerm AT_allocate(int size)
-{
-    int i;
-	ATerm at;
-
-	while (!at_freelist[size])
-	{
-		int total = at_nrblocks[size]*(BLOCK_SIZE/size);
-		if((100*alloc_since_gc[size]) <= GC_THRESHOLD*total) {
-				allocate_block(size);
-		} else {
-			AT_collect(size);
-			for(i=MIN_TERM_SIZE; i<MAX_TERM_SIZE; i++)
-				alloc_since_gc[size] = 0;
-		}
-	}
-
-	at = at_freelist[size];
-	++alloc_since_gc[size];
-	at_freelist[size] = at_freelist[size]->next;
-	return at;
-}
-
-/*}}}  */
 /*{{{  static unsigned int hash_number1(header_type header) */
 
 static unsigned int hash_number1(header_type header)
@@ -268,7 +139,7 @@ static unsigned int hash_number7(header_type header, ATerm w0,
 }
 
 /*}}}  */
-/*{{{  static unsigged hash_number(unsigned int header, int n, ATerm w[]) */
+/*{{{  static unsigned hash_number(unsigned int header, int n, ATerm w[]) */
 
 static unsigned int hash_number(unsigned int header, int n, ATerm w[])
 {
@@ -292,12 +163,174 @@ static unsigned int hash_number_anno(unsigned int header, int n, ATerm w[], ATer
   unsigned int hnr = header;
 
   for(i=0; i<n; i++)
-    hnr += ((unsigned int)w[i]) << (i-2);
-  hnr += ((unsigned int)anno) << (i-2);
+    hnr += ((unsigned int)w[i]) << (i+1);
+  hnr += ((unsigned int)anno) << (i+1);
 
   hnr %= table_size;
 
   return hnr;
+}
+
+/*}}}  */
+
+/*{{{  AT_initMemory(int argc, char *argv[]) */
+
+/**
+  * Initialize memory allocation datastructures
+  */
+
+void AT_initMemory(int argc, char *argv[])
+{
+  int i;
+
+  table_size = 16411;
+  for (i = 1; i < argc; i++)
+    if (streq(argv[i], TERM_HASH_OPT))
+      table_size = atoi(argv[++i]);
+
+  DBG_MEM(fprintf(stderr, "initial term table size = %d\n", table_size));
+
+  for(i=0; i<MAX_TERM_SIZE; i++) {
+    at_nrblocks[i] = 0;
+    at_freelist[i] = NULL;
+  }
+
+  hashtable = (ATerm *)calloc(table_size, sizeof(ATerm ));
+  if(!hashtable) {
+    ATerror("AT_initMemory: cannot allocate term table of size %d\n", 
+	    table_size);
+  }
+
+  for(i=0; i<BLOCK_TABLE_SIZE; i++) {
+	block_table[i].first_before = NULL;
+	block_table[i].first_after  = NULL;
+  }
+
+  ATempty = (ATermList)AT_allocate(TERM_SIZE_LIST);
+  ATempty->header = EMPTY_HEADER(0);
+  ATempty->next = NULL;
+  hashtable[EMPTY_HASH_NR % table_size] = (ATerm)ATempty;
+}
+
+/*}}}  */
+/*{{{  static void allocate_block(int size_class) */
+
+/**
+  * Allocate a new block of a particular size class
+  */
+
+static void allocate_block(int size)
+{
+	int idx, last;
+	Block *newblock = (Block *)calloc(1, sizeof(Block));
+	ATerm data;
+
+	if (newblock == NULL)
+		ATerror("allocate_block: out of memory!\n");
+	at_nrblocks[size]++;
+
+	newblock->size = size;
+	newblock->next_by_size = at_blocks[size];
+	at_blocks[size] = newblock;
+	data = (ATerm)newblock->data;
+
+	/* subtract garbage, and 1xsize */
+	last = BLOCK_SIZE - (BLOCK_SIZE % size) - size;
+	at_freelist[size] = data;
+	for (idx=0; idx < last; idx += size)
+	{
+		((ATerm)(((header_type *)data)+idx))->next =
+			(ATerm)(((header_type *)data)+idx+size);
+	}
+	((ATerm)(((header_type *)data)+idx))->next = NULL;
+
+	/* Place the new block in the block_table */
+	idx = (((unsigned int)newblock) >> BLOCK_SHIFT) % BLOCK_TABLE_SIZE;
+	newblock->next_after = block_table[idx].first_after;
+	block_table[idx].first_after = newblock;
+	idx = (idx+1) % BLOCK_TABLE_SIZE;
+	newblock->next_before = block_table[idx].first_before;
+	block_table[idx].first_before = newblock;
+}
+
+/*}}}  */
+/*{{{  ATerm AT_allocate(int size) */
+
+/**
+  * Allocate a node of a particular size
+  */
+
+ATerm AT_allocate(int size)
+{
+    int i;
+	ATerm at;
+
+	while (!at_freelist[size])
+	{
+		int total = at_nrblocks[size]*(BLOCK_SIZE/size);
+		if((100*alloc_since_gc[size]) <= GC_THRESHOLD*total) {
+				allocate_block(size);
+		} else {
+			AT_collect(size);
+			for(i=MIN_TERM_SIZE; i<MAX_TERM_SIZE; i++)
+				alloc_since_gc[size] = 0;
+		}
+	}
+
+	at = at_freelist[size];
+	++alloc_since_gc[size];
+	at_freelist[size] = at_freelist[size]->next;
+	return at;
+}
+
+/*}}}  */
+/*{{{  void AT_free(int size, ATerm t) */
+
+/**
+	* Free a node of a particular size.
+	*/
+
+void AT_free(int size, ATerm t)
+{
+	ATbool found;
+	int idx, nrargs = size-ARG_OFFSET;
+
+	/* Remove the node from the hashtable */
+	unsigned int hnr = hash_number(t->header, nrargs, (ATerm *)(t+1));
+	ATerm prev = NULL, cur = hashtable[hnr];
+
+	/*ATfprintf(stderr, "AT_free %d,%n\n", size, t);*/
+
+	while(1) {
+		if(t->header == cur->header) {
+			found = ATtrue;
+			for(idx=0; idx<nrargs; idx++) {
+				if(ATgetArgument((ATermAppl)t, idx) != 
+					 ATgetArgument((ATermAppl)cur, idx)) {
+					found = ATfalse;
+					break;
+				}
+			}
+		} else {
+			found = ATfalse;
+		}
+
+		if(found)
+			break;
+
+		prev = cur;
+		cur = cur->next;
+	}
+
+	if(prev)
+		prev->next = cur->next;
+	else
+		hashtable[hnr] = cur->next;
+
+	/* Put the node in the appropriate free list */
+	t->header = FREE_HEADER;
+	t->next  = at_freelist[size];
+	at_freelist[size] = t;
 }
 
 /*}}}  */
@@ -779,7 +812,8 @@ ATermReal ATmakeReal(double val)
 {
   ATerm cur;
   header_type header = REAL_HEADER(0);
-  unsigned int hnr = hash_number2(header, (ATerm)((int)val));
+  unsigned int hnr = hash_number3(header, 
+																	*((ATerm *)&val), *(((ATerm *)&val)+1));
 
   cur = hashtable[hnr];
   while(cur && (cur->header != header || ((ATermReal)cur)->value != val))
@@ -1091,16 +1125,16 @@ ATerm AT_setAnnotations(ATerm t, ATerm annos)
 
       /* check if other components are equal */
       for(i=2; i<size; i++) {
-	if(((ATerm *)cur)[i] != ((ATerm *)t)[i]) {
-	  rest_equal = ATfalse;
-	  break;
-	}
+				if(((ATerm *)cur)[i] != ((ATerm *)t)[i]) {
+					rest_equal = ATfalse;
+					break;
+				}
       }
 
       if(rest_equal)
-	found = ATtrue;
+				found = ATtrue;
       else
-	cur = cur->next;
+				cur = cur->next;
     }
   }
 
@@ -1248,8 +1282,8 @@ ATerm ATremoveAnnotation(ATerm t, ATerm label)
 
 ATbool AT_isValidTerm(ATerm term)
 {
-	block *cur;
-	int idx = (((unsigned int)term)>>BLOCK_SHIFT) % BLOCK_TABLE_SIZE;
+  Block *cur;
+  int idx = (((unsigned int)term)>>BLOCK_SHIFT) % BLOCK_TABLE_SIZE;
   header_type header;
   int         type;
 	ATbool inblock = ATfalse;
