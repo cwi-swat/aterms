@@ -605,6 +605,9 @@ void testTuple()
   test_assert("tuple", 3, strcmp(ATwriteToString(ATparse("()")), "()") == 0);
   test_assert("tuple", 4, AT_calcTextSize(ATparse("f()")) == 1);
   test_assert("tuple", 5, strcmp(ATwriteToString(ATparse("f()")), "f") == 0);
+  test_assert("tuple", 6, AT_calcTextSize(ATparse("\"\"()")) == 2);
+  test_assert("tuple", 7, strcmp(ATwriteToString(ATparse("\"\"()")),
+				 "\"\"") == 0);
 }
 
 /*}}}  */

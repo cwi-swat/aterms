@@ -1,9 +1,10 @@
 $Id$
 
 2021/11/15 (jong@cwi.nl)
- * Toplevel Makefile.am now uses 'install' rather than 'cp+chmod'
+ * Quoted, empty tuple is now printed as "", rather than ""()
  * Changed the output of the empty tuple to be "()", rather than ""
  * Fixed several typo's in aterm.c ("to long" -> "too long").
+ * Toplevel Makefile.am now uses 'install' rather than 'cp+chmod'
 
 2001/11/15 (jong@cwi.nl)
  * version 1.6.5beta started

@@ -738,7 +738,7 @@ writeToTextFile(ATerm t, FILE * f)
       AT_printSymbol(sym, f);
       arity = ATgetArity(sym);
       name = ATgetName(sym);
-      if (arity > 0 || name == NULL || *name == '\0') {
+      if (arity > 0 || (!ATisQuoted(sym) && *name == '\0')) {
 	fputc('(', f);
 	for (i = 0; i < arity; i++) {
 	  if (i != 0) {
@@ -999,7 +999,7 @@ writeToString(ATerm t, char *buf)
       arity = ATgetArity(sym);
       name = ATgetName(sym);
       buf = writeSymbolToString(sym, buf);
-      if (arity > 0 || name == NULL || *name == '\0') {
+      if (arity > 0 || (!ATisQuoted(sym) && *name == '\0')) {
 	*buf++ = '(';
 	if (arity > 0) {
 	  buf = topWriteToString(ATgetArgument(appl, 0), buf);
@@ -1124,7 +1124,7 @@ textSize(ATerm t)
       for (i = 0; i < arity; i++) {
 	size += topTextSize(ATgetArgument(appl, i));
       }
-      if (arity > 0 || name == NULL || *name == '\0') {
+      if (arity > 0 || (!ATisQuoted(sym) && *name == '\0')) {
 	/* Add space for the ',' characters */
 	if (arity > 1) {
 	  size += arity - 1;
