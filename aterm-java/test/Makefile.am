@@ -15,7 +15,7 @@ TESTS = $(foreach t, ${java_JAVA}, $t.test)
 	@(echo '#! /bin/sh';\
 	 echo 'set -e';\
 	 echo 'export CLASSPATH=..:${SHARED_OBJECTS}:${CLASSPATH}';\
-	 echo "java $*";\
+	 echo "java $* ${srcdir}";\
 	 echo "rm $*.java.test";\
 	) > $@ && chmod +x $@
 

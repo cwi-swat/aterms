@@ -6,16 +6,18 @@ import java.io.*;
 
 public class Test2 {
   ATermFactory factory;
+  String srcdir;
 
   public final static void main(String[] args) throws IOException {
-    Test2 pureSuite = new Test2(new PureFactory());
+    Test2 pureSuite = new Test2(new PureFactory(), args[0]);
     pureSuite.testAll();
     //Test2 nativeSuite = new Test2(new NativeFactory());
     //nativeSuite.testAll();
   }
 
-  public Test2(ATermFactory factory) {
+  public Test2(ATermFactory factory, String srcdir) {
     this.factory = factory;
+    this.srcdir = srcdir;
   }
 
   void test_assert(boolean condition) {
@@ -182,9 +184,9 @@ public class Test2 {
   }
 
   public void testFiles() throws IOException {
-    ATerm t1 = factory.readFromFile("test.trm");
+    ATerm t1 = factory.readFromFile(srcdir + "/test.trm");
     System.out.println("done reading test.trm");
-    ATerm t2 = factory.readFromFile("test.taf");
+    ATerm t2 = factory.readFromFile(srcdir + "/test.taf");
     System.out.println("done reading test.taf");
 
     PrintStream stream = new PrintStream(new FileOutputStream("test.trm2"));
