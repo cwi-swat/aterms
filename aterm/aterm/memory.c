@@ -485,6 +485,50 @@ ATermAppl ATmakeAppl6(Symbol sym, ATerm arg0, ATerm arg1, ATerm arg2,
 
 ATermAppl ATmakeApplList(Symbol sym, ATermList args)
 {
+  int i, arity = ATgetArity(sym);
+  ATbool found;
+  ATerm cur;
+  ATermAppl appl;
+  header_type header;
+
+  unsigned int hnr = (((unsigned int)sym) >> 2);
+  assert(arity == ATgetLength(args));
+
+  for(i=0; i<arity; i++) {
+    arg_buffer[i] = ATgetFirst(args);
+    hnr = (int)arg_buffer[i] << i;
+    args = ATgetNext(args);
+  }
+  hnr %= table_size;
+
+  header = APPL_HEADER(0, arity > 6 ? 7 : arity, sym);
+
+  while(cur) {
+    if(cur->header == header) {
+      appl = (ATermAppl)cur;
+      found = ATtrue;
+      for(i=0; i<arity; i++) {
+	if(!ATisEqual(ATgetArgument(appl, i), arg_buffer[i])) {
+	  found = ATfalse;
+	  break;
+	}
+      }
+      if(found)
+	break;
+    }
+    cur = cur->next;
+  }
+
+  if(!cur) {
+    cur = AT_allocate(arity + (arity > 6 ? 3:2));
+    cur->header = header;
+    for(i=0; i<arity; i++)
+      ATgetArgument(cur, i) = arg_buffer[i];
+    cur->next = hashtable[hnr];
+    hashtable[hnr] = cur;
+  }
+  
+  return (ATermAppl)cur;
 }
 
 /*}}}  */

@@ -70,11 +70,13 @@ typedef struct
 
 /* The ATermInt type */
 ATermInt ATmakeInt(int value);
-int      ATgetInt(ATermInt term);
+/*int      ATgetInt(ATermInt term);*/
+#define ATgetInt(t) ((t)->value)
 
 /* The ATermReal type */
 ATermReal ATmakeReal(double value);
-double    ATgetReal(ATermReal term);
+/*double    ATgetReal(ATermReal term);*/
+#define ATgetReal(t) ((t)->value)
 
 /* The ATermAppl type */
 ATermAppl ATmakeAppl(Symbol sym, ...);

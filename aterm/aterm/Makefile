@@ -10,8 +10,8 @@ LFLAGS		= -g
 AR		= ar
 
 ATERMLIBS	= libATerm.a
-ATERMSRCS	= aterm.c basic.c memory.c symbol.c list.c
-ATERMOBJS	= aterm.o basic.o memory.o symbol.o list.o
+ATERMSRCS	= aterm.c memory.c symbol.c list.c
+ATERMOBJS	= aterm.o memory.o symbol.o list.o
 
 all: $(ATERMLIBS)
 
