@@ -18,6 +18,7 @@ import apigen.adt.SeparatedListType;
 import apigen.adt.Step;
 import apigen.adt.Type;
 import apigen.adt.api.Separators;
+import apigen.gen.GenerationException;
 import apigen.gen.StringConversions;
 import apigen.gen.TypeConverter;
 import aterm.AFun;
@@ -44,7 +45,7 @@ public class APIGenerator extends CGenerator {
 		afunRegister = new AFunRegister();
 	}
 
-	protected void generate() {
+	protected void generate() throws GenerationException {
 		genPrologue();
 		genStaticConversions();
 		genTypes(adt);
@@ -676,7 +677,7 @@ public class APIGenerator extends CGenerator {
 		bothPrintFoldClose();
 	}
 
-	private String genConstructorImpl(ATerm pattern) {
+	private String genConstructorImpl(ATerm pattern) throws GenerationException {
 		String result = null;
 
 		switch (pattern.getType()) {
@@ -687,7 +688,7 @@ public class APIGenerator extends CGenerator {
 				result = buildIntConstructorImpl(pattern);
 				break;
 			case ATerm.BLOB :
-				throw new RuntimeException("blobs are not supported");
+				throw new GenerationException("blobs are not supported");
 			case ATerm.LIST :
 				result = buildListConstructorImpl(pattern);
 				break;
@@ -711,7 +712,7 @@ public class APIGenerator extends CGenerator {
 		return "(ATerm) " + converter.makeBuiltinToATermConversion(type, name);
 	}
 
-	private String buildApplConstructorImpl(ATerm pattern) {
+	private String buildApplConstructorImpl(ATerm pattern) throws GenerationException {
 		String result;
 		ATermAppl appl = (ATermAppl) pattern;
 		int arity = appl.getArity();
@@ -735,7 +736,7 @@ public class APIGenerator extends CGenerator {
 		return result;
 	}
 
-	private String buildListConstructorImpl(ATerm pattern) {
+	private String buildListConstructorImpl(ATerm pattern) throws GenerationException {
 		String result = null;
 		ATermList list = (ATermList) pattern;
 		int length = list.getLength();
@@ -771,7 +772,7 @@ public class APIGenerator extends CGenerator {
 		return "(ATerm)ATmakeReal(" + ((ATermReal) pattern).getReal() + ")";
 	}
 
-	private void genConstructors(ADT api) {
+	private void genConstructors(ADT api) throws GenerationException {
 		Iterator types = api.typeIterator();
 		bothPrintFoldOpen("constructors");
 
@@ -807,11 +808,11 @@ public class APIGenerator extends CGenerator {
 		}
 	}
 
-	private void genAlternativeConstructorBody(String type_name, Alternative alt) {
+	private void genAlternativeConstructorBody(String type_name, Alternative alt) throws GenerationException {
 		println("  return (" + type_name + ")" + genConstructorImpl(alt.getPattern()) + ";");
 	}
 
-	private void genAccessors(ADT api) {
+	private void genAccessors(ADT api) throws GenerationException {
 		Iterator types = api.typeIterator();
 		while (types.hasNext()) {
 			Type type = (Type) types.next();
@@ -1234,7 +1235,7 @@ public class APIGenerator extends CGenerator {
 		printFoldClose();
 	}
 
-	private void genIsAlt(Type type, Alternative alt) {
+	private void genIsAlt(Type type, Alternative alt) throws GenerationException {
 		String type_name = buildTypeName(type);
 		String decl = "inline ATbool " + buildIsAltName(type, alt) + "(" + type_name + " arg)";
 		String pattern;

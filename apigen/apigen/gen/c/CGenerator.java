@@ -2,6 +2,7 @@ package apigen.gen.c;
 
 import java.io.PrintStream;
 
+import apigen.gen.GenerationException;
 import apigen.gen.Generator;
 
 abstract public class CGenerator extends Generator {
@@ -26,9 +27,16 @@ abstract public class CGenerator extends Generator {
 	 * abstract code generator and close the two files afterwards
 	 */
 	public void run() {
-		headerStream = createStream(getDirectory(), getFileName(), HEADER_FILE_EXTENSION);
-		super.run();
-		closeStream(headerStream);
+        try {
+		  headerStream = createStream(getDirectory(), getFileName(), HEADER_FILE_EXTENSION);
+		  super.run();
+		  closeStream(headerStream);
+        }
+        catch (GenerationException exc) {
+            System.err.println("An error occurred at generation time:");
+            System.err.println(exc);
+            System.exit(1);
+        }
 	}
 
 	/**

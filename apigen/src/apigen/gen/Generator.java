@@ -28,13 +28,20 @@ public abstract class Generator {
 	}
 
 	public void run() {
-		stream = createStream(getDirectory(), getFileName(), getExtension());
-		fireFileCreated(getDirectory(), getFileName(), getExtension());
-		generate();
-		closeStream(stream);
+        try {
+		  stream = createStream(getDirectory(), getFileName(), getExtension());
+		  fireFileCreated(getDirectory(), getFileName(), getExtension());
+		  generate();
+		  closeStream(stream);
+        }
+        catch (GenerationException exc) {
+            System.err.println("An error occurred at generation time:");
+            System.err.println(exc);
+            System.exit(1);
+        }
 	}
 
-	abstract protected void generate();
+	abstract protected void generate() throws GenerationException ;
 
 	public void println() {
 		stream.println();
@@ -52,12 +59,12 @@ public abstract class Generator {
 		stream.close();
 	}
 
-	private PrintStream createStream(String fileName) {
+	private PrintStream createStream(String fileName) throws GenerationException {
 		try {
 			return new PrintStream(new FileOutputStream(fileName));
 		}
 		catch (FileNotFoundException exc) {
-			throw new RuntimeException("fatal error: Failed to open " + fileName + " for writing.");
+			throw new GenerationException("fatal error: Failed to open " + fileName + " for writing.");
 		}
 	}
 
@@ -65,16 +72,17 @@ public abstract class Generator {
 		return directory + File.separatorChar + fileName + ext;
 	}
 
-	protected PrintStream createStream(String directory, String fileName, String extension) {
+	protected PrintStream createStream(String directory, String fileName, String extension) 
+    throws GenerationException {
 		File base = new File(directory);
 
 		if (!base.exists()) {
 			if (!base.mkdirs()) {
-				throw new RuntimeException("could not create output directory " + directory);
+				throw new GenerationException("could not create output directory " + directory);
 			}
 		}
 		else if (!base.isDirectory()) {
-			throw new RuntimeException(directory + " is not a directory");
+			throw new GenerationException(directory + " is not a directory");
 		}
 
 		return createStream(getPath(directory, fileName, extension));

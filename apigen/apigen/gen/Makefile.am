@@ -13,4 +13,5 @@ java_JAVA = \
 	StringConversions.java \
 	TypeConversions.java \
 	TypeConverter.java \
-	VerboseGenerationObserver.java
+	VerboseGenerationObserver.java\
+	GenerationException.java

@@ -59,7 +59,7 @@ public class Alternative {
 		return pattern;
 	}
 
-	public int getPatternType() {
+	public int getPatternType()  {
 		ATerm match_pattern = buildMatchPattern();
 
 		if (match_pattern.getType() == ATerm.PLACEHOLDER) {

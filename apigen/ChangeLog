@@ -1,5 +1,8 @@
 # $Id$
 
+Wed Jan  7 14:04:02 CET 2004 <jurgenv@cwi.nl>
+ * Introduced ADTException and GenerationException to deal with errors better
+ 
 Mon Dec 15 11:53:59 CET 2003 <{jong,jurgenv}@cwi.nl>
  * Implemented reverse, append, concat, elementAt, and fixed-numbered
    make(...) methods for normal lists

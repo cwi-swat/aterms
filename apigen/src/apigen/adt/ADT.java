@@ -17,7 +17,7 @@ public class ADT {
     List bottomTypes;
     ATermFactory factory;
 
-    public ADT(Entries adt) {
+    public ADT(Entries adt) throws ADTException {
         types = new LinkedList();
 
         factory = (ATermFactory) adt.getADTFactory();
@@ -48,7 +48,7 @@ public class ADT {
                         iter.remove();
                     }
                 } catch (ClassCastException exc) {
-                    throw new RuntimeException(
+                    throw new ADTException(
                         "unexpected entry found:" + iter.previous());
                 }
             }

@@ -36,6 +36,10 @@ public class ADTReader {
 		catch (ParseError e) {
 			System.err.println("Error: A parse error occurred in the ADT file:" + e);
 		}
+        catch (ADTException e) {
+            System.err.println("Error: ");
+            System.err.println(e);
+        }
 		
 		return null;
 	}
