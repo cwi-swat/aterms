@@ -34,19 +34,17 @@ public class JavaGen
 
   private ATermFactory factory;
 
-  private InputStream input;
   private String      basedir;
   private String      pkg;
   private List	      imports;
+  private String      class_name;
 
-  private String class_name;
+  private InputStream input;
   private PrintStream stream;
 
-  private Map specialChars;
-  private char last_special_char;
+  private Map    specialChars;
+  private char   last_special_char;
   private String last_special_char_word;
-
-  private int fold_level = 1;
 
   //{{{ private static void usage()
 
@@ -183,6 +181,7 @@ public class JavaGen
     println();
     genFactoryMethod(type);
     genConstructor();
+    genIsMethods(type);
     println("}");
 
     Iterator alt_iter = type.alternativeIterator();
@@ -240,6 +239,7 @@ public class JavaGen
     println("    throw new RuntimeException(\"illegal " + type.getId() + "\");");
     println("  }");
     printFoldClose();
+    println();
   }
 
   //}}}
@@ -268,6 +268,21 @@ public class JavaGen
     println("    this.term = term;");
     println("  }");
     printFoldClose();
+    println();
+  }
+
+  //}}}
+
+  //{{{ private void genIsMethods(Type type)
+
+  private void genIsMethods(Type type)
+  {
+    Iterator iter = type.alternativeIterator();
+    while (iter.hasNext()) {
+      Alternative alt = (Alternative)iter.next();
+      String altId = buildId(alt.getId());
+      println("  abstract public boolean is" + altId + "();");
+    }
   }
 
   //}}}
@@ -285,6 +300,7 @@ public class JavaGen
     println();
 
     genAltConstructor(type, alt);
+    genAltIsMethods(type, alt);
 
     println("}");
   }
@@ -332,6 +348,31 @@ public class JavaGen
 
     println("  }");
     printFoldClose();
+    println();
+  }
+
+  //}}}
+  //{{{ private void genAltIsMethods(Type type, Alternative alt)
+
+  private void genAltIsMethods(Type type, Alternative alt)
+  {
+    Iterator iter = type.alternativeIterator();
+    while (iter.hasNext()) {
+      Alternative cur = (Alternative)iter.next();
+      String altId = buildId(cur.getId());
+      String decl = "public boolean is" + altId + "()";
+      printFoldOpen(2, decl);
+      println("    " + decl);
+      println("    {");
+      if (cur == alt) {
+	println("      return true;");
+      }
+      else {
+	println("      return false;");
+      }
+      println("    }");
+      printFoldClose(2);
+    }
   }
 
   //}}}
