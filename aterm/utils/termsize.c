@@ -1,4 +1,6 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include "_aterm.h"
 
 /*{{{  void termsize(FILE *file) */

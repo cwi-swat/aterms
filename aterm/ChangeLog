@@ -1,5 +1,8 @@
 $Id$
 
+2001/08/28 (jong@cwi.nl)
+ * C-library warnings issued by gcc-3.0.1 fixed
+
 2001/08/17 (jong@cwi.nl)
  * Version 1.6.4beta initiated
  * Started work on doc/xootic.ltx

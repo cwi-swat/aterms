@@ -1,4 +1,6 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include "aterm2.h"
 
 /*{{{  static void usage(const char *prg) */

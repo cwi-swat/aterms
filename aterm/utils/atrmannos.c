@@ -1,4 +1,6 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <aterm2.h>
 
 static char version[] = "1.0";
