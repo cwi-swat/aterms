@@ -1,4 +1,5 @@
-2001/02/27 (jong@cwi.nl)
+2001/02/28 (jong@cwi.nl)
+ * apigen classes are now built before the utils directory is entered
  * several references to ${top_srcdir} changed to ${top_builddir}
    to fix problems revealed by the build-script (mainly CLASSPATH related)
 
