@@ -45,16 +45,21 @@ public class TypeImplGenerator extends JavaGenerator {
 		println(
 			"abstract public class " + class_impl_name + " extends " + GenericConstructorGenerator.className(apiName));
 		println("{");
-		genFromString(class_name);
-		genFromTextFile(class_name);
+		
+		genConstructor(class_impl_name);
 		genIsEqual(class_name);
-		genFromTerm(type, class_name);
 		genIsTypeMethod(type);
 		genTypeDefaultProperties(type);
 		genDefaultGetAndSetMethods(type);
 		println("}");
 		println();
 
+	}
+
+	protected void genConstructor(String class_impl_name) {
+		println("  " + class_impl_name + "(" + FactoryGenerator.className(apiName) + " factory) {");
+		println("     super(factory);");
+		println("  }");
 	}
 
 	private void genIsEqual(String class_name) {
@@ -64,50 +69,10 @@ public class TypeImplGenerator extends JavaGenerator {
 		println("  }");
 	}
 
-	private void genFromTerm(Type type, String class_name) {
-		println("  public static " + class_name + " fromTerm(aterm.ATerm trm)");
-		println("  {");
-		println("    " + class_name + " tmp;");
-		genFromTermCalls(type);
-		println();
-		println("    throw new RuntimeException(\"This is not a " + class_name + ": \" + trm);");
-		println("  }");
-	}
-
+	
     
-	protected void genFromTextFile(String class_name) {
-		String get_factory = "getStatic" + FactoryGenerator.className(apiName) + "()";
-		println(
-			"  public static "
-				+ class_name
-				+ " fromTextFile(InputStream stream) "
-				+ "throws aterm.ParseError, IOException");
-		println("  {");
-		println("    aterm.ATerm trm = " + get_factory + ".readFromTextFile(stream);");
-		println("    return fromTerm(trm);");
-		println("  }");
-	}
-
-	protected void genFromString(String class_name) {
-		String get_factory = "getStatic" + FactoryGenerator.className(apiName) + "()";
-		println("  public static " + class_name + " fromString(String str)");
-		println("  {");
-		println("    aterm.ATerm trm = " + get_factory + ".parse(str);");
-		println("    return fromTerm(trm);");
-		println("  }");
-	}
-
-	protected void genFromTermCalls(Type type) {
-		Iterator alts = type.alternativeIterator();
-		while (alts.hasNext()) {
-			Alternative alt = (Alternative) alts.next();
-			String alt_class_name = AlternativeGenerator.className(type, alt);
-			println("    if ((tmp = " + alt_class_name + ".fromTerm(trm)) != null) {");
-			println("      return tmp;");
-			println("    }");
-			println();
-		}
-	}
+	
+	
 
 	protected void genDefaultGetAndSetMethods(Type type) {
 		Iterator fields = type.fieldIterator();

@@ -8,6 +8,7 @@ import apigen.adt.Type;
 import apigen.gen.StringConversions;
 
 public class AlternativeGenerator extends JavaGenerator {
+	private String apiName;
 	private Type type;
 	private Alternative alt;
 
@@ -16,50 +17,68 @@ public class AlternativeGenerator extends JavaGenerator {
 		Alternative alt,
 		String directory,
 		String pkg,
+		String apiName,
 		List standardImports,
 		boolean verbose,
 		boolean folding) {
 		super(directory, className(type, alt), pkg, standardImports, verbose);
 		this.type = type;
 		this.alt = alt;
+		this.apiName = apiName;
 	}
 
-    public static String className(Type type, Alternative alt) {
-    	return className(type.getId(),alt.getId());
-    }
-    
+	public static String className(Type type, Alternative alt) {
+		return className(type.getId(), alt.getId());
+	}
+
 	public static String className(String type, String alt) {
 		if (converter.isReserved(alt)) {
 			return alt;
-		}
-		else {
-		  return StringConversions.makeCapitalizedIdentifier(type) + "_" + 
-		            StringConversions.makeCapitalizedIdentifier(alt);
+		} else {
+			return StringConversions.makeCapitalizedIdentifier(type)
+				+ "_"
+				+ StringConversions.makeCapitalizedIdentifier(alt);
 		}
 	}
 
 	public void run() {
-		if (!new File(getPath(directory, className(type,alt), ".java")).exists()) {
-			info("generating " + className(type,alt) + extension);
+		if (!new File(getPath(directory, className(type, alt), ".java"))
+			.exists()) {
+			info("generating " + className(type, alt) + extension);
 			super.run();
 		} else {
-			info("preserving " + className(type,alt) + extension);
+			info("preserving " + className(type, alt) + extension);
 		}
 	}
 
 	protected void generate() {
-		  printPackageDecl();
-		  genAlternativeClass(type, alt);
+		printPackageDecl();
+		genAlternativeClass(type, alt);
 	}
 
 	private void genAlternativeClass(Type type, Alternative alt) {
 		String alt_class = className(type, alt);
-		String alt_impl_class = AlternativeImplGenerator.className(type.getId(), alt.getId());
+		String alt_impl_class =
+			AlternativeImplGenerator.className(type.getId(), alt.getId());
 
 		println("public class " + alt_class);
 		println("extends " + alt_impl_class);
 		println("{");
+		genAltConstructor(type, alt);
 		println();
 		println("}");
+	}
+
+	private void genAltConstructor(Type type, Alternative alt) {
+		String alt_class = className(type, alt);
+
+		println(
+			"  "
+				+ alt_class
+				+ "("
+				+ FactoryGenerator.className(apiName)
+				+ " factory) {");
+		println("    super(factory);");
+		println("  }");
 	}
 }

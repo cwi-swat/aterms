@@ -11,16 +11,19 @@ import apigen.gen.StringConversions;
 public class TypeGenerator extends JavaGenerator {
     private Type type;
     private String className;
+    private String apiName;
     
 	protected TypeGenerator(
 	    Type type,
 		String directory,
 		String pkg,
+		String apiName, 
 		List standardImports,
 		boolean verbose,
 		boolean folding) {
 		super(directory, className(type), pkg, standardImports, verbose);
 		this.type = type;
+		this.apiName = apiName;
 		className = className(type);
 	}
 
@@ -59,6 +62,9 @@ public class TypeGenerator extends JavaGenerator {
 		println(classModifier() + " class " + className);
 		println("extends " + TypeImplGenerator.className(type));
 		println("{");
+		println("  " + className + "(" + FactoryGenerator.className(apiName) + " factory) {");
+		println("    super(factory);");
+		println("  }");
 		println();
 		println("}");
 	  }

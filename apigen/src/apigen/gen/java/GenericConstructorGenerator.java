@@ -42,13 +42,17 @@ public class GenericConstructorGenerator extends JavaGenerator {
 		println("{");
 		println("  protected aterm.ATerm term = null;");
 		println();
-		println("  abstract protected aterm.ATerm getPattern();");
+		println("  " + factoryName + " factory = null;");
+		println();
+		println("  public " + className + "(" + factoryName + " factory) {");
+		println("    this.factory = factory;");
+		println("  }");
 		println();
 		
 		genToTermMethod();
 		genToStringMethod();
 		genSetTermMethod();
-		genGetFactoryMethods();
+		genGetFactoryMethod();
         genDefaultTypePredicates();
         
         if (visitable) {
@@ -57,13 +61,9 @@ public class GenericConstructorGenerator extends JavaGenerator {
 		println("}");
 	  }
 
-	private void genGetFactoryMethods() {
+	private void genGetFactoryMethod() {
 		println("  public " + factoryName + " get" + factoryName + "() {");
-		println("    return (" + factoryName + ") getFactory();");
-		println("  }");
-		println();
-		println("  static protected " + factoryName + " getStatic" + factoryName + "() {");
-		println("    return (" + factoryName + ") getStaticFactory();");
+		println("    return factory;");
 		println("  }");
 	}
 
@@ -72,6 +72,7 @@ public class GenericConstructorGenerator extends JavaGenerator {
 		println("   this.term = term;");
 		println("  }");
 	}
+	
 
 	private void genToStringMethod() {
 		println("  public String toString() {");

@@ -9,6 +9,7 @@ import apigen.gen.StringConversions;
 public class FactoryGenerator extends JavaGenerator {
 	private String className;
 	private ADT adt;
+	private String apiName;
 
 	public FactoryGenerator(
 		ADT adt,
@@ -21,6 +22,7 @@ public class FactoryGenerator extends JavaGenerator {
 		super(directory, className(apiName), pkg, standardImports, verbose);
 		this.className = className(apiName);
 		this.adt = adt;
+		this.apiName = apiName;
 	}
 
 	public static String className(String apiName) {
@@ -44,9 +46,35 @@ public class FactoryGenerator extends JavaGenerator {
 		genFactoryConstructor(api);
 		genFactoryConstructorWithSize(api);
 		genFactoryInitialize(api);
-		genFactoryMakeMethods(api);
+		genAlternativeMethods(api);
 		genFactoryMakeLists(api);
+		genTypeFromTermMethods(api);
+		genTypeFromStringMethods(api);
 		println("}");
+	}
+
+	private void genTypeFromTermMethods(ADT api) {
+		Iterator types = api.typeIterator();
+
+		while (types.hasNext()) {
+			Type type = (Type) types.next();
+
+			if (type instanceof ListType) {
+				genListTypeFromTermMethod((ListType) type);
+			} else {
+				genTypeFromTermMethod(type);
+			}
+		}
+	}
+
+	private void genTypeFromStringMethods(ADT api) {
+		Iterator types = api.typeIterator();
+
+		while (types.hasNext()) {
+			Type type = (Type) types.next();
+
+			genTypeFromStringMethod(type);
+		}
 	}
 
 	private void genFactoryInitialize(ADT api) {
@@ -83,7 +111,12 @@ public class FactoryGenerator extends JavaGenerator {
 			Type type = (Type) types.next();
 			if (type instanceof ListType) {
 				String className = TypeGenerator.className(type);
-				println("  static protected " + className + " empty" + className + ";");
+				println(
+					"  static protected "
+						+ className
+						+ " empty"
+						+ className
+						+ ";");
 			}
 		}
 
@@ -96,22 +129,65 @@ public class FactoryGenerator extends JavaGenerator {
 			Type type = (Type) types.next();
 			if (type instanceof ListType) {
 				String className = TypeGenerator.className(type);
-				String elementClassName = TypeGenerator.className(((ListType) type).getElementType());
+				String elementClassName =
+					TypeGenerator.className(((ListType) type).getElementType());
+
 				String empty = "empty" + className;
-				
+
 				println("  public " + className + " make" + className + "() {");
 				println("    return " + empty + ";");
 				println("  }");
-				println("  public " + className + " make" + className + "(" + elementClassName + " elem ) {");
-				println("    return (" + className + ") make" + className + "(elem, " + empty + ");");
+				println(
+					"  public "
+						+ className
+						+ " make"
+						+ className
+						+ "("
+						+ elementClassName
+						+ " elem ) {");
+				println(
+					"    return ("
+						+ className
+						+ ") make"
+						+ className
+						+ "(elem, "
+						+ empty
+						+ ");");
 				println("  }");
-				println("  public " + className + " make" + className + "(" + elementClassName + " head, " + className + " tail) {");
-				println("    return (" + className + ") make" + className + "((aterm.ATerm) head, (aterm.ATermList) tail, empty);");
+				println(
+					"  public "
+						+ className
+						+ " make"
+						+ className
+						+ "("
+						+ elementClassName
+						+ " head, "
+						+ className
+						+ " tail) {");
+				println(
+					"    return ("
+						+ className
+						+ ") make"
+						+ className
+						+ "((aterm.ATerm) head, (aterm.ATermList) tail, empty);");
 				println("  }");
-				println("  protected " + className + " make" + className + "(aterm.ATerm head, aterm.ATermList tail, aterm.ATermList annos) {");
-				println("    synchronized (proto" + className +") {");
-				println("      proto" + className + ".initHashCode(annos,head,tail);");
-				println("      return (" + className +") build(proto" + className + ");");
+				println(
+					"  protected "
+						+ className
+						+ " make"
+						+ className
+						+ "(aterm.ATerm head, aterm.ATermList tail, aterm.ATermList annos) {");
+				println("    synchronized (proto" + className + ") {");
+				println(
+					"      proto"
+						+ className
+						+ ".initHashCode(annos,head,tail);");
+				println(
+					"      return ("
+						+ className
+						+ ") build(proto"
+						+ className
+						+ ");");
 				println("    }");
 				println("  }");
 			}
@@ -133,19 +209,23 @@ public class FactoryGenerator extends JavaGenerator {
 			} else {
 				while (alts.hasNext()) {
 					Alternative alt = (Alternative) alts.next();
-					String altClassName = AlternativeGenerator.className(type, alt);
+					String altClassName =
+						AlternativeGenerator.className(type, alt);
 
 					String protoVar = "proto" + altClassName;
 					String funVar = "fun" + altClassName;
 
 					println("  private aterm.AFun " + funVar + ";");
-					println("  private " + typeClassName + " " + protoVar + ";");
+					println(
+						"  private " + typeClassName + " " + protoVar + ";");
+					println(
+						"  private aterm.ATerm pattern" + altClassName + ";");
 				}
 			}
 		}
 	}
 
-	private void genFactoryMakeMethods(ADT api) {
+	private void genAlternativeMethods(ADT api) {
 		Iterator types = api.typeIterator();
 		while (types.hasNext()) {
 			Type type = (Type) types.next();
@@ -157,63 +237,162 @@ public class FactoryGenerator extends JavaGenerator {
 			Iterator alts = type.alternativeIterator();
 			while (alts.hasNext()) {
 				Alternative alt = (Alternative) alts.next();
-				String altClassName = AlternativeGenerator.className(type, alt);
-				String protoVar = "proto" + altClassName;
-				String funVar = "fun" + altClassName;
 
-				println(
-					"  protected "
-						+ altClassName
-						+ " make"
-						+ altClassName
-						+ "(aterm.AFun fun, aterm.ATerm[] args, aterm.ATermList annos) {");
-				println("    synchronized (" + protoVar + ") {");
-				println("      " + protoVar + ".initHashCode(annos,fun,args);");
-				println("      return (" + altClassName + ") build(" + protoVar + ");");
-				println("    }");
-				println("  }");
-				println();
-				print("  public " + altClassName + " make" + altClassName + "(");
-				printFormalTypedAltArgumentList(type, alt);
-				println(") {");
-				print("    aterm.ATerm[] args = new aterm.ATerm[] {");
-				printActualTypedArgumentList(type, alt);
-				println("};");
-				println("    return make" + altClassName + "( " + funVar + ", args, empty);");
-				println("  }");
-				println();
+				genInternalMakeMethod(type, alt);
+				genMakeMethod(type, alt);
+				genAltFromTerm(type, alt);
+				genAltToTerm(type, alt);
 			}
-
 		}
+	}
+
+	private void genMakeMethod(Type type, Alternative alt) {
+		String altClassName = AlternativeGenerator.className(type, alt);
+
+		String funVar = "fun" + altClassName;
+		print("  public " + altClassName + " make" + altClassName + "(");
+		printFormalTypedAltArgumentList(type, alt);
+		println(") {");
+		print("    aterm.ATerm[] args = new aterm.ATerm[] {");
+		printActualTypedArgumentList(type, alt);
+		println("};");
+		println(
+			"    return make"
+				+ altClassName
+				+ "( "
+				+ funVar
+				+ ", args, empty);");
+		println("  }");
+		println();
+	}
+
+	private void genInternalMakeMethod(Type type, Alternative alt) {
+		String altClassName = AlternativeGenerator.className(type, alt);
+		String protoVar = "proto" + altClassName;
+
+		println(
+			"  protected "
+				+ altClassName
+				+ " make"
+				+ altClassName
+				+ "(aterm.AFun fun, aterm.ATerm[] args, aterm.ATermList annos) {");
+		println("    synchronized (" + protoVar + ") {");
+		println("      " + protoVar + ".initHashCode(annos,fun,args);");
+		println("      return (" + altClassName + ") build(" + protoVar + ");");
+		println("    }");
+		println("  }");
+		println();
+	}
+
+	private String patternVariable(String className) {
+		return "pattern" + className;
+	}
+
+	private void genAltToTerm(Type type, Alternative alt) {
+		String className = AlternativeGenerator.className(type, alt);
+		String classImplName = AlternativeImplGenerator.className(type, alt);
+
+		println("  protected aterm.ATerm toTerm(" + classImplName + " arg) {");
+		println("    java.util.List args = new java.util.LinkedList();");
+
+		Iterator fields = type.altFieldIterator(alt.getId());
+		for (int i = 0; fields.hasNext(); i++) {
+			Field field = (Field) fields.next();
+			String field_type = field.getType();
+			String getArgumentCall = "arg.getArgument(" + i + ")";
+
+			if (field_type.equals("str")) {
+				println(
+					"    args.add(((aterm.ATermAppl)"
+						+ getArgumentCall
+						+ ").getAFun().getName());");
+			} else if (field_type.equals("int")) {
+				println(
+					"    args.add(new Integer(((aterm.ATermInt)"
+						+ getArgumentCall
+						+ ").getInt()));");
+			} else if (field_type.equals("real")) {
+				println(
+					"    args.add(new Double (((aterm.ATermReal)"
+						+ getArgumentCall
+						+ ").getReal()));");
+			} else if (field_type.equals("term")) {
+				println("    args.add((aterm.ATerm)" + getArgumentCall + ");");
+			} else if (field_type.equals("list")) {
+				println(
+					"    args.add((aterm.ATermList)" + getArgumentCall + ");");
+			} else {
+				println(
+					"    args.add((("
+						+ TypeGenerator.className(field_type)
+						+ ")"
+						+ getArgumentCall
+						+ ").toTerm());");
+			}
+		}
+		println("    return make(" + patternVariable(className) + ", args);");
+		println("  }");
+		println();
 	}
 
 	private void genFactoryInitialization(ADT api) {
 		Iterator types = api.typeIterator();
+		int listTypesCount = 0;
+		
 		while (types.hasNext()) {
 			Type type = (Type) types.next();
-			int listTypesCount = 0;
-
-			println("    " + TypeGenerator.className(type) + ".initialize(this);");
 
 			if (type instanceof ListType) {
-				String emptyHashCode = new Integer(42 * (2 + listTypesCount)).toString();
+				String emptyHashCode =
+					new Integer(42 * (2 + listTypesCount)).toString();
 				String className = TypeGenerator.className(type);
-				println("    proto" + className + " = new " + className + "();");
-				println("    proto" + className + ".init(" + emptyHashCode + ", null, null, null);");
-				println("    empty" + className + " = (" + className + ") build(proto" + className + ");");
-				println("    empty" + className + ".init(" + emptyHashCode + ", empty" + className + ", null, null);");
+				println(
+					"    proto"
+						+ className
+						+ " = new "
+						+ className
+						+ "(this);");
+				println(
+					"    proto"
+						+ className
+						+ ".init("
+						+ emptyHashCode
+						+ ", null, null, null);");
+				println(
+					"    empty"
+						+ className
+						+ " = ("
+						+ className
+						+ ") build(proto"
+						+ className
+						+ ");");
+				println(
+					"    empty"
+						+ className
+						+ ".init("
+						+ emptyHashCode
+						+ ", empty"
+						+ className
+						+ ", null, null);");
 				listTypesCount++;
 			} else {
 				Iterator alts = type.alternativeIterator();
 				while (alts.hasNext()) {
 					Alternative alt = (Alternative) alts.next();
-					String altClassName = AlternativeGenerator.className(type, alt);
+					String altClassName =
+						AlternativeGenerator.className(type, alt);
 					String protoVar = "proto" + altClassName;
 					String funVar = "fun" + altClassName;
 					String afunName = type.getId() + "_" + alt.getId();
 
 					println();
-					println("    " + altClassName + ".initializePattern();");
+					println(
+						"    "
+							+ patternVariable(altClassName)
+							+ " = parse(\""
+							+ StringConversions.escapeQuotes(
+								alt.buildMatchPattern().toString())
+							+ "\");");
 					println(
 						"    "
 							+ funVar
@@ -223,7 +402,12 @@ public class FactoryGenerator extends JavaGenerator {
 							+ "\", "
 							+ type.getAltArity(alt)
 							+ ", false);");
-					println("    " + protoVar + " = new " + altClassName + "();");
+					println(
+						"    "
+							+ protoVar
+							+ " = new "
+							+ altClassName
+							+ "(this);");
 				}
 			}
 			println();
@@ -235,8 +419,171 @@ public class FactoryGenerator extends JavaGenerator {
 			String type = (String) bottoms.next();
 
 			if (!converter.isReserved(type)) {
-				println("    " + StringConversions.makeCapitalizedIdentifier(type) + ".initialize(this);");
+				println(
+					"    "
+						+ StringConversions.makeCapitalizedIdentifier(type)
+						+ ".initialize(this);");
 			}
 		}
+	}
+
+	private void genAltFromTerm(Type type, Alternative alt) {
+		String subClassName = AlternativeGenerator.className(type, alt);
+		String superClassName = TypeGenerator.className(type);
+		Iterator fields;
+		int argnr;
+
+		println(
+			"  public "
+				+ superClassName
+				+ " "
+				+ subClassName
+				+ "FromTerm(aterm.ATerm trm)");
+		println("  {");
+		println(
+			"    java.util.List children = trm.match("
+				+ patternVariable(AlternativeGenerator.className(type, alt))
+				+ ");");
+		println();
+		println("    if (children != null) {");
+		print("      " + superClassName + " tmp = make" + subClassName + "(");
+
+		fields = type.altFieldIterator(alt.getId());
+		argnr = 0;
+		while (fields.hasNext()) {
+			Field field = (Field) fields.next();
+			String fieldType = field.getType();
+			String fieldClass = TypeGenerator.className(fieldType);
+
+			if (fieldType.equals("str")) {
+				print("(String) children.get(" + argnr + ")");
+			} else if (fieldType.equals("int")) {
+				print("(Integer) children.get(" + argnr + ")");
+			} else if (fieldType.equals("real")) {
+				print("(Double) children.get(" + argnr + ")");
+			} else if (fieldType.equals("term")) {
+				print("(aterm.ATerm) children.get(" + argnr + ")");
+			} else if (fieldType.equals("list")) {
+				print("(aterm.ATermList) children.get(" + argnr + ")");
+			} else {
+				print(
+					fieldClass
+						+ "FromTerm( (aterm.ATerm) children.get("
+						+ argnr
+						+ "))");
+			}
+
+			if (fields.hasNext()) {
+				print(", ");
+			}
+			argnr++;
+		}
+		println(");");
+		println("      tmp.setTerm(trm);");
+		println("      return tmp;");
+		println("    }"); // endif      
+		println("    else {");
+		println("      return null;");
+		println("    }");
+		println("  }");
+	}
+
+	private void genTypeFromTermMethod(Type type) {
+		String class_name = TypeGenerator.className(type);
+
+		println(
+			"  public "
+				+ class_name
+				+ " "
+				+ class_name
+				+ "FromTerm(aterm.ATerm trm)");
+		println("  {");
+		println("    " + class_name + " tmp;");
+		genAltFromTermCalls(type);
+		println();
+		println(
+			"    throw new RuntimeException(\"This is not a "
+				+ class_name
+				+ ": \" + trm);");
+		println("  }");
+	}
+
+	protected void genAltFromTermCalls(Type type) {
+		Iterator alts = type.alternativeIterator();
+		while (alts.hasNext()) {
+			Alternative alt = (Alternative) alts.next();
+			String alt_class_name = AlternativeGenerator.className(type, alt);
+			println("    tmp = " + alt_class_name + "FromTerm(trm);");
+			println("    if (tmp != null) {");
+			println("      return tmp;");
+			println("    }");
+			println();
+		}
+	}
+
+	protected void genTypeFromStringMethod(Type type) {
+		String className = TypeGenerator.className(type);
+		String get_factory = "get" + FactoryGenerator.className(apiName) + "()";
+
+		println(
+			"  public "
+				+ className
+				+ " "
+				+ className
+				+ "FromString(String str)");
+		println("  {");
+		println("    aterm.ATerm trm = parse(str);");
+		println("    return " + className + "FromTerm(trm);");
+		println("  }");
+	}
+
+	private void genListTypeFromTermMethod(ListType type) {
+		String className = ListTypeGenerator.className(type);
+		String elementType = type.getElementType();
+		String elementTypeName = TypeGenerator.className(elementType);
+
+		if (converter.isReserved(elementType)) {
+			// TODO: implement lists of builtins
+			throw new RuntimeException(
+				"List of " + elementType + " not yet implemented, sorry!");
+		}
+
+		println(
+			"  public "
+				+ className
+				+ " "
+				+ className
+				+ "FromTerm(aterm.ATerm trm)");
+		println("  {");
+		println("     if (trm instanceof aterm.ATermList) {");
+		println("        aterm.ATermList list = ((aterm.ATermList) trm).reverse();");
+		println("        " + className + " result = make" + className + "();");
+		println("        for (; !list.isEmpty(); list = list.getNext()) {");
+		println(
+			"          "
+				+ elementTypeName
+				+ " elem = "
+				+ elementTypeName
+				+ "FromTerm(list.getFirst());");
+		println("           if (elem != null) {");
+		println("             result = make" + className + "(elem, result);");
+		println("           }");
+		println("           else {");
+		println(
+			"             throw new RuntimeException(\"Invalid element in "
+				+ className
+				+ ": \" + elem);");
+		println("           }");
+		println("        }");
+		println("        return result;");
+		println("     }");
+		println("     else {");
+		println(
+			"       throw new RuntimeException(\"This is not a "
+				+ className
+				+ ": \" + trm);");
+		println("     }");
+		println("  }");
+
 	}
 }
