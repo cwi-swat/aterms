@@ -32,9 +32,15 @@ public class MakeRulesGenerator extends Generator {
 
 	private String buildOutputDirectory() {
 		StringBuffer buf = new StringBuffer();
+        String pkg = params.getPackageName();
+        
 		buf.append(params.getOutputDirectory());
 		buf.append(File.separatorChar);
-		buf.append(params.getPackageName().replace('.', File.separatorChar));
+        
+        if (pkg != null) {
+		  buf.append(pkg.replace('.', File.separatorChar));
+        }
+        
 		return buf.toString();
 	}
 

@@ -12,7 +12,8 @@ import apigen.gen.StringConversions;
 import apigen.gen.TypeConverter;
 
 public abstract class JavaGenerator extends Generator {
-    private static TypeConverter converter = new TypeConverter(new JavaTypeConversions("factory"));
+    private static TypeConverter converter =
+        new TypeConverter(new JavaTypeConversions("factory"));
 
     private String basePackageName;
     private List imports;
@@ -35,9 +36,17 @@ public abstract class JavaGenerator extends Generator {
     }
 
     public String getDirectory() {
-        return super.getDirectory()
-            + File.separatorChar
-            + getPackageName().replace('.', File.separatorChar);
+        String pkg = getPackageName();
+        String dir = super.getDirectory();
+
+        if (pkg != null) {
+            dir =
+                dir
+                    + File.separatorChar
+                    + getPackageName().replace('.', File.separatorChar);
+        }
+
+        return dir;
     }
 
     public String getFileName() {
@@ -48,7 +57,11 @@ public abstract class JavaGenerator extends Generator {
         StringBuffer buf = new StringBuffer();
         buf.append(baseDir);
         buf.append(File.separatorChar);
-        buf.append(pkgName.replace('.', File.separatorChar));
+
+        if (pkgName != null) {
+            buf.append(pkgName.replace('.', File.separatorChar));
+        }
+
         return buf.toString();
     }
 
@@ -76,8 +89,8 @@ public abstract class JavaGenerator extends Generator {
     }
 
     /**
-     * Create a variable name from a field name
-     */
+	 * Create a variable name from a field name
+	 */
     public static String getFieldId(String fieldId) {
         return "_" + StringConversions.makeIdentifier(fieldId);
     }
@@ -87,27 +100,30 @@ public abstract class JavaGenerator extends Generator {
     }
 
     /**
-     * Print an actual argument list for one specific constructor. The field
-     * names are used for the variable names of the argument positions. In case
-     * of a reserved type the appropriate conversion is generated from target
-     * type to ATerm representation.
-     */
+	 * Print an actual argument list for one specific constructor. The field
+	 * names are used for the variable names of the argument positions. In case
+	 * of a reserved type the appropriate conversion is generated from target
+	 * type to ATerm representation.
+	 */
     protected void printActualTypedArgumentList(Type type, Alternative alt) {
         Iterator fields = type.altFieldIterator(alt.getId());
 
         print(buildActualTypedAltArgumentList(fields, true));
     }
 
-    protected String buildActualTypedAltArgumentList(Iterator fields, boolean convertBuiltins) {
+    protected String buildActualTypedAltArgumentList(
+        Iterator fields,
+        boolean convertBuiltins) {
         StringBuffer buf = new StringBuffer();
 
         while (fields.hasNext()) {
             Field field = (Field) fields.next();
             String field_id = getFieldId(field.getId());
             String field_type = field.getType();
-            
+
             if (convertBuiltins) {
-               field_id = getConverter().makeBuiltinToATermConversion(field_type, field_id);
+                field_id =
+                    getConverter().makeBuiltinToATermConversion(field_type, field_id);
             }
 
             buf.append(field_id);
@@ -156,10 +172,10 @@ public abstract class JavaGenerator extends Generator {
     }
 
     /**
-     * Print a formal argument list for one specific constructor. The field
-     * types are derived from the ADT, the field names are used for the formal
-     * parameter names.
-     */
+	 * Print a formal argument list for one specific constructor. The field
+	 * types are derived from the ADT, the field names are used for the formal
+	 * parameter names.
+	 */
     protected void printFormalTypedAltArgumentList(Type type, Alternative alt) {
         Iterator fields = type.altFieldIterator(alt.getId());
         print(buildFormalTypedArgumentList(fields));
