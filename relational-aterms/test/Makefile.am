@@ -1,7 +1,7 @@
 
 AM_CFLAGS = -Wall -pedantic -g -O2
 
-TESTS = test
+TESTS = test pico
 
 INCLUDES = \
         -I$(top_srcdir)/src \
@@ -15,8 +15,11 @@ AM_LDFLAGS = \
 
 LDLIBS = -lATerm-dbg -lrelational-aterms -lbbtree
 
-noinst_PROGRAMS = test
+noinst_PROGRAMS = test pico
 
 test_SOURCES = test.c assert-equals.c
 test_LDADD = $(LDLIBS)
+
+pico_SOURCES = pico.c
+pico_LDADD = $(LDLIBS)
 
