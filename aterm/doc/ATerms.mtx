@@ -170,6 +170,26 @@
  \CFGFUN{% context-free function
 %
 %
+%           "<" ATerm ">"            -> ATerm
+\DQLEX{\LEX{\SLEX{<}}%
+}%
+\ %
+\SORT{ATerm}\ %
+\DQLEX{\LEX{\SLEX{>}}%
+}%
+}{% result sort
+\SORT{ATerm}% index information
+\CFGFUNINDEX{\DQLEX{\LEX{\SLEX{<}}%
+}%
+ \SORT{ATerms} \DQLEX{\LEX{\SLEX{>}}%
+}%
+}{\SORT{ATerm}}{}
+}{% attributes
+}{% end-comment
+}%
+ \CFGFUN{% context-free function
+%
+%
 %           "{" ATerms "}"            -> Ann
 \DQLEX{\LEX{\{}%
 }%
@@ -228,6 +248,27 @@
  \SORT{ATerms} \DQLEX{\LEX{\SLEX{)}}%
 }%
  \SORT{Ann}}{\SORT{ATerm}}{}
+}{% attributes
+}{% end-comment
+}%
+ \CFGFUN{% context-free function
+%
+%
+%           "<" ATerm ">"  Ann           -> ATerm
+\DQLEX{\LEX{\SLEX{<}}%
+}%
+\ %
+\SORT{ATerm}\ %
+\DQLEX{\LEX{\SLEX{>}}%
+}%
+\ %
+\SORT{Ann}}{% result sort
+\SORT{ATerm}% index information
+\CFGFUNINDEX{\DQLEX{\LEX{\SLEX{<}}%
+}%
+ \SORT{ATerms} \DQLEX{\LEX{\SLEX{>}}%
+}%
+}{\SORT{ATerm}}{}
 }{% attributes
 }{% end-comment
 }%

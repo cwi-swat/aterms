@@ -140,6 +140,7 @@ The operations are as follows:
 \item {\tt ATerm make(\emph{pattern}, \emph{args})}: This operation returns a new
 term created by taking the string pattern, parsing it as a term and filling
  the holes in the resulting term with arguments taken from {\tt args}.
+ {\tt <HJ> Meer uitleg over patterns}
 \item {\tt ATerm readFromString(\emph{string})}: Creates a new term by parsing
 \emph{string}.
 \item {\tt ATerm readFromTextFile(\emph{file})}: Creates a new term by parsing the
@@ -151,6 +152,7 @@ operation returns one of the constants mentioned above.
 \item {\tt ATermList match(\emph{term}, \emph{pattern})}: Match \emph{term} against
 \emph{pattern}, and return a list of subterms matching with placeholders
 in \emph{pattern}.
+ {\tt <HJ> Meer uitleg over patterns}
 \item {\tt Boolean writeToTextFile(\emph{term}, \emph{file})}: Write the text
 representation of \emph{term} to \emph{file}. Returns {\tt true} for
 success and {\tt false} for failure.
@@ -160,13 +162,12 @@ binary representation of \emph{term} to \emph{file}. Returns
 \item {\tt String writeToString(\emph{term})}: Return the text representation
 of \emph{term} as a string.
 \item {\tt ATerm setAnnotation(\emph{term}, \emph{label}, \emph{annotation})}:
-Set the annotation labeled by \emph{label} of \emph{term} to
-\emph{annotation}. Returns the old annotations.
+Return a copy of \emph{term} with annotion labeled by \emph{label} changed
+to \emph{annotation}.
 \item {\tt ATerm getAnnotation(\emph{term}, \emph{label})}:
 Retrieve the annotation labeled by \emph{label} of \emph{term}.
-\item {\tt ATerm removeAnnotation(\emph{term}, \emph{label})}: Remove
-the annotation labeled by \emph{label} from \emph{term}. Returns
-the old annotation.
+\item {\tt ATerm removeAnnotation(\emph{term}, \emph{label})}: Return a copy
+of \emph{term} with its annotation labeled by \emph{label} removed.
 \end{itemize}
  Together these operations form a set of operations that is sufficiently
 powerful for most users, yet is simple enough to learn in a relatively
@@ -382,6 +383,7 @@ The typical space overhead for a mark-sweep garbage collection algorithm is
 only 1 bit per object.
 
 \subsubsection{Design of a mark-sweep algorithm}
+{\tt <HJ> Geen lazy-sweeping meer, moet anders.}
 Given these facts, we opted for a variant of Mark-sweep garbage collection
 to reclaim unused terms because this gives us the highest possible performance,
 and because small pauses due to garbage collection are acceptable, as long
@@ -506,8 +508,9 @@ Figure \ref{encoding} shows the encoding of the different term types.
 
 \paragraph{APPL encoding}
 The remaining 3 bytes following the header in the first word are used to
-represent the function symbol. {\tt <HJ> hash-link niet vergeten!}
-The words following the first word hold references to the function arguments.
+represent the function symbol. The second word contains a linkfield to
+facilitate bucket hashing.  The words following the second word hold
+references to the function arguments.
 
 Function applications can be encoded in
 $2+n$ machine words, with $n$ the arity of the
@@ -620,12 +623,17 @@ symbols.
 consisting of a function symbol and a number of arguments.
 The operations on this datatype are:
 \begin{itemize}
-\item {\tt ATermAppl makeAppl(Symbol \emph{symbol}, ATerm \emph{arg1},..., 
-		    ATerm \emph{argn})}:
-      Construct a new function application with the given symbol and arguments.
-\item {\tt Symbol applSymbol(ATermAppl \emph{appl})}: 
+\item {\tt ATermAppl makeAppl$n$(Symbol$\!\!$ \emph{sym}, ATerm \emph{arg}$_0$,
+           $\ldots$, ATerm \emph{arg}$_{n-1}$)}:
+	  This is a family of operations, one for each $n$ between $0$ and $6$
+	  (inclusive). These operations are used to construct a new
+	  function application with the given \emph{sym} and \emph{arg}uments.
+\item {\tt ATermAppl makeAppl(Symbol \emph{symbol}, ATermList \emph{args})}:
+		Construct a new function application with the given \emph{symbol}
+		and \emph{args}.
+\item {\tt Symbol getSymbol(ATermAppl \emph{appl})}: 
       Retrieve the function symbol of a function application.
-\item {\tt ATerm applArgument(ATermAppl \emph{appl}, int \emph{n})}: 
+\item {\tt ATerm getArgument(ATermAppl \emph{appl}, int \emph{n})}: 
       Retrieve a specific argument.
 \end{itemize}
 
@@ -637,10 +645,11 @@ Element indices start at 0. Thus a list of length $n$ has elements
 $0\ldots n-1$.
 The operations on ATermList are:
 \begin{itemize}
-\item {\tt ATermList makeList\emph{n}(ATerm \emph{el1},..., ATerm \emph{eln})}:
-      This is actually a family of operations, one for each \emph{n} between
-      0 and 7. These operations are used to quickly construct small lists
-      of terms.
+\item {\tt ATermList makeList$n$(ATerm \emph{el}$_0$,$\ldots$,
+	       ATerm \emph{el}$_{n-1}$)}:
+      This is a family of operations, one for each $n$ between
+      $0$ and $6$ (inclusive). These operations are used to quickly construct
+	  small lists of terms.
 \item {\tt Integer getLength(ATermList \emph{list})}: Retrieve the length of
 		\emph{list}.
 \item {\tt ATerm getFirst(ATermList \emph{list})}: Retrieve the first element of
@@ -654,7 +663,8 @@ The operations on ATermList are:
 \item {\tt ATermList getSlice(ATermList \emph{list}, Integer \emph{start}, 
    Integer \emph{end})}: Retrieve the portion of \emph{list} between
    \emph{start} and \emph{end} (inclusive).
-\item {\tt boolean isEmpty(ATermList \emph{list})}: Check if \emph{list} has
+\item {\tt Boolean isEmpty(ATermList \emph{list})}: Check if \emph{list}
+	contains zero elements.
 \item {\tt ATermList insert(ATermList \emph{list}, ATerm \emph{el})}:
       Insert a single element at the start of a list.
 \item {\tt ATermList insertAt(ATermList \emph{list}, ATerm \emph{el},

@@ -8,7 +8,7 @@ all: at.ps
 at.ps: at.dvi $(PICS)
 	dvips at.dvi
 
-at.dvi: at.ltx $(CHAPS) $(PICS)
+at.dvi: at.ltx ATerms.mtx $(CHAPS) $(PICS)
 
 header.ps: header.fig
 	fig2dev -Lps header.fig header.ps
