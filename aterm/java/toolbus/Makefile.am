@@ -38,6 +38,3 @@ example.tifs: example.tb
 
 %.class: %.java
 	$(CLASSPATH_ENV) $(JAVAC) $(JAVACFLAGS) -O -d $(JAVAROOT) $<
-
-
-
