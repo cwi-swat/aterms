@@ -353,21 +353,7 @@ public class AlternativeImplGenerator extends JavaGenerator {
 	   println("  }");
 	   println();
 	}
-  
-//    private void genFromTermCalls(Type type)
-//	{
-//	  String class_name = getClassName(type.getId());
-//	  Iterator alts = type.alternativeIterator();
-//	  while (alts.hasNext()) {
-//		Alternative alt = (Alternative) alts.next();    
-//		String alt_class_name = AlternativeGenerator.getAltClassName(type, alt);
-//		println("    if ((tmp = " + alt_class_name + ".fromTerm(trm)) != null) {");
-//		println("      return tmp;");
-//		println("    }");
-//		println();
-//	  }
-//	}
-	
+  	
 	private void genAltGetAndSetMethods(Type type, Alternative alt) {
     
 		Iterator fields = type.altFieldIterator( alt.getId());
