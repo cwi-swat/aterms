@@ -8,7 +8,7 @@ static void testList()
   Module mod[2];
   Modules mods[3];
 
-  mods[0] = makeModulesFromTerm(ATparse("modules([\"m1\",\"m2\",\"m3\",\"m4\"])"));
+  mods[0] = makeModulesFromTerm(ATparse("[\"m1\",\"m2\",\"m3\",\"m4\"]"));
   assert(isValidModules(mods[0]));
 
   mod[0] = getModulesHead(mods[0]);
