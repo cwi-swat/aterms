@@ -50,6 +50,7 @@ public class APIGenerator extends CGenerator {
 		genStaticConversions();
 		genTypes(adt);
 		genBottomSorts();
+        genProtectMacros(adt);
 		genInitFunction();
 		genTermConversions(adt);
 		genListsApi(adt);
@@ -60,7 +61,21 @@ public class APIGenerator extends CGenerator {
 		genEpilogue();
 	}
 
-	private void genStaticConversions() {
+	private void genProtectMacros(ADT adt) {
+        hprintFoldOpen("protect macros");
+        Iterator types = adt.typeIterator();
+        
+        while (types.hasNext()) {
+            Type type = (Type) types.next();
+            String id = StringConversions.makeIdentifier(type.getId());
+            String macroName = prefix + "protect" + id;
+            hprintln("#define " + macroName + "(arg) (ATprotect((ATerm*)((void*) arg)))");
+        }
+        
+        hprintFoldClose();
+    }
+
+    private void genStaticConversions() {
 		printFoldOpen("conversion functions");
 		genStaticStringToChars();
 		genStaticCharsToString();
