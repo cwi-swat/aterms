@@ -33,7 +33,7 @@
 % }}}
 % {{{  snippet environment
 
-\newenvironment{snippet}{\begin{scriptsize}}{\end{scriptsize}\hrulefill}
+\newenvironment{snippet}{\begin{scriptsize}}{\end{scriptsize}}
 
 % }}}
 
@@ -175,12 +175,12 @@ the syntax used in equations \emph{user-defined}.
 % {{{  fig:bool-example
 
 \begin{figure}
-\begin{scriptsize}
+\begin{snippet}
 \hrulefill
 \verbatiminput{bool.example}
 \caption{\label{fig:bool-example} \asdf\ specification of the Booleans}
 \hrulefill
-\end{scriptsize}
+\end{snippet}
 \end{figure}
 
 % }}}
@@ -228,12 +228,12 @@ Figure~\ref{fig:bool-example}.
 % {{{  fig:set-example
 
 \begin{figure}
-\begin{scriptsize}
+\begin{snippet}
 \hrulefill
 \verbatiminput{set.example}
 \caption{\label{fig:set-example} \asdf\ specification of the Set equation}
 \hrulefill
-\end{scriptsize}
+\end{snippet}
 \end{figure}
 
 % }}}
@@ -329,13 +329,13 @@ The \asfix\ representation of the grammar production
 
 looks like this:
 
-\begin{scriptsize}
+\begin{snippet}
 \begin{verbatim}
  1  prod([cf(sort("Bool")),cf(opt(layout)),lit("and"),cf(opt(layout)),cf(sort("Bool"))],
  2    cf(sort("Bool")),
  3    attrs([assoc("left")]))
 \end{verbatim}
-\end{scriptsize}
+\end{snippet}
 
 \begin{itemize}
 
@@ -369,7 +369,7 @@ example, applied to the actual argument \texttt{true and false}. The
 layout in the input term consists of exactly one space immediately before
 and after the keyword \texttt{and}.
 
-\begin{scriptsize}
+\begin{snippet}
 \begin{verbatim}
  1 appl(
  2  prod([cf(sort("Bool")),cf(opt(layout)),lit("and"),cf(opt(layout)),cf(sort("Bool"))],
@@ -378,7 +378,7 @@ and after the keyword \texttt{and}.
  5  layout([" "]), lit("and"), layout([" "]),
  6  appl(prod([lit("false")],cf(sort("Bool")),no-attrs),[lit("false")])])
 \end{verbatim}
-\end{scriptsize}
+\end{snippet}
 
 \begin{itemize}
 
@@ -533,12 +533,11 @@ manipulated in the \metaenv.
 First, we show the \C\ code necessary to construct the boolean term
 \texttt{true} which, when yielded by the parser, looks like this:
 
-\begin{quote}
+\begin{snippet}
 \begin{verbatim}
-   appl(prod([lit("true")],cf(sort("Bool")),no-attrs),
-       [lit("true")])
+   appl(prod([lit("true")],cf(sort("Bool")),no-attrs), [lit("true")])
 \end{verbatim}
-\end{quote}
+\end{snippet}
 
 Even for such a simple input term, its \aterm\ representation written
 as a \C\ (or \java) string is already quite complex. This is because
@@ -547,12 +546,12 @@ interpretation by the compiler:
 
 % {{{  Parse Tree for "true"
 
-\begin{scriptsize}
+\begin{snippet}
 \begin{verbatim}
  ATerm true = ATparse(
    "appl(prod([lit(\"true\")],cf(sort(\"Bool\")),no-attrs),[lit(\"true\")])");
 \end{verbatim}
-\end{scriptsize}
+\end{snippet}
 
 % }}}
 
@@ -576,7 +575,7 @@ over multiple lines.
 
 % {{{  Level One: Extracting lhs from "Bool and Bool -> Bool"
 
-\begin{scriptsize}
+\begin{snippet}
 \begin{verbatim}
   ATerm extract_bool_lhs(ATerm t) {
     ATerm lhs;
@@ -592,7 +591,7 @@ over multiple lines.
     return NULL;
   }
 \end{verbatim}
-\end{scriptsize}
+\end{snippet}
 
 % }}}
 
@@ -632,14 +631,14 @@ very type-unsafe and obfuscated:
 
 % {{{  Level Two: Extracting lhs from "true and false"
 
-\begin{scriptsize}
+\begin{snippet}
 \begin{verbatim}
   ATerm extract_bool_lhs(ATerm t) {
     ATermList args = ATgetArgument(t, 1);  // get arguments from AsFix "appl"
     return ATgetFirst(args);               // lhs is the first of these args.
   }
 \end{verbatim}
-\end{scriptsize}
+\end{snippet}
 
 % }}}
 
@@ -828,7 +827,7 @@ pattern, we have to allow layout (whitespace), which in this case can
 occur both after the non-terminal \texttt{lhs}, and after the literal
 \texttt{and}. The \adt\ entry thus becomes:
 
-\begin{scriptsize}
+\begin{snippet}
 \begin{verbatim}
  1  [Bool,
  2   and,
@@ -838,7 +837,7 @@ occur both after the non-terminal \texttt{lhs}, and after the literal
  6    [<lhs(Bool)>,<ws-after-lhs(Layout)>,lit("and"),<ws-after-and(Layout)>,
  7     <rhs(Bool)>])]
 \end{verbatim}
-\end{scriptsize}
+\end{snippet}
 
 Lines 1 and 2 contain the sortname and the alternative, respectively.
 Following, in lines 3--7 is the \aterm\ pattern of the actual parse
@@ -1002,47 +1001,39 @@ to provide debugging feedback when necessary. An example of a dictionary
 file can be found in Appendix~\ref{app:bool_and_dict}.
 
 The actual implementation of the \api\ functions is generated in its
-own \C\ file, accompanied by a header file containing the signatures
-of all exported \api\ functions. An abridged version of the header file
-\texttt{Bool.h} can be seen in Figure~\ref{fig:Bool.h}.
+own \C\ file, accompanied by a header file containing the signatures of
+all exported \api\ functions. We show abridged snippets of the generated
+code. The header file is straightforward, containing merely the opaque
+type definition, and the declarations of the functions contained in the
+\C\ file.
 
-% {{{  fig:Bool.h
+% {{{  Opaque type definition
 
-\begin{figure}[htb]
-\hrulefill
-\begin{scriptsize}
+\heading{Opaque type definition}
+
+Defining \verb+Bool+ to be a pointer to a non-existant type (in this case
+the \texttt{struct \_Bool}, hides the underlying \aterm\ representation
+from the point of view of \api\ users. Instances of \texttt{Bool} can
+safely be passed around by functions, but any attempt to dereference
+such a pointer results in a compile time error.
+
+\begin{snippet}
 \begin{verbatim}
-  typedef struct _Bool *Bool;                  // opaque type
- 
-  Bool  BoolFromTerm(ATerm t);                 // conversion functions
-  ATerm BoolToTerm(Bool arg);
- 
-  ATbool isEqualBool(Bool arg0, Bool arg1);    // equality function
- 
-  ATbool isValidBool(Bool arg);                // validity test
- 
-  ATbool isBoolTrue(Bool arg);                 // inspectors
-  ATbool isBoolOr(Bool arg);
-  ...
-  ATbool hasBoolLhs(Bool arg);                 // query accessors
-  ATbool hasBoolRhs(Bool arg);
-  ..
-  Bool getBoolLhs(Bool arg);                   // get/set accessors
-  Bool setBoolLhs(Bool arg, Bool lhs);
+  typedef struct _Bool *Bool;
 \end{verbatim}
-\caption{
-  \label{fig:Bool.h}
-  Abridged version of the generated \C\ header file \texttt{Bool.h}
-}
-\end{scriptsize}
-\hrulefill
-\end{figure}
+\end{snippet}
 
 % }}}
-
 % {{{  Term convertors
 
 \heading{Term convertors}
+
+These functions perform no real operation, but take care of the
+type casting between the generic \aterm\ type and the more specific
+\texttt{Bool}.  They are needed as entry and exit points to type-safety
+when \atlib\ functions such as \texttt{ATreadFromFile} are used, which
+yield an \aterm.
+
 \begin{snippet}
 \begin{verbatim}
   Bool BoolFromTerm(ATerm t) { return (Bool)t; }
@@ -1050,10 +1041,21 @@ of all exported \api\ functions. An abridged version of the header file
 \end{verbatim}
 \end{snippet}
 
+For improved efficiency, these functions could easily be replaced by
+macros which perform the exact same type cast. Unfortunately, this
+irrevocably kills type-safety, because macros are expanded during the
+pre-processor phase, without any form of type checking on the arguments
+of the macro.
+
 % }}}
 % {{{  Equality tests
 
 \heading{Equality tests}
+
+Because \aterms\ are used as implementation, we get the trivial equality
+check based on memory address comparison for free. We only need to
+provide a type-safe wrapper around \texttt{ATisEqual}.
+
 \begin{snippet}
 \begin{verbatim}
   ATbool isEqualBool(Bool arg0, Bool arg1) {
@@ -1062,10 +1064,24 @@ of all exported \api\ functions. An abridged version of the header file
 \end{verbatim}
 \end{snippet}
 
+As with the convertor functions, the equality function can be replaced by
+a macro definition (with the same concerns about the loss of type-safety)
+for improved efficiency.
+
 % }}}
 % {{{  Validity test
 
 \heading{Validity test}
+
+Whenever an \aterm\ is acquired from an external source (e.g. by
+reading it from file) and is converted to \texttt{Bool}, programmers
+might like to assert that the term satisfies one of the alternatives for
+\texttt{Bool}. After all, any valid \aterm\ will happily be parsed by
+\texttt{ATreadFromFile} and subsequent conversion by \texttt{TermToBool}
+is done without any verification. The \texttt{isValidBool} function
+checks whether a given \texttt{Bool} argument is indeed an instance of
+one of the correct alternatives.
+
 \begin{snippet}
 \begin{verbatim}
   ATbool isValidBool(Bool arg) {
@@ -1079,21 +1095,36 @@ of all exported \api\ functions. An abridged version of the header file
 \end{verbatim}
 \end{snippet}
 
-% }}}
-% {{{  Inspectors
+As checking the alternatives is expensive, the conversion functions
+themselves do not directly invoke \texttt{isValidBool}. Efficiency
+of the \texttt{BoolToTerm} function could be traded for even more
+robustness, by making it refuse to convert any \aterm\ that does not
+satisfy \texttt{isValidBool}.
 
-\heading{Inspectors}
+% }}}
+% {{{  Inspector
+
+\heading{Inspector}
+
+Inspecting a \texttt{Bool} to see if it is an instance of a specific
+alternative involves matching the argument against the pattern for
+that particular alternative. Because matching is (very) expensive,
+the result of the most recent match is cached. This caching approach
+seems limited, but is useful when multiple subterms of the \emph{same
+argument} are accessed. In these cases, sequences of \texttt{getBoolX}
+and \texttt{setBoolY} (q.v.) all reuse the (cached) inspection result.
+
 \begin{snippet}
 \begin{verbatim}
-  inline ATbool isBoolTrue(Bool arg) {
-    static ATerm last_arg = NULL;
+  ATbool isBoolTrue(Bool arg) {
+    static ATerm cached_arg = NULL;
     static int last_gc = -1;
     static ATbool cached_result;
 
     assert(arg != NULL);
 
-    if (last_gc != ATgetGCCount() || (ATerm)arg != last_arg) {
-      last_arg = (ATerm)arg;
+    if (last_gc != ATgetGCCount() || (ATerm)arg != cached_arg) {
+      cached_arg = (ATerm)arg;
       cached_result = ATmatchTerm((ATerm)arg, patternBoolTrue);
       last_gc = ATgetGCCount();
     }
@@ -1103,10 +1134,26 @@ of all exported \api\ functions. An abridged version of the header file
 \end{verbatim}
 \end{snippet}
 
+The cached \aterm\ is deliberately \emph{not} protected from garbage
+collection. Doing so would result in all inspector functions holding on
+to references of \aterms, without the intent of ever dereferencing them
+again. This causes memory hogs, because the garbage collector cannot
+free the \aterm\ (nor any of its subterms) which happens to have been
+the latest argument to an inspector.
+
+Instead, the inspector detects garbage collects (by remembering the
+number of collects) and flushes its cached result whenever one or more
+collects have been triggered in between calls to the inspector.
+
 % }}}
 % {{{  Query accessor
 
 \heading{Query accessor}
+
+The query accessor checks if a given argument has a specific field. It
+is implemented by checking if the argument is an instance of any of the
+alternatives which has the required field.
+
 \begin{snippet}
 \begin{verbatim}
   ATbool hasBoolLhs(Bool arg) {
@@ -1121,8 +1168,39 @@ of all exported \api\ functions. An abridged version of the header file
 % {{{  Get accessor
 
 \heading{Get accessor}
+
+The \texttt{get}ter is implemented much like the query accessor. It
+inspects the incoming argument to find out of which alternative it is
+an instance.  Upon finding the right alternative, it returns the intended
+subterm by directly peeking into the \aterm\ representation.
+
+If the production has but a single alternative, no testing is needed
+and the requested subterm can be returned immediately.
+
 \begin{snippet}
 \begin{verbatim}
+SDF:
+  "not" arg:Bool -> Bool {cons("not")}
+
+Generated:
+Bool getBoolArg(Bool arg) {
+    return (Bool)ATelementAt((ATermList)ATgetArgument((ATermAppl)arg, 1), 2);
+}
+\end{verbatim}
+\end{snippet}
+
+If there are multiple alternatives, each is tested in turn, until a
+single alternative remains, which must be the right one (since none of
+the other alternatives matched, and we assume a valid instance of one
+of the alternative productions).
+
+\begin{snippet}
+\begin{verbatim}
+SDF:
+  lhs:Bool "and" rhs:Bool -> Bool {left, cons("and")}
+  lhs:Bool "or" rhs:Bool  -> Bool {left, cons("or")}
+
+Generated:
   Bool getBoolLhs(Bool arg) {
     if (isBoolAnd(arg)) {
       return (Bool)ATgetFirst((ATermList)ATgetArgument((ATermAppl)arg, 1));
@@ -1133,10 +1211,35 @@ of all exported \api\ functions. An abridged version of the header file
 \end{verbatim}
 \end{snippet}
 
+An obvious optimization would be do detect if there are alternatives
+that have the requested field at the same location in the underlying
+\aterm\ representation. In this case, the \texttt{isBoolAnd} test can
+be eliminated, because both alternatives of \texttt{Bool} that have a
+\texttt{lhs}, have it at the exact same position. The condensed version
+would look much like the previous \texttt{getBoolArg} and would be much
+cheaper since it does not have to do any matching:
+
+\begin{snippet}
+\begin{verbatim}
+Condensed code for alternatives: "and", "or"
+  Bool getBoolLhs(Bool arg) {
+    return (Bool)ATgetFirst((ATermList)ATgetArgument((ATermAppl)arg, 1));
+  }
+\end{verbatim}
+\end{snippet}
+
 % }}}
 % {{{  Set accessor
 
 \heading{Set accessor}
+
+The implementation of the \texttt{set}ter is again along the same path
+as the \texttt{get}ter and the inspector. The main issue here stems from
+the fact that \aterms\ are immutable. Consequently, all \texttt{set}ters
+need to be of a functional nature. This means that they cannot update
+the \aterm\ \emph{in situ}, but instead need to construct a \emph{new}
+\aterm, reflecting the desired change.
+
 \begin{snippet}
 \begin{verbatim}
   Bool setBoolLhs(Bool arg, Bool lhs)
@@ -1159,6 +1262,12 @@ of all exported \api\ functions. An abridged version of the header file
   }
 \end{verbatim}
 \end{snippet}
+
+As the construction of a new \aterm\ is very expensive to begin with,
+the gain of eliminating the test for one of the alternatives (as
+implemented in the \texttt{get}ters) is relatively small, which is why
+that particular optimization is omitted here. If we have not found a match
+after exhaustively testing all the alternatives, the operation is aborted.
 
 % }}}
 
@@ -1299,8 +1408,7 @@ is presented here.
 \label{app:bool_and_dict}
 An abbreviated version of the generated dictionary file for the
 parse tree syntax (\asfix) of the boolean \texttt{and}. Multiple
-similar lines have been condensed by substitution the repetitions
-by an ellipsis (\texttt{...}).
+similar lines have been condensed (\texttt{...}).
 \begin{scriptsize}
 \verbatiminput{bool_and_dict}
 \end{scriptsize}
