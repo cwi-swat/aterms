@@ -1,0 +1,29 @@
+%%%% $Id$
+
+equations
+
+  [int-c]  int(numchar("\" c+)) = natcon(c+)
+  [char-i] char(natcon(c+)) = numchar("\" c+)
+
+  [pred-c] pred(_c) = char(int(_c) - 1)
+  [succ-c] succ(_c) = char(int(_c) + 1)
+
+%% Maximum and minimum: using the comparison operators.
+
+   [max1]         max(_c1, _c2) = _c1 when _c2 < _c1 = true
+   [default-max2] max(_c1, _c2) = _c2
+   [min1]         min(_c1, _c2) = _c1 when _c1 < _c2 = true
+   [default-min2] min(_c1, _c2) = _c2
+
+%% Characters can be compared with the relational operators $=$, $<$ and $\leq$.
+%% A character $c_1$ is $\leq$ than a character $c_2$ if they are equal or
+%% if $c_1$ is less than $c_2$
+
+   [lt-p0]        _c1 < _c2  = false when pred(\BOT) = _c2
+   [default-lt]   _c1 < _c2  = int(_c1) < int(_c2)
+   [leq1]         _c  <= _c  = true
+   [leq2]         _c1 <= _c2 = _c1 < _c2 when _c1 != _c2
+   [ceq1]         _c  == _c  = true
+   [default-ceq2] _c1 == _c2 = false
+
+%%%

@@ -1,0 +1,17 @@
+module Basic-Integers
+imports IntCon
+exports
+  sorts Int
+  context-free syntax
+    IntCon                 -> Int
+    con(Int)               -> IntCon
+    abs(Int)               -> NatCon
+    Int "+" Int            -> Int {left}
+
+hiddens
+  variables
+    [n][0-9\']*            -> NatCon
+    [z][0-9\']*            -> IntCon
+    "c"  [0-9]*            -> CHAR
+    "c*" [0-9]*            -> CHAR*
+    "c+" [0-9]*            -> CHAR+

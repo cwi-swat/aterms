@@ -1,0 +1,14 @@
+%%%% $Id$
+
+equations
+
+[not-1]   ~ false        = true
+[not-2]   ~ true         = false
+[and-1]   true  /\  Bool = Bool
+[and-2]   false /\  Bool = false
+[xor-1]   true  (+) Bool = ~Bool
+[xor-2]   false (+) Bool = Bool
+[or-1]    true  \/  Bool = true
+[or-2]    false \/  Bool = Bool
+[if-1]    if true  then Bool1 else Bool2 fi = Bool1
+[if-2]    if false then Bool1 else Bool2 fi = Bool2
