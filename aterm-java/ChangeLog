@@ -1,5 +1,8 @@
 $Id$
 
+2003/09/26 <jurgenv@cwi.nl>
+ * Release 1.5
+
 Wed Aug 27 14:20:42 CEST 2003 <{jong,kooiker}@cwi.nl>
  * version bump to 1.5beta
  * make empty list notion private to PureFactory
