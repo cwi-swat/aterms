@@ -1,3 +1,8 @@
+2004-09-16  pem  <pem@becky.local>
+
+  * apigen/gen/tom/TomSignatureGenerator.java: generate stamps for
+	concrete ADT
+
 2004-09-03  pem
 
   * extended the generation of visitor/visitable

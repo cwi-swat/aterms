@@ -16,12 +16,12 @@ import apigen.gen.java.JavaGenerationParameters;
 import apigen.gen.java.TypeGenerator;
 
 public class TomSignatureGenerator extends Generator {
-	protected String apiName = "";
 	private TomSignatureImplementation impl;
 	private ADT adt;
 	private String prefix;
 	private String packagePrefix;
 	private Module module;
+  private String apiName = "";
 
 	public TomSignatureGenerator(ADT adt, TomSignatureImplementation impl, GenerationParameters params, Module module) {
 		super(params);
@@ -29,6 +29,7 @@ public class TomSignatureGenerator extends Generator {
 		setDirectory(params.getOutputDirectory());
 		setExtension(".tom");
 		String moduleName = module.getModulename().getName();
+		this.apiName = (moduleName.equals("")?params.getApiName():moduleName);
 		setFileName(StringConversions.makeIdentifier((moduleName.equals(""))?params.getApiName():moduleName));
 		this.adt = adt;
 		this.impl = impl;
@@ -50,13 +51,27 @@ public class TomSignatureGenerator extends Generator {
 		genTomTypes(adt);
 	}
 
+  private String CheckStampTemplate(
+                                    String checkStamp,
+                                    String setStamp,
+                                    String getImplementation) {
+		return 
+      "  check_stamp(t) {" + checkStamp + "}\n"
+      + "  set_stamp(t) {" + setStamp + "}\n"
+      + "  get_implementation(t) {" + getImplementation + "}\n"
+      ;
+  }
+
 	private String TypeTermTemplate(
 		String type,
 		String impl,
 		String get_fun_sym,
 		String cmp_fun_sym,
 		String get_subterm,
-		String equals) {
+		String equals,
+    String checkStamp,
+    String setStamp,
+    String getImplementation) {
 
 		return "%typeterm "
 			+ type
@@ -76,6 +91,7 @@ public class TomSignatureGenerator extends Generator {
 			+ "  equals(t1,t2) {"
 			+ equals
 			+ "}\n"
+      + CheckStampTemplate(checkStamp, setStamp, getImplementation)
 			+ "}";
 	}
 
@@ -87,7 +103,10 @@ public class TomSignatureGenerator extends Generator {
 		String equals,
 		String get_head,
 		String get_tail,
-		String is_empty) {
+		String is_empty,
+    String checkStamp,
+    String setStamp,
+    String getImplementation) {
 
 		return "%typelist "
 			+ type
@@ -113,6 +132,7 @@ public class TomSignatureGenerator extends Generator {
 			+ "  is_empty(l) {"
 			+ is_empty
 			+ "}\n"
+      + CheckStampTemplate(checkStamp, setStamp, getImplementation)
 			+ "}";
 	}
 
@@ -143,9 +163,11 @@ public class TomSignatureGenerator extends Generator {
 	}
 
 	private void genTomType(Type type) {
+    String stamp = "get" 
+      + StringConversions.makeCapitalizedIdentifier(apiName)
+			+ "Factory().getPureFactory().makeList()";
 		if (type instanceof ListType) {
 			String eltType = ((ListType) type).getElementType();
-
 			println(
 				TypeListTemplate(
 					impl.TypeName(type.getId()),
@@ -155,7 +177,11 @@ public class TomSignatureGenerator extends Generator {
 					impl.TypeEquals(type.getId(), "t1", "t2"),
 					impl.ListHead(type.getId()),
 					impl.ListTail(type.getId()),
-					impl.ListEmpty(type.getId())));
+					impl.ListEmpty(type.getId()),
+          "if(t.getAnnotation(" + stamp + ") == " + stamp + ")  return; else throw new RuntimeException(\"bad stamp\")",
+          "(" + packagePrefix + prefix + type.getId()  + ")t.setAnnotation(" + stamp +"," + stamp + ")",
+          "t"
+          ));
 			println();
 			genTomConcOperator(type, eltType);
 			String class_name = "class_name";
@@ -171,7 +197,12 @@ public class TomSignatureGenerator extends Generator {
 					impl.TypeGetFunSym("t"),
 					impl.TypeCmpFunSym("s1", "s2"),
 					impl.TypeGetSubTerm("t", "n"),
-					impl.TypeEquals(type.getId(), "t1", "t2")));
+					impl.TypeEquals(type.getId(), "t1", "t2"),
+          "if(t.getAnnotation(" + stamp + ") == " + stamp + ")  return; else throw new RuntimeException(\"bad stamp\")",
+          "(" + packagePrefix + prefix + type.getId()  + ")t.setAnnotation(" + stamp +"," + stamp + ")",
+          //"(" + impl.TypeName(type.getId())  + ")t.setAnnotation(" + stamp +"," + stamp + ")",
+          "t"
+          ));
 
 			println();
 			genTomAltOperators(type);
