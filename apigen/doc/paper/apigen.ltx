@@ -38,13 +38,13 @@ if not impossible, to change the \aterm\ representation of the data type.
 
 The coding practice that uses such structural knowledge is not in any
 way restricted to the realm of parse trees. In fact, anyone who has
-programmed with the \atlib, will probably be familiar with patterns such
-as \texttt{and(<bool>,<bool>)}. And given such a pattern, what could
-be easier than writing a function that extracts the left-hand side?
-But as these patterns become longer and more intricate with a liberal
-sprinkling of quoted strings containing backslash-escaped quotes,
-and as they begin to contain lists and annotations, the once so simple
-\emph{make-and-match} paradigm becomes a developer's nightmare.
+programmed with the \atlib, will probably be familiar with patterns
+such as \texttt{and(<bool>,<bool>)}. And given such a pattern, what
+could be easier than writing a function that extracts the arguments of
+the expression? But as these patterns become longer and more intricate
+with a liberal sprinkling of quoted strings containing backslash-escaped
+quotes, and as they begin to contain lists and annotations, the once so
+simple \emph{make-and-match} paradigm becomes a developer's nightmare.
 
 Shielding \aterm\ representation knowledge in access macros somewhat
 improves the legibility of code that uses them, but it does not in any way
@@ -61,10 +61,14 @@ by developing an \api-generator that creates both an interface and an
 implementation of data structures represented by \aterms.
 
 While maintaining the advantages of the \atlib\ (in our case most notably
-its efficiency due to maximal subterm sharing), applications built with
-this generated \api\ benefit from improved simplicity and readability,
-they are easier to maintain, and they are more robust against changes
-in the underlying \asfix\ representation.
+its efficiency due to \emph{maximal subterm sharing}\footnote{Our strategy
+to minimize memory usage is simple but effective: we only create terms
+that are \emph{new}, i.e., that do not exist already. If a term to
+be constructed already exists, that term is reused, ensuring maximal
+(sub)term sharing.}), applications built with this generated \api\
+benefit from improved simplicity and readability, they are easier to
+maintain, and they are more robust against changes in the underlying
+\asfix\ representation.
 
 This paper describes how an annotated grammar or syntax definition
 can be used to generate a library of functions that provide access to
@@ -88,23 +92,25 @@ and after introduction of \api-generation.}
 Although this paper uses tools from the \metaenv\ as a running example,
 the maintenance issues addressed here are not specific to parse trees
 at all. The issues are fundamental to all applications that use \aterms\
-as its data structure representation. Many of these issues are also valid
-in applications based on other generic data representation formalisms like
-for instance XML.
+as its data structure representation. Moreover, many of these issues are
+also found in applications based on other generic data representation
+formalisms like for instance XML.
 
 We first relate our approach to other work in Section~\ref{sec:related},
 and continue with some introductory sections on the specification
 formalism \asdf\ (Section~\ref{sec:asdf-nutshell}), the syntax
 of \aterms\ (Section~\ref{sec:aterm-syntax}), and \asfix\
 (Section~\ref{sec:asfix-syntax}). Section~\ref{sec:aterm-access}
-subsequently explains how \aterm-based data types are typically
-accessed in tools and applications and we show how this approach causes
-development and maintenance issues. Section~\ref{sec:syntax-to-api}
-describes the actual generation scheme. The results of the
-application of our generation technique on tools in the \metaenv\
-are shown in Section~\ref{sec:reduction}, followed by some
-conclusions (Section~\ref{sec:conclusions}) and future work
-(Section~\ref{sec:future}).
+explains how \aterm-based data types are typically accessed
+in tools and applications and we show how this approach causes
+development and maintenance issues. We then describe the actual
+generation scheme from \sdf\ to an intermediate representation
+(Section~\ref{sec:syntax-to-api}) and the subsequent generation
+into the target language (Section~\ref{sec:adt-to-c}). The results
+of the application of our generation technique on tools in the
+\metaenv\ are shown in Section~\ref{sec:reduction}, followed by
+some conclusions (Section~\ref{sec:conclusions}), a discussion
+(Section~\ref{sec:discussion}) and future work (Section~\ref{sec:future}).
 
 % {{{ Related Work
 
@@ -293,9 +299,9 @@ non-assoc).
 separated lists, alternatives, tuples, and function application.
 \end{itemize}
 
-The syntax defined in the \sdf-part
-of a module can be used immediately when defining equations, thus making
-the syntax used in equations \emph{user-defined}.
+The syntax defined in the \sdf-part of a module can be used immediately
+when defining equations, thus making the syntax used in equations
+\emph{user-defined}.
 
 % {{{  fig:bool-example
 
@@ -310,25 +316,26 @@ the syntax used in equations \emph{user-defined}.
 
 % }}}
 
-The technology behind SDF is based on \emph{scannerless generalized LR
-parsing}. The term \emph{scannerless} indicates that there is no separate scanning
-phase before parsing: each character is a token. This approach has the
-advantage that the class of languages that can be handled by the parser
-is not restricted by local tokenization decisions taken by the scanner.
+The technology behind SDF is based on \emph{scannerless generalized
+LR parsing}~\cite{sglr}. The term \emph{scannerless} indicates that
+there is no separate scanning phase before parsing: each character is a
+token. This approach has the advantage that the class of languages that
+can be handled by the parser is not restricted by local tokenization
+decisions taken by the scanner.
 
 The term \emph{generalized} means that the parser can handle ambiguous
 constructs and in general yields a parse \emph{forest} instead of a single
 parse tree.
 
-To implement scannerless parsing for \sdf\, the \sdf\ \emph{normalizer} is used
-to transform a \sdf\ grammar into a simple character level grammar.
-One of the tasks of the normalizer is to explicitly
-insert \emph{layout} symbols between all symbols in context-free syntax
-sections. For the syntax defined in Figure~\ref{fig:bool-example} this means
-that whitespace can be inserted between keywords, for instance
-between {\tt not} and {\tt true} in equation  {\tt not-1}. In this example,
-the actual definition of what constitutes whitespace is defined in the
-module Layout that is not shown in the example.
+To implement scannerless parsing for \sdf\, the \sdf\ \emph{normalizer} is
+used to transform a \sdf\ grammar into a simple character level grammar.
+One of the tasks of the normalizer is to explicitly insert \emph{layout}
+symbols between all symbols in context-free syntax sections. For the
+syntax defined in Figure~\ref{fig:bool-example} this means that whitespace
+can be inserted between keywords, for instance between {\tt not} and {\tt
+true} in equation  {\tt not-1}. In this example, the actual definition
+of what constitutes whitespace is defined in the module Layout that is
+not shown in the example.
 
 
 \subsubsection{\asf}
@@ -406,10 +413,10 @@ by a subterm and a closing angular bracket. Examples are: \texttt{<int>},
 From a \sdf-specification, a parse table can be generated using the
 \texttt{pgen} tool from the \metaenv. \texttt{pgen} consists of the
 normalizer discussed earlier combined with a parse table generator.
-The resulting parse table can subsequently
-be used by \texttt{sglr}\cite{sglr}: the scannerless, generalized LR parser to
-parse input terms over the syntax described by the \sdf-specification.
-The result of a successful parse is a parse tree. The data structure used
+The resulting parse table can subsequently be used by \texttt{sglr}:
+the scannerless, generalized LR parser to parse input terms over the
+syntax described by the \sdf-specification.  The result of a successful
+parse is a parse forest, containing parse trees. The data structure used
 to represent parse trees is called \asfix, and is implemented using the
 \atlib\ to exploit the maximal subterm sharing that is commonly present
 in parse trees.
@@ -1081,6 +1088,8 @@ names as shown in Figure~\ref{fig:names}.
 \end{figure}
 
 % }}}
+
+% }}}
 % {{{  Code generation from \adt\ to \C
 
 \section{Code generation from \adt\ to \C}
@@ -1291,7 +1300,7 @@ and \texttt{setBoolY} all reuse (cached) inspection results.
 
 Note that the cached \aterm\ is deliberately \emph{not} protected from
 garbage collection. Doing so would result in all inspector functions
-holding on to references of \aterms that could not be collected. These
+holding on to references of \aterms\ that could not be collected. These
 terms are potentially very large and the memory behaviour would become
 extremely unpredictable. We therefore opted for a solution where caching
 results are only valid \emph{until the next garbage collection}.
@@ -1418,8 +1427,6 @@ exhaustively testing all the alternatives, the operation is aborted.
 % }}}
 
 % }}}
-
-% }}}
 % {{{  Code reduction in the \metaenv
 
 \section{Software engineering benefits in the \metaenv}
@@ -1509,6 +1516,7 @@ is already comparable to its manually written predecessor.
 % {{{  Discussion
 
 \section{Discussion}
+\label{sec:discussion}
 
 In retrospect, one might ask why on earth we began developing code using
 direct \aterm\ manipulation in the first place. The answer lies partially
@@ -1566,7 +1574,7 @@ set of abstract data definitions and generates code for them. The code
 generator must be extendible with domain specific ``modules'' to generate
 extra functionality. These modules should not only be able to add extra
 functions when needed, but they should also be able to use \emph{Aspect
-Oriented Programming}\cite{aspect} to add functionality to functions
+Oriented Programming}~\cite{aspect} to add functionality to functions
 that are generated by other modules.
 
 For example, one of the more basic modules (the ``accessor'' module) could
