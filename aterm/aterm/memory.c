@@ -124,6 +124,17 @@ static ATbool at_check = ATfalse;
 
 /*}}}  */
 
+void ATsetChecking(ATbool on)
+{
+  at_check = on;
+}
+
+ATbool ATgetChecking(void)
+{
+  return at_check;
+}
+
+
 /*{{{  static int term_size(ATerm t) */
 
 /**
