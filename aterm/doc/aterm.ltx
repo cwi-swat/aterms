@@ -1615,20 +1615,19 @@ describing tree data structures and is used as intermediate representation
 language between the various phases of a compiler \cite{Han99}.  The goals of
 ASDL and \aterms\ are in fact quite similar, exchanging syntax trees between
 tools, although \aterms\ are more general in the sense that other types of
-information, such as parse tables, can also be represented as an \aterm.
-\textbf{XXX Is het voorgaande  wel waar, ASDL kan toch alles representeren dat je met
-een grammatica definieren kunt?XXX} 
- ASDL
-pickles and the BAF format for \aterms\ are comparable with respect to
-functionality, both are binary representations of (among others) syntax trees.
+information, such as unstructured binary objects, can also be represented 
+as an \aterm.
+Everything that can be represented by a grammar can both be represented
+in \aterms\ as well as ASDL. 
 
+ASDL pickles and the BAF format for \aterms\ are comparable with respect to
+functionality, both are binary representations of (among others) syntax trees.
 There are, however, some differences.  Before a tool can process a tree
 obtained as an ASDL pickle, it has to unpickle it, which may require quite
-some memory. Tools processing \aterms\ can process \aterms\ in BAF format
-while preserving sharing. 
-\textbf{XXX Wat betekent de vorige zin precies: in het \aterm\ geval moet je
-toch ook de conversie van BAF naar interne representatie doen voordat bewerkingen
-mogelijk zijn?}
+some memory.
+%%Tools processing \aterms\ can process \aterms\ in BAF format
+%%while preserving sharing. 
+ 
 The pickle and unpickle functions are generated
 from the ASDL description and are thus application specific (this may be more
 efficient) whereas the reading and writing of BAF is entirely generic (this
@@ -1636,7 +1635,8 @@ avoids the proliferation of versions).
 
 ASDL and \aterms\ can be compared at three different levels:
 
-\textbf{XXX Zijn hier wel drie gevallen; ik zie alleen ASDL/\aterm\ en ASDL/\asfix.}
+\textbf{XXX Zijn hier wel drie gevallen; ik zie alleen ASDL/\aterm\ 
+en ASDL/\asfix.}
 
 \begin{enumerate}
   
