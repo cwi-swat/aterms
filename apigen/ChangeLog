@@ -1,3 +1,6 @@
+2002/12/11 (jong@cwi.nl)
+ * explicitly link libADT.a, rather than looking for it in install-dir
+
 2002/11/26 (vinju@loria.fr)
  * Added a tool for concatenating adts: concat-adt
  * fix a problem related to capitalize and Tom
