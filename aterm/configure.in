@@ -204,24 +204,22 @@ fi
 dnl Find out if we have rand48 suite
 AC_CHECK_FUNCS(lrand48 srand48)
 
-AC_OUTPUT( \
-	Makefile \
-	aterm/Makefile \
-	utils/Makefile \
-	test/Makefile \
-	java/Makefile \
-	java/aterm/Makefile \
-	java/aterm/ATermVisitable.java \
-	java/aterm/ATermVisitor.java \
-	java/aterm/ATermVisitFailure.java \
-	java/aterm/ATermForward.java \
-	java/aterm/pure/Makefile \
-	java/aterm/pure/ATermVisitableImpl.java \
-	java/aterm/visitor/Makefile \
-	java/aterm/test/Makefile \
-        java/toolbus/Makefile \
-        java/toolbus/tifstojava \
-	doc/Makefile \
-	doc/examples/Makefile \
-	doc/spec/Makefile \
-	, chmod +x java/toolbus/tifstojava)
+AC_OUTPUT(
+  Makefile
+  aterm/Makefile
+  utils/Makefile
+  test/Makefile
+  java/Makefile
+  java/aterm/Makefile
+  java/aterm/ATermVisitable.java
+  java/aterm/ATermVisitor.java
+  java/aterm/ATermVisitFailure.java
+  java/aterm/ATermForward.java
+  java/aterm/pure/Makefile
+  java/aterm/pure/ATermVisitableImpl.java
+  java/aterm/visitor/Makefile
+  java/aterm/test/Makefile
+  doc/Makefile
+  doc/examples/Makefile
+  doc/spec/Makefile
+)

@@ -1,7 +1,10 @@
 $Id$
 
+2001/07/12 (jong@cwi.nl)
+ * Java-source for toolbus support moved from ATerm-pkg to TB-pkg
+
 2001/07/11 (jong@cwi.nl)
- * toolbus support and tests moved from ATerm-pkg to TB-pkg
+ * C-source for toolbus support moved from ATerm-pkg to TB-pkg
 
 2001/07/09 (olivierp@cwi.nl)
  * version is now 1.6.2
