@@ -523,6 +523,16 @@ public class PureFactory
   }
 
   //}}}
+  //{{{ public ATermAppl makeAppl(AFun fun, arg1, arg2, arg3, arg4, arg5, arg6, arg7)
+
+  public ATermAppl makeAppl(AFun fun, ATerm arg1, ATerm arg2, ATerm arg3,
+			    ATerm arg4, ATerm arg5, ATerm arg6, ATerm arg7)
+  {
+    ATerm[] args = { arg1, arg2, arg3, arg4, arg5, arg6, arg7 };
+    return makeAppl(fun, args);
+  }
+
+  //}}}
 
   //{{{ public ATermList getEmpty()
 
@@ -990,6 +1000,23 @@ public class PureFactory
     args.add(arg4);
     args.add(arg5);
     args.add(arg6);
+    return make(pattern, args);
+  }
+
+  //}}}
+  //{{{ public ATerm make(String pattern, arg1, arg2, arg3, arg4, arg5, arg6, arg7)
+
+  public ATerm make(String pattern, Object arg1, Object arg2, Object arg3,
+		    Object arg4, Object arg5, Object arg6, Object arg7)
+  {
+    List args = new LinkedList();
+    args.add(arg1);
+    args.add(arg2);
+    args.add(arg3);
+    args.add(arg4);
+    args.add(arg5);
+    args.add(arg6);
+    args.add(arg7);
     return make(pattern, args);
   }
 

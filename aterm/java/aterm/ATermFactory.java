@@ -13,6 +13,8 @@ public interface ATermFactory
   ATerm make(String pattern, List args);
   ATerm make(ATerm pattern, List args);
   ATerm make(String pattern, Object arg1, Object arg2, Object arg3,
+	     Object arg4, Object arg5, Object arg6, Object arg7);
+  ATerm make(String pattern, Object arg1, Object arg2, Object arg3,
 	     Object arg4, Object arg5, Object arg6);
   ATerm make(String pattern, Object arg1, Object arg2, Object arg3,
 	     Object arg4, Object arg5);
