@@ -373,10 +373,9 @@ int ATBhandleOne(int fd)
 
 	result = connections[fd]->handler(fd, (ATerm)appl);
 
-	if(result) {
-		ATfprintf(stderr, "result = %t\n", result);
+	if(result)
 	  return ATBwriteTerm(fd, result);
-	} else if(recdo)
+	else if(recdo)
 	  return ATBwriteTerm(fd, term_snd_void);
 
 	return 0;
