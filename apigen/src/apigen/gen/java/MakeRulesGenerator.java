@@ -23,7 +23,7 @@ public class MakeRulesGenerator extends Generator {
 		this.adt = adt;
 		this.name = StringConversions.makeCapitalizedIdentifier(params.getApiName());
 		this.prefix = name + "API";
-		setDirectory(params.getBaseDir());
+		setDirectory(params.getOutputDirectory());
 		setFileName(name + "MakeRules");
 		setExtension("");
 	}
@@ -82,7 +82,7 @@ public class MakeRulesGenerator extends Generator {
 	}
 
 	protected void printAlternativeClassFiles(Type type, Alternative alt) {
-		print("\\\n" + getClassFileName(AlternativeGenerator.className(type.getId(), alt.getId())));
+		print("\\\n" + getClassFileName(AlternativeGenerator.className(alt)));
 	}
 
 	protected void printTypeClassFiles(Type type) {

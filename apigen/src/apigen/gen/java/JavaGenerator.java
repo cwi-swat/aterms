@@ -15,37 +15,41 @@ import apigen.gen.TypeConverter;
 public abstract class JavaGenerator extends Generator {
 	private static TypeConverter converter = new TypeConverter(new JavaTypeConversions());
 
-	private String packageName;
-	private GenerationParameters params;
+	private String basePackageName;
+	private List imports;
 
 	public static TypeConverter getConverter() {
 		return converter;
 	}
 
 	protected JavaGenerator(GenerationParameters params) {
-		super();
-		this.params = params;
-		this.packageName = params.getPackageName();
-		setDirectory(buildDirectoryName(params.getBaseDir(), params.getPackageName(), params.getApiName()));
-		setFileName(getClassName());
-		setExtension(".java");
+		super(".java");
+		this.basePackageName = params.getPackageName();
+		this.imports = params.getImports();
+		setDirectory(buildDirectoryName(params.getOutputDirectory(), params.getPackageName()));
 	}
 
-	private String buildDirectoryName(String baseDir, String pkgName, String apiName) {
+	public String getDirectory() {
+		return super.getDirectory() + File.separatorChar + getPackageName().replace('.', File.separatorChar);
+	}
+
+	public String getFileName() {
+		return getClassName();
+	}
+	
+	private String buildDirectoryName(String baseDir, String pkgName) {
 		StringBuffer buf = new StringBuffer();
 		buf.append(baseDir);
 		buf.append(File.separatorChar);
 		buf.append(pkgName.replace('.', File.separatorChar));
-		buf.append(File.separatorChar);
-		buf.append(apiName);
-		System.err.println("buildDirectoryName: " + buf.toString());
 		return buf.toString();
 	}
 
 	abstract public String getClassName();
+	abstract public String getPackageName();
+	abstract public String getQualifiedClassName();
 
 	protected void printImports() {
-		List imports = params.getImports();
 		if (imports.size() > 0) {
 			Iterator iter = imports.iterator();
 			while (iter.hasNext()) {
@@ -56,10 +60,12 @@ public abstract class JavaGenerator extends Generator {
 	}
 
 	protected void printPackageDecl() {
-		if (packageName.length() > 0) {
-			println("package " + packageName + ';');
-			println();
+		print("package ");
+		if (basePackageName != null) {
+			print(basePackageName + '.');
 		}
+		println(getPackageName() + ';');
+		println();
 	}
 
 	/**
@@ -140,18 +146,21 @@ public abstract class JavaGenerator extends Generator {
 	}
 
 	protected String buildFormalTypedArgumentList(Iterator fields) {
-		String result = "";
+		StringBuffer buf = new StringBuffer();
+		
 		while (fields.hasNext()) {
 			Field field = (Field) fields.next();
-			String field_id = getFieldId(field.getId());
-			result += TypeGenerator.className(field.getType()) + " " + field_id;
+			
+			buf.append(TypeGenerator.qualifiedClassName(field.getType()));
+			buf.append(' ');
+			buf.append(getFieldId(field.getId()));
 
 			if (fields.hasNext()) {
-				result += ", ";
+				buf.append(", ");
 			}
 		}
 
-		return result;
+		return buf.toString();
 	}
 
 }

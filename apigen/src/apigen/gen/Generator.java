@@ -15,6 +15,10 @@ public abstract class Generator {
 	public Generator() {
 		this("", "", "");
 	}
+	
+	public Generator(String extension) {
+		this("", "", extension);
+	}
 
 	public Generator(String directory, String fileName, String extension) {
 		this.directory = directory;

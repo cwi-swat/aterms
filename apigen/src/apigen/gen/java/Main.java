@@ -31,12 +31,12 @@ public class Main {
 	private static void usage() {
 		System.err.println("usage: JavaGen [options]");
 		System.err.println("options:");
-		System.err.println("\t-i | --input <in>              [multiple allowed]");
+		System.err.println("\t-i | --input <in>              <multiple allowed>");
 		System.err.println("\t-f | --folding                 [off]");
 		System.err.println("\t-o | --output <outputdir>      [\".\"]");
-		System.err.println("\t-p | --package <package>       [\"\"]");
+		System.err.println("\t-p | --package <package>       <optional>");
+		System.err.println("\t-n | --name <api name>         <obligatory>");
 		System.err.println("\t-i | --import <package>        (can be repeated)");
-		System.err.println("\t-n | --name <api name>         [unspecified]");
 		System.err.println("\t-t | --visitable               [off]");
 		System.err.println("\t-j | --jtom                    [off]");
 		System.err.println("\t-J | --jtype                   [off]");
@@ -49,6 +49,11 @@ public class Main {
 		if (args.length == 0) {
 			usage();
 		}
+		
+		params.setOutputDirectory(".");
+		params.setVerbose(false);
+		params.setFolding(false);
+		params.setVisitable(false);
 
 		for (int i = 0; i < args.length; i++) {
 			if ("--input".startsWith(args[i]) || "-i".startsWith(args[i])) {
@@ -59,7 +64,7 @@ public class Main {
 				params.setFolding(true);
 			}
 			else if ("--output".startsWith(args[i]) || "-o".startsWith(args[i])) {
-				params.setBaseDir(args[++i]);
+				params.setOutputDirectory(args[++i]);
 			}
 			else if ("--package".startsWith(args[i]) || "-p".startsWith(args[i])) {
 				params.setPackageName(args[++i]);
@@ -125,9 +130,9 @@ public class Main {
 		catch (ParseError e) {
 			System.err.println("Error: A parse error occurred in the ADT file:" + e);
 		}
-//		catch (RuntimeException e) {
-//			System.err.println("Error: " + e.getMessage());
-//		}
+		catch (RuntimeException e) {
+			System.err.println("Error: " + e.getMessage());
+		}
 	}
 
 	static private void generateAPI(ADT adt) {

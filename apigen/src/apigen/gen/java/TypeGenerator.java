@@ -12,16 +12,42 @@ public class TypeGenerator extends JavaGenerator {
 	private Type type;
 	private String superClassName;
 	private String factoryName;
+	private String apiName;
 
 	protected TypeGenerator(GenerationParameters params, Type type) {
 		super(params);
 		this.type = type;
+		this.apiName = params.getApiName();
 		this.superClassName = GenericConstructorGenerator.className(params.getApiName());
 		this.factoryName = FactoryGenerator.className(params.getApiName());
 	}
 
 	public String getClassName() {
 		return className(type);
+	}
+
+	public String getPackageName() {
+		return StringConversions.decapitalize(apiName) + '.' + packageName(type);
+	}
+
+	public String getQualifiedClassName() {
+		return qualifiedClassName(type);
+	}
+
+	public static String qualifiedClassName(String type) {
+		return packageName(type) + '.' + className(type);
+	}
+
+	public static String qualifiedClassName(Type type) {
+		return qualifiedClassName(type.getId());
+	}
+
+	public static String packageName(Type type) {
+		return packageName(type.getId());
+	}
+
+	public static String packageName(String type) {
+		return StringConversions.decapitalize(type);
 	}
 
 	public static String className(Type type) {

@@ -4,14 +4,14 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class GenerationParameters {
-	private String baseDir = ".";
-	private String packageName = "";
-	private List imports = null;
+	private String outputDirectory;
+	private String packageName;
+	private List imports;
 	private String apiName;
-	private String prefix = "";
-	private boolean visitable = false;
-	private boolean verbose = false;
-	private boolean folding = false;
+	private String prefix;
+	private boolean visitable;
+	private boolean verbose;
+	private boolean folding;
 
 	public boolean isFolding() {
 		return folding;
@@ -33,12 +33,12 @@ public class GenerationParameters {
 		this.apiName = apiName;
 	}
 
-	public String getBaseDir() {
-		return baseDir;
+	public String getOutputDirectory() {
+		return outputDirectory;
 	}
 
-	public void setBaseDir(String baseDir) {
-		this.baseDir = baseDir;
+	public void setOutputDirectory(String outputDirectory) {
+		this.outputDirectory = outputDirectory;
 	}
 
 	public String getPackageName() {

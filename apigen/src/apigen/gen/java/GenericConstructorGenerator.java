@@ -9,6 +9,7 @@ import apigen.gen.StringConversions;
 
 public class GenericConstructorGenerator extends JavaGenerator {
 	private boolean visitable;
+	private String apiName;
 	private String className;
 	private String factoryName;
 	private ADT adt;
@@ -16,6 +17,7 @@ public class GenericConstructorGenerator extends JavaGenerator {
 	public GenericConstructorGenerator(ADT adt, GenerationParameters params) {
 		super(params);
 		this.adt = adt;
+		this.apiName = params.getApiName();
 		this.visitable = params.isVisitable();
 		this.className = className(params.getApiName());
 		this.factoryName = FactoryGenerator.className(params.getApiName());
@@ -61,49 +63,54 @@ public class GenericConstructorGenerator extends JavaGenerator {
 	}
 
 	private void genInitMethod() {
-		println("  protected void init(int hashCode, aterm.ATermList annos, aterm.AFun fun,	aterm.ATerm[] args) {");
+		println("  protected void init(int hashCode, aterm.ATermList annos, aterm.AFun fun, aterm.ATerm[] args) {");
 		println("    super.init(hashCode, annos, fun, args);");
 		println("  }");
+		println();
 	}
 
 	private void genInitHashcodeMethod() {
-		println("  protected void initHashCode(aterm.ATermList annos, aterm.AFun fun, aterm.ATerm[] i_args) {");
-		println("  	super.initHashCode(annos, fun, i_args);");
+		println("  protected void initHashCode(aterm.ATermList annos, aterm.AFun fun, aterm.ATerm[] args) {");
+		println("    super.initHashCode(annos, fun, args);");
 		println("  }");
+		println();
 	}
 
 	private void genGetFactoryMethod() {
 		println("  public " + factoryName + " get" + factoryName + "() {");
 		println("    return factory;");
 		println("  }");
+		println();
 	}
 
 	private void genSetTermMethod() {
 		println("  protected void setTerm(aterm.ATerm term) {");
-		println("   this.term = term;");
+		println("    this.term = term;");
 		println("  }");
+		println();
 	}
 
 	private void genToStringMethod() {
 		println("  public String toString() {");
 		println("    return toTerm().toString();");
 		println("  }");
+		println();
 	}
 
 	private void genToTermMethod() {
 		println("  abstract public aterm.ATerm toTerm();");
+		println();
 	}
 
 	private void genAccept() {
 		println("  abstract public void accept(Visitor v) throws jjtraveler.VisitFailure;");
+		println();
 	}
 
 	private void genDefaultTypePredicates() {
 		Iterator types = adt.typeIterator();
-
 		while (types.hasNext()) {
 			Type type = (Type) types.next();
-
 			genDefaultTypePredicate(type);
 		}
 	}
@@ -113,5 +120,13 @@ public class GenericConstructorGenerator extends JavaGenerator {
 		println("    return false;");
 		println("  }");
 		println();
+	}
+
+	public String getPackageName() {
+		return StringConversions.decapitalize(apiName);
+	}
+
+	public String getQualifiedClassName() {
+		return getClassName();
 	}
 }

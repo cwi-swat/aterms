@@ -13,8 +13,6 @@ public class AlternativeGenerator extends JavaGenerator {
 	private Type type;
 	private Alternative alt;
 	private String apiName;
-
-	private String typeId;
 	private String altId;
 	private String className;
 	private String superClassName;
@@ -25,9 +23,8 @@ public class AlternativeGenerator extends JavaGenerator {
 		this.visitable = params.isVisitable();
 		this.type = type;
 		this.alt = alt;
-		this.typeId = type.getId();
 		this.altId = alt.getId();
-		this.className = buildClassName(typeId, altId);
+		this.className = buildClassName(altId);
 		this.superClassName = TypeGenerator.className(type);
 	}
 
@@ -35,7 +32,11 @@ public class AlternativeGenerator extends JavaGenerator {
 		return className;
 	}
 
-	private static String buildClassName(String type, String alt) {
+	public static String qualifiedClassName(Type type, Alternative alt) {
+		return StringConversions.decapitalize(type.getId()) + '.' + className(alt);
+	}
+
+	private static String buildClassName(String alt) {
 		if (getConverter().isReserved(alt)) {
 			return alt;
 		}
@@ -44,12 +45,12 @@ public class AlternativeGenerator extends JavaGenerator {
 		}
 	}
 
-	public static String className(String type, String alt) {
-		return buildClassName(type, alt);
+	public static String className(String alt) {
+		return buildClassName(alt);
 	}
 
-	public static String className(Type type, Alternative alt) {
-		return className(type.getId(), alt.getId());
+	public static String className(Alternative alt) {
+		return className(alt.getId());
 	}
 
 	protected void generate() {
@@ -314,7 +315,7 @@ public class AlternativeGenerator extends JavaGenerator {
 	}
 
 	private void genOverrrideSetArgument(Type type, Alternative alt) {
-		String alt_classname = className(type, alt);
+		String alt_classname = className(alt);
 
 		println("  public aterm.ATermAppl setArgument(aterm.ATerm arg, int i) {");
 		if (type.getAltArity(alt) > 0) {
@@ -371,7 +372,7 @@ public class AlternativeGenerator extends JavaGenerator {
 	}
 
 	private void genAltMake(Type type, Alternative alt) {
-		String altClassName = className(type, alt);
+		String altClassName = className(alt);
 
 		println("  protected aterm.ATermAppl make(aterm.AFun fun, aterm.ATerm[] i_args," + " aterm.ATermList annos) {");
 		println(
@@ -384,7 +385,7 @@ public class AlternativeGenerator extends JavaGenerator {
 	}
 
 	private void genAltDuplicateMethod(Type type, Alternative alt) {
-		String altClassName = className(type, alt);
+		String altClassName = className(alt);
 
 		println("  public shared.SharedObject duplicate() {");
 		println("    " + altClassName + " clone = new " + altClassName + "(factory);");
@@ -396,7 +397,7 @@ public class AlternativeGenerator extends JavaGenerator {
 
 	private void genAltEquivalentMethod(Type type, Alternative alt) {
 		println("  public boolean equivalent(shared.SharedObject peer) {");
-		println("    if (peer instanceof " + className(type, alt) + ") {");
+		println("    if (peer instanceof " + className(alt) + ") {");
 		println("      return super.equivalent(peer);");
 		println("    }");
 		println("    return false;");
@@ -404,7 +405,7 @@ public class AlternativeGenerator extends JavaGenerator {
 	}
 
 	private void genAltVisitableInterface(Type type, Alternative alt) {
-		String altClassName = className(type, alt);
+		String altClassName = className(alt);
 
 		println("  public void accept(Visitor v) throws jjtraveler.VisitFailure");
 		println("  {");
@@ -427,5 +428,13 @@ public class AlternativeGenerator extends JavaGenerator {
 
 	private boolean hasReservedTypeFields(Type type, Alternative alt) {
 		return computeAltArityNotReserved(type, alt) < type.getAltArity(alt);
+	}
+
+	public String getPackageName() {
+		return StringConversions.decapitalize(apiName) + '.' + TypeGenerator.packageName(type);
+	}
+
+	public String getQualifiedClassName() {
+		return getPackageName() + '.' + getClassName();
 	}
 }

@@ -16,7 +16,7 @@ public class ForwardGenerator extends JavaGenerator {
 
 	public ForwardGenerator(ADT adt, GenerationParameters params) {
 		super(params);
-		setDirectory(params.getBaseDir());
+		setDirectory(params.getOutputDirectory());
 		setFileName(getClassName());
 		this.adt = adt;
 		this.constructor = GenericConstructorGenerator.className(params.getApiName());
@@ -42,36 +42,30 @@ public class ForwardGenerator extends JavaGenerator {
 			else {
 				while (alts.hasNext()) {
 					Alternative alt = (Alternative) alts.next();
-					genVisit(type, alt);
+					genVisit(alt);
 				}
 			}
 		}
 	}
 
 	private void genListVisit(Type type) {
-		String className = TypeGenerator.className(type);
-		String classImplName = ListTypeGenerator.className(type);
-		genVisitMethod(className, classImplName);
+		genVisitMethod(ListTypeGenerator.className(type));
 	}
 
-	private void genVisitMethod(String className, String classImplName) {
-		println("public void visit_" + className + "(" + classImplName + " arg) throws jjtraveler.VisitFailure {");
+	private void genVisitMethod(String className) {
+		println("public void visit_" + className + "(" + className + " arg) throws jjtraveler.VisitFailure {");
 		println("  any.visit(arg);");
 		println("}");
 	}
 
-	private void genVisit(Type type, Alternative alt) {
-		String className = AlternativeGenerator.className(type, alt);
-		String classImplName = AlternativeGenerator.className(type, alt);
-
-		genVisitMethod(className, classImplName);
+	private void genVisit(Alternative alt) {
+		genVisitMethod(AlternativeGenerator.className(alt));
 	}
 
 	protected void generate() {
 		printPackageDecl();
 
-		println("public class Fwd extends Visitor implements jjtraveler.Visitor");
-		println("{");
+		println("public class Fwd extends Visitor implements jjtraveler.Visitor {");
 		genConstructor();
 		genVoidVisit();
 		genVisits(adt);
@@ -79,10 +73,10 @@ public class ForwardGenerator extends JavaGenerator {
 	}
 
 	private void genConstructor() {
-		println("private jjtraveler.Visitor any;");
-		println("public Fwd (jjtraveler.Visitor v) {");
-		println("this.any = v;");
-		println("}");
+		println("  private jjtraveler.Visitor any;");
+		println("  public Fwd (jjtraveler.Visitor v) {");
+		println("    this.any = v;");
+		println("  }");
 	}
 
 	private void genVoidVisit() {
@@ -93,5 +87,13 @@ public class ForwardGenerator extends JavaGenerator {
 		println("      any.visit(v);");
 		println("    }");
 		println("  }");
+	}
+
+	public String getPackageName() {
+		return "";
+	}
+
+	public String getQualifiedClassName() {
+		return getClassName();
 	}
 }

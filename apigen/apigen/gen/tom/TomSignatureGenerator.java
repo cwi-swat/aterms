@@ -18,7 +18,7 @@ public class TomSignatureGenerator extends Generator {
 	private String prefix;
 
 	public TomSignatureGenerator(ADT adt, TomSignatureImplementation impl, GenerationParameters params) {
-		super(params.getBaseDir(), StringConversions.makeIdentifier(params.getApiName()), ".tom");
+		super(params.getOutputDirectory(), StringConversions.makeIdentifier(params.getApiName()), ".tom");
 		this.adt = adt;
 		this.impl = impl;
 		this.prefix = params.getPrefix();
