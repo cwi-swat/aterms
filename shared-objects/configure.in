@@ -1,7 +1,7 @@
 dnl $Id$
 
 AC_INIT(configure.in)
-AM_INIT_AUTOMAKE(shared-objects, 1.1beta)
+AM_INIT_AUTOMAKE(shared-objects, 1.1)
 
 AC_SET_MAKE
 
