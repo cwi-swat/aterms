@@ -1,6 +1,8 @@
 # $Id$
 
 Mon Dec  1 14:12:47 CET 2003 <{jong,jurgenv}@cwi.nl>
+ * apigen/gen/c:
+   - write generation parameters after generation to shell variables
  * apigen/gen/java:
    - normalize generated packagenames to all-lowercase. This is needed
      because Java does not allow package <X> and class <X>.java in the
@@ -10,6 +12,7 @@ Mon Dec  1 14:12:47 CET 2003 <{jong,jurgenv}@cwi.nl>
    - remove <Apiname> in <Apiname>Factory.java
    - update tests to reflect recent changes.
  * apigen/utils/adt-to-java.src: forcefully remove generated apigen.env
+ * apigen/utils/adt-to-c.src: adapted to be analogous to adt-to-java.src
 
 Fri Nov 28 10:18:16 CET 2003 <jong@cwi.nl>
  * adt-to-java.src: sunos' /bin/sh does not know "source", only "."

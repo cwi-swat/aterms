@@ -14,7 +14,7 @@ public class CGenerationParameters extends GenerationParameters {
 		Iterator iter = args.iterator();
 		while (iter.hasNext()) {
 			String arg = (String) iter.next();
-			if ("-prefix".startsWith(arg)) {
+			if ("--prefix".startsWith(arg)) {
 				shift(iter);
 				setPrefix(shiftArgument(iter));
 			}
@@ -22,11 +22,11 @@ public class CGenerationParameters extends GenerationParameters {
 				shift(iter);
 				setFolding(true);
 			}
-			else if ("-prologue".startsWith(arg)) {
+			else if ("--prologue".startsWith(arg)) {
 				shift(iter);
 				setPrologue(shiftArgument(iter));
 			}
-			else if ("-compatible:term".equals(arg)) {
+			else if ("--term-compatibility".equals(arg)) {
 				shift(iter);
 				setTermCompatibility(true);
 			}
@@ -36,10 +36,10 @@ public class CGenerationParameters extends GenerationParameters {
 	
 	public String usage() {
 		StringBuffer buf = new StringBuffer();
-		buf.append("\t-prefix <prefix>          [\"\"]\n");
-		buf.append("\t-f | --folding                 [off]\n");
-		buf.append("\t-prologue <file>          include prologue <file>\n");
-		buf.append("\t-compatible:term          use backwards compatible toTerm names\n");
+		buf.append("\t--prefix <prefix>         [\"\"]\n");
+		buf.append("\t--folding                 [off]\n");
+		buf.append("\t--prologue <file>         include prologue <file>\n");
+		buf.append("\t--term-compatibility      use backwards compatible toTerm names\n");
 		return buf.toString();
 	}
 

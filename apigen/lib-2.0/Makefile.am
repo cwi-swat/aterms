@@ -4,7 +4,7 @@ INCLUDES = \
 	-I$(ATERM)/include \
 	-I$(PT_SUPPORT)/include
 
-ADT_TO_C = ${top_builddir}/utils/adt-to-c
+ADT_TO_C = ${top_builddir}/utils/adt-to-c-test
 lib_LIBRARIES = libADT.a
 include_HEADERS = ADT.h ADT_dict.h ADT-utils.h
 
@@ -19,5 +19,4 @@ ADT.c ADT.h ADT.dict ADT_dict.c ADT_dict.h: ADT.adt ADT.pro
 		--input ADT.adt \
 		--name ADT \
 		--prologue ADT.pro \
-		--prefix ADT_ \
-		--classpath ${top_builddir}:${EXTERNAL_JARS}
+		--prefix ADT_

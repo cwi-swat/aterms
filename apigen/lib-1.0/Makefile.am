@@ -4,7 +4,7 @@ INCLUDES = \
 	-I$(ATERM)/include \
 	-I$(PT_SUPPORT)/include
 
-ADT_TO_C = ${top_builddir}/utils/adt-to-c
+ADT_TO_C = ${top_builddir}/utils/adt-to-c-test
 noinst_LIBRARIES = libADT10.a
 noinst_HEADERS = ADT10.h ADT10_dict.h 
 
@@ -19,5 +19,4 @@ ADT10.c ADT10.h ADT10.dict ADT10_dict.c ADT10_dict.h: ADT10.adt ADT10.pro
 		--input ADT10.adt \
 		--name ADT10 \
 		--prologue ADT10.pro \
-		--prefix ADT10_	 \
-		--classpath ${top_builddir}:${EXTERNAL_JARS}
+		--prefix ADT10_

@@ -1,6 +1,6 @@
 # $Id$
 
-ADTTOC = ${top_builddir}/utils/adt-to-c --verbose
+ADTTOC = ${top_builddir}/utils/adt-to-c-test
 
 ADTTOJAVA = ${top_builddir}/utils/adt-to-java-test
 
@@ -72,22 +72,19 @@ rolodex.c rolodex.h: rolodex.adt
 	$(ADTTOC) \
 		--input ${top_srcdir}/test/rolodex.adt \
 		--name rolodex \
-		--compat-term \
-		--classpath ${top_builddir}:${JAVA_ATERM}
+		--term-compatibility
 
 list.c list.h: list.adt list.pro
 	$(ADTTOC) \
 		--input ${top_srcdir}/test/list.adt \
 		--name list \
 		--prologue ${top_srcdir}/test/list.pro \
-		--compat-term \
-		--classpath ${top_builddir}:${JAVA_ATERM}
+		--term-compatibility
 
 builtins.c builtins.h: builtins.adt 
 	$(ADTTOC) \
 		--input ${top_srcdir}/test/builtins.adt \
-		--name builtins \
-		--classpath ${top_builddir}:${JAVA_ATERM}
+		--name builtins
 
 %.java.sh: Makefile
 	$(ADTTOJAVA) \

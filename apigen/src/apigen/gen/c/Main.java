@@ -1,5 +1,8 @@
 package apigen.gen.c;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -62,5 +65,16 @@ public class Main {
 		APIGenerator apigen = new APIGenerator(params, adt);
 		apigen.run();
 		new CDictionaryGenerator(adt, params, factory, apigen.getAFunRegister()).run();
+		try {
+			PrintStream out = new PrintStream(new FileOutputStream("apigen.env"));
+			out.println("APINAME=" + params.getApiName());
+			out.println("VERSION=" + params.getVersion());
+			out.println("DIRECTORY=" + params.getOutputDirectory());
+			out.close();
+		}
+		catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+
 	}
 }
