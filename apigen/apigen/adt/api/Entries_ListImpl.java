@@ -3,40 +3,33 @@ package apigen.adt.api;
 abstract public class Entries_ListImpl
 extends Entries
 {
-  static private aterm.ATerm pattern = null;
-
-  protected aterm.ATerm getPattern() {
-    return pattern;
+  Entries_ListImpl(ADTFactory factory) {
+    super(factory);
   }
   private static int index_head = 0;
   private static int index_tail = 1;
   public shared.SharedObject duplicate() {
-    Entries_List clone = new Entries_List();
+    Entries_List clone = new Entries_List(factory);
      clone.init(hashCode(), getAnnotations(), getAFun(), getArgumentArray());
     return clone;
   }
 
+  public boolean equivalent(shared.SharedObject peer) {
+    if (peer instanceof Entries_List) {
+      return super.equivalent(peer);
+    }
+    return false;
+  }
   protected aterm.ATermAppl make(aterm.AFun fun, aterm.ATerm[] i_args, aterm.ATermList annos) {
     return getADTFactory().makeEntries_List(fun, i_args, annos);
   }
-  static public void initializePattern()
-  {
-    pattern = getStaticFactory().parse("[<term>,<list>]");
+  public aterm.ATerm toTerm() {
+    if (term == null) {
+      term = getADTFactory().toTerm(this);
+    }
+    return term;
   }
 
-  static public Entries fromTerm(aterm.ATerm trm)
-  {
-    java.util.List children = trm.match(pattern);
-
-    if (children != null) {
-      Entries tmp = getStaticADTFactory().makeEntries_List(Entry.fromTerm( (aterm.ATerm) children.get(0)), Entries.fromTerm( (aterm.ATerm) children.get(1)));
-      tmp.setTerm(trm);
-      return tmp;
-    }
-    else {
-      return null;
-    }
-  }
   public boolean isList()
   {
     return true;

@@ -1,40 +1,19 @@
 package apigen.adt.api;
 
-import java.io.IOException;
+import aterm.*;
 import java.io.InputStream;
+import java.io.IOException;
 
 abstract public class EntryImpl extends ADTConstructor
 {
-  public static Entry fromString(String str)
-  {
-    aterm.ATerm trm = getStaticADTFactory().parse(str);
-    return fromTerm(trm);
-  }
-  public static Entry fromTextFile(InputStream stream) throws aterm.ParseError, IOException
-  {
-    aterm.ATerm trm = getStaticADTFactory().readFromTextFile(stream);
-    return fromTerm(trm);
+  EntryImpl(ADTFactory factory) {
+     super(factory);
   }
   public boolean isEqual(Entry peer)
   {
     return term.isEqual(peer.toTerm());
   }
-  public static Entry fromTerm(aterm.ATerm trm)
-  {
-    Entry tmp;
-    if ((tmp = Entry_Constructor.fromTerm(trm)) != null) {
-      return tmp;
-    }
-
-    if ((tmp = Entry_List.fromTerm(trm)) != null) {
-      return tmp;
-    }
-
-
-    throw new RuntimeException("This is not a Entry: " + trm);
-  }
-
-  public boolean isEntry()  {
+  public boolean isSortEntry()  {
     return true;
   }
 
@@ -107,7 +86,6 @@ abstract public class EntryImpl extends ADTConstructor
   {
      throw new RuntimeException("This Entry has no ElemSort");
   }
-
 
 }
 

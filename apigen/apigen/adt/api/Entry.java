@@ -1,7 +1,10 @@
 package apigen.adt.api;
 
-abstract public class Entry
+public abstract class Entry
 extends EntryImpl
 {
+  Entry(ADTFactory factory) {
+    super(factory);
+  }
 
 }

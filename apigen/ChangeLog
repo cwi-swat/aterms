@@ -10,6 +10,7 @@
  * Each class overrides the equivalent method that uses an instanceof and then
    super.equivalent. This prevents that the SharedObjectFactory returns an object
    of the wrong type, but with the same hashCode.
+ * Bootstrapped ApiGen with new ADT api
    
 2003-08-13    <pem@bach>
 	* apigen/gen/java/FactoryGenerator.java: fix a major bug in the 

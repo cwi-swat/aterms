@@ -6,36 +6,14 @@ import java.io.IOException;
 
 abstract public class EntriesImpl extends ADTConstructor
 {
-  public static Entries fromString(String str)
-  {
-    aterm.ATerm trm = getStaticADTFactory().parse(str);
-    return fromTerm(trm);
-  }
-  public static Entries fromTextFile(InputStream stream) throws aterm.ParseError, IOException
-  {
-    aterm.ATerm trm = getStaticADTFactory().readFromTextFile(stream);
-    return fromTerm(trm);
+  EntriesImpl(ADTFactory factory) {
+     super(factory);
   }
   public boolean isEqual(Entries peer)
   {
     return term.isEqual(peer.toTerm());
   }
-  public static Entries fromTerm(aterm.ATerm trm)
-  {
-    Entries tmp;
-    if ((tmp = Entries_Empty.fromTerm(trm)) != null) {
-      return tmp;
-    }
-
-    if ((tmp = Entries_List.fromTerm(trm)) != null) {
-      return tmp;
-    }
-
-
-    throw new RuntimeException("This is not a Entries: " + trm);
-  }
-
-  public boolean isEntries()  {
+  public boolean isSortEntries()  {
     return true;
   }
 
@@ -78,7 +56,6 @@ abstract public class EntriesImpl extends ADTConstructor
   {
      throw new RuntimeException("This Entries has no Tail");
   }
-
 
 }
 

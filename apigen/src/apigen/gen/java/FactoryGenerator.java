@@ -49,7 +49,7 @@ public class FactoryGenerator extends JavaGenerator {
 		genAlternativeMethods(api);
 		genFactoryMakeLists(api);
 		genTypeFromTermMethods(api);
-		genTypeFromStringMethods(api);
+		genTypeFromMethods(api);
 		println("}");
 	}
 
@@ -67,13 +67,14 @@ public class FactoryGenerator extends JavaGenerator {
 		}
 	}
 
-	private void genTypeFromStringMethods(ADT api) {
+	private void genTypeFromMethods(ADT api) {
 		Iterator types = api.typeIterator();
 
 		while (types.hasNext()) {
 			Type type = (Type) types.next();
 
 			genTypeFromStringMethod(type);
+			genTypeFromFileMethod(type);
 		}
 	}
 
@@ -523,7 +524,6 @@ public class FactoryGenerator extends JavaGenerator {
 
 	protected void genTypeFromStringMethod(Type type) {
 		String className = TypeGenerator.className(type);
-		String get_factory = "get" + FactoryGenerator.className(apiName) + "()";
 
 		println(
 			"  public "
@@ -534,6 +534,14 @@ public class FactoryGenerator extends JavaGenerator {
 		println("  {");
 		println("    aterm.ATerm trm = parse(str);");
 		println("    return " + className + "FromTerm(trm);");
+		println("  }");
+	}
+	
+	protected void genTypeFromFileMethod(Type type) {
+		String className = TypeGenerator.className(type);
+		
+		println("  public " + className + " " + className + "FromFile(java.io.InputStream stream) throws java.io.IOException {");
+		println("    return " + className + "FromTerm(readFromFile(stream));");
 		println("  }");
 	}
 

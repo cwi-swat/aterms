@@ -124,7 +124,7 @@ public class Main {
 		try {
 			ADTFactory factory = new ADTFactory();
 			ATerm raw = factory.readFromFile(input);
-			Entries entries = Entries.fromTerm(raw);
+			Entries entries = factory.EntriesFromTerm(raw);
 			generateAPI(new ADT(entries));
 		} catch (ParseError e) {
 			System.err.println("A parse error occurred in the ADT file:");

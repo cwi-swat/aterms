@@ -23,7 +23,7 @@ public class ListTest {
     boolean exceptionThrown = false;
     
     try {
-      mods[0] = Modules.fromTerm(
+      mods[0] = factory.ModulesFromTerm(
         factory.parse("meuk([\"m1\",\"m2\",\"m3\",\"m4\"])"));
     }
     catch (RuntimeException e) {
@@ -33,7 +33,7 @@ public class ListTest {
     testAssert(exceptionThrown, "negative fromTermTest");
     exceptionThrown = false;
     
-    mods[0]= Modules.fromTerm(factory.parse("[\"m1\",\"m2\",\"m3\",\"m4\"]"));
+    mods[0]= factory.ModulesFromTerm(factory.parse("[\"m1\",\"m2\",\"m3\",\"m4\"]"));
     
     mod[0] = mods[0].getHead();
     testAssert("\"m1\"".equals(mod[0].toString()), "getFirstTest");
@@ -77,6 +77,17 @@ public class ListTest {
     l = factory.makeModuleList_Modules(mods[3]);
     testAssert(l.isSortModuleList() == true, "is<type> test");
     testAssert(l.isModules() == true, "is<cons> test");
+
+    /* Test whether we get a term of the correct type! A ClassCastException
+     * will occur otherwise
+     */
+    String example = "[]";
+    aterm.ATerm termExample = factory.parse(example);
+    mods[4] = (Modules) factory.makeModules();
+
+    example = "\"amodule\"";
+    termExample = factory.parse(example);
+    Module amodule = (Module) factory.makeModule_Default(example);
         
   }
 

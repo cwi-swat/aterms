@@ -3,46 +3,29 @@ package apigen.adt.api;
 abstract public class Entry_ListImpl
 extends Entry
 {
-  static private aterm.ATerm pattern = null;
-
-  protected aterm.ATerm getPattern() {
-    return pattern;
+  Entry_ListImpl(ADTFactory factory) {
+    super(factory);
   }
   private static int index_sort = 0;
   private static int index_elemSort = 1;
   public shared.SharedObject duplicate() {
-    Entry_List clone = new Entry_List();
+    Entry_List clone = new Entry_List(factory);
      clone.init(hashCode(), getAnnotations(), getAFun(), getArgumentArray());
     return clone;
   }
 
+  public boolean equivalent(shared.SharedObject peer) {
+    if (peer instanceof Entry_List) {
+      return super.equivalent(peer);
+    }
+    return false;
+  }
   protected aterm.ATermAppl make(aterm.AFun fun, aterm.ATerm[] i_args, aterm.ATermList annos) {
     return getADTFactory().makeEntry_List(fun, i_args, annos);
   }
-  static public void initializePattern()
-  {
-    pattern = getStaticFactory().parse("list(<term>,<term>)");
-  }
-
-  static public Entry fromTerm(aterm.ATerm trm)
-  {
-    java.util.List children = trm.match(pattern);
-
-    if (children != null) {
-      Entry tmp = getStaticADTFactory().makeEntry_List((aterm.ATerm) children.get(0), (aterm.ATerm) children.get(1));
-      tmp.setTerm(trm);
-      return tmp;
-    }
-    else {
-      return null;
-    }
-  }
   public aterm.ATerm toTerm() {
-    if(term == null) {
-      java.util.List args = new java.util.LinkedList();
-      args.add((aterm.ATerm) getArgument(0));
-      args.add((aterm.ATerm) getArgument(1));
-      setTerm(getFactory().make(getPattern(), args));
+    if (term == null) {
+      term = getADTFactory().toTerm(this);
     }
     return term;
   }

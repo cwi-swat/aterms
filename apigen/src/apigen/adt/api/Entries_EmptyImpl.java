@@ -3,38 +3,31 @@ package apigen.adt.api;
 abstract public class Entries_EmptyImpl
 extends Entries
 {
-  static private aterm.ATerm pattern = null;
-
-  protected aterm.ATerm getPattern() {
-    return pattern;
+  Entries_EmptyImpl(ADTFactory factory) {
+    super(factory);
   }
   public shared.SharedObject duplicate() {
-    Entries_Empty clone = new Entries_Empty();
+    Entries_Empty clone = new Entries_Empty(factory);
      clone.init(hashCode(), getAnnotations(), getAFun(), getArgumentArray());
     return clone;
   }
 
+  public boolean equivalent(shared.SharedObject peer) {
+    if (peer instanceof Entries_Empty) {
+      return super.equivalent(peer);
+    }
+    return false;
+  }
   protected aterm.ATermAppl make(aterm.AFun fun, aterm.ATerm[] i_args, aterm.ATermList annos) {
     return getADTFactory().makeEntries_Empty(fun, i_args, annos);
   }
-  static public void initializePattern()
-  {
-    pattern = getStaticFactory().parse("[]");
+  public aterm.ATerm toTerm() {
+    if (term == null) {
+      term = getADTFactory().toTerm(this);
+    }
+    return term;
   }
 
-  static public Entries fromTerm(aterm.ATerm trm)
-  {
-    java.util.List children = trm.match(pattern);
-
-    if (children != null) {
-      Entries tmp = getStaticADTFactory().makeEntries_Empty();
-      tmp.setTerm(trm);
-      return tmp;
-    }
-    else {
-      return null;
-    }
-  }
   public boolean isEmpty()
   {
     return true;

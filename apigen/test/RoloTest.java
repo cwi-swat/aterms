@@ -15,7 +15,7 @@ public class RoloTest
 
   public void run() throws jjtraveler.VisitFailure, java.io.IOException {
       RoloList list = 
-      RoloList.fromTerm(factory.readFromFile(directory + "/rolodex.trm"));
+      factory.RoloListFromTerm(factory.readFromFile(directory + "/rolodex.trm"));
 
       Collector c = new Collector();
       jjtraveler.Visitor tester = new jjtraveler.BottomUp(c);
