@@ -5,18 +5,22 @@
 #include <time.h>
 #include <_aterm.h>
 
-#define MAX_SYMBOLS   1024;
-
 /*{{{  checks for rand48() suite */
 
+#if HAVE_CONFIG_H
+#  include "config.h"
+#endif
+
 #if HAVE_LRAND48 && HAVE_SRAND48
-/* Use the rand48() suite */
+  /* Use the rand48() suite */
 #else
 #define lrand48()   random()
 #define srand48(s)  srandom(s)
 #endif
 
 /*}}}  */
+
+#define MAX_SYMBOLS   1024;
 
 /*{{{  variables */
 

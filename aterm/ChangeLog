@@ -1,5 +1,9 @@
 $Id$
 
+2002/06/05 <jong@cwi.nl>
+* minor tweaks to satisfy autoconf/automake versions up to 1.6.1
+* Start 1.6.8beta
+
 2002/04/22 <jurgenv@cwi.nl>
 * Release 1.6.7
 
