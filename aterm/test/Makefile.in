@@ -15,26 +15,31 @@ CC_GCC		= @CC_GCC@
 CC_CC		= @CC_CC@
 CC_DBG		= @CC_DBG@
 CC_PROF		= @CC_PROF@
+CC_NS		= @CC_DBG@
 
 CFLAGS_CC	= @CFLAGS_CC@
 CFLAGS_GCC	= @CFLAGS_GCC@
 CFLAGS_DBG	= @CFLAGS_DBG@
 CFLAGS_PROF	= @CFLAGS_PROF@
+CFLAGS_NS	= @CFLAGS_DBG@
 
 DEFS_CC		= @DEFS_CC@
 DEFS_GCC	= @DEFS_GCC@
 DEFS_DBG	= @DEFS_DBG@
 DEFS_PROF	= @DEFS_PROF@
+DEFS_NS		= @DEFS_DBG@ -DNO_SHARING
 
 INCL_CC		= @INCL_CC@
 INCL_GCC	= @INCL_GCC@
 INCL_DBG	= @INCL_DBG@
 INCL_PROF	= @INCL_PROF@
+INCL_NS		= @INCL_DBG@
 
 LFLAGS_CC	= @LFLAGS_CC@
 LFLAGS_GCC	= @LFLAGS_GCC@
 LFLAGS_DBG	= @LFLAGS_DBG@
-LFLAGS_PROF	= @LFLAGS_PROF@ 
+LFLAGS_PROF	= @LFLAGS_PROF@
+LFLAGS_NS	= @LFLAGS_DBG@ 
 
 LIBS_CC		= -L../aterm -L../asfix -L../toolbus \
 			-lATerm-cc -lAsFix-cc -lATB-cc @LIBS@
@@ -44,6 +49,8 @@ LIBS_DBG	= -L../aterm -L../asfix -L../toolbus \
 			-lATerm-dbg -lAsFix-dbg -lATB-dbg @LIBS@
 LIBS_PROF	= -L../aterm -L../asfix -L../toolbus \
 			-lATerm-prof -lAsFix-prof -lATB-prof @LIBS@
+LIBS_NS		= -L../aterm -L../asfix -L../toolbus \
+			-lATerm-ns -lAsFix-dbg -lATB-dbg @LIBS@
 
 INSTALL		= @INSTALL@
 INSTALL_PRG	= @INSTALL_PRG@
@@ -52,7 +59,7 @@ INSTALL_DAT	= @INSTALL_DAT@
 TOOLBUS		= @TOOLBUS@
 INCL		= -I../asfix -I../aterm -I../toolbus
 TESTPRGS	= stress-cc stress-gcc primes-cc primes-gcc asfixtest \
-		test-tool test-tool2
+		stress-ns primes-ns test-tool test-tool2
 TESTSRCS	= stress.c asfixtest.c primes.c test-tool.c test-tool2.c
 TESTOBJS	= stress.o asfixtest.o primes.o test-tool.o test-tool2.o
 DISTFILES	= test.tb test2.tb Test.asfix test.trms error.trm Makefile.in \
@@ -74,12 +81,18 @@ stress-cc: stress.c
 stress-gcc: stress.c
 	$(CC_DBG) $(CFLAGS_DBG) $(DEFS_GCC) $(INCL) $(LFLAGS) -o stress-gcc stress.c $(LIBS_DBG)
 
+stress-ns: stress.c
+	$(CC_NS) $(CFLAGS_NS) $(DEFS_NS) $(INCL) $(LFLAGS) -o stress-ns stress.c $(LIBS_NS)
+
 asfixtest: asfixtest.c
 	$(CC_DBG) $(CFLAGS_DBG) $(DEFS_DBG) $(INCL) $(LFLAGS) -o asfixtest asfixtest.c \
 	-L../asfix -lAsFix-gcc $(LIBS_DBG)
 
 primes-cc: primes.c
-	$(CC_CC) $(CFLAGS_CC) $(DEFS_PROF) $(INCL) $(LFLAGS) -o primes-cc primes.c $(LIBS_CC)
+	$(CC_CC) $(CFLAGS_CC) $(DEFS_CC) $(INCL) $(LFLAGS) -o primes-cc primes.c $(LIBS_CC)
+
+primes-ns: primes.c
+	$(CC_NS) $(CFLAGS_NS) $(DEFS_NS) $(INCL) $(LFLAGS) -o primes-ns primes.c $(LIBS_NS)
 
 primes-gcc: primes.c
 	$(CC_DBG) $(CFLAGS_DBG) $(INCL) $(LFLAGS) -o primes-gcc primes.c $(LIBS_DBG)
@@ -95,11 +108,11 @@ vararg3: vararg3.c
 
 test-tool: test-tool.c
 	$(CC_DBG) $(CFLAGS_DBG) $(INCL) $(LFLAGS) -o test-tool test-tool.c \
-		$(LIBS_DBG) -L../toolbus -lATB-dbg -lsocket -lnsl
+		-L../toolbus -lATB-dbg ${LIBS_DBG}
 
 test-tool2: test-tool2.c tool2.tif.c tool2.tif.h
 	$(CC_DBG) $(CFLAGS_DBG) $(INCL) $(LFLAGS) -o test-tool2 test-tool2.c \
-		tool2.tif.c $(LIBS_DBG) -L../toolbus -lATB-dbg -lsocket -lnsl
+		tool2.tif.c -L../toolbus -lATB-dbg ${LIBS_DBG}
 
 tool2.tif.c tool2.tif.h: test2.tifs
 	../toolbus/tifstoc -tool tool2 test2.tifs

@@ -7,6 +7,7 @@
 
 #include <stdio.h>
 #include <assert.h>
+#include <unistd.h>
 #include "_aterm.h"
 #include "memory.h"
 #include "afun.h"
@@ -193,13 +194,13 @@ testAppl(void)
 			 apples[1], apples[0], apples[1]);
   apples[6] = ATsetArgument(apples[2], (ATerm)apples[0], 0);
 
-  assert(apples[6] == apples[1]);
-  assert(apples[1] == apples[3]);
-  assert(apples[2] != apples[1]);
-  assert(apples[2] != apples[6]);
-  assert(apples[1] != apples[2]);
-  assert(apples[2] != apples[3]);
-  assert(apples[0] != apples[1]);
+  assert(ATisEqual(apples[6], apples[1]));
+  assert(ATisEqual(apples[1], apples[3]));
+  assert(!ATisEqual(apples[2], apples[1]));
+  assert(!ATisEqual(apples[2], apples[6]));
+  assert(!ATisEqual(apples[1], apples[2]));
+  assert(!ATisEqual(apples[2], apples[3]));
+  assert(!ATisEqual(apples[0], apples[1]));
 
   ATprintf("application tests ok.\n");
 }
@@ -617,11 +618,13 @@ void testGC()
 	test_assert("gc", 11, AT_isValidTerm(t[11]));
 	
 	AT_markTerm(t[12]);
+#ifndef NO_SHARING
 	test_assert("gc-mark", 0, IS_MARKED(t[0]->header));
 	test_assert("gc-mark", 1, IS_MARKED(t[1]->header));
 	test_assert("gc-mark", 2, IS_MARKED(t[12]->header));
 	test_assert("gc-mark", 3, !IS_MARKED(t[2]->header));
 	test_assert("gc-mark", 4, AT_isMarkedSymbol(ATgetSymbol((ATermAppl)t[0])));
+#endif
 
 	printf("gc tests ok.\n");	
 }
@@ -704,7 +707,26 @@ void testTable()
 
 void testBaffle()
 {
-	test_assert("baffle", 1, AT_calcUniqueSubterms(ATparse("f(a,[1])")) == 4);
+	char buf[64];
+	FILE *file;
+
+	test_assert("baffle", 1, AT_calcUniqueSubterms(ATparse("f(a,[1])"))==5);
+	sprintf(buf, "baffle-test-%d.baf", (int)getpid());
+	file = fopen(buf, "w");
+	if(file) {
+	  ATerm test2, test1 = ATparse("f(1,a,<abc>,[24,g]{[a,b]})");	
+	  test_assert("baffle", 2, ATwriteToBinaryFile(test1, file));
+	  fclose(file);
+	  file = fopen(buf, "r");
+	  test2 = ATreadFromBinaryFile(file); 
+	  test_assert("baffle", 3, test2);
+	  test_assert("baffle", 4, ATisEqual(test1, test2));
+	  fclose(file);
+	  unlink(buf);
+	} else {
+	  fprintf(stderr, "warning could not open file: %s for writing.\n", buf);
+	}
+
 	printf("baffle tests ok.\n");
 }
 
