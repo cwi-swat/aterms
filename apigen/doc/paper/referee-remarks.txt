@@ -124,13 +124,8 @@ rules.
  the paper can not be extended due to page limitation then authors can
  shorten some lenghty explanations in sections 2, 3 and 4.
 
-We feel that the for this "Special Issue on ATerms" the focus of the
-paper should be on the description of the techniques used and the
-relation to ATerms. We do agree that we could probably elaborate on
-the figures described in Section 5 (application of our techniques to
-the Meta Environment) in a paper that describes different techniques,
-e.g. evaluating and comparing  their efficiency or amount of code
-reduction.
+We have elaborated and improved Section 5 to better explain our
+experiences in applying "apigen" to the Meta Environment.
 
 
  - In the related work authors compare their work with Grammars as
