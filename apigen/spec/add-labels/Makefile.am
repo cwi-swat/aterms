@@ -4,6 +4,6 @@
 # $Id$
 #
 
-pkgdata_DATA	= AddLabels.asf
+pkgdata_DATA	= AddLabels.eqs
 
-EXTRA_DIST	= AddLabels.asf
+EXTRA_DIST	= AddLabels.eqs
