@@ -25,10 +25,10 @@ manual.ps: manual.dvi
 	dvips manual.dvi
 
 header.ps: header.fig
-	fig2dev -Lps header.fig header.ps
+	/home/mdejonge/bin/fig2dev-3.2 -Lps header.fig header.ps
 
 encoding.ps: encoding.fig
-	fig2dev -Lps encoding.fig encoding.ps
+	/home/mdejonge/bin/fig2dev-3.2 -Lps encoding.fig encoding.ps
 
 spell: at.ltx
 #	detex at.ltx | spell +words.txt

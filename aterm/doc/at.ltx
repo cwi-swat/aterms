@@ -45,45 +45,70 @@ present a time and space efficient implementation of this datatype.
 %{{{ Introduction
 
 \section{Introduction}
-We are working on a number of applications in the area of interactive
-programming environments, that use a common datatype called \emph{\ATerm} 
-to exchange data. Typical examples of these applications include
-parsers, compilers, typecheckers, and syntax directed editors.
+Modern software systems consist of components which often
+interact with each other using a so-called software coordination
+architecture.
+The data exchanged and processed by these components may be very diverse.
+We developed a common datatype, called \emph{\ATerm},
+to be used for the exchange of information
+between components but which can also be directly processed by them.
 
-For a lot of these applications, the \ATerm\ datatype is very close to the
-datatypes in the problem domain itself. It is therefore very natural to 
-use \ATerms\ for internal computations as well as for the exchange of data.
+Given the fact that we are working on applications in the area of interactive
+programming environments \cite{Kli93.meta,BKMO97}, 
+such a common datatype is of great convience
+when exchanging data. Typical examples of these applications include
+parsers, compilers, typecheckers, and syntax directed editors.
+Typical data being exchanged between and processed by these applications
+are (abstract) syntax trees.
+The \ATerm\ datatype is very close to this kind of
+datatype, it is therefore very natural to use \ATerms\ for internal 
+computations. By providing a well-defined set of functions it is possible
+to perform operations on the \ATerms\ without conversion to component
+specific datatypes.
+
+The applications being developed using the interactive programming environment
+vary from developing tools for domain specific languages \cite{DK98} 
+to development of factories for  renovation of COBOL programs \cite{BSV97}. 
 Because of the size of the problems that these applications
 need to handle, we need a very efficient implementation of this
-datatype, both in time and space.
+datatype, both in time and space requirements.
+
+XXX Organisation of the paper XXX
 
 %}}}
 %{{{ The application domain
 
-\section{Application domain}
+\section{ATerm Functionality}
 
-The \ATerm\ datatype is designed for applications that operate on
-trees where each node of a tree consists of a function symbol 
-and a number of arguments.
-%% In the leaves of these trees, two types of numeric datatypes are
-%%also allowed, namely \emph{reals} and \emph{integers}.
-%%Besides using function application, two other constructors are
-%%provided to build complex terms, the \emph{list} constructor to build
-%%lists of terms and \emph{placeholders} that represent typed `holes' in terms.
-%%Every term can have an optional \emph{annotation} that is used to hold
-Typical examples include parse trees and abstract syntax trees used
-in compilers, and terms used in functional language implementations 
-and rewrite engines.
+The applications that will use the \ATerm\ datatype are mainly
+in the field of language processing tools, such as programming
+environments and program transformation tools.
+These tools mainly operate on (abstract) syntax trees where
+each node of a tree consists of a function symbol (the
+production rule) and zero or more arguments (descendents). 
+The \ATerm\ datatype is also used to terms that are
+rewritten by rewrite engines such as interpreters and 
+compilers \cite{BHKO98}.
+Both types of applications, representation of (abstract) syntax trees
+and terms in rewrite engines, ask for an efficient representation
+of function application. 
 
-Besides function applications, a small number of other subtypes
+Besides these function applications, a small number of other subtypes
 are allowed, to make the \ATerm\ datatype more generally applicable.
 These subtypes include integer constants, real number constants,
 binary large objects (blobs), lists of aterms, and the special
 placeholder subtype that is used to indicate typed holes in \ATerms.
 
-Every \ATerm\ can have a list of \emph{annotations} associated with
-it (hence the name \emph{Annotated Terms}). These annotations are used
-to label \ATerms\ with extra information.
+The fact that the \ATerm\ datatype is used within the components
+of language processing tools demands extra functionality with respect
+to storage facilities of auxilary non-structural information derived by these
+components, e.g., a parser may add coordinates to the nodes
+describing the actual yield of the node in the text and a formatter
+may add font and/or color information used by an editor when displaying
+the textual representation of the tree.
+So, an \ATerm\ can be extended with a list of \emph{annotations}
+(hence the name \emph{Annotated Terms}), and these annotations are used
+to add extra information to the \ATerms.
 
 %}}}
 %{{{ The ATerm datatype
