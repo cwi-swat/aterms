@@ -32,6 +32,8 @@
 #define TRM_STACK_REL(idx)	(term_stack_depth - (idx) + 10) /* skip CMD's */
 #define SYM_STACK_REL(idx)	(sym_stack_depth - (idx))
 
+#define DEFAULT_ARG_STACK_SIZE 1024
+
 /*}}}  */
 
 /*{{{  global variables */
@@ -44,8 +46,9 @@ static ATermTable	term_stack;
 static int			sym_stack_depth;
 static ATermTable	sym_stack;
 
-static ATerm arg_stack[MAX_ARITY];
-static int   arg_stack_depth;
+static ATerm *arg_stack;
+static int    arg_stack_depth;
+static int    arg_stack_size;
 
 static char *text_buffer = NULL;
 static int   text_buffer_size = 0;
@@ -67,6 +70,13 @@ void AT_initBafIO(int argc, char *argv[])
 		empty_args[i] = (ATerm)ATempty;
 
 	ATprotectArray(empty_args, MAX_ARITY);
+
+	arg_stack_size = DEFAULT_ARG_STACK_SIZE;
+	arg_stack = (ATerm *)malloc(arg_stack_size*sizeof(ATerm));
+	if(!arg_stack)
+		ATerror("cannot allocate initial argument stack of size %d\n",
+						DEFAULT_ARG_STACK_SIZE);
+	arg_stack_depth = 0;
 }
 
 /*}}}  */
@@ -727,6 +737,13 @@ static ATerm readFromBinaryFile(FILE *f)
 				t = ATtableGet(term_stack, idx);
 				if(!t)
 				  ATerror("element %t not on stack.\n", idx);
+
+				if(arg_stack_depth >= arg_stack_size) {
+					/* We need to resize the argument stack */
+					arg_stack_size *= 2;
+					arg_stack = realloc(arg_stack, arg_stack_size*sizeof(ATerm));
+				}
+
 				arg_stack[arg_stack_depth++] = t;
 				t = NULL;
 
