@@ -488,15 +488,16 @@ public class AlternativeGenerator extends JavaGenerator {
        	Iterator moduleIt = moduleToGen.iterator();
        	while(moduleIt.hasNext()) {
        	    String moduleName = (String) moduleIt.next();
-       	    String visitorPackage =
-       	        VisitorGenerator.qualifiedClassName(getJavaGenerationParameters(),moduleName);
+       	    String visitorPackage = VisitorGenerator.qualifiedClassName(getJavaGenerationParameters(),moduleName);
        	    String altClassName = FactoryGenerator.concatTypeAlt(type, alt);
-
+      	    //String abstractTypePackage = AbstractTypeGenerator.qualifiedClassName(getJavaGenerationParameters(),moduleName);
+       	    String abstractTypePackage = AbstractTypeGenerator.qualifiedClassName(getJavaGenerationParameters(),type.getModuleName());
+       	 	
        	    println(
-       	            "  public void accept("
+       	            "  public " + abstractTypePackage + " accept("
        	            + visitorPackage
        	            + " v) throws jjtraveler.VisitFailure {");
-       	    println("    v.visit_" + altClassName + "(this);");
+       	    println("    return v.visit_" + altClassName + "(this);");
        	    println("  }");
        	    println();
        	}

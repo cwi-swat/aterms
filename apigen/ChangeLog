@@ -1,3 +1,9 @@
+2004-09-03  pem
+
+  * extended the generation of visitor/visitable
+	  - to visit types (in addition to constructors)
+		- support the replacementVisitor (in addtion to the voidVisitor)
+
 2004-08-06  Antoine Reilles  <tonio@bonzai>
 
 	* try to fix --visitable with modules

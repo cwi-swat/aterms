@@ -32,10 +32,7 @@ public class VisitorGenerator extends JavaGenerator {
     protected void generate() {
         printPackageDecl();
 
-        println(
-            "public abstract class "
-                + getClassName()
-                + " extends jjtraveler.VoidVisitor {");
+        println("public interface " + getClassName() + " {");
         genVisits(adt);
         println("}");
     }
@@ -59,11 +56,11 @@ public class VisitorGenerator extends JavaGenerator {
 
     private void genListVisit(Type type) {
         String classTypeName = ListTypeGenerator.className(type);
-        genVisitDecl(
-            classTypeName,
-            TypeGenerator.qualifiedClassName(
-                getJavaGenerationParameters(),
-                classTypeName));
+        String paramName = TypeGenerator.qualifiedClassName(
+                    		  getJavaGenerationParameters(),
+						  classTypeName);
+        String returnName = paramName;
+        genVisitDecl(classTypeName, paramName, returnName);
     }
 
     private void genVisit(Type type, Alternative alt) {
@@ -73,12 +70,17 @@ public class VisitorGenerator extends JavaGenerator {
                 getJavaGenerationParameters(),
                 type,
                 alt);
-        genVisitDecl(methodName, paramName);
+        String returnName = TypeGenerator.qualifiedClassName(
+                getJavaGenerationParameters(),
+                TypeGenerator.className(type));
+        genVisitDecl(methodName, paramName, returnName);
     }
 
-    private void genVisitDecl(String methodName, String paramTypeName) {
+    private void genVisitDecl(String methodName, String paramTypeName, String returnTypeName) {
         println(
-            "  public abstract void visit_"
+            "  public abstract " 
+        		   + returnTypeName 
+			   + " visit_"
                 + methodName
                 + "("
                 + paramTypeName

@@ -1,6 +1,7 @@
 package apigen.gen.java;
 
 import java.util.Iterator;
+import java.util.Set;
 
 import apigen.adt.ADT;
 import apigen.adt.Alternative;
@@ -39,8 +40,8 @@ public class ForwardGenerator extends JavaGenerator {
 
 			if (type instanceof ListType) {
 				genListVisit(type);
-			}
-			else {
+			} else {
+				genTypeVisit(type);
 				while (alts.hasNext()) {
 					Alternative alt = (Alternative) alts.next();
 					genVisit(type, alt);
@@ -50,30 +51,39 @@ public class ForwardGenerator extends JavaGenerator {
 	}
 
 	private void genListVisit(Type type) {
-		String classTypeName = ListTypeGenerator.className(type);
-		genVisitMethod(classTypeName, TypeGenerator.qualifiedClassName(getJavaGenerationParameters(), classTypeName));
-	}
-
-	private void genVisitMethod(String methodName, String paramTypeName) {
-		println("  public void visit_" + methodName + "(" + paramTypeName + " arg) throws jjtraveler.VisitFailure {");
-		println("    any.visit(arg);");
-		println("  }");
-		println();
+		genTypeVisit(type);
 	}
 
 	private void genVisit(Type type, Alternative alt) {
 		String methodName = FactoryGenerator.concatTypeAlt(type, alt);
 		String paramType = AlternativeGenerator.qualifiedClassName(getJavaGenerationParameters(), type, alt);
-
-		genVisitMethod(methodName, paramType);
+		String returnType = TypeGenerator.qualifiedClassName(getJavaGenerationParameters(), TypeGenerator.className(type));
+		String typeMethodName = TypeGenerator.className(type);
+		
+		println("  public " + returnType + " visit_" + methodName + "(" + paramType + " arg) throws jjtraveler.VisitFailure {");
+		println("    return visit_" + typeMethodName +"(arg);");
+		println("  }");
+		println();
+		//genVisitMethod(methodName, paramType, returnType);
 	}
 
+	private void genTypeVisit(Type type) {
+		String methodName = TypeGenerator.className(type);
+		String typeName = TypeGenerator.qualifiedClassName(getJavaGenerationParameters(), TypeGenerator.className(type));
+		
+		println("  public " + typeName + " visit_" + methodName + "(" + typeName + " arg) throws jjtraveler.VisitFailure {");
+		println("    return (" + typeName + ") any.visit(arg);");
+		println("  }");
+		println();
+		//genVisitMethod(methodName, paramType, returnType);
+	}
+	
 	protected void generate() {
 		printPackageDecl();
 
-		println("public class " + getClassName() + " extends " + getVisitorName() + " implements jjtraveler.Visitor {");
+		println("public class " + getClassName() + " implements " + getVisitorName() + ", jjtraveler.Visitor {");
 		genConstructor();
-		genVoidVisit();
+		genDefaultVisit();
 		genVisits(adt);
 		println("}");
 	}
@@ -87,12 +97,22 @@ public class ForwardGenerator extends JavaGenerator {
 		println();
 	}
 
-	private void genVoidVisit() {
-		println("  public void voidVisit(jjtraveler.Visitable v) throws jjtraveler.VisitFailure {");
-		println("    if (v instanceof " + constructor + ") {");
-		println("        ((" + constructor + ") v).accept(this);");
+	private void genDefaultVisit() {
+		
+		println("  public jjtraveler.Visitable visit(jjtraveler.Visitable v) throws jjtraveler.VisitFailure {");
+		String prefixIf = "";
+		Set moduleToGen = adt.getImportsClosureForModule(module.getModulename().getName());
+       	Iterator moduleIt = moduleToGen.iterator();
+       	while(moduleIt.hasNext()) {
+       	    String moduleName = (String) moduleIt.next();
+       	    String abstractTypePackage = AbstractTypeGenerator.qualifiedClassName(getJavaGenerationParameters(),moduleName);
+       	
+		println("    " + prefixIf + "if (v instanceof " + abstractTypePackage + ") {");
+		println("      return ((" + abstractTypePackage + ") v).accept(this);");
+			prefixIf = "} else ";
+		}
 		println("    } else {");
-		println("      any.visit(v);");
+		println("      return any.visit(v);");
 		println("    }");
 		println("  }");
 		println();

@@ -1,8 +1,9 @@
 package test;
 
 import test.rolodex.Factory;
-import test.rolodex.Fwd;
+import test.rolodex.FwdVoid;
 import test.rolodex.types.RoloList;
+import test.rolodex.types.PhoneNumber;
 import test.rolodex.types.phonenumber.Voice;
 import aterm.pure.PureFactory;
 
@@ -40,14 +41,15 @@ public class RoloTest {
   }
 }
 
-class Collector extends Fwd {
+class Collector extends FwdVoid {
   public String concatenation = "";
 
   public Collector() {
     super(new jjtraveler.Identity());
   }
 
-  public void visit_PhoneNumber_Voice(Voice v) {
+  public PhoneNumber visit_PhoneNumber_Voice(Voice v) {
     concatenation = concatenation + v.getVoice();
+    return v;
   }
 }

@@ -75,6 +75,7 @@ public class Main {
         if (params.isVisitable()) {
             generateVisitors(adt, params, l);
             generateForward(adt, params, l);
+            generateForwardVoid(adt, params, l);
         }
 
         generateTypeClasses(adt, params, l);
@@ -191,6 +192,17 @@ public class Main {
     	while(moduleIterator.hasNext()) {
     		Module module = (Module) moduleIterator.next();
     		run(new ForwardGenerator(adt, params, module), l);
+    	}	
+  }
+    
+  private static void generateForwardVoid(
+            ADT adt,
+            JavaGenerationParameters params,
+            GenerationObserver l) {
+    	Iterator moduleIterator = adt.moduleIterator();
+    	while(moduleIterator.hasNext()) {
+    		Module module = (Module) moduleIterator.next();
+    		run(new ForwardVoidGenerator(adt, params, module), l);
     	}	
   }
 }

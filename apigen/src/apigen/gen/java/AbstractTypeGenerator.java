@@ -146,13 +146,12 @@ public class AbstractTypeGenerator extends JavaGenerator {
        	Iterator moduleIt = moduleToGen.iterator();
        	while(moduleIt.hasNext()) {
        	    String moduleName = (String) moduleIt.next();
-        String visitorPackage =
-            VisitorGenerator.qualifiedClassName(getJavaGenerationParameters(),moduleName);
-        println(
-            "  abstract public void accept("
+       	    String visitorPackage = VisitorGenerator.qualifiedClassName(getJavaGenerationParameters(),moduleName);
+       	    println(
+            "  abstract public " + getClassName() + " accept("
                 + visitorPackage
                 + " v) throws jjtraveler.VisitFailure;");
-        println();
+       	    println();
        	}
     }
 
