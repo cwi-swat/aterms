@@ -108,7 +108,7 @@ relevance considering our (\api\ generation) point of view.
 
 % }}}
 
-Examples of valid boolean terms accepted by our boolean syntax include:
+Some examples of valid boolean terms are:
   \texttt{true}, \texttt{not false}, \texttt{true and not false}.
 
 % }}}
@@ -152,24 +152,72 @@ and (with annotation):
 \subsection{\asdf\ Parse Trees: the \asfix\ syntax}
 
 When a term such as \texttt{true and not false} is parsed using the
-\asmetaenv\ parser \texttt{sglr}, it yields a parse tree represented in
-a format called \asfix. Attributes such as associativity, constructor
-information and any layout in the input term is preserved.
+\asmetaenv\ parser \texttt{sglr}, it yields a parse tree represented in a
+format called \asfix. These parse trees are actually \aterms, preserving
+lots of information about the input (such as the layout used in the input
+term), as well as adding syntax-derived facts such as associativity and
+constructor information to the nodes in the tree.
 
-Parsing even a simple term such as \texttt{true} yields an
-impressive, hard to read \aterm:
+Without describing all of the idiosyncrasies of \asfix, the two most
+important constructs used are: the grammar production (\texttt{prod}),
+and its application (\texttt{appl}). We will give their \sdf\ definition
+and an explanatory example:
+
+% {{{  context-free syntax rules for "appl" and "prod"
+
 \begin{footnotesize}
 \begin{verbatim}
-parsetree(appl(prod([cf(opt(layout)),cf(sort("Bool")),cf(opt(layout))],sort("<STA
-RT>"),no-attrs),[appl(prod([],cf(opt(layout)),no-attrs),[]),appl(prod([lit("true"
-)],cf(sort("Bool")),no-attrs),[lit("true")]),appl(prod([cf(layout)],cf(opt(layout
-)),no-attrs),[10])]),0)
+context-free syntax
+  prod ( Symbols, Symbol, Attributes )  ->   Production
+  appl ( Production, Args )             ->   Tree
 \end{verbatim}
 \end{footnotesize}
 
 % }}}
 
+\noindent The production
+{\footnotesize\verb+Bool "and" Bool" -> Bool {left}+}
+from Figure~\ref{fig:boolean-syntax} looks like
+this\footnote{The insertion of \texttt{cf(opt(layout))} at each
+location where the input term is allowed to contain whitespace is done
+automatically for each context-free syntax rule by the \sdf\ normalizer
+and is left undiscussed in this paper.}:
+% {{{  example "prod":  Bool "and" Bool -> Bool {left}
+
+\begin{footnotesize}
+\begin{verbatim}
+  prod([cf(sort("Bool")),cf(opt(layout)),lit("and"),cf(opt(layout)),cf(sort("Bool"))],
+    cf(sort("Bool")),
+    attrs([assoc("left")]))
+\end{verbatim}
+\end{footnotesize}
+
+% }}}
+
+\noindent And the parse tree for {\footnotesize\texttt{true and false}}
+becomes:
+% {{{  example "appl":  true and false
+
+\begin{footnotesize}
+\begin{verbatim}
+appl(
+ prod([cf(sort("Bool")),cf(opt(layout)),lit("and"),cf(opt(layout)),cf(sort("Bool"))],
+       cf(sort("Bool")),attrs([assoc("left")])),
+ [appl(prod([lit("true")],cf(sort("Bool")),no-attrs),[lit("true")]),
+  layout([" "]), lit("and"), layout([" "]),
+  appl(prod([lit("false")],cf(sort("Bool")),no-attrs),[lit("false")])])
+\end{verbatim}
+\end{footnotesize}
+
+% }}}
+
+% }}}
+
+% {{{  Bibliography
+
 \bibliographystyle{alpha}
 \bibliography{apigen}
+
+% }}}
 
 \end{document}
