@@ -1,5 +1,9 @@
 $Id$
 
+2003-07-09  Jurgen Vinju <jurgenv@cwi.nl>
+ * Released aterm-2.0.2 by distchecking a checkout of 07/07/2003
+ * Bumped to 2.0.3
+
 Mon Jul  7 10:54:59 CEST 2003 <jong@cwi.nl>
  * applied Armijn Hemels patches to make ATerm compile on a 64bit arch.
 
