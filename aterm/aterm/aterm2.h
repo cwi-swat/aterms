@@ -149,6 +149,7 @@ int       ATlastIndexOf(ATermList list, ATerm el, int start);
 ATerm     ATelementAt(ATermList list, int index);
 ATermList ATremoveElement(ATermList list, ATerm el);
 ATermList ATremoveElementAt(ATermList list, int idx);
+ATermList ATreplace(ATermList list, int idx, ATerm el);
 ATermList ATdictSet(ATermList dict, ATerm key, ATerm value);
 ATerm     ATdictGet(ATermList dict, ATerm key);
 ATermList ATdictRemove(ATermList dict, ATerm key);
