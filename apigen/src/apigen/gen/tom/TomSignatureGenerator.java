@@ -229,7 +229,7 @@ public class TomSignatureGenerator extends Generator {
 
 		while (alts.hasNext()) {
 			Alternative alt = (Alternative) alts.next();
-			if (!alt.isEmpty() && !alt.isMany()) {
+  		    if (!alt.isEmpty() && !alt.isMany() && !alt.isSingle()) {
 				genTomAltOperator(type, alt);
 			}
 		}

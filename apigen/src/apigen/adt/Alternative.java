@@ -150,6 +150,27 @@ public class Alternative {
 		return getId().equals(ListType.EMPTY_LIST_ALT_NAME) && (subst != null);
 	}
 
+	public boolean isSingle() {
+		if (getPattern().getType() == ATerm.LIST) {
+			ATermList l = (ATermList) getPattern();
+			ATerm headPh = l.getFirst();
+			ATerm tailList = l.getNext();
+
+			if (headPh != null && headPh.getType() == ATerm.PLACEHOLDER && tailList.getType() == ATerm.LIST) {
+				ATerm head = ((ATermPlaceholder) headPh).getPlaceholder();
+				ATermList tail = ((ATermList) tailList);
+				if (tail.isEmpty()) {
+					ATerm headPattern = getPattern().getFactory().parse("head(<term>)");
+					List subst1 = head.match(headPattern);
+					if (getId().equals(ListType.SINGLE_LIST_ALT_NAME) && (subst1 != null)) {
+						return true;
+					}
+
+				}
+			}
+		}
+		return false;
+	}
 	public boolean isMany() {
 		if (getPattern().getType() == ATerm.LIST) {
 			ATermList l = (ATermList) getPattern();
