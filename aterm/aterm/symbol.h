@@ -14,5 +14,6 @@ void AT_initSymbol(int argc, char *argv[]);
 void AT_printSymbol(Symbol sym, FILE *f);
 ATbool AT_isValidSymbol(Symbol sym);
 void AT_markSymbol(Symbol sym);
+ATbool AT_isMarkedSymbol(Symbol sym);
 
 #endif

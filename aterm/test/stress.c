@@ -7,6 +7,7 @@
 
 #include <stdio.h>
 #include <assert.h>
+#include "_aterm.h"
 #include "memory.h"
 #include "symbol.h"
 #include "util.h"
@@ -528,14 +529,21 @@ void testAnno(void)
 
 void testGC()
 {
-	ATerm t[8];
+	ATerm t[16];
 
 	t[0] = ATparse("abc");
-	t[1] = ATparse("f(1)");
+	t[1] = ATparse("f(abc)");
 	t[2] = ATparse("g(<int>, [3,4])");
 	t[3] = ATparse("a(3,4,5){<annotation>}");
 	t[4] = t[3]+1;
 	t[5] = (ATerm) ((char *) t[1] + 1);
+	t[6] = (ATerm)NULL;
+	t[7] = (ATerm)testGC;
+	t[8] = (ATerm)t;
+	t[9] = (ATerm)"Just a test!";
+	t[10] = (ATerm)((char *)t[2]-1);
+	t[11] = ATsetAnnotation(t[1], t[0], t[3]);
+	t[12] = ATparse("[abc,f(abc)]");
 
 	test_assert("gc", 0, AT_isValidTerm(t[0]));
 	test_assert("gc", 1, AT_isValidTerm(t[1]));
@@ -543,6 +551,21 @@ void testGC()
 	test_assert("gc", 3, AT_isValidTerm(t[3]));
 	test_assert("gc", 4, !AT_isValidTerm(t[4]));
 	test_assert("gc", 5, !AT_isValidTerm(t[5]));
+	test_assert("gc", 6, !AT_isValidTerm(t[6]));
+	test_assert("gc", 7, !AT_isValidTerm(t[7]));
+	test_assert("gc", 8, !AT_isValidTerm(t[8]));
+	test_assert("gc", 9, !AT_isValidTerm(t[9]));
+	test_assert("gc", 10, !AT_isValidTerm(t[10]));
+	test_assert("gc", 11, AT_isValidTerm(t[11]));
+
+	AT_markTerm(t[12]);
+	test_assert("gc-mark", 0, IS_MARKED(t[0]->header));
+	test_assert("gc-mark", 1, IS_MARKED(t[1]->header));
+	test_assert("gc-mark", 2, IS_MARKED(t[12]->header));
+	test_assert("gc-mark", 3, !IS_MARKED(t[2]->header));
+	test_assert("gc-mark", 4, AT_isMarkedSymbol(ATgetSymbol((ATermAppl)t[0])));
+
+  printf("gc tests ok.\n");	
 }
 
 /*}}}  */
@@ -570,9 +593,7 @@ int main(int argc, char *argv[])
   testAnno();
   testMake();
   testMatch();
-/*
   testGC();
-  */
 
   return 0;
 }

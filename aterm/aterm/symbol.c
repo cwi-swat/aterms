@@ -237,4 +237,16 @@ void AT_markSymbol(Symbol s)
 }
 
 /*}}}  */
+/*{{{  ATbool AT_isMarkedSymbol(Symbol s) */
+
+/**
+  * Check the mark bit of a symbol.
+  */
+
+ATbool AT_isMarkedSymbol(Symbol s)
+{
+  return IS_MARKED(lookup_table[s]->header);
+}
+
+/*}}}  */
 
