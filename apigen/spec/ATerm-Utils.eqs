@@ -31,3 +31,20 @@ equations
   [equ-capitalize-y] capitalize( afun("y" $Char*) ) =  afun("Y" $Char*)
   [equ-capitalize-z] capitalize( afun("z" $Char*) ) =  afun("Z" $Char*)
   [default-capitalize] capitalize( $AFun ) =  $AFun
+
+  [equ-afun-concat-single]
+    afun-concat(at-literal(""" $Char* """)) = afun($Char*)
+
+  [default-afun-concat-single]
+    afun-concat($AFun) = $AFun
+
+  [equ-afun-concat-divide]
+    afun-concat($AFun+) = afun($Char*2)
+    ===
+    afun-concat(at-literal(""" $Char*1 """) $AFun+) = afun($Char*1 $Char*2)
+
+  [default-afun-concat-divide]
+    afun-concat($AFun+) = afun($Char*2)
+    ===
+    afun-concat(afun($Char*1) $AFun+) = afun($Char*1 $Char*2)
+

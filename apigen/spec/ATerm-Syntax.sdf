@@ -22,7 +22,7 @@ module ATerm-Syntax
    imports Literal-Syntax Integer-Syntax ATerm-Layout
 
    exports
-      sorts ATermList ACon AFun ATerm Ann
+      sorts ATermList ACon AFun ATerm ATerms Ann
 
       lexical syntax
 	 [a-zA-Z\_][a-zA-Z0-9\_\-]*	-> AFun {avoid}
@@ -31,9 +31,10 @@ module ATerm-Syntax
 	AFun -/- [a-zA-Z0-9\_\-]
 
       context-free syntax
+         { ATerm "," }*		   -> ATerms
          "[" {ATerm ","}* "]"      -> ATermList
          IntCon                    -> ACon      {constructor}
-         Literal                   -> AFun      {constructor}
+         AT-Literal                -> AFun      {constructor}
          "{" {ATerm ","}+ "}"      -> Ann       {constructor}
          ACon                      -> ATerm     {constructor}
          ATermList                 -> ATerm     {constructor}

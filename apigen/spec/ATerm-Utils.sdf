@@ -11,13 +11,15 @@ module ATerm-Utils
       "#appl"						-> ATermType
       "#placeholder"					-> ATermType
       capitalize ( AFun )				-> AFun
+      afun-concat ( AFun+ )				-> AFun
 
       capitalize					-> AFun {reject}
 
   hiddens
     variables
-      "$Char*"		-> CHAR*
+      "$Char*"[0-9]*	-> CHAR*
       "$AFun"		-> AFun
+      "$AFun+"		-> AFun+
       "$Int"		-> IntCon
       "$ATerm"		-> ATerm
       "$ATerm*"		-> { ATerm "," }*

@@ -10,3 +10,7 @@ SDF_FILES	= ATerm-Layout.sdf ATerm-Path.sdf ATerm-Syntax.sdf ATerm-Utils.sdf \
 		Integer-Syntax.sdf Literal-Syntax.sdf Naturals.sdf
 
 EXTRA_DIST	= ${SDF_FILES}
+
+data_DATA	= Gen-C-API.trm.tbl
+
+bin_SCRIPTS	= Gen-C-API

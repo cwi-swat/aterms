@@ -3,6 +3,11 @@
 PRG=`basename $0`
 DATE=`date`
 
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+bindir=@bindir@
+datadir=@datadir@
+
 # {{{ usage()
 
 usage() {
@@ -166,9 +171,9 @@ DICTTOC=dicttoc
 INDENT=indent
 RM="rm -f"
 
-GENCAPI=@top_srcdir@/spec/c-source/Gen-C-API
+GENCAPI=${bindir}/Gen-C-API
 EXTRACT=extract-api-files
-TABLE=@top_srcdir@/spec/Gen-C-API.trm.tbl
+TABLE=${datadir}/Gen-C-API.trm.tbl
 
 # }}}
 

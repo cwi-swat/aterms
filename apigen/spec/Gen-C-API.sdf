@@ -17,8 +17,6 @@ module Gen-C-API
       C-API-FILE+					-> C-API
 
   hiddens
-    sorts ATerms
-
     context-free syntax
       gen-header(C-FILE-NAME, C-CONSTRUCT*, API)	-> C-FILE
       gen-typedefs(API)					-> C-CONSTRUCTS
@@ -39,7 +37,6 @@ module Gen-C-API
       gen-struct-decls(API)				-> C-CONSTRUCTS
       gen-struct-decl(API-Type)				-> C-CONSTRUCT
 
-      { ATerm "," }*					-> ATerms
       gen-dict(API)					-> ATerms
       gen-dict-alts(API-Type)				-> ATerms
 
@@ -50,6 +47,8 @@ module Gen-C-API
       gen-check-impls(API-Type)				-> C-CONSTRUCTS
       gen-check-impl(AFun, AFun, API-Field*)		-> C-CONSTRUCT
       gen-check-body(AFun, AFun, API-Field*)		-> C-SERIES
+      gen-has-impl ( AFun, API-Field )			-> C-CONSTRUCT
+      gen-has-body ( AFun, AFun, API-Location* )	-> C-SERIES
       gen-getter-impl ( AFun, API-Field )		-> C-CONSTRUCT
       gen-getter-body ( AFun, AFun, API-Location* )	-> C-SERIES
       gen-setter-impl ( AFun, API-Field )		-> C-CONSTRUCT
@@ -59,6 +58,7 @@ module Gen-C-API
       build-init-impl ( C-FILE-NAME )			-> C-CONSTRUCT
       build-check-decl ( AFun, AFun )			-> C-FUNCTION-DECL
       build-get-expr ( ATerm-Path , C-EXPR )		-> C-EXPR
+      build-has-decl ( AFun, AFun , AFun )		-> C-FUNCTION-DECL
       build-getter-decl ( AFun, AFun , AFun )		-> C-FUNCTION-DECL
       build-set-expr ( AFun, ATerm-Path, ATerm-Path )	-> C-EXPR
       build-setter-decl ( AFun, AFun , AFun )		-> C-FUNCTION-DECL
@@ -105,6 +105,7 @@ module Gen-C-API
       "$FunImplList"[0-9]*	-> C-CONSTRUCT*
       "$GetExpr"[0-9]*		-> C-EXPR
       "$GetImpl"		-> C-CONSTRUCT
+      "$HasImpl"		-> C-CONSTRUCT
       "$Header"			-> C-FILE
       "$Id"			-> C-ID
       "$InitImpl"		-> C-CONSTRUCT

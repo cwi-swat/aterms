@@ -1,0 +1,58 @@
+module Sdf2-to-ADT
+  imports ATerm-Utils Sdf2
+
+exports
+  context-free syntax
+    sdf-module-to-adt ( Module )		-> ATerm
+
+hiddens
+  context-free syntax
+    section-to-adt ( ModuleName , Section )		-> ATerms
+    grammar-to-adt ( ModuleName , Grammar )		-> ATerms
+    productions-to-adt ( ModuleName , Production* )	-> ATerms
+    production-to-adt ( ModuleName , Production )	-> ATerms
+    sort-to-afun ( Sort )				-> AFun
+    build-asfix-prod ( ModuleName , Symbol* , Symbol , Attributes) -> ATerm
+    build-asfix-prod-args ( Symbol* )			-> ATerms
+    build-asfix-prod-arg ( Symbol )			-> ATerm
+    modname-to-lit ( ModuleName )			-> AT-Literal
+    sort-to-lit ( Sort )				-> AT-Literal
+    sort-to-afun ( Sort )				-> AFun
+    sdflit-to-lit ( Literal )				-> AT-Literal
+    sdflit-to-afun ( Literal )				-> AFun
+    
+    build-asfix-appl-args ( Symbol* )			-> ATerms
+    build-asfix-appl-arg ( Symbol )			-> ATerm
+
+    build-asfix-prod-arg 				-> ModuleId { reject }
+
+  variables
+    "$AFArg"		-> ATerm
+    "$AFArgs"		-> { ATerm "," }*
+    "$AFModName"	-> AT-Literal
+    "$AFProd"		-> ATerm
+    "$AFSort"		-> AT-Literal
+    "$AltId"		-> AFun
+    "$Attr*"[0-9]*	-> { Attribute "," }*
+    "$Attributes"	-> Attributes
+    "$Char*"		-> CHAR*
+    "$Entries"[0-9]*	-> { ATerm "," }*
+    "$FieldId"		-> AFun
+    "$FieldType"	-> AFun
+    "$FieldWs"		-> ATerm
+    "$Grammar"[0-9]*	-> Grammar
+    "$ImpSection*"	-> ImpSection*
+    "$Label"		-> UQLiteral
+    "$Literal"		-> Literal
+    "$ModName"		-> ModuleName
+    "$Production"	-> Production
+    "$Production*"	-> Production*
+    "$Section"		-> Section
+    "$Section*"		-> Section*
+    "$Sort"		-> Sort
+    "$Symbol"		-> Symbol
+    "$Symbol*"		-> Symbol*
+    "$Symbol+"		-> Symbol+
+    "$TypeId"		-> AFun
+    "$UQLit"		-> UQLiteral
+    "$QLit"		-> Literal

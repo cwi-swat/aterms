@@ -1,3 +1,7 @@
+2000/08/22 ({jong,olivierp}@cwi.nl)
+  * Now ignoring generated baf files
+  * Added Sdf2-to-ADT specification: we are now able to generate an API
+    for a basic SDF spec (no specials like lists, lexicals, optionals, etc. yet)
 
 2000/08/07 (jong@cwi.nl)
   * repository: removed apigen, added apigen.in

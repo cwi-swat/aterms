@@ -1,0 +1,140 @@
+equations
+
+[equ-sdf-module-to-adt-empty]
+  sdf-module-to-adt(module $ModName ) = [ ]
+
+[equ-sdf-module-to-adt-divide]
+  section-to-adt($ModName, $Section) = $Entries1,
+  sdf-module-to-adt(module $ModName $ImpSection* $Section*) = [ $Entries2 ]
+  ===>
+  sdf-module-to-adt(module $ModName $ImpSection* $Section $Section*) = 
+	[ $Entries1, $Entries2 ]
+
+[equ-section-to-adt-exports]
+  section-to-adt($ModName, exports $Grammar) = grammar-to-adt($ModName, $Grammar)
+
+[equ-section-to-adt-hiddens]
+  section-to-adt($ModName, hiddens $Grammar) = grammar-to-adt($ModName, $Grammar)
+
+[default-grammar-to-adt]
+  grammar-to-adt($ModName, $Grammar) =
+
+[equ-grammar-to-adt-divide]
+  grammar-to-adt($ModName, $Grammar1) = $Entries1,
+  grammar-to-adt($ModName, $Grammar2) = $Entries2
+  ===
+  grammar-to-adt($ModName, $Grammar1 $Grammar2) = $Entries1, $Entries2
+
+
+[equ-grammar-to-adt-context-free-syntax]
+  grammar-to-adt($ModName, context-free syntax $Production*) = 
+	productions-to-adt($ModName, $Production*)
+
+[equ-productions-to-adt-empty]
+  productions-to-adt($ModName, ) =
+
+[equ-productions-to-adt-divide]
+  production-to-adt($ModName, $Production) = $Entries1,
+  productions-to-adt($ModName, $Production*) = $Entries2
+  ===
+  productions-to-adt($ModName, $Production $Production*) = $Entries1, $Entries2
+
+[equ-production-to-adt]
+  $Attributes = { $Attr*1, cons($AltId), $Attr*2 },
+  $TypeId = sort-to-afun($Sort),
+  $AFProd = build-asfix-prod($ModName, $Symbol*, $Sort, $Attributes),
+  $AFArgs = build-asfix-appl-args($Symbol*)
+  ===
+  production-to-adt($ModName, $Symbol* -> $Sort $Attributes) = 
+	[ $TypeId, $AltId, appl($AFProd, w(""), [$AFArgs]) ]
+
+[equ-sort-to-afun]
+  sort-to-afun(sort($Char*)) = afun($Char*) 
+
+[equ-build-asfix-prod]
+  $AFModName = modname-to-lit($ModName),
+  $AFArgs    = build-asfix-prod-args($Symbol*),
+  $AFSort    = sort-to-lit($Sort)
+  ===
+  build-asfix-prod($ModName, $Symbol*, $Sort, $Attributes) =
+    prod(id($AFModName),w(""),[$AFArgs],w(""),l("->"),w(""),sort($AFSort),w(""),no-attrs)
+
+[equ-modname-to-lit]
+  modname-to-lit(moduleid($Char*)) = at-literal(""" $Char* """)
+
+[equ-sort-to-lit]
+  sort-to-lit(sort($Char*)) = at-literal(""" $Char* """)
+
+[equ-sort-to-afun]
+  sort-to-afun(sort($Char*)) = afun($Char*)
+
+[equ-build-asfix-prod-args-empty]
+  build-asfix-prod-args() =
+
+[equ-build-asfix-prod-args-single]
+  build-asfix-prod-args($Symbol) = build-asfix-prod-arg($Symbol)
+
+[equ-build-asfix-prod-args-divide]
+  build-asfix-prod-arg($Symbol) = $AFArg,
+  build-asfix-prod-args($Symbol+) = $AFArgs
+  ===
+  build-asfix-prod-args($Symbol $Symbol+) = $AFArg, w(""), $AFArgs
+
+[equ-build-asfix-prod-arg-strip-label]
+  build-asfix-prod-arg($Label : $Symbol) = build-asfix-prod-arg($Symbol)
+
+[equ-build-asfix-prod-arg-sort]
+  build-asfix-prod-arg($Sort) = sort(sort-to-lit($Sort))
+
+[equ-build-asfix-prod-arg-qlit]
+  build-asfix-prod-arg($QLit) = ql(sdflit-to-lit($QLit))
+
+[equ-build-asfix-prod-arg-uqlit]
+  build-asfix-prod-arg($UQLit) = ql(sdflit-to-lit($UQLit))
+
+% Unify unquoted and quoted literals, note that this is a bug in AsFix1/pgen! %
+[equ-sdflit-to-lit-quoted]
+  sdflit-to-lit(literal($Char*)) = at-literal($Char*)
+
+[equ-sdflit-to-lit-unquoted]
+  sdflit-to-lit(uqliteral($Char*)) = at-literal(""" $Char* """)
+
+[equ-sdflit-to-afun-quoted]
+  sdflit-to-afun(literal(""" $Char* """)) = afun($Char*)
+
+[equ-sdflit-to-afun-unquoted]
+  sdflit-to-afun(uqliteral($Char*)) = afun($Char*)
+
+[equ-build-asfix-appl-args-empty]
+  build-asfix-appl-args() =
+
+[equ-build-asfix-appl-args-single]
+  build-asfix-appl-args($Symbol) = build-asfix-appl-arg($Symbol)
+
+[equ-build-asfix-appl-args-divide-explicit-label]
+  build-asfix-appl-arg($Label:$Symbol) = $AFArg,
+  build-asfix-appl-args($Symbol+) = $AFArgs,
+  afun-concat(wsAfter capitalize(sdflit-to-afun($Label))) = $FieldId,
+  w(<$FieldId(SDFWhiteSpace)>) = $FieldWs
+  ===
+  build-asfix-appl-args($Label:$Symbol $Symbol+) = $AFArg, $FieldWs, $AFArgs
+
+[default-build-asfix-appl-args-divide-implicit-label]
+  build-asfix-appl-arg($Literal) = $AFArg,
+  build-asfix-appl-args($Symbol+) = $AFArgs,
+  afun-concat(wsAfter capitalize(sdflit-to-afun($Literal))) = $FieldId,
+  w(<$FieldId(SDFWhiteSpace)>) = $FieldWs
+  ===
+  build-asfix-appl-args($Literal $Symbol+) = $AFArg, $FieldWs, $AFArgs
+
+[equ-build-asfix-appl-arg-labeled-literal]
+  build-asfix-appl-arg($Label:$Literal) = l(sdflit-to-lit($Literal))
+
+[equ-build-asfix-appl-arg-unlabeled-literal]
+  build-asfix-appl-arg($Literal) = l(sdflit-to-lit($Literal))
+
+[equ-build-asfix-appl-arg-sort]
+  $FieldId = sdflit-to-afun($Label),
+  $FieldType = sort-to-afun($Sort)
+  ===
+  build-asfix-appl-arg($Label:$Sort) = <$FieldId($FieldType)>

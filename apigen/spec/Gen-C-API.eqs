@@ -87,16 +87,16 @@ equations
   ===
   gen-check-decls(type [ $TypeId, $Alt $Alt+, $Field* ]) = $FunDeclList1 $FunDeclList2
 
-
 [equ-gen-access-decls-empty]
   gen-access-decls(type [ $TypeId, $Alt+, ]) =
 
 [equ-gen-access-decls-divide]
   $Field = field [ $FieldId, $FieldType, $Loc+ ],
-  build-getter-decl($TypeId, $FieldType, $FieldId) = $FunDecl1,
-  build-setter-decl($TypeId, $FieldType, $FieldId) = $FunDecl2,
+  build-has-decl($TypeId, $FieldType, $FieldId) = $FunDecl1,
+  build-getter-decl($TypeId, $FieldType, $FieldId) = $FunDecl2,
+  build-setter-decl($TypeId, $FieldType, $FieldId) = $FunDecl3,
   gen-access-decls(type [ $TypeId, $Alt+, $Field* ]) = $FunDeclList1,
-  extern $FunDecl1; extern $FunDecl2; $FunDeclList1 = $FunDeclList2
+  extern $FunDecl1; extern $FunDecl2; extern $FunDecl3; $FunDeclList1 = $FunDeclList2
   ===
   gen-access-decls(type [ $TypeId, $Alt+, $Field $Field* ]) = $FunDeclList2
 
@@ -217,11 +217,13 @@ equations
   gen-access-impls(type [ $TypeId, $Alt+, ]) =
 
 [equ-gen-access-impls-divide]
+  gen-has-impl($TypeId, $Field) = $HasImpl,
   gen-getter-impl($TypeId, $Field) = $GetImpl,
   gen-setter-impl($TypeId, $Field) = $SetImpl,
   gen-access-impls(type [ $TypeId, $Alt+, $Field* ]) = $FunImplList
   ===
-  gen-access-impls(type [ $TypeId, $Alt+, $Field $Field* ]) = $GetImpl $SetImpl $FunImplList
+  gen-access-impls(type [ $TypeId, $Alt+, $Field $Field* ]) = 
+	$HasImpl $GetImpl $SetImpl $FunImplList
 
 [equ-gen-term-impls]
   build-c-id($TypeId) = $Id
@@ -248,6 +250,24 @@ equations
 [equ-build-check-decl]
   build-check-decl($TypeId, $AltId) =
     build-c-id(ATbool) build-c-id(is $TypeId $AltId) ( build-c-id($TypeId) arg )
+
+[equ-gen-has-impl]
+  build-has-decl($TypeId, $FieldType, $FieldId) = $FunDecl,
+  gen-has-body($TypeId, $FieldType, $Loc+) = $FunBody
+  ===
+  gen-has-impl($TypeId, field [$FieldId, $FieldType, $Loc+]) = $FunDecl { $FunBody }
+
+[equ-gen-has-body-empty]
+  gen-has-body($TypeId, $FieldType, ) = return ATfalse;
+
+[equ-gen-has-body-divide]
+  $Loc = loc [ $AltId, $Path ],
+  $Stat = gen-has-body($TypeId, $FieldType, $Loc*)
+  ===
+  gen-has-body($TypeId, $FieldType, $Loc $Loc*) = 
+	if (build-c-id(is $TypeId $AltId)(arg)) {
+	  return ATtrue;
+        } else $Stat
 
 [equ-gen-getter-impl]
   build-getter-decl($TypeId, $FieldType, $FieldId) = $FunDecl,
@@ -286,6 +306,10 @@ equations
   ===
   build-get-expr(arg:$Index -> $Path, $GetExpr1) = 
 	build-get-expr($Path, $GetExpr2)
+
+[equ-build-has-decl]
+  build-has-decl($TypeId, $FieldType, $FieldId) =
+    ATbool build-c-id(has $TypeId $FieldId) ( build-c-id($TypeId) arg )
 
 [equ-build-getter-decl]
   build-getter-decl($TypeId, $FieldType, $FieldId) =
