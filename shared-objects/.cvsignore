@@ -12,3 +12,7 @@ configure
 install-sh
 missing
 mkinstalldirs
+autom4te-2.53.cache
+shared-objects-*.pkg
+.classpath
+.project
