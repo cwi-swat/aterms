@@ -24,21 +24,21 @@ extern "C"
   * We define some new datatypes.
   */
 
-typedef struct
+typedef struct _ATermInt
 {
 	header_type header;
 	ATerm       next;
 	int         value;
 } *ATermInt;
 
-typedef struct
+typedef struct _ATermReal
 {
 	header_type header;
 	ATerm       next;
 	double      value;
 } *ATermReal;
 
-typedef struct
+typedef struct _ATermAppl
 {
 	header_type header;
 	ATerm       next;
@@ -52,14 +52,14 @@ typedef struct _ATermList
 	struct _ATermList *tail;
 } *ATermList;
 
-typedef struct
+typedef struct _ATermPlaceholder
 {
 	header_type header;
 	ATerm       next;
 	ATerm       ph_type;
 } *ATermPlaceholder;
 
-typedef struct
+typedef struct _ATermBlob
 {
 	header_type header;
 	ATerm       next;
