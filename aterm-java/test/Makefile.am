@@ -22,4 +22,4 @@ TESTS = $(foreach t, ${check_JAVA}, $t.test)
 	 echo "rm $*.java.test";\
 	) > $@ && chmod +x $@
 
-CLEANFILES+=*.test
+CLEANFILES=*.test
