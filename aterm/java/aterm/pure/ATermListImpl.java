@@ -3,7 +3,7 @@ package aterm.pure;
 import aterm.*;
 import java.util.List;
 import java.util.Vector;
-import visitor.*;
+import aterm.visitor.*;
 
 class ATermListImpl
   extends ATermImpl
@@ -561,23 +561,32 @@ class ATermListImpl
 
   //}}}
 
-  //{{{ public boolean accept(ATermVisitor v)
+  //{{{ public vooid accept(ATermVisitor v)
 
-  public boolean accept(ATermVisitor v)
+  public vooid accept(ATermVisitor v)
+    throws ATermVisitFailure
   {
-    return v.visitList(this);
+    v.visitList(this);
   }
 
   //}}}
-  //{{{ public boolean acceptChildren(Visitor v)
+  //{{{ public int getNrChildren()
 
-  public boolean acceptChildren(Visitor v)
+  public int getNrChildren()
   {
-    if (first == null) {
-      return true;
-    }
+    return first == null ? 0 : 2;
+  }
 
-    return v.visit(first) && v.visit(next);
+  //}}}
+  //{{{ public Visitable getChild(int index)
+
+  public Visitable getChild(int index)
+  {
+    if (index == 0) {
+      return first;
+    } else {
+      return next;
+    }
   }
 
   //}}}

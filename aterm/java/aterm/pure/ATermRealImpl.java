@@ -94,11 +94,12 @@ class ATermRealImpl
 
   //}}}
 
-  //{{{ public boolean accept(ATermVisitor v)
+  //{{{ public void accept(ATermVisitor v)
 
-  public boolean accept(ATermVisitor v)
+  public void accept(ATermVisitor v)
+    throws ATermVisitFailure
   {
-    return v.visitReal(this);
+    v.visitReal(this);
   }
 
   //}}}

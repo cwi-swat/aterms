@@ -2,3 +2,7 @@ Makefile.in
 Makefile
 *.class
 classjava.stamp
+ATermVisitable.java
+ATermVisitor.java
+ATermVisitFailure.java
+

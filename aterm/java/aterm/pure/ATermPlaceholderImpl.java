@@ -2,7 +2,7 @@ package aterm.pure;
 
 import aterm.*;
 import java.util.List;
-import visitor.*;
+import aterm.visitor.*;
 
 class ATermPlaceholderImpl
   extends ATermImpl
@@ -152,19 +152,28 @@ class ATermPlaceholderImpl
 
   //}}}
 
-  //{{{ public boolean accept(ATermVisitor v)
+  //{{{ public void accept(ATermVisitor v)
 
-  public boolean accept(ATermVisitor v)
+  public void accept(ATermVisitor v)
+    throws ATermVisitFailure
   {
-    return v.visitPlaceholder(this);
+    v.visitPlaceholder(this);
   }
 
   //}}}
-  //{{{ public boolean acceptChildren(Visitor v)
+  //{{{ public int getNrChildren()
 
-  public boolean acceptChildren(Visitor v)
+  public int getNrChildren()
   {
-    return v.visit(type);
+    return 1;
+  }
+
+  //}}}
+  //{{{ public Visitable getChild(int index)
+
+  public Visitable getChild(int index)
+  {
+    return type;
   }
 
   //}}}

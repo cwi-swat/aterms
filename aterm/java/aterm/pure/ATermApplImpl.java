@@ -2,7 +2,7 @@ package aterm.pure;
 
 import aterm.*;
 import java.util.List;
-import visitor.*;
+import aterm.visitor.*;
 
 class ATermApplImpl
   extends ATermImpl
@@ -230,7 +230,7 @@ class ATermApplImpl
 
   public int getArity()
   {
-    return fun.getArity();
+    return args.length;
   }
 
   //}}}
@@ -256,25 +256,28 @@ class ATermApplImpl
 
   //}}}
 
-  //{{{ public boolean accept(ATermVisitor v)
+  //{{{ public void accept(ATermVisitor v)
 
-  public boolean accept(ATermVisitor v)
+  public void accept(ATermVisitor v)
+    throws ATermVisitFailure
   {
-    return v.visitAppl(this);
+    v.visitAppl(this);
   }
 
   //}}}
-  //{{{ public boolean acceptChildren(Visitor v)
+  //{{{ public int getNrChildren()
 
-  public boolean acceptChildren(Visitor v)
+  public int getNrChildren()
   {
-    for (int i=0; i<args.length; i++) {
-      if (!v.visit(args[i])) {
-	return false;
-      }
-    }
+    return args.length;
+  }
 
-    return true;
+  //}}}
+  //{{{ public Visitable getChild(int index)
+
+  public Visitable getChild(int index)
+  {
+    return args[index];
   }
 
   //}}}

@@ -96,11 +96,12 @@ class ATermIntImpl
 
   //}}}
 
-  //{{{ public boolean accept(ATermVisitor v)
+  //{{{ public void accept(ATermVisitor v)
 
-  public boolean accept(ATermVisitor v)
+  public void accept(ATermVisitor v)
+    throws ATermVisitFailure
   {
-    return v.visitInt(this);
+    v.visitInt(this);
   }
 
   //}}}

@@ -1,7 +1,7 @@
 package aterm.pure;
 
 import aterm.*;
-import visitor.*;
+import aterm.visitor.*;
 
 import java.util.List;
 import java.util.LinkedList;
@@ -194,11 +194,19 @@ public abstract class ATermImpl
 
   //}}}
 
-  //{{{ public boolean acceptChildren(Visitor v)
+  //{{{ public int getNrChildren()
 
-  public boolean acceptChildren(Visitor v)
+  public int getNrChildren()
   {
-    return true;
+    return 0;
+  }
+
+  //}}}
+  //{{{ public Visitable getChild(int index)
+
+  public Visitable getChild(int index)
+  {
+    throw new RuntimeException("no children!");
   }
 
   //}}}

@@ -1,0 +1,8 @@
+package aterm;
+
+public interface ATermVisitable
+  extends @VISITOR_PKG@.Visitable
+{
+  public void accept(ATermVisitor visitor) throws ATermVisitFailure;
+}
+
