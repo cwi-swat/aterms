@@ -9,7 +9,7 @@ EXTRA_DIST	= append.ltx at.ltx aterm.ltx corrections.ltx \
 		$(JAVA_API_PS)
 
 CHAPS		= at.ltx
-PICS		= header.ps encoding.ps hierarchy.ps
+PICS		= header.eps encoding.eps hierarchy.eps appl-enc.fig
 
 FIG2DEV		= fig2dev
 EXAMPLEDIR	= examples

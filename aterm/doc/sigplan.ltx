@@ -12,6 +12,10 @@
 \newcommand{\AFuns}{AFuns}
 \def\aterms{\mbox{ATerms}}
 \def\aterm{\mbox{ATerm}}
+\def\appl{\mbox{ATermAppl}}
+\def\atlist{\mbox{ATermList}}
+\def\C{\texttt{C}}
+\def\gcc{\mbox{gcc}}
 
 %}}}
 
@@ -47,7 +51,7 @@ applications. The \texttt{C}-implementation of \ATerms\ is a library
 based on maximal subterm sharing and automatic garbage collection.
 This paper shows how a compilation technique called \emph{strength
 reduction} killed the conservative garbage collector used in this
-\texttt{C}-library. We show how inspecting the generated assembly
+\C-library. We show how inspecting the generated assembly
 helped point out a flaw in the assumptions upon which the conservative
 garbage collector implementation was based, and how we repaired the
 collector. Finally, we point out that other, even more ``intelligent''
@@ -57,7 +61,139 @@ optimizations could still fool our repaired collector.
 
 % }}}
 
+% {{{  \section{Introduction}
+
+\label{section:intro}
 \section{Introduction}
 
+In order to fully appreciate the subtleties involved and the intricacy of
+the compiled assembly statements, we first introduce the garbage collector
+in Section~\ref{section:collector}. Section~\ref{section:encoding}
+explains the in-memory encoding of \aterms\ in general and of the function
+application (\appl) in particular. A detailed description of \aterms\
+can be found in~\cite{bjko2000}.
+
+% }}}
+
+% {{{  \section{ATerm Garbage Collector}
+
+\section{ATerm Garbage Collector}
+\label{section:collector}
+
+The garbage collector used in the \C\ implementation of the \aterms\ is a
+so called \emph{mark-sweep} collector. Every object (\aterm) contains a
+single bit used by the mark-sweep algorithm to indicate `live' (marked)
+objects. At the start of a garbage collection cycle, all objects are
+unmarked. The garbage collector tries to locate and mark all live objects
+by traversing all terms that are explicitly protected by the programmer
+(using the \texttt{ATprotect} API-call), and by scanning the \C\ run-time
+stack looking for words that \emph{could} be references to objects. When
+such a word is found, the object (as well as the transitive closure of
+all objects it refers to) are marked as `live'.
+
+This scan of the run-time stack causes all objects referenced from local
+variables to be protected from being garbage collected. Our garbage
+collector is a \emph{conservative} collector in the sense that some of
+the words on the stack could accidentally have the same bit pattern as
+object references. Because there is no way to distinguish these `fake'
+bit patterns from `real' object references, this can cause objects to
+be marked as `live' when they are actually garbage. Bit patterns on the
+stack that do not \emph{point to valid objects} are not traversed at all.
+Only when a bit pattern represents an address that is a valid object
+address, it is followed to mark the corresponding object.
+
+After all live objects are marked, a single sweep through the heap is
+used to store all objects that are free in separate lists of free objects.
+
+% }}}
+% {{{  \section{ATerm Memory Encoding}
+
+\section{ATerm Memory Encoding}
+\label{section:encoding}
+
+An important issue in the implementation of \aterms\ is how to represent
+this data type so that all operations can be performed efficiently in
+time and space.
+
+\begin{figure}[tb]
+  \centerline{\epsfig{file=header.eps,scale=0.6}}
+  \caption{\label{header}The header layout}
+\end{figure}
+
+The in-memory encoding of \aterms\ we use is as follows. Assume that
+one machine word consists of four bytes. Every \aterm\ object is
+stored in two or more machine words. The first byte of the first word
+is called the \emph{header} of the object, and consists of four fields
+(see~\ref{header}).
+
+\begin{itemize}
+\item A field consisting of one bit used as a mark flag by the garbage
+      collector.
+\item A field consisting of one bit indicating whether or not this term
+      has an annotation.
+\item A field consisting of three bits that indicate the type of the term.
+\item A field consisting of three bits representing the arity (number of
+      pointers to other terms) of this object. When this field
+      contains the maximum value of 7, the term must be a function application
+      and the actual arity can be found by retrieving the arity of the
+      function symbol (see below).
+\end{itemize}
+
+Depending on the type of the node (as determined by the header byte in
+the first word) the remaining bytes in the first word contain either a
+function symbol, a length indication, or they are unused.
+
+The \emph{second} word is always used for hashing, and links together all
+terms in the same hash bucket.
+
+The type of the node determines its exact layout and contents.
+Figure~\ref{encoding} is an excerpt from~\cite{bjko2000} showing the
+encoding of the function application (called \appl{} for short).
+
+\begin{figure}[!htb]
+  \centerline{\epsfig{file=appl-enc.eps,scale=0.6}}
+  \caption{\label{encoding}Encoding of the function application (\appl).}
+\end{figure}
+
+% }}}
+% {{{  \section{Into the Trenches}
+
+\section{Into the Trenches}
+\label{section:trenches}
+
+This section explains how the \gcc{}-compiler translates a \C{}-function
+that uses \aterms\ into its corresponding assembly statements. In
+particular we will show the effect of deactivating the optimization
+called \emph{strength reduction} on generated assembly statements. The
+generated statements are in SPARC assembly language for the Solaris
+operating system, generated using version $2.95.2$ of the \gcc\ compiler.
+
+The sample code is a dressed down snippet from the \aterm{}-ToolBus
+library. The code iterates over the arguments of an \appl{} (variable
+\texttt{appl}) in \emph{reverse} order, building up an \atlist{} (variable
+\texttt{list}) by invoking some arbitrary function (\texttt{foo}) on
+each of these arguments and inserting the result in \texttt{list}. The
+variable \texttt{arity} holds the arity of \texttt{appl}.
+
+\begin{verbatim}
+    ...
+    ATermList list = ATempty;
+
+    for (i = arity; i >= 0; i--) {
+      list = ATinsert(list, foo(ATgetArgument(appl , i)));
+    }
+    ...
+\end{verbatim}
+
+% }}}
+% {{{  \section{References}
+
+\section{References}
+\label{section:references}
+
+\bibliographystyle{alpha}
+\bibliography{thesis}
+
+% }}}
 
 \end{document}
