@@ -192,7 +192,7 @@ ${SGLR} -p ${APITABLE} -s SDF -i ${INPUT} -o .api_1_$$ || err
 
 info " - Labeling ${INPUT} (parsed)"
 ${APPLYFUNC} -f add-labels -s SDF -i .api_1_$$ -o .api_2_$$ || err
-${EVALUATOR} -w on -e ${ADDLABELS} -i .api_2_$$ -o .api_3_$$ || err
+${EVALUATOR} -e ${ADDLABELS} -i .api_2_$$ -o .api_3_$$ || err
 
 info " - Generating ADT (${SDF2TOADT})"
 func="sdf-to-asfix2me-adt-${CONSOPT}"

@@ -1,4 +1,5 @@
 2001/11/14 (jong@cwi.nl)
+ * Removed '-w on' invocation on asfe
  * Removed '-m' invocations and now uses apply-function from
    pt-support, rather than asc-support
 
