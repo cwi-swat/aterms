@@ -19,22 +19,26 @@
 
 $Id$
 
-2000/03/28 <mdejonge@cwi.nl>
+2000/3/31 (mdejonge @cwi.nl)
+   * The toolbus is no longer required during the build process of the aterm
+     library
+
+2000/03/28 (mdejonge@cwi.nl)
    * no longer distribute reconf script
    * version is now 0.24
    * Added GPL license headers to the files in the distribution
    * (re) Added \$(DEFS) to compiler flags in configure.in
    * Updated address of developers of aterm library
 
-2000/03/06 <olivierp@cwi.nl>
+2000/03/06 (olivierp@cwi.nl)
    * Cleaned up support for gcc/cc/dbg/prof variants of the 
 	libraries.
    * Added an ATerm specific section to the INSTALL file.
 	
-2000/03/01 <mdejonge@cwi.nl>
+2000/03/01 (mdejonge@cwi.nl)
    * generation of shared libraries temporarily disabled because of
      instability of libtool/automake.
 
-2000/02/27 <mdejonge@cwi.nl>
+2000/02/27 (mdejonge@cwi.nl)
    * aterm library is now configured/build using automake/libtool
 

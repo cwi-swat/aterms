@@ -25,7 +25,12 @@ include ../make_rules
 PROGS              	= stress primes asfixtest randgen termstats \
 			  vararg1 vararg2 vararg3 test-tool test-tool2
 
-TESTS	          	= stress asfixtest
+TESTS	          	= stress asfixtest 
+
+EXTRA_DIST = termstats.sh test.tb test2.tb Test.asfix test.trms error.trm  \
+             tool2.tif.c tool2.tif.h
+
+CLEANFILES = test2.tifs
 
 INCLUDES   = -I. -I$(top_srcdir)/asfix -I$(top_srcdir)/aterm -I$(top_srcdir)/toolbus
 
@@ -70,10 +75,9 @@ test-tool2.o : tool2.tif.h
 
 tool2.tif.o : tool2.tif.c tool2.tif.h
 
-tool2.tif.c tool2.tif.h : test2.tifs
+%.tif.c %.tif.h : test2.tifs
 	$(top_builddir)/toolbus/tifstoc -tool tool2 $<
 
-EXTRA_DIST = termstats.sh test.tb test2.tb Test.asfix test.trms error.trm 
 
 test: stress
 	./stress
@@ -82,7 +86,7 @@ test: stress
 # file exists in the current directory. The ToolBus by default uses the
 # dirname of its second argument to determine the location where to store
 # its output. This does not work correct when using VPATH in the Makefile.
-test2.tifs: test2.tb
+%.tifs: %.tb
 	$(TOOLBUS) -gentifs $<
 	@if [ "a${VPATH}" != "a" ]; then \
 	   mv ${srcdir}/test2.tifs $@ ;\

@@ -28,8 +28,10 @@ bin_SCRIPTS = tifstojava java-adapter
 # during a make dist.
 noinst_SCRIPTS = Testing.java
 
-EXTRA_DIST  = test.tb Test.java TestTool.java TestingTool.java Tool.java \
-              ToolBusChannel.java ToolException.java tifstojava java-adapter
+EXTRA_DIST  = test.tb Test.java TestTool.java TestingTool.java \
+              Tool.java ToolBusChannel.java ToolException.java \
+              tifstojava java-adapter Testing.java test.tifs
+
 
 java_JAVA   = JavaTif.java ToolBusChannel.java TestTool.java \
               TestingTool.java ToolException.java \
@@ -37,7 +39,7 @@ java_JAVA   = JavaTif.java ToolBusChannel.java TestTool.java \
 
 JAVAROOT    = ${top_builddir}/java1.2/
 
-CLEANFILES  = test.tifs Testing.java
+CLEANFILES  = test.tifs 
 
 Testing.java: test.tifs JavaTif.class
 	$(CLASSPATH_ENV) java aterm.tool.JavaTif \
