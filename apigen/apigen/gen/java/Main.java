@@ -28,8 +28,9 @@ public class Main {
 	private static boolean jtype = false;
 
 	private static void usage() {
-		System.err.println("usage: JavaGen [options]");
-		System.err.println("options:");
+		System.err.println("Usage: apigen.gen.java.Main [options]\n");
+		System.err.println("options:\n");
+		System.err.print(params.usage());
 		System.err.println("\t-j | --jtom                    [off]");
 		System.err.println("\t-J | --jtype                   [off]");
 	}
@@ -39,6 +40,11 @@ public class Main {
 
 		if (args.size() == 0) {
 			usage();
+			System.exit(1);
+		}
+		else if (args.contains("-h") || args.contains("--help")) {
+			usage();
+			return;
 		}
 
 		params = new JavaGenerationParameters();
@@ -51,14 +57,8 @@ public class Main {
 			params.parseArguments(args);
 		}
 		catch (IllegalArgumentException e) {
-			StringBuffer buf = new StringBuffer();
-			buf.append('\n');
-			buf.append(e.getMessage());
-			buf.append('\n');
-			buf.append("usage: apigen.gen.java.Main [options]\n");
-			buf.append("options:\n");
-			buf.append(params.usage());
-			System.err.println(buf.toString());
+			System.err.println(e.getMessage());
+			usage();
 			System.exit(1);
 		}
 
