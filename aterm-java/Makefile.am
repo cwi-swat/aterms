@@ -31,7 +31,7 @@ JAVA_FILES = $(patsubst %,$(srcdir)/aterm/%.java,$(JAVA_CLASSES)) \
 ${JAVADOCDIR}.tar.gz: ${JAVA_FILES}
 	@mkdir -p ${JAVADOCDIR}
 	javadoc -public \
-		-classpath ${top_builddir}:${EXTERNAL_JARS}
+		-classpath ${top_builddir}:${EXTERNAL_JARS} \
 		-d ${JAVADOCDIR} \
 		$(JAVA_FILES)
 	tar cf - ${JAVADOCDIR} | gzip --best > ${JAVADOCDIR}.tar.gz
