@@ -335,29 +335,29 @@ ATermList ATremoveElement(ATermList list, ATerm t)
   ATerm el = NULL;
   ATermList l = list;
 
-	while(!ATisEmpty(l)) {
+  while(!ATisEmpty(l)) {
     el = ATgetFirst(l);
     l = ATgetNext(l);
     if(i >= buffer_size) 
       resize_buffer(i*2);
     buffer[i++] = el;
-		if(ATisEqual(el, t))
-			break;
-	}
+    if(ATisEqual(el, t))
+      break;
+  }
 
 
-	if(ATisEmpty(l))
-		return list;
-
-	list = l; /* Skip element to be removed */
-
-	/* We found the element. Add all elements prior to this 
-		 one to the tail of the list. */
-	for(i-=2; i>=0; i--) {
-		list = ATinsert(list, buffer[i]);
-		buffer[i] = NULL;
-	}
-
+  if(!ATisEqual(el, t))
+    return list;
+  
+  list = l; /* Skip element to be removed */
+  
+  /* We found the element. Add all elements prior to this 
+     one to the tail of the list. */
+  for(i-=2; i>=0; i--) {
+    list = ATinsert(list, buffer[i]);
+    buffer[i] = NULL;
+  }
+  
   return list;
 }
 
