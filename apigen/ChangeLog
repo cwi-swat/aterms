@@ -1,5 +1,9 @@
-2001/03/30 (jong@cwi.nl)
+2001/03/30 ({jong,olivierp}@cwi.nl)
+ * version 0.8.3
  * improved capitalization of generated alt-factory-methodnames
+ * added support for native types in java-generation
+ * factored out buildMatchPattern from CGen-specific to Alternative
+ * changed adt-to-java.in according to adt-to-c standards
 
 2001/03/27 ({jong,olivierp}@cwi.nl)
  * version 0.8.2

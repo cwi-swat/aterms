@@ -6,7 +6,7 @@ dnl
 
 dnl Process this file with autoconf to produce a configure script.
 AC_INIT(configure.in)
-AM_INIT_AUTOMAKE(apigen, 0.8.2)
+AM_INIT_AUTOMAKE(apigen, 0.8.3)
 
 dnl Add current dir to searchpath
 ACLOCAL="${ACLOCAL} -I ."
