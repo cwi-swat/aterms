@@ -291,6 +291,15 @@ abstract public class AbstractTool
     }
 
   //}}}
+  //{{{ public static ATerm readTerm(InputStream stream, ATermFactory factory)
+
+  public static ATerm readTerm(InputStream stream, ATermFactory factory)
+    throws IOException
+  {
+    return readTerm(stream, factory, stream);
+  }
+
+  //}}}
   //{{{ public static ATerm readTerm(inputStream, factory, lock)
 
   public static ATerm readTerm(InputStream inputStream,
@@ -301,23 +310,22 @@ abstract public class AbstractTool
     byte[] lspecBuf = new byte[LENSPEC];
     inputStream.read(lspecBuf);
 
-    synchronized (lock) {
-      String lspec = new String(lspecBuf);
+    String lspec = new String(lspecBuf);
 
-      int bytesLeft = Integer.parseInt(lspec.substring(0, LENSPEC-1));
-      if (bytesLeft < MIN_MSG_SIZE) {
-	bytesLeft = MIN_MSG_SIZE;
-      }
-      bytesLeft -= LENSPEC;
-
-      byte[] data = new byte[bytesLeft];
-      inputStream.read(data);
-      String stringdata = new String(data);
-
-      //info("data read (" + bytesLeft + " bytes): '" + stringdata + "'");
-
-      result = factory.parse(stringdata);
+    int bytesLeft = Integer.parseInt(lspec.substring(0, LENSPEC-1));
+    if (bytesLeft < MIN_MSG_SIZE) {
+      bytesLeft = MIN_MSG_SIZE;
     }
+    bytesLeft -= LENSPEC;
+
+    byte[] data = new byte[bytesLeft];
+    inputStream.read(data);
+    String stringdata = new String(data);
+
+    //info("data read (" + bytesLeft + " bytes): '" + stringdata + "'");
+
+    result = factory.parse(stringdata);
+
     return result;
   }
 
