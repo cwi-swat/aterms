@@ -6,7 +6,6 @@ import apigen.adt.ADT;
 import apigen.adt.Alternative;
 import apigen.adt.Field;
 import apigen.adt.ListType;
-import apigen.adt.NormalListType;
 import apigen.adt.SeparatedListType;
 import apigen.adt.Type;
 import apigen.adt.api.Separators;
@@ -77,10 +76,12 @@ public class FactoryGenerator extends JavaGenerator {
         while (types.hasNext()) {
             Type type = (Type) types.next();
 
-            if (type instanceof NormalListType) {
-                genListFromTerm((NormalListType) type);
-            } else if (type instanceof SeparatedListType) {
-                genSeparatedListFromTermMethod((SeparatedListType) type);
+            if (type instanceof ListType) {
+                if (type instanceof SeparatedListType) {
+                    genSeparatedListFromTermMethod((SeparatedListType) type);
+                } else {
+                    genListFromTerm((ListType) type);
+                }
             } else {
                 genTypeFromTermMethod(type);
             }
@@ -142,20 +143,7 @@ public class FactoryGenerator extends JavaGenerator {
                 String empty = emptyListVariable(type);
                 String proto = protoListVariable(type);
 
-                if (type instanceof NormalListType) {
-                    genMakeEmptyList(returnTypeName, methodName, empty);
-                    genMakeSingletonList(
-                        returnTypeName,
-                        methodName,
-                        paramTypeName,
-                        empty);
-                    genMakeManyList(
-                        listType.getElementType(),
-                        returnTypeName,
-                        methodName,
-                        paramTypeName);
-                    genMakeManyTermList(returnTypeName, methodName, proto);
-                } else if (type instanceof SeparatedListType) {
+                if (type instanceof SeparatedListType) {
                     SeparatedListType lType = (SeparatedListType) type;
                     genMakeEmptyList(returnTypeName, methodName, empty);
                     genMakeSingletonSeparatedList(
@@ -177,14 +165,25 @@ public class FactoryGenerator extends JavaGenerator {
                         lType);
                     genReverseSeparatedLists(lType, methodName);
                     genConcatSeparatedLists(lType, methodName);
+                } else {
+                    genMakeEmptyList(returnTypeName, methodName, empty);
+                    genMakeSingletonList(
+                        returnTypeName,
+                        methodName,
+                        paramTypeName,
+                        empty);
+                    genMakeManyList(
+                        listType.getElementType(),
+                        returnTypeName,
+                        methodName,
+                        paramTypeName);
+                    genMakeManyTermList(returnTypeName, methodName, proto);
                 }
             }
         }
     }
 
-    private void genConcatSeparatedLists(
-        SeparatedListType type,
-        String makeMethodName) {
+    private void genConcatSeparatedLists(SeparatedListType type, String makeMethodName) {
         JavaGenerationParameters params = getJavaGenerationParameters();
         String className = TypeGenerator.qualifiedClassName(params, type);
         String sepArgs = buildOptionalSeparatorArguments(type);
@@ -642,13 +641,14 @@ public class FactoryGenerator extends JavaGenerator {
         while (types.hasNext()) {
             Type type = (Type) types.next();
 
-            if (type instanceof NormalListType) {
-                genNormalListTypeInitialization(type, listTypeCount);
-                listTypeCount++;
-            } else if (type instanceof SeparatedListType) {
-                genSeparatedListInitialization(
-                    listTypeCount,
-                    (SeparatedListType) type);
+            if (type instanceof ListType) {
+                if (type instanceof SeparatedListType) {
+                    genSeparatedListInitialization(
+                        listTypeCount,
+                        (SeparatedListType) type);
+                } else {
+                    genNormalListTypeInitialization(type, listTypeCount);
+                }
                 listTypeCount++;
             } else {
                 JavaGenerationParameters params = getJavaGenerationParameters();
@@ -922,21 +922,22 @@ public class FactoryGenerator extends JavaGenerator {
         println();
     }
 
-    private void genListFromTerm(NormalListType type) {
+    private void genListFromTerm(ListType type) {
         JavaGenerationParameters params = getJavaGenerationParameters();
         String returnTypeName = TypeGenerator.qualifiedClassName(params, type);
         String className = TypeGenerator.className(type);
         String elementType = type.getElementType();
         String elementTypeName = TypeGenerator.qualifiedClassName(params, elementType);
         String nextElement;
-        
+
         if (!getConverter().isReserved(elementType)) {
             nextElement =
                 TypeGenerator.className(elementType) + "FromTerm(list.getFirst())";
         } else {
-            nextElement = getConverter().makeATermToBuiltinConversion(elementType, "list");
+            nextElement =
+                getConverter().makeATermToBuiltinConversion(elementType, "list");
         }
-        
+
         println(
             "  public "
                 + returnTypeName
@@ -1111,7 +1112,10 @@ public class FactoryGenerator extends JavaGenerator {
         if (!getConverter().isReserved(elementType)) {
             continueConversion = ".toTerm()";
         }
-        String convertedHead = getConverter().makeBuiltinToATermConversion(elementType, "nodes[0].getHead()");
+        String convertedHead =
+            getConverter().makeBuiltinToATermConversion(
+                elementType,
+                "nodes[0].getHead()");
         convertedHead += continueConversion;
 
         println("    aterm.ATerm result = factory.makeList(" + convertedHead + ");");

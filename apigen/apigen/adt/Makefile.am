@@ -14,7 +14,6 @@ java_JAVA = \
 	Field.java \
 	ListType.java \
 	Location.java \
-	NormalListType.java \
 	SeparatedListType.java \
 	Step.java \
 	Type.java

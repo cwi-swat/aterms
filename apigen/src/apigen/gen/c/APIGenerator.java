@@ -14,7 +14,6 @@ import apigen.adt.AlternativeList;
 import apigen.adt.Field;
 import apigen.adt.ListType;
 import apigen.adt.Location;
-import apigen.adt.NormalListType;
 import apigen.adt.SeparatedListType;
 import apigen.adt.Step;
 import apigen.adt.Type;
@@ -89,16 +88,18 @@ public class APIGenerator extends CGenerator {
         while (types.hasNext()) {
             Type type = (Type) types.next();
 
-            if (type instanceof NormalListType) {
-                genListApi((NormalListType) type);
-            } else if (type instanceof SeparatedListType) {
-                genSeparatedListApi((SeparatedListType) type);
+            if (type instanceof ListType) {
+                if (type instanceof SeparatedListType) {
+                    genSeparatedListApi((SeparatedListType) type);
+                } else {
+                    genListApi((ListType) type);
+                }
             }
         }
         bothPrintFoldClose();
     }
 
-    private void genListApi(NormalListType type) {
+    private void genListApi(ListType type) {
         String typeName = buildTypeName(type.getId());
         String typeId = StringConversions.makeIdentifier(type.getId());
         String elementTypeName = buildTypeName(type.getElementType());
@@ -125,6 +126,7 @@ public class APIGenerator extends CGenerator {
         String elementTypeName = buildTypeName(type.getElementType());
         String elementTypeId = StringConversions.makeIdentifier(type.getElementType());
         int seps = type.getSeparators().getLength();
+        System.err.println("Seps" + type.getSeparators());
 
         genGetSeparatedLength(typeId, typeName, type.getSeparators());
         genSeparatedReverse(type, typeId, typeName);
@@ -377,7 +379,7 @@ public class APIGenerator extends CGenerator {
     }
 
     private void genAppend(
-        NormalListType type,
+        ListType type,
         String typeId,
         String typeName,
         String elementTypeName) {

@@ -149,51 +149,10 @@ public class Alternative {
 		}
 	}
 
-	protected static Alternative makeEmptyListConstructor(ATermFactory factory) {
-		Alternative empty = new Alternative(ListType.EMPTY_LIST_ALT_NAME, factory.parse("[]"));
-		return empty;
-	}
+	
 
-	protected static Alternative makeManyListConstructor(ATermFactory factory, String listType, String elementType) {
-		Alternative many =
-			new Alternative(
-				ListType.MANY_LIST_ALT_NAME,
-				factory.parse("[<head(" + elementType + ")>,<[tail(" + listType + ")]>]"));
 
-		return many;
-	}
-
-	public static Alternative makeSingletonListConstructor(ATermFactory factory, String elementType) {
-		Alternative single =
-			new Alternative(ListType.SINGLE_LIST_ALT_NAME, factory.parse("[<head(" + elementType + ")>]"));
-
-		return single;
-	}
-
-	protected static Alternative makeManySeparatedListConstructor(
-		ATermFactory factory,
-		String listType,
-		String elementType,
-		Separators separators) {
-		String pattern = "[";
-
-		pattern += "<head(" + elementType + ")>";
-		pattern += ",";
-
-		for (; !separators.isEmpty(); separators = separators.getTail()) {
-			Separator sep = separators.getHead();
-
-			pattern += sep.toString();
-			pattern += ",";
-		}
-
-		pattern += "<[tail(" + listType + ")]>";
-		pattern += "]";
-
-		return new Alternative(ListType.MANY_LIST_ALT_NAME, factory.parse(pattern));
-
-	}
-
+	
 	public boolean isEmpty() {
 		List subst = getPattern().match("[]");
 		return getId().equals(ListType.EMPTY_LIST_ALT_NAME) && (subst != null);

@@ -5,7 +5,7 @@ import java.util.Iterator;
 import apigen.adt.ADT;
 import apigen.adt.Alternative;
 import apigen.adt.Field;
-import apigen.adt.NormalListType;
+import apigen.adt.ListType;
 import apigen.adt.Type;
 import apigen.gen.GenerationParameters;
 import apigen.gen.Generator;
@@ -158,8 +158,8 @@ public class TomSignatureGenerator extends Generator {
 	}
 
 	private void genTomType(Type type) {
-		if (type instanceof NormalListType) {
-			String eltType = ((NormalListType) type).getElementType();
+		if (type instanceof ListType) {
+			String eltType = ((ListType) type).getElementType();
 
 			println(
 				TypeListTemplate(

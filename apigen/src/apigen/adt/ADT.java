@@ -108,22 +108,18 @@ public class ADT {
         }
     }
 
-    private void processSeparatedList(String typeId, Entry first) {
-        String elementType = ((ATermAppl) first.getElemSort()).getAFun().getName();
-        Separators separators = first.getSeparators();
-        Type type = new SeparatedListType(factory, typeId, elementType, separators);
+    private void processSeparatedList(String typeId, Entry entry) {
+        String elementType = ((ATermAppl) entry.getElemSort()).getAFun().getName();
+        Separators separators = entry.getSeparators();
+        SeparatedListType type = new SeparatedListType(typeId, elementType, separators, factory);
+        type.addAlternatives();
         types.add(type);
     }
 
     private void processList(String typeId, Entry first) {
         String elementType = ((ATermAppl) first.getElemSort()).getAFun().getName();
-        Type type = new NormalListType(factory, typeId, elementType);
-        
-        //TODO: remove these comments, check whether correct code is still generated
-        // then remove all special code for NormalListType
-        
-        //Separators separators = first.getADTFactory().makeSeparators();
-        //Type type = new SeparatedListType(factory, typeId, elementType, separators);
+        ListType type = new ListType(typeId, elementType, factory);
+        type.addAlternatives();
         types.add(type);
     }
 

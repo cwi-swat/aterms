@@ -2,6 +2,7 @@ package apigen.adt;
 
 import java.util.Iterator;
 
+import apigen.adt.api.Separator;
 import apigen.adt.api.Separators;
 import apigen.util.FirstAndLastSkippingIterator;
 import aterm.ATermFactory;
@@ -10,28 +11,15 @@ public class SeparatedListType extends ListType {
     private Separators separators;
 
     public SeparatedListType(
-        ATermFactory factory,
         String id,
         String elementType,
-        Separators separators) {
-        super(id, factory, elementType);
+        Separators separators,
+        ATermFactory factory) {
+        super(id, elementType, factory);
         this.separators = separators;
-
-        addAlternative(
-            Alternative.makeManySeparatedListConstructor(
-                this.factory,
-                getId(),
-                elementType,
-                separators));
-        addAlternative(Alternative.makeEmptyListConstructor(this.factory));
-        addAlternative(
-            Alternative.makeSingletonListConstructor(this.factory, elementType));
+        
     }
 
-    protected void setSeparators(Separators separators) {
-        this.separators = separators;
-    }
-    
     public Separators getSeparators() {
         return separators;
     }
@@ -39,15 +27,15 @@ public class SeparatedListType extends ListType {
     public Iterator separatorFieldIterator() {
         return new FirstAndLastSkippingIterator(altFieldIterator("many"));
     }
-    
+
     public Alternative getManyAlternative() {
         return getAlternative("many");
     }
-    
+
     public Field getManyField(String fieldId) {
         return getAltField("many", fieldId);
     }
-    
+
     public Iterator manyFieldIterator() {
         return altFieldIterator("many");
     }
@@ -55,14 +43,39 @@ public class SeparatedListType extends ListType {
     public int countSeparatorFields() {
         Iterator iter = separatorFieldIterator();
         int count = 0;
-        
+
         while (iter.hasNext()) {
             iter.next();
             count++;
         }
-        
+
         return count;
     }
-    
-}
 
+    protected Alternative makeManyListConstructor() {
+        String head = buildHeadPattern();
+        String seps = buildSeparatorPattern();
+        String tail = buildTailPattern();
+        String pattern = "[" + head + "," + seps + "," + tail + "]";
+
+        return new Alternative(MANY_LIST_ALT_NAME, getFactory().parse(pattern));
+    }
+
+    private String buildSeparatorPattern() {
+        StringBuffer pattern = new StringBuffer();
+        Separators runner = separators;
+
+        while (!runner.isEmpty()) {
+            Separator sep = runner.getHead();
+
+            pattern.append(sep.toString());
+            runner = runner.getTail();
+
+            if (!runner.isEmpty()) {
+                pattern.append(',');
+            }
+        }
+        return pattern.toString();
+    }
+
+}
