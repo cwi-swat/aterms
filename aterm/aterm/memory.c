@@ -212,19 +212,20 @@ void AT_initMemory(int argc, char *argv[])
   int i;
 
 	table_class = 16;
-	table_size  = 1<<table_class;
-	table_mask  = table_size-1;
 
 	/*{{{  Analyze arguments */
 
   for (i = 1; i < argc; i++) {
     if (streq(argv[i], TERM_HASH_OPT))
-      table_size = atoi(argv[++i]);
+      table_class = atoi(argv[++i]);
 		if(streq(argv[i], HASH_INFO_OPT))
 			infoflags |= INFO_HASHING;
 	}
 
 	/*}}}  */
+
+	table_size  = 1<<table_class;
+	table_mask  = table_size-1;
 
 	/*{{{  Initialize blocks */
 
