@@ -890,7 +890,7 @@ static ATerm fparse_term(int *c, FILE *f)
     /* Term is annotated */
     fnext_skip_layout(c, f);
     if(*c != '}') {
-      ATermList annos = fparse_terms(c, f);
+      ATerm annos = (ATerm)fparse_terms(c, f);
       if(annos == NULL || *c != '}')
 	return NULL;
       result = AT_setAnnotations(result, annos);
@@ -1171,7 +1171,7 @@ static ATerm sparse_term(int *c, char **s)
     /* Term is annotated */
     snext_skip_layout(c, s);
     if(*c != '}') {
-      ATermList annos = sparse_terms(c, s);
+      ATerm annos = (ATerm)sparse_terms(c, s);
       if(annos == NULL || *c != '}')
 	return NULL;
       result = AT_setAnnotations(result, annos);

@@ -221,6 +221,9 @@ int ATindexOf(ATermList list, ATerm el, int start)
 {
   int i;
 
+  if(start < 0)
+    start += (ATgetLength(list) + 1);
+
   for(i=0; i<start; i++)
     list = ATgetNext(list);
 
@@ -243,9 +246,14 @@ int ATindexOf(ATermList list, ATerm el, int start)
 
 int ATlastIndexOf(ATermList list, ATerm el, int start)
 {
-  int i, len = start+1;
+  int i, len;
 
   RESIZE_BUFFER(len);
+
+  if(start < 0)
+    start += ATgetLength(list)+1;
+  len = start+1;
+
   for(i=0; i<len; i++) {
     buffer[i] = ATgetFirst(list);
     list = ATgetNext(list);
@@ -335,17 +343,29 @@ ATermList ATremoveElementAt(ATermList list, int idx)
 }
 
 /*}}}  */
-/*{{{  ATermList ATdictSet(ATermList dict, ATerm key, ATerm value) */
+/*{{{  ATerm ATdictCreate() */
+
+/**
+  * Create a new dictionary.
+  */
+
+ATerm ATdictCreate()
+{
+  return (ATerm)ATempty;
+}
+
+/*}}}  */
+/*{{{  ATerm ATdictPut(ATerm dict, ATerm key, ATerm value) */
 
 /**
   * Set an element of a 'dictionary list'. This is a list consisting
   * of [key,value] pairs.
   */
 
-ATermList ATdictSet(ATermList dict, ATerm key, ATerm value)
+ATerm ATdictPut(ATerm dict, ATerm key, ATerm value)
 {
   int i;
-  ATermList pair, tmp = dict;
+  ATermList pair, tmp = (ATermList)dict;
   
   /* Search for the key */
   while(!ATisEmpty(tmp)) {
@@ -356,7 +376,7 @@ ATermList ATdictSet(ATermList dict, ATerm key, ATerm value)
       tmp = ATinsert(tmp, (ATerm)pair);
       for(--i; i>=0; i--)
 	tmp = ATinsert(tmp, buffer[i]);
-      return tmp;
+      return (ATerm)tmp;
     } else {
       if(i >= buffer_size)
 	resize_buffer(i*2);
@@ -365,27 +385,28 @@ ATermList ATdictSet(ATermList dict, ATerm key, ATerm value)
   }
 
   /* The key is not in the dictionary */
-  return ATinsert(dict, (ATerm)ATmakeList2(key, value));
+  return (ATerm)ATinsert((ATermList)dict, (ATerm)ATmakeList2(key, value));
 }
 
 /*}}}  */
-/*{{{  ATerm ATdictGet(ATermList dict, ATerm key) */
+/*{{{  ATerm ATdictGet(ATerm dict, ATerm key) */
 
 /**
   * Retrieve a value from a dictionary list.
   */
 
-ATerm ATdictGet(ATermList dict, ATerm key)
+ATerm ATdictGet(ATerm dict, ATerm key)
 {
   ATermList pair;
+  ATermList tmp = (ATermList)dict;
 
   /* Search for the key */
-  while(!ATisEmpty(dict)) {
-    pair = (ATermList)ATgetFirst(dict);
+  while(!ATisEmpty(tmp)) {
+    pair = (ATermList)ATgetFirst(tmp);
     if(ATisEqual(ATgetFirst(pair), key))
       return ATgetFirst(ATgetNext(pair));
 
-    dict = ATgetNext(dict);
+    tmp = ATgetNext(tmp);
   }
 
   /* The key is not in the dictionary */
@@ -393,23 +414,23 @@ ATerm ATdictGet(ATermList dict, ATerm key)
 }
 
 /*}}}  */
-/*{{{  ATermList ATdictRemove(ATermList dict, ATerm key) */
+/*{{{  ATerm ATdictRemove(ATerm dict, ATerm key) */
 
 /**
   * Remove a [key,value] pair from a dictionary list.
   */
 
-ATermList ATdictRemove(ATermList dict, ATerm key)
+ATerm ATdictRemove(ATerm dict, ATerm key)
 {
   int idx = 0;
-  ATermList tmp = dict;
+  ATermList tmp = (ATermList)dict;
   ATermList pair;
 
   /* Search for the key */
   while(!ATisEmpty(tmp)) {
     pair = (ATermList)ATgetFirst(tmp);
     if(ATisEqual(ATgetFirst(pair), key))
-      return ATremoveElementAt(dict, idx);
+      return (ATerm)ATremoveElementAt((ATermList)dict, idx);
 
     tmp = ATgetNext(tmp);
     idx++;

@@ -158,7 +158,7 @@ static unsigned int hash_number1(header_type header)
 
 static unsigned int hash_number2(header_type header, ATerm w0)
 {
-  unsigned int hnr = header + (((unsigned int)w0)>>2);
+  unsigned int hnr = header + (((unsigned int)w0)<<1);
   return hnr % table_size;
 }
 
@@ -168,7 +168,7 @@ static unsigned int hash_number2(header_type header, ATerm w0)
 static unsigned int hash_number3(header_type header, ATerm w0,
 				 ATerm w1)
 {
-  unsigned int hnr = header + (((unsigned int)w0)>>2) + (((unsigned int)w1)>>1);
+  unsigned int hnr = header + (((unsigned int)w0)<<1) + (((unsigned int)w1)<<2);
   return hnr % table_size;
 }
 
@@ -178,8 +178,8 @@ static unsigned int hash_number3(header_type header, ATerm w0,
 static unsigned int hash_number4(header_type header, ATerm w0,
 				 ATerm w1, ATerm w2)
 {
-  unsigned int hnr = header + (((unsigned int)w0)>>2) + 
-    (((unsigned int)w1)>>1) + (unsigned int)w2;
+  unsigned int hnr = header + (((unsigned int)w0)<<1) + 
+    (((unsigned int)w1)<<2) + (((unsigned int)w2)<<3);
   return hnr % table_size;
 }
 
@@ -190,8 +190,9 @@ static unsigned int hash_number5(header_type header, ATerm w0,
 				 ATerm w1, ATerm w2, 
 				 ATerm w3)
 {
-  unsigned int hnr = header + (((unsigned int)w0)>>2) + 
-    (((unsigned int)w1)>>1) + (unsigned int)w2 + (((unsigned int)w3)<<1);
+  unsigned int hnr = header + (((unsigned int)w0)<<1) + 
+    (((unsigned int)w1)<<2) + (((unsigned int)w2)<<3) + 
+    (((unsigned int)w3)<<4);
   return hnr % table_size;
 }
 
@@ -202,9 +203,9 @@ static unsigned int hash_number6(header_type header, ATerm w0,
 				 ATerm w1, ATerm w2,
 				 ATerm w3, ATerm w4)
 {
-  unsigned int hnr = header + (((unsigned int)w0)>>2) +
-    (((unsigned int)w1)>>1) + (unsigned int)w2 + 
-    (((unsigned int)w3)<<1) + (((unsigned int)w4)<<2);
+  unsigned int hnr = header + (((unsigned int)w0)<<1) +
+    (((unsigned int)w1)<<2) + (((unsigned int)w2)<<3) + 
+    (((unsigned int)w3)<<4) + (((unsigned int)w4)<<5);
   return hnr % table_size;
 }
 
@@ -216,10 +217,10 @@ static unsigned int hash_number7(header_type header, ATerm w0,
 				 ATerm w3, ATerm w4,
 				 ATerm w5)
 {
-  unsigned int hnr = header + (((unsigned int)w0)>>2) + 
-    (((unsigned int)w1)>>1) + (unsigned int)w2 + 
-    (((unsigned int)w3)<<1) + (((unsigned int)w4)<<2) + 
-    (((unsigned int)w5)<<3);
+  unsigned int hnr = header + (((unsigned int)w0)<<1) + 
+    (((unsigned int)w1)<<2) + (((unsigned int)w2)<<3) + 
+    (((unsigned int)w3)<<4) + (((unsigned int)w4)<<5) + 
+    (((unsigned int)w5)<<6);
   return hnr % table_size;
 }
 
@@ -232,7 +233,7 @@ static unsigned int hash_number(unsigned int header, int n, ATerm w[])
   unsigned int hnr = header;
 
   for(i=0; i<n; i++)
-    hnr += ((unsigned int)w[i]) << (i-2);
+    hnr += ((unsigned int)w[i]) << (i+1);
 
   hnr %= table_size;
 
@@ -240,7 +241,7 @@ static unsigned int hash_number(unsigned int header, int n, ATerm w[])
 }
 
 /*}}}  */
-/*{{{  static unsigged hash_number_anno(unsigned int header, int n, w[], anno) */
+/*{{{  static unsigned hash_number_anno(unsigned int header, int n, w[], anno) */
 
 static unsigned int hash_number_anno(unsigned int header, int n, ATerm w[], ATerm anno)
 {
@@ -985,11 +986,11 @@ static int term_size(ATerm t)
   * Retrieve the annotations of a term.
   */
 
-ATermList AT_getAnnotations(ATerm t)
+ATerm AT_getAnnotations(ATerm t)
 {
   if(HAS_ANNO(t->header)) {
     int size = term_size(t);
-    return ((ATermList *)t)[size-1];
+    return ((ATerm *)t)[size-1];
   }
   return NULL;
 }
@@ -1001,7 +1002,7 @@ ATermList AT_getAnnotations(ATerm t)
   * Change the annotations of a term.
   */
 
-ATerm AT_setAnnotations(ATerm t, ATermList annos)
+ATerm AT_setAnnotations(ATerm t, ATerm annos)
 {
   unsigned int hnr;
   int i, size = term_size(t);
@@ -1016,7 +1017,7 @@ ATerm AT_setAnnotations(ATerm t, ATermList annos)
     header = SET_ANNO(t->header);
   }
 
-  hnr = hash_number_anno(t->header, size-2, ((ATerm *)t)+2, (ATerm)annos);
+  hnr = hash_number_anno(header, size-2, ((ATerm *)t)+2, annos);
   cur = hashtable[hnr];
   found = ATfalse;
   
@@ -1052,7 +1053,7 @@ ATerm AT_setAnnotations(ATerm t, ATermList annos)
 
     for(i=2; i<size; i++)
       ((ATerm *)cur)[i] = ((ATerm *)t)[i];
-    ((ATerm *)cur)[i] = (ATerm)annos;
+    ((ATerm *)cur)[i] = annos;
   }
   return cur;
 }
@@ -1078,7 +1079,7 @@ ATerm AT_removeAnnotations(ATerm t)
   header = CLR_ANNO(t->header);
   size = term_size(t)-1;
 
-  hnr = hash_number(t->header, size-2, ((ATerm *)t)+2);
+  hnr = hash_number(header, size-2, ((ATerm *)t)+2);
   cur = hashtable[hnr];
   found = ATfalse;
   
@@ -1124,12 +1125,12 @@ ATerm AT_removeAnnotations(ATerm t)
 
 ATerm ATsetAnnotation(ATerm t, ATerm label, ATerm anno)
 {
-  ATermList newannos, oldannos = AT_getAnnotations(t);
+  ATerm newannos, oldannos = AT_getAnnotations(t);
 
   if(!oldannos)
-    oldannos = ATempty;
+    oldannos = ATdictCreate();
 
-  newannos = ATdictSet(oldannos, label, anno);
+  newannos = ATdictPut(oldannos, label, anno);
 
   if(ATisEqual(oldannos, newannos))
     return t;
@@ -1145,7 +1146,7 @@ ATerm ATsetAnnotation(ATerm t, ATerm label, ATerm anno)
 
 ATerm ATgetAnnotation(ATerm t, ATerm label)
 {
-  ATermList annos = AT_getAnnotations(t);
+  ATerm annos = AT_getAnnotations(t);
   if(!annos)
     return NULL;
 
@@ -1161,7 +1162,7 @@ ATerm ATgetAnnotation(ATerm t, ATerm label)
 
 ATerm ATremoveAnnotation(ATerm t, ATerm label)
 {
-  ATermList newannos, oldannos = AT_getAnnotations(t);
+  ATerm newannos, oldannos = AT_getAnnotations(t);
 
   if(!oldannos)
     return t;
@@ -1170,6 +1171,9 @@ ATerm ATremoveAnnotation(ATerm t, ATerm label)
 
   if(ATisEqual(newannos, oldannos))
     return t;
+
+  if(ATisEmpty((ATermList)newannos))
+    return AT_removeAnnotations(t);
 
   return AT_setAnnotations(t, newannos);
 }
