@@ -12,11 +12,14 @@ JAVAROOT        = ${top_builddir}
 
 GENERATED	= PhoneNumber.java Rolodex.java
 
+EXTRA_DIST	= rolodex.adt SDF.adt
+
 test: all
 	gen-java-test -basedir ${JAVAROOT} -package apigen.java \
-		-input rolodex.adt -import "java.util.*" -verbose
+		-input rolodex.adt -verbose
 	javac ${GENERATED}
 
 test-sdf: all
+	mkdir -p sdf
 	gen-java-test -package sdf -input SDF.adt -verbose
 	javac -classpath .:${CLASSPATH} -d . sdf/*.java
