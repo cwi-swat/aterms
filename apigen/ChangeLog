@@ -1,5 +1,6 @@
 2001/11/29 (jurgenv@cwi.nl)
  * Removed automatic quote insertion in production attributes.
+ * Regenerated with new parsetable generator and adapted asf[e,c].
 
 2001/11/22 (jong@cwi.nl)
  * Copied warning in CGen to JavaGen.
