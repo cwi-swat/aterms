@@ -724,6 +724,87 @@ void testMark()
 	* Test table routines.
 	*/
 
+/*{{{  void testTable2() */
+
+/**
+ * Table tests devised by JFG
+ */
+
+#define MAX_ELEM 50000 
+
+void testTable2()
+{ 
+  ATermTable table;
+  int i;
+
+  table=ATtableCreate(2,75);
+
+  for(i=0 ; i<MAX_ELEM ; i++)
+  { 
+    ATtablePut(table,ATmake("f(<int>)",i),ATmake("g(f(<int>),<int>)",i,i+1));
+  }
+
+  /* insert elements twice, as this caused previous versions
+     of the hashtable to crash */
+  for(i=0 ; i<MAX_ELEM ; i++)
+  { 
+    ATtablePut(table,ATmake("f(<int>)",i),ATmake("g(f(<int>),<int>)",i,i+1));
+  }
+
+  for(i=0 ; i<MAX_ELEM ; i++)
+  { 
+    if (ATtableGet(table,ATmake("f(<int>)",i))==NULL)
+    ATerror("Problem1\n");
+  }
+
+  for(i=0 ; i<MAX_ELEM ; i++)
+  { 
+    ATtableRemove(table,ATmake("f(<int>)",i));
+  }
+
+  if (ATgetLength(ATtableKeys(table))!=0)
+      ATerror("Problem2\n");
+  
+  if (ATgetLength(ATtableValues(table))!=0)
+  {    
+      ATerror("Problem3\n");
+  }
+
+  for(i=0 ; i<MAX_ELEM ; i++)
+  {
+    if (ATtableGet(table,ATmake("f(<int>)",i))!=NULL)
+      ATerror("Problem4\n");
+  }
+
+  for(i=0 ; i<MAX_ELEM ; i++)
+  {
+    ATtablePut(table,ATmake("f(<int>)",i+MAX_ELEM),ATmake("g(f(<int>),<int>)",i,i+1));
+  }
+
+  for(i=0 ; i<MAX_ELEM ; i++)
+  { 
+    ATtablePut(table,ATmake("f(<int>)",i+MAX_ELEM),
+          ATmake("g(f(<int>),<int>)",i,i+2));
+  }
+
+  for(i=0 ; i<MAX_ELEM ; i++)
+  { 
+    if (ATtableGet(table,ATmake("f(<int>)",i+MAX_ELEM))!=
+         ATmake("g(f(<int>),<int>)",i,i+2))
+    ATerror("Problem5\n");
+  }
+
+  if (ATgetLength(ATtableKeys(table))!=MAX_ELEM)
+  { 
+    ATerror("Problem6\n");
+  }
+
+  if (ATgetLength(ATtableValues(table))!=MAX_ELEM)
+      ATerror("Problem7\n");
+}
+
+/*}}}  */
+
 void testTable()
 {
 	int i;
@@ -755,10 +836,80 @@ void testTable()
 
 	ATtableDestroy(table);
 
+	testTable2();
+
 	printf("table tests ok.\n");
 }
 
 /*}}}  */
+/*{{{  void testIndexedSet() */
+
+/**
+ * Some of these tests have been devised by JFG
+ */
+
+void testIndexedSet()
+{
+  ATermIndexedSet set;
+  int i;
+  ATbool new;
+  
+  set=ATindexedSetCreate(2,75);
+
+  for(i=0 ; i<MAX_ELEM ; i++)
+  { 
+    ATindexedSetPut(set,ATmake("f(<int>)",i),&new);
+    if (!new) ATerror("Problem0.1");
+  }
+
+  /* insert elements twice, as this caused previous versions
+     of the hashset to crash */
+  for(i=0 ; i<MAX_ELEM ; i++)
+  { 
+    ATindexedSetPut(set,ATmake("f(<int>)",i),&new);
+    if (new) ATerror("Problem0.2");
+  }
+
+  for(i=0 ; i<MAX_ELEM ; i++)
+  { 
+    if (ATindexedSetGet(set,ATmake("f(<int>)",i))<0)
+    ATerror("Problem1\n");
+  }
+
+  for(i=0 ; i<MAX_ELEM ; i++)
+  { 
+    ATindexedSetRemove(set,ATmake("f(<int>)",i));
+  }
+
+  if (ATgetLength(ATindexedSetKeys(set))!=0)
+      ATerror("Problem2\n");
+  
+  for(i=0 ; i<MAX_ELEM ; i++)
+  {
+    if (ATindexedSetGet(set,ATmake("f(<int>)",i))>=0)
+      ATerror("Problem4\n");
+  }
+
+  for(i=0 ; i<MAX_ELEM ; i++)
+  { 
+    ATindexedSetPut(set,ATmake("f(<int>)",i+MAX_ELEM),&new);
+    if (!new) ATerror("Problem4.5");
+  }
+
+  for(i=0 ; i<MAX_ELEM ; i++)
+  { 
+    if (ATindexedSetGet(set,ATmake("f(<int>)",i+MAX_ELEM))<0)
+    ATerror("Problem5\n");
+  }
+
+  if (ATgetLength(ATindexedSetKeys(set))!=MAX_ELEM)
+      ATerror("Problem6\n");
+
+	printf("indexedSet tests ok.\n");
+}
+
+/*}}}  */
+
 /*{{{  void testBaffle() */
 
 void testBaffle()
@@ -816,6 +967,7 @@ int main(int argc, char *argv[])
 	testProtect();
   testMark();
   testTable();
+	testIndexedSet();
 
   return 0;
 }
