@@ -9,22 +9,21 @@
 \section{Introduction}
 \label{sec:intro}
 
-\begin{sloppypar}
-Since the development of the \atlib~\cite{BJKO2000} in 1999, its use
-for the implementation of tree-like data structures has become quite
-popular amongst developers of scanners, parsers, rewrite engines and
-model checkers. Apart from its inevitable deployment in the tools of the
-\metaenv~\cite{Kli93,BKMO97} for which it was specifically designed,
-the \atlib\ is used amongst others in: the ELAN system~\cite{BR01},
-The XT Program Transformation Tools~\cite{xt} which are based on the
-Stratego Language~\cite{Stratego}, The CoFI Algebraic Specification
-Language CASL~\cite{caslsum,CoFI}, and the $\mu$CRL ToolSet for Analysing
-Algebraic Specifications~\cite{mucrl-toolset}. \aterms\ include several
-nice features: they are easy to manipulate yet very efficient; they
-come with a built-in garbage collector (in the \C\ library), and they
-have persistence support in the form of a compact, sharing preserving
-serialization in both textual and binary representations.
-\end{sloppypar}
+\begin{sloppypar} Since the development of the \atlib~\cite{BJKO2000}
+in 1999, its use for the implementation of tree-like data structures has
+become quite popular amongst developers of scanners, parsers, rewrite
+engines and model checkers. Apart from its inevitable deployment in the
+tools of the \metaenv~\cite{Kli93,BKMO97,tool.demo} for which it was
+specifically designed, the \atlib\ is used amongst others in: the ELAN
+system~\cite{BR01}, the XT Program Transformation Tools~\cite{xt} which
+are based on the Stratego Language~\cite{Stratego}, the CoFI Algebraic
+Specification Language CASL~\cite{caslsum,CoFI}, and the $\mu$CRL ToolSet
+for Analysing Algebraic Specifications~\cite{mucrl-toolset}. \aterms\
+include several nice features: they are easy to manipulate yet very
+efficient; they come with a built-in garbage collector (in the
+\C\ library), and they have persistence support in the form of a
+compact, sharing preserving serialization in both textual and binary
+representations.  \end{sloppypar}
 
 As more and more tools in the \metaenv\ were converted to work with
 the \atlib, it became apparent that the tools had become inflexible with
@@ -117,12 +116,13 @@ some conclusions (Section~\ref{sec:conclusions}), a discussion
 \subsection{Related Work}
 \label{sec:related}
 
-The tecniques described in this paper both use the \metaenv{} and
+The techniques described in this paper both use the \metaenv{} and
 \emph{are used} to improve the tools therein and as such our work can be
-seen as an implementation of~\cite{Heering2000}. We now briefly discuss
-some related work that deals with the aspects we address in this paper:
-applying \emph{generational} techniques to create an \emph{abstraction
-layer} on top of a \emph{generic} data exchange formalism.
+seen as one step towards the implementation of~\cite{Heering2000}. We
+now briefly discuss some related work that deals with the aspects we
+address in this paper: applying \emph{generational} techniques to create
+an \emph{abstraction layer} on top of a \emph{generic} data exchange
+formalism.
 
 % {{{  Grammars as Contracts
 
@@ -478,7 +478,6 @@ The \asfix\ representation of the grammar production
 \end{quote}
 
 looks like this:
-\pagebreak %% HACK to prevent snippet from being chopped up by pagebreak
 \begin{snippet}
 \begin{verbatim}
  1  prod([cf(sort("Bool")),cf(opt(layout)),lit("and"),cf(opt(layout)),cf(sort("Bool"))],
@@ -858,12 +857,12 @@ has to be updated.
 
 \item With such inflexibility with respect to the application syntax
 in mind, imagine what would happen if the structure of the parse
-trees (\asfix) \emph{itself} were to change! Every tool based on
+trees (\asfix) \emph{itself} were to change. Every tool based on
 the \emph{representation} of parse trees would have to be updated to
 reflect the structural changes in the format. In our practical case of
 the \metaenv\ where we wanted to rid \asfix\ of some legacy constructs,
 this meant modification of virtually \emph{every} tool --- an arduous
-task indeed!
+task indeed.
 
 \end{itemize}
 
@@ -1283,12 +1282,12 @@ again at the cost of a considerable efficiency hit.
 \heading{Inspector}
 
 Inspecting a \texttt{Bool} to see if it is an instance of a specific
-alternative involves matching the argument against the pattern for
-that particular alternative. Because matching is (very) expensive,
-the result of the most recent match is cached. This caching approach
-seems limited, but is useful when multiple subterms of the \emph{same
-argument} are accessed. In these cases, sequences of \texttt{getBoolX}
-and \texttt{setBoolY} all reuse (cached) inspection results.
+alternative involves matching the argument against the pattern for that
+particular alternative. Because matching is expensive, the result of the
+most recent match is cached. This caching approach seems limited, but is
+useful when multiple subterms of the \emph{same argument} are accessed. In
+these cases, sequences of \texttt{getBoolX} and \texttt{setBoolY} all
+reuse (cached) inspection results.
 
 \begin{snippet}
 \begin{verbatim}
@@ -1377,7 +1376,7 @@ of the alternative productions).
 \end{verbatim}
 \end{snippet}
 
-An obvious optimization is to detect if there are alternatives that
+An obvious optimization would be to detect if there are alternatives that
 have the requested field at the same location in the underlying \aterm\
 representation. In this case, the \texttt{isBoolAnd} test is redundant,
 because both alternatives of \texttt{Bool} that have a \texttt{lhs},
@@ -1428,11 +1427,11 @@ the \aterm\ \emph{in situ}, but instead need to construct a \emph{new}
 \end{verbatim}
 \end{snippet}
 
-As the construction of a new \aterm\ is very expensive to begin with,
-the gain of eliminating the test for one of the alternatives (as
-implemented in the \texttt{get}ters) is minimal, which is why that
-particular optimization is omitted here. If no match was found after
-exhaustively testing all the alternatives, the operation is aborted.
+As the construction of a new \aterm\ is expensive to begin with, the gain
+of eliminating the test for one of the alternatives (as implemented in the
+\texttt{get}ters) is minimal, which is why that particular optimization
+is omitted here. If no match was found after exhaustively testing all
+the alternatives, the operation is aborted.
 
 % }}}
 
