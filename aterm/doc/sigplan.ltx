@@ -102,10 +102,12 @@ bit patterns from `real' object references, this can cause objects to
 be marked as `live' when they are actually garbage. Bit patterns on the
 stack that do not \emph{point to valid objects} are not traversed at all.
 Only when a bit pattern represents an address that is a valid object
-address, it is followed to mark the corresponding object.
+address, it is followed to mark the corresponding object.  After all
+live objects are marked, a single sweep through the heap is used to
+store all objects that are free in separate lists of free objects.
 
-After all live objects are marked, a single sweep through the heap is
-used to store all objects that are free in separate lists of free objects.
+More information on this and other garbage collection techniques is
+readily available, e.g. in~\cite[Chapter 13]{Appel97}.
 
 % }}}
 % {{{  \section{ATerm Memory Encoding}
