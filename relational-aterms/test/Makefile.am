@@ -9,15 +9,15 @@ INCLUDES = \
 	-I$(BALANCED_BINARY_ATERMS)/include
 
 AM_LDFLAGS = \
-	-L$(top_builddir)/src \
+	-L$(ATERM)/lib \
 	-L$(BALANCED_BINARY_ATERMS)/lib \
-	-L$(ATERM)/lib
+	-L$(top_builddir)/src
 
-LDLIBS = -lATerm -lrelational-aterms -lbbtree
+LDLIBS = -lATerm -lrelational-aterms -lbbtree 
 
 noinst_PROGRAMS = test pico
 
-test_SOURCES = test.c assert-equals.c
+test_SOURCES = test.c
 test_LDADD = $(LDLIBS)
 
 pico_SOURCES = pico.c

@@ -139,7 +139,6 @@ int main(int argc, char **argv) {
   ATerm fac;
   ATinit(argc, argv, &bottomOfStack);
   ATR_init();
-  ATsetChecking(ATtrue);
 
   fac = ATreadFromNamedFile("fac.ast");
   
