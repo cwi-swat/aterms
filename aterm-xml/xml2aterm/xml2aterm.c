@@ -549,9 +549,6 @@ void usage(void)
 
 /*}}}  */
 
-#define ATprotectList(t) (ATprotect((ATerm*)(void*)t))
-#define ATprotectAppl(t) (ATprotect((ATerm*)(void*)t))
-
 /*{{{  int main(int argc, char *argv[]) */
 
 int main(int argc, char *argv[])
@@ -565,9 +562,9 @@ int main(int argc, char *argv[])
   ATinit(argc, argv, &bottomOfStack);
 
   /* protect the global variables from garbage collection */
-  ATprotectList(&stack);
-  ATprotectAppl(&atermdata);
-  ATprotectList(&entities);
+  ATprotect((ATerm*)(void*)&stack);
+  ATprotect((ATerm*)(void*)&atermdata);
+  ATprotect((ATerm*)(void*)&entities);
 
   while ((c = getopt(argc, argv, myarguments)) != EOF) {
     switch (c) {
