@@ -1,6 +1,7 @@
 2002/09/31 (vinju@loria.fr)
  * Removed sdf2 dependencies by creating a new package sdf-apigen which contains
    sdf2-to-adt and all that is related to it. 
+ * Put ADT library in lib subdirectory
 
 2002/09/24 (vinju@loria.fr)
  * Renamed API class to ADT class (eclipse rules!)
