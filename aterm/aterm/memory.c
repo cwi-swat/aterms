@@ -876,7 +876,7 @@ ATermPlaceholder ATmakePlaceholder(ATerm type)
   * Create a new BLOB (Binary Large OBject)
   */
 
-ATermBlob ATmakeBlob(void *data, int size)
+ATermBlob ATmakeBlob(int size, void *data)
 {
   ATerm cur;
   header_type header = BLOB_HEADER(0, size);
@@ -1178,4 +1178,16 @@ ATerm ATremoveAnnotation(ATerm t, ATerm label)
   return AT_setAnnotations(t, newannos);
 }
 
+/*}}}  */
+/*{{{  void ATprotect(ATerm *t) */
+void ATprotect(ATerm *t)
+{
+	
+}
+/*}}}  */
+/*{{{  void ATunprotect(ATerm *t) */
+void ATunprotect(ATerm *t)
+{
+	
+}
 /*}}}  */

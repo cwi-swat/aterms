@@ -93,7 +93,7 @@ void ATerror(const char *format, ...)
   if(error_handler)
     error_handler(format, args);
   else {
-    vfprintf(stderr, format, args);
+	ATvfprintf(stderr, format, args);
     exit(1);
   }
 
@@ -800,7 +800,7 @@ static ATerm fparse_num_or_blob(int *c, FILE *f, ATbool canbeblob)
       data[i] = *c;
     }
     fnext_char(c, f);
-    return (ATerm)ATmakeBlob(data, size);
+    return (ATerm)ATmakeBlob(size, data);
 
     /*}}}  */
   } else if(*c == '.' || toupper(*c) == 'E') {
@@ -1081,7 +1081,7 @@ static ATerm sparse_num_or_blob(int *c, char **s, ATbool canbeblob)
       data[i] = *c;
     }
     snext_char(c, s);
-    return (ATerm)ATmakeBlob(data, size);
+    return (ATerm)ATmakeBlob(size, data);
 
     /*}}}  */
   } else if(*c == '.' || toupper(*c) == 'E') {
@@ -1186,19 +1186,19 @@ static ATerm sparse_term(int *c, char **s)
 }
 
 /*}}}  */
-/*{{{  ATerm ATreadFromString(char *string) */
+/*{{{  ATerm ATreadFromString(const char *string) */
 
 /**
   * Read from a string.
   */
 
-ATerm ATreadFromString(char *string)
+ATerm ATreadFromString(const char *string)
 {
   int c;
 
-  snext_skip_layout(&c, &string);
+  snext_skip_layout(&c, (char **) &string);
 
-  return sparse_term(&c, &string);
+  return sparse_term(&c, (char **) &string);
 }
 
 /*}}}  */

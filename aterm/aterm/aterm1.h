@@ -33,9 +33,9 @@ typedef struct ATerm
   * relatively unique.
   */
 
-ATerm ATmake(char *pattern, ...);
-ATerm ATmatch(ATerm t, char *pattern, ...);
-ATerm ATreadFromString(char *string);
+ATerm ATmake(const char *pattern, ...);
+ATerm ATmatch(ATerm t, const char *pattern, ...);
+ATerm ATreadFromString(const char *string);
 ATerm ATreadFromTextFile(FILE *file);
 ATerm ATreadFromBinaryFile(FILE *file);
 

@@ -160,7 +160,7 @@ ATermPlaceholder ATmakePlaceholder(ATerm type);
 #define ATgetPlaceholder(ph) ((ph)->ph_type)
 
 /* The ATermBlob type */
-ATermBlob ATmakeBlob(void *data, int size);
+ATermBlob ATmakeBlob(int size, void *data);
 /*void   *ATgetBlobData(ATermBlob blob);*/
 #define ATgetBlobData(blob) ((blob)->data)
 /*int     ATgetBlobSize(ATermBlob blob);*/
@@ -174,5 +174,9 @@ Symbol  ATmakeSymbol(char *name, int arity, ATbool quoted);
 char   *ATgetName(Symbol sym);
 int     ATgetArity(Symbol sym);
 ATbool  ATisQuoted(Symbol sym);
+
+/* C specific version of ATmake */
+ATerm ATvmake(const char *pat, va_list args);
+ATerm ATvmakeTerm(ATerm pat, va_list args);
 
 #endif
