@@ -47,10 +47,8 @@ public class SharedObjectFactory {
     this.hashMask = hashMask();
     this.table = new Entry[hashSize()];
 
-    // for statistics
     this.tableSize = new int[hashSize()];
-    this.loadFactor = 3.0f; //0.75f;
-    //this.loadFactor = 0.75f;
+    this.loadFactor = 3.0f; 
 
     this.maxThreshold = (int) (hashSize() * loadFactor);
     this.minThreshold = 0;
@@ -58,8 +56,6 @@ public class SharedObjectFactory {
     this.maxId = (1 << 31) - 1;
     this.minId = - (1 << 31);
     this.currentId = this.minId;
-    //System.out.println("MAXID="+this.maxId);
-    //System.out.println("MINID="+this.currentId);
     this.indexId = 0;
     this.usedId = new int[1];
     this.usedId[0] = this.maxId;
@@ -222,7 +218,7 @@ public class SharedObjectFactory {
 
   public SharedObject build(SharedObject prototype) {
     nbCall++;
-
+	
     SharedObject foundObj;
     Entry tab[] = table;
     int hash = prototype.hashCode();
@@ -247,7 +243,8 @@ public class SharedObjectFactory {
       else {
         // Found a reference
         nbFoundReference++;
-        if (prototype.equivalent(foundObj)) {
+		
+        if (prototype.equivalent(foundObj)) {    
           nbFoundExactReference++;
 
           // swap the found object
@@ -265,9 +262,6 @@ public class SharedObjectFactory {
           nbProjectionCollision++;
           if (foundObj.hashCode() == hash) {
             nbHashingCollision++;
-            //System.out.println("*** hashing collision ***");
-            //System.out.println("proto  = " + prototype);
-            //System.out.println(" found = " + foundObj);
           }
         }
 
@@ -309,6 +303,7 @@ public class SharedObjectFactory {
     tab[index] = new Entry(foundObj, tab[index]);
     nbAdd++;
     tableSize[index]++;
+    
     return foundObj;
   }
 
