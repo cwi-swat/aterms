@@ -1,4 +1,4 @@
-javadir = ${prefix}/classes/shared-objects
+javadir = ${prefix}/classes/shared
 
 JAVAROOT = ${top_builddir}
 

@@ -202,11 +202,11 @@ public class SharedObjectFactory {
 
       if (tableSize[idx] > 2 * loadFactor) {
         System.out.println(idx + " --> " + tableSize[idx] + " elements (usedSlot = " + usedSlot + ")");
-        /*
+          /*
                   for(Entry e = tab[idx] ; e != null ; e = e.next) {
                     System.out.println("\t" + e.get());
                   }
-        */
+          */
       }
     }
     //s += "maxThreshold = " + maxThreshold + "\n";
@@ -513,9 +513,10 @@ public class SharedObjectFactory {
           nbProjectionCollision++;
           if (foundObj.hashCode() == hash) {
             nbHashingCollision++;
-            //System.out.println("*** hashing collision ***");
+              //System.out.println("*** hashing collision ***");
+              //System.out.println("proto  = " + prototype);
+              //System.out.println(" found = " + foundObj);
           }
-          //System.out.println(this);
         }
 
         prev = e;
