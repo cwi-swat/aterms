@@ -9,7 +9,7 @@
 package shared;
 
 public interface SharedObjectWithID extends SharedObject {
-  int getId();
-  void setId(int uniqueId);
+  int getUniqueIdentifier();
+  void setUniqueIdentifier(int uniqueId);
 }
  

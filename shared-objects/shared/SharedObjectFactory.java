@@ -329,7 +329,7 @@ public class SharedObjectFactory {
     
     foundObj = prototype.duplicate();
     if(prototype instanceof SharedObjectWithID) {
-      ((SharedObjectWithID)foundObj).setId(getFreshId());
+      ((SharedObjectWithID)foundObj).setUniqueIdentifier(getFreshId());
     }    
     tab[index] = new Entry(foundObj, tab[index]);
     nbAdd++;
@@ -371,7 +371,7 @@ public class SharedObjectFactory {
       for (Entry e = table[i]; e != null; e = e.next) {
         
         if (e.get() instanceof SharedObjectWithID)
-          list.add(new Integer(((SharedObjectWithID)e.get()).getId()));
+          list.add(new Integer(((SharedObjectWithID)e.get()).getUniqueIdentifier()));
       }
     }
     list.add(new Integer(maxId));
