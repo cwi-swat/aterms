@@ -7,7 +7,6 @@ AM_INIT_AUTOMAKE(aterm-xml, 0.2)
 ACLOCAL="${ACLOCAL} -I ."
 
 dnl Which compiler to use?
-AC_REQUIRE([AC_PROG_CC])
 AC_PROG_CC
 
 dnl Handle --with-cflags option
