@@ -115,27 +115,8 @@ public class TomSignatureGenerator extends Generator {
 		println("%include { string.tom }");
 		println("%include { int.tom }");
 		println("%include { double.tom }");
-		
-		println(
-			TypeTermTemplate(
-				impl.ATermName(),
-				impl.ATermImpl(),
-				impl.ATermGetFunSym("t"),
-				impl.ATermCmpFunSym("s1", "s2"),
-				impl.ATermGetSubTerm("t", "n"),
-				impl.ATermEquals("t1", "t2")));
-		println();
-		println(
-			TypeListTemplate(
-				impl.ATermListName(),
-				impl.ATermListImpl(),
-				impl.ATermListGetFunSym("t"),
-				impl.ATermListCmpFunSym("s1", "s2"),
-				impl.ATermListEquals("t1", "t2"),
-				impl.ATermListGetFirst("l"),
-				impl.ATermListGetNext("l"),
-				impl.ATermListIsEmpty("l")));
-		println();
+		println("%include { aterm.tom }");
+		println("%include { atermlist.tom }");
 	}
 
 	private void genTomTypes(ADT api) {

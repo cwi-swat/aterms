@@ -1,3 +1,8 @@
+2004-06-21  pem  <pem@polly.loria.fr>
+
+  * apigen/gen/tom/TomSignatureGenerator.java: import aterm.tom 
+    and atermlist.tom instead of generating them
+
 2004-05-19  pem  <pem@polly.loria.fr>
 
   * apigen/gen/java/ListTypeGenerator.java: renamed factory into
