@@ -11,7 +11,7 @@ import java.util.List;
 import apigen.adt.ADT;
 import apigen.adt.Alternative;
 import apigen.adt.Type;
-import apigen.gen.TomSignatureGenerator;
+import apigen.tom.TomSignatureGenerator;
 import aterm.ParseError;
 import aterm.pure.PureFactory;
 
