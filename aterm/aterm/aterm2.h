@@ -227,4 +227,7 @@ ATbool ATdiff(ATerm t1, ATerm t2, ATerm *templ, ATerm *diffs);
 void ATsetChecking(ATbool on);
 ATbool ATgetChecking(void);
 
+int  ATcalcUniqueSubterms(ATerm t);
+int  ATcalcUniqueSymbols(ATerm t);
+
 #endif

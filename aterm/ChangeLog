@@ -1,5 +1,11 @@
 $Id$
 
+2000/03/06 ({jong,olivierp@cwi.nl})
+ * Version 1.5.3beta
+ * deprecated.h is now empty (and deprecated)
+ * moved ATmatchTerm and friends to aterm1.h
+ * added ATcalcUniqueSubterms/Symbols (alias for AT_calcUniqueXxx)
+
 2000/03/05 (jong@cwi.nl)
  * Version 1.5.2beta
  * Arne de Bruijn goes on a killing spree :-) Yet another three fixes

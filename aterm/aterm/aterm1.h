@@ -37,6 +37,15 @@ typedef struct _ATerm
 
 ATerm ATmake(const char *pattern, ...);
 ATbool ATmatch(ATerm t, const char *pattern, ...);
+
+ATerm ATmakeTerm(ATerm pat, ...);
+ATbool ATmatchTerm(ATerm t, ATerm pat, ...);
+ATerm ATvmake(const char *pat);
+ATerm ATvmakeTerm(ATerm pat);
+void  AT_vmakeSetArgs(va_list *args);
+ATbool ATvmatch(ATerm t, const char *pat);
+ATbool ATvmatchTerm(ATerm t, ATerm pat);
+
 ATerm ATreadFromTextFile(FILE *file);
 ATerm ATreadFromSharedTextFile(FILE *f);
 ATerm ATreadFromBinaryFile(FILE *file);
