@@ -39,6 +39,9 @@ ATerm ATreadFromString(const char *string);
 ATerm ATreadFromTextFile(FILE *file);
 ATerm ATreadFromBinaryFile(FILE *file);
 
+/* Abbreviation for ATreadFromString */
+#define ATparse(s)	ATreadFromString((s))
+
 /* int    ATgetType(ATerm t); */
 #define ATgetType(t) GET_TYPE((t)->header)
 
