@@ -577,7 +577,7 @@ ATerm AT_allocate(int size)
 	allocate_block(size);
 #ifndef NO_SHARING
 	/* Hashtable might need resizing. */
-	if((total_nodes/maxload)*100 > table_size) {
+	if((total_nodes/100)*maxload > table_size) {
 	  resize_hashtable();
 	}
 #endif
