@@ -1092,12 +1092,21 @@ extends Generator
     }
     println(" {");
     println("  fsym { }");
-    println("  is_fsym(t) { t.is" + operator_name + "() }");
+
+      /*
+       * The following cast is not necessary.
+       * It could be replaced by subject = "t"
+       * This is to be compatible when the strictType option is not set
+       */
+    String subject = "((" + class_name + ")t)";
+      //println("  is_fsym(t) { " + subject + ".is" + operator_name + "() }");
+    println("  is_fsym(t) { (t instanceof " + class_name  + ")?" + subject + ".is" + operator_name + "():false }");
+    
     fields = type.altFieldIterator(alt.getId());
     while (fields.hasNext()) {
       Field field = (Field) fields.next();
       String field_id = buildId(field.getId());
-      println("  get_slot(" + field_id + ",t) { t.get" + capitalize(field_id) +
+      println("  get_slot(" + field_id + ",t) { " + subject + ".get" + capitalize(field_id) +
               "() }");
     }
  
