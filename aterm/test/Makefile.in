@@ -103,4 +103,6 @@ depend: tool2.tif.c tool2.tif.h
 	cat /tmp/.gendep | sed "s/.o:/-prof.o:/" >> .depend
 	rm -f /tmp/.gendep
 
+tag:
+	ctags *.[ch]
 include .depend
