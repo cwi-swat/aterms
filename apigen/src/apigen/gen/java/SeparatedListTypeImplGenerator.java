@@ -61,7 +61,7 @@ public class SeparatedListTypeImplGenerator extends ListTypeImplGenerator {
         println("}");
     }
 
-    private void genSeparatorsGettersAndSetters() {
+    private void genSeparatorGettersAndSetters() {
         Iterator fields = listType.separatorFieldIterator();
         while (fields.hasNext()) {
             Field field = (Field) fields.next();
@@ -70,8 +70,8 @@ public class SeparatedListTypeImplGenerator extends ListTypeImplGenerator {
     }
 
     private void genSeparatorGetterAndSetter(Field field) {
-        String fieldName = field.getId()
-        println("  public get" + )
+        String fieldName = field.getId();
+        //println("  public get"  );
         
     }
 
