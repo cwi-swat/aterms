@@ -1580,5 +1580,141 @@ void AT_markTerm(ATerm t)
 }
 
 /*}}}  */
+/*{{{  void AT_unmarkTerm(ATerm t) */
+
+/**
+  * Unmark a term and all of its children.
+  */
+
+void AT_unmarkTerm(ATerm t)
+{
+  int i, arity;
+  Symbol sym;
+  ATerm *current = mark_stack+1;
+	ATerm *limit = mark_stack + mark_stack_size - MARK_STACK_MARGE;
+	ATerm *depth = mark_stack;
+
+	mark_stack[0] = NULL;
+	*current++ = t;
+
+	while(ATtrue) {
+		if(current > limit) {
+			/* We need to resize the mark stack */
+			mark_stack_size = mark_stack_size*2;
+			mark_stack = (ATerm *)realloc(mark_stack, sizeof(ATerm)*mark_stack_size);
+			if(!mark_stack)
+				ATerror("cannot realloc mark stack to %d entries.\n", mark_stack_size);
+			limit = mark_stack + mark_stack_size - MARK_STACK_MARGE;
+			fprintf(stderr, "resized mark stack to %d entries\n", mark_stack_size);
+		}
+
+		if(current > depth)
+			depth = current;
+		
+		t = *--current;
+
+		if(!t)
+			break;
+
+		CLR_MARK(t->header);
+		
+		switch(GET_TYPE(t->header)) {
+			case AT_INT:
+			case AT_REAL:
+			case AT_BLOB:
+				break;
+				
+			case AT_APPL:
+				sym = ATgetSymbol((ATermAppl)t);
+				AT_markSymbol(sym);
+				arity = GET_ARITY(t->header);
+				if(arity > MAX_INLINE_ARITY)
+					arity = ATgetArity(sym);
+				for(i=0; i<arity; i++)
+					*current++ = ATgetArgument((ATermAppl)t, i);
+				break;
+				
+			case AT_LIST:
+				if(!ATisEmpty((ATermList)t)) {
+					*current++ = (ATerm)ATgetNext((ATermList)t);
+					*current++ = ATgetFirst((ATermList)t);
+				}
+				break;
+				
+			case AT_PLACEHOLDER:
+				*current++ = ATgetPlaceholder((ATermPlaceholder)t);
+				break;
+		}
+	}
+  STATS(mark_stats, depth-mark_stack);
+	nr_marks++;
+}
+
+/*}}}  */
+
+/*{{{  static int internalSize(ATerm t) */
+
+/**
+	* Calculate the term size in bytes.
+	*/
+
+static int internalSize(ATerm t)
+{
+	int i, arity, size = 0;
+
+	if(IS_MARKED(t->header))
+		return size;
+
+	SET_MARK(t->header);
+  switch(ATgetType(t)) {
+		case AT_INT:
+			size = 12;
+			break;
+
+		case AT_REAL:
+		case AT_BLOB:
+			size = 16;
+			break;
+
+		case AT_APPL:
+			arity = ATgetArity(ATgetSymbol((ATermAppl)t));
+			size = 8 + arity*4;
+			for(i=0; i<arity; i++)
+				size += internalSize(ATgetArgument((ATermAppl)t, i));
+			break;
+			
+		case AT_LIST:
+			size = 16;
+			if(!ATisEmpty((ATermList)t)) {
+				size += internalSize(ATgetFirst((ATermList)t));
+				size += internalSize((ATerm)ATgetNext((ATermList)t));
+			}
+			break;
+
+		case AT_PLACEHOLDER:
+			size = 12;
+			size += internalSize(ATgetPlaceholder((ATermPlaceholder)t));
+			break;
+	}
+	return size;
+}
+
+
+/*}}}  */
+/*{{{  int ATinternalSize(ATerm t) */
+
+/**
+	* Calculate the term size in bytes.
+	*/
+
+int ATinternalSize(ATerm t)
+{
+	int result = internalSize(t);
+	AT_unmarkTerm(t);
+	return result;
+}
+
+
+/*}}}  */
 
 

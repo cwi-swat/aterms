@@ -41,6 +41,7 @@ INSTALL		= @INSTALL@
 INSTALL_PRG	= @INSTALL_PRG@
 INSTALL_DAT	= @INSTALL_DAT@
 
+PROGS		= termsize
 ATERMSRCS	= aterm.c list.c make.c memory.c symbol.c gc.c
 ATERMLIBS	= libATerm-gcc.a libATerm-cc.a libATerm-dbg.a libATerm-prof.a
 PUBLIC_INCL	= abool.h aterm1.h aterm2.h deprecated.h encoding.h symbol.h
@@ -53,7 +54,7 @@ OBJ_GCC		= $(patsubst %.c,%-gcc.o,$(ATERMSRCS))
 OBJ_DBG		= $(patsubst %.c,%-dbg.o,$(ATERMSRCS))
 OBJ_PROF	= $(patsubst %.c,%-prof.o,$(ATERMSRCS))
 
-all: $(ATERMLIBS)
+all: $(ATERMLIBS) $(PROGS)
 
 clean:
 	@CLEAN@
@@ -67,6 +68,9 @@ install: ${ATERMLIBS} ${PUBLIC_INCL}
 	done
 	@for file in ${PUBLIC_INCL}; do \
 		${INSTALL_DAT} $$file ${includedir}; \
+	done
+	@for file in ${PROGS}; do \
+		${INSTALL_PRG} $$file ${bindir}; \
 	done
 
 %-cc.o: %.c
@@ -92,6 +96,9 @@ libATerm-dbg.a: ${OBJ_DBG}
 
 libATerm-prof.a: ${OBJ_PROF}
 	${AR} ${AR_FLAGS} $@ ${OBJ_PROF}
+
+termsize: termsize.c libATerm-cc.a
+	${CC_CC} ${CFLAGS_CC} -o termsize $< -L. -lATerm-cc
 
 tag:
 	ctags -t *.[ch]
