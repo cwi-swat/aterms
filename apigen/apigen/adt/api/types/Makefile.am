@@ -1,6 +1,6 @@
 # $Id$
 
-SUBDIRS = entry separator module modulename
+SUBDIRS = type entry separator module modulename
 
 EXTRA_DIST = ${java_JAVA}
 
