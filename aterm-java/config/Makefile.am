@@ -1,6 +1,6 @@
 bin_SCRIPTS = aterm-java-config
 
-EXTRA_DIST = aterm-java-config.sh.src program-check.m4
+EXTRA_DIST = aterm-java-config.sh.src
 
 aterm-java-config: aterm-java-config.sh.src Makefile
 	sed 's@__PREFIX__@${prefix}@g;\

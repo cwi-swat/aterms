@@ -1,5 +1,3 @@
 #! /bin/sh
 
-aclocal -I ./config
-autoconf
-automake -a
+autoreconf --install --symlink $*
