@@ -7,12 +7,14 @@ import aterm.*;
 import aterm.pure.PureFactory;
 
 import apigen.adt.*;
-import apigen.gen.Generator;
+import apigen.gen.TomSignatureGenerator;
 
 public class Main {
 	
-	
-	
+	private static boolean verbose;
+
+	private static boolean jtom;
+
 	private ATermFactory factory;
 
 	private InputStream input;
@@ -67,6 +69,9 @@ public class Main {
 			else if ("-compatible:term".equals(args[i])) {
 				make_term_compatibility = true;
 			}
+			else if ("-jtom".startsWith(args[i])) {
+			   jtom = true;
+			}
 			else {
 				usage();
 			}
@@ -119,9 +124,8 @@ public class Main {
 		source = new PrintStream(new FileOutputStream(source_name));
 
         new APIGenerator(apiName,prefix,verbose,folding).run();
+        new TomSignatureGenerator(api,new CTomSignatureImplementation(),".",apiName,verbose,folding).run();
         
-       
-   
 
     info("generating " + output + ".dict");
 		ATerm dict = buildDictionary(api);

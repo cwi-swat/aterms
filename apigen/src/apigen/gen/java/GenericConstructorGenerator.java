@@ -3,7 +3,6 @@ package apigen.gen.java;
 
 import java.util.LinkedList;
 
-import apigen.gen.Generator;
 import apigen.gen.StringConversions;
 
 

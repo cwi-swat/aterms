@@ -1,7 +1,6 @@
 
 package apigen.gen.java;
 
-import java.io.File;
 import java.util.Iterator;
 
 import apigen.adt.ADT;
