@@ -288,7 +288,7 @@ testRead(void)
 	  ATprintf("term read: %t\n", t);
     } else
       fprintf(stdout, "no more terms to read.\n");
-  } while(t);
+  } while(t && !ATisEqual(t, ATparse("\"the end\"")));
 
   fclose(f);
 
@@ -312,6 +312,11 @@ testRead(void)
   ATwriteToTextFile(t, stdout);
 
   fprintf(stdout, "\n");
+
+  fprintf(stdout, "Next term should give a parse error at line 0, col 17\n");
+  f = fopen("error.trm", "r");
+  t = ATreadFromTextFile(f);
+  fclose(f);
 
 }
 
@@ -380,6 +385,9 @@ testMake(void)
 	test_assert("make", 7, ATisEqual(ATmake("<placeholder>", ATmakeInt(7)),
 		ATmakePlaceholder((ATerm)ATmakeInt(7))));
 
+	fprintf(stderr, "The following tests should generate parse errors.\n");
+	ATparse("<int");
+	ATparse("f(<int>,<int>,<int>,<int>,<int>,<int>,<int>,<int>,<int>,<int>,<int>,<int>,<int>,<int>,<int>,<int>,<int>,<int>,<int>,<int>asdfaksdjfhasjkhf)");
 	printf("make tests ok.\n");
 }
 

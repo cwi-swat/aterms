@@ -959,6 +959,7 @@ static ATerm fparse_term(int *c, FILE *f)
 ATerm ATreadFromTextFile(FILE *file)
 {
   int c;
+  ATerm term;
   
   line = 0;
   col  = 0;
@@ -967,7 +968,23 @@ ATerm ATreadFromTextFile(FILE *file)
 
   fnext_skip_layout(&c, file);
 
-  return fparse_term(&c, file);
+  term = fparse_term(&c, file);
+
+  if (!term)
+  {
+	  int i;
+	  fprintf(stderr, "ATreadFromTextFile: parse error at line %d, col %d:\n",
+			line, col);
+	  for (i = 0; i < ERROR_SIZE; ++i)
+	  {
+		  char c = error_buf[(i+error_idx) % ERROR_SIZE];
+		  if (c)
+			  fprintf(stderr, "%c", c);
+	  }
+	  fprintf(stderr, "\n");
+	  fflush(stderr);
+  }
+  return term;
 }
 
 /*}}}  */
@@ -1257,10 +1274,24 @@ static ATerm sparse_term(int *c, char **s)
 ATerm ATreadFromString(const char *string)
 {
   int c;
+  const char *orig = string;
+  ATerm term;
 
   snext_skip_layout(&c, (char **) &string);
 
-  return sparse_term(&c, (char **) &string);
+  term = sparse_term(&c, (char **) &string);
+
+  if (!term)
+  {
+	int i;
+    fprintf(stderr, "ATreadFromString: parse error at or near:\n");
+	fprintf(stderr, "%s\n", orig);
+	for (i = 1; i < string-orig; ++i)
+		fprintf(stderr, " ");
+	fprintf(stderr, "^\n");
+  }
+
+  return term;
 }
 
 /*}}}  */
