@@ -74,6 +74,7 @@
 #define ADDR_TO_BLOCK_IDX(a) \
 	((((HashNumber)(a))>>(BLOCK_SHIFT+PTR_ALIGN_SHIFT)) % BLOCK_TABLE_SIZE)
 
+#define TERM_CHECK
 #ifdef TERM_CHECK
 #define CHECK_TERM(t) assert(AT_isValidTerm(t) && "term is invalid")
 #else
@@ -1598,7 +1599,7 @@ ATermAppl ATmakeApplList(Symbol sym, ATermList args)
 				   MAX_INLINE_ARITY+1 : arity, sym);
   HashNumber hnr;
   
-  CHECK_TERM(args);
+  CHECK_TERM((ATerm)args);
   assert(arity == ATgetLength(args));
   
   protoAppl = (ATermAppl) protoTerm;
@@ -1819,7 +1820,7 @@ ATermList ATmakeList1(ATerm el)
   header_type header = LIST_HEADER(0, 1);
   HashNumber hnr;
   
-  CHECK_TERM(e1);
+  CHECK_TERM(el);
 
   protoList = (ATermList) protoTerm;
   protoList->header = header;
@@ -1863,7 +1864,7 @@ ATermList ATinsert(ATermList tail, ATerm el)
   header_type header = LIST_HEADER(0, (GET_LENGTH(tail->header)+1));
   HashNumber hnr;
   
-  CHECK_TERM(tail);
+  CHECK_TERM((ATerm)tail);
   CHECK_TERM(el);
   
   protoList = (ATermList) protoTerm;
