@@ -309,13 +309,15 @@ from XML are generated. The actual code generation can be steered using
 a specification in XML. This makes it possible to add e.g. interfaces
 and extra code to the generated classes.
 
+\begin{sloppypar}
 In general this approach is called \emph{data binding}, and several
 other initiatives in this area are currently underway, including
-some open source initiatives~\cite{databinding.open-source} and the
-commercial initiative~\cite{breeze}. All these approaches offer tool
-support for generating \java\ code from an XML Schema. The generated
-code can \emph{marshal} and \emph{unmarshal} XML terms to Java objects
-with accessors to retrieve type safe (sub)elements.
+some open source initiatives~\cite{enhydra,castor} and the commercial
+initiative~\cite{breeze}. All these approaches offer tool support for
+generating \java\ code from an XML Schema. The generated code can
+\emph{marshal} and \emph{unmarshal} XML terms to Java objects with
+accessors to retrieve type safe (sub)elements.
+\end{sloppypar}
 
 % }}}
 % {{{  Generative Programming
@@ -1598,7 +1600,6 @@ have not yet been fully explored, the efficiency of the generated library
 is already comparable to its manually written predecessor.
 
 % }}}
-
 % {{{  Discussion
 
 \section{Discussion}
@@ -1623,7 +1624,6 @@ in \asfix, and we have gained the ability to experiment with the format,
 and quickly see the results working in our tools.
 
 % }}}
-
 % {{{  Future work
 
 \section{Future work}
