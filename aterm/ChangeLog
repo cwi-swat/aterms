@@ -1,6 +1,7 @@
 $Id$
 
 Wed Jun  9 10:51:21 CEST 2004 <jong@cwi.nl>
+ * configure.in: bump version to 2.3 because interface changes
  * aterm/aterm1.h: add convenience macros to circumvent gcc valid warning
     "dereferencing type-punned pointer will break strict-aliasing rules"
    ATprotectList, ATprotectAppl, ...
