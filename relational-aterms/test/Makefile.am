@@ -6,11 +6,11 @@ TESTS = test
 INCLUDES = \
         -I$(top_srcdir)/src \
 	-I$(ATERM)/include \
-	-I$(BALANCED_BINARY_TREES)/include
+	-I$(BALANCED_BINARY_ATERMS)/include
 
 AM_LDFLAGS = \
 	-L$(top_builddir)/src \
-	-L$(BALANCED_BINARY_TREES)/lib \
+	-L$(BALANCED_BINARY_ATERMS)/lib \
 	-L$(ATERM)/lib
 
 LDLIBS = -lATerm-dbg -lATerm-relations -lbbtree

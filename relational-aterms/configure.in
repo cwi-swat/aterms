@@ -29,9 +29,9 @@ AC_SUBST(ATERM)
 dnl }}}
 
 dnl {{{  Require BBTree library
-AC_PACKAGE_REQUIRE(balanced-binary-trees, balanced-binary-trees-config,
-   [  --with-balanced-binary-trees=DIR        ATerm-library is in DIR])
-AC_SUBST(BALANCED_BINARY_TREES)
+AC_PACKAGE_REQUIRE(balanced-binary-aterms, balanced-binary-aterms-config,
+   [  --with-balanced-binary-aterms=DIR        Binary balanced aterms library is in DIR])
+AC_SUBST(BALANCED_BINARY_ATERMS)
 
 dnl }}}
 

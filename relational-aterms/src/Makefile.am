@@ -11,9 +11,9 @@ AM_CFLAGS = -Wall -pedantic -g -O2
 
 AM_LDFLAGS = \
 	-L${ATERM}/lib \
-	-L${BALANCED_BINARY_TREES}/lib
+	-L${BALANCED_BINARY_ATERMS}/lib
 
 INCLUDES = \
         -I${ATERM}/include \
-        -I${BALANCED_BINARY_TREES}/include 
+        -I${BALANCED_BINARY_ATERMS}/include 
 
