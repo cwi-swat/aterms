@@ -14,7 +14,7 @@ all:
 
 at.ps: at.dvi $(PICS)
 
-at.dvi: at.ltx spec/ATerm.mtx $(CHAPS) $(PICS)
+at.dvi: at.ltx aterm.ltx spec/ATerm.mtx $(CHAPS) $(PICS)
 
 manual.dvi: manual.ltx $(EXAMPLES)
 

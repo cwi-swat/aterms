@@ -765,190 +765,147 @@ As discussed in the introduction, the efficient exchange of \ATerms\
 between processes is very important. The simplest form of exchange 
 is the concrete syntax presented in Section \ref{concrete-syntax}.
 This would involve pretty printing the term on one side, and parsing it
-on the other. There are a number of efficiency problems with this approach:
-\begin{itemize}
-\item The concrete syntax of \ATerms\ does not take into account any
-      of the subterm sharing that is exploited in other parts of the
-      implementation. This means that this format is unnecessarily verbose.
-\item Parsing of terms is an expensive operation. Function symbols need
-      to be rescanned everytime they are encountered and all information about
-      the sharing of subterms needs to be rebuild.
-\end{itemize}
+on the other. The concrete syntax is not a very efficient exchange format
+however, because function symbol and subterm sharing cannot be expressed
+this way.
 
-A better solution would be to exchange a representation
-of the term that includes sharing. 
-A simple solution would be to exchange the memory dump containing the term,
-however,  this is not a solution, because such
-a dump contains addresses in the memory space of the sending process
-that have no meaning for the receiving process.
-We have designed an exchange format called BAF (Binary ATerm Format)
-that preserves the sharing information in a compact and portable way, 
-and is easy to encode and decode. Another important characteristic of
-BAF is that it is \emph{compositional}. You can take two or more terms
-in BAF format, simply concatenate them and add a function symbol to build 
-a more complex term in BAF format. Because the BAF representation of the
-argument terms need not be interpreted, this operation can be done very
-efficiently even if the argument terms are very large.
-The BAF format is readable both by the C implementation as well as
-the JAVA implementation of the term library, so it is in fact implementation
-independent.
+A better solution would be to exchange a representation in which 
+sharing (both of function symbols and subterms) can be expressed
+concisely
+A memory dump is not practical, because addresses
+in the address space of one process have no meaning in the address space
+of another process.
 
-\subsubsection{The BAF Virtual Machine}
-A term in BAF format consists of a stream of bytes representing instructions
-for a very simple virtual machine. The BAF virtual machine consists of
-three stacks, the term stack, the symbol stack, and the argument stack,
-and has an instruction set consisting of ten instructions.
-We will discuss these instructions, and show how they are used together
-with the three stacks to efficiently encode terms.
+In order to address these problems, we have developed \baf, the
+{\bf B}inary {\bf A}Term {\bf F}ormat.
+Instead of writing addresses, we assign a unique number
+to each subterm and each symbol occuring in a term that we want to 
+exchange. When referring to this term, we could use this number instead
+of its address. 
 
-\begin{description}
-\item[{\tt RESET}]
-Every term in BAF format starts with the {\tt RESET} command.
-This command contains a magic number, a version indication, and a
-size estimate of the term stack.
-\item[{\tt TPUSH\_INT}]
-The {\tt TPUSH\_INT} command is used to push an integer term on the
-term stack. It has a single argument: the value of the integer term.
+When writing a term, we first start by writing all function symbols
+used in this term. Each function symbol consists of the string 
+representation of the symbol followed by its arity.
 
-\item[{\tt TPUSH\_REAL}]
-The {\tt TPUSH\_REAL} command is used to push a real term on the
-term stack. It has a single argument: a string representing the
-value of the real-valued term.
+To write a function application, first the index of the
+function symbol is written. Then the indices of the arguments
+are written. When an argument consists of a term that has not
+been written yet, the index of the argument is first written itself
+before continuing with the next argument.
+In this way, every subterm is written exactly once. Every time
+a parent term wishes to refer to a subterm, it just uses the
+index.
 
-\item[{\tt TPUSH\_BLOB}]
-The {\tt TPUSH\_BLOB} command is used to push a blob term on the
-term stack. It has a single argument: the binary data that is stored
-in the blob.
+\subsubsection{Exploiting \ATerm\ regularities}
+When sending a large term containing a lot of subterms, the subterm
+indices can become quite large. Consequently a lot of bits are needed
+to represent these indices. We can considerably reduce the size of these
+indices when we take into account some of the regularities in the
+structure of terms. Empirical study shows that the set of function symbols
+that actually occur at each argument position of all terms over a
+certain function symbol is often very small. A rationale for this is that
+although \ATerm\ applications themselves are not typed, the datatypes
+they represent often are. In this case, function applications represent
+objects and the type of the object is represented by the function
+symbol. The type hierarchy determines which types can occur at each
+position in the object.
 
-\item[{\tt SPUSH\_SYM}]
-The {\tt SPUSH\_SYM} command is used to push a new function
-symbol on the symbol stack. The command has two arguments: the arity of the 
-function symbol and the name of the function symbol.
+We exploit this knowledge by grouping all terms occording to their
+top function symbol. Terms that are not function applications are
+grouped based on dummy function symbols, one for each term type.
+For each function symbol, we determine which function symbols can
+occur at each argument position. When writing all function symbols
+at the start of the BAF file, we also write this information also.
 
-\item[{\tt SPUSH\_QSYM}]
-The {\tt SPUSH\_QSYM} command is similar to the {\tt SPUSH\_SYM} command,
-but is used with quoted function symbols.
+When writing the argument of a function application, we start
+by writing the actual symbol of the argument. Because this symbol
+is taken from a limited set of function symbols (only those symbols
+that can accually occur at this position), we can use a very small
+number to represent this it. Following this function symbol we
+write the index of the argument term itself in the table of terms
+over this function symbol instead of the index of the argument in
+the total term table.
 
-\item[{\tt TPUSH\_APPL}]
-The {\tt TPUSH\_APPL} command is used to push a new function application on 
-the term stack. This command has one argument: the index of the function
-symbol relative to the current top of the symbol stack. The arity of
-this symbol is used to pop as many arguments from the argument stack as
-needed.
+\subsection{Example}
+As an example, we show how the term {\tt mult(s(s(z),s(z)))} is represented
+in \baf. This term contains three function symbols: {\tt mult} with
+arity two, {\tt s} with arity one, and {\tt z} with arity zero.
+When grouping the subterms by function symbol we get:
+\vspace{0.5cm}
 
-\item[{\tt TPUSH\_LIST}]
-The {\tt TPUSH\_LIST} command pushes a new list on the term stack.
-It's single argument indicates the number of terms that are to be
-taken of the argument stack and stored in the new list.
+\begin{tabular}{|c|c|c|}
+\hline
+mult               & s & z       \\
+\hline
+mult(s(s(z)),s(z)) & s(s(z)) & z \\
+                   & s(z)    &   \\
+\hline
+\end{tabular}
+\vspace{0.5cm}
 
-\item[{\tt APUSH}]
-The {\tt APUSH} command is used to push a term on the argument stack.
-This command has one argument: the index of the argument term 
-on the term stack, relative to the current top of the term stack.
+When we look at the function symbols that can occur
+at every argument position we get:
+\vspace{0.5cm}
 
-\end{description}
+\begin{tabular}{|c|c|c|c|}
+\hline
+position & mult               & s    & z \\
+\hline
+0        & s                  & s, z & \\
+1        & s                  &      & \\
+\hline
+\end{tabular}
+\vspace{0.5cm}
 
-\subsubsection{An example}
-Lets suppose we want to encode the term {\tt f(g("a","a"),123,g("a","a"))}.
-A possible BAF encoding of this term would be:
-\begin{verbatim}
-RESET      0xBAF, 0x0100, yy
-SPUSH_QSYM 0, a
-TPUSH_APPL 0
-APUSH      0
-APUSH      0
-SPUSH_SYM  2, g
-TPUSH_APPL 0
-TPUSH_INT  123
-APUSH      1
-APUSH      0
-APUSH      1
-SPUSH_SYM  3, f
-TPUSH_APPL 0
-\end{verbatim}
+The information in this last table is written first in a 
+straightforward manner
+that we will not discuss here. It is important to note that
+in most cases the number of function symbols is very small
+compared to the number of terms that is to be written. Storing
+some extra information for every function symbol in order
+to better compress the actual term data is no problem.
 
-After the {\tt RESET} command, the quoted symbol {\tt "a"} of arity
-0 is defined. This symbol is used to push the function application {\tt "a"}
-on the term stack. This function application is then pushed on the
-argument stack twice. These two instances are then used to create
-the function application g("a","a"). The integer {\tt 123} is pushed
-on the term stack. Now that all arguments of the outer function application
-are created, they are pushed on the argument stack and used to create
-the final function symbol.
+The following bits need to be written in order to encode
+the example term:
 
-\subsubsection{Binary encoding}
-The textual representation of the encoding described above can hardly be 
-seen as an improvement over the textual representation of the term.
-But this changes when we take a look at the actual binary encoding that
-is used describe a term in BAF format.
+\begin{tabbing}
+00 \= : \= \kill
+   \> : \> No bits need to be written to identify the function symbol {\tt s},\\
+   \>   \> because it is the only possible function symbol at the first \\
+   \>   \> argument position of {\tt mult}. \\
+0  \> : \> One bit indicates which term over the function symbol {\tt s} is \\
+   \>   \> written ({\tt s(s(z))}). Because this term has not been written yet,\\
+   \>   \> it is done so now. \\
+0  \> : \> The function symbol of the only argument of {\tt s(s(z))} is {\tt s}.\\
+1  \> : \> {\tt s(z)} is has index 1 in the termtable of symbol {\tt s}. \\
+1  \> : \> Symbol {\tt z} has index 1 in the symboltable of symbol {\tt s}.\\
+   \> : \> Because there is only one term over symbol {\tt z}, no bits are\\
+   \>   \> needed to encode this term. Now we only need to encode the \\
+   \>   \> second argument of the input term, {\tt s(z)}. \\
+   \> : \> No bits are needed to encode the function symbol {\tt s}, because\\
+   \>   \> it is the only symbol that can occur as the second argument of mult.\\
+1  \> : \> {\tt s(z)} has index 1 in the termtable of symbol {\tt s}. Because\\
+   \>   \> this term has already been written, we are done.
+\end{tabbing}
 
-All numbers used in the BAF format are encoded in such a way that small
-integers take less space than large numbers, because small numbers
-occur far more often than large numbers. The number of bytes needed to 
-encode a number can be found by looking at the number of leading 1
-bits in the first byte of the number (with a maximum of 3), and
-increasing this number by one.
-Numbers between 0 and $2^{7}$ (7 bits) use only one byte:\newline
-{\tt 0xxxxxxx}.\newline
-Numbers between 0 and $2^{14}$ (14 bits) use two bytes:\newline
-{\tt 10xxxxxx, xxxxxxxx}.\newline
-Numbers between 0 and $2^{21}$ (21 bits) use three bytes:\newline
-{\tt 110xxxxx, xxxxxxxx, xxxxxxxx}.\newline
-Numbers between 0 and $2^{28}$ (28 bits) use four bytes:\newline
-{\tt 1110xxxx, xxxxxxxx, xxxxxxxx, xxxxxxxx}.\newline
-Numbers between 0 and $2^{32}$ (32 bits) use five bytes:\newline
-{\tt 11110000, xxxxxxxx, xxxxxxxx, xxxxxxxx, xxxxxxxx}.\newline
+Only five bits were needed to encode the term {\tt mult(s(s(z)),s(z))}
+after some information about the symbols was written! As mentioned
+earlier, the amount of data needed to write the symbols is in most
+cases negligible compared to the actual term data so the extra
+information stored with the symbols really pays of in the long run.
 
-Each command of the BAF virtual machine has its own command number,
-except for the {\tt APUSH} command. Because this command is used the
-most, it is implicitly assumed when a command with a number greater
-than 10 is read. In this case, 10 is subtracted from the command
-to get the {\tt APUSH} argument, the term index on the term stack
-that must be pushed on the argument stack. The other command numbers
-are:
-\begin{itemize}
-\item 0: {\tt RESET}
-\item 1: {\tt TPUSH\_APPL}
-\item 2: {\tt TPUSH\_INT}
-\item 3: {\tt TPUSH\_REAL}
-\item 4: {\tt TPUSH\_LIST}
-\item 5: {\tt TPUSH\_PLACEHOLDER}
-\item 6: {\tt TPUSH\_BLOB}
-\item 7: {\tt SPUSH\_SYM}
-\item 8: {\tt SPUSH\_QSYM}
-\end{itemize}
-
-Strings are encoded by their length indicator followed by their contents.
-The length indicator is of course encoded as described above.
-
-\subsubsection{The example again}
-Using this mechanism the example described above can be encoded
-using the following sequence of bytes (in hexadecimal notation):
-\begin{verbatim}
-00 8B AF 81 00 04       %% The reset command
-08 00 01 61             %% A quoted symbol "a", with arity 0.
-01 00                   %% Push application "a" on the term stack.
-00                      %% Push application "a" on the argument stack
-00                      %% Push application "a" on the argument stack
-07 02 01 67             %% An unquoted symbol g, with arity 2.
-01 00                   %% Push appl. g("a","a") on the term stack
-02 7B                   %% Push integer term 123 on the term stack
-01                      %% Push appl. g("a","a") on the argument stack
-00                      %% Push integer term 123 on the term stack
-01                      %% Push appl. g("a","a") on the argument stack
-07 03 01 66             %% Unquoted symbol f with arity 3.
-01 00                   %% Push appl. f(g("a","a"),123,g("a","a"))
-\end{verbatim}
-
-If we ignore the {\tt RESET} command, we are still left with
-25 bytes against the 28 bytes of the original term. The fact that we 
-do not gain anything is mainly due to the size of this example.
-The overhead of the {\tt SPUSH\_SYM} and {\tt SPUSH\_QSYM} commands 
-diminishes as the size of the term increases. The following table
-gives an impression of the compression that can be reached in real-world
-terms when the term size increases:
+\subsubsection{Compression results}
+The compression ratio that can be reached using the techniques discussed
+in this section depend on characteristics of the term being written,
+like the amount of sharing, the number of different symbols, and the
+distribution of terms over these symbols. In practice we reach a compression
+ratio between two and twelve compared to the textual representation
+of the term. Reading \baf\ terms is about a factor two to four faster
+than reading their textual representation. Writing of \baf\ terms is
+only a fraction slower than writing their textual representation.
 
 %}}}
+%{{{ Applications
 
 \section{Applications}
 
@@ -1048,6 +1005,9 @@ essential to reduce the size of these terms.
 
 \subsection{JFG}
 
+%}}}
+%{{{ Related Work
+
 \section{Related Work}
 
 \begin{itemize}
@@ -1055,6 +1015,9 @@ essential to reduce the size of these terms.
 \item SGML
 \item GEL
 \end{itemize}
+
+%}}}
+%{{{ Conclusions
 
 \section{Conclusions}
 
@@ -1072,7 +1035,10 @@ a tool for detecting code clones in COBOL programs.
 processing time by a factor XXX.
 \end{itemize}
 
-\section{Future work}
+%}}}
+%{{{ Future Work
+
+\section{Future Work}
 
 \begin{itemize}
 \item Generational garbage collector.
@@ -1080,3 +1046,5 @@ processing time by a factor XXX.
 \item More compact BAF format.
 \item Porting to Windows platform.
 \end{itemize}
+
+%}}}
