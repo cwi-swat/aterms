@@ -22,7 +22,7 @@ dnl
 dnl $Id$
 
 AC_INIT(Makefile.in)
-AM_INIT_AUTOMAKE(aterm, 1.4.6)
+AM_INIT_AUTOMAKE(aterm, 1.4.6pl1)
 
 dnl Default values
 CC_GCC=gcc
@@ -86,10 +86,15 @@ if test "a${TOOLBUS}" = "a"; then
  fi
 fi
 
+JAVA_SUBDIRS=
 AC_ARG_WITH(java,
-   [  --with-java         with Java support. Note that 
+   [  --with-java         with Java support (jdk-1.2 and up).],
+      JAVA_SUBDIRS="${JAVA_SUBDIRS} java",)
+
+AC_ARG_WITH(old-java,
+   [  --with-old-java     with deprecated Java support. Note that 
                       only jdk-1.2 (Java-2) is supported!],
-      JAVA_SUBDIR=java1.2,)
+      JAVA_SUBDIRS="${JAVA_SUBDIRS} java1.2",)
 
 AC_ARG_WITH(gcc,
    [  --with-gcc          create gcc version of the library (libATerm-gcc.a)],
@@ -179,7 +184,7 @@ AC_SUBST(LFLAGS_DBG)
 AC_SUBST(LFLAGS_PROF)
 AC_SUBST(LFLAGS_SHARED)
 
-AC_SUBST(JAVA_SUBDIR)
+AC_SUBST(JAVA_SUBDIRS)
 
 AC_HAVE_FUNCS(strdup)
 

@@ -19,6 +19,11 @@
 
 $Id$
 
+2001/01/10 (jong@cwi.nl)
+ * Version 1.4.6pl1 released. An omission in configure.in degraded
+   the usefulness of release 1.4.6 for those who use it for the
+   Java implementation.
+
 2001/01/09 (jong@cwi.nl)
   * Version 1.4.6 (released)
   * Significant progress made in de Java implementation (i.e. the version
