@@ -2173,6 +2173,8 @@ ATermAppl ATsetArgument(ATermAppl appl, ATerm arg, int n)
 {
   int i, arity;
   Symbol sym = ATgetSymbol(appl);
+  ATermAppl result;
+  ATerm annos;
 
   arity = ATgetArity(sym);
   assert(n >= 0 && n < arity);
@@ -2182,7 +2184,13 @@ ATermAppl ATsetArgument(ATermAppl appl, ATerm arg, int n)
   }
   arg_buffer[n] = arg;
 
-  return ATmakeApplArray(sym, arg_buffer);
+  result = ATmakeApplArray(sym, arg_buffer);
+  annos = AT_getAnnotations((ATerm)appl);
+  if (annos != NULL) {
+    result = (ATermAppl)AT_setAnnotations((ATerm)result, annos);
+  }
+
+  return result;
 }
 
 /*}}}  */

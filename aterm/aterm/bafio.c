@@ -318,7 +318,7 @@ writeInt(unsigned int val, byte_writer *writer)
   unsigned char buf[8];
 
   nr_items = writeIntToBuf(val, buf);
-  if(write_bytes(buf, nr_items, writer) != nr_items)
+  if(write_bytes((char *)buf, nr_items, writer) != nr_items)
     return -1;
 
   /* Ok */
