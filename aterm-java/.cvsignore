@@ -12,3 +12,5 @@ missing
 mkinstalldirs
 .classpath
 .project
+aterm-java-*.pkg
+*.cache
