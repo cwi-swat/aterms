@@ -33,13 +33,13 @@ public interface SharedObject {
   boolean equivalent(SharedObject o);
   
   /**
-   * Returns the hash code of an object. It is a good idea to cache to
+   * Returns the hash code of an object. It is a good idea to 
    * compute this code once, and store it locally in a field to let
    * this hashCode() method return it. Because a SharedObject should be 
    * immutable, the hashCode has to be computed only once. Note that a hashCode()
    * of 0 should also lead to a correct implementation, but it will be very slow.
    * A good uniform hash leads to the fastest implementations. 
-   * @return
+   * @return a proper hash code for this object
    */
   int hashCode();
 }
