@@ -1,4 +1,5 @@
 
+TOOLBUS		= toolbus
 CC_CC		= cc
 CC_GCC		= gcc
 
@@ -17,8 +18,8 @@ AR			= ar
 
 EFENCE		= /home/olivierp/ElectricFence-2.0.5
 TESTPRGS	= stress-cc stress-gcc primes-cc primes-gcc asfixtest \
-		test-tool
-TESTSRCS	= stress.c asfixtest.c primes.c test-tool
+		test-tool test-tool2
+TESTSRCS	= stress.c asfixtest.c primes.c test-tool test-tool2
 TESTOBJS	= stress.o asfixtest.o primes.o test-tool.o
 
 all: $(TESTPRGS) $(TESTS)
@@ -42,6 +43,17 @@ primes-gcc: primes.c
 test-tool: test-tool.c
 	$(CC_GCC) $(CFLAGS_GCC) $(INCL) $(LFLAGS) -o test-tool test-tool.c \
 		$(LIBS_GCC) -L../toolbus -lATB-dbg -lsocket -lnsl
+
+test-tool2: test-tool2.c tool2.tif.c tool2.tif.h
+	$(CC_GCC) $(CFLAGS_GCC) $(INCL) $(LFLAGS) -o test-tool2 test-tool2.c \
+		tool2.tif.c $(LIBS_GCC) -L../toolbus -lATB-dbg -lsocket -lnsl
+
+tool2.tif.c tool2.tif.h: test2.tifs
+	../toolbus/ctif -tool tool2 test2.tifs
+
+test2.tifs: test2.tb
+	$(TOOLBUS) -gentifs test2.tb
+	
 
 clean:
 	rm -f $(TESTPRGS) $(TESTOBJS) *~ core
