@@ -3,6 +3,7 @@
    can contain user defined methods and are not overwritten if the API is regenerated.
  * adt-to-java creates the output directory automatically if it does not exist. Exceptions are thrown
    when that fails and when a file exists with the same name as the output directory.
+ * fixed a bug in adt-to-c, it was not able to handle pattern that consist of only one placeholder
    
 2002/11/12 (vinju@loria.fr)
  * adt-to-{c,java} throws runtime exceptions if:

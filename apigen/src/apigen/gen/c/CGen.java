@@ -747,16 +747,17 @@ extends Generator {
 			}
 			if (pat_type == ATerm.APPL) {
 				//{{{ Check function symbols
-
-				AFun afun = ((ATermAppl) alt.buildMatchPattern()).getAFun();
-				alt_count = alts_left.size();
-				alts_left.keepByAFun(afun);
-				if (alts_left.size() < alt_count) {
-					source.println(
-						"  if (ATgetAFun((ATermAppl)arg) != ATgetAFun(" + pattern + ")) {");
-					source.println("    return ATfalse;");
-					source.println("  }");
-				}
+        if (alt instanceof ATermAppl) {
+				  AFun afun = ((ATermAppl) alt.buildMatchPattern()).getAFun();
+				  alt_count = alts_left.size();
+				  alts_left.keepByAFun(afun);
+				  if (alts_left.size() < alt_count) {
+				  	source.println(
+				  		"  if (ATgetAFun((ATermAppl)arg) != ATgetAFun(" + pattern + ")) {");
+				  	source.println("    return ATfalse;");
+				    source.println("  }");
+				  }
+        }
 
 				//}}}
 			}

@@ -526,15 +526,15 @@ extends Generator
 	private void genTypeClassImpl(Type type) {
     String class_impl_name = buildClassImplName(type);
     String class_name = buildClassName(type);
-    
+    String get_factory = "getStatic" + api_factory + "()";
+       
 		println("abstract public class " + class_impl_name + " extends " + api_constructor);
 		println("{");
-		println("  private static aterm.ATermFactory factory = null;");
-    println();
+
     printFoldOpen("fromString()");
 		println("  static " + class_name + " fromString(String str)");
 		println("  {");
-		println("    aterm.ATerm trm = factory.parse(str);");
+		println("    aterm.ATerm trm = " + get_factory + ".parse(str);");
 		println("    return fromTerm(trm);");
 		println("  }");
     printFoldClose();
@@ -542,7 +542,7 @@ extends Generator
 		println("  static " + class_name + " fromTextFile(InputStream stream) " +
             "throws aterm.ParseError, IOException");
 		println("  {");
-		println("    aterm.ATerm trm = factory.readFromTextFile(stream);");
+		println("    aterm.ATerm trm = " + get_factory + ".readFromTextFile(stream);");
 		println("    return fromTerm(trm);");
 		println("  }");
     printFoldClose();

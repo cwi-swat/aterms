@@ -23,6 +23,7 @@ Parameters:
   -o | --output <DIR>     specify output directory         [.]
   -p | --package <STR>    specify package                  [""]
   -m | --import <PKG>     specify extra import package     [see below]
+  -n | --name <NAME>      specify name of api              [improvised]
   -t | --visitable        visitable enabled                [off]
   -j | --jtom             generate jtom signature          [off]
   -v | --verbose          be verbose during generation     [off]
@@ -71,6 +72,7 @@ require() {
    FOLDING=0
    VISITABLE=0
    JTOM=0
+   NAME=""
 
 # data needed
 CLASSES=${prefix}/classes:${JAVA_ATERM}:${SHARED_OBJECTS}
@@ -98,6 +100,9 @@ do
 
     -m | --import)
       shift; OPT_IMPORTS="${OPT_IMPORTS} -import $1" ;;
+
+    -n | --name)
+      shift; NAME="$1";;
 
     -v | --verbose)
       VERBOSE=1 ;;
@@ -163,6 +168,13 @@ if [ $JTOM -gt 0 ]; then
 else
   OPT_JTOM=""
 fi
+
+if [ "a${NAME}" = "a" ]; then
+  OPT_NAME=""
+else
+  OPT_NAME="-name ${NAME}"
+fi
+
   
 # }}}
 
@@ -175,6 +187,7 @@ java  -classpath ${CLASSES} apigen.gen.java.JavaGen \
 	  ${OPT_VERBOSE}        \
 	  ${OPT_FOLDING}        \
 	  ${OPT_VISITABLE} \
-	  ${OPT_JTOM}
+	  ${OPT_JTOM} \
+	  ${OPT_NAME}
 
 # }}}
