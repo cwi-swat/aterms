@@ -23,7 +23,7 @@ import aterm.ATermAppl;
 
 public class ADT {
 	List modules;
-    List types;
+  List types;
     List bottomTypes;
     Map modulesTypes;
     Factory factory;
@@ -320,4 +320,16 @@ public class ADT {
     	    	}
     	    	return null;
     	}
+  
+  public Set getModuleNameSet() {
+    Set modulenames = new HashSet();
+    Iterator it = moduleIterator();
+    while (it.hasNext()) {
+      Module mod = (Module) it.next();
+      String modname = mod.getModulename().getName();
+      modulenames.add(modname);
+    }
+    return modulenames;
+  }
+
 }

@@ -11,12 +11,13 @@ import apigen.gen.GenerationParameters;
 import apigen.gen.StringConversions;
 
 public class AlternativeGenerator extends JavaGenerator {
-    private Type type;
-    private Alternative alt;
-    private String className;
-    private String superClassName;
-    private ADT adt;
-    private String traveler;
+  private Type type;
+  private Alternative alt;
+  private String className;
+  private String superClassName;
+  private boolean hasGlobalName;
+  private ADT adt;
+  private String traveler;
 
     protected AlternativeGenerator(
         ADT adt, 
@@ -27,6 +28,7 @@ public class AlternativeGenerator extends JavaGenerator {
         this.adt = adt;
         this.type = type;
         this.alt = alt;
+        this.hasGlobalName = !(params.getApiName()).equals("");
         this.className = className(type.getId(),alt.getId());
         this.superClassName = new TypeGenerator(params, type).qualifiedClassName(params, type);
         this.traveler = params.getTravelerName();
@@ -493,8 +495,14 @@ public class AlternativeGenerator extends JavaGenerator {
     }
 
     private void genAltVisitableInterface(Type type, Alternative alt) {
-   		Set moduleToGen = adt.getImportsClosureForModule(type.getModuleName());
-       	Iterator moduleIt = moduleToGen.iterator();
+        Iterator moduleIt;
+        if (hasGlobalName) {
+          moduleIt = adt.getModuleNameSet().iterator();
+        } else {
+          Set moduleToGen = adt.getImportsClosureForModule(type.getModuleName());
+          moduleIt = moduleToGen.iterator();
+        }
+
        	while(moduleIt.hasNext()) {
        	    String moduleName = (String) moduleIt.next();
        	    String visitorPackage = VisitorGenerator.qualifiedClassName(getJavaGenerationParameters(),moduleName);

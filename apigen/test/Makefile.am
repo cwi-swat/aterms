@@ -4,16 +4,15 @@ ADTTOC = ${top_builddir}/scripts/adt-to-c-test
 
 ADTTOJAVA = ${top_builddir}/scripts/adt-to-java-test
 
-JAVATESTS = cyclic peano list rolodex builtins
+JAVATESTS = cyclic peano list builtins
 
-TESTS = listtest rolotest builtinstest \
+TESTS = listtest builtinstest \
             $(foreach j, ${JAVATESTS}, ${j}.java.sh)
 
 JAVAC = javac
 
 peano_Main = PeanoTest
 list_Main  = ListTest
-rolodex_Main = RoloTest
 builtins_Main = BuiltinsTest
 cyclic_Main = CyclicTest
 
@@ -24,16 +23,11 @@ AM_LDFLAGS = \
 	-L$(ATERM)/lib 
 
 # Build the C programs that are to be run during testing:
-check_PROGRAMS	= rolotest listtest builtinstest
-check_LIBRARIES	= librolodex.a liblist.a libbuiltins.a
+check_PROGRAMS	= listtest builtinstest
+check_LIBRARIES	= liblist.a libbuiltins.a
 
-librolodex_a_SOURCES = rolodex.c rolodex_dict.c
 liblist_a_SOURCES = list.c list_dict.c
 libbuiltins_a_SOURCES = builtins.c builtins_dict.c
-
-rolotest_SOURCES = rolotest.c
-rolotest_LDADD = -L. -lrolodex -lATerm
-rolotest_DEPENDENCIES = librolodex.a
 
 listtest_SOURCES = listtest.c
 listtest_LDADD = -L. -llist -lATerm
@@ -50,16 +44,11 @@ clean:
 
 CLEANFILES = \
 	${check_PROGRAMS} ${check_LIBRARIES} \
-	rolodex.[ch] rolodex_dict.[ch] \
 	list.[ch] list_dict.[ch] \
 	builtins.[ch] builtins_dict.[ch] \
 	*.java.sh *.class *.jar *.dict
 
 BUILT_SOURCES = \
-	rolodex.c \
-	rolodex.h \
-	rolodex_dict.c \
-	rolodex_dict.h \
 	list.c \
 	list.h \
 	list_dict.c \
@@ -81,15 +70,7 @@ EXTRA_DIST = \
 	list.adt \
 	cyclic.adt \
 	list.pro \
-	peano.adt \
-	rolodex.adt \
-	rolodex.trm
-
-rolodex.c rolodex.h: rolodex.adt
-	$(ADTTOC) \
-		--input ${top_srcdir}/test/rolodex.adt \
-		--name rolodex \
-		--term-compatibility
+	peano.adt 
 
 list.c list.h: list.adt list.pro
 	$(ADTTOC) \

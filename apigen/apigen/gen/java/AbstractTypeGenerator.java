@@ -12,17 +12,19 @@ import apigen.gen.StringConversions;
 import apigen.gen.java.FactoryGenerator;
 
 public class AbstractTypeGenerator extends JavaGenerator {
-    private boolean visitable;
-    private String apiName;
-    private String factoryClassName;
-    private Module module;
-    private ADT adt;
-    private String traveler;
+  private boolean visitable;
+  private String apiName;
+  private String factoryClassName;
+  private Module module;
+  private boolean hasGlobalName;
+  private ADT adt;
+  private String traveler;
     
     public AbstractTypeGenerator(ADT adt, JavaGenerationParameters params, Module module) {
         super(params);
         this.adt = adt;
         this.apiName = params.getApiExtName(module);
+        this.hasGlobalName = !(params.getApiName()).equals("");
         this.module = module;
         this.factoryClassName = FactoryGenerator.qualifiedClassName(getJavaGenerationParameters(), module.getModulename().getName());
         this.visitable = params.isVisitable();
@@ -143,9 +145,14 @@ public class AbstractTypeGenerator extends JavaGenerator {
     }
 
     private void genAccept() {
-    		Set moduleToGen = new HashSet();
-       	moduleToGen = adt.getImportsClosureForModule(module.getModulename().getName());
-       	Iterator moduleIt = moduleToGen.iterator();
+        Iterator moduleIt;
+        if (hasGlobalName) {
+          moduleIt = adt.getModuleNameSet().iterator();
+        } else {
+          Set moduleToGen = adt.getImportsClosureForModule(module.getModulename().getName());
+          moduleIt = moduleToGen.iterator();
+        }
+
        	while(moduleIt.hasNext()) {
        	    String moduleName = (String) moduleIt.next();
        	    String visitorPackage = VisitorGenerator.qualifiedClassName(getJavaGenerationParameters(),moduleName);
