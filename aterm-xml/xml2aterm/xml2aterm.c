@@ -541,8 +541,8 @@ void usage(void)
           "Options:\n"
           "\t-e             Enable expand option (default off)\n"
           "\t-h             Display usage information\n"
-          "\t-i filename    Read ATerm from filename (default stdin)\n"
-          "\t-o filename    Write XML to filename (default stdout)\n"
+          "\t-i filename    Read XML from filename (default stdin)\n"
+          "\t-o filename    Write ATerm to filename (default stdout)\n"
           "\t-v             Verbose mode\n"
           "\t-V             Reveal version (i.e. %s)\n", myname, myversion);
 }
