@@ -52,7 +52,7 @@ void mark_phase()
   ATerm topOfStack;
   ATerm *stackTop = &topOfStack;
   ATerm *start, *stop, *cur;
-	jmp_buf env;
+	sigjmp_buf env;
 
 	/* Traverse possible register variables */
 	sigsetjmp(env,0);
