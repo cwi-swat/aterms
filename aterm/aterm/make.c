@@ -332,10 +332,11 @@ makePlaceholder(ATermPlaceholder pat, va_list *args)
 			return (ATerm) ATmakeInt(va_arg(*args, int));
 		else if (sym == symbol_real && ATgetArity(sym) == 0)
 			return (ATerm) ATmakeReal(va_arg(*args, double));
-		else if (sym == symbol_blob)
-			return (ATerm) ATmakeBlob(va_arg(*args, int),
-									  va_arg(*args, void *));
-		else if(sym == symbol_placeholder)
+		else if (sym == symbol_blob) {
+			int len = va_arg(*args, int);
+			void *data = va_arg(*args, void *);
+			return (ATerm) ATmakeBlob(len, data);
+		} else if(sym == symbol_placeholder)
 			return (ATerm) ATmakePlaceholder(va_arg(*args, ATerm));
 		else if(sym == symbol_term)
 		    return va_arg(*args, ATerm);
@@ -523,6 +524,8 @@ static ATbool matchArguments(ATermAppl appl, ATermAppl applpat,
 	return arity == 0 ? ATtrue : ATfalse;
 
   for(i=0; i<parity; i++) {
+	if(i >= arity)
+	  return ATfalse;
 	if(!AT_vmatchTerm(ATgetArgument(appl,i), ATgetArgument(applpat,i), args))
 	  return ATfalse;
   }
