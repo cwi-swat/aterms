@@ -91,7 +91,7 @@ dnl }}}
 dnl {{{ Handle --with-pt-support
 
 AC_PACKAGE_REQUIRE(pt-support, asource,
-	[  --with-pt-support=DIR   ParseTree distribution is in DIR])
+	[  --with-pt-support=DIR   ParseTree is in DIR])
 AC_SUBST(PT_SUPPORT)
 
 ASFIXINC=${PT_SUPPORT}/include
@@ -108,7 +108,7 @@ dnl }}}
 dnl {{{ Handle --with-pgen
 
 AC_PACKAGE_REQUIRE(pgen, sdf2table,
-	[  --with-pgen=DIR         pgen distribution is in DIR])
+	[  --with-pgen=DIR         pgen is in DIR (developers only)])
 AC_SUBST(PGEN)
 
 PGENBIN=${PGEN}/bin

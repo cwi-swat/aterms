@@ -8,6 +8,9 @@
  * silenced output of test/rolotest (new visit/acceptor code was verbose)
  * added ChangeLog entry for Jurgen's fix to his changes of 2001/01/16
  * utils/ADT.adt and utils/ADT.pro added to EXTRA_DIST
+ * spec/Sdf2-to-ADT.trm.tbl added to EXTRA_DIST so external users don't
+   need pgen to build apigen.
+ * configure.in adapted to inform users that pgen is for developers only
 
 2001/02/19 (jurgenv@cwi.nl)
  * adapted test/booltest to conform to the new functions generated for
