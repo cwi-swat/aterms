@@ -202,7 +202,8 @@ public class ATermApplImpl extends ATermImpl implements ATermAppl {
     for (int i = 0; i < this.args.length; i++) {
       newargs[i] = this.args[i].make(args);
     }
-    return make(fun, newargs);
+      //return make(fun, newargs);
+    return getPureFactory().makeAppl(fun, newargs, getPureFactory().makeList());
   }
 
   public ATerm setAnnotations(ATermList annos) {
