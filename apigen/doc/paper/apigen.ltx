@@ -150,12 +150,152 @@ grammar productions and their \aterm-pattern in the underlying \asfix\
 parse tree, and how this mapping is subsequently used to generate \C\
 functions that provide an \api\ to these parse trees.
 
-Before getting to the core of the generation scheme, we
-present introductory sections on the specification formalism
-\asdf\ (Section~\ref{sec:asdf-nutshell}), the syntax of
-\aterms\ (Section~\ref{sec:aterm-syntax}), and \asfix\
-(Section~\ref{sec:asfix-syntax}).
+Although this paper uses tools from the \metaenv\ as a running example,
+the maintenance issues addressed here are not specific to parse trees
+at all. The issues are fundamental to all applications that use \aterms\
+as its data structure representation. Many of these issues are also valid
+in applications based on other generic data representation formalisms.
 
+We first relate our approach to other related work in
+Section~\ref{sec:related}, and continue with some introductory sections
+on the specification formalism \asdf\ (Section~\ref{sec:asdf-nutshell}),
+the syntax of \aterms\ (Section~\ref{sec:aterm-syntax}), and \asfix\
+(Section~\ref{sec:asfix-syntax}). Section~\ref{sec:aterm-access}
+subsequently explains how \aterm-based data types are typically
+accessed in tools and applications and we show how this approach causes
+development and maintenance issues. Section~\ref{sec:syntax-to-api}
+describes the actual generation scheme. The results of the
+application of our generation technique on tools in the \metaenv\
+are shown in Section~\ref{sec:reduction}, followed by some
+conclusions (Section~\ref{sec:conclusions}) and future work
+(Section~\ref{sec:future}).
+
+% {{{ Related Work
+
+\subsection{Related Work}
+\label{sec:related}
+
+% {{{  Zephyr ASDL
+
+\medskip
+\noindent\textbf{Zephyr ASDL}
+
+The abstract syntax definition language (ASDL)~\cite{Wan97} is a language
+for describing tree data structures much like \aterms, and is used as
+intermediate representation language between the various phases of a
+compiler~\cite{Han99}.
+
+The ASDL tools support the generation of
+accessor and serialization code. The main differences with our approach are:
+
+\begin{itemize}
+
+\item ASDL works on abstract syntax definitions. The link between parser
+and ASDL must be programmed manually;
+
+\item ASDL supports a wide variety of languages including C, C++, Java,
+Standard ML, and Haskell;
+
+\item ASDL offers a graphical browser and editor for data described
+in ASDL;
+
+\item ASDL does not support maximal subterm sharing;
+
+\item There is no garbage collection support for languages like C and C++.
+
+\end{itemize}
+
+
+% }}}
+% {{{  COM/Corba IDL compiler
+
+\medskip
+\noindent\textbf{(D)COM/Corba IDL compiler}
+
+The two major commercial component architectures, Microsoft's (D)COM
+and OMG's CORBA~\cite{corba,syp98}, both provide IDL compilers that take
+an interface definition written in their respective \emph{interface
+definition languages} (IDLs), and generate communication scaffolding
+code. The generated code includes \emph{stubs} and \emph{skeletons}
+to make it easy to write clients and servers respectively.
+
+The biggest difference with our work is that the target of these systems
+is to make it easy for programmers to build components in a distributed
+setting while we focus on providing an abstraction layer on top of a
+generic data exchange format. This means that the IDL compilers generate
+code for marshalling arguments when calling remote procedures and for
+unmarshalling their return values, while in our approach we keep the data
+in the original ``marshalled'' form until it is actually used. In this
+sense, our approach could be characterized as lazy and the DCOM/CORBA
+approach as eager.
+
+%%\begin{itemize}
+%%\item Only generate interfaces not implementations
+%%\item Targeted at distributed environments
+%%\item Well-defined mappings to specific target languages (whitepapers)
+%%\item Interface centric instead of datatype centric
+%%\item No sharing
+%%\item No garbage collection (in languages without GC)
+%%\item (D)COM very windows specific
+%%\end{itemize}
+
+% }}}
+% {{{  XML access
+
+\medskip
+\noindent\textbf{XML access}
+
+A comparable approach to provide an abstraction layer on top of a generic
+data exchange formalism is used in \texttt{jaxb}~\cite{jaxb}. This is a
+tool that generates a class hierarchy from an XML DTD. Besides accessor
+functions and constructors, (de)serialization functions to and from
+XML are generated.  The actual code generation can be steered using a
+specification in XML. This makes it possible to add e.g. interfaces and
+extra code to the generated classes.
+
+%% Comparable approach: generate classes from schema/DTD representing
+%% XML entities.  Typical example: jaxb (http://java.sun.com/xml/jaxb)
+%% \begin{itemize}
+%% \item Java specific
+%% \item XML oriented: classes implement RootElement, XML as exchange format
+%% \item No sharing
+%% \item Code generation can be steered (using a spec. in XML)
+%% \end{itemize}
+
+% }}}
+% {{{  Generative Programming
+
+\medskip
+\noindent\textbf{Generative Programming}
+
+Generative programming focuses on using domain engineering to retrieve
+domain specific knowledge that can be incorporated into component
+generators~\cite{genprog}. At first glance this ``high level'' view on
+generating software components seems to be far removed from the low
+level view on source code generation we have taken in this paper. If
+we take a closer look, the two approaches are not as disjunct as one
+might think. We believe any succesful generic approach to generative
+programming must be based on some abstract data type definition augmented
+with domain specific knowledge. In our case, the data type definitions
+are written in SDF, and the domain specific knowledge consists of the
+mapping of such datatypes to concrete \asfix\ representations.
+
+% }}}
+% {{{  JJForester
+
+\medskip
+\noindent\textbf{JJForester}
+
+Another approach to generating code from an SDF definition is taken in
+JJForester~\cite{KV2000}. JJForester is a combined parser generator, tree
+builder, and visitor generator for Java. The focus lies on the generation
+of tree manipulation and especially tree traversal support. Especially
+nice is the integration with JJTraveler~\cite{Visser2001a}, providing
+generic visitor combinator support.
+
+% }}}
+
+% }}}
 % {{{  subsection{\asdf\ in a nutshell}
 
 \subsection{\asdf\ in a nutshell}
@@ -314,8 +454,18 @@ is:
   prod([lit("true")],cf(sort("Bool")),no-attrs)
 \end{verbatim}
 \medskip
-The literal \texttt{true} is the only element in the lefthand side 
-of the production. It is injected into the sort \texttt{Bool}.
+The \texttt{prod} symbol declares this to be a grammar production. It
+has three arguments: the first is a list of sorts of the elements of
+the lefthand side of the production, the second argument is the sort
+of the righthand side, and the third argument contains the attributes
+(e.g. left associativity) of the production.
+
+In this example, the literal (denoted by the symbol \texttt{lit})
+\texttt{true} is the only element in the lefthand side of the
+production. It is injected into the context-free (denoted by the symbol
+\texttt{cf}) sort \texttt{Bool}. The production has no specific attributes
+(\texttt{no-attrs}).
+
 
 \hrulefill\nopagebreak
 
@@ -343,8 +493,9 @@ looks like this:
 
 \item Line 1 declares this to be a grammar production (\texttt{prod}),
 containing all the elements of the lefthand side of the production. The
-\sdf-normalizer has inserted \texttt{cf(opt(layout))} subterms at every
-location where optional layout in the input term is allowed.
+\sdf-normalizer has inserted the context-free sort \texttt{opt(layout)}
+subterms at every location where optional layout in the input term
+is allowed.
 
 \item Line 2 tells us that the result sort of this production is
 \texttt{Bool}.
@@ -711,17 +862,9 @@ task indeed!
 
 \end{itemize}
 
-Although this paper uses tools from the \metaenv\ as a running example,
-the maintenance issues addressed here are not specific to parse trees
-at all. The issues are fundamental to all applications that use \aterms\
-as its data structure representation. Many of these issues are also
-valid in applications based on other generic data representation formalisms.
-
-
 % }}}
 
 % }}}
-
 % {{{  From syntax to \api
 
 \section{From syntax to \api}
@@ -858,10 +1001,9 @@ generate legible, understandable names.
 
 % }}}
 
-% }}}
 % {{{  Deriving the \adt\ from a \sdf\ specification
 
-\section{Deriving the \adt\ from a \sdf\ specification}
+\subsection{Deriving the \adt\ from a \sdf\ specification}
 \label{sec:sdf-to-adt}
 
 Now that we know what specific information we need in the \adt, how do we
@@ -943,7 +1085,7 @@ names as shown in Figure~\ref{fig:names}.
 % }}}
 % {{{  Code generation from \adt\ to \C
 
-\section{Code generation from \adt\ to \C}
+\subsection{Code generation from \adt\ to \C}
 \label{sec:adt-to-c}
 
 Given an abstract data type, which is generated from an \sdf\ definition,
@@ -1278,6 +1420,8 @@ exhaustively testing all the alternatives, the operation is aborted.
 % }}}
 
 % }}}
+
+% }}}
 % {{{  Code reduction in the \metaenv
 
 \section{Code reduction in the \metaenv}
@@ -1336,117 +1480,6 @@ this library.
 
 
 % }}}
-% {{{  Related Work
-
-\section{Related Work}
-\label{sec:related}
-
-% {{{  Zephyr ASDL
-
-\subsection{Zephyr ASDL}
-The abstract syntax definition language (ASDL)~\cite{Wan97} is a
-language for describing tree data structures much like \aterms, and is used as
-intermediate representation language between the various phases of a
-compiler~\cite{Han99}. 
-
-The ASDL tools support the generation of
-accessor and serialization code. The main differences with our approach are:
-\begin{itemize}
-\item ASDL works on abstract syntax definitions. The link between
-parser and ASDL must be programmed manually.
-\item ASDL supports a wide variety of languages including C, C++, Java,
-Standard ML, and Haskell.
-\item ASDL offers a graphical browser and editor for data described in ASDL.
-\item ASDL does not support maximal subterm sharing.
-\item There is no garbage collection support for languages like C and C++.
-\end{itemize}
-
-
-% }}}
-% {{{  COM/Corba IDL compiler
-
-\subsection{(D)COM/Corba IDL compiler}
-The two major commercial component architectures, Microsoft's (D)COM and
-OMG's CORBA\cite{corba,syp98}, both provide IDL compilers that
-take an interface definition
-written in their respective \emph{interface definition languages} (IDLs), and
-generate communication scaffolding code. The generated code includes
-\emph{stubs} and {skeletons} to make it easy to write clients and
-servers respectively.
-The biggest difference
-with our work is that the target of these systems is to make it
-easy for programmers to build components in a distributed setting
-while we focus on providing an abstraction layer on top of a
-generic exchange format. This means that the IDL compilers generate
-code for marshalling arguments when calling remote procedures and for
-unmarshalling their return values,
-while in our approach we keep the data in the original 'marshalled'
-form until it is actually used. In this sense, you could characterize our
-approach as lazy and the DCOM/CORBA approach as eager.
-
-%%\begin{itemize}
-%%\item Only generate interfaces not implementations
-%%\item Targeted at distributed environments
-%%\item Well-defined mappings to specific target languages (whitepapers)
-%%\item Interface centric instead of datatype centric
-%%\item No sharing
-%%\item No garbage collection (in languages without GC)
-%%\item (D)COM very windows specific
-%%\end{itemize}
-
-% }}}
-% {{{  XML access
-
-\subsection{XML access}
-A comparable approach to provide an abstraction layer on top of a generic
-data exchange formalism is used in {\tt jaxb}\cite{jaxb}. This is a tool
-that generates a class hierarchy from an XML DTD. Besides accessor functions
-and constructors, (de)serialization functions to and from XML are generated.
-The actual code generation can be steered using a specification in XML. This
-makes it for instance possible to add interfaces and extra code to the
-generated classes.
-
-Comparable approach: generate classes from schema/DTD representing XML entities.
-Typical example: jaxb (http://java.sun.com/xml/jaxb)
-\begin{itemize}
-\item Java specific
-\item XML oriented: classes implement RootElement, XML as exchange format
-\item No sharing
-\item Code generation can be steered (using a spec. in XML)
-\end{itemize}
-
-% }}}
-% {{{  Generative Programming
-
-\subsection{Generative Programming}
-\label{subsec:genprog}
-
-Generative programming focusses on using domain engineering to retrieve
-domain specific knowledge that can be incorporated into component
-generators\cite{genprog}. At first glance this 'high level' view on generating
-software components seems to be far removed from the low level view
-on source code generation we have taken in this paper. If we take a closer
-look, the two approaches are not as disjunct as one might think. We
-believe any succesful generic approach to generative programming must
-be based on some abstract data type definition augmented with domain specific
-knowledge. In our case, the data type definitions are written in SDF, and
-the domain specific knowledge consists of the mapping of such datatypes
-to concrete \asfix\ representations.
-
-% }}}
-% {{{  JJForester
-
-\subsection{JJForester}
-Another approach to generating code from an SDF definition is
-taken in JJForester\cite{KV2000}. JJForester is a combined parser
-generator, tree builder, and visitor generator for Java. The focus
-lies on the generation of tree manipulation and especially tree
-traversal support. Especially nice is the integration with 
-JJTraveler\cite{Visser2001a}, providing generic visitor combinator support.
-
-% }}}
-
-% }}}
 % {{{  Conclusions
 
 \section{Conclusions}
@@ -1472,12 +1505,13 @@ Obvious optimizations include \emph{inlining} (some of) the generated
 functions. By rewriting the functions as \C\ macros, the overhead of a
 function call is removed. As noted before, the cost of this efficiency
 gain is that some type-safety is lost. This is due to the fact that \C\
-macro expansion is performed by a pre-compiler, which does not have access
-to type information and thus performs no type checks on macro arguments.
-A typical approach would be to generate typesafe functions in the development
-stage, and switch to the use of generated efficient macros for production code.
-This approach is comparable to the use of {\tt assert} macro's that are
-completely eliminated in production versions of the software.
+macro expansion is performed by a pre-compiler, which does not have
+access to type information and thus performs no type checks on macro
+arguments.  A typical approach would be to generate typesafe functions
+in the development stage, and switch to the use of generated efficient
+macros for production code. This approach is comparable to the use of
+\texttt{assert} macro's that are completely eliminated in production
+versions of the software.
 
 More interesting, however, are optimizations that take into account
 information about the structure of the underlying \aterm\ representation.
@@ -1486,34 +1520,53 @@ similarity between alternatives is assembled, which could be exploited
 to generate more efficient matching and selection code than the current
 \texttt{ATmatch} call, which is rather inefficient.
 
+In retrospect, one might ask why on earth we began developing code using
+direct \aterm\ manipulation in the first place. The answer lies partially
+in the power and addictiveness of working with \aterms. Because it is
+so utterly simple to write a tool that uses simple \aterm\ patterns,
+several developers quickly started writing their own applications. Later,
+when some of the tools demonstrated a need for speed, parts of the now
+grown-but-not-restructured tools were rewritten to use the more efficient
+level two interface instead of the matching interface, mostly in the
+form of ad hoc restructuring, driven by the output of the \texttt{gprof}
+profiler. When prompted to implement changes in our parsetree format,
+we realized the era of direct \aterm\ manipulation had to end, and we
+had to find a structural solution to representing data types by \aterms,
+or we would be unable to maintain our toolset. Fortunately, the road of
+generating the access library as described in this paper works like a
+charm in the \metaenv. Since the introduction of what has become known
+as \textsc{apigen}, we have been able to effectuate considerable changes
+in \asfix, and we have gained the ability to experiment with the format,
+and quickly see the results working in our tools.
+
 % }}}
 % {{{  Future work
 
 \section{Future work}
 \label{sec:future}
 
-In some way, the project described in this paper can be seen as
-a casestudy in generative programming as described in 
-Subsection \ref{subsec:genprog}. We want to extend this casestudy
-into a more generic approach. This approach will be based on a
-modular generic generator that takes a set of abstract data definitions
-and generates code for them. The code generator must be extendable with domain
-specific 'modules' to generate extra functionality. These modules should
-not only be able to add extra functions when needed, but they
-should also be able to use \emph{aspect oriented programming}\cite{aspect}
-to add functionality to functions that are generated by other modules.
+In a way the project described in this paper can be seen as a casestudy in
+generative programming as described in Section~\ref{sec:related}. We
+want to extend this casestudy into a more generic approach. This
+approach will be based on a modular generic generator that takes a
+set of abstract data definitions and generates code for them. The code
+generator must be extendable with domain specific ``modules'' to generate
+extra functionality. These modules should not only be able to add extra
+functions when needed, but they should also be able to use \emph{aspect
+oriented programming}\cite{aspect} to add functionality to functions
+that are generated by other modules.
 
-For example, one of the more basic modules (the 'accessor' module) could
+For example, one of the more basic modules (the ``accessor'' module) could
 generate the actual data representation (for instance simple attributes
 in an object oriented setting) and accessors on this representation,
 while another module could add transparent persistency using a standard
 relational database by instrumenting all accessors.
 
-The most important challenge in such a approach would be to create
-an environment where the threshold to create new generator modules
-is extremely low. In the ideal situation software developers could
-add new modules to the generator just as easy as to add new modules
-directly to the software system they are building.
+The most important challenge in such an approach would be to create
+an environment where the threshold to create new generator modules is
+extremely low. In the ideal situation software developers could add new
+modules to the generator just as easy as to add new modules directly to
+the software system they are building.
 
 % }}}
 
