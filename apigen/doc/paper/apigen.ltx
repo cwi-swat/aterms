@@ -67,8 +67,8 @@ parsers, rewrite engines and model checkers. Practical experience with the
 of tools that access \aterms\ using handcrafted code is involved and
 very error prone. Both the \emph{make and match} paradigm and the
 \emph{direct manipulation} of \aterms\ suffer from the fact that the
-programmer uses knowledge about the underlying structure of the \aterm\
-that represents the data type being accessed. Hardwiring this knowledge
+programmer uses knowledge about the underlying structure (a.k.a. the signature)
+of the \aterm\ that represents the data type being accessed. Hardwiring this knowledge
 in various tools makes it difficult to maintain the tools with respect
 to changes in the datastructure.
 
@@ -121,10 +121,11 @@ As more and more tools in the \metaenv\ were converted to work with
 the \atlib, it became apparent that the tools had become inflexible with
 respect to changes in the parse tree format (called \asfix), and were hard
 to maintain. The reason behind this inflexibility was the fact that all
-tools used manually encoded structural knowledge about the location of
-data elements inside their \aterm\ representation. With such knowledge
-hardwired into the tools it becomes difficult, if not impossible, to
-change the \aterm\ representation of the data type.
+tools used manually encoded structural knowledge about the signature
+of the data types, i.e. the location of
+data elements inside their \aterm\ representation. Hardwiring such knowledge
+into the tools without an explicit signature definition makes it difficult,
+if not impossible, to change the \aterm\ representation of the data type. 
 
 The coding practise that uses such structural knowledge is not in any
 way restricted to the realm of parse trees. In fact, anyone who has
@@ -158,7 +159,9 @@ in the underlying \asfix\ representation.
 
 This paper describes how an annotated grammar or syntax definition
 can be used to generate a library of functions that provide access to
-the parse trees of terms over this grammar. In particular we describe
+the parse trees of terms over this grammar. Such a library effectively
+turns a parse tree into an abstract data type, providing a typesafe and
+systematic API to manipulate terms. In particular we describe
 how a \sdf-specification commonly found when using the \metaenv\ is
 used to collect the information into an \emph{annotated data type}
 (\adt), necessary to build a mapping between grammar productions
@@ -177,7 +180,8 @@ Although this paper uses tools from the \metaenv\ as a running example,
 the maintenance issues addressed here are not specific to parse trees
 at all. The issues are fundamental to all applications that use \aterms\
 as its data structure representation. Many of these issues are also valid
-in applications based on other generic data representation formalisms.
+in applications based on other generic data representation formalisms like
+for instance XML.
 
 We first relate our approach to other work in Section~\ref{sec:related},
 and continue with some introductory sections on the specification
@@ -293,17 +297,21 @@ approach as eager.
 % {{{  XML access
 
 \medskip
-\noindent\textbf{XML access}
+\noindent\textbf{XML data binding in Java}
 
 A comparable approach to provide an abstraction layer on top of a generic
 data exchange formalism is used in \texttt{jaxb}~\cite{jaxb}. This is a
-tool that generates a class hierarchy from an XML DTD. Besides accessor
+tool that generates a Java class hierarchy from an XML DTD. Besides accessor
 functions and constructors, (de)serialization functions to and from
 XML are generated.  The actual code generation can be steered using a
 specification in XML. This makes it possible to add e.g. interfaces and
 extra code to the generated classes.
 
-A commercial initiative~\cite{breeze} offers a tool that generates
+In general this approach is called \emph{data binding}, and several
+other initiatives in this area are currently underway, including
+some open source initiatives~\cite{databinding.open-source} and
+the commercial initiative~\cite{breeze}. All these approaches offers 
+tool support for generating
 \java\ code from an XML Schema. The generated code can \emph{marshal}
 and \emph{unmarshal} XML terms to Java objects with accessors to retrieve
 type safe (sub)elements.
@@ -355,6 +363,8 @@ the Boolean data type in \asdf. \asdf\ specifications consist of modules,
 where each module has an \sdf-part (defining lexical and context-free
 syntax) and an \asf-part (defining equations).
 
+\subsubsection{\sdf}
+
 The \sdf\ part corresponds
 to signatures in ordinary algebraic specification formalisms. However,
 syntax is not restricted to plain prefix notation but instead arbitrary
@@ -389,6 +399,29 @@ the syntax used in equations \emph{user-defined}.
 \end{figure}
 
 % }}}
+
+The technology behind SDF is based on \emph{scannerless generalized LR
+parsing}. The term \emph{scannerless} indicates that there is no separate scanning
+phase before parsing: each character is a token. This approach has the
+advantage that the class of languages that can be handled by the parser
+is not restricted by local tokenization decisions taken by the scanner.
+
+The term \emph{generalized} means that the parser can handle ambiguous
+constructs and in general yields a parse \emph{forest} instead of a single
+parse tree.
+
+To implement scannerless parsing for \sdf\, the \sdf\ \emph{normalizer} is used
+to transform a \sdf\ grammar into a simple character level grammar.
+One of the tasks of the normalizer is to explicitly
+insert \emph{layout} symbols between all symbols in context-free syntax
+sections. For the syntax defined in Figure~\ref{fig:bool-example} this means
+that whitespace can be inserted between keywords, for instance
+between {\tt not} and {\tt true} in equation  {\tt not-1}. In this example,
+the actual definition of what constitutes whitespace is defined in the
+module Layout that is not shown in the example.
+
+
+\subsubsection{\asf}
 
 The equations appearing in the \asf-part of a specification have the
 following distinctive features:
@@ -461,7 +494,9 @@ by a subterm and a closing angular bracket. Examples are: \texttt{<int>},
 \label{sec:asfix-syntax}
 
 From a \sdf-specification, a parse table can be generated using the
-\texttt{pgen} tool from the \metaenv. This parse table can subsequently
+\texttt{pgen} tool from the \metaenv. \texttt{pgen} consists of the
+normalizer discussed earlier combined with a parse table generator.
+The resulting parse table can subsequently
 be used by \texttt{sglr}\cite{sglr}: the scannerless, generalized LR parser to
 parse input terms over the syntax described by the \sdf-specification.
 The result of a successful parse is a parse tree. The data structure used
@@ -953,8 +988,9 @@ from an \sdf-definition of the grammar. In order to separate some
 concerns and simplify the generation framework, we split the process
 into two steps (see Figure~\ref{fig:gen}). First, we extract all the
 necessary information from the \sdf-definition, and store it in a
-convenient format. This step takes care of the parsing and analysis of
-the grammar. The second step takes the intermediate format and does the
+convenient format. This step
+takes care of the parsing and analysis of the grammar.
+The second step takes the intermediate format and does the
 actual generation for a specific target language.
 \begin{figure}[htb]
 \centerline{\epsfig{file=gen.eps,scale=1.3}}
@@ -962,7 +998,9 @@ actual generation for a specific target language.
 \end{figure}
 
 We call the intermediate format \emph{annotated data type}, or \adt\
-for short. It holds the minimal amount of information for each syntax
+for short.
+
+ It holds the minimal amount of information for each syntax
 rule in the original \sdf\ specification. In particular, for each rule
 we need:
 
@@ -1003,6 +1041,7 @@ to simplify development-time debugging.  Remember that an \adt\ entry
 contains an \aterm\ pattern and they are hard enough to read, without
 the introduction of an extra function-symbol around them.
 
+
 % {{{  Example adt-entry with explanation
 
 As an example of the concrete representation of an \adt\ entry, let
@@ -1040,6 +1079,15 @@ Section~\ref{sec:sdf-to-adt} elaborates on the naming schemes used to
 generate legible, understandable names.
 
 % }}}
+
+Given an \adt, which is generated from an \sdf\ definition,
+but which could also come from any other source, we no longer need to
+worry about any \sdf\ peculiarities, or parse tree specifics. Instead,
+we can concentrate on generating the desired functionality for a given
+target language. In this paper we concentrate on describing the steps
+needed to produce legible, type-safe \C\ code. Optimizations to the
+generated code can easily be obtained by removing type-safety checks,
+resulting in a more efficient production version of the code.
 
 % {{{  Deriving the \adt\ from a \sdf\ specification
 
@@ -1128,19 +1176,12 @@ names as shown in Figure~\ref{fig:names}.
 \subsection{Code generation from \adt\ to \C}
 \label{sec:adt-to-c}
 
-Given an abstract data type, which is generated from an \sdf\ definition,
-but which could also come from any other source, we no longer need to
-worry about any \sdf\ peculiarities, or parse tree specifics. Instead,
-we can concentrate on generating the desired functionality for a given
-target language. In this paper we concentrate on describing the steps
-needed to produce legible, type-safe \C\ code. Optimizations to the
-generated code can easily be obtained by removing type-safety checks,
-resulting in a more efficient production version of the code.
 
 % {{{  Generated types and functions
 
 \subsection{Generated types and functions}
-For each sortname in an \adt, we generate the following items:
+For each sortname in an \adt, we generate the following items
+(which are further explained in Subsection \ref{sec:implementation}):
 
 \begin{itemize}
 
@@ -1181,6 +1222,7 @@ each of the fields in a sort.
 % {{{  Implementation
 
 \subsection{Implementation}
+\label{sec:implementation}
 
 In order to address the maintenance issues associated with the
 proliferation of \aterm-patterns, we decided it was a good idea to
@@ -1316,7 +1358,7 @@ that particular alternative. Because matching is (very) expensive,
 the result of the most recent match is cached. This caching approach
 seems limited, but is useful when multiple subterms of the \emph{same
 argument} are accessed. In these cases, sequences of \texttt{getBoolX}
-and \texttt{setBoolY} (q.v.) all reuse (cached) inspection results.
+and \texttt{setBoolY} all reuse (cached) inspection results.
 
 \begin{snippet}
 \begin{verbatim}
@@ -1338,16 +1380,15 @@ and \texttt{setBoolY} (q.v.) all reuse (cached) inspection results.
 \end{verbatim}
 \end{snippet}
 
-The cached \aterm\ is deliberately \emph{not} protected from garbage
-collection. Doing so would result in all inspector functions holding on
-to references of \aterms, without the intent of ever dereferencing them
-again. This causes memory hogs, because the garbage collector cannot
-free the \aterm\ (nor any of its subterms) which happens to have been
-the latest argument to an inspector.
+Note that the cached \aterm\ is deliberately \emph{not} protected from
+garbage collection. Doing so would result in all inspector functions
+holding on to references of \aterms that could not be collected. These
+terms are potentially very large and the memory behaviour would become
+extremely unpredictable. We therefore opted for a solution where caching
+results are only valid \emph{until the next garbage collection}.
+This is done by comparing the current garbage collection count with
+the same count at the time the cached result was calculated.
 
-Instead, the inspector detects garbage collects (by remembering the
-number of collects) and flushes its cached result whenever one or more
-collects have been triggered in between calls to the inspector.
 
 % }}}
 % {{{  Query accessor
@@ -1406,7 +1447,7 @@ of the alternative productions).
 \end{verbatim}
 \end{snippet}
 
-An obvious optimization would be do detect if there are alternatives that
+An obvious optimization is to detect if there are alternatives that
 have the requested field at the same location in the underlying \aterm\
 representation. In this case, the \texttt{isBoolAnd} test is redundant,
 because both alternatives of \texttt{Bool} that have a \texttt{lhs},
@@ -1472,13 +1513,13 @@ exhaustively testing all the alternatives, the operation is aborted.
 % }}}
 % {{{  Code reduction in the \metaenv
 
-\section{Code reduction in the \metaenv}
+\section{Software engineering benefits in the \metaenv}
 \label{sec:reduction}
 
 Our main motivation to start this work has been the desire to make changes
 to \asfix, the parse tree format used by our tools in the \metaenv. Of
 particular interest is the dramatic size reduction (in terms of lines
-of code) of the various tools after refactoring them to use the new \api.
+of code) of the various tools after refactoring them to use the new \api s.
 
 This \emph{apification} process consisted of weeding out any and all
 direct \aterm\ manipulations from the tools, replacing them by calls
@@ -1526,6 +1567,12 @@ most of this library is now generated from the SDF definition of SDF itself.
 Only some high level functionality that could not be generated remains in
 this library.
 
+Somewhat more subjective but still quite spectacular is the fact that
+after apification, we where able to make significant changes to the
+\asfix\ format itself and implement these changes in all our tools
+in a matter of days. Similar changes that where implemented before
+apification took weeks of extensive coding and painstaking
+debugging sessions to find all affected locations.
 
 % }}}
 % {{{  Conclusions
@@ -1549,24 +1596,11 @@ implemented by \aterms. Even though several optimization opportunities
 have not yet been fully explored, the efficiency of the generated library
 is already comparable to its manually written predecessor.
 
-Obvious optimizations include \emph{inlining} (some of) the generated
-functions. By rewriting the functions as \C\ macros, the overhead of a
-function call is removed. As noted before, the cost of this efficiency
-gain is that some type-safety is lost. This is due to the fact that \C\
-macro expansion is performed by a pre-compiler, which does not have
-access to type information and thus performs no type checks on macro
-arguments.  A typical approach would be to generate typesafe functions
-in the development stage, and switch to the use of generated efficient
-macros for production code. This approach is comparable to the use of
-\texttt{assert} macro's that are completely eliminated in production
-versions of the software.
+% }}}
 
-More interesting, however, are optimizations that take into account
-information about the structure of the underlying \aterm\ representation.
-During the generation phase information about common subterms and
-similarity between alternatives is assembled, which could be exploited
-to generate more efficient matching and selection code than the current
-\texttt{ATmatch} call, which is rather inefficient.
+% {{{  Discussion
+
+\section{Discussion}
 
 In retrospect, one might ask why on earth we began developing code using
 direct \aterm\ manipulation in the first place. The answer lies partially
@@ -1588,10 +1622,34 @@ in \asfix, and we have gained the ability to experiment with the format,
 and quickly see the results working in our tools.
 
 % }}}
+
 % {{{  Future work
 
 \section{Future work}
 \label{sec:future}
+
+The future work of this project falls into two categories: increasing
+the efficiency of the generated code and generalizing our approach
+to a wider application area.
+
+Obvious optimizations include \emph{inlining} (some of) the generated
+functions. By rewriting the functions as \C\ macros, the overhead of a
+function call is removed. As noted before, the cost of this efficiency
+gain is that some type-safety is lost. This is due to the fact that \C\
+macro expansion is performed by a pre-compiler, which does not have
+access to type information and thus performs no type checks on macro
+arguments.  A typical approach would be to generate typesafe functions
+in the development stage, and switch to the use of generated efficient
+macros for production code. This approach is comparable to the use of
+\texttt{assert} macro's that are completely eliminated in production
+versions of the software.
+
+More interesting, however, are optimizations that take into account
+information about the structure of the underlying \aterm\ representation.
+During the generation phase information about common subterms and
+similarity between alternatives is assembled, which could be exploited
+to generate more efficient matching and selection code than the current
+\texttt{ATmatch} call, which is rather inefficient.
 
 In a way the project described in this paper can be seen as a casestudy in
 generative programming as described in Section~\ref{sec:related}. We
