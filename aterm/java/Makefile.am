@@ -4,7 +4,8 @@ noinst_DATA	= ${JAVADOCDIR}.tar.gz
 
 JAVA_CLASSES	= AFun ATerm ATermInt ATermReal ATermBlob ATermAppl \
 		ATermList ATermPlaceholder ATermFactory
-JAVA_FILES	= $(patsubst %,aterm/%.java,$(JAVA_CLASSES))
+JAVA_FILES	= $(patsubst %,aterm/%.java,$(JAVA_CLASSES)) \
+		aterm/pure/PureFactory.java
 
 JAVADOCDIR	= aterm-javadoc
 

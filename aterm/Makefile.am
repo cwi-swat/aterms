@@ -7,7 +7,7 @@ WWWDIR		= /usr/local/www.cwi.nl/projects/MetaEnv/aterm
 
 www-dist: distcheck
 	cp ${DISTFILE} ${WWWDIR}
-	gzip < doc/at.ps > ${WWWDIR}/doc/at.ps.gz
-	gzip < doc/manual.ps > ${WWWDIR}/doc/manual.ps.gz
+	gzip --best < doc/at.ps > ${WWWDIR}/doc/at.ps.gz
+	gzip --best < doc/manual.ps > ${WWWDIR}/doc/manual.ps.gz
 	cp java/aterm-javadoc.tar.gz ${WWWDIR}/doc
 	cd ${WWWDIR}; make

@@ -1,6 +1,8 @@
 $Id$
 
 2001/05/16 (jong@cwi.nl)
+ * added --best to gzip on installed documentation
+ * added java.pure.PureFactory to generated documentation
  * Made public versions of AT_writeToStringBuffer and AT_calcTextSize to
    prepare move of ToolBus specific code from ATerm-distro to ToolBus.
  * Added make(String trm) (synonym for parse(String trm)) as per C-interface.
