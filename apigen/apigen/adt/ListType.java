@@ -14,7 +14,7 @@ public class ListType extends Type {
     private Factory factory;
     private String elementType;
 
-    public ListType(String id, String moduleName, String elementType, Factory factory) {
+   public ListType(String id, String moduleName, String elementType, Factory factory) {
         super(id, moduleName);
         this.factory = factory;
         this.elementType = elementType;

@@ -1,5 +1,10 @@
 # $Id$
 
+2005-01-22  Antoine Reilles  <tonio@arcelot.loria.fr>
+
+	* apigen/adt/NamedListType.java: added NamedList, allow to specify
+	the list operator name for tom generation.
+
 2005-01-20 pem
   * fix a naming convention problem: only operator whose sort is reserved are not capitalized. In the previous version only operator whose name was reserved was not capitalized
 

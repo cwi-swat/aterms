@@ -12,6 +12,9 @@ public class Factory {
   private aterm.AFun fun_Entry_List;
   private apigen.adt.api.types.Entry proto_Entry_List;
   private aterm.ATerm pattern_Entry_List;
+  private aterm.AFun fun_Entry_NamedList;
+  private apigen.adt.api.types.Entry proto_Entry_NamedList;
+  private aterm.ATerm pattern_Entry_NamedList;
   private aterm.AFun fun_Entry_SeparatedList;
   private apigen.adt.api.types.Entry proto_Entry_SeparatedList;
   private aterm.ATerm pattern_Entry_SeparatedList;
@@ -46,9 +49,22 @@ public class Factory {
   private apigen.adt.api.types.Imports empty_Imports;
   private apigen.adt.api.types.Sorts empty_Sorts;
 
-  public Factory(aterm.pure.PureFactory factory) {
+  private Factory(aterm.pure.PureFactory factory) {
     this.factory = factory;
-    initialize();
+  }
+
+  private static Factory instance = null;
+
+  public static Factory getInstance(aterm.pure.PureFactory factory) {
+    if (instance == null) {
+        instance = new Factory(factory);
+        instance.initialize();
+    }
+    if (instance.factory != factory) {
+        throw new RuntimeException("Dont create two Factory factories with differents PureFactory ");
+    } else {
+        return instance;
+    }
   }
 
   public aterm.pure.PureFactory getPureFactory() {
@@ -68,6 +84,10 @@ public class Factory {
     pattern_Entry_List = factory.parse("list(<term>,<term>)");
     fun_Entry_List = factory.makeAFun("_Entry_List", 2, false);
     proto_Entry_List = new apigen.adt.api.types.entry.List(this);
+
+    pattern_Entry_NamedList = factory.parse("named-list(<term>,<term>,<term>)");
+    fun_Entry_NamedList = factory.makeAFun("_Entry_NamedList", 3, false);
+    proto_Entry_NamedList = new apigen.adt.api.types.entry.NamedList(this);
 
     pattern_Entry_SeparatedList = factory.parse("separated-list(<term>,<term>,<term>)");
     fun_Entry_SeparatedList = factory.makeAFun("_Entry_Separated-List", 3, false);
@@ -174,6 +194,41 @@ public class Factory {
     args.add((aterm.ATerm)arg.getSort());
     args.add((aterm.ATerm)arg.getElemSort());
     return factory.make(pattern_Entry_List, args);
+  }
+
+  public apigen.adt.api.types.entry.NamedList makeEntry_NamedList(aterm.AFun fun, aterm.ATerm[] args, aterm.ATermList annos) {
+    synchronized (proto_Entry_NamedList) {
+      proto_Entry_NamedList.initHashCode(annos, fun, args);
+      return (apigen.adt.api.types.entry.NamedList) factory.build(proto_Entry_NamedList);
+    }
+  }
+
+  public apigen.adt.api.types.entry.NamedList makeEntry_NamedList(aterm.ATerm _opname, aterm.ATerm _sort, aterm.ATerm _elemSort) {
+    aterm.ATerm[] args = new aterm.ATerm[] {_opname, _sort, _elemSort};
+    return makeEntry_NamedList(fun_Entry_NamedList, args, factory.getEmpty());
+  }
+
+  protected apigen.adt.api.types.Entry Entry_NamedListFromTerm(aterm.ATerm trm) {
+    java.util.List children = trm.match(pattern_Entry_NamedList);
+
+    if (children != null) {
+      return makeEntry_NamedList(
+        (aterm.ATerm) children.get(0),
+        (aterm.ATerm) children.get(1),
+        (aterm.ATerm) children.get(2)
+      );
+    }
+    else {
+      return null;
+    }
+  }
+
+  public aterm.ATerm toTerm(apigen.adt.api.types.entry.NamedList arg) {
+    java.util.List args = new java.util.LinkedList();
+    args.add((aterm.ATerm)arg.getOpname());
+    args.add((aterm.ATerm)arg.getSort());
+    args.add((aterm.ATerm)arg.getElemSort());
+    return factory.make(pattern_Entry_NamedList, args);
   }
 
   public apigen.adt.api.types.entry.SeparatedList makeEntry_SeparatedList(aterm.AFun fun, aterm.ATerm[] args, aterm.ATermList annos) {
@@ -676,6 +731,11 @@ public class Factory {
     }
 
     tmp = Entry_ListFromTerm(trm);
+    if (tmp != null) {
+      return tmp;
+    }
+
+    tmp = Entry_NamedListFromTerm(trm);
     if (tmp != null) {
       return tmp;
     }

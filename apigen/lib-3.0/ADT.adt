@@ -4,6 +4,8 @@
     constructor(<sort(term)>,<alternative(term)>,<term-pattern(term)>)),
   constructor(Entry, List, 
     list(<sort(term)>,<elem-sort(term)>)),
+  constructor(Entry, NamedList, 
+    named-list(<opname(term)>,<sort(term)>,<elem-sort(term)>)),
   constructor(Entry, Separated-List, 
     separated-list(<sort(term)>,<elem-sort(term)>,<separators(Separators)>)),
   list(Separators, Separator),

@@ -17,7 +17,7 @@ public class ADTReader {
 		Iterator iter = params.getInputFiles().iterator();
 		String fileName = "";
 		try {
-			Factory factory = new Factory(SingletonFactory.getInstance());
+			Factory factory = Factory.getInstance(SingletonFactory.getInstance());
 			Modules all = factory.makeModules();
 			//Entries all = factory.makeEntries();
 			while (iter.hasNext()) {

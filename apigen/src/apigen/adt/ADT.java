@@ -154,13 +154,15 @@ public class ADT {
     private Type processAlternatives(String typeId, String moduleName, List alts) {
         Entry first = (Entry) alts.get(0);
 
-        if (first.isList() || first.isSeparatedList()) {
+        if (first.isList() || first.isSeparatedList() || first.isNamedList()) {
             if (alts.size() > 1) {
                 throw new RuntimeException("Multiple definitions of same list: " + alts);
             }
 
             if (first.isSeparatedList()) {
                 return processSeparatedList(typeId, moduleName, first);
+            } else if (first.isNamedList()) {
+                return processNamedList(typeId, moduleName, first);
             } else {
                 return processList(typeId, moduleName, first);
             }
@@ -173,6 +175,15 @@ public class ADT {
         String elementType = ((ATermAppl) entry.getElemSort()).getAFun().getName();
         Separators separators = entry.getSeparators();
         SeparatedListType type = new SeparatedListType(typeId, moduleName, elementType, separators, factory);
+        type.addAlternatives();
+        types.add(type);
+        return type;
+    }
+
+    private Type processNamedList(String typeId, String moduleName, Entry entry) {
+        String elementType = ((ATermAppl) entry.getElemSort()).getAFun().getName();
+        String opName = ((ATermAppl) entry.getOpname()).getAFun().getName();
+        NamedListType type = new NamedListType(typeId, moduleName, elementType, opName, factory);
         type.addAlternatives();
         types.add(type);
         return type;

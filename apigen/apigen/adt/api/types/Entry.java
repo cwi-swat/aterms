@@ -29,6 +29,10 @@ abstract public class Entry extends apigen.adt.api.AbstractType {
     return false;
   }
 
+  public boolean isNamedList() {
+    return false;
+  }
+
   public boolean isSeparatedList() {
     return false;
   }
@@ -46,6 +50,10 @@ abstract public class Entry extends apigen.adt.api.AbstractType {
   }
 
   public boolean hasElemSort() {
+    return false;
+  }
+
+  public boolean hasOpname() {
     return false;
   }
 
@@ -83,6 +91,14 @@ abstract public class Entry extends apigen.adt.api.AbstractType {
 
   public Entry setElemSort(aterm.ATerm _elemSort) {
      throw new IllegalArgumentException("Illegal argument: " + _elemSort);
+  }
+
+  public aterm.ATerm getOpname() {
+     throw new UnsupportedOperationException("This Entry has no Opname");
+  }
+
+  public Entry setOpname(aterm.ATerm _opname) {
+     throw new IllegalArgumentException("Illegal argument: " + _opname);
   }
 
   public apigen.adt.api.types.Separators getSeparators() {

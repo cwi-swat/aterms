@@ -7,6 +7,7 @@ import apigen.adt.ADT;
 import apigen.adt.Alternative;
 import apigen.adt.Field;
 import apigen.adt.ListType;
+import apigen.adt.NamedListType;
 import apigen.adt.Type;
 import apigen.adt.api.types.Module;
 import apigen.gen.GenerationParameters;
@@ -166,8 +167,13 @@ public class TomSignatureGenerator extends Generator {
     String stamp = "get" 
       + StringConversions.makeCapitalizedIdentifier(apiName)
 			+ "Factory().getPureFactory().makeList()";
-		if (type instanceof ListType) {
+		if ((type instanceof ListType) || (type instanceof NamedListType)) {
 			String eltType = ((ListType) type).getElementType();
+			String opName = "conc" + type.getId();
+			if (type instanceof NamedListType) {
+				eltType = ((NamedListType) type).getElementType();
+				opName  = ((NamedListType) type).getOpName();
+			}
 			println(
 				TypeListTemplate(
 					impl.TypeName(type.getId()),
@@ -183,7 +189,7 @@ public class TomSignatureGenerator extends Generator {
           "t"
           ));
 			println();
-			genTomConcOperator(type, eltType);
+			genTomConcOperator(type, eltType, opName);
 			String class_name = "class_name";
 			genTomEmptyOperator(type, class_name);
 			genTomManyOperator(type, eltType, class_name);
@@ -230,9 +236,9 @@ public class TomSignatureGenerator extends Generator {
 		println("}");
 	}
 
-	private void genTomConcOperator(Type type, String eltType) {
+	private void genTomConcOperator(Type type, String eltType, String opName) {
 		// conc operator
-		println("%oplist " + type.getId() + " conc" + eltType + "(" + eltType + "*) {");
+		println("%oplist " + type.getId() + " " + opName + "(" + eltType + "*) {");
 		println("  fsym { null }");
 		println("  is_fsym(t) {" + impl.ListIsList("t", type.getId()) + "}");
 		println("  make_empty() {" + impl.ListmakeEmpty(type.getId()) + "}");

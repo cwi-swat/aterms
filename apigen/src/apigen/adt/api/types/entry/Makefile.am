@@ -5,6 +5,6 @@ javadir = ${prefix}/classes/apigen/adt/api/types/entry
 
 CLASSPATH_ENV=CLASSPATH=${JAVAROOT}:${EXTERNAL_JARS}
 
-java_JAVA = Constructor.java List.java SeparatedList.java
+java_JAVA = Constructor.java List.java SeparatedList.java NamedList.java
 
 EXTRA_DIST = ${java_JAVA}

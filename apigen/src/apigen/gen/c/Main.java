@@ -56,7 +56,7 @@ public class Main {
 	}
 
 	private static void generateAPI(CGenerationParameters params, ADT adt) {
-		Factory factory = new Factory(new PureFactory());
+		Factory factory = Factory.getInstance(new PureFactory());
 		APIGenerator apigen = new APIGenerator(params, adt);
 		apigen.run();
 		new CDictionaryGenerator(adt, params, factory.getPureFactory(), apigen.getAFunRegister()).run();

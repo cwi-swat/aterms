@@ -17,6 +17,7 @@ java_JAVA = \
 	ListType.java \
 	Location.java \
 	SeparatedListType.java \
+	NamedListType.java \
 	Step.java \
 	Type.java\
 	ADTException.java
