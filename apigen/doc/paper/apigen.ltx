@@ -1344,13 +1344,21 @@ this library.
 % {{{  Zephyr ASDL
 
 \subsection{Zephyr ASDL}
+The abstract syntax definition language (ASDL)~\cite{Wan97} is a
+language for describing tree data structures much like \aterms, and is used as
+intermediate representation language between the various phases of a
+compiler~\cite{Han99}. 
+
+The ASDL tools support the generation of
+accessor and serialization code. The main differences with our approach are:
 \begin{itemize}
-\item Targeted at compiler building (much like ATerms)
-\item Generates data structure implementations in C, C++, Java, Standard ML and Haskell
-\item Generates accessors and serialization code (in a compact binary format)
-\item Offers a graphical browser and editor for data described in ASDL
-\item No sharing
-\item No garbage collection (in C/C++)
+\item ASDL works on abstract syntax definitions. The link between
+parser and ASDL must be programmed manually.
+\item ASDL supports a wide variety of languages including C, C++, Java,
+Standard ML, and Haskell.
+\item ASDL offers a graphical browser and editor for data described in ASDL.
+\item ASDL does not support maximal subterm sharing.
+\item There is no garbage collection support for languages like C and C++.
 \end{itemize}
 
 
@@ -1375,6 +1383,8 @@ unmarshalling their return values,
 while in our approach we keep the data in the original 'marshalled'
 form until it is actually used. In this sense, you could characterize our
 approach as lazy and the DCOM/CORBA approach as eager.
+
+XXX: References needed!
 
 
 %%\begin{itemize}
