@@ -1,5 +1,8 @@
 $Id$
 
+Tue Feb 18 15:47:24 CET 2003 <{jong,olivierp}@cwi.nl>
+ * Fix two bugs in tests 5, 37/38
+
 2003-01-22  Jurgen Vinju	<jurgenv@cwi.nl>
  * Release 2.0
 

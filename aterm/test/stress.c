@@ -675,8 +675,8 @@ void testMatch(void)
   test_assert("match", 36, ATmatch((ATerm)ATempty, "[]"));
 
   /* These were reported to SEGV, but should work */
-  test_assert("match", 37, ATmatch(ATmake("int(<int>)",1), "<appl(<term>)>", NULL));
-  test_assert("match", 38, ATmatchTerm(ATmake("int(<int>)",1), ATparse("<appl(<term>)>"), NULL));
+  test_assert("match", 37, ATmatch(ATmake("int(<int>)",1), "<appl(<term>)>", NULL, NULL));
+  test_assert("match", 38, ATmatchTerm(ATmake("int(<int>)",1), ATparse("<appl(<term>)>"), NULL, NULL));
 
   printf("match tests ok.\n");
 }
@@ -1126,7 +1126,7 @@ void testBaffle()
   ATfprintf(stderr, "term read from binary string : %t\n", test2);
   test_assert("baffle", 5, ATisEqual(test1, test2));
 
-  ptr = ATwriteToBinaryString((ATerm)ATmakeBlob(4, "abc"), &len);
+  ptr = ATwriteToBinaryString((ATerm)ATmakeBlob(4, strdup("abc")), &len);
   blob = (ATermBlob)ATreadFromBinaryString(ptr, len);
   test_assert("baffle", 6, blob);
   test_assert("baffle", 7, strcmp(ATgetBlobData(blob), "abc") == 0);
