@@ -245,4 +245,6 @@ int  ATcalcTextSize(ATerm t);
 void AT_writeToStringBuffer(ATerm t, char *buffer);
 #define ATwriteToStringBuffer(t,b) AT_writeToStringBuffer((t),(b))
 
+#define ATgetAFunId(afun) ((afun))
+
 #endif
