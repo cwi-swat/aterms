@@ -139,6 +139,8 @@ spec/Makefile
 utils/Makefile
 utils/gen-c-api
 utils/sdf2-to-adt
+apigen/Makefile
+apigen/c/Makefile
 test/Makefile
 spec/gen-c-api/Makefile
 spec/sdf2-to-adt/Makefile
