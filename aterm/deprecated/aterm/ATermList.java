@@ -318,7 +318,6 @@ public class ATermList extends ATerm
   }
 
   //}
-
   //{ public ATermList removeElementAt(int n)
 
   /**
@@ -334,12 +333,88 @@ public class ATermList extends ATerm
 
   //}
 
-	// <PO> Missing:
-	// public ATermList getPrefix()
-	// public ATerm getLast()
+	//{ public ATermList insert(ATerm el)
+
+	/**
+		* Insert an element in front of this list
+		*/
+
+	public ATermList insert(ATerm el)
+	{
+		return world.makeList(el, this);
+	}
+
+	//}
+	//{ public ATermList insertAt(ATerm el, int idx)
+
+	/**
+		* Insert an element somewhere in this list
+		*/ 
+
+	public ATermList insertAt(ATerm el, int idx)
+	{
+		if(idx == 0 || isEmpty())
+			return world.makeList(el, this);
+
+		return getNext().insertAt(el, idx-1).insert(getFirst());
+	}
+
+	//}
+	//{ public ATermList getPrefix()
+
+	/**
+		* Retrieve the prefix of this list (all elements except the last)
+		*/
+
+	public ATermList getPrefix()
+	{
+		if(isEmpty())
+			return this;
+
+		ATermList l = this, next;
+		Vector elems = new Vector();
+
+		while (true) {
+			next = l.getNext();
+			if(next.isEmpty()) {
+				l = world.empty;
+				for(int i=elems.size()-1; i>=0; i--) {
+					l = l.insert((ATerm)elems.elementAt(i));
+				}
+				return l;
+			} else {
+				elems.addElement(l.getFirst());
+				l = l.getNext();
+			}
+		}
+	}
+
+	//}
+	//{ public ATerm getLast()
+
+	/**
+		* Return the last element of a list
+		*/
+
+	public ATerm getLast()
+	{
+		ATermList l = this, next;
+
+		if(isEmpty())
+			throw new RuntimeException("cannot get last element of empty list!");
+
+		while(true) {
+			next = l.getNext();
+			if(next.isEmpty())
+				return l.getFirst();
+			l = next;
+		}
+	}
+
+	//}
+
+	// <PO> Still missing:
 	// public ATermList getSlice(int start, int end)
-	// public ATermList insert(ATerm el)
-	// public ATermList insertAt(ATerm el, int idx)
 	// public ATermList removeElement(ATerm el)
 	// public ATermList removeAll(ATerm el)
 	// public ATermList replace(ATerm el, int idx)

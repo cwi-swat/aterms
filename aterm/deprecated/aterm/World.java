@@ -1049,8 +1049,10 @@ public class World
 					 
 					fun = parseId(channel);
 					if(channel.last() == '(') {
-						channel.readNext();
-						list = parseATermList(channel);
+						if(channel.readNext() == ')')
+							list = empty;
+						else
+							list = parseATermList(channel);
 						if(channel.last() != ')')
 							throw new ParseError(channel, channel.last(), "')' expected");
 						result = makeAppl(fun, list);
@@ -1078,6 +1080,19 @@ public class World
 			}
 			result = result.setAnnotations(annos);	
 		}
+
+		/* Parse some ToolBus anomalies for backwards compatibility */
+		if(channel.last() == ':') {
+			channel.readNext();
+			ATerm anno = parseATerm(channel);
+			result = result.setAnnotation(ATerm.parse("type"), anno);
+		}
+
+		if(channel.last() == '?') {
+			channel.readNext();
+			result = result.setAnnotation(ATerm.parse("result"),ATerm.parse("true"));
+		}
+
 
     return result;
   }
@@ -1114,7 +1129,8 @@ public class World
       channel.read();    
     } while(Character.isLetterOrDigit((char)channel.last()) || 
 						channel.last() == '-' || channel.last() == '_' || 
-						channel.last() == '+' || channel.last() == '*');
+						channel.last() == '+' || channel.last() == '*' ||
+						channel.last() =='$');
     channel.skipWhitespace();
     return str.toString();
   }

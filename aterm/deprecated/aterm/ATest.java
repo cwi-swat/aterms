@@ -183,6 +183,28 @@ public class ATest
     test(Ts[4].append(world.makeInt(7)).equals(Ts[5]), "append-1");
 
     //}
+		//{ test insert
+
+		Ts[7] = Ts[3].insert(ATerm.parse("3"));
+		Ts[7] = Ts[7].insert(ATerm.parse("2"));
+		Ts[7] = Ts[7].insert(ATerm.parse("1"));
+		test(Ts[7].equals(Ts[4]), "insert-1");
+
+		test(Ts[1].insert(ATerm.parse("1")).equals(ATerm.parse("[1]")), 
+				 "insert-2");
+
+		//System.out.println("insert: " + Ts[4].insertAt(ATerm.parse("7"), 7));
+											 
+		test(Ts[4].insertAt(ATerm.parse("7"), 7).equals(Ts[5]), "insert-3");
+
+		//}
+		//{ Test prefix/last
+
+		test(Ts[5].getPrefix().equals(Ts[4]), "prefix-1");
+		test(Ts[5].getLast().equals(ATerm.parse("7")), "last-1");
+
+		//}
+
   }
 
   //}
