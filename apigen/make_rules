@@ -23,7 +23,7 @@ SUFFIXES 	= .pic .ltx .dvi .bbl .ind .idx .xwd .ps .tex .fig
 		latex $< ;\
 	done
 
-%.bbl: %.ltx
+%.bbl: %.bib
 	bibtex $*
 
 %.ind: %.idx
