@@ -15,7 +15,7 @@ INCLUDES	= -I$(ASCINC) \
 		-I$(ATERM)/include
 
 pkgdata_DATA	= Sdf2-to-ADT.trm.tbl
-CLEANFILES	= ${data_DATA}
+CLEANFILES	= ${pkgdata_DATA}
 
 EXTRA_DIST	= ${SDF2_TO_ADT_SDF} ${SDF2_SPEC_SDF} \
                   ${UTILS_SPEC_SDF} Sdf2-to-ADT.trm.tbl
