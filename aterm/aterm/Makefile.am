@@ -48,6 +48,8 @@ PUBLIC_INCL              = abool.h atypes.h aterm1.h aterm2.h deprecated.h \
 PRIVATE_INCL             = _aterm.h debug.h gc.h list.h make.h memory.h \
                            util.h bafio.h version.h
 
+CFLAGS			 = -Wall -g -O2
+
 ALLINCLUDES              = ${PUBLIC_INCL} ${PRIVATE_INCL}
 
 include_HEADERS          = $(PUBLIC_INCL)
