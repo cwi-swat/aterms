@@ -16,9 +16,11 @@ Usage: $PRG -i <adt-file> [options]
 Parameters:
 
   -i | --input <FILE>     specify input adt                [not specified]
+  -f | --folding          folding enabled                  [off]
   -o | --output <DIR>     specify basedir for output       [.]
   -p | --package <STR>    specify package                  [""]
   -m | --import <PKG>     specify extra import package     [see below]
+  -t | --visitable        visitable enabled                [off]
   -v | --verbose          be verbose during generation     [off]
   -h | --help             display this information
 
@@ -62,6 +64,8 @@ require() {
 # settings/options
      INPUT=""
    VERBOSE=0
+   FOLDING=0
+   VISITABLE=0
 
 # data needed
 CLASSES=${prefix}/classes
@@ -92,6 +96,12 @@ do
 
     -v | --verbose)
       VERBOSE=1 ;;
+     
+    -f | --folding)
+      FOLDING=1 ;;
+
+    -t | --visitable)
+      VISITABLE=1 ;;
 
     -h | --help)
       usage; exit 0 ;;
@@ -128,6 +138,18 @@ else
   OPT_VERBOSE=""
 fi
 
+if [ $FOLDING -gt 0 ]; then
+  OPT_FOLDING="-folding"
+else
+  OPT_FOLDING=""
+fi
+
+if [ $VISITABLE -gt 0 ]; then
+  OPT_VISITABLE="-visitable"
+else
+  OPT_VISITABLE=""
+fi
+
 # }}}
 
 # {{{  generate Java code from ADT
@@ -136,6 +158,8 @@ java  -classpath ${CLASSES} apigen.java.JavaGen \
 	  -basedir ${OUTPUT}	\
 	  ${OPT_IMPORTS}	\
 	  ${OPT_PACKAGE}	\
-	  ${OPT_VERBOSE}
+	  ${OPT_VERBOSE}        \
+	  ${OPT_FOLDING}        \
+	  ${OPT_VISITABLE}
 
 # }}}
