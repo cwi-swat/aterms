@@ -1,0 +1,13 @@
+Makefile
+Makefile.in
+*.aux
+*.bbl
+*.blg
+*.dvi
+*.idx
+*.ild
+*.ilg
+*.ind
+*.log
+*.ps
+*.toc
