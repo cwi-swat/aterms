@@ -26,7 +26,6 @@ module ATerm-Syntax
 
       lexical syntax
          [\ \t\n]         -> LAYOUT
-         "%%" ~[\n]* "\n" -> LAYOUT
 
 	 [a-zA-Z\_][a-zA-Z0-9\_\-]*	-> AFun {avoid}
 
@@ -34,10 +33,10 @@ module ATerm-Syntax
 	AFun -/- [a-zA-Z0-9\_\-]
 
       context-free restrictions
-        LAYOUT? -/- [\ \t\n\%]
+        LAYOUT? -/- [\ \t\n]
 
       context-free syntax
-         { ATerm "," }*		   -> ATerms
+         { ATerm "," }*		   -> ATerms    {avoid}
          "[" {ATerm ","}* "]"      -> ATermList
          IntCon                    -> ACon      {constructor}
          AT-Literal                -> AFun      {constructor}

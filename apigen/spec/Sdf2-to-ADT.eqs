@@ -1,7 +1,7 @@
 equations
 
 [equ-sdf-module-to-adt-empty]
-  sdf-module-to-adt(module $ModName ) = [ ]
+  sdf-module-to-adt(module $ModName $ImpSection*) = [ ]
 
 [equ-sdf-module-to-adt-divide]
   section-to-adt($ModName, $Section) = $Entries1,

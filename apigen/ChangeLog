@@ -1,3 +1,7 @@
+2000/09/15 (jong@cwi.nl)
+  * Bugfix in Sdf2-to-ADT.eqs, imports were handled improperly.
+  * Removed double definition of %%-layout.
+
 2000/09/10 (jong@cwi.nl)
   * Version 0.5
   * Added heuristics for translating unlabeled tokens into valid C-ids.
