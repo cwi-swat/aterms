@@ -1,7 +1,7 @@
 package
 identification
-  name=aterm
-  version=2.0.2
+  name=__PACKAGE__
+  version=__VERSION__
   location=http://www.cwi.nl/projects/MetaEnv/aterm
   info=http://www.cwi.nl/projects/MetaEnv/aterm
   description='ATerm (short for Annotated Term) is an abstract data type
