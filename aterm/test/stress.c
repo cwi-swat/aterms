@@ -145,6 +145,8 @@ testOther(void)
 	assert(ATgetBlobData(blob[0]) == data);
 	ATwriteToTextFile((ATerm)blob[0], stdout);
 	fprintf(stdout, "\n");
+
+	test_assert("text-size", 1,  AT_calcTextSize(ATparse("[]")) == 2);
 }
 
 /*}}}  */
@@ -439,6 +441,7 @@ void testMatch(void)
   t[0] = ATmake("f(1,3.14,<placeholder>,a,\"b\",00000004:abcd)", 
 				ATmake("type"));
   t[1] = ATmake("[1,2,3]");
+	t[2] = ATmake("f(1,2,3)");
 
   test_assert("match", 1, ATmatch(ATmake("1"), "<int>", &i));
   test_assert("match", 2, i == 1);
@@ -474,6 +477,12 @@ void testMatch(void)
   test_assert("match", 29, !ATmatch(ATmake("\"f\""), "<id>", &name[0]));
   test_assert("match", 30, !ATmatch(ATmake("f"), "<appl(1)>", &name[0]));
   test_assert("match", 31, !ATmatch(ATmake("f(1)"), "<appl>", &name[0]));
+	test_assert("match", 32, ATmatch(t[2], "<appl(<list>)>", &name[0], &t[3]));
+	test_assert("match", 33, ATisEqual(t[3], t[1]));
+	test_assert("match", 34, ATmatch(ATparse("rec-do(signature([1,2,3]))"),
+																	 "rec-do(signature(<term>))", &t[4]));
+	test_assert("match", 35, ATisEqual(t[1], t[4]));
+	test_assert("match", 36, ATmatch((ATerm)ATempty, "[]"));
 
   printf("match tests ok.\n");
 }

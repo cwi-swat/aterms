@@ -3,12 +3,15 @@ process TEST is
 let
   T : tool2,
   T1 : term, T2 : term,
-  B : bool,
+  B : term,
   I : int, 
   S : str
 in
   T1 := "just a test!" .
   T2 := just-a-test .
+  B := abc .
+  I := 7 .
+  S := "Hello World!" .
   execute(tool2, T?) .
 
   %% do tests
@@ -25,7 +28,7 @@ in
   snd-eval(T, test-eval-1(B)) .
   rec-value(T, ok(B)) .
   snd-eval(T, test-eval-2(I, S)) .
-  rec-value(T, ok(I, S)) .
+  rec-value(T,	 ok(I, S)) .
   snd-eval(T, test-eval-3(S, I, T1)) .
   rec-value(T, ok(S, I, T1)) .
   
