@@ -209,8 +209,8 @@ extends Generator
     println();
     println();
     
-    println(prefix + "=\\\n" + 
-    api_factory + ".java " + api_constructor + ".java \\");
+    print(prefix + "=\\\n" + 
+    api_factory + ".java " + api_constructor + ".java \\\n");
     while(--bucket >= 0) {
       print("${" + prefix + bucket + "} ");
     }
