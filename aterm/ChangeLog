@@ -1,5 +1,9 @@
 $Id$
 
+2001/04/04 ({jong,olivierp}@cwi.nl)
+ * Fixed locking in Java toolbus support
+ * Added support for <str> pattern in Java library
+
 2001/03/30 ({jong,olivierp}@cwi.nl)
  * version 1.5.5
  * added --with-visitor-pkg option to configure.in
