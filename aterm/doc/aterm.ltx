@@ -1060,14 +1060,16 @@ such as the rewrite rules that must be compiled or interpreted are
 exchanged as \asfix\ terms.
 
 The \aterm\ format is directly used by the parser generator and the
-parse table interpreter \cite{Vis97} because the parse table is
+parser \cite{Vis97} because the parse table is
 represented as an \aterm. \aterms\ are also used with in the \asdf2C
 compiler, see the next section.
+The parse trees constructed by the parser is an \asfix\ term, thus an
+\aterm\ as well.
 
 \subsection{ASF+SDF to C compiler}
 
 The \asdf\ to C compiler \cite{BKO99} is a compiler for the algebraic
-specification language \asdf~\cite{HHKR89.update,BHK89,DHK96}. 
+specification language \asdf~\cite{HHKR92.new,BHK89,DHK96}. 
 It generates ANSI-C code and is based on
 the run-time environment based on the \aterm\ library.
 The terms manipulated by the generated C code are represented as \aterms.
@@ -1082,9 +1084,47 @@ issue as well.
 
 The \aterm\ library takes of the maximal sharing and the garbage collection.
 For both facilities no extra code needs to be generated.
- 
+The \asdf2C compiler is an \asdf\ specification and is bootstrapped.
+Table \ref{ASF2Ctable} gives some figures on the size of this specification
+and the time to compile it.
+Table \ref{sharingtable} gives an impression of the effect of compiling
+the \asdf2C compiler with and without sharing.
+More information on the performance can be found in \cite{BKO99}.
 
-\subsection{JFG}
+\begin{table}[tb]
+\begin{center}
+\begin{tabular}{|l|c|c|c|c|c|} \hline
+Specification & \asdf\      & \asdf    & Generated C  	& \asdf\	& C compiler\\
+	      & (equations) & (lines)  & code (lines) 	& compiler (sec)& (sec)\\ \hline \hline
+\asdf{} compiler & 1876     & 8699     & 85185    	& 216  		& 323 \\ \hline
+%%Parser generator & 1388     & 4722     & 47662    	& 106  		& 192 \\ \hline
+%%COBOL formatter  & 2037     & 9205     & 85976    	& 208  		& 374 \\ \hline
+%%Risla expander   & 1082     & 7169     & 46787    	& 168  		& 531 \\ \hline
+\end{tabular}
+\vspace{\baselineskip}
+\caption{\label{ASF2Ctable}Some figures on the \asdf\ compiler.}
+\end{center}
+\end{table}
+
+\begin{table}[tb]
+\begin{center}
+\begin{tabular}{|l|c|c|} \hline
+Application 				& Time (sec) 	& Memory (Mb) \\ \hline \hline
+\asdf{} compiler (with sharing)    	& 216		& \ 16	\\ \hline
+\asdf{} compiler (without sharing) 	& 661  		& 117 	\\ \hline 
+%%Risla expansion (with sharing)   	& \ \ 9  	& \ \ 8 \\ \hline
+%%Risla expansion (without sharing)  	& \ 18 		& \ 13	\\ \hline
+\end{tabular}
+\vspace{\baselineskip}
+\caption{\label{sharingtable}Performance with and without maximal sharing.}
+\end{center}
+\end{table}
+
+\subsection{Protocol Verification Tool}
+
+Another major application is a verification tool for protocols. The \aterms\
+are used to represent the states. Because of the huge amount of states
+($\geq 1.000.000$) it is necessary to share as many states as possible.
 
 %}}}
 %{{{ Related Work
