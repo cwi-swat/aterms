@@ -24,6 +24,8 @@ SOURCE	= World.java ATerm.java ATermList.java ATermAppl.java ATermInt.java \
 		ATermPlaceholder.java ATermReal.java ATermBlob.java \
 		ATermChannel.java ParseError.java \
 		ATermSize.java ATest.java Primes.java
+	
+XTRACLASSES	= HashedWeakRef.class TestFailedException.class InputChannel.class
 
 CLASSES	= $(patsubst %.java,%.class,$(SOURCE))
 
@@ -52,7 +54,7 @@ clean:
 
 install:
 	@mkdir -p ${classdir}/aterm
-	@for file in ${CLASSES}; do \
+	@for file in ${CLASSES} ${XTRACLASSES}; do \
 		${INSTALL_DAT} $$file ${classdir}/aterm; \
 	done
 	@for dir in ${SUBDIRS}; \
