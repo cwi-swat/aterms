@@ -242,8 +242,7 @@ ATunprotect(ATerm * term)
     {
 			if (at_protected[lcv] == term)
 				{
-					at_protected--;
-					at_protected[lcv] = at_protected[at_nrprotected];
+					at_protected[lcv] = at_protected[--at_nrprotected];
 					at_protected[at_nrprotected] = NULL;
 					break;
 				}
