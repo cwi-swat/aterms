@@ -1,12 +1,14 @@
 package apigen.gen.tom;
 
 import java.util.Iterator;
+import java.util.Set;
 
 import apigen.adt.ADT;
 import apigen.adt.Alternative;
 import apigen.adt.Field;
 import apigen.adt.ListType;
 import apigen.adt.Type;
+import apigen.adt.api.types.Module;
 import apigen.gen.GenerationParameters;
 import apigen.gen.Generator;
 import apigen.gen.StringConversions;
@@ -19,12 +21,15 @@ public class TomSignatureGenerator extends Generator {
 	private ADT adt;
 	private String prefix;
 	private String packagePrefix;
+	private Module module;
 
-	public TomSignatureGenerator(ADT adt, TomSignatureImplementation impl, GenerationParameters params) {
+	public TomSignatureGenerator(ADT adt, TomSignatureImplementation impl, GenerationParameters params, Module module) {
 		super(params);
+		this.module = module;
 		setDirectory(params.getOutputDirectory());
 		setExtension(".tom");
-		setFileName(StringConversions.makeIdentifier(params.getApiName()));
+		String moduleName = module.getModulename().getName();
+		setFileName(StringConversions.makeIdentifier((moduleName.equals(""))?params.getApiName():moduleName));
 		this.adt = adt;
 		this.impl = impl;
 		this.prefix = params.getPrefix();
@@ -120,12 +125,21 @@ public class TomSignatureGenerator extends Generator {
 	}
 
 	private void genTomTypes(ADT api) {
-		Iterator types = api.typeIterator();
+		String moduleName = module.getModulename().getName();
+		Set modules = api.getImportsClosureForModule(moduleName);
+		modules.add(module.getModulename().getName()); //do not forget myself
+		
+		//System.out.println("closure for "+moduleName+ " "+modules);
+		Iterator moduleIt = modules.iterator();
+		while(moduleIt.hasNext()) {
+			Iterator types = api.typeIterator((String)moduleIt.next());
 
-		while (types.hasNext()) {
-			Type type = (Type) types.next();
-			genTomType(type);
+			while (types.hasNext()) {
+				Type type = (Type) types.next();
+				genTomType(type);
+			}
 		}
+		
 	}
 
 	private void genTomType(Type type) {

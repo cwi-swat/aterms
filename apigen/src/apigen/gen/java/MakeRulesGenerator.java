@@ -87,9 +87,11 @@ public class MakeRulesGenerator extends Generator {
 		print(
 			prefix
 				+ "=\\\n"
-				+ getClassFileName(FactoryGenerator.className())
+				//+ getClassFileName(FactoryGenerator.className())
+				+ getClassFileName(FactoryGenerator.className("BUG_HERE"))
 				+ " "
-				+ getClassFileName(AbstractTypeGenerator.className())
+				//+ getClassFileName(AbstractTypeGenerator.className())
+				+ getClassFileName(AbstractTypeGenerator.className("BUG_HERE"))
 				+ "\\\n");
 
 		while (--bucket >= 0) {

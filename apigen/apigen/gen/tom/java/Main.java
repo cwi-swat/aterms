@@ -1,11 +1,13 @@
 package apigen.gen.tom.java;
 
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
 import apigen.adt.ADT;
 import apigen.adt.ADTReader;
+import apigen.adt.api.types.Module;
 
 
 public class Main {
@@ -34,14 +36,22 @@ public class Main {
 		}
 
 		ADT adt = ADTReader.readADT(params);
-		JavaTomSignatureImplementation signature = new JavaTomSignatureImplementation(params);
-		new JavaTomSignatureGenerator(adt, signature, params).run();
+		generateSignature(adt, params);
 
 		if (params.isJavaGen()) { // generate Java Stuff
 			apigen.gen.java.Main.generateAPI(adt, params);
 		}
 	}
 
+	private static void generateSignature(ADT adt,  JavaTomGenerationParameters params) {
+		Iterator it = adt.moduleIterator();
+		while(it.hasNext()) {
+			Module module = (Module) it.next();
+			JavaTomSignatureImplementation signature = new JavaTomSignatureImplementation(params, module);
+			new JavaTomSignatureGenerator(adt, signature, params, module).run();
+		}
+	}
+	
 	private static JavaTomGenerationParameters buildDefaultParameters() {
 		JavaTomGenerationParameters params = new JavaTomGenerationParameters();
 		params.setOutputDirectory(".");

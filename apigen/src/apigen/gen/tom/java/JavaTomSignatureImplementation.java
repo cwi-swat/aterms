@@ -1,5 +1,6 @@
 package apigen.gen.tom.java;
 
+import apigen.adt.api.types.Module;
 import apigen.gen.StringConversions;
 import apigen.gen.TypeConverter;
 import apigen.gen.java.JavaTypeConversions;
@@ -13,8 +14,10 @@ public class JavaTomSignatureImplementation implements TomSignatureImplementatio
 
 	private String apiName;
 
-	public JavaTomSignatureImplementation(JavaTomGenerationParameters params) {
-		this.apiName = params.getApiName();
+	public JavaTomSignatureImplementation(JavaTomGenerationParameters params, Module module) {
+		//this.apiName = params.getApiName();
+		String moduleName = module.getModulename().getName();
+		this.apiName = (moduleName.equals("")?params.getApiName():moduleName);
 		this.jtype = params.isJtype();
 	}
 

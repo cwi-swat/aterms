@@ -17,7 +17,7 @@ import apigen.adt.Location;
 import apigen.adt.SeparatedListType;
 import apigen.adt.Step;
 import apigen.adt.Type;
-import apigen.adt.api.Separators;
+import apigen.adt.api.types.Separators;
 import apigen.gen.GenerationException;
 import apigen.gen.StringConversions;
 import apigen.gen.TypeConverter;

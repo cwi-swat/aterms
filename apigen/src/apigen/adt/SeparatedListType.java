@@ -2,20 +2,21 @@ package apigen.adt;
 
 import java.util.Iterator;
 
-import apigen.adt.api.Separator;
-import apigen.adt.api.Separators;
+import apigen.adt.api.Factory;
+import apigen.adt.api.types.Separator;
+import apigen.adt.api.types.Separators;
 import apigen.util.FirstAndLastSkippingIterator;
-import aterm.ATermFactory;
 
 public class SeparatedListType extends ListType {
     private Separators separators;
 
     public SeparatedListType(
         String id,
+				String moduleName,
         String elementType,
         Separators separators,
-        ATermFactory factory) {
-        super(id, elementType, factory);
+        Factory factory) {
+        super(id, moduleName, elementType, factory);
         this.separators = separators;
         
     }
@@ -58,7 +59,7 @@ public class SeparatedListType extends ListType {
         String tail = buildTailPattern();
         String pattern = "[" + head + "," + seps + "," + tail + "]";
 
-        return new Alternative(MANY_LIST_ALT_NAME, getFactory().parse(pattern));
+        return new Alternative(MANY_LIST_ALT_NAME, getFactory().getPureFactory().parse(pattern));
     }
 
     private String buildSeparatorPattern() {

@@ -6,6 +6,7 @@ import apigen.adt.ADT;
 import apigen.adt.Alternative;
 import apigen.adt.ListType;
 import apigen.adt.Type;
+import apigen.adt.api.types.Module;
 
 public class ForwardGenerator extends JavaGenerator {
 	private static final String CLASS_NAME = "Fwd";
@@ -13,18 +14,17 @@ public class ForwardGenerator extends JavaGenerator {
 	private ADT adt;
 	private String constructor;
 
-	public ForwardGenerator(ADT adt, JavaGenerationParameters params) {
+    private Module module;
+
+	public ForwardGenerator(ADT adt, JavaGenerationParameters params, Module module) {
 		super(params);
 		this.adt = adt;
-		this.constructor = AbstractTypeGenerator.qualifiedClassName(params);
+		this.module = module;
+		this.constructor = AbstractTypeGenerator.qualifiedClassName(params,module.getModulename().getName());
 	}
 
 	public String getClassName() {
-		return className();
-	}
-
-	public static String className() {
-		return CLASS_NAME;
+		return module.getModulename().getName() + CLASS_NAME;
 	}
 
 	protected void genVisits(ADT adt) {

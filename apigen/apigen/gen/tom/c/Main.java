@@ -1,12 +1,15 @@
 package apigen.gen.tom.c;
 
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
 import apigen.adt.ADT;
 import apigen.adt.ADTReader;
+import apigen.adt.api.types.Module;
 import apigen.gen.tom.TomSignatureGenerator;
+
 
 public class Main {
 	public static final void main(String[] arguments) {
@@ -32,9 +35,18 @@ public class Main {
 
 		ADT adt = ADTReader.readADT(params);
 		CTomSignatureImplementation signature = new CTomSignatureImplementation(params);
-		new TomSignatureGenerator(adt, signature, params).run();
+		generateSignature(adt, signature, params);
 	}
 
+	private static void generateSignature(ADT adt, CTomSignatureImplementation signature, CTomGenerationParameters params) {
+		Iterator it = adt.moduleIterator();
+		while(it.hasNext()) {
+			Module module = (Module) it.next();
+			//TODO: Not a CTomSignatureGenerator???
+			new TomSignatureGenerator(adt, signature, params, module).run();
+		}
+	}
+	
 	private static CTomGenerationParameters buildDefaultParameters() {
 		CTomGenerationParameters params = new CTomGenerationParameters();
 		params.setOutputDirectory(".");

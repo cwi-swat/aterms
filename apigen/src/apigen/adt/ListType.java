@@ -1,6 +1,7 @@
 package apigen.adt;
 
-import aterm.ATermFactory;
+import apigen.adt.api.Factory;
+
 
 public class ListType extends Type {
     //TODO : make private?
@@ -10,11 +11,11 @@ public class ListType extends Type {
     protected static final String HEAD_FIELD_NAME = "head";
     protected static final String TAIL_FIELD_NAME = "tail";
 
-    private ATermFactory factory;
+    private Factory factory;
     private String elementType;
 
-    public ListType(String id, String elementType, ATermFactory factory) {
-        super(id);
+    public ListType(String id, String moduleName, String elementType, Factory factory) {
+        super(id, moduleName);
         this.factory = factory;
         this.elementType = elementType;
     }
@@ -54,12 +55,12 @@ public class ListType extends Type {
     }
 
     protected Alternative makeEmptyListConstructor() {
-        return new Alternative(EMPTY_LIST_ALT_NAME, getFactory().parse("[]"));
+        return new Alternative(EMPTY_LIST_ALT_NAME, getFactory().getPureFactory().parse("[]"));
     }
 
     protected Alternative makeSingletonListConstructor() {
         String pattern = "[" + buildHeadPattern() + "]";
-        return new Alternative(SINGLE_LIST_ALT_NAME, getFactory().parse(pattern));
+        return new Alternative(SINGLE_LIST_ALT_NAME, getFactory().getPureFactory().parse(pattern));
     }
 
     protected Alternative makeManyListConstructor() {
@@ -67,7 +68,7 @@ public class ListType extends Type {
         String tail = buildTailPattern();
         String pattern = "[" + head + "," + tail + "]";
 
-        return new Alternative(MANY_LIST_ALT_NAME, getFactory().parse(pattern));
+        return new Alternative(MANY_LIST_ALT_NAME, getFactory().getPureFactory().parse(pattern));
     }
 
     protected String buildHeadPattern() {
@@ -80,7 +81,7 @@ public class ListType extends Type {
         return tail;
     }
 
-    public ATermFactory getFactory() {
+    public Factory getFactory() {
         return factory;
     }
 }

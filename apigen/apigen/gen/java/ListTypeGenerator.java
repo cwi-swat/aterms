@@ -17,7 +17,7 @@ public class ListTypeGenerator extends TypeGenerator {
 		this.typeName = TypeGenerator.className(type);
 		this.elementType = type.getElementType();
 		this.elementTypeName = TypeGenerator.qualifiedClassName(params, elementType);
-		this.factory = FactoryGenerator.qualifiedClassName(params);
+		this.factory = FactoryGenerator.qualifiedClassName(params,type.getModuleName());
 	}
 
 	public String getTypeName() {
@@ -249,7 +249,7 @@ public class ListTypeGenerator extends TypeGenerator {
 	}
 
 	private String buildFactoryGetter() {
-		return AbstractTypeGenerator.getFactoryMethodName(getGenerationParameters()) + "()";
+		return AbstractTypeGenerator.getFactoryMethodName(getGenerationParameters(),type.getModuleName()) + "()";
 	}
 
 	private void genGetters() {

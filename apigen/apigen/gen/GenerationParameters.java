@@ -4,6 +4,10 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import apigen.adt.ADT;
+import apigen.adt.Type;
+import apigen.adt.api.types.Module;
+
 public class GenerationParameters {
 	private String outputDirectory;
 	private String apiName;
@@ -13,6 +17,7 @@ public class GenerationParameters {
 
 	public GenerationParameters() {
 		inputFiles = new LinkedList();
+		setApiName("");
 	}
 
 	public void parseArguments(List args) {
@@ -70,8 +75,36 @@ public class GenerationParameters {
 	public void addInputFile(String fileName) {
 		inputFiles.add(fileName);
 	}
-
-	public String getApiName() {
+	
+	public final String getApiName() {
+		return apiName;
+	}
+	
+	public final String getApiExtName(Module m) {
+		if (apiName.equals("")) {
+			return m.getModulename().getName();
+		}
+		return apiName;
+	}
+	
+	public final String getApiExtName(String moduleName) {
+		if (apiName.equals("")) {
+			return moduleName;
+		}
+		return apiName;
+	}
+	
+	public final String getApiExtName(Type type) {
+		if(apiName.equals("")) {
+			return type.getModuleName();
+		}
+		return apiName;
+	}
+	
+	public final String getApiExtName(TypeConverter conv,String typename) {
+		if(apiName.equals("")) {
+			return ADT.getInstance().getModuleName(conv,typename);
+		}
 		return apiName;
 	}
 
@@ -104,8 +137,10 @@ public class GenerationParameters {
 	}
 
 	public void check() {
-		if (getApiName() == null) {
+		/*if (getApiName() == null) {
 			throw new IllegalArgumentException("No API name specified");
-		}
+		}*/ 
+		// No more to be tested since it is either "",
+		// apiName given in argument or computed with type arg 
 	}
 }

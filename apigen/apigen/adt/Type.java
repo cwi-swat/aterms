@@ -16,14 +16,15 @@ import aterm.ATermList;
 import aterm.ATermPlaceholder;
 
 public class Type {
+	  private String moduleName;
     private String id;
     private AlternativeList alts;
     private Map fields;
     private List field_list;
 
-    public Type(String id) {
+    public Type(String id, String moduleName) {
         this.id = id;
-
+        this.moduleName = moduleName;
         alts = new AlternativeList();
         fields = new HashMap();
         field_list = new Vector();
@@ -31,6 +32,10 @@ public class Type {
 
     public String getId() {
         return id;
+    }
+    
+    public String getModuleName() {
+      return moduleName;
     }
 
     public void addAlternative(Alternative alt) {
@@ -266,7 +271,7 @@ public class Type {
     }
 
     public String toString() {
-        return "type[" + id + ", " + alts.toString() + ",\n" + fields.toString() + "]";
+        return "type[" + id + ",\n\t" + alts.toString() + ",\n\t" + fields.toString() + "]\n\tfrom module "+moduleName;
     }
 
     public int getAltArity(Alternative alt) {
@@ -279,4 +284,5 @@ public class Type {
 
         return arity;
     }
+    
 }

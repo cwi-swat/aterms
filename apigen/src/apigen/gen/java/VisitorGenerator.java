@@ -6,24 +6,23 @@ import apigen.adt.ADT;
 import apigen.adt.Alternative;
 import apigen.adt.ListType;
 import apigen.adt.Type;
+import apigen.adt.api.types.Module;
 import apigen.gen.GenerationParameters;
 
 public class VisitorGenerator extends JavaGenerator {
     private static final String CLASS_NAME = "Visitor";
+    private Module module;
 
     private ADT adt;
 
-    public VisitorGenerator(ADT adt, JavaGenerationParameters params) {
+    public VisitorGenerator(ADT adt, JavaGenerationParameters params, Module module) {
         super(params);
         this.adt = adt;
+        this.module = module;
     }
 
     public String getClassName() {
-        return className();
-    }
-
-    public static String className() {
-        return CLASS_NAME;
+        return module.getModulename().getName() + CLASS_NAME;
     }
 
     protected void generate() {

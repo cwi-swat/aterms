@@ -22,7 +22,7 @@ public class AlternativeGenerator extends JavaGenerator {
         this.type = type;
         this.alt = alt;
         this.className = buildClassName(alt.getId());
-        this.superClassName = TypeGenerator.qualifiedClassName(params, type);
+        this.superClassName = new TypeGenerator(params, type).qualifiedClassName(params, type);
     }
 
     public String getClassName() {
@@ -41,7 +41,7 @@ public class AlternativeGenerator extends JavaGenerator {
             buf.append('.');
         }
 
-        buf.append(params.getApiName().toLowerCase());
+        buf.append(params.getApiExtName(type).toLowerCase());
         buf.append('.');
         buf.append(packageName(type));
         buf.append('.');
@@ -123,7 +123,7 @@ public class AlternativeGenerator extends JavaGenerator {
             "  public "
                 + className
                 + "("
-                + FactoryGenerator.qualifiedClassName(params)
+                + FactoryGenerator.qualifiedClassName(params,type.getModuleName())
                 + " factory) {");
         println("    super(factory);");
         println("  }");
@@ -206,7 +206,7 @@ public class AlternativeGenerator extends JavaGenerator {
 
     private String buildGetFactoryMethodCall() {
         GenerationParameters params = getGenerationParameters();
-        return AbstractTypeGenerator.getFactoryMethodName(params) + "()";
+        return AbstractTypeGenerator.getFactoryMethodName(params,type.getModuleName()) + "()";
     }
 
     private void genAltToTerm() {
@@ -285,7 +285,7 @@ public class AlternativeGenerator extends JavaGenerator {
     }
 
     private String buildFactoryGetter() {
-        return AbstractTypeGenerator.getFactoryMethodName(getGenerationParameters())
+        return AbstractTypeGenerator.getFactoryMethodName(getGenerationParameters(),type.getModuleName())
             + "()";
     }
 
@@ -313,7 +313,7 @@ public class AlternativeGenerator extends JavaGenerator {
             println("   return getArgument(" + fieldIndex + ");");
         } else if (fieldType.equals("chars")) {
             JavaGenerationParameters params = getJavaGenerationParameters();
-            String factoryClass = FactoryGenerator.qualifiedClassName(params);
+            String factoryClass = FactoryGenerator.qualifiedClassName(params,type.getModuleName());
             println(
                 "   return "
                     + factoryClass
@@ -449,7 +449,7 @@ public class AlternativeGenerator extends JavaGenerator {
         GenerationParameters params = getGenerationParameters();
         String altClassName = className(alt);
         println("  public shared.SharedObject duplicate() {");
-        String getFactoryMethodName = AbstractTypeGenerator.getFactoryMethodName(params);
+        String getFactoryMethodName = AbstractTypeGenerator.getFactoryMethodName(params,type.getModuleName());
         println(
             "    "
                 + altClassName
@@ -508,7 +508,7 @@ public class AlternativeGenerator extends JavaGenerator {
 
     public String getPackageName() {
         StringBuffer buf = new StringBuffer();
-        buf.append(getGenerationParameters().getApiName());
+        buf.append(getGenerationParameters().getApiExtName(type));
         buf.append('.');
         buf.append(TypeGenerator.packageName());
         buf.append('.');

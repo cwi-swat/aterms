@@ -20,14 +20,14 @@ public class TypeGenerator extends JavaGenerator {
     }
 
     public String getPackageName() {
-        String apiName = getGenerationParameters().getApiName();
+        String apiName = getGenerationParameters().getApiExtName(type);
         return (apiName + '.' + packageName()).toLowerCase();
     }
 
     public String getQualifiedClassName() {
         return qualifiedClassName(getJavaGenerationParameters(), type);
     }
-
+    
     public static String qualifiedClassName(
         JavaGenerationParameters params,
         String type) {
@@ -41,7 +41,8 @@ public class TypeGenerator extends JavaGenerator {
             buf.append(pkg);
             buf.append('.');
         }
-        buf.append(params.getApiName().toLowerCase());
+        String extName = params.getApiExtName(getConverter(),type);
+        buf.append(extName.toLowerCase());
         buf.append('.');
         buf.append(packageName());
         buf.append('.');
@@ -49,7 +50,7 @@ public class TypeGenerator extends JavaGenerator {
         return buf.toString();
     }
 
-    public static String qualifiedClassName(JavaGenerationParameters params, Type type) {
+    public String qualifiedClassName(JavaGenerationParameters params, Type type) {
         return qualifiedClassName(params, type.getId());
     }
 
@@ -81,7 +82,7 @@ public class TypeGenerator extends JavaGenerator {
         JavaGenerationParameters params = getJavaGenerationParameters();
         String classImplName = className(type);
         String className = TypeGenerator.className(type.getId());
-        String superClassName = AbstractTypeGenerator.qualifiedClassName(params);
+        String superClassName = AbstractTypeGenerator.qualifiedClassName(params,type.getModuleName());
 
         println(
             "abstract public class "
@@ -118,7 +119,7 @@ public class TypeGenerator extends JavaGenerator {
 
     protected void genConstructor(String classImplName) {
         String factoryName =
-            FactoryGenerator.qualifiedClassName(getJavaGenerationParameters());
+            FactoryGenerator.qualifiedClassName(getJavaGenerationParameters(),type.getModuleName());
         println("  public " + classImplName + "(" + factoryName + " factory) {");
         println("     super(factory);");
         println("  }");
@@ -151,7 +152,7 @@ public class TypeGenerator extends JavaGenerator {
         String className = TypeGenerator.className(type.getId());
         String fieldName = StringConversions.makeCapitalizedIdentifier(field.getId());
         String fieldId = getFieldId(field.getId());
-        String fieldTypeId = TypeGenerator.qualifiedClassName(params, field.getType());
+        String fieldTypeId = qualifiedClassName(params, field.getType());
 
         // getter
         println("  public " + fieldTypeId + " get" + fieldName + "() {");

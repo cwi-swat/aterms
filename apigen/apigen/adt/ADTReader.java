@@ -5,11 +5,11 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Iterator;
 
-import apigen.adt.api.ADTFactory;
-import apigen.adt.api.Entries;
+import apigen.adt.api.Factory;
+import apigen.adt.api.types.Modules;
 import apigen.gen.GenerationParameters;
-import aterm.ATermList;
 import aterm.ParseError;
+import aterm.pure.PureFactory;
 
 public class ADTReader {
 
@@ -17,15 +17,30 @@ public class ADTReader {
 		Iterator iter = params.getInputFiles().iterator();
 		String fileName = "";
 		try {
-			ADTFactory factory = new ADTFactory();
-			ATermList all = factory.getEmpty();
+			Factory factory = new Factory(new PureFactory());
+			Modules all = factory.makeModules();
+			//Entries all = factory.makeEntries();
 			while (iter.hasNext()) {
 				fileName = (String) iter.next();
 				FileInputStream fis = new FileInputStream(fileName);
-				all = all.concat((ATermList) factory.readFromFile(fis));
+				try {
+					all = all.concat(factory.ModulesFromFile(fis));
+				} catch (IllegalArgumentException ex) {
+					fis.close();
+          if (params.getApiName() == null) {
+            throw new IllegalArgumentException("No API name specified");
+          }
+          fis = new FileInputStream(fileName);
+					
+          all = factory.makeModules(
+                                    factory.makeModule_Modulentry(
+									factory.makeModuleName_Name(""),
+									factory.makeImports(),
+									factory.EntriesFromFile(fis)));
+				
+				}
 			}
-			Entries entries = factory.EntriesFromTerm(all);
-			return new ADT(entries);
+			return ADT.initialize(all);
 		}
 		catch (FileNotFoundException e) {
 			System.err.println("Error: File not found: " + fileName);
@@ -36,10 +51,10 @@ public class ADTReader {
 		catch (ParseError e) {
 			System.err.println("Error: A parse error occurred in the ADT file:" + e);
 		}
-        catch (ADTException e) {
-            System.err.println("Error: ");
-            System.err.println(e);
-        }
+    catch (ADTException e) {
+      System.err.println("Error: ");
+      System.err.println(e);
+    }
 		
 		return null;
 	}

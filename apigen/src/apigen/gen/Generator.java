@@ -108,7 +108,7 @@ public abstract class Generator {
 		this.stream = stream;
 	}
 
-	public void setDirectory(String directory) {
+	public final void setDirectory(String directory) {
 		this.directory = directory;
 	}
 

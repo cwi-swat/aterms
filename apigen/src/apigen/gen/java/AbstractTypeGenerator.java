@@ -4,21 +4,24 @@ import java.util.Iterator;
 
 import apigen.adt.ADT;
 import apigen.adt.Type;
+import apigen.adt.api.types.Module;
 import apigen.gen.GenerationParameters;
 import apigen.gen.StringConversions;
+import apigen.gen.java.FactoryGenerator;
 
 public class AbstractTypeGenerator extends JavaGenerator {
     private boolean visitable;
     private String apiName;
     private String factoryClassName;
+    private Module module;
     private ADT adt;
 
-    public AbstractTypeGenerator(ADT adt, JavaGenerationParameters params) {
+    public AbstractTypeGenerator(ADT adt, JavaGenerationParameters params, Module module) {
         super(params);
         this.adt = adt;
-        this.apiName = params.getApiName();
-        this.factoryClassName =
-            FactoryGenerator.qualifiedClassName(getJavaGenerationParameters());
+        this.apiName = params.getApiExtName(module);
+        this.module = module;
+        this.factoryClassName = FactoryGenerator.qualifiedClassName(getJavaGenerationParameters(), module.getModulename().getName());
         this.visitable = params.isVisitable();
     }
 
@@ -26,11 +29,19 @@ public class AbstractTypeGenerator extends JavaGenerator {
         return className();
     }
 
-    public static String className() {
-        return "AbstractType";
+    public String className() {
+    	return AbstractTypeGenerator.className(module.getModulename().getName());
+    }
+    
+    public static String className(String moduleName) {
+        return moduleName + "AbstractType";
     }
 
-    public static String qualifiedClassName(JavaGenerationParameters params) {
+    public String qualifiedClassName(JavaGenerationParameters params) {
+    	return AbstractTypeGenerator.qualifiedClassName(params,module.getModulename().getName());
+    }
+    
+    public static String qualifiedClassName(JavaGenerationParameters params, String moduleName) {
         StringBuffer buf = new StringBuffer();
         String pkg = params.getPackageName();
 
@@ -38,9 +49,9 @@ public class AbstractTypeGenerator extends JavaGenerator {
             buf.append(pkg);
             buf.append('.');
         }
-        buf.append(params.getApiName().toLowerCase());
+        buf.append(params.getApiExtName(moduleName).toLowerCase());
         buf.append('.');
-        buf.append(className());
+        buf.append(AbstractTypeGenerator.className(moduleName));
         return buf.toString();
     }
 
@@ -102,7 +113,7 @@ public class AbstractTypeGenerator extends JavaGenerator {
     private void genGetFactoryMethod() {
         GenerationParameters params = getGenerationParameters();
         println(
-            "  public " + factoryClassName + ' ' + getFactoryMethodName(params) + "() {");
+            "  public " + factoryClassName + ' ' + getFactoryMethodName(params,module.getModulename().getName()) + "() {");
         println("    return abstractTypeFactory;");
         println("  }");
         println();
@@ -160,8 +171,11 @@ public class AbstractTypeGenerator extends JavaGenerator {
         return getClassName();
     }
 
-    public static String getFactoryMethodName(GenerationParameters params) {
-        String apiName = StringConversions.capitalize(params.getApiName());
-        return "get" + apiName + FactoryGenerator.className();
+    public static String getFactoryMethodName(GenerationParameters params, String moduleName) {
+        String apiName = params.getApiName();
+        if (!apiName.equals("")) {
+            apiName = StringConversions.capitalize(params.getApiName());
+        }
+        return "get" + apiName + FactoryGenerator.className(moduleName);
     }
 }

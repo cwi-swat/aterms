@@ -9,7 +9,8 @@ import java.util.List;
 
 import apigen.adt.ADT;
 import apigen.adt.ADTReader;
-import apigen.adt.api.ADTFactory;
+import apigen.adt.api.Factory;
+import aterm.pure.PureFactory;
 
 public class Main {
 	public final static void main(String[] arguments) {
@@ -55,10 +56,10 @@ public class Main {
 	}
 
 	private static void generateAPI(CGenerationParameters params, ADT adt) {
-		ADTFactory factory = new ADTFactory();
+		Factory factory = new Factory(new PureFactory());
 		APIGenerator apigen = new APIGenerator(params, adt);
 		apigen.run();
-		new CDictionaryGenerator(adt, params, factory, apigen.getAFunRegister()).run();
+		new CDictionaryGenerator(adt, params, factory.getPureFactory(), apigen.getAFunRegister()).run();
 		try {
 			PrintStream out = new PrintStream(new FileOutputStream("apigen.env"));
 			out.println("APINAME=" + params.getApiName());

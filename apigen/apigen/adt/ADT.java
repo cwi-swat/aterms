@@ -1,35 +1,65 @@
 package apigen.adt;
 
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Map;
+import java.util.Set;
 
-import apigen.adt.api.Entries;
-import apigen.adt.api.Entry;
-import apigen.adt.api.Separators;
+import apigen.adt.api.Factory;
+import apigen.adt.api.types.Entries;
+import apigen.adt.api.types.Entry;
+import apigen.adt.api.types.Imports;
+import apigen.adt.api.types.Module;
+import apigen.adt.api.types.Modules;
+import apigen.adt.api.types.Separators;
+import apigen.adt.api.types.module.Modulentry;
+import apigen.gen.TypeConverter;
 import aterm.ATerm;
 import aterm.ATermAppl;
-import aterm.ATermFactory;
 
 public class ADT {
+		List modules;
     List types;
     List bottomTypes;
-    ATermFactory factory;
+    Map modulesTypes;
+    Factory factory;
+    private static ADT instance;
+    
+    public static ADT getInstance() {
+    	if(instance == null) {
+    		throw new RuntimeException("ADT.getInstance called before initialize");
+    	} 
+    	return instance;
+    }
+    
+    private ADT(Modules adt) throws ADTException {
+    	types = new LinkedList();
+      modules = new LinkedList();
+      modulesTypes = new HashMap();
+      factory = adt.getApiFactory();
 
-    public ADT(Entries adt) throws ADTException {
-        types = new LinkedList();
+      List entries = new LinkedList();
 
-        factory = (ATermFactory) adt.getADTFactory();
-
-        List entries = new LinkedList();
-
-        while (!adt.isEmpty()) {
-            entries.add(adt.getHead());
-            adt = adt.getTail();
-        }
-
-        while (!entries.isEmpty()) {
+      Modulentry currentModule;
+      String moduleName;
+      while (!adt.isEmpty()) { //For each module
+      		List listModuleType = new LinkedList();
+      		currentModule = (Modulentry)adt.getHead();
+      		moduleName = currentModule.getModulename().getName();
+      		//System.out.println("Processing module "+moduleName);
+      		modules.add(currentModule);
+      		Entries currentEntries = currentModule.getEntries();
+      		while(!currentEntries.isEmpty()) {
+      			entries.add(currentEntries.getHead());
+      			currentEntries = currentEntries.getTail();
+      		}
+      		
+      		
+      		while (!entries.isEmpty()) { //For each entry in the module
             List alts = new LinkedList();
             ListIterator iter = entries.listIterator();
             Entry first = (Entry) iter.next();
@@ -53,13 +83,43 @@ public class ADT {
                 }
             }
 
-            processAlternatives(typeId.toString(), alts);
+            listModuleType.add(processAlternatives(typeId.toString(), moduleName, alts));
         }
+      	modulesTypes.put(moduleName,listModuleType);
+      		
+        adt = adt.getTail();
+      }
+      
+      computeBottomTypes();
+      analyseModuleList();
+      
+      /*System.out.println("Computed Types");
+      Iterator iter = typeIterator();
+      while(iter.hasNext()) {
+      	System.out.println(iter.next());
+      }
+      System.out.println("Computed BottomTypes");
+      iter = bottomTypeIterator();
+      while(iter.hasNext()) {
+      	System.out.println(iter.next());
+      }*/
 
-        computeBottomTypes();
+    }
+    
+    public static ADT initialize(Modules adt) throws ADTException {
+    	instance = new ADT(adt);
+    	return instance;
     }
 
-    private void computeBottomTypes() {
+    /**
+	 * Analyse the list of module to see whether there are no cycles and module with same names
+	 */
+    private void analyseModuleList() {
+		
+		
+    }
+
+	  private void computeBottomTypes() {
         bottomTypes = new LinkedList();
         Iterator types = typeIterator();
 
@@ -91,7 +151,7 @@ public class ADT {
         }
     }
 
-    private void processAlternatives(String typeId, List alts) {
+    private Type processAlternatives(String typeId, String moduleName, List alts) {
         Entry first = (Entry) alts.get(0);
 
         if (first.isList() || first.isSeparatedList()) {
@@ -100,32 +160,34 @@ public class ADT {
             }
 
             if (first.isSeparatedList()) {
-                processSeparatedList(typeId, first);
+                return processSeparatedList(typeId, moduleName, first);
             } else {
-                processList(typeId, first);
+                return processList(typeId, moduleName, first);
             }
         } else {
-            processConstructors(typeId, alts);
+            return processConstructors(typeId, moduleName, alts);
         }
     }
 
-    private void processSeparatedList(String typeId, Entry entry) {
+    private Type processSeparatedList(String typeId, String moduleName, Entry entry) {
         String elementType = ((ATermAppl) entry.getElemSort()).getAFun().getName();
         Separators separators = entry.getSeparators();
-        SeparatedListType type = new SeparatedListType(typeId, elementType, separators, factory);
+        SeparatedListType type = new SeparatedListType(typeId, moduleName, elementType, separators, factory);
         type.addAlternatives();
         types.add(type);
+        return type;
     }
 
-    private void processList(String typeId, Entry first) {
+    private Type processList(String typeId, String moduleName, Entry first) {
         String elementType = ((ATermAppl) first.getElemSort()).getAFun().getName();
-        ListType type = new ListType(typeId, elementType, factory);
+        ListType type = new ListType(typeId, moduleName, elementType, factory);
         type.addAlternatives();
         types.add(type);
+        return type;
     }
 
-    private void processConstructors(String typeId, List alts) {
-        Type type = new Type(typeId);
+    private Type processConstructors(String typeId, String moduleName, List alts) {
+        Type type = new Type(typeId, moduleName);
         ListIterator iter = alts.listIterator();
 
         while (iter.hasNext()) {
@@ -137,13 +199,14 @@ public class ADT {
 
                 Alternative alt = new Alternative(altId, pattern);
 
-		addAlternative(typeId, type, altId, alt);
+                addAlternative(typeId, type, altId, alt);
             } else {
                 throw new RuntimeException("Unexpected alternative");
             }
         }
 
         types.add(type);
+        return type;
     }
 
     private void addAlternative(
@@ -163,7 +226,72 @@ public class ADT {
         return types.iterator();
     }
 
+    public Iterator typeIterator(Module module) {
+    	return ((List)modulesTypes.get(module.getModulename().getName())).iterator();
+    }
+
+    public Iterator typeIterator(String moduleName) {
+    	return ((List)modulesTypes.get(moduleName)).iterator();
+    }
+
     public Iterator bottomTypeIterator() {
         return bottomTypes.iterator();
     }
+    
+    public Iterator moduleIterator() {
+      return modules.iterator();
+    }
+    
+    public String getModuleName(TypeConverter conv, String typename) {
+    		String modulename= "";
+    		System.out.println("Test : "+ modulesTypes);
+    		if (conv.isReserved(typename)) {
+    			return modulename;
+    		}
+    		Iterator it = typeIterator();
+    		while (it.hasNext()) {
+    			Type current = (Type) it.next();
+    			if (current.getId().equals(typename)) {
+    				return current.getModuleName();
+    			}
+    		}
+    		it = typeIterator();
+    		while (it.hasNext()) {
+    			Type current = (Type) it.next();
+    			Iterator altit = current.alternativeIterator();
+    			while (altit.hasNext()) {
+    			    Alternative alt = (Alternative) altit.next();
+    			    	if (alt.getId().equals(typename)) {
+    				return current.getModuleName();
+    			}
+    			}
+    		}
+    		throw new RuntimeException("The type " + typename + " is unknown");
+    }
+    
+    // Warning: if there are cycle, tchou tchou TODO
+    public Set getImportsClosureForModule(String moduleName) {
+    	Set result = new HashSet();
+    	Iterator modulesIt = moduleIterator();
+    	
+    //	System.out.println("getImportsClosureForModule for "+moduleName);
+    	
+    	while(modulesIt.hasNext()) {
+    		Module currentModule = (Module)modulesIt.next();
+    		String currentModuleName = currentModule.getModulename().getName();
+    		if(moduleName.equals(currentModuleName)) {
+    			Imports imported = currentModule.getImports();
+    			//System.out.println(currentModuleName+" has imports:"+imported);
+    			result.add(currentModuleName);
+    			//System.out.println("getImportsClosureForModule adding "+currentModuleName);
+    			while(!imported.isEmpty()) {
+    				result.addAll(getImportsClosureForModule(imported.getHead().getName()));
+    				imported = imported.getTail();
+    			}
+    			break;
+    		}
+    	}
+    	return result;
+    }
+    
 }

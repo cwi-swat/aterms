@@ -14,6 +14,7 @@ import apigen.adt.Alternative;
 import apigen.adt.ListType;
 import apigen.adt.SeparatedListType;
 import apigen.adt.Type;
+import apigen.adt.api.types.Module;
 import apigen.gen.GenerationObserver;
 import apigen.gen.Generator;
 import apigen.gen.TypeConverter;
@@ -21,7 +22,7 @@ import apigen.gen.TypeConverter;
 public class Main {
     public static void main(String[] arguments) {
         JavaGenerationParameters params = buildDefaultParameters();
-
+        ADT adt;
         List args = new LinkedList(Arrays.asList(arguments));
         if (args.size() == 0) {
             usage(params);
@@ -39,8 +40,16 @@ public class Main {
             usage(params);
             return;
         }
+        try {
+          adt = ADTReader.readADT(params);
+        } catch (IllegalArgumentException e) {
+            System.err.println(e.getMessage());
+            usage(params);
+            return;
+        }
+        
 
-        generateAPI(ADTReader.readADT(params), params);
+        generateAPI(adt, params);
     }
 
     private static JavaGenerationParameters buildDefaultParameters() {
@@ -60,19 +69,19 @@ public class Main {
     public static void generateAPI(ADT adt, JavaGenerationParameters params) {
         GeneratedJavaFileCollector l = new GeneratedJavaFileCollector();
 
-        run(new FactoryGenerator(adt, params), l);
-        run(new AbstractTypeGenerator(adt, params), l);
+        generateFactories(adt,params,l);
+        generateAbstractTypes(adt,params,l);
 
         if (params.isVisitable()) {
-            run(new VisitorGenerator(adt, params), l);
-            run(new ForwardGenerator(adt, params), l);
+            generateVisitors(adt, params, l);
+            generateForward(adt, params, l);
         }
 
         generateTypeClasses(adt, params, l);
         showGeneratedFiles(params, l.getGeneratedFiles());
     }
 
-    private static void showGeneratedFiles(
+	private static void showGeneratedFiles(
         JavaGenerationParameters params,
         List generatedFiles) {
         StringBuffer buf = new StringBuffer();
@@ -88,7 +97,7 @@ public class Main {
         if (params.isGenerateJar()) {
         	try {
             PrintStream out = new PrintStream(new FileOutputStream("apigen.env"));
-            out.println("APINAME=" + params.getApiName());
+            //out.println("APINAME=" + params.getApiName());
             out.println("VERSION=" + params.getVersion());
             out.println("DIRECTORY=" + params.getOutputDirectory());
             out.println("FILES=\"" + buf.toString() + '"');
@@ -104,6 +113,28 @@ public class Main {
         generator.run();
     }
 
+    private static void generateFactories(
+    		ADT adt,
+				JavaGenerationParameters params,
+				GenerationObserver observer) {
+    	Iterator moduleIterator = adt.moduleIterator();
+    	while(moduleIterator.hasNext()) {
+    		Module module = (Module) moduleIterator.next();
+    		run(new FactoryGenerator(adt, params, module), observer);
+    	}	
+    }
+    
+    private static void generateAbstractTypes(
+    		ADT adt,
+				JavaGenerationParameters params,
+				GenerationObserver observer) {
+    	Iterator moduleIterator = adt.moduleIterator();
+    	while(moduleIterator.hasNext()) {
+    		Module module = (Module) moduleIterator.next();
+    		run(new AbstractTypeGenerator(adt, params, module), observer);
+    	}	
+    }
+ 
     private static void generateTypeClasses(
         ADT adt,
         JavaGenerationParameters params,
@@ -139,4 +170,26 @@ public class Main {
             run(new AlternativeGenerator(params, type, alt), l);
         }
     }
+ 
+    private static void generateVisitors(
+            ADT adt,
+            JavaGenerationParameters params,
+            GenerationObserver l) {
+    	Iterator moduleIterator = adt.moduleIterator();
+    	while(moduleIterator.hasNext()) {
+    		Module module = (Module) moduleIterator.next();
+    		run(new VisitorGenerator(adt, params, module), l);
+    	}	
+  }
+
+    private static void generateForward(
+            ADT adt,
+            JavaGenerationParameters params,
+            GenerationObserver l) {
+    	Iterator moduleIterator = adt.moduleIterator();
+    	while(moduleIterator.hasNext()) {
+    		Module module = (Module) moduleIterator.next();
+    		run(new ForwardGenerator(adt, params, module), l);
+    	}	
+  }
 }
