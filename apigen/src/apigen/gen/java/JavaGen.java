@@ -137,7 +137,8 @@ extends Generator
 
   private void genFactoryClassFile(ADT api) throws IOException {
     class_name = capitalize(buildId(pkg)) + "Factory";
-    stream = createStream(class_name);
+    
+    createClassStream(class_name);
     
     genPackageDecl();
     
@@ -197,21 +198,19 @@ extends Generator
     throws IOException
   {
     String class_name = buildClassName(type);    
-    stream = createStream(class_name);
+    createClassStream(class_name);
     PrintStream tmp;
     
-    info("generating " + path);
+    info("generating " + class_name);
 
     genPackageDecl();
     genImports();    
     println();
     
-    genTypeClass(type);    
-    tmp = stream;
-    genAlternativesClassesFiles(type);
-    stream = tmp;
-    
+    genTypeClass(type); 
     stream.close();
+       
+    genAlternativesClassesFiles(type);
   }
     
 	private void genPackageDecl() {
@@ -233,9 +232,9 @@ extends Generator
   private void genAlternativeClassFile(Type type, Alternative alt)
   {
     String class_name = buildAltClassName(type, alt);
-    stream = createStream(class_name);
+    createClassStream(class_name);
     
-    info("generating " + path);
+    info("generating " + class_name);
     
     genPackageDecl();
     genImports();
@@ -245,19 +244,12 @@ extends Generator
     stream.close();
   }
 
-	private PrintStream createStream(String class_name) {
-		char sep = File.separatorChar;
-		path = basedir + sep + pkg.replace('.', sep) + sep + class_name + ".java";
-    
-    try {
-  		return new PrintStream(new FileOutputStream(path));
-    }
-    catch (FileNotFoundException exc) {
-      System.err.println("fatal error: Failed to open " + path + " for writing.");
-      System.exit(1);
-      return null;
-    }
-	}
+  private void createClassStream(String class_name) {
+    char sep = File.separatorChar;
+    createStream(basedir + sep + pkg.replace('.', sep) + sep + class_name + ".java");
+  }
+  
+	
 
 	private void genTypeClass(Type type) {
     String class_name = buildClassName(type);

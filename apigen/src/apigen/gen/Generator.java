@@ -1,5 +1,7 @@
 package apigen.gen;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.Map;
@@ -48,7 +50,7 @@ public abstract class Generator {
 			"'SingleQuote",
 			};
 
-
+ 
 	protected void initializeConstants(String[][] RESERVED_TYPES) {
 		specialChars = new HashMap();
 		reservedTypes = new HashMap();
@@ -180,5 +182,16 @@ public abstract class Generator {
 	}
 
 	//}}}
+  
+  protected void createStream(String file) 
+  {  
+    try {
+      stream = new PrintStream(new FileOutputStream(file));
+    }
+    catch (FileNotFoundException exc) {
+      System.err.println("fatal error: Failed to open " + file + " for writing.");
+      System.exit(1);
+    }
+  }
 
 }

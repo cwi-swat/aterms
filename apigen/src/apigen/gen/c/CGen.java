@@ -124,12 +124,8 @@ extends Generator {
 
 	//{{{ public CGen(InputStream input, String output, String prefix, String prologue)
 
-	public CGen(
-		InputStream input,
-		String output,
-		String prefix,
-		String prologue,
-		boolean make_term_compatibility)
+	public CGen(InputStream input,String output,String prefix,String prologue,
+              boolean make_term_compatibility)
 		throws IOException {
 		this.input = input;
 		this.output = output;
