@@ -1,9 +1,9 @@
 .SUFFIXES: .grap .pic .ltx .dvi .bbl .ind .idx .xwd .ps .tex .fig
 
-%.ps: %.dvi
-	dvips -o $@ $<
+%.bbl: %.ltx
+	bibtex $*
 
-.ltx.dvi:
+%.dvi: %.ltx
 	TEXINPUTS=$$TEXINPUTS:${srcdir} ;\
 	export TEXINPUTS ;\
 	latex $< ;\
@@ -14,21 +14,20 @@
 		latex $< ;\
 	done
 
-.ltx.bbl:
-	bibtex $*
+%.eps: %.fig
+	fig2dev -Leps $< $@
 
-.pic.tex:
-	gpic -t $*.pic > $*.tex
-
-.grap.pic:
-	grap $*.grap > $*.pic
-	remove-lfs $*.pic
-
-.idx.ind:
+%.ind: %.idx
 	makeindex $*
 
-.xwd.ps:
+%.ps: %.dvi
+	dvips -o $@ $<
+
+%.ps: %.fig
+	fig2dev -Lps $< $@
+
+%.ps: %.xwd
 	xbm2ps -s 0.55x0.55 $*.xwd > $*.ps
 
-.fig.ps:
-	fig2dev -Lps $< $@
+%.tex: %.pic
+	gpic -t $*.pic > $*.tex
