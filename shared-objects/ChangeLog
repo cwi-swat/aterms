@@ -1,8 +1,10 @@
+2003-05-15    <jurgenv@cwi.nl>
+ * Changed getId() to getUniqueIdentifier() and also for set.
+ * Bumped to 1.3beta
+
 2003-05-15    <Julien.Guyon@loria.fr>
  * Introduce new interface SharedObjectWithID (With get/setId methods)
  * Modify factory so that a unique timestamp is assign to each created ATerm
- * Changed getId() to getUniqueIdentifier() and also for set.
- * Bumped to 1.3beta
 
 2003-04-22    <jurgenv@cwi.nl>
   * Release 1.2
