@@ -380,6 +380,25 @@ ATbool ATmatch(ATerm t, const char *pat, ...)
 }
 
 /*}}}  */
+/*{{{  ATbool ATmatchTerm(ATerm t, ATerm pat, ...) */
+
+/**
+  * Match a term against a pattern using a list of arguments.
+  */
+
+ATbool ATmatchTerm(ATerm t, ATerm pat, ...)
+{
+  ATbool result;
+  va_list args;
+
+  va_start(args, pat);
+  result = ATvmatchTerm(t, pat, args);
+  va_end(args);
+
+  return result;
+}
+
+/*}}}  */
 /*{{{  ATbool ATvmatchTerm(ATerm t, ATerm pat, va_list args) */
 
 /**
