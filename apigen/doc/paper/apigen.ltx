@@ -103,7 +103,7 @@ of \aterms\ (Section~\ref{sec:aterm-syntax}), and \asfix\
 (Section~\ref{sec:asfix-syntax}). Section~\ref{sec:aterm-access}
 explains how \aterm-based data types are typically accessed
 in tools and applications and we show how this approach causes
-development and maintenance issues. We then describe the actual
+development and maintenance problems. We then describe the actual
 generation scheme from \sdf\ to an intermediate representation
 (Section~\ref{sec:syntax-to-api}) and the subsequent generation
 into the target language (Section~\ref{sec:adt-to-c}). The results
@@ -275,9 +275,13 @@ The specification formalism \asdf~\cite{BHK89,HHKR92} is a combination of
 the algebraic specification formalism \asf\ and the syntax definition
 formalism \sdf. An overview can be found in~\cite{DHK96}. As an
 illustration, Figure~\ref{fig:bool-example} presents the definition of
-the Boolean data type in \asdf. \asdf\ specifications consist of modules,
-where each module has an \sdf-part (defining lexical and context-free
-syntax) and an \asf-part (defining equations).
+the Boolean data type in \asdf\footnote{Note how in \sdf\ left-hand
+and right-hand sides of a production have opposite meaning compared
+to BNF notation. In \sdf\ the elements of the LHS produce the RHS, in
+BNF notation the LHS is produced by the elements of the RHS.}.  \asdf\
+specifications consist of modules, where each module has an \sdf-part
+(defining lexical and context-free syntax) and an \asf-part (defining
+equations).
 
 \subsubsection{\sdf}
 
@@ -309,8 +313,8 @@ when defining equations, thus making the syntax used in equations
 \begin{snippet}
 \hrulefill
 \verbatiminput{bool.example}
-\caption{\label{fig:bool-example} \asdf\ specification of the Booleans}
-\hrulefill
+\caption{\label{fig:bool-example} \asdf\ specification of the
+Booleans}\hrulefill
 \end{snippet}
 \end{figure}
 
@@ -1518,24 +1522,23 @@ is already comparable to its manually written predecessor.
 \section{Discussion}
 \label{sec:discussion}
 
-Although this paper shows how API generation was used in a very specific
-context (generating \aterm\ manipulation code from an \sdf\ specification),
-many of the issues encountered are not \aterm\ or \sdf\ specific at all.
-In fact any generic data exchange formalism potentially suffers from the
-problem that generic manipulation functions are inheritly type unsafe.
-For instance if we look at \xml, DOM based libraries for 
-manipulating \xml\ in a generic way suffer from many of the the same problems
-as the \aterm\ library. Recent techniques like \xml\ data binding 
-(discussed in Section~\cite{sec:related})
-take the same approach as we do in this paper by generating accessor
-and manipulation functions based on a signature description like
-\xml\ schemas or DTDs.
+Although this paper shows how API generation was used in a very
+specific context (generating \aterm\ manipulation code from an \sdf\
+specification), many of the issues encountered are not \aterm\ or
+\sdf\ specific at all. In fact any generic data exchange formalism
+potentially suffers from the problem that generic manipulation functions
+are inheritly type unsafe.  For instance if we look at \xml, DOM based
+libraries for manipulating \xml\ in a generic way suffer from many of the
+the same problems as the \aterm\ library. Recent techniques like \xml\
+data binding (discussed in Section~\ref{sec:related}) take the same
+approach as we do in this paper by generating accessor and manipulation
+functions based on a signature description like \xml\ schemas or DTDs.
 
-In retrospect, one might ask why on earth we began developing code using
-direct \aterm\ manipulation in the first place. The answer lies partially
-in the power and attractiveness of working with \aterms. Because it is
-so utterly simple to write a tool that uses simple \aterm\ patterns,
-several developers quickly started writing their own applications. Later,
+In retrospect, one might ask why we ever developed code using direct
+\aterm\ manipulations in the first place. The answer lies partially
+in the power and attractiveness of working with \aterms. Because it
+is so easy to write a tool that uses simple \aterm\ patterns, several
+developers quickly started writing their own applications. Later,
 when some of the tools demonstrated a need for speed, parts of the now
 grown-but-not-restructured tools were rewritten to use the more efficient
 level two interface instead of the matching interface, mostly in the
@@ -1543,9 +1546,9 @@ form of ad hoc restructuring, driven by the output of the \texttt{gprof}
 profiler. When prompted to implement changes in our parse tree format,
 we realized the era of direct \aterm\ manipulation had to end, and we
 had to find a structural solution to representing data types by \aterms,
-or we would be unable to maintain our toolset. Fortunately, the road of
-generating the access library as described in this paper works like a
-charm in the \metaenv. Since the introduction of what has become known
+or we would be unable to maintain our toolset. Fortunately, the road
+of generating the access library as described in this paper works very
+well in the \metaenv. Since the introduction of what has become known
 as \textsc{apigen}, we have been able to effectuate considerable changes
 in \asfix, and we have gained the ability to experiment with the format,
 and quickly see the results working in our tools.
