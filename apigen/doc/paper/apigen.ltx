@@ -62,7 +62,7 @@
 \begin{abstract}
 \label{abstract}
 
-Using the \atlib\ to represent tree-like datastructures has become a
+Using the \atlib\ to represent tree-like data structures has become a
 popular activity, especially amongst developers of e.g. lexical scanners,
 parsers, rewrite engines and model checkers. Practical experience with the
 \atlib\ in the \metaenv\ has shown that the development and maintenance
@@ -70,9 +70,9 @@ of tools that access \aterms\ using handcrafted code is involved and very
 error prone. Both the \emph{make and match} paradigm and the \emph{direct
 manipulation} of \aterms\ suffer from the fact that the programmer uses
 knowledge about the underlying structure (a.k.a. the signature) of the
-\aterm\ that represents the data type being accessed. Hardwiring this
+\aterm\ that represents the data type being accessed. Hard-wiring this
 knowledge in various tools makes it difficult to maintain the tools with
-respect to changes in the datastructure.
+respect to changes in the data structure.
 
 By lifting the data definition and its mapping to an \aterm\
 representation away from the level of tool implementation, it becomes
@@ -84,7 +84,7 @@ the fact that \aterms\ are used for the implementation of the data type.
 
 This paper describes how an \api\ and its implementation can be generated
 from a syntax definition of the data type. In particular we describe
-how a grammer (in \sdf) can be used to generate a library
+how a grammar (in \sdf) can be used to generate a library
 of access functions that manipulate the parse trees of terms over this
 syntax. Application of this technique in the \metaenv\ has resulted in
 a spectacular elimination of 47\% of the handwritten code, thus greatly
@@ -115,7 +115,7 @@ Language CASL~\cite{caslsum,CoFI}, and the $\mu$CRL ToolSet for Analysing
 Algebraic Specifications~\cite{mucrl-toolset}. \aterms\ include several
 nice features: they are easy to manipulate yet very efficient; they
 come with a built-in garbage collector (in the \C\ library), and they
-have persistency support in the form of a compact, sharing preserving
+have persistence support in the form of a compact, sharing preserving
 serialization in both textual and binary representations.
 \end{sloppypar}
 
@@ -125,11 +125,11 @@ respect to changes in the parse tree format (called \asfix), and were hard
 to maintain. The reason behind this inflexibility was the fact that all
 tools used manually encoded structural knowledge about the signature
 of the data types, i.e. the location of
-data elements inside their \aterm\ representation. Hardwiring such knowledge
+data elements inside their \aterm\ representation. Hard-wiring such knowledge
 into the tools without an explicit signature definition makes it difficult,
 if not impossible, to change the \aterm\ representation of the data type. 
 
-The coding practise that uses such structural knowledge is not in any
+The coding practice that uses such structural knowledge is not in any
 way restricted to the realm of parse trees. In fact, anyone who has
 programmed with the \atlib, will probably be familiar with patterns such
 as \texttt{and(<bool>,<bool>)}. And given such a pattern, what could
@@ -162,7 +162,7 @@ in the underlying \asfix\ representation.
 This paper describes how an annotated grammar or syntax definition
 can be used to generate a library of functions that provide access to
 the parse trees of terms over this grammar. Such a library effectively
-turns a parse tree into an abstract data type, providing a typesafe and
+turns a parse tree into an abstract data type, providing a type-safe and
 systematic API to manipulate terms. In particular we describe
 how a \sdf-specification commonly found when using the \metaenv\ is
 used to collect the information into an \emph{annotated data type}
@@ -279,9 +279,9 @@ The biggest difference with our work is that the target of these systems
 is to make it easy for programmers to build components in a distributed
 setting while we focus on providing an abstraction layer on top of a
 generic data exchange format. This means that the IDL compilers generate
-code for marshalling arguments when calling remote procedures and for
-unmarshalling their return values, while in our approach we keep the data
-in the original ``marshalled'' form until it is actually used. In this
+code for marshaling arguments when calling remote procedures and for
+unmarshaling their return values, while in our approach we keep the data
+in the original ``marshaled'' form until it is actually used. In this
 sense, our approach could be characterized as lazy and the DCOM/CORBA
 approach as eager.
 
@@ -289,7 +289,7 @@ approach as eager.
 %%\item Only generate interfaces not implementations
 %%\item Targeted at distributed environments
 %%\item Well-defined mappings to specific target languages (whitepapers)
-%%\item Interface centric instead of datatype centric
+%%\item Interface centric instead of data type centric
 %%\item No sharing
 %%\item No garbage collection (in languages without GC)
 %%\item (D)COM very windows specific
@@ -311,7 +311,7 @@ and extra code to the generated classes.
 
 \begin{sloppypar}
 In general this approach is called \emph{data binding}, and several
-other initiatives in this area are currently underway, including
+other initiatives in this area are currently under way, including
 some open source initiatives~\cite{enhydra,castor} and the commercial
 initiative~\cite{breeze}. All these approaches offer tool support for
 generating \java\ code from an XML Schema. The generated code can
@@ -330,7 +330,7 @@ domain specific knowledge that can be incorporated into component
 generators~\cite{genprog}. At first glance this ``high level'' view on
 generating software components seems to be far removed from the low
 level view on source code generation we have taken in this paper. If
-we take a closer look, the two approaches are not as disjunct as one
+we take a closer look, the two approaches are not as disjoint as one
 might think. We believe any successful generic approach to generative
 programming must be based on some abstract data type definition augmented
 with domain specific knowledge. In our case, the data type definitions
@@ -373,7 +373,7 @@ to signatures in ordinary algebraic specification formalisms. However,
 syntax is not restricted to plain prefix notation but instead arbitrary
 context-free grammars can be defined. \sdf\ contains some interesting
 features that make it possible to give concise definitions of
-context-free grammers:
+context-free grammars:
 \begin{itemize}
 \item Both context-free and lexical syntax can be specified.
 \item Lexical syntax can be described using regular expressions.
@@ -382,7 +382,7 @@ non-assoc).
 \item Priority relations between productions can be specified in priority sections.
 \item Grammar specifications can be modular.
 \item Modules and sorts can be parameterized.
-\item A number of heavily used constructs are builtin including lists,
+\item A number of heavily used constructs are built-in including lists,
 separated lists, alternatives, tuples, and function application.
 \end{itemize}
 
@@ -535,7 +535,7 @@ is:
 The \texttt{prod} symbol declares this to be a grammar production. It
 has three arguments: the first is a list of sorts of the elements of
 the left-hand side of the production, the second argument is the sort
-of the righthand side, and the third argument contains the attributes
+of the right-hand side, and the third argument contains the attributes
 (e.g. left associativity) of the production.
 
 In this example, the literal (denoted by the symbol \texttt{lit})
@@ -951,12 +951,12 @@ task indeed!
 Abstracting from implementation details about the facts that there
 is such a thing as a parse tree format and that this format in turn
 is implemented using \aterms, it is easy to name several operations a
-toolbuilder would like, given a syntax definition.
+tool-builder would like, given a syntax definition.
 
 % {{{  What you want to be able to do, given an SDF definition
 
 As an example we consider the booleans again. Some of the typical things
-a toolbuilder would like to be able to do given the boolean syntax are:
+a tool-builder would like to be able to do given the boolean syntax are:
 
 \begin{itemize}
 
@@ -1031,7 +1031,7 @@ we could use \texttt{lhs}, and \texttt{rhs}, both of type \texttt{Bool}.
 Since we are solving the maintenance problem of using \aterms\ as a
 data type representation, we decided we could very well use an \aterm\
 to represent the elements of an \adt. The obvious advantage is that
-we get persistency (saving and loading of an \adt) for free, and we do
+we get persistence (saving and loading of an \adt) for free, and we do
 not need to construct a domain specific language (with its own parser
 etc.) which would introduce undesired development-time overhead. Each
 entry in the \adt\ consists of the three elements \emph{sortname},
@@ -1131,7 +1131,7 @@ what do we do when we find another syntax rule that has three, four
 or even more arguments? In syntax rules with only one non-terminal,
 we could default to using the sort name of that non-terminal. But in
 general, it is hard to come up with any kind of descriptive naming scheme.
-Keep in mind that most toolbuilders will not really be happy if they are
+Keep in mind that most tool-builders will not really be happy if they are
 confronted with access functions that have arbitrarily complex names,
 or numbered arguments.
 
@@ -1252,7 +1252,7 @@ type definition, and the declarations of the functions contained in the
 
 \heading{Opaque type definition}
 
-Defining \verb+Bool+ to be a pointer to a non-existant type (in this case
+Defining \verb+Bool+ to be a pointer to a non-existent type (in this case
 \texttt{struct \_Bool}, hides the underlying \aterm\ representation from
 the point of view of \api\ users. Instances of \texttt{Bool} can safely
 be passed around by functions, but any attempt to dereference such a
@@ -1606,7 +1606,7 @@ is already comparable to its manually written predecessor.
 
 In retrospect, one might ask why on earth we began developing code using
 direct \aterm\ manipulation in the first place. The answer lies partially
-in the power and addictiveness of working with \aterms. Because it is
+in the power and attractiveness of working with \aterms. Because it is
 so utterly simple to write a tool that uses simple \aterm\ patterns,
 several developers quickly started writing their own applications. Later,
 when some of the tools demonstrated a need for speed, parts of the now
@@ -1639,7 +1639,7 @@ function call is removed. As noted before, the cost of this efficiency
 gain is that some type-safety is lost. This is due to the fact that \C\
 macro expansion is performed by a pre-compiler, which does not have
 access to type information and thus performs no type checks on macro
-arguments.  A typical approach would be to generate typesafe functions
+arguments.  A typical approach would be to generate type-safe functions
 in the development stage, and switch to the use of generated efficient
 macros for production code. This approach is comparable to the use of
 \texttt{assert} macro's that are completely eliminated in production
@@ -1652,12 +1652,12 @@ similarity between alternatives is assembled, which could be exploited
 to generate more efficient matching and selection code than the current
 \texttt{ATmatch} call, which is rather inefficient.
 
-In a way the project described in this paper can be seen as a casestudy in
-generative programming as described in Section~\ref{sec:related}. We
-want to extend this casestudy into a more generic approach. This
+In a way the project described in this paper can be seen as a case study
+in generative programming as described in Section~\ref{sec:related}. We
+want to extend this case study into a more generic approach. This
 approach will be based on a modular generic generator that takes a
 set of abstract data definitions and generates code for them. The code
-generator must be extendable with domain specific ``modules'' to generate
+generator must be extendible with domain specific ``modules'' to generate
 extra functionality. These modules should not only be able to add extra
 functions when needed, but they should also be able to use \emph{Aspect
 Oriented Programming}\cite{aspect} to add functionality to functions
