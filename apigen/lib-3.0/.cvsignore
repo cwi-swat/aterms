@@ -1,4 +1,4 @@
+.deps
 Makefile.in
 Makefile
-*.class
-classjava.stamp
+

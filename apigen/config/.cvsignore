@@ -1,4 +1,6 @@
+apigen-config
 Makefile.in
 Makefile
 *.class
 classjava.stamp
+.deps
