@@ -52,12 +52,35 @@ public class ListTypeGenerator extends TypeGenerator {
 		genPredicates();
 		genSharedObjectInterface();
 		genGetEmptyMethod();
+		genInsertMethods();
+		genReverseMethods();
+		println("}");
+	}
 
+	private void genReverseMethods() {
+		genReverseMethod();
+		genOverrideReverseMethod();
+	}
+
+	private void genOverrideReverseMethod() {
+		println("  public aterm.ATermList reverse() {");
+		println("    return reverse" + typeName + "();");
+		println("  }");
+		println();
+	}
+
+	private void genReverseMethod() {
+		println("  public " + typeName + " reverse" + typeName + "() {");
+		println("    return " + buildFactoryGetter() + ".reverse(this);");
+		println("  }");
+		println();
+	}
+
+	private void genInsertMethods() {
 		if (!type.getElementType().equals("term")) {
 			genInsertMethod();
 		}
 		genOverrideInsertMethod();
-		println("}");
 	}
 
 	protected void genInitMethod() {

@@ -67,11 +67,11 @@ public class FactoryGenerator extends JavaGenerator {
 		genStringToChars();
 	}
 	private void genCharsToString() {
-		println("  public String " + "charsToString(aterm.ATerm arg) {");
+		println("  public static String charsToString(aterm.ATerm arg) {");
 		println("    aterm.ATermList list = (aterm.ATermList) arg;");
 		println("    StringBuffer str = new StringBuffer();");
 		println();
-		println("    for (int i = 0; !list.isEmpty(); list = list.getNext(), i++) {");
+		println("    for ( ; !list.isEmpty(); list = list.getNext()) {");
 		println("      str.append((char) ((aterm.ATermInt) list.getFirst()).getInt());");
 		println("    }");
 		println();
@@ -81,7 +81,7 @@ public class FactoryGenerator extends JavaGenerator {
 	}
 
 	private void genStringToChars() {
-		println("  public aterm.ATerm " + "stringToChars(String str) {");
+		println("  public aterm.ATerm stringToChars(String str) {");
 		println("    int len = str.length();");
 		println("    byte chars[] = str.getBytes();");
 		println("    aterm.ATermFactory factory = getPureFactory();");
@@ -198,9 +198,45 @@ public class FactoryGenerator extends JavaGenerator {
 					genMakeSingletonList(returnTypeName, methodName, paramTypeName, empty);
 					genMakeManyList(listType.getElementType(), returnTypeName, methodName, paramTypeName);
 					genMakeManyTermList(returnTypeName, methodName, proto);
+					genMakeFixedSizedList(returnTypeName, methodName, listType);
+					genReverseLists(listType, methodName);
+					//					genConcatLists(listType, methodName);
+					//					genAppendLists(listType, methodName);
 				}
 			}
 		}
+	}
+
+	private void genReverseLists(ListType type, String makeMethodName) {
+		JavaGenerationParameters params = getJavaGenerationParameters();
+		String className = TypeGenerator.qualifiedClassName(params, type);
+
+		println("  public " + className + " reverse(" + className + " arg) {");
+		println("    " + className + " reversed = " + makeMethodName + "();");
+		println("    while (!arg.isEmpty()) {");
+		println("      reversed = " + makeMethodName + "(arg.getHead(), reversed);");
+		println("      arg = arg.getTail();");
+		println("    }");
+		println("    return reversed;");
+		println("  }");
+		println();
+	}
+
+	private void genMakeFixedSizedList(String returnTypeName, String methodName, ListType type) {
+		for (int i = 2; i < 7; i++) {
+			genMakeFixedSizedList(returnTypeName, methodName, type, i);
+		}
+	}
+
+	private void genMakeFixedSizedList(String returnTypeName, String methodName, ListType type, int size) {
+		JavaGenerationParameters params = getJavaGenerationParameters();
+		String qualifiedElementName = TypeGenerator.qualifiedClassName(params, type.getElementType());
+		String formalElems = buildFormalArgumentList(qualifiedElementName, "elem", size);
+		String actualElems = buildActualArgumentList("elem", 1, size);
+		println("  public " + returnTypeName + " " + methodName + "(" + formalElems + ") {");
+		println("    return " + methodName + "(elem0, " + methodName + "(" + actualElems + "));");
+		println("  }");
+		println();
 	}
 
 	private void genMakeFixedSizedSeparatedList(String returnTypeName, String methodName, SeparatedListType type) {

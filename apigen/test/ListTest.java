@@ -146,11 +146,49 @@ public class ListTest {
 		testAppend();
 		testElementAt();
 		testMakeLists();
-
+		testReverse();
+		testMakeSeparatedLists();
 		testNineSeps();
 	}
 
+	private void testReverse() {
+		Module m[] = new Module[3];
+
+		for (int i = 0; i < m.length; i++) {
+			m[i] = factory.makeModule_Default("m" + i);
+		}
+		
+		Modules forward = factory.makeModules(m[0], m[1], m[2]);
+		Modules reverse = factory.makeModules(m[2], m[1], m[0]);
+		testAssert(forward.reverse().equals(reverse), "reverse list");
+		
+		Modules ml = reverse.reverseModules();
+		testAssert(forward.equals(ml), "typed reverse list");
+	}
+
 	private void testMakeLists() {
+		Module m[] = new Module[6];
+
+		for (int i = 0; i < m.length; i++) {
+			m[i] = factory.makeModule_Default("m" + i);
+		}
+
+		Modules list[] = new Modules[7];
+
+		list[0] = factory.makeModules();
+		list[1] = factory.makeModules(m[0]);
+		list[2] = factory.makeModules(m[0], m[1]);
+		list[3] = factory.makeModules(m[0], m[1], m[2]);
+		list[4] = factory.makeModules(m[0], m[1], m[2], m[3]);
+		list[5] = factory.makeModules(m[0], m[1], m[2], m[3], m[4]);
+		list[6] = factory.makeModules(m[0], m[1], m[2], m[3], m[4], m[5]);
+
+		for (int i = 0; i < 7; i++) {
+			testAssert(list[i].getLength() == i, "" + i + " element list");
+		}
+	}
+
+	private void testMakeSeparatedLists() {
 		Module m[] = new Module[6];
 
 		for (int i = 0; i < 6; i++) {
