@@ -121,6 +121,14 @@ static ATSet extractAssignedIds(ATerm term) {
   return topDownAccumulator(term, matchAssignedId, NULL, ATR_empty());
 }
 
+static ATerm matchNode(ATerm term) {
+  /*  ATerm id = ATgetAnnotation(term, ATmake("id"));
+  term = ATremoveAnnotations(term); 
+  return ATR_makeTuple(stat, id);*/
+  return NULL;
+}
+
+
 static ATerm makeEachNodeUnique(ATerm term) {
   return topDownTransformer(term, annotateUnique, NULL);
 }
