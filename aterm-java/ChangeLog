@@ -1,0 +1,21 @@
+2002-10-20    <pem@bach>
+
+  * aterm/pure/ATermListImpl.java: 
+    - fix a bug in match:	
+      makelist().match(<list>) should return the empty ATermList	
+
+  * aterm/ATermFactory.java: 
+  * aterm/pure/PureFactory.java: 
+    - makeAppl(AFun fun, ATermList args) has been renamed into
+      makeApplList(AFun fun, ATermList args) to avoid ambiguities
+      The semantic should not depend on the static type
+      Aterm     l1 = makeList(...)	 
+      AtermList l2 = makeList(...), with l1==l2	 
+      makeAppl(fun,l1) should be equal to makeAppl(fun,l2)	
+	
+2002-10-19    <pem@bach>
+  * aterm/pure/PureFactory.java: 
+    - modify hashAppl for reducing hashing-collisions 
+    - introduce hashApplNoCopy for avoiding copy of arrays
+    - introduce static arrays for reducing allocations
+	

@@ -16,4 +16,5 @@ AC_OUTPUT(
   aterm/pure/Makefile
   aterm/test/Makefile
   aterm/visitor/Makefile
+  test/Makefile
 )

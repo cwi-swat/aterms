@@ -33,7 +33,8 @@ public abstract class ATermImpl extends ATermVisitableImpl implements ATerm, Sha
   
   public boolean equivalent(SharedObject obj) {
     try {
-      return ((ATerm)obj).getType() == getType() && annotations.equals(annotations);
+      return ((ATerm)obj).getType() == getType()
+        && ((ATerm)obj).getAnnotations().equals(getAnnotations());
     } catch (ClassCastException e) {
       return false;
     }

@@ -10,9 +10,9 @@ import shared.SharedObjectFactory;
 
 public class PureFactory extends SharedObjectFactory implements ATermFactory {
 
-  private static int DEFAULT_TERM_TABLE_SIZE = 43117;
+  private static int DEFAULT_TERM_TABLE_SIZE = 16; // means 2^16
   private static int DEFAULT_PATTERN_CACHE_SIZE = 4321;
-
+  
   private ATermListImpl protoList;
   private ATermApplImpl protoAppl;
   private ATermIntImpl protoInt;
@@ -156,7 +156,32 @@ public class PureFactory extends SharedObjectFactory implements ATermFactory {
   static private int hashList(ATermList annos, ATerm first, ATermList next) {
     return doobs_hashFunction(new Object[] { annos, first, next });
   }
-  
+
+  private static ATerm[] array1= new ATerm[1+2];
+  private static ATerm[] array2= new ATerm[2+2];
+  private static ATerm[] array3= new ATerm[3+2];
+  private static ATerm[] array4= new ATerm[4+2];
+
+  static private int hashApplNoCopy(ATermList annos, AFun fun, ATerm[] hashArgs) {
+    hashArgs[hashArgs.length-2] = annos;
+    hashArgs[hashArgs.length-1] = fun;
+    return doobs_hashFunction(hashArgs);
+  }
+
+  static private int hashAppl(ATermList annos, AFun fun, ATerm[] args) {
+    ATerm[] hashArgs = new ATerm[args.length+2];
+    for(int i=0; i<args.length; i++) {
+      hashArgs[i] = args[i];
+    }
+    hashArgs[args.length]   = annos;
+    hashArgs[args.length+1] = fun;
+    return doobs_hashFunction(hashArgs);
+  }
+
+  public ATermAppl makeAppl(AFun fun, ATerm[] args) {
+    return makeAppl(fun, args, empty);
+  }
+
   public ATermAppl makeAppl(AFun fun, ATerm[] args, ATermList annos) {
     synchronized (protoAppl) {
       protoAppl.init(hashAppl(annos, fun, args), annos, fun, args);
@@ -164,71 +189,82 @@ public class PureFactory extends SharedObjectFactory implements ATermFactory {
     }
   }
   
-  static private int hashAppl(ATermList annos, AFun fun, ATerm[] args) {
-    Object[] hashArgs = new Object[2 + args.length];
-    hashArgs[0] = annos;
-    hashArgs[1] = fun;
-    for (int i=0; i<args.length; i++) {
-      hashArgs[2+i] = args[i];
+  private ATermAppl internMakeAppl(AFun fun, ATerm[] args) {
+    return internMakeAppl(fun, args, empty);
+  }
+
+  private ATermAppl internMakeAppl(AFun fun, ATerm[] args, ATermList annos) {
+    synchronized (protoAppl) {
+      protoAppl.initCopy(hashApplNoCopy(annos, fun, args), annos, fun, args);
+      return (ATermAppl) build(protoAppl);
     }
-//    System.arraycopy(args, 0, hashArgs, 2, args.length);
-    return doobs_hashFunction(hashArgs);
+  }
+
+  public ATermAppl makeApplList(AFun fun, ATermList list) {
+    return makeApplList(fun, list, empty);
   }
   
-  public ATermAppl makeAppl(AFun fun, ATerm[] args) {
-    return makeAppl(fun, args, empty);
-  }
-  
-  public ATermAppl makeAppl(AFun fun, ATermList args) {
-    return makeAppl(fun, args, empty);
-  }
-  
-  public ATermAppl makeAppl(AFun fun, ATermList args, ATermList annos) {
+  public ATermAppl makeApplList(AFun fun, ATermList list, ATermList annos) {
     ATerm[] arg_array;
 
-    arg_array = new ATerm[args.getLength()];
+    arg_array = new ATerm[list.getLength()+2]; // +2 for efficient hashAppl
 
     int i = 0;
-    while (!args.isEmpty()) {
-      arg_array[i++] = args.getFirst();
-      args = args.getNext();
+    while (!list.isEmpty()) {
+      arg_array[i++] = list.getFirst();
+      list = list.getNext();
     }
 
-    return makeAppl(fun, arg_array, annos);
+    return internMakeAppl(fun, arg_array, annos);
   }
 
   public ATermAppl makeAppl(AFun fun) {
-    return makeAppl(fun, new ATerm[0]);
+    return internMakeAppl(fun, new ATerm[0+2]); // +2 for efficient hashAppl
   }
 
   public ATermAppl makeAppl(AFun fun, ATerm arg) {
-    ATerm[] args = { arg };
-    return makeAppl(fun, args);
+      //ATerm[] args = { arg,null,null };
+      //return internMakeAppl(fun, args);
+    array1[0] = arg;
+    return internMakeAppl(fun, array1);
   }
 
   public ATermAppl makeAppl(AFun fun, ATerm arg1, ATerm arg2) {
-    ATerm[] args = { arg1, arg2 };
-    return makeAppl(fun, args);
+      //ATerm[] args = { arg1, arg2,null,null };
+      //return internMakeAppl(fun, args);
+    array2[0] = arg1;
+    array2[1] = arg2;
+    return internMakeAppl(fun, array2);
   }
 
   public ATermAppl makeAppl(AFun fun, ATerm arg1, ATerm arg2, ATerm arg3) {
-    ATerm[] args = { arg1, arg2, arg3 };
-    return makeAppl(fun, args);
+      //ATerm[] args = { arg1, arg2, arg3,null,null };
+      //return internMakeAppl(fun, args);
+    array3[0] = arg1;
+    array3[1] = arg2;
+    array3[2] = arg3;
+    return internMakeAppl(fun, array3);
   }
 
   public ATermAppl makeAppl(AFun fun, ATerm arg1, ATerm arg2, ATerm arg3, ATerm arg4) {
-    ATerm[] args = { arg1, arg2, arg3, arg4 };
-    return makeAppl(fun, args);
+      //ATerm[] args = { arg1, arg2, arg3, arg4,null,null };
+      //return internMakeAppl(fun, args);
+    array4[0] = arg1;
+    array4[1] = arg2;
+    array4[2] = arg3;
+    array4[3] = arg4;
+    return internMakeAppl(fun, array4);
+    
   }
 
   public ATermAppl makeAppl(AFun fun, ATerm arg1, ATerm arg2, ATerm arg3, ATerm arg4, ATerm arg5) {
-    ATerm[] args = { arg1, arg2, arg3, arg4, arg5 };
-    return makeAppl(fun, args);
+    ATerm[] args = { arg1, arg2, arg3, arg4, arg5,null,null };
+    return internMakeAppl(fun, args);
   }
 
   public ATermAppl makeAppl(AFun fun, ATerm arg1, ATerm arg2, ATerm arg3, ATerm arg4, ATerm arg5, ATerm arg6) {
-    ATerm[] args = { arg1, arg2, arg3, arg4, arg5, arg6 };
-    return makeAppl(fun, args);
+    ATerm[] args = { arg1, arg2, arg3, arg4, arg5, arg6,null,null };
+    return internMakeAppl(fun, args);
   }
 
   public ATermAppl makeAppl(
@@ -240,8 +276,8 @@ public class PureFactory extends SharedObjectFactory implements ATermFactory {
     ATerm arg5,
     ATerm arg6,
     ATerm arg7) {
-    ATerm[] args = { arg1, arg2, arg3, arg4, arg5, arg6, arg7 };
-    return makeAppl(fun, args);
+    ATerm[] args = { arg1, arg2, arg3, arg4, arg5, arg6, arg7,null,null };
+    return internMakeAppl(fun, args);
   }
 
   public ATermList getEmpty() {

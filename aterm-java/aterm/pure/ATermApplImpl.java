@@ -18,10 +18,19 @@ class ATermApplImpl extends ATermImpl implements ATermAppl {
     super(factory);
   }
 
-  protected void init(int hashCode, ATermList annos, AFun fun, ATerm[] args) {
+  protected void init(int hashCode, ATermList annos, AFun fun, ATerm[] i_args) {
     super.init(hashCode, annos);
     this.fun = fun;
-    this.args = args;
+    this.args = i_args;
+  }
+
+  protected void initCopy(int hashCode, ATermList annos, AFun fun, ATerm[] i_args) {
+    super.init(hashCode, annos);
+    this.fun = fun;
+    this.args = new ATerm[fun.getArity()];
+    for(int i=0; i<this.args.length; i++) {
+      this.args[i] = i_args[i];
+    }
   }
 
   public Object clone() {
@@ -31,7 +40,7 @@ class ATermApplImpl extends ATermImpl implements ATermAppl {
   }
   
   public boolean equivalent(SharedObject obj) {
-    if (super.equivalent(obj)) {
+    if(super.equivalent(obj)) {
       ATermAppl peer = (ATermAppl) obj;
       if (peer.getAFun().equals(fun)) {
         for (int i=0; i<args.length; i++) {
@@ -42,7 +51,6 @@ class ATermApplImpl extends ATermImpl implements ATermAppl {
         return true;
       }
     }
-    
     return false;
   }
 

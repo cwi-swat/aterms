@@ -1,0 +1,11 @@
+
+The Java ATerm Library was developed at CWI and LORIA-INRIA by
+  Hayco de Jong         <jong@cwi.nl>,
+  Pierre-Etienne Moreau <Pierre-Etienne.Moreau@loria.fr>,
+  Pieter Olivier        <olivierp@cwi.nl>, and 
+  Jurgen Vinju          <jurgenv@cwi.nl>
+
+
+Several people have contributed to the ATerm library by hinting
+at bugs, sending in bugfixes, pointing out efficiency improvements,
+or in general providing helpful comment: thanks!

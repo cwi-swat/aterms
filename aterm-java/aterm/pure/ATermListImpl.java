@@ -53,6 +53,8 @@ class ATermListImpl extends ATermImpl implements ATermList {
     if (pattern.getType() == LIST) {
       ATermList l = (ATermList) pattern;
 
+
+        /*
       if (this == PureFactory.empty) {
         return l == PureFactory.empty;
       }
@@ -60,13 +62,20 @@ class ATermListImpl extends ATermImpl implements ATermList {
       if (l == PureFactory.empty) {
         return false;
       }
+        */
 
+      if (l == PureFactory.empty) {
+        return this == PureFactory.empty;
+      }
+      
       if (l.getFirst().getType() == PLACEHOLDER) {
         ATerm ph_type = ((ATermPlaceholder) l.getFirst()).getPlaceholder();
         if (ph_type.getType() == APPL) {
           ATermAppl appl = (ATermAppl) ph_type;
           if (appl.getName().equals("list") && appl.getArguments().isEmpty()) {
-            list.add(this);
+              //if(this != PureFactory.empty) {
+              list.add(this);
+                //}
             return true;
           }
         }

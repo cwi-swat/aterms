@@ -351,7 +351,7 @@ public interface ATermFactory
    *
    * @return the constructed function application.
    */
-  ATermAppl makeAppl(AFun fun, ATermList args);
+  ATermAppl makeApplList(AFun fun, ATermList args);
 
   /**
    * Creates an ATerm from a text stream.

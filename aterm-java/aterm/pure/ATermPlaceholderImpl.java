@@ -113,7 +113,7 @@ class ATermPlaceholderImpl extends ATermImpl implements ATermPlaceholder {
         args.remove(0);
         ATermList newargs = (ATermList) oldargs.make(args);
         AFun newfun = factory.makeAFun(newname, newargs.getLength(), false);
-        return factory.makeAppl(newfun, newargs);
+        return factory.makeApplList(newfun, newargs);
       }
     }
     throw new RuntimeException("illegal pattern: " + this);

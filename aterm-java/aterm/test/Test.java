@@ -111,7 +111,7 @@ public class Test {
     test_assert(!apples[2].equals(apples[3]));
     test_assert(!apples[0].equals(apples[1]));
 
-    System.out.println("application tests ok.\n");
+    System.out.println("pass: TestMakeAppl");
   }
 
   public void testDict() {
@@ -175,6 +175,12 @@ public class Test {
     list = factory.makeList();
     result = list.append(factory.parse("1"));
     test_assert(result.equals(factory.parse("[1]")));
+
+    list = (ATermList) factory.parse("[]");
+    result = factory.makeList();
+    test_assert(result.equals(list));
+
+    System.out.println("pass: testList");
   }
 
   public void testFiles() throws IOException {
@@ -201,6 +207,11 @@ public class Test {
     ATerm t = factory.parse("node(\"Pico-eval\",box,182,21,62,26)");
     List result = t.match("node(<str>,<fun>,<int>,<int>,<int>,<int>)");
     test_assert(result != null);
+
+    t = factory.parse("f(1,2,3)"); 
+    result = t.match("f(1,2,3)");
+    test_assert(result != null);
+
     System.out.println("pass: testMatch");
   }
 
