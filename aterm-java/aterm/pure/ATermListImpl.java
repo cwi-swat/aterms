@@ -420,11 +420,13 @@ class ATermListImpl extends ATermImpl implements ATermList {
   }
 
   public ATermList reverse() {
-    if (this == PureFactory.empty) {
-      return this;
+    ATermList cur = this;
+    ATermList reverse = getPureFactory().makeList();
+    while(!cur.isEmpty()){
+      reverse = reverse.insert(cur.getFirst());
+      cur = cur.getNext();
     }
-
-    return next.reverse().insert(first);
+    return reverse;
   }
 
   public ATerm dictGet(ATerm key) {

@@ -4,7 +4,7 @@ CLASSPATH_ENV   = CLASSPATH=$(SHARED_OBJECTS):${top_builddir}:$(JAVAROOT):$(srcd
 
 EXTRA_DIST = test.trm test.taf
 
-check_JAVA       = Test1.java \
+check_JAVA      = Test1.java \
 		  Test2.java \
 		  TestFib.java \
 		  TestFibInterpreted.java \

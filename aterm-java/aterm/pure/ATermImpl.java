@@ -36,10 +36,6 @@ public abstract class ATermImpl extends ATermVisitableImpl implements ATerm, Sha
     factory = f;
   }
 
-  static protected PureFactory getStaticFactory() {
-    return factory;
-  }
-  
   public int hashCode() {
     return this.hashCode;
   }
@@ -67,13 +63,17 @@ public abstract class ATermImpl extends ATermVisitableImpl implements ATerm, Sha
       return false;
     }
   }
+
+  static protected PureFactory getStaticFactory() {
+    return factory;
+  }
   
   public ATermFactory getFactory() {
-    return getPureFactory();
+    return getStaticFactory();
   }
   
   protected PureFactory getPureFactory() {
-    return factory;
+    return getStaticFactory();
   }
   
   public ATerm setAnnotation(ATerm label, ATerm anno) {
