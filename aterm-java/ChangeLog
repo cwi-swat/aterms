@@ -1,3 +1,21 @@
+2002-11-04    <pem@bach>
+
+  * aterm/pure/PureFactory.java: 
+    - initialize ATermImpl and create prototypes	
+
+  * aterm/pure/ATermImpl.java: 
+    - make factory a protected static slot	
+    - add static initialize and getStaticFactory functions
+	
+  * aterm/pure/ATermApplImpl.java: 
+    - introduce make(...) functions
+    - make hashFunction a protected function
+	
+  * aterm/pure/AFunImpl.java: 
+    - initHashCode added
+    - hashFunction added	
+    
+
 2002-10-31  Pierre-Etienne Moreau  <pem@escher.loria.fr>
 
   * aterm/pure/ATermIntImpl.java: 
