@@ -4,5 +4,5 @@ Makefile
 *.trm
 *.baf
 reduct.out
-gen-c-api
-sdf2-to-adt
+.deps
+Sdf2_to_ADT

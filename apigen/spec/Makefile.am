@@ -6,7 +6,7 @@
 
 SDF2TABLE	= ${PGENBIN}/sdf2table
 
-SUBDIRS		= sdf2-to-asfix2me-adt add-labels
+SUBDIRS		= add-labels
 
 pkgdata_DATA	= Sdf2-to-AsFix2ME-ADT.trm.tbl
 CLEANFILES	= ${data_DATA}
@@ -41,4 +41,16 @@ Sdf2-to-AsFix2ME-ADT.trm.tbl: $(SDF2_TO_ASFIX2ME_ADT_SDF) $(SDF2_SPEC_SDF) $(UTI
 	 cat $(SDF2_SPEC_SDF); \
 	 cat $(UTILS_SPEC_SDF)) \
 	| ${SDF2TABLE} -o $@
-#	> Aap.def
+
+Sdf2_to_ADT_SOURCES = Sdf2-to-AsFix2ME-ADT.c
+Sdf2_to_ADT_LDADD   = -L$(ASCLIB) -lasc-support-me \
+			-L$(PT_SUPPORT)/lib -lmept \
+			-L$(ATERM)/lib -lATerm
+
+INCLUDES		= -I$(ASCINC) \
+			-I$(PT_SUPPORT)/include \
+			-I$(ATERM)/include
+
+CFLAGS			= -g -Wall -O2 -DMAIN_Sdf2_to_AsFix2ME_ADT
+
+bin_PROGRAMS = Sdf2_to_ADT
