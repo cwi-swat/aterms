@@ -21,6 +21,7 @@ Parameters:
   -p | --package <STR>    specify package                  [""]
   -m | --import <PKG>     specify extra import package     [see below]
   -t | --visitable        visitable enabled                [off]
+  -j | --jtom             generate jtom signature          [off]
   -v | --verbose          be verbose during generation     [off]
   -h | --help             display this information
 
@@ -66,6 +67,7 @@ require() {
    VERBOSE=0
    FOLDING=0
    VISITABLE=0
+   JTOM=0
 
 # data needed
 CLASSES=${prefix}/classes
@@ -102,6 +104,9 @@ do
 
     -t | --visitable)
       VISITABLE=1 ;;
+    
+    -j | --jtom)
+      JTOM=1 ;;
   
     -h | --help)
       usage; exit 0 ;;
@@ -150,6 +155,12 @@ else
   OPT_VISITABLE=""
 fi
 
+if [ $JTOM -gt 0 ]; then
+  OPT_JTOM="-jtom"
+else
+  OPT_JTOM=""
+fi
+  
 # }}}
 
 # {{{  generate Java code from ADT
@@ -160,6 +171,7 @@ java  -classpath ${CLASSES} apigen.gen.java.JavaGen \
 	  ${OPT_PACKAGE}	\
 	  ${OPT_VERBOSE}        \
 	  ${OPT_FOLDING}        \
-	  ${OPT_VISITABLE}
+	  ${OPT_VISITABLE} \
+	  ${OPT_JTOM}
 
 # }}}
