@@ -214,7 +214,7 @@ void resize_hashtable()
 
   hashtable = (ATerm *)calloc(table_size, sizeof(ATerm));
   if(!hashtable) {
-    ATerror("AT_initMemory: cannot re-allocate term table of size %d\n", 
+    ATerror("resize_hashtable: cannot re-allocate term table of size %d\n", 
 						table_size);
   }
 

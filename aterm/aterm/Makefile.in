@@ -53,7 +53,7 @@ PROGSRCS	= termsize.c baffle.c
 ATERMSRCS	= aterm.c list.c make.c memory.c asymbol.c gc.c bafio.c
 ATERMLIBS	= libATerm-gcc.a libATerm-cc.a libATerm-dbg.a libATerm-prof.a
 PUBLIC_INCL	= abool.h aterm1.h aterm2.h deprecated.h encoding.h asymbol.h
-PRIVATE_INCL	= _aterm.h debug.h gc.h list.h make.h memory.h util.h
+PRIVATE_INCL	= _aterm.h debug.h gc.h list.h make.h memory.h util.h bafio.h
 ATERMINCL	= ${PUBLIC_INCL} ${PRIVATE_INCL}
 DISTFILES	= Makefile.in .depend ${PROGSRCS} ${ATERMSRCS} ${ATERMINCL} \
 			${SCRIPTS}

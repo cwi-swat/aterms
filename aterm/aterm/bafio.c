@@ -561,11 +561,10 @@ readStringFromFile(FILE *f)
 	/* Assure buffer can hold the string */
 	if (text_buffer_size < len)
 	{
-		if (text_buffer_size == 0)
-			text_buffer_size = 1024;
-		else
-			text_buffer_size *= 2;
+		text_buffer_size = len*1.5;
 		text_buffer = (char *) realloc(text_buffer, text_buffer_size);
+		if(!text_buffer)
+			ATerror("out of memory in readStringFromFile (%d)\n", text_buffer_size);
 	}
 
 	/* Read the actual string */
