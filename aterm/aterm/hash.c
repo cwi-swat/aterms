@@ -54,7 +54,10 @@
 #define STEP 1   /* The position on which the next hash entry
                        searched */
 #define INITIAL_NR_OF_TABLES 8
-#define ELEMENTS_PER_TABLE 8192
+#define TABLE_SHIFT 13
+#define ELEMENTS_PER_TABLE (1<<TABLE_SHIFT)
+#define modELEMENTS_PER_TABLE(n) ((n) & (ELEMENTS_PER_TABLE-1))
+#define divELEMENTS_PER_TABLE(n) ((n) >> TABLE_SHIFT)
 
 /*-----------------------------------------------------------*/
 
@@ -75,7 +78,9 @@
 struct ATermTable
 {
   long sizeMinus1;
-  long nr_entries;
+  long nr_entries; /* the number of occupied positions in the hashtable,
+                      including the elements that are explicitly marked
+                      as deleted */
   long nr_deletions;
   int max_load;
   long max_entries;
@@ -104,6 +109,7 @@ static long approximatepowerof2(long n)
 		n |= mask;
 	}
 
+  if (n<127) n=127;
 	return n;
 }
 
@@ -167,7 +173,7 @@ static long calculateNewSize
 static ATerm tableGet(ATerm **tableindex, long n)
 { 
   assert(n>=0);
-  return tableindex[n / ELEMENTS_PER_TABLE][n % ELEMENTS_PER_TABLE];
+  return tableindex[divELEMENTS_PER_TABLE(n)][modELEMENTS_PER_TABLE(n)];
 }
 
 /*}}}  */
@@ -179,7 +185,7 @@ static void insertKeyValue(ATermIndexedSet s,
   long x,y,i;
   ATerm *keytable, *valuetable;
 
-  x = n / ELEMENTS_PER_TABLE;
+  x = divELEMENTS_PER_TABLE(n);
   if (x>=s->nr_tables) { 
 		s->keys = (ATerm **)realloc(s->keys,
 																sizeof(ATerm *)*s->nr_tables*2);
@@ -226,7 +232,7 @@ static void insertKeyValue(ATermIndexedSet s,
  
   assert(keytable != NULL);
 
-  y = n % ELEMENTS_PER_TABLE;
+  y = modELEMENTS_PER_TABLE(n);
   keytable[y] = t;
   if(s->values != NULL) { 
 		s->values[x][y] = v; 
@@ -415,22 +421,23 @@ static long keyPut(ATermIndexedSet hashset, ATerm key,
 			*new = ATfalse;
 			if(value != NULL) { 
 				assert(hashset->values!=NULL);
-				hashset->values[ n / ELEMENTS_PER_TABLE]
-					[ n % ELEMENTS_PER_TABLE] = value;
+				hashset->values[ divELEMENTS_PER_TABLE(n)]
+					[ modELEMENTS_PER_TABLE(n)] = value;
 			}
 			return n;
 		}
 		hashset->nr_entries++;
 	} else { 
-		m = hashset->free_table[(hashset->first_free_position-1)/ELEMENTS_PER_TABLE]
-			[(hashset->first_free_position-1) % ELEMENTS_PER_TABLE]; 
+		m = hashset->free_table
+          [divELEMENTS_PER_TABLE(hashset->first_free_position-1)]
+			      [modELEMENTS_PER_TABLE(hashset->first_free_position-1)]; 
 		n = hashPut(hashset, key, m);
 		if (n != m) { 
 			*new = ATfalse;
 			if(value != NULL) { 
 				assert(hashset->values != NULL);
-				hashset->values[ n / ELEMENTS_PER_TABLE]
-					[ n % ELEMENTS_PER_TABLE] = value;
+				hashset->values[ divELEMENTS_PER_TABLE(n)]
+					[ modELEMENTS_PER_TABLE(n)] = value;
 			}
 			return n;
 		}
@@ -439,8 +446,8 @@ static long keyPut(ATermIndexedSet hashset, ATerm key,
 	
   *new = ATtrue;
   insertKeyValue(hashset, n, key, value);
-  if(n >= hashset->max_entries) {
-     hashResizeSet(hashset);
+  if(hashset->nr_entries >= hashset->max_entries) {
+     hashResizeSet(hashset); /* repaired by Jan Friso Groote, 25/7/00 */
 	}
 
   return n;
@@ -643,7 +650,7 @@ void ATtableRemove(ATermTable table, ATerm key)
 
   insertKeyValue(table, v, NULL, NULL);
 
-  x=table->first_free_position / ELEMENTS_PER_TABLE;
+  x=divELEMENTS_PER_TABLE(table->first_free_position);
   if (x>=table->nr_free_tables) { 
 		table->free_table = (long **)realloc(table->free_table,
 														 sizeof(long)*table->nr_free_tables*2);
@@ -667,7 +674,7 @@ void ATtableRemove(ATermTable table, ATerm key)
     }
   }
 
-  y = table->first_free_position % ELEMENTS_PER_TABLE;
+  y = modELEMENTS_PER_TABLE(table->first_free_position);
   ltable[y] = v;
   table->first_free_position++;
   table->nr_deletions++; 
@@ -690,3 +697,4 @@ ATermList  ATtableValues(ATermTable table)
 }
 
 /*}}}  */
+

@@ -35,6 +35,7 @@
 #include "memory.h"
 #include "util.h"
 #include "debug.h"
+#include "gc.h"
 
 /*}}}  */
 /*{{{  defines */
@@ -1237,6 +1238,8 @@ ATermAppl ATmakeAppl0(Symbol sym)
   header_type header = APPL_HEADER(0, 0, sym);
   HashNumber hnr;
 
+  PARK_SYMBOL(sym);
+
   CHECK_ARITY(ATgetArity(sym), 0);
 
   protoAppl = (ATermAppl) protoTerm;
@@ -1283,6 +1286,8 @@ ATermAppl ATmakeAppl1(Symbol sym, ATerm arg0)
   ATerm *hashspot;
   header_type header = APPL_HEADER(0, 1, sym);
   HashNumber hnr;
+
+  PARK_SYMBOL(sym);
 
   CHECK_TERM(arg0);
   CHECK_ARITY(ATgetArity(sym), 1);
@@ -1335,6 +1340,8 @@ ATermAppl ATmakeAppl2(Symbol sym, ATerm arg0, ATerm arg1)
   header_type header = APPL_HEADER(0, 2, sym);
   HashNumber hnr;
   
+  PARK_SYMBOL(sym);
+
   CHECK_TERM(arg0);
   CHECK_TERM(arg1);
   CHECK_ARITY(ATgetArity(sym), 2);
@@ -1388,6 +1395,8 @@ ATermAppl ATmakeAppl3(Symbol sym, ATerm arg0, ATerm arg1, ATerm arg2)
   header_type header = APPL_HEADER(0, 3, sym);
   HashNumber hnr;
   
+  PARK_SYMBOL(sym);
+
   CHECK_TERM(arg0);
   CHECK_TERM(arg1);
   CHECK_TERM(arg2);
@@ -1434,9 +1443,13 @@ ATermAppl ATmakeAppl4(Symbol sym, ATerm arg0, ATerm arg1, ATerm arg2, ATerm arg3
 {
   ATermAppl protoAppl;
   ATerm cur;
-  header_type header = APPL_HEADER(0, 4, sym);
+  header_type header;
   HashNumber hnr;
   
+  PARK_SYMBOL(sym);
+
+  header = APPL_HEADER(0, 4, sym);
+
   CHECK_TERM(arg0);
   CHECK_TERM(arg1);
   CHECK_TERM(arg2);
@@ -1490,6 +1503,8 @@ ATermAppl ATmakeAppl5(Symbol sym, ATerm arg0, ATerm arg1, ATerm arg2,
   header_type header = APPL_HEADER(0, 5, sym);
   HashNumber hnr;
   
+  PARK_SYMBOL(sym);
+
   CHECK_TERM(arg0);
   CHECK_TERM(arg1);
   CHECK_TERM(arg2);
@@ -1548,6 +1563,8 @@ ATermAppl ATmakeAppl6(Symbol sym, ATerm arg0, ATerm arg1, ATerm arg2,
   header_type header = APPL_HEADER(0, 6, sym);
   HashNumber hnr;
   
+  PARK_SYMBOL(sym);
+
   CHECK_TERM(arg0);
   CHECK_TERM(arg1);
   CHECK_TERM(arg2);
@@ -1612,6 +1629,8 @@ ATermAppl ATmakeApplList(Symbol sym, ATermList args)
 				   MAX_INLINE_ARITY+1 : arity, sym);
   HashNumber hnr;
   
+  PARK_SYMBOL(sym);
+
   CHECK_TERM((ATerm)args);
   assert(arity == ATgetLength(args));
   
@@ -1679,6 +1698,8 @@ ATermAppl ATmakeApplArray(Symbol sym, ATerm args[])
   HashNumber hnr;
   header_type header = APPL_HEADER(0, arity > MAX_INLINE_ARITY ?
 				   MAX_INLINE_ARITY+1 : arity, sym);
+
+  PARK_SYMBOL(sym);
 
   protoAppl = (ATermAppl) protoTerm;
   protoAppl->header = header;

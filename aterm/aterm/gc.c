@@ -63,6 +63,8 @@ static int     reclaim_perc[3]     = { 0, MYMAXINT, 0 };
 extern int     mark_stats[3];
 extern int     nr_marks;
 
+AFun at_parked_symbol = -1;
+
 /*}}}  */
 
 /*{{{  void AT_initGC(int argc, char *argv[], ATerm *bottomOfStack) */
@@ -136,191 +138,212 @@ ATerm *stack_top()
 #ifdef WIN32
 void __cdecl mark_phase()
 #else
-void mark_phase()
+     void mark_phase()
 #endif
 {
   int i, j;
-	int stack_size;
-	int nr_stack_terms, nr_stack_syms;
-	int nr_reg_terms, nr_reg_syms;
+  int stack_size;
+  int nr_stack_terms, nr_stack_syms;
+  int nr_reg_terms, nr_reg_syms;
 
   ATerm *stackTop;
   ATerm *start, *stop, *cur;
 
 #ifdef AT_64BIT
-	ATerm oddTerm;
-	AFun oddSym;
+  ATerm oddTerm;
+  AFun oddSym;
 #endif
 
 #ifdef WIN32
-     unsigned int r_eax, r_ebx, r_ecx, r_edx, \
-                   r_esi, r_edi, r_esp, r_ebp;
-     ATerm reg[8];
+  /*{{{  Process registers on WIN32 platform */
 
-     __asm {
-          /* Get the registers into local variables to check them
-             for aterms later. */
-          mov r_eax, eax
-          mov r_ebx, ebx
-          mov r_ecx, ecx
-          mov r_edx, edx
-          mov r_esi, esi
-          mov r_edi, edi
-          mov r_esp, esp
-          mov r_ebp, ebp
-     }
-     /* Put the register-values into an array */
-     reg[0] = (ATerm) r_eax;
-     reg[1] = (ATerm) r_ebx;
-     reg[2] = (ATerm) r_ecx;
-     reg[3] = (ATerm) r_edx;
-     reg[4] = (ATerm) r_esi;
-     reg[5] = (ATerm) r_edi;
-     reg[6] = (ATerm) r_esp;
-     reg[7] = (ATerm) r_ebp;
+  unsigned int r_eax, r_ebx, r_ecx, r_edx, \
+    r_esi, r_edi, r_esp, r_ebp;
+  ATerm reg[8];
 
-     nr_stack_terms = 0;
-     nr_stack_syms  = 0;
-     nr_reg_terms   = 0;
-     nr_reg_syms    = 0;
+  __asm {
+    /* Get the registers into local variables to check them
+       for aterms later. */
+    mov r_eax, eax
+      mov r_ebx, ebx
+      mov r_ecx, ecx
+      mov r_edx, edx
+      mov r_esi, esi
+      mov r_edi, edi
+      mov r_esp, esp
+      mov r_ebp, ebp
+      }
+  /* Put the register-values into an array */
+  reg[0] = (ATerm) r_eax;
+  reg[1] = (ATerm) r_ebx;
+  reg[2] = (ATerm) r_ecx;
+  reg[3] = (ATerm) r_edx;
+  reg[4] = (ATerm) r_esi;
+  reg[5] = (ATerm) r_edi;
+  reg[6] = (ATerm) r_esp;
+  reg[7] = (ATerm) r_ebp;
 
-     /* First traverse the reg-array to count the nr of aterms
-        that were in registers */
-     for(i=0; i<8; i++) {
-          if (AT_isValidTerm(reg[i])) {
-               AT_markTerm(reg[i]);
-               nr_reg_terms++;
-          }
-          if (AT_isValidSymbol((Symbol)reg[i])) {
-               AT_markSymbol((Symbol)reg[i]);
-               nr_reg_syms++;
-          }
-     }
+  nr_stack_terms = 0;
+  nr_stack_syms  = 0;
+  nr_reg_terms   = 0;
+  nr_reg_syms    = 0;
 
-     STATS(register_terms, nr_reg_terms);
-     STATS(register_symbols, nr_reg_syms);
-     /* The register variables are on the stack aswell
-        I set them to zero so they won't be processed again when
-        the stack is traversed. The reg-array is also in the stack
-         but that will be adjusted later */
-     r_eax = 0;
-     r_ebx = 0;
-     r_ecx = 0;
-     r_edx = 0;
-     r_esi = 0;
-     r_edi = 0;
-     r_esp = 0;
-     r_ebp = 0;
+  /* First traverse the reg-array to count the nr of aterms
+     that were in registers */
+  for(i=0; i<8; i++) {
+    if (AT_isValidTerm(reg[i])) {
+      AT_markTerm(reg[i]);
+      nr_reg_terms++;
+    }
+    if (AT_isValidSymbol((Symbol)reg[i])) {
+      AT_markSymbol((Symbol)reg[i]);
+      nr_reg_syms++;
+    }
+  }
 
+  STATS(register_terms, nr_reg_terms);
+  STATS(register_symbols, nr_reg_syms);
+  /* The register variables are on the stack aswell
+     I set them to zero so they won't be processed again when
+     the stack is traversed. The reg-array is also in the stack
+     but that will be adjusted later */
+  r_eax = 0;
+  r_ebx = 0;
+  r_ecx = 0;
+  r_edx = 0;
+  r_esi = 0;
+  r_edi = 0;
+  r_esp = 0;
+  r_ebp = 0;
+
+/*}}}  */
 #else
+  /*{{{  Process registers on UNIX platform */
 
   sigjmp_buf env;
 
-	/* Traverse possible register variables */
-	sigsetjmp(env,0);
+  /* Traverse possible register variables */
+  sigsetjmp(env,0);
 
-	start = (ATerm *)env;
-	stop  = ((ATerm *)(((char *)env) + sizeof(sigjmp_buf)));
+  start = (ATerm *)env;
+  stop  = ((ATerm *)(((char *)env) + sizeof(sigjmp_buf)));
 
-	nr_stack_terms = 0;
-	nr_stack_syms  = 0;
-	nr_reg_terms   = 0;
-	nr_reg_syms    = 0;
+  nr_stack_terms = 0;
+  nr_stack_syms  = 0;
+  nr_reg_terms   = 0;
+  nr_reg_syms    = 0;
 
-	for(cur=start; cur<stop; cur++) {
-		if (AT_isValidTerm(*cur)) {
-			AT_markTerm(*cur);
-			nr_reg_terms++;
-		}
+  for(cur=start; cur<stop; cur++) {
+    if (AT_isValidTerm(*cur)) {
+      AT_markTerm(*cur);
+      nr_reg_terms++;
+    }
 
-		if (AT_isValidSymbol((AFun)*cur)) {
-			AT_markSymbol((AFun)*cur);
-			nr_reg_syms++;
-		}
+    if (AT_isValidSymbol((AFun)*cur)) {
+      AT_markSymbol((AFun)*cur);
+      nr_reg_syms++;
+    }
 
 #ifdef AT_64BIT
-		oddTerm = *((ATerm *)((MachineWord)cur)+4);
-		if (AT_isValidTerm(oddTerm)) {
-			AT_markTerm(oddTerm);
-			nr_reg_terms++;
-		}
+    oddTerm = *((ATerm *)((MachineWord)cur)+4);
+    if (AT_isValidTerm(oddTerm)) {
+      AT_markTerm(oddTerm);
+      nr_reg_terms++;
+    }
 
-		oddSym = *((AFun *)((MachineWord)cur)+4);
-		if (AT_isValidSymbol(oddSym)) {
-			AT_markSymbol(oddSym);
-			nr_reg_syms++;
-		}
+    oddSym = *((AFun *)((MachineWord)cur)+4);
+    if (AT_isValidSymbol(oddSym)) {
+      AT_markSymbol(oddSym);
+      nr_reg_syms++;
+    }
 #endif
-	}
+  }
 
-	STATS(register_terms, nr_reg_terms);
-	STATS(register_symbols, nr_reg_syms);
+  STATS(register_terms, nr_reg_terms);
+  STATS(register_symbols, nr_reg_syms);
 
+/*}}}  */
 #endif
 
-	stackTop = stack_top();
+  stackTop = stack_top();
 
-  /* Determine stack orientation */
+  /*{{{  Determine stack orientation */
+
   start = MIN(stackTop, stackBot);
   stop  = MAX(stackTop, stackBot);
 
-	stack_size = stop-start;
-	STATS(stack_depth, stack_size);
+  stack_size = stop-start;
+  STATS(stack_depth, stack_size);
+
+  /*}}}  */
+
+  /*{{{  Traverse the stack */
 
   /* Traverse the stack */
   for(cur=start; cur<stop; cur++) {
-		if (AT_isValidTerm(*cur)) {
-			AT_markTerm(*cur);
-			nr_stack_terms++;
-		}
+    if (AT_isValidTerm(*cur)) {
+      AT_markTerm(*cur);
+      nr_stack_terms++;
+    }
 
-		if (AT_isValidSymbol((Symbol)*cur)) {
-			AT_markSymbol((Symbol)*cur);
-			nr_stack_syms++;
-		}
+    if (AT_isValidSymbol((Symbol)*cur)) {
+      AT_markSymbol((Symbol)*cur);
+      nr_stack_syms++;
+    }
 
 #ifdef AT_64BIT
-		oddTerm = *((ATerm *)((MachineWord)cur)+4);
-		if (AT_isValidTerm(oddTerm)) {
-			AT_markTerm(oddTerm);
-			nr_reg_terms++;
-		}
+    oddTerm = *((ATerm *)((MachineWord)cur)+4);
+    if (AT_isValidTerm(oddTerm)) {
+      AT_markTerm(oddTerm);
+      nr_reg_terms++;
+    }
 
-		oddSym = *((AFun *)((MachineWord)cur)+4);
-		if (AT_isValidSymbol(oddSym)) {
-			AT_markSymbol(oddSym);
-			nr_reg_syms++;
-		}
+    oddSym = *((AFun *)((MachineWord)cur)+4);
+    if (AT_isValidSymbol(oddSym)) {
+      AT_markSymbol(oddSym);
+      nr_reg_syms++;
+    }
 #endif
   }
 
 #ifdef WIN32
-/* Alex: Env variabele wordt verderop in de code ook al doorlopen
-         omdat hij op de stack staat. De aantallen reg_terms moeten dus
-          achteraf van de aantallen stack_terms worden afgetrokken
-   Adjust the nr_stack-variables because the reg-array is also on the stack
- */
-     nr_stack_terms = nr_stack_terms - nr_reg_terms;
-     nr_stack_syms  = nr_stack_syms  - nr_stack_syms;
+  /* Alex: Env variabele wordt verderop in de code ook al doorlopen
+     omdat hij op de stack staat. De aantallen reg_terms moeten dus
+     achteraf van de aantallen stack_terms worden afgetrokken
+     Adjust the nr_stack-variables because the reg-array is also on the stack
+  */
+  nr_stack_terms = nr_stack_terms - nr_reg_terms;
+  nr_stack_syms  = nr_stack_syms  - nr_stack_syms;
 #endif
 
-	STATS(stack_terms, nr_stack_terms);
-	STATS(stack_symbols, nr_stack_syms);
+  STATS(stack_terms, nr_stack_terms);
+  STATS(stack_symbols, nr_stack_syms);
+
+  /*}}}  */
+
+  /*{{{  Traverse protected terms */
 
   /* Traverse protected terms */
   for(i=0; i<at_prot_table_size; i++) {
-		ProtEntry *cur = at_prot_table[i];
-		while(cur) {
-			for(j=0; j<cur->size; j++) {
-				if(cur->start[j])
-					AT_markTerm(cur->start[j]);
-			}
-			cur = cur->next;
-		}
-	}
+    ProtEntry *cur = at_prot_table[i];
+    while(cur) {
+      for(j=0; j<cur->size; j++) {
+	if(cur->start[j])
+	  AT_markTerm(cur->start[j]);
+      }
+      cur = cur->next;
+    }
+  }
 
-	/* Mark protected symbols */
-	AT_markProtectedSymbols();
+  /*}}}  */
+
+  /* Mark protected symbols */
+  AT_markProtectedSymbols();
+
+  /* Mark 'parked' symbol */
+  if (AT_isValidSymbol(at_parked_symbol)) {
+    AT_markSymbol(at_parked_symbol);
+  }
 }
 
 /*}}}  */

@@ -50,10 +50,10 @@ ALL_INCLUDES		= ${PUBLIC_INCL} ${PRIVATE_INCL}
 
 include_HEADERS		= $(PUBLIC_INCL)
 
-EXTRA_DIST		= $(ALLSRCS) tblog-interface.tb tblog.dict
+EXTRA_DIST		= $(ALLSRCS) tblog-interface.tb tblog-interface.tifs\
+			 tblog.dict
 
-CLEANFILES		= tblog-interface.tifs logger.tif.c logger.tif.h \
-			tblog_dict.c tblog_dict.h
+CLEANFILES		= logger.tif.c logger.tif.h tblog_dict.c tblog_dict.h
 
 # static only libraries
 libATB_a_SOURCES	=
