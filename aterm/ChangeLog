@@ -3,6 +3,7 @@ $Id$
 Tue Jun  1 10:24:20 CEST 2004 <jurgenv@cwi.nl>
  * Removed broken NO_SHARING variant from C source and header files.
  * Bumped to 2.2
+ * Add abort when ATsetChecking is called in a non-debugging version. 
 
 Tue May  13 16:02:03 CEST 2004 <{jurgenv,kooiker}@cwi.nl>
  * utils/Makefile.am: made Cygwin complient

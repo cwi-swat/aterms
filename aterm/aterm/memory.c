@@ -196,6 +196,12 @@ static ATbool at_check = ATfalse;
 void ATsetChecking(ATbool on)
 {
   at_check = on;
+
+#ifdef NDEBUG
+  if (on) {
+    ATabort("warning: call to ATsetChecking has no effect in ATerm library without asserts!\n");
+  }
+#endif
 }
 
 /*}}}  */
