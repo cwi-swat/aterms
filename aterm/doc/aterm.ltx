@@ -113,8 +113,11 @@ The data type of \ATerms\ ({\tt ATerm}) is defined as follows:
 
 \begin{itemize}
 \item  {\tt INT}: An integer constant is an \ATerm.
+These integers are 32-bits integers\footnote{The \aterm\ library
+will be upgraded to support 64-bits architectures as well.}.
 
 \item {\tt REAL} A real constant is an \ATerm.
+The reals are 64-bits reals.
 
 \item {\tt APPL}: A function application consisting of a function symbol and
       zero or more \ATerms\ (arguments) is an \ATerm.
@@ -989,8 +992,17 @@ details.
 language, a domain specific language for describing financial products
 \cite{ADR95}.
 
-\item[LPO:] a linear process operator (LPO) describing the 'firewire'
+\item[LPO:] a linear process operator (LPO) describing the ``firewire''
 protocol with 1 bus and 9 links \cite{GL99, Lut99}.
+LPOs are the kernel of the $\mu$CRL ToolKit \cite{DG95}
+which is a collection of tools for manipulation process and
+data descriptions in $\mu$CRL (micro Common Representation 
+Language) \cite{GP95}.
+An LPO is a structured process, where the state consists of an assignment
+to a sequence of typed data variables and its behaviour is described
+by condition, action and effect functions.
+These states are represented as \aterms, and are rather complex.
+*** MISSCHIEN WAT MEER DETAILS PRESENTEREN??? ***
 
 \end{description}
 
@@ -1474,7 +1486,7 @@ Other applications are still under development and include:
 
 \item A tool for protocol verification~\cite{GL99}. The \aterms\
 are used to represent the states in the state space of the
-protocol. Because of the huge amount of states ($\geq 1.000.000$) it
+protocol. Because of the huge amount of states ($\geq 1,000,000$) it
 is necessary to share as many states as possible.
 
 \item A tool for the detection of code clones in legacy code.
@@ -1562,7 +1574,7 @@ between the various phases of a compiler \cite{Han99}.
 The goals of ASDL and \aterms\
 are in fact quite similar, exchanging syntax trees between tools,
 although that \aterms\ are more general in the sense that other information
-*** ander woord *** can also be represented as an \aterm.
+*** ANDER WOORD *** can also be represented as an \aterm.
 The ASDL pickles and the \aterms\ BAF format are comparable
 with respect to functionality, both are binary representations
 of among others syntax trees. But before a tool can process a tree
@@ -1596,15 +1608,16 @@ COBOL parse table & 4212633 & 213683 & 2507957 \\ \hline
 The second level we define the structure information coded in the
 \aterm\ explicit in the ASDL definition, so we have to give
 the ASDL definition of the parse tables and use this structured information
-when pickling, see Table \ref{asdlaterm2} for the resulting sizes.
+when pickling, see Table \ref{asdlaterm2} for the resulting sizes with
+respect to the structured information of \asfix.
 
 \begin{table}[tb]
 \begin{center}
 \begin{tabular}{|l||r|r|r|} \hline
                   & \ascii  & BAF    & ASDL pickle \\
-COBOL parse table & 4212633 & 213683 & ??? \\ \hline    
+COBOL parse table & 6778877 & 41087 & 1836850 \\ \hline    
 \end{tabular}
-\caption{Sizes of the COBOL parse table} \label{asdlaterm2}
+\caption{Sizes of an \asfix\ term} \label{asdlaterm2}
 \end{center}
 \end{table}
 
@@ -1669,7 +1682,7 @@ representing parse tables as well.
 As stated in the introduction, \ATerms\ are intended to form an \emph{open},
 \emph{simple}, 
 \emph{efficient}, \emph{concise}, and \emph{language
-independent} solution for the exchange of complex data structures
+independent} solution for the exchange of (tree-like) data structures
 between distributed applications.
 
 \ATerms\ \emph{are} open and language independent since they do not
@@ -1713,6 +1726,8 @@ severe requirements) and to Merijn de Jonge and Jeroen Scheerder
 (for detecting quite a lot of intricate bugs).
 Alexander van den Bergh who did the porting to Windows/NT as part
 of his Master thesis project.
+Joost Visser for providing us with useful information on ASDL and
+for writing a tool to pickle \aterms\ and \asfix.
 Finally, we want to thank Pierre-Etienne Moreau for the fruitful
 discussions on this subject during his stay in Amsterdam.
 

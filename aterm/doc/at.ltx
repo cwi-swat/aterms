@@ -53,7 +53,7 @@
 %{{{ Abstract
 
 \begin{abstract}
-How do distributed applications exchange complex data structures?  To
+How do distributed applications exchange (tree-like) data structures?  To
 this end, we introduce the abstract data type of \emph{Annotated Terms}
 (\emph{ATerms}) and discuss their design, implementation and
 application.  A comprehensive procedural interface enables
@@ -62,7 +62,8 @@ supported.  The ATerm implementation is based on maximal subterm
 sharing and automatic garbage collection.  A binary exchange format for the
 concise representation of ATerms (sharing preserved) allows the
 fast exchange of ATerms between applications.  In a typical
-application, less than 2 \emph{bytes} are needed to represent a node in memory,
+application, parse tree which contain quite some redundant information, 
+less than 2 \emph{bytes} are needed to represent a node in memory,
 and less than 2 \emph{bits} are needed to represent it in binary format. It is
 shown that the implementation of ATerms scales up to the manipulation
 of ATerms in the giga-byte range.
