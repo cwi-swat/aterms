@@ -4,6 +4,7 @@
 
      PRG=`basename $0`
   prefix=@prefix@
+  ATERM=@ATERM@/classes
 ATERMBIN=@ATERMBIN@
 
 # }}}
@@ -28,7 +29,7 @@ Parameters:
   -h | --help             display this information
 
 Default locations:
-  classes = ${CGEN}
+  classes = ${CGEN}:${ATERM}/classes
   dicttoc = ${DICTTOC}
 
 Example: $PRG -i Booleans.adt --prefix SDF --prologue Booleans.pro
@@ -163,7 +164,7 @@ fi
 
 # {{{  generate C code from ADT
 
-java  -classpath ${CGEN} apigen.gen.c.CGen \
+java  -classpath ${CGEN}:${ATERM}/classes apigen.gen.c.CGen \
 	  -input ${INPUT}	\
 	  -output ${OUTPUT}	\
 	  ${OPTIONAL_PROLOGUE}	\
