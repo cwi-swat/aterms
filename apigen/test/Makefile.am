@@ -44,13 +44,15 @@ builtinstest_SOURCES = builtinstest.c
 builtinstest_LDADD = -L. -lbuiltins -lATerm
 builtinstest_DEPENDENCIES = libbuiltins.a
 
+clean:
+	rm -rf $(JAVATESTS)
+
 CLEANFILES = \
 	${check_PROGRAMS} ${check_LIBRARIES} \
 	rolodex.[ch] rolodex_dict.[ch] \
 	list.[ch] list_dict.[ch] \
 	builtins.[ch] builtins_dict.[ch] \
-	*.java.sh \
-	peano/* list/* rolodex/* builtins/* *.class
+	*.java.sh *.class
 
 EXTRA_DIST = \
 	BuiltinsTest.java \
@@ -99,7 +101,6 @@ builtins.c builtins.h: builtins.adt
 	@(echo "#! /bin/sh"; \
 	  echo "CLASSPATH=.:${top_srcdir}:${JAVA_ATERM}"; \
 	  echo "export CLASSPATH"; \
-          echo "cd ${top_srcdir}/test"; \
 	  echo "java test.$($*_Main) ${top_srcdir}/test") \
 	> $@ \
 	&& chmod +x $@
