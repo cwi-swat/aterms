@@ -1,5 +1,5 @@
 
-README with version 0.3 of the aterm library.
+README with version 0.4 of the aterm library.
 =============================================
 
 This library implements the ATerm datatype as described in ...
