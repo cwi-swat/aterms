@@ -1238,71 +1238,71 @@ fparse_terms(int *c, FILE * f)
   * Parse a quoted application.
   */
 
-static          ATermAppl
+static ATermAppl
 fparse_quoted_appl(int *c, FILE * f)
 {
-	int             len = 0;
-	ATermList       args = ATempty;
-	Symbol          sym;
-	char           *name;
-
-	/* First parse the identifier */
-	fnext_char(c, f);
-	while (*c != '"') {
-		switch (*c) {
-			case EOF:
-				/*	case '\n':
-						case '\r':
-						case '\t':
-				*/
-				return NULL;
-			case '\\':
-				fnext_char(c, f);
-				if (*c == EOF)
-					return NULL;
-				switch (*c) {
-					case 'n':
-						store_char('\n', len++);
-						break;
-					case 'r':
-						store_char('\r', len++);
-						break;
-					case 't':
-						store_char('\t', len++);
-						break;
-					default:
-						store_char(*c, len++);
-						break;
-				}
-				break;
-			default:
-				store_char(*c, len++);
-				break;
-		}
-		fnext_char(c, f);
-	}
-
-	store_char('\0', len);
+  int             len = 0;
+  ATermList       args = ATempty;
+  Symbol          sym;
+  char           *name;
+  
+  /* First parse the identifier */
+  fnext_char(c, f);
+  while (*c != '"') {
+    switch (*c) {
+    case EOF:
+      return NULL;
+    case '\\':
+      fnext_char(c, f);
+      if (*c == EOF)
+	return NULL;
+      switch (*c) {
+        case 'n':
+	  store_char('\n', len++);
+	  break;
+        case 'r':
+	  store_char('\r', len++);
+	  break;
+        case 't':
+	  store_char('\t', len++);
+	  break;
+        default:
+	  store_char(*c, len++);
+	  break;
+      }
+      break;
+      default:
+	store_char(*c, len++);
+	break;
+    }
+    fnext_char(c, f);
+  }
+  
+  store_char('\0', len);
+  
+  name = strdup(buffer);
+  if (!name)
+    ATerror("fparse_quoted_appl: symbol to long.");
 	
-	name = strdup(buffer);
-	if (!name)
-		ATerror("fparse_quoted_appl: symbol to long.");
-	
-	fnext_skip_layout(c, f);
+  fnext_skip_layout(c, f);
 
-	/* Time to parse the arguments */
-	if (*c == '(') {
-		fnext_skip_layout(c, f);
-		args = fparse_terms(c, f);
-		if (args == NULL || *c != ')')
-			return NULL;
-		fnext_skip_layout(c, f);
-	}
+  /* Time to parse the arguments */
+  if (*c == '(') {
+    fnext_skip_layout(c, f);
+    if(*c != ')') {
+      args = fparse_terms(c, f);
+    } else {
+      args = ATempty;
+    }
+    if (args == NULL || *c != ')')
+      return NULL;
+    fnext_skip_layout(c, f);
+  }
 
-	/* Wrap up this function application */
-	sym = ATmakeSymbol(name, ATgetLength(args), ATtrue);
-	free(name);
-	return ATmakeApplList(sym, args);
+  /* Wrap up this function application */
+  sym = ATmakeSymbol(name, ATgetLength(args), ATtrue);
+  free(name);
+  return ATmakeApplList(sym, args);
 }
 
 /*}}}  */
@@ -1336,11 +1336,15 @@ fparse_unquoted_appl(int *c, FILE * f)
     /* Time to parse the arguments */
     if (*c == '(')
     {
-			fnext_skip_layout(c, f);
-			args = fparse_terms(c, f);
-			if (args == NULL || *c != ')')
-				return NULL;
-			fnext_skip_layout(c, f);
+      fnext_skip_layout(c, f);
+      if(*c != ')') {
+	args = fparse_terms(c, f);
+      } else {
+	args = ATempty;
+      }
+      if (args == NULL || *c != ')')
+	return NULL;
+      fnext_skip_layout(c, f);
     }
 		
     /* Wrap up this function application */
@@ -1720,11 +1724,15 @@ sparse_quoted_appl(int *c, char **s)
     /* Time to parse the arguments */
     if (*c == '(')
     {
-			snext_skip_layout(c, s);
-			args = sparse_terms(c, s);
-			if (args == NULL || *c != ')')
-				return NULL;
-			snext_skip_layout(c, s);
+      snext_skip_layout(c, s);
+      if(*c != ')') {
+	args = sparse_terms(c, s);
+      } else {
+	args = ATempty;
+      }
+      if (args == NULL || *c != ')')
+	return NULL;
+      snext_skip_layout(c, s);
     }
 
     /* Wrap up this function application */
@@ -1764,11 +1772,15 @@ sparse_unquoted_appl(int *c, char **s)
     /* Time to parse the arguments */
     if (*c == '(')
     {
-			snext_skip_layout(c, s);
-			args = sparse_terms(c, s);
-			if (args == NULL || *c != ')')
-				return NULL;
-			snext_skip_layout(c, s);
+      snext_skip_layout(c, s);
+      if(*c != ')') {
+	args = sparse_terms(c, s);
+      } else {
+	args = ATempty;
+      }
+      if (args == NULL || *c != ')')
+	return NULL;
+      snext_skip_layout(c, s);
     }
 
     /* Wrap up this function application */

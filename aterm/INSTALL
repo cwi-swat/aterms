@@ -220,4 +220,7 @@ options:
     options enabled, so it can be used to find performance problems
     in your application or in the ATerm library.
 
-
+'--with-all'
+    Try to create all libraries mentioned above. This is the same
+    as specifying --with-gcc, --with-cc, --with-dbg, and --with-prof
+    at the same time.

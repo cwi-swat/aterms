@@ -114,6 +114,23 @@ TOOLBUS_LIB_PROF=libATB-prof.a
 #,
 #)
 
+AC_ARG_WITH(all,
+[  --with-all   create all libraries (--with-{gcc,cc,dbg,prof}, NOT java)],
+ATERM_LIB_GCC=libATerm-gcc.a
+ASFIX_LIB_GCC=libAsFix-gcc.a
+TOOLBUS_LIB_GCC=libATB-gcc.a
+ATERM_LIB_CC=libATerm-cc.a
+ASFIX_LIB_CC=libAsFix-cc.a
+TOOLBUS_LIB_CC=libATB-cc.a
+ATERM_LIB_DBG=libATerm-dbg.a
+ASFIX_LIB_DBG=libAsFix-dbg.a
+TOOLBUS_LIB_DBG=libATB-dbg.a
+ATERM_LIB_PROF=libATerm-prof.a
+ASFIX_LIB_PROF=libAsFix-prof.a
+TOOLBUS_LIB_PROF=libATB-prof.a
+,
+)
+
 AC_SUBST(ATERM_LIB_GCC)
 AC_SUBST(ATERM_LIB_CC)
 AC_SUBST(ATERM_LIB_DBG)

@@ -361,6 +361,8 @@ testRead(void)
 
   t = ATreadFromString("f(1)");
   ATfprintf(stdout, "read from string: %t\n", t);
+  t = ATreadFromString("f()");
+  ATfprintf(stdout, "read from string: %t\n", t);
   t = ATreadFromString("f(a,b,<123>,0.456,\"f\")");
   ATfprintf(stdout, "read from string: %t\n", t);
   t = ATreadFromString("f(00000004:1234,xyz,[1,2,3])");
@@ -431,65 +433,67 @@ void testDict(void)
 void
 testMake(void)
 {
-	int len = 8;
-	char data[8] = "ABCDEFG";
-	Symbol sym[8];
-
-	test_assert("make", 1, ATisEqual(ATmake("<int>", 3), ATmakeInt(3)));
-	test_assert("make", 2, ATisEqual(ATmake("<real>", 3.8), ATmakeReal(3.8)));
-	test_assert("make", 3, ATisEqual(ATmake("<blob>", len, data),
-									 ATmakeBlob(len, data)));
-	sym[0] = ATmakeSymbol("abc", 0, ATfalse);
-	test_assert("make", 4, ATisEqual(ATmake("<appl>", "abc"),
-									 ATmakeAppl0(sym[0])));
-	sym[1] = ATmakeSymbol("def", 0, ATtrue);
-	test_assert("make", 5, ATisEqual(ATmake("<str>", "def"),
-									 ATmakeAppl0(sym[1])));
-	sym[2] = ATmakeSymbol("echt", 3, ATfalse);
-
-	test_assert("make", 6, ATisEqual(ATmake("<appl(<int>, <list>)>",
-		"echt", 123, ATmakeList2((ATerm)ATmakeInt(7), (ATerm)ATmakeReal(7.01))),
-		ATreadFromString("echt(123, 7, 7.01)")));
-	test_assert("make", 7, ATisEqual(ATmake("<placeholder>", ATmakeInt(7)),
-		ATmakePlaceholder((ATerm)ATmakeInt(7))));
-
-	test_assert("make", 8, ATisEqual(ATmake("w(<str>)", " "),
-					 ATparse("w(\" \")")));
-
-	ATprintf("ATmake with 9 args: %t\n",
-			 ATmake("f(<int>,<int>,<int>,<int>,<int>,"
-					"<int>,<int>,<int>,<int>)", 1, 2, 3, 4, 5, 6, 7, 8, 9));
- 
-	ATprintf("ATmakeAppl: %t\n",
-				ATmakeAppl(ATmakeSymbol("f", 9, ATfalse), ATmakeInt(1),
-                           ATmakeInt(2),ATmakeInt(3),ATmakeInt(4),
-                           ATmakeInt(5),ATmakeInt(6),ATmakeInt(7),
-						   ATmakeInt(8),ATmakeInt(9)));
-
-	test_assert("make", 9, ATisEqual(ATmake("f(<int>,<int>,<int>,<int>,<int>,"
+  int len = 8;
+  char data[8] = "ABCDEFG";
+  Symbol sym[8];
+  
+  test_assert("make", 1, ATisEqual(ATmake("<int>", 3), ATmakeInt(3)));
+  test_assert("make", 2, ATisEqual(ATmake("<real>", 3.8), ATmakeReal(3.8)));
+  test_assert("make", 3, ATisEqual(ATmake("<blob>", len, data),
+				   ATmakeBlob(len, data)));
+  sym[0] = ATmakeSymbol("abc", 0, ATfalse);
+  test_assert("make", 4, ATisEqual(ATmake("<appl>", "abc"),
+				   ATmakeAppl0(sym[0])));
+  sym[1] = ATmakeSymbol("def", 0, ATtrue);
+  test_assert("make", 5, ATisEqual(ATmake("<str>", "def"),
+				   ATmakeAppl0(sym[1])));
+  sym[2] = ATmakeSymbol("echt", 3, ATfalse);
+  
+  test_assert("make", 6, ATisEqual(ATmake("<appl(<int>, <list>)>",
+					  "echt", 123, 
+					  ATmakeList2((ATerm)ATmakeInt(7), 
+						      (ATerm)ATmakeReal(7.01))),
+				   ATreadFromString("echt(123, 7, 7.01)")));
+  test_assert("make", 7, ATisEqual(ATmake("<placeholder>", ATmakeInt(7)),
+				   ATmakePlaceholder((ATerm)ATmakeInt(7))));
+  
+  test_assert("make", 8, ATisEqual(ATmake("w(<str>)", " "),
+				   ATparse("w(\" \")")));
+  
+  ATprintf("ATmake with 9 args: %t\n",
+	   ATmake("f(<int>,<int>,<int>,<int>,<int>,"
+		  "<int>,<int>,<int>,<int>)", 1, 2, 3, 4, 5, 6, 7, 8, 9));
+  
+  ATprintf("ATmakeAppl: %t\n",
+	   ATmakeAppl(ATmakeSymbol("f", 9, ATfalse), ATmakeInt(1),
+		      ATmakeInt(2),ATmakeInt(3),ATmakeInt(4),
+		      ATmakeInt(5),ATmakeInt(6),ATmakeInt(7),
+		      ATmakeInt(8),ATmakeInt(9)));
+  
+  test_assert("make", 9, ATisEqual(ATmake("f(<int>,<int>,<int>,<int>,<int>,"
 											"<int>,<int>,<int>,<int>)", 
-											1, 2, 3, 4, 5, 6, 7, 8, 9), 
-				ATmakeAppl(ATmakeSymbol("f", 9, ATfalse), ATmakeInt(1),
-                           ATmakeInt(2),ATmakeInt(3),ATmakeInt(4),
-                           ATmakeInt(5),ATmakeInt(6),ATmakeInt(7),
-						   ATmakeInt(8),ATmakeInt(9))));
+					  1, 2, 3, 4, 5, 6, 7, 8, 9), 
+				   ATmakeAppl(ATmakeSymbol("f", 9, ATfalse), ATmakeInt(1),
+					      ATmakeInt(2),ATmakeInt(3),ATmakeInt(4),
+					      ATmakeInt(5),ATmakeInt(6),ATmakeInt(7),
+					      ATmakeInt(8),ATmakeInt(9))));
+  
+  test_assert("make", 10, ATisEqual(ATmake("[\"f\"([<list>])]", 
+					   ATparse("[1,2,3]")),
+				    ATparse("[\"f\"([1,2,3])]")));
 
-	test_assert("make", 10, ATisEqual(ATmake("[\"f\"([<list>])]", 
-																					 ATparse("[1,2,3]")),
-																		ATparse("[\"f\"([1,2,3])]")));
-
-	fprintf(stderr, "The following two tests should generate parse errors.\n");
+  fprintf(stderr, "The following two tests should generate parse errors.\n");
 #ifdef ABORT_ON_PARSE_ERROR
-	ATsetAbortHandler(abort_handler);
-	parse_error_encountered = ATfalse;
+  ATsetAbortHandler(abort_handler);
+  parse_error_encountered = ATfalse;
 #endif
-	ATparse("<int");
-	ATparse("f(<int>,<int>,<int>,<int>,<int>,<int>,<int>,<int>,<int>,<int>,<int>,<int>,<int>,<int>,<int>,<int>,<int>,<int>,<int>,<int>asdfaksdjfhasjkhf)");
+  ATparse("<int");
+  ATparse("f(<int>,<int>,<int>,<int>,<int>,<int>,<int>,<int>,<int>,<int>,<int>,<int>,<int>,<int>,<int>,<int>,<int>,<int>,<int>,<int>asdfaksdjfhasjkhf)");
 #ifdef ABORT_ON_PARSE_ERROR
   ATsetAbortHandler(NULL);
-	assert(parse_error_encountered);
+  assert(parse_error_encountered);
 #endif
-	printf("make tests ok.\n");
+  printf("make tests ok.\n");
 }
 
 /*}}}  */
