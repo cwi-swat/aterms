@@ -1344,28 +1344,28 @@ fparse_unquoted_appl(int *c, FILE * f)
     char           *name;
 
     /* First parse the identifier */
-    while (isalnum(*c) || *c == '-' || *c == '_')
+    while (isalnum(*c) || *c == '-' || *c == '_' || *c == '+' || *c == '*')
     {
-	store_char(*c, len++);
-	fnext_char(c, f);
+			store_char(*c, len++);
+			fnext_char(c, f);
     }
     store_char('\0', len++);
     name = strdup(buffer);
     if (!name)
-	ATerror("fparse_unquoted_appl: symbol to long.");
+			ATerror("fparse_unquoted_appl: symbol to long.");
 
     fskip_layout(c, f);
 
     /* Time to parse the arguments */
     if (*c == '(')
     {
-	fnext_skip_layout(c, f);
-	args = fparse_terms(c, f);
-	if (args == NULL || *c != ')')
-	    return NULL;
-	fnext_skip_layout(c, f);
+			fnext_skip_layout(c, f);
+			args = fparse_terms(c, f);
+			if (args == NULL || *c != ')')
+				return NULL;
+			fnext_skip_layout(c, f);
     }
-
+		
     /* Wrap up this function application */
     sym = ATmakeSymbol(name, ATgetLength(args), ATfalse);
     free(name);
@@ -1386,18 +1386,18 @@ fparse_num_or_blob(int *c, FILE * f, ATbool canbeblob)
 
     if (*c == '-')
     {
-	*ptr++ = *c;
-	fnext_char(c, f);
+			*ptr++ = *c;
+			fnext_char(c, f);
     }
 
     while (isdigit(*c))
     {
-	*ptr++ = *c;
-	fnext_char(c, f);
+			*ptr++ = *c;
+			fnext_char(c, f);
     }
     if (canbeblob && *c == ':')
-    {
-	/*{{{  Must be a blob! */
+			{
+				/*{{{  Must be a blob! */
 
 	int             i, size;
 	char           *data;
@@ -1421,10 +1421,10 @@ fparse_num_or_blob(int *c, FILE * f, ATbool canbeblob)
 	return (ATerm) ATmakeBlob(size, data);
 
 	/*}}}  */
-    }
+			}
     else if (*c == '.' || toupper(*c) == 'E')
-    {
-	/*{{{  A real number */
+			{
+				/*{{{  A real number */
 
 	if (*c == '.')
 	{
@@ -1432,39 +1432,39 @@ fparse_num_or_blob(int *c, FILE * f, ATbool canbeblob)
 	    fnext_char(c, f);
 	    while (isdigit(*c))
 	    {
-		*ptr++ = *c;
-		fnext_char(c, f);
+				*ptr++ = *c;
+				fnext_char(c, f);
 	    }
 	}
 	if (toupper(*c) == 'E')
-	{
+		{
 	    *ptr++ = *c;
 	    fnext_char(c, f);
-	    if (*c == '-')
-	    {
-		*ptr++ = *c;
-		fnext_char(c, f);
-	    }
+	    if (*c == '-' || *c == '+')
+				{
+					*ptr++ = *c;
+					fnext_char(c, f);
+				}
 	    while (isdigit(*c))
-	    {
-		*ptr++ = *c;
-		fnext_char(c, f);
-	    }
-	}
+				{
+					*ptr++ = *c;
+					fnext_char(c, f);
+				}
+		}
 	*ptr = '\0';
 	return (ATerm) ATmakeReal(atof(num));
-
+	
 	/*}}}  */
-    }
+			}
     else
-    {
-	/*{{{  An integer */
+			{
+				/*{{{  An integer */
 
 	*ptr = '\0';
 	return (ATerm) ATmakeInt(atoi(num));
 
 	/*}}}  */
-    }
+			}
 }
 
 /*}}}  */
@@ -1760,26 +1760,26 @@ sparse_unquoted_appl(int *c, char **s)
     char           *name;
 
     /* First parse the identifier */
-    while (isalnum(*c) || *c == '-' || *c == '_')
+    while (isalnum(*c) || *c == '-' || *c == '_' || *c == '+' || *c == '*')
     {
-	store_char(*c, len++);
-	snext_char(c, s);
+			store_char(*c, len++);
+			snext_char(c, s);
     }
     store_char('\0', len);
     name = strdup(buffer);
     if (!name)
-	ATerror("fparse_unquoted_appl: symbol to long.");
+			ATerror("sparse_unquoted_appl: symbol to long.");
 
     sskip_layout(c, s);
 
     /* Time to parse the arguments */
     if (*c == '(')
     {
-	snext_skip_layout(c, s);
-	args = sparse_terms(c, s);
-	if (args == NULL || *c != ')')
-	    return NULL;
-	snext_skip_layout(c, s);
+			snext_skip_layout(c, s);
+			args = sparse_terms(c, s);
+			if (args == NULL || *c != ')')
+				return NULL;
+			snext_skip_layout(c, s);
     }
 
     /* Wrap up this function application */
@@ -1802,18 +1802,18 @@ sparse_num_or_blob(int *c, char **s, ATbool canbeblob)
 
     if (*c == '-')
     {
-	*ptr++ = *c;
-	snext_char(c, s);
+			*ptr++ = *c;
+			snext_char(c, s);
     }
-
+		
     while (isdigit(*c))
-    {
-	*ptr++ = *c;
-	snext_char(c, s);
-    }
+			{
+				*ptr++ = *c;
+				snext_char(c, s);
+			}
     if (canbeblob && *c == ':')
-    {
-	/*{{{  Must be a blob! */
+			{
+				/*{{{  Must be a blob! */
 
 	int             i, size;
 	char           *data;
@@ -1837,50 +1837,50 @@ sparse_num_or_blob(int *c, char **s, ATbool canbeblob)
 	return (ATerm) ATmakeBlob(size, data);
 
 	/*}}}  */
-    }
+			}
     else if (*c == '.' || toupper(*c) == 'E')
-    {
-	/*{{{  A real number */
+			{
+				/*{{{  A real number */
 
-	if (*c == '.')
-	{
-	    *ptr++ = *c;
-	    snext_char(c, s);
-	    while (isdigit(*c))
-	    {
-		*ptr++ = *c;
-		snext_char(c, s);
-	    }
-	}
-	if (toupper(*c) == 'E')
-	{
-	    *ptr++ = *c;
-	    snext_char(c, s);
-	    if (*c == '-')
-	    {
-		*ptr++ = *c;
-		snext_char(c, s);
-	    }
-	    while (isdigit(*c))
-	    {
-		*ptr++ = *c;
-		snext_char(c, s);
-	    }
-	}
-	*ptr = '\0';
-	return (ATerm) ATmakeReal(atof(num));
-
-	/*}}}  */
-    }
+				if (*c == '.')
+					{
+						*ptr++ = *c;
+						snext_char(c, s);
+						while (isdigit(*c))
+							{
+								*ptr++ = *c;
+								snext_char(c, s);
+							}
+					}
+				if (toupper(*c) == 'E')
+					{
+						*ptr++ = *c;
+						snext_char(c, s);
+						if (*c == '-' || *c == '+')
+							{
+								*ptr++ = *c;
+								snext_char(c, s);
+							}
+						while (isdigit(*c))
+							{
+								*ptr++ = *c;
+								snext_char(c, s);
+							}
+					}
+				*ptr = '\0';
+				return (ATerm) ATmakeReal(atof(num));
+				
+				/*}}}  */
+			}
     else
-    {
-	/*{{{  An integer */
+			{
+				/*{{{  An integer */
 
 	*ptr = '\0';
 	return (ATerm) ATmakeInt(atoi(num));
 
 	/*}}}  */
-    }
+			}
 }
 
 /*}}}  */

@@ -2250,3 +2250,23 @@ void AT_printAllAFunCounts(FILE *file)
 }
 
 /*}}}  */
+/*{{{  int AT_calcAllocatedBytes() */
+
+/**
+	* Calculate all allocated bytes containing ATerms.
+	*/
+
+int AT_calcAllocatedSize()
+{
+	int i;
+	int total;
+
+	for(i=0; i<MAX_TERM_SIZE; i++)
+		total += at_nrblocks[i]*sizeof(Block);
+
+	total += table_size*sizeof(ATerm);
+
+	return total;
+}
+
+/*}}}  */

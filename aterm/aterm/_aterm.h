@@ -34,5 +34,6 @@ int  AT_calcTermDepth(ATerm t);
 void AT_writeToStringBuffer(ATerm t, char *buffer);
 void AT_assertUnmarked(ATerm t);
 void AT_assertMarked(ATerm t);
+int AT_calcAllocatedSize();
 
 #endif

@@ -18,8 +18,6 @@ void termsize(FILE *file)
 int main(int argc, char *argv[])
 {
   ATerm bottomOfStack;
-	int size;
-
 	ATinit(argc, argv, &bottomOfStack);
 	termsize(stdin);
 
