@@ -94,11 +94,7 @@ testSymbol(void)
 
 	assert(symmies[0] == symmies[4]);
 	for (i=0; i<5; i++)
-	{
-		fprintf(stdout, "symmies[%d]: ", i);
-		AT_printSymbol(symmies[i], stdout);
-		fprintf(stdout, "\n");
-	}
+		ATprintf("symmies[%d]: %y\n", i, symmies[i]);
 	assert(symmies[1] != symmies[2]);
 	assert(symmies[1] != symmies[3]);
 	assert(symmies[2] != symmies[3]);
