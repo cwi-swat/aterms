@@ -3,11 +3,19 @@ dnl $Id$
 AC_INIT(configure.in)
 AM_INIT_AUTOMAKE(aterm-java, 2.0beta)
 
+dnl Let aclocal use macros in ./config directory
+ACLOCAL="${ACLOCAL} -I ./config"
+
 AC_SET_MAKE
 
-AC_ARG_WITH(shared-objects,
-   [  --with-shared-objects=JAR       /path/to/shared-objects-<version>.jar],
-   SHARED_OBJECTS=$withval,SHARED_OBJECTS=${datadir}/shared-objects.jar)
+dnl AC_ARG_WITH(shared-objects,
+dnl    [  --with-shared-objects=JAR       /path/to/shared-objects-<version>.jar],
+dnl    SHARED_OBJECTS=$withval,SHARED_OBJECTS=${datadir}/shared-objects.jar)
+dnl AC_SUBST(SHARED_OBJECTS)
+
+AC_PACKAGE_REQUIRE(shared-objects, shared-objects-config,
+   [ --with-shared-objects=DIR       installation directory of shared-objects])
+SHARED_OBJECTS=${SHARED_OBJECTS}/share/shared-objects.jar
 AC_SUBST(SHARED_OBJECTS)
 
 AC_OUTPUT(
@@ -17,4 +25,5 @@ AC_OUTPUT(
   aterm/test/Makefile
   aterm/visitor/Makefile
   test/Makefile
+  config/Makefile
 )

@@ -1,5 +1,10 @@
-2002-10-20    <pem@bach>
+2002-10-29    <vinju@loria.fr>
+  * Added ugly config script in order to detect the location of this 
+    package easily in the meta package.
+  * Configure.in automatically detects location of shared-objects.jar in
+    order to get distcheck correct.
 
+2002-10-20    <pem@bach>
   * aterm/pure/ATermListImpl.java: 
     - fix a bug in match:	
       makelist().match(<list>) should return the empty ATermList	
@@ -18,4 +23,3 @@
     - modify hashAppl for reducing hashing-collisions 
     - introduce hashApplNoCopy for avoiding copy of arrays
     - introduce static arrays for reducing allocations
-	
