@@ -1,6 +1,6 @@
 
 PRODUCT		= aterm
-VERSION		= 0.0.3
+VERSION		= 0.0.4
 
 ATERMSRCS	= aterm.c list.c make.c memory.c symbol.c gc.c
 ATERMLIBS	= libATerm-gcc.a libATerm-cc.a libATerm-dbg.a libATerm-prof.a
@@ -10,10 +10,11 @@ CC_GCC		= gcc
 CC_DBG		= ${CC_GCC}
 CC_PROF		= ${CC_GCC}
 
-CFLAGS_CC	= -O ${DEFS_CC} ${INCL_CC}
-CFLAGS_GCC	= -Wall -pedantic -O4
-CFLAGS_DBG	= -Wall -pedantic -g
-CFLAGS_PROF	= -Wall -pedantic -pg
+CFLAGS_CC	= -g -O ${DEFS_CC} ${INCL_CC}
+#CFLAGS_CC      = -g ${DEFS_CC} ${INCL_CC}
+CFLAGS_GCC	= -Wall -pedantic -O4 ${DEFS_GCC} ${INCL_GCC}
+CFLAGS_DBG	= -Wall -pedantic -g ${DEFS_DBG} ${INCL_DBG}
+CFLAGS_PROF	= -Wall -pedantic -pg ${DEFS_PROF} ${INCL_PROF}
 
 DEFS_CC		= -DVERSION="\"$(VERSION)\"" -DNDEBUG -DGC_ON
 DEFS_GCC	= -DVERSION="\"$(VERSION)\"" -DNDEBUG -DGC_ON
@@ -39,7 +40,6 @@ AR		= ar
 AR_FLAGS	= cr
 
 all: $(ATERMLIBS)
-	@echo ${OBJ_GCC}
 
 %-cc.o: %.c
 	${CC_CC} ${CFLAGS_CC} -c -o $@ $<

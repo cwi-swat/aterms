@@ -55,7 +55,7 @@ void mark_phase()
 	jmp_buf env;
 
 	/* Traverse possible register variables */
-	setjmp(env);
+	sigsetjmp(env,0);
 	start = (ATerm *)env;
 	stop  = ((ATerm *)(((char *)env) + sizeof(jmp_buf)));
 
@@ -77,9 +77,11 @@ void mark_phase()
 
   /* Traverse the stack */
   for(cur=start; cur<stop; cur++) {
-		if (AT_isValidTerm(*cur))
+		if (AT_isValidTerm(*cur)) 
 			AT_markTerm(*cur);
-		else
+/*		else
+			printf("%p is not a valid term.\n", *cur);*/
+
 		if (AT_isValidSymbol((Symbol)*cur))
 			AT_markSymbol((Symbol)*cur);
   }
@@ -127,18 +129,18 @@ void AT_collect(int size)
   struct tms start, mark, sweep;
   clock_t user;
 
-  fprintf(stderr, "collecting garbage...\n");
+  /*fprintf(stderr, "collecting garbage...\n");*/
   times(&start);
   mark_phase();
   times(&mark);
   user = mark.tms_utime - start.tms_utime;
-  fprintf(stderr, "marking took %.2f seconds\n", 
-		  ((double)user)/(double)CLK_TCK);
+  /*fprintf(stderr, "marking took %.2f seconds\n", 
+		  ((double)user)/(double)CLK_TCK);*/
   sweep_phase();
   times(&sweep);
   user = sweep.tms_utime - mark.tms_utime;
-  fprintf(stderr, "sweeping took %.2f seconds\n",
-		  ((double)user)/(double)CLK_TCK);
+  /*fprintf(stderr, "sweeping took %.2f seconds\n",
+		  ((double)user)/(double)CLK_TCK);*/
 }
 
 /*}}}  */

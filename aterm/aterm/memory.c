@@ -244,6 +244,7 @@ static void allocate_block(int size)
 			(ATerm)(((header_type *)data)+idx+size);
 	}
 	((ATerm)(((header_type *)data)+idx))->next = NULL;
+	/*fprintf(stderr, "last of block = %p\n", (ATerm)(((header_type *)data)+idx));*/
 
 	/* Place the new block in the block_table */
 	idx = (((unsigned int)newblock) >> (BLOCK_SHIFT+2)) % BLOCK_TABLE_SIZE;
@@ -276,10 +277,8 @@ ATerm AT_allocate(int size)
 #else
 			if(1) {
 #endif
-				/*printf("allocating new block of size %d\n", size);*/
 				allocate_block(size);
 		} else {
-			/*printf("collecting for size %d\n", size);*/
 			AT_collect(size);
 			for(i=MIN_TERM_SIZE; i<MAX_TERM_SIZE; i++)
 				alloc_since_gc[size] = 0;
@@ -1296,12 +1295,15 @@ ATbool AT_isValidTerm(ATerm term)
   header_type header;
   int         type;
 	ATbool inblock = ATfalse;
+	int offset = 0;
 
 	for(cur=block_table[idx].first_after; cur; cur=cur->next_after) 
 	{
-		int offset  = ((char *)term) - ((char *)cur->data);
+		offset  = ((char *)term) - ((char *)&cur->data);
 		if (offset >= 0	&& offset < (BLOCK_SIZE * sizeof(header_type))) {
 			inblock = ATtrue;
+			/*fprintf(stderr, "term %p in block %p, size=%d, offset=%d\n", 
+						 term, &cur->data[0], cur->size, offset);*/
 			break;
 		}
 	}
@@ -1310,22 +1312,31 @@ ATbool AT_isValidTerm(ATerm term)
   {
 		for(cur=block_table[idx].first_before; cur; cur=cur->next_before) 
 		{
-			int offset  = ((char *)term) - ((char *)cur->data);
+			offset  = ((char *)term) - ((char *)&cur->data);
 			if (offset >= 0 && offset < (BLOCK_SIZE * sizeof(header_type))) {
 				inblock = ATtrue;
+				/*fprintf(stderr, "term %p in block %p, size=%d, offset=%d\n", 
+							 term, &cur->data[0], cur->size, offset);*/
 				break;
 			}
 		}
 	}
 
-	if(!inblock)
+	if(!inblock) {
+		/*fprintf(stderr, "not in block: %p\n", term);*/
 		return ATfalse;
+	}
 
 	/* Check if we point to the start of a term. Pointers inside terms
      are not allowed.
 	 */
-  if((((header_type)term - (header_type)cur->data) % cur->size) != 0)
+	if(offset % (cur->size*sizeof(header)))
 		return ATfalse;
+
+  /* <PO> was: 
+		 if((((header_type)term - (header_type)&cur->data) % cur->size) != 0)
+		   return ATfalse;
+	*/
 
   header = term->header;
   type = GET_TYPE(header);

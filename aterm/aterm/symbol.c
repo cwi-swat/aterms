@@ -32,9 +32,7 @@
 
 typedef struct SymEntry
 {
-  unsigned char  header;
-  unsigned char  dummy;		/* fill to short-alignment */
-  unsigned short arity;
+  header_type header;
   struct SymEntry *next;
   Symbol  id;
   char   *name;
@@ -81,8 +79,9 @@ void AT_initSymbol(int argc, char *argv[])
 		ATerror("AT_initSymbol: cannot allocate %d lookup-entries.\n",
 		        table_size);
 
-	for (i = first_free = 0; i < table_size;)
-		lookup_table[i] = (SymEntry) SYM_SET_NEXT_FREE(++i);
+	for (i = first_free = 0; i < table_size; i++)
+		lookup_table[i] = (SymEntry) SYM_SET_NEXT_FREE(i+1);
+
 	lookup_table[i-1] = (SymEntry) SYM_SET_NEXT_FREE(-1);		/* Sentinel */
 }
 /*}}}  */
@@ -137,7 +136,7 @@ void AT_printSymbol(Symbol sym, FILE *f)
 
 Symbol ATmakeSymbol(char *name, int arity, ATbool quoted)
 {
-  header_type   mask = (quoted ? MASK_QUOTED : 0);
+  header_type   header = (quoted ? MASK_QUOTED : 0) | (arity << SHIFT_LENGTH);
   unsigned int  hash_val;
   char         *walk = name;
   SymEntry      cur;
@@ -148,16 +147,14 @@ Symbol ATmakeSymbol(char *name, int arity, ATbool quoted)
   
   /* Find symbol in table */
   cur = hash_table[hash_val];
-  while (cur && (cur->arity != arity || !streq(cur->name, name) ||
-		 IS_QUOTED(cur->header) != mask))
+  while (cur && (cur->header != header || !streq(cur->name, name)))
     cur = cur->next;
   
   if (cur == NULL) {
     Symbol free_entry;
 
     cur = (SymEntry) AT_allocate(sizeof(struct SymEntry)/sizeof(header_type));
-    cur->header = mask;
-    cur->arity = arity;
+    cur->header = header;
     cur->next = hash_table[hash_val];
     cur->name = strdup(name);
     if (cur->name == NULL)
@@ -198,7 +195,7 @@ char *ATgetName(Symbol sym)
 
 int ATgetArity(Symbol sym)
 {
-  return lookup_table[sym]->arity;
+  return GET_LENGTH(lookup_table[sym]->header);
 }
 
 /*}}}  */
@@ -235,6 +232,8 @@ ATbool AT_isValidSymbol(Symbol sym)
 
 void AT_markSymbol(Symbol s)
 {
+	if(s == 57)
+		fprintf(stderr, "symbol 57 is now marked: %p.\n", lookup_table[s]);
   lookup_table[s]->header |= MASK_MARK;
 }
 

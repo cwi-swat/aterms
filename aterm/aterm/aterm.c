@@ -1144,42 +1144,46 @@ ATermList sparse_terms(int *c, char **s)
 
 static ATermAppl sparse_quoted_appl(int *c, char **s)
 {
-  ATbool escaped = ATfalse;
   int len = 0;
   ATermList args = ATempty;
   Symbol sym;
   char *name;
 
   /* First parse the identifier */
-  do {
-    snext_char(c, s);
-    if(*c == EOF)
-      return NULL;
-    if(escaped) {
-      switch(*c) {
-	case 'n':
-	  buffer[len++] = '\n';
-	  break;
-	case 'r':
-	  buffer[len++] = '\r';
-	  break;
-	case 't':
-	  buffer[len++] = '\t';
-	  break;
-	case '\\':
-	  buffer[len++] = '\\';
-	  break;
-	default:
-	  buffer[len++] = '\\';
-	  buffer[len++] = *c;
-	  break;
+   snext_char( c, s );
+   while( *c != '"' )
+   {
+      switch( *c )
+      {
+         case EOF:
+            return NULL;
+         case '\\':
+            snext_char( c, s );
+            if( *c == EOF ) return NULL;
+            switch( *c )
+            {
+               case 'n':
+                  buffer[len++] = '\n';
+                  break;
+               case 'r':
+                  buffer[len++] = '\r';
+                  break;
+               case 't':
+                  buffer[len++] = '\t';
+                  break;
+               default:
+                  buffer[len++] = '\\';
+                  buffer[len++] = *c;
+                  break;
+            }
+            break;
+         default:
+            buffer[len++] = *c;
+            break;
       }
-      escaped = ATfalse;
-    } else if(*c == '\\')
-      escaped = ATtrue;
-    else if(*c != '"')
-      buffer[len++] = *c;
-  } while(*c != '"');
+      snext_char( c, s );
+   }
+
   buffer[len] = '\0';
   name = strdup(buffer);
   if(!name)
@@ -1429,8 +1433,9 @@ void AT_markTerm(ATerm t)
   int i, arity;
   Symbol sym;
 
+	/*fprintf(stderr, "marking term: %p\n", t);*/
   if(IS_MARKED(t->header))
-	return;
+		return;
 
   SET_MARK(t->header);
   
@@ -1445,9 +1450,9 @@ void AT_markTerm(ATerm t)
 	  AT_markSymbol(sym);
 	  arity = GET_ARITY(t->header);
 	  if(arity > MAX_INLINE_ARITY)
-		arity = ATgetArity(sym);
+			arity = ATgetArity(sym);
 	  for(i=0; i<arity; i++)
-		AT_markTerm(ATgetArgument((ATermAppl)t, i));
+			AT_markTerm(ATgetArgument((ATermAppl)t, i));
 	  break;
 
 	case AT_LIST:
