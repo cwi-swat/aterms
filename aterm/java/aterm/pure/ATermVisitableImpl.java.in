@@ -10,17 +10,17 @@ public abstract class ATermVisitableImpl
   abstract public int getNrSubTerms();
   abstract public ATerm getSubTerm(int index);
 
-  //{{{ public int getNrChildren()
+  //{{{ public int getChildCount()
 
-  public int getNrChildren()
+  public int getChildCount()
   {
     return getNrSubTerms();
   }
 
   //}}}
-  //{{{ public Visitable getChild(int index)
+  //{{{ public Visitable getChildAt(int index)
 
-  public Visitable getChild(int index)
+  public Visitable getChildAt(int index)
   {
     return getSubTerm(index);
   }
