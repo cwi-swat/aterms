@@ -932,6 +932,14 @@ used for this purpose.  So, finally our \texttt{and} syntax rule becomes:
 {\small \texttt{lhs:Bool "and" rhs:Bool -> Bool \{left, cons("and")\}} }
 \end{quote}
 
+From which we can subsequently generate (e.g.) \C\ code as shown in
+Figure~\ref{fig:names}.
+
+\begin{figure}[htb]
+\epsfig{file=names.eps,scale=1.1}
+\caption{\label{fig:names}Using \sdf\ elements to derive legible names.}
+\end{figure}
+
 % }}}
 % {{{  Code generation from \adt\ to \C
 

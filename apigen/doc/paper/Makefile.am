@@ -5,7 +5,7 @@
 #
 
 SPECS = ATerms.sdf Symbol.sdf Tree.sdf Attributes.sdf
-FIGS = gen.eps
+FIGS = gen.eps names.eps
 EXAMPLES = bool.example set.example bool_and_dict
 SOURCES = apigen.ltx $(SPECS) $(EXAMPLES) $(FIGS)
 
