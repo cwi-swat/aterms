@@ -1,0 +1,8 @@
+DONE -- * verbose mode maken
+DONE -- * "expand" mode maken (voor <list> of <blob>)
+* testen of het goed gaat met blobs
+DONE -- * characters checken bij tag-namen/tekst/atributes etc
+DONE -- * placeholder tag maken
+DONE -- * error systeem bouwen
+DONE -- * main structuur veranderen (aterm2xml/temp vars etc)
+DONE -- * foutmeldingen meteen ter plekke afhandelen

@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<!ENTITY hoi "<aap>sjaak</aap>">
+<!ENTITY name "Kasper">
+<doc a="b" c="d">hoi<br length="3"/>
+                 
+    &hoi;
+<weg/>
+<test pietje="puk"  aap="mies" jan="piet">hallo</test>
+</doc>

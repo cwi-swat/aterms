@@ -1,0 +1,16 @@
+$Id$
+
+2002-01-05 (kasperh@science.uva.nl)
+  * rewrote some functions to make better use of the ATerm
+    library.
+
+2002-01-03 (jurgenv@cwi.nl)
+  * added --with-xml option. If config-xml is your PATH
+    the configure scripts finds out automatically where the xml
+    library is. If if it is not in your PATH you need to set
+    it using --with-xml=path/to/xml/directory
+  * added --with-aterm option.
+  * added tests
+
+2002-01-03 (kasperh@science.uva.nl)
+  * initial version 0.1
