@@ -18,8 +18,8 @@ static ATbool checkForListIdioms = ATfalse;
 void usage(void)
 {
     fprintf(stderr,
-	"\nConcat-adt concatenates lists of adt entries to form a single adt\n"
-        "Usage: concat-adt -V -o <output> -h <file-1> ... <file-n>"
+	"\n%s concatenates lists of adt entries to form a single adt\n"
+        "Usage: %s -V -o <output> -h <file-1> ... <file-n>"
         "Options:\n"
         "\t-h              display help information (usage)\n"
 	"\t-i              ADT file in old format (default stdin)\n"
@@ -27,6 +27,7 @@ void usage(void)
         "\t-o filename     ADT file in new format (default stdout)\n"
         "\t-V              reveal program version (i.e. %s)\n"
         "\n",
+	myname, myname,
         myversion);
 }
 
