@@ -117,4 +117,14 @@ public class GenerationParameters {
 		this.version = version;
 	}
 
+	public void check() {
+		if (getApiName() == null) {
+			System.err.println("warning: no API name specified");
+			setApiName("unknown_api");
+		}
+		if (getVersion() == null) {
+			System.err.println("warning: no API version specified.");
+			setVersion("0.0.0");
+		}
+	}
 }

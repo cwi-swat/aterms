@@ -15,7 +15,7 @@ public class JavaGenerationParameters extends GenerationParameters {
 		super();
 		imports = new LinkedList();
 	}
-	
+
 	public void parseArguments(List args) {
 		Iterator iter = args.iterator();
 		while (iter.hasNext()) {
@@ -35,7 +35,7 @@ public class JavaGenerationParameters extends GenerationParameters {
 		}
 		super.parseArguments(args);
 	}
-	
+
 	public String usage() {
 		StringBuffer buf = new StringBuffer(super.usage());
 		buf.append("\t-p | --package <package>       <optional>\n");
@@ -67,16 +67,5 @@ public class JavaGenerationParameters extends GenerationParameters {
 	public void setPackageName(String packageName) {
 		this.packageName = packageName;
 	}
-
-  public void check() {
-		if (getApiName() == null) {
-			System.err.println("warning: no API name specified");
-			setApiName("unknown_api");
-		}
-		if (getVersion() == null) {
-			System.err.println("warning: no API version specified.");
-			setVersion("0.0.0");
-		}
-  }
 
 }
