@@ -126,20 +126,20 @@ public class Main {
 			new TomSignatureGenerator(adt, sigImpl, basedir, apiName, verbose, folding).run();
         }
 
-		foreachType(adt);
+		generateTypeClasses(adt);
 	}
 
-	static private void foreachType(ADT api) throws IOException {
+	static private void generateTypeClasses(ADT api) throws IOException {
 		Iterator types = api.typeIterator();
 		while (types.hasNext()) {
 			Type type = (Type) types.next();
 			new TypeImplGenerator(type, basedir, pkg, apiName, imports, verbose).run();
 			new TypeGenerator(type, basedir, pkg, imports, verbose, folding).run();
-			foreachAlternative(type);
+			generateAlternativeClasses(type);
 		}
 	}
 
-	static private void foreachAlternative(Type type) {
+	static private void generateAlternativeClasses(Type type) {
 		Iterator alt_iter = type.alternativeIterator();
 		while (alt_iter.hasNext()) {
 			Alternative alt = (Alternative) alt_iter.next();
