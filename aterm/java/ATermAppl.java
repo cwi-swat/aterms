@@ -35,7 +35,17 @@ public interface ATermAppl extends ATerm {
     public ATerm getArgument(int i);
 
     /**
-     * Gets if this application is quoted. A quoted application looks
+     * Sets a specific argument of this application.
+     *
+     * @param arg the new ith argument.
+     * @param i the index of the argument to be set.
+     *
+     * @return a copy of this application with argument i replaced by arg.
+     */
+    public ATerm setArgument(ATerm arg, int i);
+
+    /**
+     * Checks if this application is quoted. A quoted application looks
      * like this: "foo", whereas an unquoted looks like this: foo.
      *
      * @return true if this application is quoted, false otherwise.
