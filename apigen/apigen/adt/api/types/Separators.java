@@ -51,7 +51,7 @@ public class Separators extends aterm.pure.ATermListImpl {
   }
 
   public boolean isEmpty() {
-    return this == getApiFactory().makeSeparators();
+    return getFirst()==getEmpty().getFirst() && getNext()==getEmpty().getNext();
   }
 
   public boolean isMany() {
@@ -93,8 +93,16 @@ public class Separators extends aterm.pure.ATermListImpl {
     return getApiFactory().makeSeparators(head, (Separators) this);
   }
 
+  public aterm.ATermList make(aterm.ATerm head, aterm.ATermList tail, aterm.ATermList annos) {
+    return getApiFactory().makeSeparators(head, tail, annos);
+  }
+
+  public aterm.ATermList make(aterm.ATerm head, aterm.ATermList tail) {
+    return make(head, tail, getApiFactory().getPureFactory().getEmpty());
+  }
+
   public aterm.ATermList insert(aterm.ATerm head) {
-    return insert((apigen.adt.api.types.Separator) head);
+    return make(head, this);
   }
 
   public Separators reverseSeparators() {

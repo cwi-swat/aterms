@@ -1,3 +1,10 @@
+2005-02-15  pem  <pem@polly.loria.fr>
+
+  * lib-3.0/ADT.adt: 
+    renamed 'Name' and 'Type' into 'name' and 'type'
+    renamed 'NamedList' into 'Named-List'
+    updated the generated java api accordingly
+
 # $Id$
 
 2005-01-22  Antoine Reilles  <tonio@arcelot.loria.fr>

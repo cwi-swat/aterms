@@ -51,7 +51,7 @@ public class Modules extends aterm.pure.ATermListImpl {
   }
 
   public boolean isEmpty() {
-    return this == getApiFactory().makeModules();
+    return getFirst()==getEmpty().getFirst() && getNext()==getEmpty().getNext();
   }
 
   public boolean isMany() {
@@ -93,8 +93,16 @@ public class Modules extends aterm.pure.ATermListImpl {
     return getApiFactory().makeModules(head, (Modules) this);
   }
 
+  public aterm.ATermList make(aterm.ATerm head, aterm.ATermList tail, aterm.ATermList annos) {
+    return getApiFactory().makeModules(head, tail, annos);
+  }
+
+  public aterm.ATermList make(aterm.ATerm head, aterm.ATermList tail) {
+    return make(head, tail, getApiFactory().getPureFactory().getEmpty());
+  }
+
   public aterm.ATermList insert(aterm.ATerm head) {
-    return insert((apigen.adt.api.types.Module) head);
+    return make(head, this);
   }
 
   public Modules reverseModules() {

@@ -1,15 +1,15 @@
 [
 	modulentry(
-		Name("Ying"),
-		[Name("Yang")],
+		name("Ying"),
+		[name("Yang")],
 		[],
 		[
 			constructor(Moon,ping,ping(<slot(Sun)>))
 		]
 	),
 	modulentry(
-		Name("Yang"),
-		[Name("Ying")],
+		name("Yang"),
+		[name("Ying")],
 		[],
 		[
 			constructor(Sun,pong,pong(<slot(Moon)>)),

@@ -4,7 +4,7 @@
     constructor(<sort(term)>,<alternative(term)>,<term-pattern(term)>)),
   constructor(Entry, List, 
     list(<sort(term)>,<elem-sort(term)>)),
-  constructor(Entry, NamedList, 
+  constructor(Entry, Named-List, 
     named-list(<opname(term)>,<sort(term)>,<elem-sort(term)>)),
   constructor(Entry, Separated-List, 
     separated-list(<sort(term)>,<elem-sort(term)>,<separators(Separators)>)),
@@ -14,8 +14,8 @@
 	list(Modules, Module),
 	constructor(Module, Modulentry, modulentry(<modulename(ModuleName)>,<imports(Imports)>,<sorts(Sorts)>,<entries(Entries)>)),
 	list(Imports, ModuleName),
-	constructor(Type, Type, Type(<name(str)>)),
+	constructor(Type, Type, type(<name(str)>)),
 	list(Sorts, Type),
-	constructor(ModuleName, Name, Name(<name(str)>))
+	constructor(ModuleName, Name, name(<name(str)>))
 
 ]

@@ -76,7 +76,7 @@ public class Factory {
     proto_Entries = new apigen.adt.api.types.Entries(this);
     proto_Entries.init(84, null, null, null);
     empty_Entries = (apigen.adt.api.types.Entries) factory.build(proto_Entries);
-    empty_Entries.init(84, empty_Entries, null, null);
+    empty_Entries.init(84, factory.getEmpty(), null, null);
     pattern_Entry_Constructor = factory.parse("constructor(<term>,<term>,<term>)");
     fun_Entry_Constructor = factory.makeAFun("_Entry_Constructor", 3, false);
     proto_Entry_Constructor = new apigen.adt.api.types.entry.Constructor(this);
@@ -86,7 +86,7 @@ public class Factory {
     proto_Entry_List = new apigen.adt.api.types.entry.List(this);
 
     pattern_Entry_NamedList = factory.parse("named-list(<term>,<term>,<term>)");
-    fun_Entry_NamedList = factory.makeAFun("_Entry_NamedList", 3, false);
+    fun_Entry_NamedList = factory.makeAFun("_Entry_Named-List", 3, false);
     proto_Entry_NamedList = new apigen.adt.api.types.entry.NamedList(this);
 
     pattern_Entry_SeparatedList = factory.parse("separated-list(<term>,<term>,<term>)");
@@ -96,7 +96,7 @@ public class Factory {
     proto_Separators = new apigen.adt.api.types.Separators(this);
     proto_Separators.init(126, null, null, null);
     empty_Separators = (apigen.adt.api.types.Separators) factory.build(proto_Separators);
-    empty_Separators.init(126, empty_Separators, null, null);
+    empty_Separators.init(126, factory.getEmpty(), null, null);
     pattern_Separator_Default = factory.parse("<term>");
     fun_Separator_Default = factory.makeAFun("_Separator_Default", 1, false);
     proto_Separator_Default = new apigen.adt.api.types.separator.Default(this);
@@ -104,7 +104,7 @@ public class Factory {
     proto_Modules = new apigen.adt.api.types.Modules(this);
     proto_Modules.init(168, null, null, null);
     empty_Modules = (apigen.adt.api.types.Modules) factory.build(proto_Modules);
-    empty_Modules.init(168, empty_Modules, null, null);
+    empty_Modules.init(168, factory.getEmpty(), null, null);
     pattern_Module_Modulentry = factory.parse("modulentry(<term>,<term>,<term>,<term>)");
     fun_Module_Modulentry = factory.makeAFun("_Module_Modulentry", 4, false);
     proto_Module_Modulentry = new apigen.adt.api.types.module.Modulentry(this);
@@ -112,16 +112,16 @@ public class Factory {
     proto_Imports = new apigen.adt.api.types.Imports(this);
     proto_Imports.init(210, null, null, null);
     empty_Imports = (apigen.adt.api.types.Imports) factory.build(proto_Imports);
-    empty_Imports.init(210, empty_Imports, null, null);
-    pattern_Type_Type = factory.parse("Type(<str>)");
+    empty_Imports.init(210, factory.getEmpty(), null, null);
+    pattern_Type_Type = factory.parse("type(<str>)");
     fun_Type_Type = factory.makeAFun("_Type_Type", 1, false);
     proto_Type_Type = new apigen.adt.api.types.type.Type(this);
 
     proto_Sorts = new apigen.adt.api.types.Sorts(this);
     proto_Sorts.init(252, null, null, null);
     empty_Sorts = (apigen.adt.api.types.Sorts) factory.build(proto_Sorts);
-    empty_Sorts.init(252, empty_Sorts, null, null);
-    pattern_ModuleName_Name = factory.parse("Name(<str>)");
+    empty_Sorts.init(252, factory.getEmpty(), null, null);
+    pattern_ModuleName_Name = factory.parse("name(<str>)");
     fun_ModuleName_Name = factory.makeAFun("_ModuleName_Name", 1, false);
     proto_ModuleName_Name = new apigen.adt.api.types.modulename.Name(this);
 
@@ -409,7 +409,7 @@ public class Factory {
     return (apigen.adt.api.types.Entries) makeEntries((aterm.ATerm) head, (aterm.ATermList) tail, factory.getEmpty());
   }
 
-  protected apigen.adt.api.types.Entries makeEntries(aterm.ATerm head, aterm.ATermList tail, aterm.ATermList annos) {
+  public apigen.adt.api.types.Entries makeEntries(aterm.ATerm head, aterm.ATermList tail, aterm.ATermList annos) {
     synchronized (proto_Entries) {
       proto_Entries.initHashCode(annos, head, tail);
       return (apigen.adt.api.types.Entries) factory.build(proto_Entries);
@@ -471,7 +471,7 @@ public class Factory {
     return (apigen.adt.api.types.Separators) makeSeparators((aterm.ATerm) head, (aterm.ATermList) tail, factory.getEmpty());
   }
 
-  protected apigen.adt.api.types.Separators makeSeparators(aterm.ATerm head, aterm.ATermList tail, aterm.ATermList annos) {
+  public apigen.adt.api.types.Separators makeSeparators(aterm.ATerm head, aterm.ATermList tail, aterm.ATermList annos) {
     synchronized (proto_Separators) {
       proto_Separators.initHashCode(annos, head, tail);
       return (apigen.adt.api.types.Separators) factory.build(proto_Separators);
@@ -533,7 +533,7 @@ public class Factory {
     return (apigen.adt.api.types.Modules) makeModules((aterm.ATerm) head, (aterm.ATermList) tail, factory.getEmpty());
   }
 
-  protected apigen.adt.api.types.Modules makeModules(aterm.ATerm head, aterm.ATermList tail, aterm.ATermList annos) {
+  public apigen.adt.api.types.Modules makeModules(aterm.ATerm head, aterm.ATermList tail, aterm.ATermList annos) {
     synchronized (proto_Modules) {
       proto_Modules.initHashCode(annos, head, tail);
       return (apigen.adt.api.types.Modules) factory.build(proto_Modules);
@@ -595,7 +595,7 @@ public class Factory {
     return (apigen.adt.api.types.Imports) makeImports((aterm.ATerm) head, (aterm.ATermList) tail, factory.getEmpty());
   }
 
-  protected apigen.adt.api.types.Imports makeImports(aterm.ATerm head, aterm.ATermList tail, aterm.ATermList annos) {
+  public apigen.adt.api.types.Imports makeImports(aterm.ATerm head, aterm.ATermList tail, aterm.ATermList annos) {
     synchronized (proto_Imports) {
       proto_Imports.initHashCode(annos, head, tail);
       return (apigen.adt.api.types.Imports) factory.build(proto_Imports);
@@ -657,7 +657,7 @@ public class Factory {
     return (apigen.adt.api.types.Sorts) makeSorts((aterm.ATerm) head, (aterm.ATermList) tail, factory.getEmpty());
   }
 
-  protected apigen.adt.api.types.Sorts makeSorts(aterm.ATerm head, aterm.ATermList tail, aterm.ATermList annos) {
+  public apigen.adt.api.types.Sorts makeSorts(aterm.ATerm head, aterm.ATermList tail, aterm.ATermList annos) {
     synchronized (proto_Sorts) {
       proto_Sorts.initHashCode(annos, head, tail);
       return (apigen.adt.api.types.Sorts) factory.build(proto_Sorts);
@@ -944,6 +944,11 @@ public class Factory {
     return str.toString();
   }
 
+  public static char charToByte(aterm.ATerm arg) {
+
+      return((char) ((aterm.ATermInt) arg).getInt());
+  }
+
   public aterm.ATerm stringToChars(String str) {
     int len = str.length();
     byte chars[] = str.getBytes();
@@ -954,6 +959,10 @@ public class Factory {
     }
 
     return (aterm.ATerm) result;
+  }
+
+  public aterm.ATerm byteToChar(char ch) {
+      return getPureFactory().makeInt((int) ch);
   }
 
 }
