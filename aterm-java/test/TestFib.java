@@ -16,9 +16,9 @@ public class TestFib {
   public final static void main(String[] args) {
     TestFib t = new TestFib(new PureFactory());
 
-    t.test1();
-    t.test2();
-    t.test3(15);
+      t.test1();
+      t.test2();
+      t.test3(15);
   }
 
   public TestFib(ATermFactory factory) {

@@ -18,7 +18,7 @@ TESTS = $(foreach t, ${java_JAVA}, $t.test)
 	 echo 'set -e';\
 	 echo 'CLASSPATH=${top_builddir}:..:${SHARED_OBJECTS}:${CLASSPATH}';\
 	 echo 'export CLASSPATH';\
-	 echo "java test/$* ${srcdir}";\
+	 echo "java test.$* ${srcdir}";\
 	 echo "rm $*.java.test";\
 	) > $@ && chmod +x $@
 
