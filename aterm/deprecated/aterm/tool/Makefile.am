@@ -14,8 +14,6 @@ JAVAROOT    = ${top_builddir}/java1.2/
 
 CLEANFILES  = test.tifs Testing.java
 
-BUILT_SOURCES = test.tifs Testing.java
-
 ${srcdir}/TestingTool.java : Testing.java
 
 Testing.java: test.tifs JavaTif.class
