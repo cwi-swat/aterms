@@ -309,6 +309,7 @@ ATbool AT_isMarkedSymbol(Symbol s)
 
 void ATprotectSymbol(Symbol sym)
 {
+
 	if(nr_protected_symbols >= max_protected_symbols) {
 		max_protected_symbols += SYM_PROTECT_EXPAND_SIZE;
 		protected_symbols = (Symbol *)realloc(protected_symbols,
@@ -353,7 +354,7 @@ void AT_markProtectedSymbols()
 	int lcv;
 
 	for(lcv = 0; lcv < nr_protected_symbols; lcv++)
-		SET_MARK(((ATerm)lookup_table[lcv])->header);
+		SET_MARK(((ATerm)lookup_table[protected_symbols[lcv]])->header);
 }
 
 /*}}}  */
