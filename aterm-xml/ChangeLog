@@ -1,5 +1,8 @@
 $Id$
 
+2003-06-27 (jurgenv@cwi.nl)
+  * Added package definition file
+
 2003-05-30 (jurgenv@cwi.nl)
   * Fixed error in configure.in script
 
