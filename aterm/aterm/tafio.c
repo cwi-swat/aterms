@@ -803,7 +803,7 @@ static ATerm rparse_term(int *c, byte_reader *reader, ATermIndexedSet abbrevs)
       break;
 
     default:
-      if (isalpha(*c)) {
+      if (isalpha(*c) || *c == '(') {
 	result = (ATerm) rparse_unquoted_appl(c, reader, abbrevs);
       } else if (isdigit(*c)) {
 	result = rparse_num(c, reader);
