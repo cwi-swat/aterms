@@ -48,6 +48,14 @@ public class ListTest {
     strs[4] = l.toString();
     testAssert("list(modules([\"amodule\",\"amodule\",\"amodule\"]))".equals(
 	     strs[4]), "toStringTest4");
+         
+    /* If the hash code generator does not generate different hash codes for these
+     * two constructors (they have the same pattern, same alternative name, but a different type)
+     * then a ClassCastException will occurr:
+     */
+    Modules mempty = factory.makeModulesEmpty();
+    Modules2 mempty2 = factory.makeModules2Empty();
+    
   }
 
   public final static void main(String[] args) {
