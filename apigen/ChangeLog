@@ -3,6 +3,8 @@
   * Removed unused layout definitions in C-Layout
   * test/Makefile.am used obsolete 'apigen' instead of 'gen-c-api'
   * fixed dependency problem in check target
+  * Updated SDF_FILES in spec/Makefile.am to reflect recent changes
+    in specification structure.
 
 2000/08/22 ({jong,olivierp}@cwi.nl)
   * Version is now 0.2
