@@ -548,6 +548,7 @@ static void allocate_block(int size)
     ((ATerm)(((header_type *)data)+idx))->header = AT_FREE;
   }
   ((ATerm)(((header_type *)data)+idx))->next = NULL;
+  ((ATerm)(((header_type *)data)+idx))->header = AT_FREE;
 
   /* Place the new block in the block_table */
   /*idx = (((MachineWord)newblock) >> (BLOCK_SHIFT+2)) % BLOCK_TABLE_SIZE;*/
