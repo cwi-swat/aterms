@@ -384,7 +384,7 @@ static void resize_buffer(int n)
 {
   free(buffer);
   buffer_size = n;
-  buffer = (char *)malloc(buffer_size);
+  buffer = (char *) realloc(buffer, buffer_size);
   if(!buffer)
     ATerror("ATinit: cannot allocate string buffer of size %d\n", buffer_size);
 }
