@@ -134,28 +134,6 @@ AC_SUBST(LFLAGS_PROF)
 
 AC_HAVE_FUNCS(strdup)
 
-dnl Find out which libraries we need
-
-SOCKET_FOUND=no
-AC_CHECK_LIB(sun,socket,[SOCKET_FOUND=yes;LIBS="$LIBS -lsun"])
-if test ${SOCKET_FOUND} = no; then
-   AC_CHECK_LIB(socket, socket,[SOCKET_FOUND=yes;LIBS="$LIBS -lsocket"])
-   if test ${SOCKET_FOUND} = no; then
-      AC_CHECK_LIB(bsd,
-                   socket,
-                   [SOCKET_FOUND=yes;LIBS="$LIBS -lbsd";DEFS="$DEFS -D_BSD=43"]
-)
-   fi
-fi
-
-AC_CHECK_LIB(dl, dlopen)
-
-GETHOSTNAME_FOUND=no
-AC_CHECK_LIB(sun,gethostname,[GETHOSTNAME_FOUND=yes])
-if test ${GETHOSTNAME_FOUND} = no; then
-   AC_CHECK_LIB(nsl,gethostname,[GETHOSTNAME_FOUND=yes;LIBS="$LIBS -lnsl"])
-fi
-
 dnl Find out if we have rand48 suite
 AC_CHECK_FUNCS(lrand48 srand48)
 
