@@ -1,0 +1,8 @@
+#! /bin/sh
+#
+# $Id$
+
+aclocal
+autoconf
+autoheader
+automake -a

@@ -1,0 +1,11 @@
+#
+# vim:ts=8:sw=8:sts=0
+#
+# $Id$
+#
+
+include ${top_srcdir}/make_rules
+
+SUBDIRS     = utils test
+
+EXTRA_DIST  = make_rules
