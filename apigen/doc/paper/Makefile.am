@@ -4,7 +4,7 @@
 # $Id$
 #
 
-SOURCES = apigen.ltx aterm.sdf bool.example set.example
+SOURCES = apigen.ltx ATerms.sdf bool.example set.example
 
 include ${top_srcdir}/make_rules
 

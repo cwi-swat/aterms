@@ -224,32 +224,10 @@ Figure~\ref{fig:bool-example}.
 \subsection{Annotated Terms: the \aterm\ syntax}
 \label{sec:aterm-syntax}
 
-The definition of \aterms{} as well as its syntax in \sdf\ can be
-found in~\cite{BJKO2000}. A more concise version of the syntax is
-shown in figure~\ref{fig:aterm-syntax}. The definitions of the sorts
-\texttt{ATermInt} and \texttt{ATermReal} describing the lexical syntax
-of an integer and real valued number respectively, have been left out.
-Parts of the lexical definition of a function symbol \texttt{AFun} were
-likewise omitted\footnote{The official definition allows a much richer
-\emph{quoted} definition for function symbols as well.}.
-
-% {{{  fig:aterm-syntax
-
-\begin{figure}
-\hrulefill
-\begin{scriptsize}
-\verbatiminput{aterm.sdf}
-\caption{
-  \label{fig:aterm-syntax}
-  Abbreviated \aterm\ syntax in \sdf.
-}
-\end{scriptsize}
-\hrulefill
-\end{figure}
-
-% }}}
-
-Here are a number of examples to show some of the features of the textual representation of \aterms:
+The definition of the concrete syntax of \aterms\ is given in
+Appendix~\ref{app:aterm-syntax}. Here are a number of examples to
+(re-)familiarize the reader with some of the features of the textual
+representation of \aterms:
 
 \begin{itemize}
 
@@ -257,7 +235,7 @@ Here are a number of examples to show some of the features of the textual repres
 \texttt{3.14}, and \texttt{-0.7E34} are all valid \aterms.
 
 \item Function applications are represented by a function name followed
-by an open parenthesis, a slist of arguments separated by commas, and a
+by an open parenthesis, a list of arguments separated by commas, and a
 closing parenthesis. When there are no arguments, the parentheses may be
 omitted. Examples are: \texttt{f(a,b)} and \texttt{"test!"(1,2.1,"Hello
 world!")}. These examples show that double quotes can be used to delimite
@@ -800,6 +778,21 @@ exported \api\ functions.
 
 \bibliographystyle{alpha}
 \bibliography{apigen}
+
+% }}}
+% {{{  Appendix
+
+\appendix
+
+% {{{  Concrete Syntax of ATerms
+
+\section{Concrete Syntax of \aterms}
+\label{app:aterm-syntax}
+A formal definition of the concrete syntax for \aterms\ using \sdf\
+is presented here.
+\verbatiminput{ATerms.sdf}
+
+% }}}
 
 % }}}
 
