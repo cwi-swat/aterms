@@ -25,7 +25,6 @@
 
 static char version[] = "1.0";
 
-#define arity(appl) (ATgetArity(ATgetAFun((ATermAppl) appl)))
 #define streq(str1, str2) (!strcmp(str1, str2))
 #define MAX_LABELS 256
 
@@ -41,7 +40,7 @@ visitATerm(ATerm tree, ATerm (*accept)(ATerm t, ATerm data), ATerm data)
     /*{{{  Handle function application */
 
     {
-      int arity = ATgetArity(ATgetAFun((ATermAppl)appl));
+      int arity = ATgetArity(ATgetAFun((ATermAppl)tree));
       ATerm arg;
       int i;
 
