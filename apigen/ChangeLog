@@ -3,6 +3,7 @@
 Tue Dec  2 10:54:54 CET 2003 <jurgenv@cwi.nl>
  * Split of a scripts directory from the utils directory  to prevent
    a circular dependency.
+ * Bumped to version 2.0
 
 Mon Dec  1 14:12:47 CET 2003 <{jong,jurgenv}@cwi.nl>
  * apigen/gen/c:
