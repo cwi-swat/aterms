@@ -1,43 +1,41 @@
-package apigen.adt;
+    package apigen.adt;
 
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 
+import apigen.adt.api.Entries;
+import apigen.adt.api.Entry;
 import aterm.ATerm;
-import aterm.ATermList;
+import aterm.ATermAppl;
 
 public class ADT {
 	List types;
   List bottomTypes;
 
-
-	//{{{ public API(ATerm adt)
-
-	public ADT(ATerm adt) {
+	public ADT(Entries adt) {
 		types = new LinkedList();
 
-		ATermList list = (ATermList) adt;
 		List entries = new LinkedList();
 
-		while (!list.isEmpty()) {
-			entries.add(list.getFirst());
-			list = list.getNext();
+		while (!adt.isEmpty()) {
+			entries.add(adt.getHead());
+			adt = adt.getTail();
 		}
 
 		while (!entries.isEmpty()) {
 			List alts = new LinkedList();
 			ListIterator iter = entries.listIterator();
-			ATermList first = (ATermList) iter.next();
+			Entry first = (Entry) iter.next();
 			alts.add(first);
-			ATerm typeId = first.getFirst();
+			String typeId = ((ATermAppl) first.getSort()).getAFun().getName();
 
 			iter.remove();
 			while (iter.hasNext()) {
         try {
-				  ATermList entry = (ATermList) iter.next();
-				  if (entry.getFirst().equals(typeId)) {
+				  Entry entry = (Entry) iter.next();
+				  if (((ATermAppl) entry.getSort()).getAFun().getName().equals(typeId)) {
 				  	alts.add(entry);
 				  	iter.remove();
 				  }
@@ -53,8 +51,6 @@ public class ADT {
     
     computeBottomTypes();
 	}
-
-	//}}}
 
   private void computeBottomTypes() {
     bottomTypes = new LinkedList();
@@ -86,16 +82,15 @@ public class ADT {
       } 
     }
   }
-	//{{{ private void processAlternatives(String typeId, List alts)
 
 	private void processAlternatives(String typeId, List alts) {
 		Type type = new Type(typeId);
 		ListIterator iter = alts.listIterator();
+        
 		while (iter.hasNext()) {
-			ATermList entry = (ATermList) iter.next();
-			List matches = entry.match("[<appl>,<appl>,<term>]");
-			String altId = (String) matches.get(1);
-			ATerm pattern = (ATerm) matches.get(2);
+			Entry entry = (Entry) iter.next();
+			String altId = ((ATermAppl) entry.getAlternative()).getAFun().getName();
+			ATerm pattern = entry.getTermPattern();
 
 			Alternative alt = new Alternative(altId, pattern);
       
@@ -111,10 +106,6 @@ public class ADT {
 		types.add(type);
 	}
 
-	//}}}
-
-	//{{{ public Iterator typeIterator()
-
 	public Iterator typeIterator() {
 		return types.iterator();
 	}
@@ -122,7 +113,4 @@ public class ADT {
   public Iterator bottomTypeIterator() {
     return bottomTypes.iterator();
   }
-  
-	//}}}
-
 }

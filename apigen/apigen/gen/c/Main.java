@@ -1,12 +1,14 @@
 package apigen.gen.c;
 
-import java.io.*;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
-import aterm.ATermFactory;
-import aterm.pure.PureFactory;
-
-import apigen.adt.*;
+import apigen.adt.ADT;
+import apigen.adt.api.ADTFactory;
+import apigen.adt.api.Entries;
 import apigen.gen.tom.TomSignatureGenerator;
+import aterm.ATerm;
 
 public class Main {
 	private static boolean verbose = false;
@@ -83,9 +85,12 @@ public class Main {
 		ADT adt;
 
 		try {
-			ATermFactory factory = new PureFactory();
-			
-			adt = new ADT(factory.readFromFile(input));
+      ADTFactory factory = new ADTFactory();
+      ATerm raw = factory.readFromFile(input);
+      Entries entries = Entries.fromTerm(raw);      
+      
+			adt = new ADT(entries);
+            
 			APIGenerator apigen = 
 			new APIGenerator(adt, output, prefix, prologue, verbose, true, make_term_compatibility);
 			apigen.run();

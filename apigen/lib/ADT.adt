@@ -1,5 +1,5 @@
 [
   [Entries, Empty, []],
   [Entries, List, [<head(Entry)>, <[tail(Entries)]>]],
-  [Entry, Default, [<sort(Sort)>,<alt(Alternative)>,<pat(Pattern)>]]
+  [Entry, Constructor, [<sort(term)>,<alternative(term)>,<term-pattern(term)>]]
 ]

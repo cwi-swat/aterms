@@ -73,8 +73,8 @@ public class ADTFactory extends PureFactory
     }
   }
 
-  public Entry_Constructor makeEntry_Constructor(String _type, String _alternative, ATerm _pattern) {
-    aterm.ATerm[] args = new aterm.ATerm[] {makeAppl(makeAFun(_type, 0, true)), makeAppl(makeAFun(_alternative, 0, true)), _pattern};
+  public Entry_Constructor makeEntry_Constructor(ATerm _sort, ATerm _alternative, ATerm _termPattern) {
+    aterm.ATerm[] args = new aterm.ATerm[] {_sort, _alternative, _termPattern};
     return makeEntry_Constructor( funEntry_Constructor, args, empty);
   }
 

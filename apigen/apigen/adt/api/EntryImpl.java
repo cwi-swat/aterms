@@ -36,7 +36,7 @@ abstract public class EntryImpl extends ADTConstructor
     return false;
   }
 
-  public boolean hasType()
+  public boolean hasSort()
   {
     return false;
   }
@@ -46,39 +46,39 @@ abstract public class EntryImpl extends ADTConstructor
     return false;
   }
 
-  public boolean hasPattern()
+  public boolean hasTermPattern()
   {
     return false;
   }
 
-  public String getType()
+  public ATerm getSort()
   {
-     throw new RuntimeException("This Entry has no Type");
+     throw new RuntimeException("This Entry has no Sort");
   }
 
-  public Entry setType(String _type)
+  public Entry setSort(ATerm _sort)
   {
-     throw new RuntimeException("This Entry has no Type");
+     throw new RuntimeException("This Entry has no Sort");
   }
 
-  public String getAlternative()
+  public ATerm getAlternative()
   {
      throw new RuntimeException("This Entry has no Alternative");
   }
 
-  public Entry setAlternative(String _alternative)
+  public Entry setAlternative(ATerm _alternative)
   {
      throw new RuntimeException("This Entry has no Alternative");
   }
 
-  public ATerm getPattern()
+  public ATerm getTermPattern()
   {
-     throw new RuntimeException("This Entry has no Pattern");
+     throw new RuntimeException("This Entry has no TermPattern");
   }
 
-  public Entry setPattern(ATerm _pattern)
+  public Entry setTermPattern(ATerm _termPattern)
   {
-     throw new RuntimeException("This Entry has no Pattern");
+     throw new RuntimeException("This Entry has no TermPattern");
   }
 
 

@@ -11,9 +11,11 @@ import java.util.List;
 import apigen.adt.ADT;
 import apigen.adt.Alternative;
 import apigen.adt.Type;
+import apigen.adt.api.ADTFactory;
+import apigen.adt.api.Entries;
 import apigen.gen.tom.TomSignatureGenerator;
+import aterm.ATerm;
 import aterm.ParseError;
-import aterm.pure.PureFactory;
 
 public class Main {
 	private static boolean visitable = false;
@@ -107,7 +109,10 @@ public class Main {
 
 	static public void run(InputStream input) {
 		try {
-			generateAPI(new ADT(new PureFactory().readFromFile(input)));
+      ADTFactory factory = new ADTFactory();
+      ATerm raw = factory.readFromFile(input);
+      Entries entries = Entries.fromTerm(raw);      
+			generateAPI(new ADT(entries));
 		} catch (ParseError e) {
 			System.err.println("A parse error occurred in the ADT file:");
 			System.err.println(e);

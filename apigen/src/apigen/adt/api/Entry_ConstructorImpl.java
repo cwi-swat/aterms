@@ -1,5 +1,7 @@
 package apigen.adt.api;
 
+import aterm.ATerm;
+
 abstract public class Entry_ConstructorImpl
 extends Entry
 {
@@ -8,9 +10,9 @@ extends Entry
   protected aterm.ATerm getPattern() {
     return pattern;
   }
-  private static int index_type = 0;
+  private static int index_sort = 0;
   private static int index_alternative = 1;
-  private static int index_pattern = 2;
+  private static int index_termPattern = 2;
   public shared.SharedObject duplicate() {
     Entry_Constructor clone = new Entry_Constructor();
      clone.init(hashCode(), getAnnotations(), getAFun(), getArgumentArray());
@@ -22,7 +24,7 @@ extends Entry
   }
   static public void initializePattern()
   {
-    pattern = getStaticFactory().parse("[<str>,<str>,<term>]");
+    pattern = getStaticFactory().parse("[<term>,<term>,<term>]");
   }
 
   static public Entry fromTerm(aterm.ATerm trm)
@@ -30,7 +32,7 @@ extends Entry
     java.util.List children = trm.match(pattern);
 
     if (children != null) {
-      Entry tmp = getStaticADTFactory().makeEntry_Constructor((String) children.get(0), (String) children.get(1), (aterm.ATerm) children.get(2));
+      Entry tmp = getStaticADTFactory().makeEntry_Constructor((aterm.ATerm) children.get(0), (aterm.ATerm) children.get(1), (aterm.ATerm) children.get(2));
       tmp.setTerm(trm);
       return tmp;
     }
@@ -41,8 +43,8 @@ extends Entry
   public aterm.ATerm toTerm() {
     if(term == null) {
       java.util.List args = new java.util.LinkedList();
-      args.add(((aterm.ATermAppl) getArgument(0)).getAFun().getName());
-      args.add(((aterm.ATermAppl) getArgument(1)).getAFun().getName());
+      args.add((aterm.ATerm) getArgument(0));
+      args.add((aterm.ATerm) getArgument(1));
       args.add((aterm.ATerm) getArgument(2));
       setTerm(getFactory().make(getPattern(), args));
     }
@@ -54,7 +56,7 @@ extends Entry
     return true;
   }
 
-  public boolean hasType()
+  public boolean hasSort()
   {
     return true;
   }
@@ -64,51 +66,51 @@ extends Entry
     return true;
   }
 
-  public boolean hasPattern()
+  public boolean hasTermPattern()
   {
     return true;
   }
 
-  public String getType()
+  public ATerm getSort()
   {
-   return ((aterm.ATermAppl) this.getArgument(index_type)).getAFun().getName();
+   return this.getArgument(index_sort);
   }
 
-  public Entry setType(String _type)
+  public Entry setSort(ATerm _sort)
   {
-    return (Entry) super.setArgument(getFactory().makeAppl(getFactory().makeAFun(_type, 0, true)), index_type);
+    return (Entry) super.setArgument(_sort, index_sort);
   }
 
-  public String getAlternative()
+  public ATerm getAlternative()
   {
-   return ((aterm.ATermAppl) this.getArgument(index_alternative)).getAFun().getName();
+   return this.getArgument(index_alternative);
   }
 
-  public Entry setAlternative(String _alternative)
+  public Entry setAlternative(ATerm _alternative)
   {
-    return (Entry) super.setArgument(getFactory().makeAppl(getFactory().makeAFun(_alternative, 0, true)), index_alternative);
+    return (Entry) super.setArgument(_alternative, index_alternative);
   }
 
-  public ATerm getPattern()
+  public ATerm getTermPattern()
   {
-   return this.getArgument(index_pattern);
+   return this.getArgument(index_termPattern);
   }
 
-  public Entry setPattern(ATerm _pattern)
+  public Entry setTermPattern(ATerm _termPattern)
   {
-    return (Entry) super.setArgument(_pattern, index_pattern);
+    return (Entry) super.setArgument(_termPattern, index_termPattern);
   }
 
   public aterm.ATermAppl setArgument(aterm.ATerm arg, int i) {
     switch(i) {
       case 0:
-        if (! (arg instanceof aterm.ATermAppl)) { 
-          throw new RuntimeException("Argument 0 of a Entry_Constructor should have type str");
+        if (! (arg instanceof aterm.ATerm)) { 
+          throw new RuntimeException("Argument 0 of a Entry_Constructor should have type term");
         }
         break;
       case 1:
-        if (! (arg instanceof aterm.ATermAppl)) { 
-          throw new RuntimeException("Argument 1 of a Entry_Constructor should have type str");
+        if (! (arg instanceof aterm.ATerm)) { 
+          throw new RuntimeException("Argument 1 of a Entry_Constructor should have type term");
         }
         break;
       case 2:

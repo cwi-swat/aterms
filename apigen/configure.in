@@ -77,7 +77,8 @@ utils/adt-to-c
 utils/adt-to-java
 apigen/Makefile
 apigen/adt/Makefile
-apigen/gen/Makefile
+apigen/adt/Makefile
+apigen/adt/api/Makefile
 apigen/gen/tom/Makefile
 apigen/gen/c/Makefile
 apigen/gen/java/Makefile
