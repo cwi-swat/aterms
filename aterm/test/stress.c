@@ -134,11 +134,14 @@ testAlloc(void)
   * Test symbol creation and printing
   */
 
+#define NR_TEST_AFUNS (3*65535/2)
 void
 testSymbol(void)
 {
   int i;
   Symbol symmies[8];
+  AFun test_afuns[NR_TEST_AFUNS];
+  char buf[BUFSIZ];
 
   symmies[0] = ATmakeSymbol("application", 3, ATfalse);
   symmies[1] = ATmakeSymbol("application", 3, ATtrue);
@@ -153,12 +156,17 @@ testSymbol(void)
   assert(symmies[1] != symmies[3]);
   assert(symmies[2] != symmies[3]);
 
-  for (i=0; i< 3*65535/2; i++)
-    {
-      char buf[BUFSIZ];
-      sprintf(buf, "xxx%d", i);
-      ATmakeSymbol(buf, 0, ATtrue);
-    }
+  for (i=0; i<NR_TEST_AFUNS; i++) {
+    sprintf(buf, "xxx%d", i);
+    test_afuns[i] = ATmakeSymbol(buf, 0, ATtrue);
+  }
+
+  for (i=0; i<NR_TEST_AFUNS; i++) {
+    sprintf(buf, "xxx%d", i);
+    test_assert("symbol", i, test_afuns[i] == ATmakeSymbol(buf, 0, ATtrue));
+  }
+
+  printf("symbol tests ok.\n");
 }
 
 /*}}}  */

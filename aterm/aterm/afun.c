@@ -51,6 +51,8 @@
 #define INITIAL_PROTECTED_SYMBOLS   1024
 #define SYM_PROTECT_EXPAND_SIZE     1024
 
+#define MAGIC_PRIME 7
+
 /*}}}  */
 /*{{{  globals */
 
@@ -79,6 +81,48 @@ ATerm    *at_lookup_table_alias = NULL;
 
 /*}}}  */
 
+/*{{{  static void resize_table() */
+
+static void resize_table()
+{
+  int i;
+  int new_class = table_class+1;
+  int new_size  = TABLE_SIZE(new_class);
+  int new_mask  = TABLE_MASK(new_class);
+
+  at_lookup_table = (SymEntry *)realloc(at_lookup_table, new_size*sizeof(SymEntry));
+  at_lookup_table_alias = (ATerm *)at_lookup_table;
+  if (!at_lookup_table) {
+    ATerror("afun.c:resize_table - could not allocate space for lookup table of %d afuns\n", new_size);
+  }
+  for (i = table_size; i < new_size; i++) {
+    at_lookup_table[i] = (SymEntry) SYM_SET_NEXT_FREE(first_free);
+    first_free = i;
+  }
+
+  hash_table = (SymEntry *)realloc(hash_table, new_size*sizeof(SymEntry));
+  if (!hash_table) {
+    ATerror("afun.c:resize_table - could not allocate space for hashtable of %d afuns\n", new_size);
+  }
+  memset(hash_table, 0, new_size*sizeof(SymEntry));
+
+  for (i=0; i<table_size; i++) {
+    SymEntry entry = at_lookup_table[i];
+    if (!SYM_IS_FREE(entry)) {
+      ShortHashNumber hnr = AT_hashSymbol(entry->name, GET_LENGTH(entry->header));
+      hnr &= new_mask;
+      entry->next = hash_table[hnr];
+      hash_table[hnr] = entry;
+    }
+  }
+
+  table_class = new_class;
+  table_size  = new_size;
+  table_mask  = new_mask;
+}
+
+/*}}}  */
+
 /*{{{  unsigned int AT_symbolTableSize() */
 
 unsigned int AT_symbolTableSize()
@@ -103,7 +147,6 @@ void AT_initSymbol(int argc, char *argv[])
       table_class = atoi(argv[++i]);
       table_size  = TABLE_SIZE(table_class);
       table_mask  = TABLE_MASK(table_class);
-      fprintf(stderr, "table_size=%d, table_mask=%d\n", table_size, table_mask);
     } else if(streq(argv[i], "-at-help")) {
       fprintf(stderr, "    %-20s: initial afun table class " 
 	      "(default=%d)\n",	AFUN_TABLE_OPT " <class>", table_class);
@@ -291,7 +334,7 @@ ShortHashNumber AT_hashSymbol(char *name, int arity)
   for(hnr = arity*3; *walk; walk++)
     hnr = 251 * hnr + *walk;
   
-  return hnr;
+  return hnr*MAGIC_PRIME;
 }
 
 
@@ -319,28 +362,37 @@ Symbol ATmakeSymbol(char *name, int arity, ATbool quoted)
   if (cur == NULL) {
     Symbol free_entry;
 
+    free_entry = first_free;
+    if(free_entry == -1) {
+      resize_table();
+
+      /* Hashtable size changed, so recalculate hashnumber */
+      hnr = AT_hashSymbol(name, arity) & table_mask;
+     
+      free_entry = first_free;
+      if(free_entry == -1) {
+	ATerror("AT_initSymbol: out of symbol slots!\n");
+      }
+    }
+
+    first_free = SYM_GET_NEXT_FREE(at_lookup_table[first_free]);
+
     cur = (SymEntry) AT_allocate(TERM_SIZE_SYMBOL);
+    at_lookup_table[free_entry] = cur;
+
     cur->header = header;
-    cur->next = hash_table[hnr];
+    cur->id = free_entry;
+    cur->count = 0;
+    cur->index = -1;
+
     cur->name = strdup(name);
     if (cur->name == NULL) {
       ATerror("ATmakeSymbol: no room for name of length %d\n",
 	      strlen(name));
     }
 
-    cur->count = 0;
-    cur->index = -1;
-
+    cur->next = hash_table[hnr];
     hash_table[hnr] = cur;
-
-    free_entry = first_free;
-    if(free_entry == -1) {
-      ATerror("AT_initSymbol: out of symbol slots!\n");
-    }
-
-    first_free = SYM_GET_NEXT_FREE(at_lookup_table[first_free]);
-    at_lookup_table[free_entry] = cur;
-    cur->id = free_entry;
   }
 
   return cur->id;
@@ -357,14 +409,15 @@ void AT_freeSymbol(SymEntry sym)
 {
   ShortHashNumber hnr;
   ATerm t = (ATerm)sym;
-  char *walk = sym->name;
+  /*char *walk = sym->name;*/
   
   /* Assert valid name-pointer */
   assert(sym->name);
   
   /* Calculate hashnumber */
-  for(hnr = GET_LENGTH(sym->header)*3; *walk; walk++)
-    hnr = 251 * hnr + *walk;
+  hnr = AT_hashSymbol(sym->name, GET_LENGTH(sym->header));
+  /*for(hnr = GET_LENGTH(sym->header)*3; *walk; walk++)
+    hnr = 251 * hnr + *walk;*/
   hnr &= table_mask;
   
   /* Update hashtable */
