@@ -6,7 +6,7 @@ import aterm.ATermFactory;
 import aterm.pure.PureFactory;
 
 import apigen.adt.*;
-import apigen.tom.TomSignatureGenerator;
+import apigen.gen.tom.TomSignatureGenerator;
 
 public class Main {
 	private static boolean verbose = false;

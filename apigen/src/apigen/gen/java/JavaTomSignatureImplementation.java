@@ -1,8 +1,8 @@
 package apigen.gen.java;
 
 import apigen.gen.StringConversions;
-import apigen.gen.TomSignatureImplementation;
 import apigen.gen.TypeConverter;
+import apigen.tom.TomSignatureImplementation;
 
 public class JavaTomSignatureImplementation implements TomSignatureImplementation {
 	private static TypeConverter converter;

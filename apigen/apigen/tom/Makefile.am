@@ -4,11 +4,10 @@
 # $Id: Makefile.am,v 1.7 2001/07/16 13:41:54 jong Exp $
 #
 
-SUBDIRS = . tom c java 
 
 CLASSPATH_ENV	= CLASSPATH=${top_srcdir}:$(JAVA_ATERM):$(SHARED_OBJECTS)
 
-java_JAVA       = Generator.java StringConversions.java TypeConverter.java TypeConversions.java
+java_JAVA       = TomSignatureGenerator.java TomSignatureImplementation.java 
 
-javadir         = ${prefix}/classes/apigen/gen
+javadir         = ${prefix}/classes/apigen/gen/tom
 JAVAROOT	= ${top_builddir}
