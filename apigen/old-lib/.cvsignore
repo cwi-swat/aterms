@@ -1,0 +1,9 @@
+.deps
+OLDADT.c
+OLDADT.dict
+OLDADT.h
+OLDADT_dict.c
+OLDADT_dict.h
+Makefile
+Makefile.in
+libOLDADT.a

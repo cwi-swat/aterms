@@ -1,0 +1,5 @@
+[
+  constructor(Entries, Empty, []),
+  constructor(Entries, List, [<head(Entry)>, <[tail(Entries)]>]),
+  constructor(Entry, Constructor, [<sort(term)>,<alternative(term)>,<term-pattern(term)>])
+]
