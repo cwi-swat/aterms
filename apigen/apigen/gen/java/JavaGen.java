@@ -288,7 +288,6 @@ extends Generator
     printFoldClose();
 	}
 
-
 	private void genFactoryMakeMethods(ADT api) {
     Iterator types = api.typeIterator();
     while (types.hasNext()) {
@@ -322,8 +321,7 @@ extends Generator
       }
     }
 	}
-
-  
+ 
   private void genFactoryInitialization(ADT api)
   {
     Iterator types = api.typeIterator();
@@ -441,7 +439,7 @@ extends Generator
   
   private void createFileStream(String name, String ext) {
     char sep = File.separatorChar;
-    createStream(basedir + sep + pkg.replace('.', sep) + sep + name + ext);
+    createStream(basedir + sep + name + ext);
   }
 	
 
