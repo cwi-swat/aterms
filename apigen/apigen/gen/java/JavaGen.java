@@ -956,13 +956,13 @@ extends Generator
       String field_type = field.getType();
       
       if (field_type.equals("str")) {
-        print("((aterm.ATermAppl) children.get(" + argnr + ")).getAFun().getName()");
+        print("(String) children.get(" + argnr + ")");
       }
       else if (field_type.equals("int")) {
-        print("new Integer (((aterm.ATermInt) children.get(" + argnr + ")).getInt())");
+        print("(Integer) children.get(" + argnr + ")");
       }
       else if (field_type.equals("real")) {
-        print("new Double (((aterm.ATermReal) children.get(" + argnr + ")).getReal())");
+        print("(Double) children.get(" + argnr + ")");
       }
       else {
         print(field_type + ".fromTerm( (aterm.ATerm) children.get(" + argnr + "))");
