@@ -7,7 +7,6 @@ import java.util.*;
 
 // import aterm.pure.PureFactory;
 
-import apigen.*;
 import apigen.adt.*;
 import apigen.gen.Generator;
 import aterm.ParseError;

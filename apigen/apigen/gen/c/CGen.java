@@ -8,7 +8,6 @@ import java.util.*;
 import aterm.*;
 import aterm.pure.PureFactory;
 
-import apigen.*;
 import apigen.adt.*;
 import apigen.gen.Generator;
 
