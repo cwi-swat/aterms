@@ -2,6 +2,7 @@
  * Generating reverse method is unnecessary again.
  * Renamed lib directory to lib-2.0 and old-lib directory to lib-1.0
  * Renamed convert-old-adt tool to upgrade-adt
+ * Renamed OLDADT library to ADT10 library
 
 2003-08-13  (jurgenv@cwi.nl)
  * Major change in code generation. The first step toward no more static

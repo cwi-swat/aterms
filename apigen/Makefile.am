@@ -1,4 +1,4 @@
-SUBDIRS		= apigen lib old-lib utils test doc
+SUBDIRS		= apigen lib-1.0 lib-2.0 utils test doc
 
 DISTFILE	= ${distdir}.tar.gz
 WWWDIR		= /hosts/www/projects/MetaEnv/apigen

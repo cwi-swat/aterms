@@ -4,10 +4,10 @@
 #include <string.h>
 
 #include <ADT.h>
-#include <OLDADT.h>
+#include <ADT10.h>
 #include <aterm2.h>
 
-static char myname[]    = "convert-old-adt";
+static char myname[]    = "upgrade-adt";
 static char myversion[] = "1.0";
 static char myarguments[] = "hi:lo:V";
 
@@ -96,22 +96,22 @@ ADT_Entry detectListIdiom(ATerm listType, ATerm pattern)
 }
 
 /*}}}  */
-/*{{{  ADT_Entry convertEntry(OLDADT_Entry old) */
+/*{{{  ADT_Entry convertEntry(ADT10_Entry old) */
 
-ADT_Entry convertEntry(OLDADT_Entry old)
+ADT_Entry convertEntry(ADT10_Entry old)
 {
-  ATerm pattern = OLDADT_getEntryTermPattern(old);
+  ATerm pattern = ADT10_getEntryTermPattern(old);
   ADT_Entry new = NULL;
 
   if (!checkForListIdioms || !isEmptyListPattern(pattern)) {
     if (checkForListIdioms) {
-      new = detectListIdiom(OLDADT_getEntrySort(old), pattern);
+      new = detectListIdiom(ADT10_getEntrySort(old), pattern);
     }
 
     if (new == NULL) {
-      return ADT_makeEntryConstructor(OLDADT_getEntrySort(old),
-				      OLDADT_getEntryAlternative(old),
-				      OLDADT_getEntryTermPattern(old));
+      return ADT_makeEntryConstructor(ADT10_getEntrySort(old),
+				      ADT10_getEntryAlternative(old),
+				      ADT10_getEntryTermPattern(old));
     }
   }
 
@@ -119,14 +119,14 @@ ADT_Entry convertEntry(OLDADT_Entry old)
 }
 
 /*}}}  */
-/*{{{  ADT_Entries convertEntries(OLDADT_Entries old) */
+/*{{{  ADT_Entries convertEntries(ADT10_Entries old) */
 
-ADT_Entries convertEntries(OLDADT_Entries old)
+ADT_Entries convertEntries(ADT10_Entries old)
 {
   ADT_Entries new = ADT_makeEntriesEmpty();
 
-  for (; !OLDADT_isEntriesEmpty(old); old = OLDADT_getEntriesTail(old)) {
-    OLDADT_Entry oldEntry = OLDADT_getEntriesHead(old);
+  for (; !ADT10_isEntriesEmpty(old); old = ADT10_getEntriesTail(old)) {
+    ADT10_Entry oldEntry = ADT10_getEntriesHead(old);
     ADT_Entry newEntry = convertEntry(oldEntry);
 
     if (newEntry != NULL) {
@@ -147,7 +147,7 @@ int main (int argc, char **argv)
   ATerm bottomOfStack;
   char *input = "-";
   char *output = "-";
-  OLDADT_Entries oldEntries;
+  ADT10_Entries oldEntries;
 
   if(argc == 1) { /* no arguments */
     usage();
@@ -178,9 +178,9 @@ int main (int argc, char **argv)
 
   ATinit(argc, argv, &bottomOfStack); 
   ADT_initADTApi();
-  OLDADT_initOLDADTApi();
+  ADT10_initADT10Api();
 
-  oldEntries = OLDADT_EntriesFromTerm(ATreadFromNamedFile(input));
+  oldEntries = ADT10_EntriesFromTerm(ATreadFromNamedFile(input));
 
   if (oldEntries) {
     ADT_Entries newEntries = convertEntries(oldEntries);
