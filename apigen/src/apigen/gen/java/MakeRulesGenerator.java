@@ -10,6 +10,7 @@ import apigen.gen.Generator;
 import apigen.gen.StringConversions;
 
 public class MakeRulesGenerator extends  Generator {
+	private static final int MAX_FILES_IN_MAKEFILE_VARIABLE = 50;
     private ADT adt;
     private String name;
     
@@ -32,7 +33,7 @@ public class MakeRulesGenerator extends  Generator {
 		while(types.hasNext()) {
 		  Type type = (Type) types.next();
       
-		  if (i % 50 == 0) {
+		  if (i % MAX_FILES_IN_MAKEFILE_VARIABLE == 0) {
 			println(); println();
 			print(prefix + bucket++ + "=");
 		  }
@@ -45,7 +46,7 @@ public class MakeRulesGenerator extends  Generator {
 		  while(alts.hasNext()) {
 			Alternative alt = (Alternative) alts.next();
 
-			if (i % 50 == 0) {
+			if (i % MAX_FILES_IN_MAKEFILE_VARIABLE == 0) {
 			  println(); println();
 			  print(prefix + bucket++ + "=");
 			}
