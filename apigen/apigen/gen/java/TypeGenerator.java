@@ -21,7 +21,7 @@ public class TypeGenerator extends JavaGenerator {
 
 	public String getPackageName() {
 		String apiName = getGenerationParameters().getApiName();
-		return StringConversions.decapitalize(apiName) + '.' + packageName(type);
+		return (apiName + '.' + packageName()).toLowerCase();
 	}
 
 	public String getQualifiedClassName() {
@@ -37,7 +37,7 @@ public class TypeGenerator extends JavaGenerator {
 		buf.append('.');
 		buf.append(StringConversions.decapitalize(params.getApiName()));
 		buf.append('.');
-		buf.append(packageName(type));
+		buf.append(packageName());
 		buf.append('.');
 		buf.append(className(type));
 		return buf.toString();
@@ -47,12 +47,8 @@ public class TypeGenerator extends JavaGenerator {
 		return qualifiedClassName(params, type.getId());
 	}
 
-	public static String packageName(Type type) {
-		return packageName(type.getId());
-	}
-
-	public static String packageName(String type) {
-		return StringConversions.decapitalize(type);
+	public static String packageName() {
+		return "types";
 	}
 
 	public static String className(Type type) {

@@ -6,7 +6,6 @@ import apigen.adt.ADT;
 import apigen.adt.Alternative;
 import apigen.adt.ListType;
 import apigen.adt.Type;
-import apigen.gen.StringConversions;
 
 public class ForwardGenerator extends JavaGenerator {
 	private static final String CLASS_NAME = "Fwd";
@@ -96,8 +95,7 @@ public class ForwardGenerator extends JavaGenerator {
 	}
 
 	public String getPackageName() {
-		String apiName = getGenerationParameters().getApiName();
-		return StringConversions.decapitalize(apiName);
+		return getGenerationParameters().getApiName().toLowerCase();
 	}
 
 	public String getQualifiedClassName() {

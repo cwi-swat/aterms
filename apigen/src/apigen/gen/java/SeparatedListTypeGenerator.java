@@ -52,10 +52,9 @@ public class SeparatedListTypeGenerator extends ListTypeGenerator {
 	}
 
 	protected void genToTerm() {
-		String getFactoryMethodName = "get" + FactoryGenerator.className() + "()";
 		println("  public aterm.ATerm toTerm() {");
 		println("    if (term == null) {");
-		println("      term = " + getFactoryMethodName + ".toTerm(this);");
+		println("      term = " + factoryGetter() + ".toTerm(this);");
 		println("    }");
 		println("    return term;");
 		println("  }");
@@ -149,15 +148,8 @@ public class SeparatedListTypeGenerator extends ListTypeGenerator {
 		println("    if (!isEmpty() && !isSingle()) {");
 		String arglist = buildActualSeparatorArguments(listType);
 		arglist = arglist.replaceAll(fieldId, "arg");
-		String getFactoryMethodName = "get" + FactoryGenerator.className() + "()";
 		println(
-			"      return "
-				+ getFactoryMethodName
-				+ ".make"
-				+ getClassName()
-				+ "(getHead(), "
-				+ arglist
-				+ "getTail());");
+			"      return " + factoryGetter() + ".make" + getClassName() + "(getHead(), " + arglist + "getTail());");
 		println("    }");
 		println("    throw new RuntimeException(\"This " + getClassName() + " does not have a " + fieldId + ".\");");
 		println("  }");

@@ -7,7 +7,6 @@ import apigen.adt.Alternative;
 import apigen.adt.ListType;
 import apigen.adt.Type;
 import apigen.gen.GenerationParameters;
-import apigen.gen.StringConversions;
 
 public class VisitorGenerator extends JavaGenerator {
 	private static final String CLASS_NAME = "Visitor";
@@ -66,11 +65,15 @@ public class VisitorGenerator extends JavaGenerator {
 
 	private void genVisitDecl(String methodName, String paramTypeName) {
 		println(
-			"  public abstract void visit_" + methodName + "(" + paramTypeName + " arg) throws jjtraveler.VisitFailure;");
+			"  public abstract void visit_"
+				+ methodName
+				+ "("
+				+ paramTypeName
+				+ " arg) throws jjtraveler.VisitFailure;");
 	}
 
 	public static String packageName(GenerationParameters params) {
-		return StringConversions.decapitalize(params.getApiName());
+		return params.getApiName().toLowerCase();
 	}
 
 	public static String qualifiedClassName(JavaGenerationParameters params) {

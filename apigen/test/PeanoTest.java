@@ -2,7 +2,7 @@ package test;
 
 import test.Replace;
 import test.peano.Factory;
-import test.peano.nat.Nat;
+import test.peano.types.Nat;
 import aterm.ATerm;
 import aterm.pure.PureFactory;
 

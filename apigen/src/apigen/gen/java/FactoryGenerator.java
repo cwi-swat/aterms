@@ -936,7 +936,7 @@ public class FactoryGenerator extends JavaGenerator {
 	}
 
 	public String getPackageName() {
-		return StringConversions.decapitalize(apiName);
+		return apiName.toLowerCase();
 	}
 
 	public String getQualifiedClassName() {

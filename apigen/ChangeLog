@@ -2,8 +2,13 @@
 
 Mon Dec  1 14:12:47 CET 2003 <{jong,jurgenv}@cwi.nl>
  * apigen/gen/java:
+   - normalize generated packagenames to all-lowercase. This is needed
+     because Java does not allow package <X> and class <X>.java in the
+     same directory.
+   - generate Nat in types/Nat.java, Zero/Succ in types/nat/{Zero,Succ}.java
    - renamed GenericConstructor into AbstractType
    - remove <Apiname> in <Apiname>Factory.java
+   - update tests to reflect recent changes.
  * apigen/utils/adt-to-java.src: forcefully remove generated apigen.env
 
 Fri Nov 28 10:18:16 CET 2003 <jong@cwi.nl>

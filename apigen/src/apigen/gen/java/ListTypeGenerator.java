@@ -161,7 +161,7 @@ public class ListTypeGenerator extends TypeGenerator {
 	}
 
 	protected String factoryGetter() {
-		return "get" + FactoryGenerator.className() + "()";
+		return AbstractTypeGenerator.getFactoryMethodName(getGenerationParameters()) + "()";
 	}
 
 	protected void genGetters() {
@@ -201,8 +201,7 @@ public class ListTypeGenerator extends TypeGenerator {
 
 	protected void genIsEmpty(String className) {
 		println("  public boolean isEmpty() {");
-		String getFactoryMethodName = "get" + FactoryGenerator.className();
-		println("    return this == " +  getFactoryMethodName+ "().make" + className + "();");
+		println("    return this == " + factoryGetter() + ".make" + className + "();");
 		println("  }");
 		println();
 	}
@@ -213,18 +212,18 @@ public class ListTypeGenerator extends TypeGenerator {
 		println("  }");
 		println();
 	}
-	
+
 	protected void genToTerm() {
-		String get_factory = factoryGetter();
+		String getFactoryMethodName = factoryGetter();
 		String className = TypeGenerator.className(type);
 
 		println("  public aterm.ATerm toTerm() {");
 		println("    if (this.term == null) {");
 		println("      " + className + " reversed = (" + className + ")this.reverse();");
-		println("      aterm.ATermList tmp = " + get_factory + ".getPureFactory().makeList();");
+		println("      aterm.ATermList tmp = " + getFactoryMethodName + ".getPureFactory().makeList();");
 		println("      for (; !reversed.isEmpty(); reversed = reversed.getTail()) {");
 		println("         aterm.ATerm elem = reversed.getHead().toTerm();");
-		println("         tmp = " + get_factory + ".getPureFactory().makeList(elem, tmp);");
+		println("         tmp = " + getFactoryMethodName + ".getPureFactory().makeList(elem, tmp);");
 		println("      }");
 		println("      this.term = tmp;");
 		println("    }");

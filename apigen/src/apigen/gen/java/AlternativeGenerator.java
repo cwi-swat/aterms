@@ -19,7 +19,7 @@ public class AlternativeGenerator extends JavaGenerator {
 		this.type = type;
 		this.alt = alt;
 		this.className = buildClassName(alt.getId());
-		this.superClassName = TypeGenerator.className(type);
+		this.superClassName = TypeGenerator.qualifiedClassName(params, type);
 	}
 
 	public String getClassName() {
@@ -30,12 +30,16 @@ public class AlternativeGenerator extends JavaGenerator {
 		StringBuffer buf = new StringBuffer();
 		buf.append(params.getPackageName());
 		buf.append('.');
-		buf.append(StringConversions.decapitalize(params.getApiName()));
+		buf.append(params.getApiName().toLowerCase());
 		buf.append('.');
-		buf.append(TypeGenerator.packageName(type));
+		buf.append(packageName(type));
 		buf.append('.');
 		buf.append(className(alt));
 		return buf.toString();
+	}
+
+	private static String packageName(Type type) {
+		return (TypeGenerator.packageName() + '.' + TypeGenerator.className(type)).toLowerCase();
 	}
 
 	private static String buildClassName(String alt) {
@@ -435,8 +439,13 @@ public class AlternativeGenerator extends JavaGenerator {
 	}
 
 	public String getPackageName() {
-		String apiName = getGenerationParameters().getApiName();
-		return StringConversions.decapitalize(apiName) + '.' + TypeGenerator.packageName(type);
+		StringBuffer buf = new StringBuffer();
+		buf.append(getGenerationParameters().getApiName());
+		buf.append('.');
+		buf.append(TypeGenerator.packageName());
+		buf.append('.');
+		buf.append(TypeGenerator.className(type));
+		return buf.toString().toLowerCase();
 	}
 
 	public String getQualifiedClassName() {
