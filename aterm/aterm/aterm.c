@@ -2108,6 +2108,7 @@ AT_unmarkTerm(ATerm t)
 void AT_unmarkIfAllMarked(ATerm t)
 {
 	if(IS_MARKED(t->header)) {
+		/*ATfprintf(stderr, "* unmarking %t\n", t);*/
 		CLR_MARK(t->header);
 		switch(ATgetType(t)) {
 			case AT_INT:
@@ -2122,11 +2123,15 @@ void AT_unmarkIfAllMarked(ATerm t)
 			case AT_LIST:
 				{
 					ATermList list = (ATermList)t;
-					while(!ATisEmpty(list) && IS_MARKED(list->header)) {
+					while(!ATisEmpty(list)) {
 						CLR_MARK(list->header);
 						AT_unmarkIfAllMarked(ATgetFirst(list));
 						list = ATgetNext(list);
+						if (!IS_MARKED(list->header)) {
+							break;
+						}
 					}
+					CLR_MARK(list->header);
 				}
 				break;
 			case AT_APPL:
@@ -2136,6 +2141,7 @@ void AT_unmarkIfAllMarked(ATerm t)
 					AFun sym;
 
 					sym = ATgetAFun(appl);
+					AT_unmarkSymbol(sym);
 					cur_arity = ATgetArity(sym);
 					for(cur_arg=0; cur_arg<cur_arity; cur_arg++) {
 						AT_unmarkIfAllMarked(ATgetArgument(appl, cur_arg));
@@ -2146,6 +2152,14 @@ void AT_unmarkIfAllMarked(ATerm t)
 				ATerror("collect_terms: illegal term\n");
 				break;
 		}		
+		
+		if(HAS_ANNO(t->header)) {
+			/*ATfprintf(stderr, "* unmarking annos of %t\n", t);*/
+			AT_unmarkIfAllMarked(AT_getAnnotations(t));
+		}
+	}
+	else {
+		/*ATfprintf(stderr, "* already unmarked %t\n", t);*/
 	}
 }
 
@@ -2386,8 +2400,9 @@ calcUniqueSymbols(ATerm t)
 			at_lookup_table[sym]->count++;
 			AT_markSymbol(sym);
 			arity = ATgetArity(sym);
-			for (i = 0; i < arity; i++)
+			for (i = 0; i < arity; i++) {
 				nr_unique += calcUniqueSymbols(ATgetArgument((ATermAppl)t, i));
+			}
 			break;
 			
 		case AT_LIST:
@@ -2429,8 +2444,9 @@ int
 AT_calcUniqueSymbols(ATerm t)
 {
     int result = calcUniqueSymbols(t);
-    /*AT_unmarkIfAllMarked(t);*/
-		AT_unmarkTerm(t);
+    AT_unmarkIfAllMarked(t);
+		/*AT_assertUnmarked(t);*/
+
     return result;
 }
 

@@ -1035,9 +1035,9 @@ ATwriteToBinaryFile(ATerm t, FILE *file)
 	AFun sym;
 
 #ifdef WIN32
-               if( _setmode( _fileno( file ), _O_BINARY ) == -1 ) {
-                    perror( "Warning: Cannot set outputfile to binary mode." );
-               }
+  if( _setmode( _fileno( file ), _O_BINARY ) == -1 ) {
+			perror( "Warning: Cannot set outputfile to binary mode." );
+  }
 #endif
 
 	
@@ -1099,8 +1099,7 @@ ATwriteToBinaryFile(ATerm t, FILE *file)
 						nr_unique_symbols, nr_unique_terms);*/
 	
 	collect_terms(t);
-	/*AT_unmarkIfAllMarked(t);*/
-	AT_unmarkTerm(t);
+	AT_unmarkIfAllMarked(t);
 	
 	/* reset cur_index */
 	for(lcv=0; lcv < nr_unique_symbols; lcv++)
