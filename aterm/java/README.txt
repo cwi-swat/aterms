@@ -6,6 +6,7 @@
    - A native implementation, providing a Java layer on the native C-lib.
    - A pure   implementation, much like the one in ../java1.2 now.
 
+  Packages: aterm, aterm.native, aterm.pure
 
 * Status:
 

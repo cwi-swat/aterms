@@ -17,10 +17,16 @@ INSTALL		= @INSTALL@
 INSTALL_DAT	= @INSTALL_DAT@
 INSTALL_PRG	= @INSTALL_PRG@
 
-SUBDIRS		= aterm
-DISTFILES	= Makefile.in
+SUBDIRS		= native pure
+DISTFILES	= Makefile.in ${SOURCE}
 
-all:
+SOURCE		= ATerm.java ATermAppl.java ATermBlob.java ATermInt.java \
+		  ATermList.java ATermPlaceholder.java ATermReal.java \
+		  ParseError.java
+
+CLASSES		= $(patsubst %.java,%.class,$(SOURCE))
+
+all: ${CLASSES}
 	@for dir in ${SUBDIRS}; \
 	do \
 		echo "make all in $$dir"; \
@@ -28,7 +34,11 @@ all:
 		cd ..; \
 	done
 
+%.class: %.java
+	javac -classpath ..:$$CLASSPATH $<
+
 clean:
+	@rm -f ${CLASSES} *~ core
 	@for dir in ${SUBDIRS}; \
 	do \
 		echo "make clean in $$dir"; \
@@ -37,6 +47,11 @@ clean:
 	done
 
 install:
+	@mkdir -p ${classdir}/aterm
+	@for file in ${CLASSES}; \
+	do \
+		${INSTALL_DAT} $$file ${classdir}/aterm; \
+	done
 	@for dir in ${SUBDIRS}; \
 	do \
 		echo "make install in $$dir"; \
