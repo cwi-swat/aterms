@@ -1,0 +1,16 @@
+package
+identification
+  name=shared-objects
+  version=1.2
+  location=http://www.cwi.nl/projects/MetaEnv/daily-dist
+  info=http://www.cwi.nl/projects/MetaEnv/aterm
+  description='A Java Class implementing a core factory for maximal sharing
+of arbitrary objects'
+
+  keywords=meta-environment, library, sharing, factory 
+
+configuration interface
+
+requires
+
+configuration

@@ -1,3 +1,6 @@
+2003/06/26    <jurgenv@cwi.nl>
+ * Added package definition file
+
 2003-05-15    <jurgenv@cwi.nl>
  * Changed getId() to getUniqueIdentifier() and also for set.
  * Bumped to 1.3beta
