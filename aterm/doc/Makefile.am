@@ -6,10 +6,11 @@ EXTRA_DIST	= append.ltx at.ltx aterm.ltx corrections.ltx \
 		corrections2.ltx gtld-at.ltx manual.ltx thesis.bib \
 		encoding.fig header.fig hierarchy.fig sharing.eps \
 		speauth.cls spedoc.tex general-make at.ps manual.ps \
-		$(JAVA_API_PS)
+		appl-enc.fig $(JAVA_API_PS)
 
 CHAPS		= at.ltx
-PICS		= header.eps encoding.eps hierarchy.eps appl-enc.fig
+AT_PICS		= header.eps encoding.eps hierarchy.eps
+SP_PICS		= header.eps appl-enc.eps
 
 FIG2DEV		= fig2dev
 EXAMPLEDIR	= examples
@@ -24,10 +25,11 @@ all:
 
 doc: sigplan.ps at.ps manual.ps $(JAVA_API_PS)
 
-sigplan.dvi: sigplan.ltx asm-diff.ltx
+sigplan.ps: sigplan.dvi $(SP_PICS)
+sigplan.dvi: sigplan.ltx asm-diff.ltx $(SP_PICS)
 
-at.ps: at.dvi $(PICS)
-at.dvi: at.ltx aterm.ltx spec/ATerm.mtx $(CHAPS) $(PICS)
+at.ps: at.dvi $(AT_PICS)
+at.dvi: at.ltx aterm.ltx spec/ATerm.mtx $(CHAPS) $(AT_PICS)
 
 manual.dvi: manual.ltx $(EXAMPLES)
 
