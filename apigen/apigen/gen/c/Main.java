@@ -27,7 +27,7 @@ public class Main {
 
 		try {
 			params.parseArguments(args);
-			checkParameters(params);
+			params.check();//checkParameters(params);
 		}
 		catch (IllegalArgumentException e) {
 			System.err.println(e.getMessage());
@@ -52,12 +52,6 @@ public class Main {
 		params.setVerbose(false);
 		params.setFolding(false);
 		return params;
-	}
-
-	private static void checkParameters(CGenerationParameters params) {
-		if (params.getApiName() == null) {
-			throw new IllegalArgumentException("No API name specified");
-		}
 	}
 
 	private static void generateAPI(CGenerationParameters params, ADT adt) {

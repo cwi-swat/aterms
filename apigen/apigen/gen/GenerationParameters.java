@@ -119,8 +119,7 @@ public class GenerationParameters {
 
 	public void check() {
 		if (getApiName() == null) {
-			System.err.println("warning: no API name specified");
-			setApiName("unknown_api");
+			throw new IllegalArgumentException("No API name specified");
 		}
 	}
 }
