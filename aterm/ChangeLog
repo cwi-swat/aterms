@@ -19,6 +19,11 @@
 
 $Id$
 
+2000/7/27 ({jong,olivierp}@cwi.nl)
+  * Release 1.3.4
+  * Bugfix which could cause symbol to be unprotected under very
+    specific circumstances
+
 2000/7/14 (jong@cwi.nl)
   * Release 1.3.2 (first release that passes "make distcheck" :-)
 
