@@ -19,6 +19,10 @@
 
 $Id$
 
+2000/4/8 (mdejonge @cwi.nl)
+   * Removed all asfix related stuff because the asfix library is now
+     distributed separately
+
 2000/3/31 (mdejonge @cwi.nl)
    * The toolbus is no longer required during the build process of the aterm
      library

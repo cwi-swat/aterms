@@ -22,23 +22,22 @@
 # vim:ts=8:sw=8
 include ../make_rules
 
-PROGS              	= stress primes asfixtest randgen termstats \
+PROGS              	= stress primes randgen termstats \
 			  vararg1 vararg2 vararg3 test-tool test-tool2
 
-TESTS	          	= stress asfixtest 
+TESTS	          	= stress
 
-EXTRA_DIST = termstats.sh test.tb test2.tb Test.asfix test.trms error.trm  \
+EXTRA_DIST = termstats.sh test.tb test2.tb test.trms error.trm  \
              tool2.tif.c tool2.tif.h
 
 CLEANFILES = test2.tifs
 
-INCLUDES   = -I. -I$(top_srcdir)/asfix -I$(top_srcdir)/aterm -I$(top_srcdir)/toolbus
+INCLUDES   = -I. -I$(top_srcdir)/aterm -I$(top_srcdir)/toolbus
 
 LDFLAGS 		= -L$(top_builddir)/aterm/ \
-			  -L$(top_builddir)/asfix/ \
 			  -L$(top_builddir)/toolbus/
 
-LDLIBS			= -lAsFix -lATB -lATerm
+LDLIBS			= -lATB -lATerm
 
 noinst_PROGRAMS		= $(PROGS)
 stress_SOURCES		= stress.c 
@@ -61,9 +60,6 @@ test_tool_LDADD    	= $(LDLIBS)
 
 test_tool2_SOURCES	= test-tool2.c
 test_tool2_LDADD	= tool2.tif.o $(LDLIBS)
-
-asfixtest_SOURCES  	= asfixtest.c
-asfixtest_LDADD    	= $(LDLIBS)
 
 randgen_SOURCES    	= randgen.c
 randgen_LDADD      	= $(LDLIBS)

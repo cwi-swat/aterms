@@ -18,8 +18,5 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 
 
-- The AsFix interface has not been stabilized yet. Please take note
-  that this interface may still change considerably.
-
 - Baffle.version binaries for changing baf versions.
 
