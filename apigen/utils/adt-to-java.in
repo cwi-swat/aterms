@@ -71,7 +71,7 @@ require() {
    JTOM=0
 
 # data needed
-CLASSES=${prefix}/classes:${ATERM_JAVA}:${SHARED_OBJECTS}
+CLASSES=${prefix}/classes:${JAVA_ATERM}:${SHARED_OBJECTS}
 
 # }}}
 

@@ -33,11 +33,11 @@ rolodex.c rolodex.h: rolodex.adt
 	${ADT_TO_C} \
 		--input ${top_srcdir}/test/rolodex.adt \
 		--compat-term \
-		--classpath ${top_builddir}:${ATERM}/classes
+		--classpath ${top_builddir}:${JAVA_ATERM}:${SHARED_OBJECTS}
 
 list.c list.h: list.adt list.pro
 	${ADT_TO_C} \
 		--input ${top_srcdir}/test/list.adt \
 		--prologue ${top_srcdir}/test/list.pro \
 		--compat-term \
-		--classpath ${top_builddir}:${ATERM}/classes
+		--classpath ${top_builddir}:${JAVA_ATERM}:${SHARED_OBJECTS}
