@@ -620,22 +620,25 @@ void testAnno(void)
   t[3]  = ATgetAnnotation(t[1], label);
   test_assert("anno", 1, ATisEqual(t[3], value));
   t[4] = ATsetAnnotation(t[1], label, value2);
-  test_assert("anno", 2, ATisEqual(ATgetAnnotation(t[4], label), value2));
 
-  test_assert("anno", 3, ATisEqual(t[0], t[1]));
-  test_assert("anno", 4, !ATisEqual(t[0], t[2]));
+  test_assert("anno", 2, ATisEqual(t[4], t[2]));
+
+  test_assert("anno", 3, ATisEqual(ATgetAnnotation(t[4], label), value2));
+
+  test_assert("anno", 4, ATisEqual(t[0], t[1]));
+  test_assert("anno", 5, !ATisEqual(t[0], t[2]));
 
   t[4] = ATremoveAnnotation(t[4], label);
-  test_assert("anno", 5, ATgetAnnotation(t[4], label) == NULL);
+  test_assert("anno", 6, ATgetAnnotation(t[4], label) == NULL);
 
-  test_assert("anno", 6, ATisEqual(ATremoveAnnotation(t[0], label), term));
+  test_assert("anno", 7, ATisEqual(ATremoveAnnotation(t[0], label), term));
 
 	t[5] = ATparse("test-anno{[label,unique_anno(42)]}");
-	test_assert("anno", 7, ATgetAnnotation(t[5], ATparse("label")) != NULL);
+	test_assert("anno", 8, ATgetAnnotation(t[5], ATparse("label")) != NULL);
 	AT_collect(2);
-	test_assert("anno", 8, ATisEqual(ATgetAnnotation(t[5],ATparse("label")),
+	test_assert("anno", 9, ATisEqual(ATgetAnnotation(t[5],ATparse("label")),
 																	 ATparse("unique_anno(42)")));
-	test_assert("anno", 9, ATisEqual(ATremoveAllAnnotations(t[0]), term));
+	test_assert("anno", 10, ATisEqual(ATremoveAllAnnotations(t[0]), term));
 
   printf("annotation tests ok.\n");
 }
@@ -654,7 +657,7 @@ void testGC()
 	t[4] = t[3]+1;
 	t[5] = (ATerm) ((char *) t[1] + 1);
 	t[6] = (ATerm)NULL;
-	t[7] = (ATerm)testGC;
+	t[7] = (ATerm)((MachineWord)testGC);
 	t[8] = (ATerm)t;
 	t[9] = (ATerm)"Just a test!";
 	t[10] = (ATerm)((char *)t[2]-1);
@@ -720,15 +723,19 @@ void testMark()
 	int i;
 	ATerm zero = ATparse("zero");
 	ATerm one  = ATparse("one");
-  ATerm t1 = zero;
-	ATerm t2 = one;
-	ATerm result;
+  ATerm t1 = NULL;
+	ATerm t2 = NULL;
+	ATerm result = NULL;
+
+	t1 = zero;
+	t2 = one;
 
 	for(i=0; i<100000; i++) {
 		t1 = ATmake("succ(<int>,<term>)", i, t1);
 		t2 = ATmake("succ(<int>,<term>)", i, t2);
 	}
 	result = ATmake("result(<term>,<term>)", t1, t2);
+	AT_assertUnmarked(result);
 	
 	AT_markTerm(result);
 	test_assert("marking", 1, IS_MARKED(zero->header));
@@ -987,10 +994,10 @@ int main(int argc, char *argv[])
   testMatch();
   testBaffle();
   testGC();
-	testProtect();
+  testProtect();
   testMark();
   testTable();
-	testIndexedSet();
+  testIndexedSet();
 
   return 0;
 }

@@ -74,7 +74,6 @@ tool2.tif.o : tool2.tif.c tool2.tif.h
 %.tif.c %.tif.h : test2.tifs
 	$(top_builddir)/toolbus/tifstoc -tool tool2 $<
 
-
 test: stress
 	./stress
 
