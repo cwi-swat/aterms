@@ -1,12 +1,14 @@
 *.jar
 *.tar.gz
+.classpath
+.project
+COPYING
+INSTALL
 Makefile
 Makefile.in
 aclocal.m4
 config.*
 configure
-COPYING
-INSTALL
 install-sh
 missing
 mkinstalldirs
