@@ -12,8 +12,7 @@ implements TomSignatureImplementation {
 	}
 	
 	private String buildAltTypeName(String type, String alt) {
-		return StringConversions.capitalize(type + "_" + 
-																				StringConversions.capitalize(alt));
+		return StringConversions.capitalize(type + "_" + StringConversions.capitalize(alt));
 	}
 
 	public String StringName() {
@@ -136,7 +135,7 @@ implements TomSignatureImplementation {
 		return "null";
 	}
 
-	public String TypeEquals(String arg1, String arg2) {
+	public String TypeEquals(String type, String arg1, String arg2) {
 		return arg1 + ".equals(" + arg2 + ")";
 	}
 
@@ -161,7 +160,7 @@ implements TomSignatureImplementation {
 			+ StringConversions.capitalize(buildAltTypeName(type, alt) + "()");
 	}
 
-	public String OperatorGetSlot(String term, String slot) {
+	public String OperatorGetSlot(String term, String type, String slot) {
 		return term + ".get" + StringConversions.capitalize(slot) + "()";
 	}
 
