@@ -707,6 +707,16 @@ are completely equal, inclusive any annotations they might have!}
 	when an error message is sent to {\tt ATabort}.
 }
 
+\Function{ATabort}{void}{(const char *format, ...)}
+{Issue an errormessage and abort the \ATlib}
+\Describe{
+  If an aborthandler has been installed through a call to
+  {\tt ATsetAbortHandler}, this handler will be called.  Otherwise
+  {\tt ATabort} uses {\tt ATvfprintf} to print a formatted message
+  to {\tt stderr} calls {\tt abort}.
+}
+
+
 \Function{ATprotect}{void}{\aterm\ *atp}{Protect an \aterm}
 \Describe{
 	Protects an \aterm\ from being freed at garbage collection. See
