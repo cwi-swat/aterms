@@ -48,4 +48,4 @@ Testing.java: test.tifs JavaTif.class
 	$(TOOLBUS) -gentifs $<
 
 %.class: %.java
-	$(CLASSPATH_ENV) javac -O -d $(JAVAROOT) $<
+	$(CLASSPATH_ENV) $(JAVAC) $(JAVACFLAGS) -O -d $(JAVAROOT) $<
