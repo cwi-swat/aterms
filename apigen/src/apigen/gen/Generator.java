@@ -13,6 +13,14 @@ public abstract class Generator {
 	protected boolean folding;
 	protected PrintStream stream;
 
+    /**
+     * Initialization of the generators arguments
+     * @param directory The path to the new file
+     * @param filename  The name of the new file
+     * @param extension The extension of the new file
+     * @param verbose   Print information on stderr?
+     * @param folding   Print folding comments?
+     */
 	public Generator(
 		String directory,
 		String filename,
@@ -26,6 +34,10 @@ public abstract class Generator {
 		this.folding = folding;
 	}
 
+    /**
+     * Create a new file and use the abstract generate() function to print its contents.
+     *
+     */
 	public void run() {
 		stream = createStream(filename, extension, directory);
 		info ("generating " + filename + extension);
@@ -33,31 +45,56 @@ public abstract class Generator {
 		closeStream(stream);
 	}
 
-	/** Using print, println etc. create the contents of the file */
+	/**
+	 * Generates the contents of the file using the printing facilities offered by this 
+	 * class
+	 *
+	 */
 	abstract protected void generate();
 
+    /**
+     * Print an empty line to the target file
+     *
+     */
 	public void println() {
 		stream.println();
 	}
 
+    /**
+     * Print a line to the target file
+     */
 	public void println(String msg) {
 		stream.println(msg);
 	}
 
+    /** 
+     * Print a message to the target file
+     */
 	public void print(String msg) {
 		stream.print(msg);
 	}
 
+    /**
+     * Print a message on stderr if the verbose option is set to true
+     */
 	public void info(String msg) {
 		if (verbose) {
 			System.err.println(msg);
 		}
 	}
 
+    /**
+     * Close a file stream
+     */
 	protected  void closeStream(PrintStream stream) {
 		stream.close();
 	}
 
+    /**
+     * Create a file if possible
+     * @param file A complete path to the file
+     * @return PrintStream a handle to the new file
+     */
 	private PrintStream createStream(String file) {
 		try {
 			PrintStream stream = new PrintStream(new FileOutputStream(file));
@@ -75,6 +112,13 @@ public abstract class Generator {
     	return directory + File.separatorChar + name + ext;
     }
     
+    /**
+     * Create a file stream and create the path to it if necessary
+     * @param name The name of the file
+     * @param ext The extension of the file
+     * @param directory The path to the file
+     * @return PrintStream A PrintStream to a new file
+     */
 	protected PrintStream createStream(String name, String ext, String directory) {
 		File base = new File(directory);
 

@@ -46,6 +46,12 @@ public class StringConversions {
 		}
 	}
 
+    /**
+     * Creates a C/Java identifier by replacing non-alphanumeric characters
+     * by some acronym. Dashes are interpreted as word separators, which is
+     * implemented using CamelCase style.
+     *
+     */
 	static public String makeIdentifier(String id) {
 		StringBuffer buf = new StringBuffer();
 		boolean cap_next = false;
@@ -75,10 +81,18 @@ public class StringConversions {
 		return buf.toString();
 	}
 
+  /**
+   * Makes a capitalized C/Java identifier, see also makeIdenfifier
+   * 
+   */
   static public String makeCapitalizedIdentifier(String id) {
   	return capitalize(makeIdentifier(id));
   }
     
+    /**
+     * Capitalize the first letter of a string
+     *
+     */
 	static public String capitalize(String s) {
 		return Character.toUpperCase(s.charAt(0)) + s.substring(1);
 	}
