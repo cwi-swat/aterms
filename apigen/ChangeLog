@@ -1,3 +1,6 @@
+2001/05/15 (jurgenv@cwi.nl)
+ * added support for SDF prefix productions
+
 2001/05/07 (jong@cwi.nl)
  * version 0.8.4
  * rehabilitated "test" directory (got accidentally deleted)
