@@ -54,8 +54,13 @@ char            aterm_id[] = "$Id$";
 /* Flag to tell whether to keep quiet or not. */
 ATbool silent	= ATtrue;
 
+/* warning_handler is called when a recoverable error is detected */
+static void     (*warning_handler) (const char *format, va_list args) = NULL;
 /* error_handler is called when a fatal error is detected */
 static void     (*error_handler) (const char *format, va_list args) = NULL;
+/* abort_handler is called when a fatal error is detected that
+   warrants a core being dumped. */
+static void     (*abort_handler) (const char *format, va_list args) = NULL;
 
 /* We need a buffer for printing and parsing */
 static int      buffer_size = 0;
@@ -230,6 +235,19 @@ ATinit(int argc, char *argv[], ATerm * bottomOfStack)
 }
 
 /*}}}  */
+/*{{{  void ATsetWarningHandler(handler) */
+
+/**
+	* Change the warning handler.
+	*/
+
+void
+ATsetWarningHandler(void (*handler) (const char *format, va_list args))
+{
+    warning_handler = handler;
+}
+
+/*}}}  */
 /*{{{  void ATsetErrorHandler(handler) */
 
 /**
@@ -240,6 +258,40 @@ void
 ATsetErrorHandler(void (*handler) (const char *format, va_list args))
 {
     error_handler = handler;
+}
+
+/*}}}  */
+/*{{{  void ATsetAbortHandler(handler) */
+
+/**
+	* Change the abort handler.
+	*/
+
+void
+ATsetAbortHandler(void (*handler) (const char *format, va_list args))
+{
+    abort_handler = handler;
+}
+
+/*}}}  */
+/*{{{  void ATwarning(const char *format, ...) */
+
+/**
+  * A fatal error was detected.
+  */
+
+void
+ATwarning(const char *format,...)
+{
+    va_list         args;
+
+    va_start(args, format);
+    if (warning_handler)
+			warning_handler(format, args);
+    else
+			ATvfprintf(stderr, format, args);
+
+    va_end(args);
 }
 
 /*}}}  */
@@ -256,12 +308,35 @@ ATerror(const char *format,...)
 
     va_start(args, format);
     if (error_handler)
-	error_handler(format, args);
+			error_handler(format, args);
+    else
+			{
+				ATvfprintf(stderr, format, args);
+				exit(1);
+    }
+
+    va_end(args);
+}
+
+/*}}}  */
+/*{{{  void ATabort(const char *format, ...) */
+
+/**
+  * A fatal error was detected.
+  */
+
+void
+ATabort(const char *format,...)
+{
+    va_list         args;
+
+    va_start(args, format);
+    if (abort_handler)
+			abort_handler(format, args);
     else
     {
-	ATvfprintf(stderr, format, args);
-	abort();
-	/* exit(1); */
+			ATvfprintf(stderr, format, args);
+			abort();
     }
 
     va_end(args);

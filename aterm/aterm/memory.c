@@ -1022,7 +1022,7 @@ void AT_freeTerm(int size, ATerm t)
 
 		assert(cur);
 		/*if(!cur)
-			ATerror("### cannot find term %n at %p in hashtable at pos %d"
+			ATabort("### cannot find term %n at %p in hashtable at pos %d"
 							", header = %d\n", t, t, hnr, t->header);*/
 
 		if(t->header != cur->header)

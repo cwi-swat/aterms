@@ -319,7 +319,7 @@ void sweep_phase()
 							break;
 							
 						default:
-							abort();
+							ATabort("panic in sweep phase\n");
 					}
 				}
 			}
