@@ -1,0 +1,16 @@
+#! /bin/sh
+
+set -e
+
+APIGEN=apigen.gen.java.Main
+CLASSPATH=__APIGEN_CLASSES__:__JAVA_ATERM__
+
+PARAMS=apigen.env
+java -classpath ${CLASSPATH} ${APIGEN} $*
+. ${PARAMS}
+
+CLASSES=`echo ${FILES} | sed -e 's/.java/.class/g'`
+JARFILE=${APINAME}-${VERSION}.jar
+javac -classpath ${DIRECTORY}:${CLASSPATH} ${FILES}
+jar cf ${JARFILE} ${FILES} ${CLASSES}
+rm -f ${PARAMS}

@@ -1,8 +1,8 @@
 # $Id$
 
-ADTTOC = ${top_builddir}/utils/adt-to-c-test
+ADTTOC = ${top_builddir}/scripts/adt-to-c-test
 
-ADTTOJAVA = ${top_builddir}/utils/adt-to-java-test
+ADTTOJAVA = ${top_builddir}/scripts/adt-to-java-test
 
 JAVATESTS = peano list rolodex builtins
 

@@ -4,7 +4,7 @@ INCLUDES = \
 	-I$(ATERM)/include \
 	-I$(PT_SUPPORT)/include
 
-ADT_TO_C = ${top_builddir}/utils/adt-to-c-test
+ADT_TO_C = ${top_builddir}/scripts/adt-to-c-test
 noinst_LIBRARIES = libADT10.a
 noinst_HEADERS = ADT10.h ADT10_dict.h 
 

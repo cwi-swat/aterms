@@ -70,6 +70,7 @@ dnl Which files need updating?
 AC_OUTPUT(
 Makefile
 utils/Makefile
+scripts/Makefile
 lib-1.0/Makefile
 lib-2.0/Makefile
 apigen/Makefile
