@@ -9,7 +9,7 @@ include ${top_srcdir}/make_rules
 ADTC		= ${top_builddir}/utils/adt-to-c
 ADTJAVA         = ${top_builddir}/utils/adt-to-java
 
-TESTS			= rolotest listtest peanotest
+TESTS			= rolotest listtest peanotest.sh
 
 noinst_PROGRAMS		= ${TESTS}
 noinst_LIBRARIES	= librolodex.a liblist.a 
@@ -52,7 +52,7 @@ list.c list.h: list.adt list.pro
 		--compat-term \
 		--classpath ${top_builddir}:${JAVA_ATERM}:${SHARED_OBJECTS}
 
-peanotest: PeanoTest.java peano.adt Makefile
+peanotest.sh: PeanoTest.java peano.adt Makefile
 	${ADTJAVA} --input ${top_srcdir}/test/peano.adt \
 	           --output ${top_builddir}/test \
 		   --package test \
