@@ -127,11 +127,8 @@ main(int argc, char *argv[])
 		exit(0);
 	}
 
-    curtime = time(NULL);
-	if (binary_input)
-		term = ATreadFromBinaryFile(input);
-	else
-		term = ATreadFromTextFile(input);
+	curtime = time(NULL);
+	term = ATreadFromFile(input);
 	
 	if (term == NULL)
 		ATerror("%s: illegal input!\n", argv[0]);

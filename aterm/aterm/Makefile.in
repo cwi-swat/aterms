@@ -60,7 +60,7 @@ INSTALL		= @INSTALL@
 INSTALL_PRG	= @INSTALL_PRG@
 INSTALL_DAT	= @INSTALL_DAT@
 
-SCRIPTS		= baf2trm trm2baf
+SCRIPTS		= baf2trm trm2baf trmcat
 BINARIES	= termsize baffle
 PROGS		= ${BINARIES} ${SCRIPTS}
 PROGSRCS	= termsize.c baffle.c

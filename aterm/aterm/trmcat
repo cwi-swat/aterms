@@ -1,0 +1,2 @@
+#! /bin/sh
+baffle -wt -silent $@
