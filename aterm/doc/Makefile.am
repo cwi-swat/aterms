@@ -22,7 +22,9 @@ JAVA_FILES	= $(patsubst %,${top_srcdir}/java/aterm/%.java,$(JAVA_CLASSES))
 
 all:
 
-doc: at.ps manual.ps $(JAVA_API_PS)
+doc: sigplan.ps at.ps manual.ps $(JAVA_API_PS)
+
+sigplan.dvi: sigplan.ltx
 
 at.ps: at.dvi $(PICS)
 at.dvi: at.ltx aterm.ltx spec/ATerm.mtx $(CHAPS) $(PICS)

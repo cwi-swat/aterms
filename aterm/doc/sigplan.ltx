@@ -1,0 +1,63 @@
+\documentclass{article}
+
+%{{{ LaTeX configuration
+
+\usepackage[english]{babel}
+\usepackage{epsfig}
+\usepackage{latexsym}
+
+\newcommand{\ATerm}{ATerm}
+\newcommand{\ATerms}{ATerms}
+\newcommand{\AFun}{AFun}
+\newcommand{\AFuns}{AFuns}
+\def\aterms{\mbox{ATerms}}
+\def\aterm{\mbox{ATerm}}
+
+%}}}
+
+% {{{  Title definition
+
+\title{
+  Compiler Optimization Effects on the\\
+  ATerm Garbage Collector
+}
+
+\author{
+  M.G.J. van den Brand$^{^1}$\\
+  H.A. de Jong$^{^1}$\\
+  P.A. Olivierp$^{^1}$\\
+  \vspace{.1cm}\\
+  {\small\sl $^1$CWI,
+  Department of Software Engineering\vspace{-.2cm}}\\
+  {\small\sl Kruislaan 413, 1098 SJ Amsterdam, The Netherlands}
+}
+
+% }}}
+
+\begin{document}
+\maketitle
+
+% {{{  Abstract
+
+\begin{abstract}
+
+\ATerm\ (short for Annotated Term) is an abstract data type designed
+for the exchange of tree-like data structures between distributed
+applications. The \texttt{C}-implementation of \ATerms\ is a library
+based on maximal subterm sharing and automatic garbage collection.
+This paper shows how a compilation technique called \emph{strength
+reduction} killed the conservative garbage collector used in this
+\texttt{C}-library. We show how inspecting the generated assembly
+helped point out a flaw in the assumptions upon which the conservative
+garbage collector implementation was based, and how we repaired the
+collector. Finally, we point out that other, even more ``intelligent''
+optimizations could still fool our repaired collector.
+
+\end{abstract}
+
+% }}}
+
+\section{Introduction}
+
+
+\end{document}
