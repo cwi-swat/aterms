@@ -164,7 +164,7 @@ implements TomSignatureImplementation {
 			+ "!= null) &&"
 			+ term
 			+ ".is"
-			+ StringConversions.capitalize(buildAltTypeName(type, alt) + "()");
+			+ StringConversions.makeCapitalizedIdentifier(alt) + "()";
 	}
 
 	public String OperatorGetSlot(String term, String type, String slot) {
