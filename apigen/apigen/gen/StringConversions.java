@@ -4,12 +4,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class StringConversions {
-	private Map specialChars;
+	static private Map specialChars;
 
 	// Do *NOT* add an entry for '-' (Dash) here, the dash is used
 	// as a word-separator!
 
-	protected final String[] SPECIAL_CHAR_WORDS =
+	protected static final String[] SPECIAL_CHAR_WORDS =
 		{
 			"[BracketOpen",
 			"]BracketClose",
@@ -37,7 +37,7 @@ public class StringConversions {
 			"'SingleQuote",
 			};
 
-	public StringConversions() {
+	static {
 		specialChars = new HashMap();
 
 		for (int i = 0; i < SPECIAL_CHAR_WORDS.length; i++) {
@@ -46,7 +46,7 @@ public class StringConversions {
 		}
 	}
 
-	public String makeIdentifier(String id) {
+	static public String makeIdentifier(String id) {
 		StringBuffer buf = new StringBuffer();
 		boolean cap_next = false;
 
@@ -75,23 +75,23 @@ public class StringConversions {
 		return buf.toString();
 	}
 
-    public String makeCapitalizedIdentifier(String id) {
-    	return capitalize(makeIdentifier(id));
-    }
+  static public String makeCapitalizedIdentifier(String id) {
+  	return capitalize(makeIdentifier(id));
+  }
     
-	public String capitalize(String s) {
+	static public String capitalize(String s) {
 		return Character.toUpperCase(s.charAt(0)) + s.substring(1);
 	}
 
-	private boolean isSpecialChar(char c) {
+	static private boolean isSpecialChar(char c) {
 		return getSpecialCharWord(c) != null;
 	}
 
-	private String getSpecialCharWord(char c) {
+	static private String getSpecialCharWord(char c) {
 		return (String) specialChars.get(new Character(c));
 	}
 
-	public String escapeQuotes(String s) {
+	static public String escapeQuotes(String s) {
 		StringBuffer buf = new StringBuffer(s.length() * 2);
 		for (int i = 0; i < s.length(); i++) {
 			char c = s.charAt(i);

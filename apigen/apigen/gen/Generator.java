@@ -6,61 +6,76 @@ import java.io.FileOutputStream;
 import java.io.PrintStream;
 
 public abstract class Generator {
-	// current stream to write to
+	protected String directory;
+	protected String filename;
+	protected String extension;
+	protected boolean verbose;
+	protected boolean folding;
 	protected PrintStream stream;
 
-    // we always need string conversions and type conversions to
-    // map apigen strings to identifiers accepted in the generated language
-	protected StringConversions stringConverter;
-	protected TypeConverter typeConverter;
-	abstract protected void initTypeConverter();
-	
-	// basic generator options
-	protected static boolean verbose = false;
-	protected static boolean folding = false;
-
-	protected Generator() {
-		initStringConverter();
-		initTypeConverter();
+	public Generator(
+		String directory,
+		String filename,
+		String extension,
+		boolean verbose,
+		boolean folding) {
+		this.directory = directory;
+		this.filename = filename;
+		this.extension = extension;
+		this.verbose = verbose;
+		this.folding = folding;
 	}
 
-	public void initStringConverter() {
-		stringConverter = new StringConversions();
+	public void run() {
+		stream = createStream(filename, extension, directory);
+		generate();
+		closeStream(stream);
 	}
 
-	protected void println() {
+	/** Using print, println etc. create the contents of the file */
+	abstract protected void generate();
+
+	public void println() {
 		stream.println();
 	}
 
-	protected void println(String msg) {
+	public void println(String msg) {
 		stream.println(msg);
 	}
 
-	protected void print(String msg) {
+	public void print(String msg) {
 		stream.print(msg);
 	}
 
-	protected void info(String msg) {
+	public void info(String msg) {
 		if (verbose) {
 			System.err.println(msg);
 		}
 	}
 
-	protected void createStream(String file) {
+	protected  void closeStream(PrintStream stream) {
+		stream.close();
+	}
+
+	private PrintStream createStream(String file) {
 		try {
-			stream = new PrintStream(new FileOutputStream(file));
+			PrintStream stream = new PrintStream(new FileOutputStream(file));
+			info ("Generated " + file);
+			return stream;
 		} catch (FileNotFoundException exc) {
 			System.err.println(
 				"fatal error: Failed to open " + file + " for writing.");
 			System.exit(1);
 		}
+		
+		return null;
 	}
 
-	protected void createFileStream(
-		String name,
-		String ext,
-		String directory) {
-		char sep = File.separatorChar;
+    protected String getPath(String directory, String name, String ext) {
+    	return directory + File.separatorChar + name + ext;
+    }
+    
+	protected PrintStream createStream(String name, String ext, String directory) {
 		File base = new File(directory);
 
 		if (!base.exists()) {
@@ -72,6 +87,6 @@ public abstract class Generator {
 			throw new RuntimeException(directory + " is not a directory");
 		}
 
-		createStream(directory + sep + name + ext);
+		return createStream(getPath(directory,name,ext));
 	}
 }

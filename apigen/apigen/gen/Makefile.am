@@ -8,7 +8,8 @@ SUBDIRS = . c java
 
 CLASSPATH_ENV	= CLASSPATH=${top_srcdir}:$(JAVA_ATERM):$(SHARED_OBJECTS)
 
-java_JAVA       = Generator.java TomSignatureGenerator.java
+java_JAVA       = Generator.java TomSignatureGenerator.java \
+                  StringConversions.java TomSignatureImplementation.java
 
 javadir         = ${prefix}/classes/apigen/gen
 JAVAROOT	= ${top_builddir}

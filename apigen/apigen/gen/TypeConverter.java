@@ -5,9 +5,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class TypeConverter {	
-	private Map reservedTypes;
+	static private Map reservedTypes;
 	
-	public TypeConverter(String integer, String real, String string, String term) {
+	protected static void registerConversions(String integer, String real, String string, String term) {
 		reservedTypes = new HashMap();
 		
 		reservedTypes.put("int",integer);
@@ -17,11 +17,11 @@ public class TypeConverter {
 		
 	}
 	
-	public boolean isReserved(String t) {
+	static public boolean isReserved(String t) {
 		return reservedTypes.containsKey(t);
 	}
 	
-	public String getType(String t) {
+	static public String getType(String t) {
 		if (isReserved(t)) {
 			return (String) reservedTypes.get(t);
 		}
