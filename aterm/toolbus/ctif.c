@@ -212,11 +212,9 @@ ATermList unify_tifs(ATermList tifs)
 			if(!streq(cur_prim, primitive))
 				ATerror("primitives collide: %t vs. %t\n", tif, cur);
 
-			fprintf(stderr, "cur_name=%s, mgu_name=%s\n", cur_name, mgu_name);
 			mgu_args = unify_arguments(mgu_args, cur_args);
 			if(!mgu_args)
 				ATerror("arity mismatch: %t vs. %t\n", tif, cur);
-			ATprintf("unified arguments: %t\n", mgu_args);
 		}
 			
 		mgu = ATmake("<appl(<list>)>", mgu_name, mgu_args);
@@ -632,7 +630,7 @@ int main(int argc, char *argv[])
 {
 	int i, fd;
 	ATerm topOfStack;
-	char *tool, *handler = NULL, *checker = NULL, *output = NULL;
+	char *tool = NULL, *handler = NULL, *checker = NULL, *output = NULL;
 	char *tifname = NULL;
 	ATermList tifs;
 	char *p, *codename, *headername;
@@ -682,11 +680,8 @@ int main(int argc, char *argv[])
 
 	tifs = read_tifs(fd, tool);
 	close(fd);
-	ATprintf("tifs read: %t\n", tifs);
 	tifs = generalize_tifs(tifs);
-	ATprintf("tifs generalized: %t\n", tifs);
 	tifs = unify_tifs(tifs);
-	ATprintf("tifs unified: %t\n", tifs);
 
 	file = fopen(headername, "w"); 
 	if(!file)
