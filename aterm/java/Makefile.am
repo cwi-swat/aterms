@@ -1,4 +1,4 @@
-SUBDIRS = aterm toolbus
+SUBDIRS		= aterm toolbus
 
 noinst_DATA	= ${JAVADOCDIR}.tar.gz
 
@@ -13,5 +13,5 @@ javadoc: ${JAVADOCDIR}.tar.gz
 ${JAVADOCDIR}.tar.gz: ${JAVA_FILES}
 	@mkdir -p ${JAVADOCDIR}
 	javadoc -public -d ${JAVADOCDIR} $(JAVA_FILES)
-	tar cf - ${JAVADOCDIR} | gzip > ${JAVADOCDIR}.tar.gz
-
+	tar cf - ${JAVADOCDIR} | gzip --best > ${JAVADOCDIR}.tar.gz
+	@rm -rf ${JAVADOCDIR}

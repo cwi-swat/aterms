@@ -1,0 +1,23 @@
+tool example is { command="java-adapter -class Example" }
+
+process EXAMPLE is
+let
+  T : example,
+  Value : int,
+  Name  : str
+in
+  execute(example, T?) .
+  (
+    snd-eval(T, msg("Hello World!")) delay(sec(3)) .
+    rec-value(T, count(Value?)) .
+    printf("Hello number %d\n", Value)
+  ) * delta 
+  ||
+  (
+    rec-event(T, button(Name?)) .
+    printf("Button pressed: %s\n", Name) .
+    snd-ack-event(T, button(Name))
+  ) * delta
+endlet
+
+toolbus(EXAMPLE)

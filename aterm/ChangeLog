@@ -2,6 +2,7 @@ $Id$
 
 2001/05/16 (jong@cwi.nl)
  * Added make(String trm) (synonym for parse(String trm)) as per C-interface.
+ * Added documentation on "Connecting Java Tools"
 
 2001/05/15 ({jong,olivierp}@cwi.nl)
  * Optimized ATremoveAllAnnotations

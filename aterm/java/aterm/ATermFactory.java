@@ -25,16 +25,19 @@ public interface ATermFactory
    * @param trm the string representation of the term
    *
    * @return the parsed term.
+   *
+   * @see #make(String)
    */
   ATerm parse(String trm);
 
   /**
-   * Creates a new ATerm by parsing a string.
-   * Synonym of <code>parse(String trm)<\code>;
+   * Equivalent of parse.
    *
    * @param trm the string representation of the term
    *
    * @return the parsed term.
+   *
+   * @see #parse(String)
    */
   ATerm make(String trm);
 
@@ -44,7 +47,8 @@ public interface ATermFactory
    * Then the holes in the pattern are filled with arguments taken from
    * the supplied list of arguments.
    *
-   * @param pattern the string pattern containing a placeholder for each argument.
+   * @param pattern the string pattern containing a placeholder for each
+   *        argument.
    * @param args the list of arguments to be filled into the placeholders.
    *
    * @return the constructed term.

@@ -113,7 +113,7 @@
 \vskip .1in 
 \startsubsubsection{Declaration}{
 \fbox{\vbox{
-\hbox{\vbox{\small public interface 
+\hbox{\vbox{\small public abstract interface 
 AFun}}
 }}}
 \startsubsubsection{Methods}{
@@ -196,7 +196,7 @@ true if this application is quoted, false otherwise.
 \vskip .1in 
 \startsubsubsection{Declaration}{
 \fbox{\vbox{
-\hbox{\vbox{\small public interface 
+\hbox{\vbox{\small public abstract interface 
 ATerm}}
 \noindent\hbox{\vbox{{\bf implements} 
 ATermVisitable}}
@@ -815,7 +815,7 @@ Write a term to a text file$/$stream.
 \vskip .1in 
 \startsubsubsection{Declaration}{
 \fbox{\vbox{
-\hbox{\vbox{\small public interface 
+\hbox{\vbox{\small public abstract interface 
 ATermAppl}}
 \noindent\hbox{\vbox{{\bf implements} 
 ATerm}}
@@ -1029,7 +1029,7 @@ a copy of this application with argument i replaced by arg.
 \vskip .1in 
 \startsubsubsection{Declaration}{
 \fbox{\vbox{
-\hbox{\vbox{\small public interface 
+\hbox{\vbox{\small public abstract interface 
 ATermBlob}}
 \noindent\hbox{\vbox{{\bf implements} 
 ATerm}}
@@ -1091,7 +1091,7 @@ the size of the data in this blob.
 \vskip .1in 
 \startsubsubsection{Declaration}{
 \fbox{\vbox{
-\hbox{\vbox{\small public interface 
+\hbox{\vbox{\small public abstract interface 
 ATermFactory}}
 }}}
 \startsubsubsection{Fields}{
@@ -1177,9 +1177,48 @@ the constructed term.
 \divideents{make}
 \item{\vskip -1.9ex 
 \membername{make}
+{\tt public ATerm {\bf make}( {\tt java.lang.String } {\bf trm} )
+\label{l86}\label{l87}}%end signature
+\begin{itemize}
+\sld
+\item{
+\sld
+{\bf Usage}
+  \begin{itemize}\isep
+   \item{
+Equivalent of parse.
+}%end item
+  \end{itemize}
+}
+\item{
+\sld
+{\bf Parameters}
+\sld\isep
+  \begin{itemize}
+\sld\isep
+   \item{
+\sld
+{\tt trm} - the string representation of the term}
+  \end{itemize}
+}%end item
+\item{{\bf Returns} - 
+the parsed term. 
+}%end item
+\item{{\bf See Also}
+  \begin{itemize}
+   \item{{\tt aterm.ATermFactory.parse(String)} {\small 
+\refdefined{l88}}%end \small
+}%end item
+  \end{itemize}
+}%end item
+\end{itemize}
+}%end item
+\divideents{make}
+\item{\vskip -1.9ex 
+\membername{make}
 {\tt public ATerm {\bf make}( {\tt java.lang.String } {\bf pattern},
 {\tt java.util.List } {\bf args} )
-\label{l86}\label{l87}}%end signature
+\label{l89}\label{l90}}%end signature
 \begin{itemize}
 \sld
 \item{
@@ -1202,7 +1241,8 @@ Creates a new ATerm given a string pattern and a list of arguments.
 \sld\isep
    \item{
 \sld
-{\tt pattern} - the string pattern containing a placeholder for each argument.}
+{\tt pattern} - the string pattern containing a placeholder for each
+        argument.}
    \item{
 \sld
 {\tt args} - the list of arguments to be filled into the placeholders.}
@@ -1218,7 +1258,7 @@ the constructed term.
 \membername{make}
 {\tt public ATerm {\bf make}( {\tt java.lang.String } {\bf pattern},
 {\tt java.lang.Object } {\bf arg1} )
-\label{l88}\label{l89}}%end signature
+\label{l91}\label{l92}}%end signature
 \begin{itemize}
 \sld
 \item{
@@ -1257,7 +1297,7 @@ the constructed term.
 {\tt public ATerm {\bf make}( {\tt java.lang.String } {\bf pattern},
 {\tt java.lang.Object } {\bf arg1},
 {\tt java.lang.Object } {\bf arg2} )
-\label{l90}\label{l91}}%end signature
+\label{l93}\label{l94}}%end signature
 \begin{itemize}
 \sld
 \item{
@@ -1300,7 +1340,7 @@ the constructed term.
 {\tt java.lang.Object } {\bf arg1},
 {\tt java.lang.Object } {\bf arg2},
 {\tt java.lang.Object } {\bf arg3} )
-\label{l92}\label{l93}}%end signature
+\label{l95}\label{l96}}%end signature
 \begin{itemize}
 \sld
 \item{
@@ -1347,7 +1387,7 @@ the constructed term.
 {\tt java.lang.Object } {\bf arg2},
 {\tt java.lang.Object } {\bf arg3},
 {\tt java.lang.Object } {\bf arg4} )
-\label{l94}\label{l95}}%end signature
+\label{l97}\label{l98}}%end signature
 \begin{itemize}
 \sld
 \item{
@@ -1398,7 +1438,7 @@ the constructed term.
 {\tt java.lang.Object } {\bf arg3},
 {\tt java.lang.Object } {\bf arg4},
 {\tt java.lang.Object } {\bf arg5} )
-\label{l96}\label{l97}}%end signature
+\label{l99}\label{l100}}%end signature
 \begin{itemize}
 \sld
 \item{
@@ -1453,7 +1493,7 @@ the constructed term.
 {\tt java.lang.Object } {\bf arg4},
 {\tt java.lang.Object } {\bf arg5},
 {\tt java.lang.Object } {\bf arg6} )
-\label{l98}\label{l99}}%end signature
+\label{l101}\label{l102}}%end signature
 \begin{itemize}
 \sld
 \item{
@@ -1515,7 +1555,7 @@ the constructed term.
 {\tt java.lang.Object } {\bf arg5},
 {\tt java.lang.Object } {\bf arg6},
 {\tt java.lang.Object } {\bf arg7} )
-\label{l100}\label{l101}}%end signature
+\label{l103}\label{l104}}%end signature
 \begin{itemize}
 \sld
 \item{
@@ -1572,7 +1612,7 @@ the constructed term.
 {\tt public AFun {\bf makeAFun}( {\tt java.lang.String } {\bf name},
 {\tt int } {\bf arity},
 {\tt boolean } {\bf isQuoted} )
-\label{l102}\label{l103}}%end signature
+\label{l105}\label{l106}}%end signature
 \begin{itemize}
 \sld
 \item{
@@ -1610,7 +1650,7 @@ the constructed AFun.
 \item{\vskip -1.9ex 
 \membername{makeAppl}
 {\tt public ATermAppl {\bf makeAppl}( {\tt aterm.AFun } {\bf fun} )
-\label{l104}\label{l105}}%end signature
+\label{l107}\label{l108}}%end signature
 \begin{itemize}
 \sld
 \item{
@@ -1643,7 +1683,7 @@ the constructed function application.
 \membername{makeAppl}
 {\tt public ATermAppl {\bf makeAppl}( {\tt aterm.AFun } {\bf fun},
 {\tt aterm.ATerm } {\bf arg} )
-\label{l106}\label{l107}}%end signature
+\label{l109}\label{l110}}%end signature
 \begin{itemize}
 \sld
 \item{
@@ -1679,7 +1719,7 @@ the constructed function application.
 \membername{makeAppl}
 {\tt public ATermAppl {\bf makeAppl}( {\tt aterm.AFun } {\bf fun},
 {\tt aterm.ATerm []} {\bf args} )
-\label{l108}\label{l109}}%end signature
+\label{l111}\label{l112}}%end signature
 \begin{itemize}
 \sld
 \item{
@@ -1716,7 +1756,7 @@ the constructed function application.
 {\tt public ATermAppl {\bf makeAppl}( {\tt aterm.AFun } {\bf fun},
 {\tt aterm.ATerm } {\bf arg1},
 {\tt aterm.ATerm } {\bf arg2} )
-\label{l110}\label{l111}}%end signature
+\label{l113}\label{l114}}%end signature
 \begin{itemize}
 \sld
 \item{
@@ -1757,7 +1797,7 @@ the constructed function application.
 {\tt aterm.ATerm } {\bf arg1},
 {\tt aterm.ATerm } {\bf arg2},
 {\tt aterm.ATerm } {\bf arg3} )
-\label{l112}\label{l113}}%end signature
+\label{l115}\label{l116}}%end signature
 \begin{itemize}
 \sld
 \item{
@@ -1802,7 +1842,7 @@ the constructed function application.
 {\tt aterm.ATerm } {\bf arg2},
 {\tt aterm.ATerm } {\bf arg3},
 {\tt aterm.ATerm } {\bf arg4} )
-\label{l114}\label{l115}}%end signature
+\label{l117}\label{l118}}%end signature
 \begin{itemize}
 \sld
 \item{
@@ -1851,7 +1891,7 @@ the constructed function application.
 {\tt aterm.ATerm } {\bf arg3},
 {\tt aterm.ATerm } {\bf arg4},
 {\tt aterm.ATerm } {\bf arg5} )
-\label{l116}\label{l117}}%end signature
+\label{l119}\label{l120}}%end signature
 \begin{itemize}
 \sld
 \item{
@@ -1904,7 +1944,7 @@ the constructed function application.
 {\tt aterm.ATerm } {\bf arg4},
 {\tt aterm.ATerm } {\bf arg5},
 {\tt aterm.ATerm } {\bf arg6} )
-\label{l118}\label{l119}}%end signature
+\label{l121}\label{l122}}%end signature
 \begin{itemize}
 \sld
 \item{
@@ -1955,7 +1995,7 @@ the constructed function application.
 \membername{makeAppl}
 {\tt public ATermAppl {\bf makeAppl}( {\tt aterm.AFun } {\bf fun},
 {\tt aterm.ATermList } {\bf args} )
-\label{l120}\label{l121}}%end signature
+\label{l123}\label{l124}}%end signature
 \begin{itemize}
 \sld
 \item{
@@ -1990,7 +2030,7 @@ the constructed function application.
 \item{\vskip -1.9ex 
 \membername{makeBlob}
 {\tt public ATermBlob {\bf makeBlob}( {\tt byte []} {\bf data} )
-\label{l122}\label{l123}}%end signature
+\label{l125}\label{l126}}%end signature
 \begin{itemize}
 \sld
 \item{
@@ -2022,7 +2062,7 @@ the constructed ATermBlob.
 \item{\vskip -1.9ex 
 \membername{makeInt}
 {\tt public ATermInt {\bf makeInt}( {\tt int } {\bf val} )
-\label{l124}\label{l125}}%end signature
+\label{l127}\label{l128}}%end signature
 \begin{itemize}
 \sld
 \item{
@@ -2054,7 +2094,7 @@ the constructed ATermInt object.
 \item{\vskip -1.9ex 
 \membername{makeList}
 {\tt public ATermList {\bf makeList}(  )
-\label{l126}\label{l127}}%end signature
+\label{l129}\label{l130}}%end signature
 \begin{itemize}
 \sld
 \item{
@@ -2075,7 +2115,7 @@ the (empty) ATermList.
 \item{\vskip -1.9ex 
 \membername{makeList}
 {\tt public ATermList {\bf makeList}( {\tt aterm.ATerm } {\bf single} )
-\label{l128}\label{l129}}%end signature
+\label{l131}\label{l132}}%end signature
 \begin{itemize}
 \sld
 \item{
@@ -2108,7 +2148,7 @@ the singleton ATermList object.
 \membername{makeList}
 {\tt public ATermList {\bf makeList}( {\tt aterm.ATerm } {\bf head},
 {\tt aterm.ATermList } {\bf tail} )
-\label{l130}\label{l131}}%end signature
+\label{l133}\label{l134}}%end signature
 \begin{itemize}
 \sld
 \item{
@@ -2143,7 +2183,7 @@ the constructed ATermList.
 \item{\vskip -1.9ex 
 \membername{makePlaceholder}
 {\tt public ATermPlaceholder {\bf makePlaceholder}( {\tt aterm.ATerm } {\bf type} )
-\label{l132}\label{l133}}%end signature
+\label{l135}\label{l136}}%end signature
 \begin{itemize}
 \sld
 \item{
@@ -2175,7 +2215,7 @@ the constructed ATermPlaceholder.
 \item{\vskip -1.9ex 
 \membername{makeReal}
 {\tt public ATermReal {\bf makeReal}( {\tt double } {\bf val} )
-\label{l134}\label{l135}}%end signature
+\label{l137}\label{l138}}%end signature
 \begin{itemize}
 \sld
 \item{
@@ -2207,7 +2247,7 @@ the constructed ATermReal object.
 \item{\vskip -1.9ex 
 \membername{parse}
 {\tt public ATerm {\bf parse}( {\tt java.lang.String } {\bf trm} )
-\label{l136}\label{l137}}%end signature
+\label{l139}\label{l140}}%end signature
 \begin{itemize}
 \sld
 \item{
@@ -2233,13 +2273,20 @@ Creates a new ATerm by parsing a string.
 \item{{\bf Returns} - 
 the parsed term. 
 }%end item
+\item{{\bf See Also}
+  \begin{itemize}
+   \item{{\tt aterm.ATermFactory.make(String)} {\small 
+\refdefined{l141}}%end \small
+}%end item
+  \end{itemize}
+}%end item
 \end{itemize}
 }%end item
 \divideents{readFromBinaryFile}
 \item{\vskip -1.9ex 
 \membername{readFromBinaryFile}
 {\tt public ATerm {\bf readFromBinaryFile}( {\tt java.io.InputStream } {\bf stream} )
-\label{l138}\label{l139}}%end signature
+\label{l142}\label{l143}}%end signature
 \begin{itemize}
 \sld
 \item{
@@ -2271,7 +2318,7 @@ the parsed ATerm.
 \item{\vskip -1.9ex 
 \membername{readFromFile}
 {\tt public ATerm {\bf readFromFile}( {\tt java.io.InputStream } {\bf stream} )
-\label{l140}\label{l141}}%end signature
+\label{l144}\label{l145}}%end signature
 \begin{itemize}
 \sld
 \item{
@@ -2305,7 +2352,7 @@ the parsed ATerm.
 \item{\vskip -1.9ex 
 \membername{readFromFile}
 {\tt public ATerm {\bf readFromFile}( {\tt java.lang.String } {\bf file} )
-\label{l142}\label{l143}}%end signature
+\label{l146}\label{l147}}%end signature
 \begin{itemize}
 \sld
 \item{
@@ -2337,7 +2384,7 @@ the parsed ATerm.
 \item{\vskip -1.9ex 
 \membername{readFromSharedTextFile}
 {\tt public ATerm {\bf readFromSharedTextFile}( {\tt java.io.InputStream } {\bf stream} )
-\label{l144}\label{l145}}%end signature
+\label{l148}\label{l149}}%end signature
 \begin{itemize}
 \sld
 \item{
@@ -2369,7 +2416,7 @@ the parsed ATerm.
 \item{\vskip -1.9ex 
 \membername{readFromTextFile}
 {\tt public ATerm {\bf readFromTextFile}( {\tt java.io.InputStream } {\bf stream} )
-\label{l146}\label{l147}}%end signature
+\label{l150}\label{l151}}%end signature
 \begin{itemize}
 \sld
 \item{
@@ -2407,7 +2454,7 @@ the parsed ATerm.
 \vskip .1in 
 \startsubsubsection{Declaration}{
 \fbox{\vbox{
-\hbox{\vbox{\small public interface 
+\hbox{\vbox{\small public abstract interface 
 ATermInt}}
 \noindent\hbox{\vbox{{\bf implements} 
 ATerm}}
@@ -2418,7 +2465,7 @@ ATerm}}
 \item{\vskip -1.9ex 
 \membername{getInt}
 {\tt public int {\bf getInt}(  )
-\label{l148}\label{l149}}%end signature
+\label{l152}\label{l153}}%end signature
 \begin{itemize}
 \sld
 \item{
@@ -2445,7 +2492,7 @@ the integer value from this term.
 \vskip .1in 
 \startsubsubsection{Declaration}{
 \fbox{\vbox{
-\hbox{\vbox{\small public interface 
+\hbox{\vbox{\small public abstract interface 
 ATermList}}
 \noindent\hbox{\vbox{{\bf implements} 
 ATerm}}
@@ -2456,7 +2503,7 @@ ATerm}}
 \item{\vskip -1.9ex 
 \membername{append}
 {\tt public ATermList {\bf append}( {\tt aterm.ATerm } {\bf el} )
-\label{l150}\label{l151}}%end signature
+\label{l154}\label{l155}}%end signature
 \begin{itemize}
 \sld
 \item{
@@ -2488,7 +2535,7 @@ a list with el appended to it.
 \item{\vskip -1.9ex 
 \membername{concat}
 {\tt public ATermList {\bf concat}( {\tt aterm.ATermList } {\bf rhs} )
-\label{l152}\label{l153}}%end signature
+\label{l156}\label{l157}}%end signature
 \begin{itemize}
 \sld
 \item{
@@ -2520,7 +2567,7 @@ the concatenation of this list and rhs
 \item{\vskip -1.9ex 
 \membername{dictGet}
 {\tt public ATerm {\bf dictGet}( {\tt aterm.ATerm } {\bf key} )
-\label{l154}\label{l155}}%end signature
+\label{l158}\label{l159}}%end signature
 \begin{itemize}
 \sld
 \item{
@@ -2554,7 +2601,7 @@ the value associated with key, or null when key is not present.
 \membername{dictPut}
 {\tt public ATermList {\bf dictPut}( {\tt aterm.ATerm } {\bf key},
 {\tt aterm.ATerm } {\bf value} )
-\label{l156}\label{l157}}%end signature
+\label{l160}\label{l161}}%end signature
 \begin{itemize}
 \sld
 \item{
@@ -2590,7 +2637,7 @@ the new dictionary list
 \item{\vskip -1.9ex 
 \membername{dictRemove}
 {\tt public ATermList {\bf dictRemove}( {\tt aterm.ATerm } {\bf key} )
-\label{l158}\label{l159}}%end signature
+\label{l162}\label{l163}}%end signature
 \begin{itemize}
 \sld
 \item{
@@ -2623,7 +2670,7 @@ the new dictionary list
 \item{\vskip -1.9ex 
 \membername{elementAt}
 {\tt public ATerm {\bf elementAt}( {\tt int } {\bf i} )
-\label{l160}\label{l161}}%end signature
+\label{l164}\label{l165}}%end signature
 \begin{itemize}
 \sld
 \item{
@@ -2662,7 +2709,7 @@ the ith element of this list.
 \item{\vskip -1.9ex 
 \membername{getFirst}
 {\tt public ATerm {\bf getFirst}(  )
-\label{l162}\label{l163}}%end signature
+\label{l166}\label{l167}}%end signature
 \begin{itemize}
 \sld
 \item{
@@ -2683,7 +2730,7 @@ the first element of this list.
 \item{\vskip -1.9ex 
 \membername{getLast}
 {\tt public ATerm {\bf getLast}(  )
-\label{l164}\label{l165}}%end signature
+\label{l168}\label{l169}}%end signature
 \begin{itemize}
 \sld
 \item{
@@ -2704,7 +2751,7 @@ the last element of this list.
 \item{\vskip -1.9ex 
 \membername{getLength}
 {\tt public int {\bf getLength}(  )
-\label{l166}\label{l167}}%end signature
+\label{l170}\label{l171}}%end signature
 \begin{itemize}
 \sld
 \item{
@@ -2725,7 +2772,7 @@ the length of this list.
 \item{\vskip -1.9ex 
 \membername{getNext}
 {\tt public ATermList {\bf getNext}(  )
-\label{l168}\label{l169}}%end signature
+\label{l172}\label{l173}}%end signature
 \begin{itemize}
 \sld
 \item{
@@ -2746,7 +2793,7 @@ the tail of this list.
 \item{\vskip -1.9ex 
 \membername{getPrefix}
 {\tt public ATermList {\bf getPrefix}(  )
-\label{l170}\label{l171}}%end signature
+\label{l174}\label{l175}}%end signature
 \begin{itemize}
 \sld
 \item{
@@ -2768,7 +2815,7 @@ the prefix of this list.
 \membername{getSlice}
 {\tt public ATermList {\bf getSlice}( {\tt int } {\bf start},
 {\tt int } {\bf end} )
-\label{l172}\label{l173}}%end signature
+\label{l176}\label{l177}}%end signature
 \begin{itemize}
 \sld
 \item{
@@ -2804,7 +2851,7 @@ the portion of this list between start and end.
 \membername{indexOf}
 {\tt public int {\bf indexOf}( {\tt aterm.ATerm } {\bf el},
 {\tt int } {\bf start} )
-\label{l174}\label{l175}}%end signature
+\label{l178}\label{l179}}%end signature
 \begin{itemize}
 \sld
 \item{
@@ -2846,7 +2893,7 @@ the index of the first occurance of el in this list,
 \item{{\bf See Also}
   \begin{itemize}
    \item{{\tt aterm.ATermList.lastIndexOf} {\small 
-\refdefined{l176}}%end \small
+\refdefined{l180}}%end \small
 }%end item
   \end{itemize}
 }%end item
@@ -2856,7 +2903,7 @@ the index of the first occurance of el in this list,
 \item{\vskip -1.9ex 
 \membername{insert}
 {\tt public ATermList {\bf insert}( {\tt aterm.ATerm } {\bf el} )
-\label{l177}\label{l178}}%end signature
+\label{l181}\label{l182}}%end signature
 \begin{itemize}
 \sld
 \item{
@@ -2889,7 +2936,7 @@ a list with el inserted.
 \membername{insertAt}
 {\tt public ATermList {\bf insertAt}( {\tt aterm.ATerm } {\bf el},
 {\tt int } {\bf i} )
-\label{l179}\label{l180}}%end signature
+\label{l183}\label{l184}}%end signature
 \begin{itemize}
 \sld
 \item{
@@ -2924,7 +2971,7 @@ a list with el inserted as ith element.
 \item{\vskip -1.9ex 
 \membername{isEmpty}
 {\tt public boolean {\bf isEmpty}(  )
-\label{l181}\label{l182}}%end signature
+\label{l185}\label{l186}}%end signature
 \begin{itemize}
 \sld
 \item{
@@ -2946,7 +2993,7 @@ true if this list is empty, false otherwise.
 \membername{lastIndexOf}
 {\tt public int {\bf lastIndexOf}( {\tt aterm.ATerm } {\bf el},
 {\tt int } {\bf start} )
-\label{l183}\label{l184}}%end signature
+\label{l187}\label{l188}}%end signature
 \begin{itemize}
 \sld
 \item{
@@ -2980,7 +3027,7 @@ the index of the last occurance of el in this list,
 \item{{\bf See Also}
   \begin{itemize}
    \item{{\tt aterm.ATermList.indexOf} {\small 
-\refdefined{l185}}%end \small
+\refdefined{l189}}%end \small
 }%end item
   \end{itemize}
 }%end item
@@ -2990,7 +3037,7 @@ the index of the last occurance of el in this list,
 \item{\vskip -1.9ex 
 \membername{remove}
 {\tt public ATermList {\bf remove}( {\tt aterm.ATerm } {\bf el} )
-\label{l186}\label{l187}}%end signature
+\label{l190}\label{l191}}%end signature
 \begin{itemize}
 \sld
 \item{
@@ -3022,7 +3069,7 @@ this list with one occurance of el removed.
 \item{\vskip -1.9ex 
 \membername{removeAll}
 {\tt public ATermList {\bf removeAll}( {\tt aterm.ATerm } {\bf el} )
-\label{l188}\label{l189}}%end signature
+\label{l192}\label{l193}}%end signature
 \begin{itemize}
 \sld
 \item{
@@ -3054,7 +3101,7 @@ this list with all occurances of el removed.
 \item{\vskip -1.9ex 
 \membername{removeElementAt}
 {\tt public ATermList {\bf removeElementAt}( {\tt int } {\bf i} )
-\label{l190}\label{l191}}%end signature
+\label{l194}\label{l195}}%end signature
 \begin{itemize}
 \sld
 \item{
@@ -3094,7 +3141,7 @@ a list with the ith element removed.
 \membername{replace}
 {\tt public ATermList {\bf replace}( {\tt aterm.ATerm } {\bf el},
 {\tt int } {\bf i} )
-\label{l192}\label{l193}}%end signature
+\label{l196}\label{l197}}%end signature
 \begin{itemize}
 \sld
 \item{
@@ -3136,7 +3183,7 @@ this list with the ith element replaced by el.
 \item{\vskip -1.9ex 
 \membername{reverse}
 {\tt public ATermList {\bf reverse}(  )
-\label{l194}\label{l195}}%end signature
+\label{l198}\label{l199}}%end signature
 \begin{itemize}
 \sld
 \item{
@@ -3163,7 +3210,7 @@ a reverse order copy of this list.
 \vskip .1in 
 \startsubsubsection{Declaration}{
 \fbox{\vbox{
-\hbox{\vbox{\small public interface 
+\hbox{\vbox{\small public abstract interface 
 ATermPlaceholder}}
 \noindent\hbox{\vbox{{\bf implements} 
 ATerm}}
@@ -3174,7 +3221,7 @@ ATerm}}
 \item{\vskip -1.9ex 
 \membername{getPlaceholder}
 {\tt public ATerm {\bf getPlaceholder}(  )
-\label{l196}\label{l197}}%end signature
+\label{l200}\label{l201}}%end signature
 \begin{itemize}
 \sld
 \item{
@@ -3201,7 +3248,7 @@ the type of this placeholder.
 \vskip .1in 
 \startsubsubsection{Declaration}{
 \fbox{\vbox{
-\hbox{\vbox{\small public interface 
+\hbox{\vbox{\small public abstract interface 
 ATermReal}}
 \noindent\hbox{\vbox{{\bf implements} 
 ATerm}}
@@ -3212,7 +3259,7 @@ ATerm}}
 \item{\vskip -1.9ex 
 \membername{getReal}
 {\tt public double {\bf getReal}(  )
-\label{l198}\label{l199}}%end signature
+\label{l202}\label{l203}}%end signature
 \begin{itemize}
 \sld
 \item{
