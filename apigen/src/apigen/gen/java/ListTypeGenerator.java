@@ -1,5 +1,6 @@
 package apigen.gen.java;
 
+import sun.io.Converters;
 import apigen.adt.ListType;
 import apigen.adt.Type;
 
@@ -104,8 +105,9 @@ public class ListTypeGenerator extends TypeGenerator {
     }
 
     protected void genOverrideInsertMethod() {
+        String head = getConverter().makeATermToBuiltinConversion(elementType, "head");
         println("  public aterm.ATermList insert(aterm.ATerm head) {");
-        println("    return insert((" + elementTypeName + ") head);");
+        println("    return insert((" + elementTypeName + ") " + head + ");");
         println("  }");
         println();
     }
@@ -238,18 +240,23 @@ public class ListTypeGenerator extends TypeGenerator {
         String className = TypeGenerator.className(type);
 
         println("  public aterm.ATerm toTerm() {");
+        println(
+            "    aterm.ATermFactory factory = " + getFactoryMethodName + ".getPureFactory();");
         println("    if (this.term == null) {");
         println("      " + className + " reversed = (" + className + ")this.reverse();");
-        println(
-            "      aterm.ATermList tmp = "
-                + getFactoryMethodName
-                + ".getPureFactory().makeList();");
-        println("      for (; !reversed.isEmpty(); reversed = reversed.getTail()) {");
-        println("         aterm.ATerm elem = reversed.getHead().toTerm();");
-        println(
-            "         tmp = "
-                + getFactoryMethodName
-                + ".getPureFactory().makeList(elem, tmp);");
+        println("      aterm.ATermList tmp = factory.makeList();");
+        println("for (; !reversed.isEmpty(); reversed = reversed.getTail()) {");
+        
+        String head = "reversed.getHead()";
+        String termHead;
+        if (!getConverter().isReserved(elementType)) {
+            termHead = head + ".toTerm()";
+        } else {
+            termHead = getConverter().makeBuiltinToATermConversion(elementType, head);
+        }
+        println("         aterm.ATerm elem = " + termHead + ";");
+
+        println("         tmp = factory.makeList(elem, tmp);");
         println("      }");
         println("      this.term = tmp;");
         println("    }");
