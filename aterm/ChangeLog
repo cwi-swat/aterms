@@ -1,5 +1,8 @@
 $Id$
 
+2001/07/31 (jurgenv@cwi.nl)
+ * Bumped version to 1.6.3
+
 2001/07/12 (jong@cwi.nl)
  * Java-source for toolbus support moved from ATerm-pkg to TB-pkg
 
