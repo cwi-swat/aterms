@@ -35,7 +35,7 @@ main (int argc, char **argv)
   int  nInputs = 0;
   char *output = "-";
   int i;
-  ADTEntries total;
+  ADT_Entries total;
 
   if(argc == 1) { /* no arguments */
     usage();
@@ -74,24 +74,24 @@ main (int argc, char **argv)
   }
 
   ATinit(argc, argv, &bottomOfStack); 
-  ADTinitADTApi();
+  ADT_initADTApi();
  
-  total = ADTmakeEntriesEmpty();
+  total = ADT_makeEntriesEmpty();
   for (--nInputs; nInputs >= 0; nInputs--) {
-    ADTEntries es = ADTEntriesFromTerm(ATreadFromNamedFile(inputs[nInputs])); 
+    ADT_Entries es = ADT_EntriesFromTerm(ATreadFromNamedFile(inputs[nInputs])); 
 
     if (es == NULL) {
       ATwarning("concat-adt: Unable to read anything from %s\n", 
 		inputs[nInputs]);
     }
     else {
-      total = ADTconcatEntries(es, total);
+      total = ADT_concatEntries(es, total);
     }
 
     free(inputs[nInputs]);
   }
 
-  ATwriteToNamedTextFile(ADTEntriesToTerm(total), output);
+  ATwriteToNamedTextFile(ADT_EntriesToTerm(total), output);
  
   return 0;
 }
