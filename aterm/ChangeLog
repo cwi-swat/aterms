@@ -1,5 +1,8 @@
 $Id$
 
+2002/04/22 <jurgenv@cwi.nl>
+* Release 1.6.6
+
 Tue Mar  5 14:50:18 CET 2002 <jong@cwi.nl>
 * Increased magical LENSPEC from 8 to 12 bytes
 
