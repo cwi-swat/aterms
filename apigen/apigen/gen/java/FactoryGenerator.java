@@ -137,7 +137,7 @@ public class FactoryGenerator extends JavaGenerator {
 	   while (bottoms.hasNext()) {
 		 String type = (String) bottoms.next();
       
-		 if (!JavaTypeConversions.isReserved(type)) {
+		 if (!converter.isReserved(type)) {
 		   println("    " + StringConversions.makeCapitalizedIdentifier(type) + ".initialize(this);");
 		 }
 	   }

@@ -6,6 +6,7 @@ import java.io.*;
 
 import apigen.adt.*;
 import apigen.gen.StringConversions;
+import apigen.gen.TypeConverter;
 import aterm.*;
 
 
@@ -17,8 +18,6 @@ public class APIGenerator extends CGenerator {
 	private static final boolean OPTIMIZE_WITHOUT_ANNOS = false;
 	private boolean make_term_compatibility;
 	
-	private String output;
-	private String capOutput;
 	private String prefix;
 	private String prologue;
 	private String macro;
@@ -32,6 +31,9 @@ public class APIGenerator extends CGenerator {
 		this.adt = adt;
 		this.apiName = apiName;
 		this.prefix = prefix;
+		
+		afuns_by_name = new HashMap();
+		afuns_by_afun = new HashMap();
 	}
 
 	protected void generate() {
@@ -52,7 +54,7 @@ public class APIGenerator extends CGenerator {
 
 	private void genPrologue()  {
 		/* Header stuff */
-		macro = "_" + output.toUpperCase() + "_H";
+		macro = "_" + apiName.toUpperCase() + "_H";
 		StringBuffer buf = new StringBuffer();
 		for (int i = 0; i < macro.length(); i++) {
 			if (Character.isLetterOrDigit(macro.charAt(i))) {
@@ -72,7 +74,7 @@ public class APIGenerator extends CGenerator {
 		hprintln();
 		hprintFoldOpen("includes");
 		hprintln("#include <aterm1.h>");
-		hprintln("#include \"" + output + "_dict.h\"");
+		hprintln("#include \"" + apiName + "_dict.h\"");
 		hprintFoldClose();
 		hprintln();
 
@@ -109,7 +111,7 @@ public class APIGenerator extends CGenerator {
 		println();
 		println("#include <aterm2.h>");
 		println("#include <deprecated.h>");
-		println("#include \"" + output + ".h\"");
+		println("#include \"" + apiName + ".h\"");
 		println();
 	}
 
@@ -136,13 +138,14 @@ public class APIGenerator extends CGenerator {
 //	{{{ private void genInitFunction(API api)
 
 	  private void genInitFunction() {
-		  String decl = "void " + prefix + "init" + StringConversions.makeIdentifier(capOutput) + "Api(void)";
+		  String decl = "void " + prefix + "init" + StringConversions.makeCapitalizedIdentifier(apiName) + 
+                        "Api(void)";
 		  hprintln(decl + ";");
 
 		  printFoldOpen( decl);
 		  println(decl);
 		  println("{");
-		  String dictInitfunc = buildDictInitFunc(output);
+		  String dictInitfunc = buildDictInitFunc(apiName);
 		  println("  init_" + dictInitfunc + "_dict();");
 		  println("}");
 		  printFoldClose();
@@ -1134,9 +1137,11 @@ public class APIGenerator extends CGenerator {
 	//{{{ private String buildTypeName(String typeId)
 
 	private String buildTypeName(String typeId) {
-		String name = CTypeConverter.getType(typeId);
+		TypeConverter conv = new TypeConverter(new CTypeConversions());
 		
-		if (CTypeConverter.isReserved(typeId)) {
+		String name = conv.getType(typeId);
+		
+		if (conv.isReserved(typeId)) {
 			return name;
 		}
 		else {

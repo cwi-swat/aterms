@@ -1,31 +1,29 @@
-
 package apigen.gen;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class TypeConverter {	
-	static private Map reservedTypes;
-	
-	protected static void registerConversions(String integer, String real, String string, String term) {
+public class TypeConverter {
+	private Map reservedTypes;
+
+	public TypeConverter(TypeConversions conv) {
 		reservedTypes = new HashMap();
-		
-		reservedTypes.put("int",integer);
-		reservedTypes.put("real",real);
-		reservedTypes.put("str",string);
-		reservedTypes.put("term",term);
-		
+
+		reservedTypes.put("int", conv.IntegerType());
+		reservedTypes.put("real", conv.RealType());
+		reservedTypes.put("str", conv.StringType());
+		reservedTypes.put("term", conv.TermType());
+
 	}
-	
-	static public boolean isReserved(String t) {
+
+	public boolean isReserved(String t) {
 		return reservedTypes.containsKey(t);
 	}
-	
-	static public String getType(String t) {
+
+	public String getType(String t) {
 		if (isReserved(t)) {
 			return (String) reservedTypes.get(t);
-		}
-		else {
+		} else {
 			return t;
 		}
 	}

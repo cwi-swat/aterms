@@ -1,22 +1,24 @@
-package apigen.gen.java;
+package apigen.gen.c;
 
 import apigen.gen.TypeConversions;
 
-public class JavaTypeConversions implements TypeConversions {
-
+public class CTypeConversions implements TypeConversions {
+	
 	public String IntegerType() {
-		return "Integer";
+		return "int";
 	}
 
 	public String RealType() {
-		return "Double";
+		return "float";
 	}
 
+	
 	public String TermType() {
 		return "ATerm";
 	}
 
+	
 	public String StringType() {
-		return "String";
+		return "char*";
 	}
 }

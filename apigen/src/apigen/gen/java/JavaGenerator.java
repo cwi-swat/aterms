@@ -8,11 +8,17 @@ import apigen.adt.Field;
 import apigen.adt.Type;
 import apigen.gen.Generator;
 import apigen.gen.StringConversions;
+import apigen.gen.TypeConverter;
 
 public abstract class JavaGenerator extends Generator {
+	static protected TypeConverter converter;
 	protected String pkg;
 	List imports;
 
+    static {
+    	converter = new TypeConverter(new JavaTypeConversions());
+    }
+    
 	protected JavaGenerator(
 		String directory,
 		String filename,
@@ -44,11 +50,11 @@ public abstract class JavaGenerator extends Generator {
 	}
 
 	public static String getClassName(String typeId) {
-		return StringConversions.makeIdentifier(JavaTypeConversions.getType(typeId));
+		return StringConversions.makeIdentifier(converter.getType(typeId));
 	}
 
 	public static String getTypeId(String typeId) {
-		return StringConversions.makeIdentifier(JavaTypeConversions.getType(typeId));
+		return StringConversions.makeIdentifier(converter.getType(typeId));
 	}
 
 	public static String getFieldId(String fieldId) {

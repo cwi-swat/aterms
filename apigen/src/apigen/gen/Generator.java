@@ -60,7 +60,6 @@ public abstract class Generator {
 	private PrintStream createStream(String file) {
 		try {
 			PrintStream stream = new PrintStream(new FileOutputStream(file));
-			info ("Generated " + file);
 			return stream;
 		} catch (FileNotFoundException exc) {
 			System.err.println(

@@ -469,7 +469,7 @@ public class AlternativeImplGenerator extends JavaGenerator {
 		int count = 0;
 		while (fields.hasNext()) {
 			Field field = (Field) fields.next();
-			if (!JavaTypeConversions.isReserved(field.getType())) {
+			if (!converter.isReserved(field.getType())) {
 				count++;
 			}
 		}
