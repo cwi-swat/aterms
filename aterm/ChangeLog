@@ -1,10 +1,7 @@
 $Id$
 
-Tue Feb 10 09:49:11 CET 2004 <{jurgenv,kooiker}@cwi.nl>
- * undone one of the changes done by autoupdate AC_CANONICAL_TARGET does
-  not properly link config.guess and config.sub, so we replace this call
-  by the old AC_CANONICAL_SYSTEM([])
-
+Tue Feb 10 15:04:08 CET 2004 <m336@cwi.nl>
+ * upgrade auto* to: autoconf 2.59, automake 1.7.9, libtool 1.5.2
 
 Mon Feb  9 14:56:11 CET 2004 <jong@cwi.nl>
  * aterm/gc.c: remove verbose print: check_unmarked_block
