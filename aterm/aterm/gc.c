@@ -84,11 +84,6 @@ ATerm *stack_top()
   * Mark all terms reachable from the root set.
   */
 
-void flush_regs()
-{
-  AT_flush_register_windows();
-}
-
 void mark_phase()
 {
   int i;
@@ -102,7 +97,6 @@ void mark_phase()
 
 	/* Traverse possible register variables */
 	sigsetjmp(env,0);
-	/*AT_flush_register_windows();*/
 
 	start = (ATerm *)env;
 	stop  = ((ATerm *)(((char *)env) + sizeof(sigjmp_buf)));
