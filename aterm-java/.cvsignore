@@ -10,3 +10,5 @@ configure
 install-sh
 missing
 mkinstalldirs
+.classpath
+.project
