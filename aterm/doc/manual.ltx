@@ -16,7 +16,7 @@
 \newcommand{\ATerms}{ATerms}
 
 %% notion of Symbol was changed to AFun, which matches specification.
-\newcommand{\Symbol}{AFun}	
+\newcommand{\Symbol}{AFun}
 
 \newcommand{\ATtrue}{\mbox{\tt ATtrue}}
 \newcommand{\ATfalse}{\mbox{\tt ATfalse}}
@@ -1917,8 +1917,17 @@ A fully functional \toolbus\ tool can now be implemented by
 subclassing the generated class TestingTif:
 
 \begin{verbatim}
+import java.io.IOException;
+import java.net.UnknownHostException;
+import aterm.tool.ToolException;
+
 public class TestingTool extends TestingTif
 {
+  public TestingTool(String args) throws UnknownHostException
+  {
+    super(args);
+  }
+
   void f1(int i)
   {
      System.out.println("f1 called: " + i);
