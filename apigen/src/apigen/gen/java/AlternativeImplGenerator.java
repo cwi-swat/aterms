@@ -172,7 +172,6 @@ public class AlternativeImplGenerator extends JavaGenerator {
 
 
 		private void genAltToTerm(Type type, Alternative alt) {
-		if (hasReservedTypeFields(type, alt)) {
 		  println("  public aterm.ATerm toTerm() {");
 		  println("    if(term == null) {");
 		  println("      java.util.List args = new java.util.LinkedList();");
@@ -196,9 +195,8 @@ public class AlternativeImplGenerator extends JavaGenerator {
                         else if (field_type.equals("list")) {
 			  println("      args.add((aterm.ATermList) getArgument(" + i + "));");
 			}
-
 			else {
-			  println("      args.add(((" + GenericConstructorGenerator.className(apiName) + ") getArgument(" + i + ")).toTerm());");
+			  println("      args.add(((" + TypeGenerator.className(field_type) + ") getArgument(" + i + ")).toTerm());");
 			}
 		  }
 		  println("      setTerm(getFactory().make(getPattern(), args));");
@@ -206,7 +204,6 @@ public class AlternativeImplGenerator extends JavaGenerator {
 		  println("    return term;");
 		  println("  }");
 		  println();
-		}
 		}
 		
 	private void genAltFieldIndexMembers(Type type, Alternative alt)

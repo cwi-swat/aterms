@@ -44,25 +44,20 @@ public class GenericConstructorGenerator extends JavaGenerator {
 		println();
 		println("  abstract protected aterm.ATerm getPattern();");
 		println();
-		println("  public aterm.ATerm toTerm() {");
-		println("    if(term == null) {");
-		println("      java.util.List args = new java.util.LinkedList();");
-		println("      for(int i = 0; i<getArity() ; i++) {");
-		println("        args.add(((" + className + ") getArgument(i)).toTerm());");
-		println("      }");
-		println("      setTerm(getFactory().make(getPattern(), args));");
-		println("    }");
-		println("    return term;");
-		println("  }");
-		println();
-		println("  public String toString() {");
-		println("    return toTerm().toString();");
-		println("  }");
-		println();
-		println("  protected void setTerm(aterm.ATerm term) {");
-		println("   this.term = term;");
-		println("  }");
-		println();
+		
+		genToTermMethod();
+		genToStringMethod();
+		genSetTermMethod();
+		genGetFactoryMethods();
+        genDefaultTypePredicates();
+        
+        if (visitable) {
+          genAccept();
+        }
+		println("}");
+	  }
+
+	private void genGetFactoryMethods() {
 		println("  public " + factoryName + " get" + factoryName + "() {");
 		println("    return (" + factoryName + ") getFactory();");
 		println("  }");
@@ -70,13 +65,23 @@ public class GenericConstructorGenerator extends JavaGenerator {
 		println("  static protected " + factoryName + " getStatic" + factoryName + "() {");
 		println("    return (" + factoryName + ") getStaticFactory();");
 		println("  }");
-		println();
-        genDefaultTypePredicates();
-        if (visitable) {
-          genAccept();
-        }
-		println("}");
-	  }
+	}
+
+	private void genSetTermMethod() {
+		println("  protected void setTerm(aterm.ATerm term) {");
+		println("   this.term = term;");
+		println("  }");
+	}
+
+	private void genToStringMethod() {
+		println("  public String toString() {");
+		println("    return toTerm().toString();");
+		println("  }");
+	}
+
+	private void genToTermMethod() {
+		println("  abstract public aterm.ATerm toTerm();");
+	}
       
       private void genAccept()  {
           println("  abstract public void accept(Visitor v) throws jjtraveler.VisitFailure;"); 

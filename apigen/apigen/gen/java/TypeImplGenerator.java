@@ -74,6 +74,7 @@ public class TypeImplGenerator extends JavaGenerator {
 		println("  }");
 	}
 
+    
 	protected void genFromTextFile(String class_name) {
 		String get_factory = "getStatic" + FactoryGenerator.className(apiName) + "()";
 		println(

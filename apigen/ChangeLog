@@ -4,6 +4,9 @@
  * Only basic support for lists works: fromTerm and make. 
  * Had to add generation of 'insert' and 'reverse' (copied from ATermLibrary) 
    because of ClassCastExceptions concerning ATempty
+ * Generic toTerm method is not possible anymore because not every term inherits
+   from ATermApplImpl anymore. Every alternative class not generates its own
+   toTerm method
    
 2003-08-06 (jurgenv@cwi.nl)
  * Refactored generation of list constructors to a simpler design. There

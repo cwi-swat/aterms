@@ -61,7 +61,8 @@ public class ListTest {
 
     l = factory.makeModuleList_Modules(mods[3]);
     strs[4] = l.toString();
-    testAssert("list(modules([\"amodule\",\"amodule\",\"amodule\"]))".equals(
+    
+    testAssert("list([\"amodule\",\"amodule\",\"amodule\"])".equals(
 	     strs[4]), "toStringTest4");
          
     /* If the hash code generator does not generate different hash codes for these
