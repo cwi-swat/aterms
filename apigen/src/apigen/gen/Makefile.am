@@ -6,7 +6,7 @@
 
 SUBDIRS = . c java 
 
-CLASSPATH_ENV	= CLASSPATH=${top_srcdir}:$(ATERM)/classes
+CLASSPATH_ENV	= CLASSPATH=${top_srcdir}:$(JAVA_ATERM):$(SHARED_OBJECTS)
 
 java_JAVA       = Generator.java
 

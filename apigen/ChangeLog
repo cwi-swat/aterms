@@ -1,3 +1,8 @@
+2002/10/30 (vinju@loria.fr)
+ * Bumped to 1.4beta
+ * Added dependency on aterm-java and shared-objects
+ * Using jarfiles instead of .class files
+
 2002/09/31 (vinju@loria.fr)
  * Removed sdf2 dependencies by creating a new package sdf-apigen which contains
    sdf2-to-adt and all that is related to it. 

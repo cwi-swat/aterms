@@ -39,6 +39,7 @@ extends Generator
   private String pkg;
   private List	 imports;
   private String class_name;
+  private String api_name;
   
   private InputStream input;
 	private String path;
@@ -51,6 +52,7 @@ extends Generator
     System.err.println("options:");
     System.err.println("\t-verbose                  [off]");
     System.err.println("\t-package <package>        [\"\"]");
+    System.err.println("\t-name <api name>          [improvised]");
     System.err.println("\t-basedir <basedir>        [\".\"]");
     System.err.println("\t-import <package>         (can be repeated)");
     System.err.println("\t-input <in>               [-]");
@@ -70,6 +72,7 @@ extends Generator
     String pkg = "";
     String input  = "-";
     String basedir = ".";
+    String api_name = "";
     List imports = new LinkedList();
     InputStream inputStream;
 
@@ -96,6 +99,8 @@ extends Generator
         visitable = true;
       } else if ("-jtom".startsWith(args[i])) {
         jtom = true;
+      } else if ("-name".startsWith(args[i])) {
+        api_name = args[++i];
       } else {
         usage();
       }
@@ -106,16 +111,28 @@ extends Generator
     } else {
       inputStream = new FileInputStream(input);
     }
-    JavaGen gen = new JavaGen(inputStream, basedir, pkg, imports);
+    
+    if (api_name.equals("")) {
+      if (input.equals("-")) {
+        System.err.println("Please give a name to the API");
+        usage();
+      }
+      else {
+        api_name = input.substring(0, input.lastIndexOf((int) '.'));
+      }
+    }
+    
+    JavaGen gen = new JavaGen(inputStream,api_name,basedir, pkg, imports);
   }
 
   //}}}
 
   //{{{ public JavaGen(InputStream input, String basedir, String pkg, List imports)
 
-  public JavaGen(InputStream input, String basedir, String pkg, List imports)
+  public JavaGen(InputStream input, String api_name, String basedir, String pkg, List imports)
     throws IOException
   {
+    this.api_name = api_name;
     this.input   = input;
     this.basedir = basedir;
     this.pkg	 = pkg;
@@ -138,7 +155,7 @@ extends Generator
 	
 
   private void genFactoryClassFile(ADT api) throws IOException {
-    class_name = capitalize(buildId(pkg)) + "Factory";
+    class_name = capitalize(buildId(api_name)) + "Factory";
     
     createClassStream(class_name);
     
@@ -255,7 +272,7 @@ extends Generator
   }
   
   private void createTomSignatureStream(String name) {
-    createFileStream(name, ".signature");
+    createFileStream(name, ".t");
   }
   
   private void createFileStream(String name, String ext) {
@@ -272,7 +289,7 @@ extends Generator
 		println("  private static aterm.ATermFactory factory = null;");
 		println("  protected aterm.ATerm term = null;");    
     println();
-    printFoldOpen("initialize(ATermFactory f)");
+    printFoldOpen("initialize(aterm.ATermFactory f)");
 		println("  static public void initialize(aterm.ATermFactory f)");
 		println("  {");
 		println("    factory = f;");
@@ -310,7 +327,7 @@ extends Generator
 		println("    return term.isEqual(peer.toTerm());");
 		println("  }");
     printFoldClose();
-    printFoldOpen("fromTerm(ATerm trm)");
+    printFoldOpen("fromTerm(aterm.ATerm trm)");
     println("  public static " + class_name + " fromTerm(aterm.ATerm trm)");
     println("  {");
     println("    " + class_name + " tmp;");
@@ -556,7 +573,7 @@ extends Generator
   
 	private void genAltInitialize(Type type, Alternative alt) 
   {
-    printFoldOpen("initialize(ATermFactory f");
+    printFoldOpen("initialize(aterm.ATermFactory f");
     println("  static public void initialize(aterm.ATermFactory f)");
     println("  {");
     println("    pattern = f.parse(\"" + escapeQuotes(alt.buildMatchPattern().toString()) + "\");");
@@ -887,10 +904,10 @@ extends Generator
   //}}}
 
   private void genTomSignatureFile(ADT api) {
-    String filename = capitalize(buildId(pkg));
+    String filename = buildId(api_name);
     createTomSignatureStream(filename);
     
-    info("generating " + filename + ".signature");
+    info("generating " + filename + ".t");
     
     genTomBuiltinTypes();
     genTomTypes(api);
