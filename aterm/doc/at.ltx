@@ -70,16 +70,17 @@ and a number of arguments.
 %%lists of terms and \emph{placeholders} that represent typed `holes' in terms.
 %%Every term can have an optional \emph{annotation} that is used to hold
 Typical examples include parse trees and abstract syntax trees used
-in compilers, and terms used in functional languages and rewrite engines.
+in compilers, and terms used in functional language implementations 
+and rewrite engines.
 
 Besides function applications, a small number of other subtypes
 are allowed, to make the \ATerm\ datatype more generally applicable.
 These subtypes include integer constants, real number constants,
-Binary Large OBjects (blobs), lists of aterms, and the special
+binary large objects (blobs), lists of aterms, and the special
 placeholder subtype that is used to indicate typed holes in \ATerms.
 
 Every \ATerm\ can have a list of \emph{annotations} associated with
-it (hence the name \emph{Annotated} Terms). These annotations are used
+it (hence the name \emph{Annotated Terms}). These annotations are used
 to label \ATerms\ with extra information.
 
 %}}}
@@ -92,20 +93,18 @@ This datatype can be defined as follows.
 \begin{itemize}
 \item An integer constant is an \ATerm.
 \item A real constant is an \ATerm.
-\item A list of zero or more \ATerms\ between rectangular brackets
-      is an \ATerm.
+\item A list of zero or more \ATerms\ is an \ATerm.
 \item A function application consisting of a function symbol and
       a list of zero or more \ATerms\ (arguments) is an \ATerm.
-      The number of arguments of a function application is called
+      The number of arguments of the function is called
       the \emph{arity} of the function.
 \item A blob (Binary Large data OBject) containing a length indication
       and a byte array of binary data (possibly of very large size)
       is an \ATerm.
 \item A placeholder term containing an \ATerm\ representing the
       type of the placeholder is an \ATerm.
-\item Every \ATerm\ may be associated with a list of \ATerm\ pairs
-      between curly braces, representing a list of $(label,annotation)$ 
-      pairs.
+\item A list of \ATerm\ pairs may be associated with every \ATerm\
+      representing a list of $(label,annotation)$ pairs.
 \end{itemize}
 Each of these constructs except the last one can be seen as a subtype of
 the generic type {\tt ATerm}. The last construct is the \emph{annotation
@@ -232,7 +231,7 @@ of the \ATerm\ datatype is easy to use:
 \item The interface of the library should
       be intuitive, and be as small as possible to avoid a steep
       learning curve. This is among others realized by restricting the 
-      first level
+      level one
       interface to the 12 operations presented in Section \ref{operations}.
 \end{itemize}
 
@@ -551,13 +550,16 @@ of the object, and consists of three fields (see Figure \ref{header}):
 \end{figure}
  
 \begin{itemize}
-\item A field consisting of 3 bits that indicate the type of the term.
-\item A field consisting of 1 bit that indicates whether this term has an
-      annotation or not.
-\item A field consisting of 4 bits representing the arity (number of
+\item A field consisting of 1 bit indicating whether or not this term
+      has an annotation or not.
+\item A field consisting of 1 bit used as a mark flag by the garbage
+      collector.
+\item A field consisting of 3 bits representing the arity (number of
       pointers to other terms) of this object. When this field
-      contains the maximum value of 15, the actual arity of this 
-      object is stored in the second word.
+      contains the maximum value of 7, the term must be a function application
+      and the actual arity can be found retrieving the arity of the
+      function symbol, which will be discussed later.
+\item A field consisting of 3 bits that indicate the type of the term.
 \end{itemize}
 
 The second word is used for hashing, and links together all terms in the same
