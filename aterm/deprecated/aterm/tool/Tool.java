@@ -472,6 +472,8 @@ abstract public class Tool implements Runnable
   public void setVerbose(boolean on)           { verbose = on; }
   public String  getName()                     { return name; }
   public int getTid()                          { return toolid; }
+  public InetAddress getAddress()              { return address; }
+  public int getPort()                         { return port; }
 }
 
 //}

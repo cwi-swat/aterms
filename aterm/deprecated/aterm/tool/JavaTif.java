@@ -210,7 +210,7 @@ class TifGenerator
     out.println("import aterm.tool.*;");
     out.println("import java.net.UnknownHostException;");
     out.println("import java.net.InetAddress;");
-		out.println("import java.util.Vector;");
+    out.println("import java.util.Vector;");
     out.println("import java.util.Hashtable;\n\n");
     out.println("abstract public class " + javaclass + " extends Tool");
     out.println("{");
