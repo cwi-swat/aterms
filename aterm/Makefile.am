@@ -1,10 +1,13 @@
-SUBDIRS		= aterm utils test doc
+SUBDIRS = aterm utils test doc
 
-DIST_SUBDIRS	= aterm utils test doc
-EXTRA_DIST	= make_rules LICENSE $(wildcard *.pkg)
+CLEANFILES = ${PACKAGE}-${VERSION}.pkg
 
-DISTFILE	= ${distdir}.tar.gz
-WWWDIR		= /hosts/www/projects/MetaEnv/aterm
+DIST_SUBDIRS = aterm utils test doc
+
+EXTRA_DIST = make_rules LICENSE $(wildcard *.pkg)
+
+DISTFILE = ${distdir}.tar.gz
+WWWDIR = /hosts/www/projects/MetaEnv/aterm
 
 noinst_SCRIPTS = ${PACKAGE}-${VERSION}.pkg
 

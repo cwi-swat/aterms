@@ -13,7 +13,7 @@ EXTRA_DIST = \
 	vararg2.c \
 	vararg3.c
 
-MAINTAINERCLEANFILES = stress_dict.c stress_dict.h
+CLEANFILES = test.taf test.blob stress_dict.c stress_dict.h
 
 INCLUDES = \
 	-I$(top_srcdir) \

@@ -1,5 +1,11 @@
 $Id$
 
+Mon Feb  2 14:21:55 CET 2004 <jong@cwi.nl>
+ * configure.in: bumped version to 2.1
+ * doc/Makefile.am: add generated files to CLEANFILES
+ * test/Makefile.am: move *dict_[ch] to CLEANFILES
+ * Makefile.am: add generated package file to CLEANFILES
+
 Mon Feb  2 14:22:41 CET 2004 <jurgenv@cwi.nl>
  * aterm package is now up-to-date with automake-1.6.3
  * Removed all unused '#ifndef PO ... #else ... #endif' code and

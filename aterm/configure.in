@@ -4,8 +4,7 @@
 # $Id$
 
 AC_INIT(configure)
-AM_INIT_AUTOMAKE(aterm, 2.0.6)
-AC_PREREQ(2.13)
+AM_INIT_AUTOMAKE(aterm, 2.1)
 
 AC_PROG_CC
 

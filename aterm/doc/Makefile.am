@@ -8,9 +8,9 @@ EXTRA_DIST	= append.ltx at.ltx aterm.ltx corrections.ltx \
 		speauth.cls spedoc.tex general-make at.ps manual.ps \
 		appl-enc.fig 
 
-CLEANFILES	= *~ encoding.eps header.eps \
+CLEANFILES	= *~ encoding.eps header.eps hierarchy.eps \
 		at.{aux,bbl,blg,dvi,log,ps} \
-		manual.{aux,bbl,blg,ilg,ind,log,toc} \
+		manual.{aux,bbl,blg,dvi,idx,ps,ilg,ind,log,toc} \
 		sigplan.{aux,bbl,blg,log,dvi,ps} \
 		xootic.{aux,bbl,blg,log,dvi,ps}
 
