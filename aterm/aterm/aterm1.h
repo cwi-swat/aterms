@@ -20,6 +20,8 @@
 #define AT_PLACEHOLDER  5
 #define AT_BLOB         6
 
+#define AT_SYMBOL       7
+
 typedef struct ATerm
 {
 	header_type   header;
@@ -58,6 +60,8 @@ ATerm  ATremoveAnnotation(ATerm t, ATerm label);
 
 void ATprotect(ATerm *atp);
 void ATunprotect(ATerm *atp);
+void ATprotectArray(ATerm *start, int size);
+void ATunprotectArray(ATerm *start);
 
 /**
   * We also define some functions that are specific

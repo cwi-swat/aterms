@@ -174,15 +174,6 @@ ATermBlob ATmakeBlob(int size, void *data);
 void    ATregisterBlobDestructor(ATbool (*destructor)(ATermBlob));
 void    ATunregisterBlobDestructor(ATbool (*destructor)(ATermBlob));
 
-/* The Symbol type */
-typedef struct SymEntry
-{
-  header_type header;
-  struct SymEntry *next;
-  Symbol  id;
-  char   *name;
-} *SymEntry;
-
 extern ATerm *lookup_table_alias;
 extern SymEntry *lookup_table;
 

@@ -16,12 +16,6 @@
 #include "gc.h"
 
 /*}}}  */
-/*{{{  externals */
-
-extern ATerm **at_protected;
-extern int at_nrprotected;
-
-/*}}}  */
 /*{{{  globals */
 
 char gc_id[] = "$Id$";
@@ -68,11 +62,32 @@ void AT_initGC(int argc, char *argv[], ATerm *bottomOfStack)
 
 /*}}}  */
 
+/*{{{  ATerm *stack_top() */
+
+/**
+	* Find the top of the stack.
+	*/
+
+ATerm *stack_top()
+{
+    ATerm topOfStack;
+		ATerm *top = &topOfStack;
+
+    return top;
+}
+
+/*}}}  */
+ 
 /*{{{  void mark_phase() */
 
 /**
   * Mark all terms reachable from the root set.
   */
+
+void flush_regs()
+{
+  AT_flush_register_windows();
+}
 
 void mark_phase()
 {
@@ -80,16 +95,17 @@ void mark_phase()
 	int stack_size;
 	int nr_stack_terms, nr_stack_syms;
 	int nr_reg_terms, nr_reg_syms;
- 
-  ATerm topOfStack;
-  ATerm *stackTop = &topOfStack;
+
+  ATerm *stackTop;
   ATerm *start, *stop, *cur;
-	sigjmp_buf env;
+  sigjmp_buf env;
 
 	/* Traverse possible register variables */
 	sigsetjmp(env,0);
+	/*AT_flush_register_windows();*/
+
 	start = (ATerm *)env;
-	stop  = ((ATerm *)(((char *)env) + sizeof(jmp_buf)));
+	stop  = ((ATerm *)(((char *)env) + sizeof(sigjmp_buf)));
 
 	nr_stack_terms = 0;
 	nr_stack_syms  = 0;
@@ -110,17 +126,14 @@ void mark_phase()
 	STATS(register_terms, nr_reg_terms);
 	STATS(register_symbols, nr_reg_syms);
 
+	stackTop = stack_top();
+
   /* Determine stack orientation */
   start = MIN(stackTop, stackBot);
   stop  = MAX(stackTop, stackBot);
 
 	stack_size = stop-start;
 	STATS(stack_depth, stack_size);
-
-  /* Traverse protected terms */
-  for(i=0; i<at_nrprotected; i++)
-		if(*at_protected[i])
-			AT_markTerm(*at_protected[i]);
 
   /* Traverse the stack */
   for(cur=start; cur<stop; cur++) {
@@ -137,7 +150,26 @@ void mark_phase()
 
 	STATS(stack_terms, nr_stack_terms);
 	STATS(stack_symbols, nr_stack_syms);
+
+  /* Traverse protected terms */
+  for(i=0; i<at_nrprotected; i++)
+		if(*at_protected[i])
+			AT_markTerm(*at_protected[i]);
+
+	/* Traverse protected arrays */
+	for(i=0; i<at_nrprotected_arrays; i++) {
+		ATerm *cur = at_protected_arrays[i].start;
+		ATerm *end = cur + at_protected_arrays[i].size;
+		while(cur < end) {
+			if(*cur)
+				AT_markTerm(*cur++);
+			else
+				cur++;
+		}
+	}
 }
+
+
 
 /*}}}  */
 /*{{{  void sweep_phase() */
@@ -162,9 +194,26 @@ void sweep_phase()
 				ATerm t = (ATerm)&(block->data[idx]);
 				if(IS_MARKED(t->header))
 					CLR_MARK(t->header);
-				else if(ATgetType(t) != AT_FREE) {
-					AT_free(size, t);
-					reclaiming++;
+				else {
+					switch(ATgetType(t)) {
+						case AT_FREE:
+							break;
+						case AT_INT:
+						case AT_REAL:
+						case AT_APPL:
+						case AT_LIST:
+						case AT_PLACEHOLDER:
+						case AT_BLOB:
+							AT_freeTerm(size, t);
+							reclaiming++;
+							break;
+						case AT_SYMBOL:
+							AT_freeSymbol((SymEntry)t);
+							break;
+							
+						default:
+							abort();
+					}
 				}
 			}
 			block = block->next_by_size;

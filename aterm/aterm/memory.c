@@ -271,6 +271,8 @@ void AT_initMemory(int argc, char *argv[])
 
 	/*}}}  */
 
+	ATprotectArray(arg_buffer, MAX_ARITY);
+
   DBG_MEM(fprintf(stderr, "initial term table size = %d\n", table_size));
 }
 
@@ -368,6 +370,7 @@ static void allocate_block(int size)
 	{
 		((ATerm)(((header_type *)data)+idx))->next =
 			(ATerm)(((header_type *)data)+idx+size);
+		((ATerm)(((header_type *)data)+idx))->header = AT_FREE;
 	}
 	((ATerm)(((header_type *)data)+idx))->next = NULL;
 	/*fprintf(stderr, "last of block = %p\n", (ATerm)(((header_type *)data)+idx));*/
@@ -419,22 +422,20 @@ ATerm AT_allocate(int size)
 }
 
 /*}}}  */
-/*{{{  void AT_free(int size, ATerm t) */
+/*{{{  void AT_freeTerm(int size, ATerm t) */
 
 /**
-	* Free a node of a particular size.
+	* Free a term of a particular size.
 	*/
 
-void AT_free(int size, ATerm t)
+void AT_freeTerm(int size, ATerm t)
 {
-	ATbool found;
+	ATbool found = ATfalse;
 	int idx, nrargs = size-ARG_OFFSET;
 
 	/* Remove the node from the hashtable */
 	unsigned int hnr = hash_number(t->header, nrargs, (ATerm *)(t+1));
 	ATerm prev = NULL, cur = hashtable[hnr];
-
-	/*ATfprintf(stderr, "AT_free %d,%n\n", size, t);*/
 
 	while(1) {
 		if(t->header == cur->header) {
@@ -519,8 +520,10 @@ ATermAppl ATmakeAppl(Symbol sym, ...)
   if(!cur) {
     cur = AT_allocate(arity + ARG_OFFSET);
     cur->header = header;
-    for(i=0; i<arity; i++)
+    for(i=0; i<arity; i++) {
       ATgetArgument(cur, i) = arg_buffer[i];
+			arg_buffer[i] = NULL;
+		}
     cur->next = hashtable[hnr];
     hashtable[hnr] = cur;
   }
@@ -791,9 +794,9 @@ ATermAppl ATmakeApplList(Symbol sym, ATermList args)
   ATerm cur;
   ATermAppl appl;
   header_type header = APPL_HEADER(0, arity > MAX_INLINE_ARITY ?
-		MAX_INLINE_ARITY+1 : arity, sym);
+																	 MAX_INLINE_ARITY+1 : arity, sym);
   unsigned int hnr;
-
+	
   assert(arity == ATgetLength(args));
 
   for(i=0; i<arity; i++) {
@@ -828,8 +831,10 @@ ATermAppl ATmakeApplList(Symbol sym, ATermList args)
 	{
     cur = AT_allocate(ARG_OFFSET + arity);
     cur->header = header;
-    for(i=0; i<arity; i++)
+    for(i=0; i<arity; i++) {
       ATgetArgument(cur, i) = arg_buffer[i];
+			arg_buffer[i] = NULL;
+		}
     cur->next = hashtable[hnr];
     hashtable[hnr] = cur;
   }
@@ -881,8 +886,10 @@ ATermAppl ATmakeApplArray(Symbol sym, ATerm args[])
   if(!cur) {
     cur = AT_allocate(ARG_OFFSET + arity);
     cur->header = header;
-    for(i=0; i<arity; i++)
+    for(i=0; i<arity; i++) {
       ATgetArgument(cur, i) = arg_buffer[i];
+			arg_buffer[i] = NULL;
+		}
     cur->next = hashtable[hnr];
     hashtable[hnr] = cur;
   }
@@ -903,8 +910,11 @@ ATermAppl ATsetArgument(ATermAppl appl, ATerm arg, int n)
   Symbol sym = ATgetSymbol(appl);
 
   arity = ATgetArity(sym);
+	assert(n >= 0 && n < arity);
+
   for(i=0; i<arity; i++)
-		arg_buffer[i] = (i == n ? arg : ATgetArgument(appl, i));
+		arg_buffer[i] = ATgetArgument(appl, i);
+	arg_buffer[n] = arg;
 
   return ATmakeApplArray(sym, arg_buffer);
 }
@@ -1470,8 +1480,46 @@ ATbool AT_isValidTerm(ATerm term)
   type = GET_TYPE(header);
 
 	/* The only possibility left for an invalid term is AT_FREE */
-	return (type == AT_FREE ? ATfalse : ATtrue);
+	return (((type == AT_FREE) || (type == AT_SYMBOL)) ? ATfalse : ATtrue);
 }
 
 /*}}}  */
 
+/*{{{  void AT_validateFreeList(int size) */
+
+void AT_validateFreeList(int size)
+{
+	ATerm cur1, cur2;
+
+	for(cur1=at_freelist[size]; cur1; cur1=cur1->next) {
+		for(cur2=cur1->next; cur2; cur2=cur2->next)
+			assert(cur1 != cur2);
+		assert(ATgetType(cur1) == AT_FREE);
+	}
+	
+}
+
+/*}}}  */
+/*{{{  int AT_inAnyFreeList(ATerm t) */
+
+/**
+	* Check if a term is in any free list.
+	*/
+
+int AT_inAnyFreeList(ATerm t)
+{
+	int i;
+
+	for(i=0; i<MAX_TERM_SIZE; i++) {
+		ATerm cur = at_freelist[i];
+
+		while(cur) {
+			if(cur == t)
+				return i;
+			cur = cur->next;
+		}
+	}
+	return 0;
+}
+
+/*}}}  */

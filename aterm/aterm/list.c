@@ -26,10 +26,13 @@ void AT_initList(int argc, char *argv[])
 {
   buffer_size = DEFAULT_LIST_BUFFER;
   buffer = (ATerm *)malloc(buffer_size*sizeof(ATerm));
+
   if(!buffer) {
     ATerror("AT_initLists: cannot allocate list buffer of size %d\n", 
 	    DEFAULT_LIST_BUFFER);
   }
+
+	ATprotectArray(buffer, buffer_size);
 }
 
 /*}}}  */
@@ -41,12 +44,17 @@ void AT_initList(int argc, char *argv[])
 
 static void resize_buffer(int n)
 {
+	ATunprotectArray(buffer);
+
   buffer_size = n;
   buffer = (ATerm *)realloc(buffer, buffer_size*sizeof(ATerm));
+
   if(!buffer) {
     ATerror("resize_buffer: cannot allocate list buffer of size %d\n",
 	    DEFAULT_LIST_BUFFER);
   }
+
+	ATprotectArray(buffer, buffer_size);
 }
 
 /*}}}  */

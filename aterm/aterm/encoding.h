@@ -16,12 +16,14 @@
 #define SHIFT_TYPE    5
 #define SHIFT_LENGTH  8
 #define SHIFT_SYMBOL  SHIFT_LENGTH
+#define SHIFT_SYM_ARITY SHIFT_LENGTH
 
 #define TERM_SIZE_INT         3
 #define TERM_SIZE_REAL        4
 #define TERM_SIZE_BLOB        4
 #define TERM_SIZE_LIST        4
 #define TERM_SIZE_PLACEHOLDER 3
+#define TERM_SIZE_SYMBOL      (sizeof(struct SymEntry)/sizeof(header_type))
 
 #define IS_MARKED(h)    ((h) & MASK_MARK)
 #define GET_TYPE(h)     (((h) & MASK_TYPE) >> SHIFT_TYPE)
@@ -56,7 +58,9 @@
 #define PLACEHOLDER_HEADER(anno)  ((anno) | (AT_PLACEHOLDER << SHIFT_TYPE) | \
            1 << SHIFT_ARITY)
 #define BLOB_HEADER(anno,len)     ((anno) | (AT_BLOB << SHIFT_TYPE) | \
-				   (len << SHIFT_LENGTH))
+				   ((len) << SHIFT_LENGTH))
+#define SYMBOL_HEADER(arity,quoted) (((quoted) ? MASK_QUOTED : 0) | \
+		       ((arity) << SHIFT_SYM_ARITY) | (AT_SYMBOL << SHIFT_TYPE))
 #define FREE_HEADER               (AT_FREE << SHIFT_TYPE)
 
 #define ARG_OFFSET 2

@@ -3,7 +3,7 @@
   * aterm.c
   */
 
-/* {{{  includes */
+/*{{{  includes */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -19,8 +19,8 @@
 #include "gc.h"
 #include "util.h"
 
-/* }}}  */
-/* {{{  defines */
+/*}}}  */
+/*{{{  defines */
 
 #define DEFAULT_BUFFER_SIZE 4096
 #define RESIZE_BUFFER(n) if(n > buffer_size) resize_buffer(n)
@@ -29,11 +29,14 @@
 #define MARK_STACK_MARGE          MAX_ARITY
 
 /* Initial number of terms that can be protected (grows as needed) */
-#define PROTECT_INITIAL_SIZE 64
-#define PROTECT_EXPAND_SIZE  16
+#define PROTECT_INITIAL_SIZE 2048
+#define PROTECT_EXPAND_SIZE  4096
+/* The same for the protected arrays */
+#define PROTECT_ARRAY_INITIAL_SIZE 128
+#define PROTECT_ARRAY_EXPAND_SIZE  256
 
-/* }}}  */
-/* {{{  globals */
+/*}}}  */
+/*{{{  globals */
 
 char            aterm_id[] = "$Id$";
 
@@ -50,26 +53,30 @@ static int      col = 0;
 static char     error_buf[ERROR_SIZE];
 static int      error_idx = 0;
 
-ATerm         **at_protected = NULL;	/* Holds all protected terms             */
+ATerm         **at_protected = NULL;	/* Holds all protected terms           */
 int             at_nrprotected = -1;	/* How many terms are actually
-					 * protected */
-int             at_maxprotected = -1;	/* How many terms fit in the array       */
+																				 protected */
+int             at_maxprotected = -1;	/* How many terms fit in the array     */
+
+ProtectedArray *at_protected_arrays = NULL; /* Holds protected arrays */
+int             at_nrprotected_arrays = -1; /* How many arrays */
+int             at_maxprotected_arrays = -1; /* How many arrays maximally */
 
 static ATerm   *mark_stack = NULL;
 static int      mark_stack_size = 0;
 int             mark_stats[3] = {0, MYMAXINT, 0};
 int             nr_marks = 0;
 
-/* }}}  */
-/* {{{  function declarations */
+/*}}}  */
+/*{{{  function declarations */
 
 extern char    *strdup(const char *s);
 static ATerm    fparse_term(int *c, FILE * f);
 static ATerm    sparse_term(int *c, char **s);
 
-/* }}}  */
+/*}}}  */
 
-/* {{{  void AT_cleanup() */
+/*{{{  void AT_cleanup() */
 
 /**
 	* Perform necessary cleanup.
@@ -82,8 +89,8 @@ AT_cleanup()
     AT_cleanupMemory();
 }
 
-/* }}}  */
-/* {{{  void ATinit(int argc, char *argv[], ATerm *bottomOfStack) */
+/*}}}  */
+/*{{{  void ATinit(int argc, char *argv[], ATerm *bottomOfStack) */
 
 /**
   * Initialize the ATerm library.
@@ -92,54 +99,65 @@ AT_cleanup()
 void
 ATinit(int argc, char *argv[], ATerm * bottomOfStack)
 {
-    static ATbool   initialized = ATfalse;
+	static ATbool   initialized = ATfalse;
 
-    if (initialized)
-	return;
+	if (initialized)
+		return;
 
-    /* Protect novice users that simply pass NULL as bottomOfStack */
-    if (bottomOfStack == NULL)
-	ATerror("ATinit: illegal bottomOfStack (arg 3) passed.\n");
+	/* Protect novice users that simply pass NULL as bottomOfStack */
+	if (bottomOfStack == NULL)
+		ATerror("ATinit: illegal bottomOfStack (arg 3) passed.\n");
+	
+	/* Check for reasonably sized ATerm (32 bits, 4 bytes)     */
+	/* This check might break on perfectly valid architectures */
+	/* that have char == 2 bytes, and sizeof(header_type) == 2 */
+	assert(sizeof(header_type) == sizeof(ATerm *));
+	assert(sizeof(header_type) >= 4);
+	
+	buffer_size = DEFAULT_BUFFER_SIZE;
+	buffer = (char *) malloc(DEFAULT_BUFFER_SIZE);
+	if (!buffer)
+		ATerror("ATinit: cannot allocate string buffer of size %d\n",
+						DEFAULT_BUFFER_SIZE);
 
-    /* Check for reasonably sized ATerm (32 bits, 4 bytes)     */
-    /* This check might break on perfectly valid architectures */
-    /* that have char == 2 bytes, and sizeof(header_type) == 2 */
-    assert(sizeof(header_type) == sizeof(ATerm *));
-    assert(sizeof(header_type) >= 4);
+	/* Allocate memory for PROTECT_INITIAL_SIZE protected terms */
+	at_nrprotected = 0;
+	at_maxprotected = PROTECT_INITIAL_SIZE;
+	at_protected = (ATerm **) calloc(at_maxprotected, sizeof(ATerm *));
+	if (!at_protected)
+		ATerror("ATinit: cannot allocate space for %d protected terms.\n",
+						at_maxprotected);
+	
+	/* Allocate initial array of protected arrays */
+	at_nrprotected_arrays  = 0;
+	at_maxprotected_arrays = PROTECT_ARRAY_INITIAL_SIZE;
+	at_protected_arrays    = (ProtectedArray *)calloc(at_maxprotected_arrays,
+																											sizeof(ProtectedArray));
+	if(!at_protected_arrays)
+		ATerror("ATinit: cannot allocate space for %d protected arrays.\n",
+						at_maxprotected_arrays);
 
-    buffer_size = DEFAULT_BUFFER_SIZE;
-    buffer = (char *) malloc(DEFAULT_BUFFER_SIZE);
-    if (!buffer)
-	ATerror("ATinit: cannot allocate string buffer of size %d\n",
-		DEFAULT_BUFFER_SIZE);
+	/* Allocate initial mark stack */
+	mark_stack = (ATerm *) malloc(sizeof(ATerm) * INITIAL_MARK_STACK_SIZE);
+	if (!mark_stack)
+		ATerror("cannot allocate marks stack of %d entries.\n",
+						INITIAL_MARK_STACK_SIZE);
+	mark_stack_size = INITIAL_MARK_STACK_SIZE;
 
-    /* Allocate memory for PROTECT_INITIAL_SIZE protected terms */
-    at_nrprotected = 0;
-    at_maxprotected = PROTECT_INITIAL_SIZE;
-    at_protected = (ATerm **) calloc(at_maxprotected, sizeof(ATerm *));
-    if (!at_protected)
-	ATerror("ATinit: cannot allocate space for %d protected terms.\n",
-		at_maxprotected);
+	/* Initialize other components */
+	AT_initMemory(argc, argv);
+	AT_initSymbol(argc, argv);
+	AT_initList(argc, argv);
+	AT_initMake(argc, argv);
+	AT_initGC(argc, argv, bottomOfStack);
+	
+	initialized = ATtrue;
 
-    mark_stack = (ATerm *) malloc(sizeof(ATerm) * INITIAL_MARK_STACK_SIZE);
-    if (!mark_stack)
-	ATerror("could allocate marks stack of %d entries.\n",
-		INITIAL_MARK_STACK_SIZE);
-    mark_stack_size = INITIAL_MARK_STACK_SIZE;
-
-    AT_initMemory(argc, argv);
-    AT_initSymbol(argc, argv);
-    AT_initList(argc, argv);
-    AT_initMake(argc, argv);
-    AT_initGC(argc, argv, bottomOfStack);
-
-    initialized = ATtrue;
-
-    atexit(AT_cleanup);
+	atexit(AT_cleanup);
 }
 
-/* }}}  */
-/* {{{  void ATsetErrorHandler(handler) */
+/*}}}  */
+/*{{{  void ATsetErrorHandler(handler) */
 
 /**
 	* Change the error handler.
@@ -151,8 +169,8 @@ ATsetErrorHandler(void (*handler) (const char *format, va_list args))
     error_handler = handler;
 }
 
-/* }}}  */
-/* {{{  void ATerror(const char *format, ...) */
+/*}}}  */
+/*{{{  void ATerror(const char *format, ...) */
 
 /**
   * A fatal error was detected.
@@ -176,9 +194,9 @@ ATerror(const char *format,...)
     va_end(args);
 }
 
-/* }}}  */
+/*}}}  */
 
-/* {{{  void ATprotect(ATerm *term) */
+/*{{{  void ATprotect(ATerm *term) */
 
 /**
   * Protect a given term.
@@ -186,26 +204,25 @@ ATerror(const char *format,...)
 void
 ATprotect(ATerm * term)
 {
-    /*
-     * If at_nrprotected < at_maxprotected, then at_nrprotected holds the
-     * exact index of the first free slot. Otherwise, we need to increase the
-     * at_protected array.
-     */
-    if (at_nrprotected >= at_maxprotected)
-    {
-	at_maxprotected += PROTECT_EXPAND_SIZE;
-	at_protected = (ATerm **) realloc(at_protected,
-					  at_maxprotected * sizeof(ATerm *));
-	if (!at_protected)
+	/*
+	 * If at_nrprotected < at_maxprotected, then at_nrprotected holds the
+	 * exact index of the first free slot. Otherwise, we need to increase the
+	 * at_protected array.
+	 */
+	if (at_nrprotected >= at_maxprotected) {
+		at_maxprotected += PROTECT_EXPAND_SIZE;
+		at_protected = (ATerm **) realloc(at_protected,
+																			at_maxprotected * sizeof(ATerm *));
+		if (!at_protected)
 	    ATerror("ATprotect: no space to hold %d protected terms.\n",
-		    at_maxprotected);
-    }
+							at_maxprotected);
+	}
 
-    at_protected[at_nrprotected++] = term;
+	at_protected[at_nrprotected++] = term;
 }
 
-/* }}}  */
-/* {{{  void ATunprotect(ATerm *term) */
+/*}}}  */
+/*{{{  void ATunprotect(ATerm *term) */
 
 /**
  * Unprotect a given term.
@@ -214,27 +231,85 @@ ATprotect(ATerm * term)
 void
 ATunprotect(ATerm * term)
 {
-    int             lcv;
-
-    /*
-     * Traverse array of protected terms. If equal, switch last protected
-     * term into this slot and clear last protected slot. Update number of
-     * protected terms.
-     */
-    for (lcv = 0; lcv < at_nrprotected; ++lcv)
+	int             lcv;
+	
+	/*
+	 * Traverse array of protected terms. If equal, switch last protected
+	 * term into this slot and clear last protected slot. Update number of
+	 * protected terms.
+	 */
+	for (lcv = 0; lcv < at_nrprotected; ++lcv)
     {
-	if (at_protected[lcv] == term)
-	{
-	    at_protected[lcv] = at_protected[at_nrprotected];
-	    at_protected[at_nrprotected--] = NULL;
-	    break;
-	}
+			if (at_protected[lcv] == term)
+				{
+					at_protected[lcv] = at_protected[at_nrprotected];
+					at_protected[at_nrprotected--] = NULL;
+					break;
+				}
     }
 }
 
-/* }}}  */
+/*}}}  */
+/*{{{  void ATprotectArray(ATerm *start, int size) */
 
-/* {{{  int ATprintf(const char *format, ...) */
+/**
+	* Protect an array
+	*/
+
+void ATprotectArray(ATerm *start, int size)
+{
+	/*
+	 * If at_nrprotected_arrays < at_maxprotected_arrays, 
+	 * then at_nrprotected_arrays holds the exact index of the first free slot. 
+	 * Otherwise, we need to resize at_protected_arrays.
+	 */
+	int idx;
+
+	if (at_nrprotected_arrays >= at_maxprotected_arrays) {
+		at_maxprotected_arrays += PROTECT_ARRAY_EXPAND_SIZE;
+		at_protected_arrays = (ProtectedArray *) realloc(at_protected_arrays,
+														 at_maxprotected_arrays * sizeof(ProtectedArray));
+		if (!at_protected_arrays)
+	    ATerror("ATprotectArray: no space to hold %d protected arrays.\n",
+							at_maxprotected_arrays);
+	}
+
+	idx = at_nrprotected_arrays++;
+	at_protected_arrays[idx].start = start;
+	at_protected_arrays[idx].size  = size;
+}
+
+/*}}}  */
+/*{{{  void ATunprotectArrray(ATerm *start) */
+
+/**
+ * Unprotect an array of terms.
+ */
+
+void ATunprotectArray(ATerm *start)
+{
+	int lcv;
+	
+	/*
+	 * Traverse array of protected term arrays. If equal, switch last protected
+	 * array into this slot and clear last protected slot. Update number of
+	 * protected arrays.
+	 */
+	for (lcv = 0; lcv < at_nrprotected_arrays; ++lcv) {
+		if (at_protected_arrays[lcv].start == start) {
+			at_protected_arrays[lcv].start = 
+				at_protected_arrays[at_nrprotected_arrays].start;
+			at_protected_arrays[lcv].size = 
+				at_protected_arrays[at_nrprotected_arrays].size;
+			at_protected_arrays[at_nrprotected--].start = NULL;
+			break;
+		}
+	}
+}
+
+/*}}}  */
+
+/*{{{  int ATprintf(const char *format, ...) */
 
 /**
  * Extension of printf() with ATerm-support.
@@ -253,8 +328,8 @@ ATprintf(const char *format,...)
     return result;
 }
 
-/* }}}  */
-/* {{{  int ATfprintf(FILE *stream, const char *format, ...) */
+/*}}}  */
+/*{{{  int ATfprintf(FILE *stream, const char *format, ...) */
 
 /**
  * Extension of fprintf() with ATerm-support.
@@ -272,8 +347,8 @@ ATfprintf(FILE * stream, const char *format,...)
 
     return result;
 }
-/* }}}  */
-/* {{{  int ATvfprintf(FILE *stream, const char *format, va_list args) */
+/*}}}  */
+/*{{{  int ATvfprintf(FILE *stream, const char *format, va_list args) */
 
 int
 ATvfprintf(FILE * stream, const char *format, va_list args)
@@ -391,9 +466,10 @@ ATvfprintf(FILE * stream, const char *format, va_list args)
     return result;
 }
 
-/* }}}  */
+/*}}}  */
 
-/* {{{  static void resize_buffer(int n) */
+/*{{{  static void resize_buffer(int n) */
+
 /**
   * Resize the resident string buffer
   */
@@ -407,9 +483,9 @@ resize_buffer(int n)
 	ATerror("ATinit: cannot allocate string buffer of size %d\n", buffer_size);
 }
 
-/* }}}  */
+/*}}}  */
 
-/* {{{  ATbool ATwriteToTextFile(ATerm t, FILE *f) */
+/*{{{  ATbool ATwriteToTextFile(ATerm t, FILE *f) */
 
 /**
   * Write a term in text format to file.
@@ -434,7 +510,7 @@ writeToTextFile(ATerm t, FILE * f)
 	fprintf(f, "%f", ((ATermReal) t)->value);
 	break;
     case AT_APPL:
-	/* {{{  Print application */
+	/*{{{  Print application */
 
 	appl = (ATermAppl) t;
 
@@ -454,10 +530,10 @@ writeToTextFile(ATerm t, FILE * f)
 	    fputc(')', f);
 	}
 
-	/* }}}  */
+	/*}}}  */
 	break;
     case AT_LIST:
-	/* {{{  Print list */
+	/*{{{  Print list */
 
 	list = (ATermList) t;
 	if (ATisEmpty(list))
@@ -473,30 +549,37 @@ writeToTextFile(ATerm t, FILE * f)
 	    writeToTextFile((ATerm) list, f);
 	}
 
-	/* }}}  */
+	/*}}}  */
 	break;
     case AT_PLACEHOLDER:
-	/* {{{  Print placeholder */
+	/*{{{  Print placeholder */
 
 	fputc('<', f);
 	ATwriteToTextFile(ATgetPlaceholder((ATermPlaceholder) t), f);
 	fputc('>', f);
 
-	/* }}}  */
+	/*}}}  */
 	break;
     case AT_BLOB:
-	/* {{{  Print blob */
+	/*{{{  Print blob */
 
 	blob = (ATermBlob) t;
 	fprintf(f, "%08d:", ATgetBlobSize(blob));
 	fwrite(ATgetBlobData(blob), ATgetBlobSize(blob), 1, f);
 
-	/* }}}  */
+	/*}}}  */
 	break;
 
-    default:
-	ATerror("ATwriteToTextFile: type %d not implemented.", ATgetType(t));
-	return ATfalse;
+    case AT_FREE:
+			if(AT_inAnyFreeList(t))
+				ATerror("ATwriteToTextFile: printing free term at %p!\n", t);
+			else
+				ATerror("ATwriteToTextFile: free term %p not in freelist?\n", t);
+			return ATfalse;
+
+	case AT_SYMBOL:
+		ATerror("ATwriteToTextFile: not a term but a symbol: %y\n", t);
+		return ATfalse;
     }
     trm = (ATerm) AT_getAnnotations(t);
     if (trm)
@@ -529,8 +612,8 @@ ATwriteToTextFile(ATerm t, FILE * f)
     return result;
 }
 
-/* }}}  */
-/* {{{  ATbool ATwriteToBinaryFile(ATerm t, FILE *f) */
+/*}}}  */
+/*{{{  ATbool ATwriteToBinaryFile(ATerm t, FILE *f) */
 
 /**
   * Write a term to file in a compact binary format (using gel)
@@ -542,14 +625,14 @@ ATwriteToBinaryFile(ATerm t, FILE * f)
     return ATfalse;
 }
 
-/* }}}  */
-/* {{{  char *ATwriteToString(ATerm t) */
+/*}}}  */
+/*{{{  char *ATwriteToString(ATerm t) */
 
 /**
   * Write a term to a string buffer.
   */
 
-/* {{{  static int symbolTextSize(Symbol sym) */
+/*{{{  static int symbolTextSize(Symbol sym) */
 
 /**
   * Calculate the size of a symbol in text format.
@@ -586,8 +669,8 @@ symbolTextSize(Symbol sym)
 	return strlen(id);
 }
 
-/* }}}  */
-/* {{{  static char *writeSymbolToString(Symbol sym, char *buf) */
+/*}}}  */
+/*{{{  static char *writeSymbolToString(Symbol sym, char *buf) */
 
 /**
   * Write a symbol in a string buffer.
@@ -638,8 +721,8 @@ writeSymbolToString(Symbol sym, char *buf)
     }
 }
 
-/* }}}  */
-/* {{{  static char *writeToString(ATerm t, char *buf) */
+/*}}}  */
+/*{{{  static char *writeToString(ATerm t, char *buf) */
 
 static char    *topWriteToString(ATerm t, char *buf);
 
@@ -656,25 +739,25 @@ writeToString(ATerm t, char *buf)
     switch (ATgetType(t))
     {
     case AT_INT:
-	/* {{{  write integer */
+	/*{{{  write integer */
 
 	sprintf(buf, "%d", ATgetInt((ATermInt) t));
 	buf += strlen(buf);
 
-	/* }}}  */
+	/*}}}  */
 	break;
 
     case AT_REAL:
-	/* {{{  write real */
+	/*{{{  write real */
 
 	sprintf(buf, "%f", ATgetReal((ATermReal) t));
 	buf += strlen(buf);
 
-	/* }}}  */
+	/*}}}  */
 	break;
 
     case AT_APPL:
-	/* {{{  write appl */
+	/*{{{  write appl */
 
 	appl = (ATermAppl) t;
 	sym = ATgetSymbol(appl);
@@ -692,11 +775,11 @@ writeToString(ATerm t, char *buf)
 	    *buf++ = ')';
 	}
 
-	/* }}}  */
+	/*}}}  */
 	break;
 
     case AT_LIST:
-	/* {{{  write list */
+	/*{{{  write list */
 
 	list = (ATermList) t;
 	if (!ATisEmpty(list))
@@ -711,20 +794,20 @@ writeToString(ATerm t, char *buf)
 	    }
 	}
 
-	/* }}}  */
+	/*}}}  */
 	break;
 
     case AT_PLACEHOLDER:
-	/* {{{  write placeholder */
+	/*{{{  write placeholder */
 
 	trm = ATgetPlaceholder((ATermPlaceholder) t);
 	buf = topWriteToString(trm, buf);
 
-	/* }}}  */
+	/*}}}  */
 	break;
 
     case AT_BLOB:
-	/* {{{  write blob */
+	/*{{{  write blob */
 
 	blob = (ATermBlob) t;
 	size = ATgetBlobSize(blob);
@@ -732,7 +815,7 @@ writeToString(ATerm t, char *buf)
 	memcpy(buf + 9, ATgetBlobData(blob), size);
 	buf += 9 + size;
 
-	/* }}}  */
+	/*}}}  */
 	break;
     }
     return buf;
@@ -754,8 +837,8 @@ topWriteToString(ATerm t, char *buf)
     return buf;
 }
 
-/* }}}  */
-/* {{{  static int textSize(ATerm t) */
+/*}}}  */
+/*{{{  static int textSize(ATerm t) */
 
 /**
   * Calculate the size of a term in text format
@@ -852,7 +935,7 @@ AT_calcTextSize(ATerm t)
     return topTextSize(t);
 }
 
-/* }}}  */
+/*}}}  */
 
 /**
   * Write a term into its text representation.
@@ -885,9 +968,9 @@ AT_writeToStringBuffer(ATerm t, char *buffer)
     topWriteToString(t, buffer);
 }
 
-/* }}}  */
+/*}}}  */
 
-/* {{{  static void store_char(int char) */
+/*{{{  static void store_char(int char) */
 
 /**
 	* Store a single character in the buffer
@@ -902,8 +985,8 @@ store_char(int c, int pos)
     buffer[pos] = c;
 }
 
-/* }}}  */
-/* {{{  static void fnext_char(int *c, FILE *f) */
+/*}}}  */
+/*{{{  static void fnext_char(int *c, FILE *f) */
 
 /**
   * Read the next character from file.
@@ -926,8 +1009,8 @@ fnext_char(int *c, FILE * f)
     error_idx %= ERROR_SIZE;
 }
 
-/* }}}  */
-/* {{{  static void fskip_layout(int *c, FILE *f) */
+/*}}}  */
+/*{{{  static void fskip_layout(int *c, FILE *f) */
 
 /**
   * Skip layout from file.
@@ -940,8 +1023,8 @@ fskip_layout(int *c, FILE * f)
 	fnext_char(c, f);
 }
 
-/* }}}  */
-/* {{{  static void fnext_skip_layout(int *c, FILE *f) */
+/*}}}  */
+/*{{{  static void fnext_skip_layout(int *c, FILE *f) */
 
 /**
   * Skip layout from file.
@@ -956,8 +1039,8 @@ fnext_skip_layout(int *c, FILE * f)
     } while (isspace(*c));
 }
 
-/* }}}  */
-/* {{{  static ATermList fparse_terms(int *c, FILE *f) */
+/*}}}  */
+/*{{{  static ATermList fparse_terms(int *c, FILE *f) */
 
 /**
   * Parse a list of arguments.
@@ -978,8 +1061,8 @@ fparse_terms(int *c, FILE * f)
     return ATinsert(tail, el);
 }
 
-/* }}}  */
-/* {{{  static ATermAppl fparse_quoted_appl(int *c, FILE *f) */
+/*}}}  */
+/*{{{  static ATermAppl fparse_quoted_appl(int *c, FILE *f) */
 
 /**
   * Parse a quoted application.
@@ -988,75 +1071,72 @@ fparse_terms(int *c, FILE * f)
 static          ATermAppl
 fparse_quoted_appl(int *c, FILE * f)
 {
-    int             len = 0;
-    ATermList       args = ATempty;
-    Symbol          sym;
-    char           *name;
+	int             len = 0;
+	ATermList       args = ATempty;
+	Symbol          sym;
+	char           *name;
 
-    /* First parse the identifier */
-    fnext_char(c, f);
-    while (*c != '"')
-    {
-	switch (*c)
-	{
-	case EOF:
-	case '\n':
-	case '\r':
-	case '\t':
-	    return NULL;
-	case '\\':
-	    fnext_char(c, f);
-	    if (*c == EOF)
-		return NULL;
-	    switch (*c)
-	    {
-	    case 'n':
-		store_char('\n', len++);
-		break;
-	    case 'r':
-		store_char('\r', len++);
-		break;
-	    case 't':
-		store_char('\t', len++);
-		break;
-	    default:
-		store_char(*c, len++);
-		break;
-	    }
-	    break;
-	default:
-	    store_char(*c, len++);
-	    break;
-	}
+	/* First parse the identifier */
 	fnext_char(c, f);
-    }
+	while (*c != '"') {
+		switch (*c) {
+			case EOF:
+				/*	case '\n':
+						case '\r':
+						case '\t':
+				*/
+				return NULL;
+			case '\\':
+				fnext_char(c, f);
+				if (*c == EOF)
+					return NULL;
+				switch (*c) {
+					case 'n':
+						store_char('\n', len++);
+						break;
+					case 'r':
+						store_char('\r', len++);
+						break;
+					case 't':
+						store_char('\t', len++);
+						break;
+					default:
+						store_char(*c, len++);
+						break;
+				}
+				break;
+			default:
+				store_char(*c, len++);
+				break;
+		}
+		fnext_char(c, f);
+	}
 
-    store_char('\0', len);
-
-    name = strdup(buffer);
-    if (!name)
-	ATerror("fparse_quoted_appl: symbol to long.");
-
-    fnext_skip_layout(c, f);
-
-    /* Time to parse the arguments */
-    if (*c == '(')
-    {
+	store_char('\0', len);
+	
+	name = strdup(buffer);
+	if (!name)
+		ATerror("fparse_quoted_appl: symbol to long.");
+	
 	fnext_skip_layout(c, f);
-	args = fparse_terms(c, f);
-	if (args == NULL || *c != ')')
-	    return NULL;
-	fnext_skip_layout(c, f);
-    }
 
-    /* Wrap up this function application */
-    sym = ATmakeSymbol(name, ATgetLength(args), ATtrue);
-    free(name);
-    return ATmakeApplList(sym, args);
+	/* Time to parse the arguments */
+	if (*c == '(') {
+		fnext_skip_layout(c, f);
+		args = fparse_terms(c, f);
+		if (args == NULL || *c != ')')
+			return NULL;
+		fnext_skip_layout(c, f);
+	}
+
+	/* Wrap up this function application */
+	sym = ATmakeSymbol(name, ATgetLength(args), ATtrue);
+	free(name);
+	return ATmakeApplList(sym, args);
 }
 
-/* }}}  */
-/* {{{  static ATermAppl fparse_unquoted_appl(int *c, FILE *f) */
+/*}}}  */
+/*{{{  static ATermAppl fparse_unquoted_appl(int *c, FILE *f) */
 
 /**
   * Parse a quoted application.
@@ -1099,8 +1179,8 @@ fparse_unquoted_appl(int *c, FILE * f)
     return ATmakeApplList(sym, args);
 }
 
-/* }}}  */
-/* {{{  static void fparse_num_or_blob(int *c, FILE *f) */
+/*}}}  */
+/*{{{  static void fparse_num_or_blob(int *c, FILE *f) */
 
 /**
   * Parse a number or blob.
@@ -1124,7 +1204,7 @@ fparse_num_or_blob(int *c, FILE * f, ATbool canbeblob)
     }
     if (canbeblob && *c == ':')
     {
-	/* {{{  Must be a blob! */
+	/*{{{  Must be a blob! */
 
 	int             i, size;
 	char           *data;
@@ -1147,11 +1227,11 @@ fparse_num_or_blob(int *c, FILE * f, ATbool canbeblob)
 	fnext_char(c, f);
 	return (ATerm) ATmakeBlob(size, data);
 
-	/* }}}  */
+	/*}}}  */
     }
     else if (*c == '.' || toupper(*c) == 'E')
     {
-	/* {{{  A real number */
+	/*{{{  A real number */
 
 	if (*c == '.')
 	{
@@ -1181,22 +1261,22 @@ fparse_num_or_blob(int *c, FILE * f, ATbool canbeblob)
 	*ptr = '\0';
 	return (ATerm) ATmakeReal(atof(num));
 
-	/* }}}  */
+	/*}}}  */
     }
     else
     {
-	/* {{{  An integer */
+	/*{{{  An integer */
 
 	*ptr = '\0';
 	return (ATerm) ATmakeInt(atoi(num));
 
-	/* }}}  */
+	/*}}}  */
     }
 }
 
-/* }}}  */
+/*}}}  */
 
-/* {{{  static ATerm fparse_term(int *c, FILE *f) */
+/*{{{  static ATerm fparse_term(int *c, FILE *f) */
 
 /**
   * Parse a term from file.
@@ -1210,61 +1290,61 @@ fparse_term(int *c, FILE * f)
     switch (*c)
     {
     case '"':
-	result = (ATerm) fparse_quoted_appl(c, f);
-	break;
-    case '[':
-	fnext_skip_layout(c, f);
-	if (*c == ']')
-	    result = (ATerm) ATempty;
-	else
-	{
-	    result = (ATerm) fparse_terms(c, f);
-	    if (result == NULL || *c != ']')
-		return NULL;
-	}
-	fnext_skip_layout(c, f);
-	break;
-    case '<':
-	fnext_skip_layout(c, f);
-	t = fparse_term(c, f);
-	if (t != NULL && *c == '>')
-	{
-	    result = (ATerm) ATmakePlaceholder(t);
-	    fnext_skip_layout(c, f);
-	}
-	break;
-    default:
-	if (isalpha(*c))
-	    result = (ATerm) fparse_unquoted_appl(c, f);
-	else if (isdigit(*c))
-	    result = fparse_num_or_blob(c, f, ATtrue);
-	else if (*c == '.' || *c == '-')
-	    result = fparse_num_or_blob(c, f, ATfalse);
-	else
-	    result = NULL;
+			result = (ATerm) fparse_quoted_appl(c, f);
+			break;
+			case '[':
+				fnext_skip_layout(c, f);
+				if (*c == ']')
+					result = (ATerm) ATempty;
+				else
+					{
+						result = (ATerm) fparse_terms(c, f);
+						if (result == NULL || *c != ']')
+							return NULL;
+					}
+				fnext_skip_layout(c, f);
+				break;
+			case '<':
+				fnext_skip_layout(c, f);
+				t = fparse_term(c, f);
+				if (t != NULL && *c == '>')
+					{
+						result = (ATerm) ATmakePlaceholder(t);
+						fnext_skip_layout(c, f);
+					}
+				break;
+			default:
+				if (isalpha(*c))
+					result = (ATerm) fparse_unquoted_appl(c, f);
+				else if (isdigit(*c))
+					result = fparse_num_or_blob(c, f, ATtrue);
+				else if (*c == '.' || *c == '-')
+					result = fparse_num_or_blob(c, f, ATfalse);
+				else
+					result = NULL;
     }
-
+		
     fskip_layout(c, f);
 
     if (*c == '{')
     {
-	/* Term is annotated */
-	fnext_skip_layout(c, f);
-	if (*c != '}')
-	{
-	    ATerm           annos = (ATerm) fparse_terms(c, f);
-	    if (annos == NULL || *c != '}')
-		return NULL;
-	    result = AT_setAnnotations(result, annos);
-	}
-	fnext_skip_layout(c, f);
+			/* Term is annotated */
+			fnext_skip_layout(c, f);
+			if (*c != '}')
+				{
+					ATerm annos = (ATerm) fparse_terms(c, f);
+					if (annos == NULL || *c != '}')
+						return NULL;
+					result = AT_setAnnotations(result, annos);
+				}
+			fnext_skip_layout(c, f);
     }
-
+		
     return result;
 }
 
-/* }}}  */
-/* {{{  ATerm ATreadFromTextFile(FILE *file) */
+/*}}}  */
+/*{{{  ATerm ATreadFromTextFile(FILE *file) */
 
 /**
   * Read a term from a text file.
@@ -1307,13 +1387,13 @@ ATreadFromTextFile(FILE * file)
     return term;
 }
 
-/* }}}  */
+/*}}}  */
 
 #define snext_char(c,s) ((*c) = *(*s)++)
 #define sskip_layout(c,s) while(isspace(*c)) snext_char(c,s)
 #define snext_skip_layout(c,s) do { snext_char(c, s); } while(isspace(*c))
 
-/* {{{  static ATermList sparse_terms(int *c, char **s) */
+/*{{{  static ATermList sparse_terms(int *c, char **s) */
 
 /**
   * Parse a list of arguments.
@@ -1334,8 +1414,8 @@ sparse_terms(int *c, char **s)
     return ATinsert(tail, el);
 }
 
-/* }}}  */
-/* {{{  static ATermAppl sparse_quoted_appl(int *c, char **s) */
+/*}}}  */
+/*{{{  static ATermAppl sparse_quoted_appl(int *c, char **s) */
 
 /**
   * Parse a quoted application.
@@ -1356,9 +1436,10 @@ sparse_quoted_appl(int *c, char **s)
 	switch (*c)
 	{
 	case EOF:
-	case '\n':
+/*	case '\n':
 	case '\r':
 	case '\t':
+*/
 	    return NULL;
 	case '\\':
 	    snext_char(c, s);
@@ -1411,8 +1492,8 @@ sparse_quoted_appl(int *c, char **s)
     return ATmakeApplList(sym, args);
 }
 
-/* }}}  */
-/* {{{  static ATermAppl sparse_unquoted_appl(int *c, char **s) */
+/*}}}  */
+/*{{{  static ATermAppl sparse_unquoted_appl(int *c, char **s) */
 
 /**
   * Parse a quoted application.
@@ -1455,8 +1536,8 @@ sparse_unquoted_appl(int *c, char **s)
     return ATmakeApplList(sym, args);
 }
 
-/* }}}  */
-/* {{{  static void sparse_num_or_blob(int *c, char **s) */
+/*}}}  */
+/*{{{  static void sparse_num_or_blob(int *c, char **s) */
 
 /**
   * Parse a number or blob.
@@ -1480,7 +1561,7 @@ sparse_num_or_blob(int *c, char **s, ATbool canbeblob)
     }
     if (canbeblob && *c == ':')
     {
-	/* {{{  Must be a blob! */
+	/*{{{  Must be a blob! */
 
 	int             i, size;
 	char           *data;
@@ -1503,11 +1584,11 @@ sparse_num_or_blob(int *c, char **s, ATbool canbeblob)
 	snext_char(c, s);
 	return (ATerm) ATmakeBlob(size, data);
 
-	/* }}}  */
+	/*}}}  */
     }
     else if (*c == '.' || toupper(*c) == 'E')
     {
-	/* {{{  A real number */
+	/*{{{  A real number */
 
 	if (*c == '.')
 	{
@@ -1537,22 +1618,22 @@ sparse_num_or_blob(int *c, char **s, ATbool canbeblob)
 	*ptr = '\0';
 	return (ATerm) ATmakeReal(atof(num));
 
-	/* }}}  */
+	/*}}}  */
     }
     else
     {
-	/* {{{  An integer */
+	/*{{{  An integer */
 
 	*ptr = '\0';
 	return (ATerm) ATmakeInt(atoi(num));
 
-	/* }}}  */
+	/*}}}  */
     }
 }
 
-/* }}}  */
+/*}}}  */
 
-/* {{{  static ATerm sparse_term(int *c, char **s) */
+/*{{{  static ATerm sparse_term(int *c, char **s) */
 
 /**
   * Parse a term from file.
@@ -1619,8 +1700,8 @@ sparse_term(int *c, char **s)
     return result;
 }
 
-/* }}}  */
-/* {{{  ATerm ATreadFromString(const char *string) */
+/*}}}  */
+/*{{{  ATerm ATreadFromString(const char *string) */
 
 /**
   * Read from a string.
@@ -1652,9 +1733,9 @@ ATreadFromString(const char *string)
     return term;
 }
 
-/* }}}  */
+/*}}}  */
 
-/* {{{  void AT_markTerm(ATerm t) */
+/*{{{  void AT_markTerm(ATerm t) */
 
 /**
   * Mark a term and all of its children.
@@ -1674,66 +1755,73 @@ AT_markTerm(ATerm t)
 
     while (ATtrue)
     {
-	if (current > limit)
-	{
-	    /* We need to resize the mark stack */
-	    mark_stack_size = mark_stack_size * 2;
-	    mark_stack = (ATerm *) realloc(mark_stack, sizeof(ATerm) * mark_stack_size);
-	    if (!mark_stack)
-		ATerror("cannot realloc mark stack to %d entries.\n", mark_stack_size);
-	    limit = mark_stack + mark_stack_size - MARK_STACK_MARGE;
-	    fprintf(stderr, "resized mark stack to %d entries\n", mark_stack_size);
-	}
+			if (current > limit)
+				{
+					int current_index, depth_index;
+					
+					current_index = current - mark_stack;
+					depth_index   = depth - mark_stack;
+					
+					/* We need to resize the mark stack */
+					mark_stack_size = mark_stack_size * 2;
+					mark_stack = (ATerm *) realloc(mark_stack, sizeof(ATerm) * mark_stack_size);
+					if (!mark_stack)
+						ATerror("cannot realloc mark stack to %d entries.\n", mark_stack_size);
+					limit = mark_stack + mark_stack_size - MARK_STACK_MARGE;
+					fprintf(stderr, "resized mark stack to %d entries\n", mark_stack_size);
+					
+					current = mark_stack + current_index;
+					depth   = mark_stack + depth_index;
+				}
+			
+			if (current > depth)
+				depth = current;
+			
+			t = *--current;
+			
+			if (!t)
+				break;
 
-	if (current > depth)
-	    depth = current;
+			if (IS_MARKED(t->header))
+				continue;
 
-	t = *--current;
-
-	if (!t)
-	    break;
-
-	if (IS_MARKED(t->header))
-	    continue;
-
-	SET_MARK(t->header);
-
-	switch (GET_TYPE(t->header))
-	{
-	case AT_INT:
-	case AT_REAL:
-	case AT_BLOB:
-	    break;
-
-	case AT_APPL:
-	    sym = ATgetSymbol((ATermAppl) t);
-	    AT_markSymbol(sym);
-	    arity = GET_ARITY(t->header);
-	    if (arity > MAX_INLINE_ARITY)
-		arity = ATgetArity(sym);
-	    for (i = 0; i < arity; i++)
-		*current++ = ATgetArgument((ATermAppl) t, i);
-	    break;
-
-	case AT_LIST:
-	    if (!ATisEmpty((ATermList) t))
-	    {
-		*current++ = (ATerm) ATgetNext((ATermList) t);
-		*current++ = ATgetFirst((ATermList) t);
-	    }
-	    break;
-
-	case AT_PLACEHOLDER:
-	    *current++ = ATgetPlaceholder((ATermPlaceholder) t);
-	    break;
-	}
+			SET_MARK(t->header);
+			
+			switch (GET_TYPE(t->header))
+			{
+				case AT_INT:
+				case AT_REAL:
+				case AT_BLOB:
+					break;
+					
+				case AT_APPL:
+					sym = ATgetSymbol((ATermAppl) t);
+					AT_markSymbol(sym);
+					arity = GET_ARITY(t->header);
+					if (arity > MAX_INLINE_ARITY)
+						arity = ATgetArity(sym);
+					for (i = 0; i < arity; i++)
+						*current++ = ATgetArgument((ATermAppl) t, i);
+					break;
+					
+				case AT_LIST:
+					if (!ATisEmpty((ATermList) t)) {
+						*current++ = (ATerm) ATgetNext((ATermList) t);
+						*current++ = ATgetFirst((ATermList) t);
+					}
+					break;
+					
+				case AT_PLACEHOLDER:
+					*current++ = ATgetPlaceholder((ATermPlaceholder) t);
+					break;
+			}
     }
     STATS(mark_stats, depth - mark_stack);
     nr_marks++;
 }
 
-/* }}}  */
-/* {{{  void AT_unmarkTerm(ATerm t) */
+/*}}}  */
+/*{{{  void AT_unmarkTerm(ATerm t) */
 
 /**
   * Unmark a term and all of its children.
@@ -1755,6 +1843,11 @@ AT_unmarkTerm(ATerm t)
     {
 	if (current > limit)
 	{
+	    int current_index, depth_index;
+
+	    current_index = current - mark_stack;
+	    depth_index   = depth - mark_stack;
+
 	    /* We need to resize the mark stack */
 	    mark_stack_size = mark_stack_size * 2;
 	    mark_stack = (ATerm *) realloc(mark_stack, sizeof(ATerm) * mark_stack_size);
@@ -1762,6 +1855,9 @@ AT_unmarkTerm(ATerm t)
 		ATerror("cannot realloc mark stack to %d entries.\n", mark_stack_size);
 	    limit = mark_stack + mark_stack_size - MARK_STACK_MARGE;
 	    fprintf(stderr, "resized mark stack to %d entries\n", mark_stack_size);
+
+	    current = mark_stack + current_index;
+	    depth   = mark_stack + depth_index;
 	}
 
 	if (current > depth)
@@ -1808,9 +1904,9 @@ AT_unmarkTerm(ATerm t)
     nr_marks++;
 }
 
-/* }}}  */
+/*}}}  */
 
-/* {{{  static int calcCoreSize(ATerm t) */
+/*{{{  static int calcCoreSize(ATerm t) */
 
 /**
 	* Calculate the term size in bytes.
@@ -1869,8 +1965,8 @@ calcCoreSize(ATerm t)
 }
 
 
-/* }}}  */
-/* {{{  int AT_calcCoreSize(ATerm t) */
+/*}}}  */
+/*{{{  int AT_calcCoreSize(ATerm t) */
 
 /**
 	* Calculate the term size in bytes.
@@ -1885,4 +1981,68 @@ AT_calcCoreSize(ATerm t)
 }
 
 
-/* }}}  */
+/*}}}  */
+/*{{{  void AT_assertUnmarked(ATerm t) */
+
+void AT_assertUnmarked(ATerm t)
+{
+	ATermAppl appl;
+	Symbol sym;
+	int i;
+
+	assert(!IS_MARKED(t->header));
+	switch(ATgetType(t)) {
+		case AT_APPL:
+			appl = (ATermAppl)t;
+			sym = ATgetSymbol(appl);
+			assert(!AT_isMarkedSymbol(sym));
+			for(i=0; i<ATgetArity(sym); i++)
+				AT_assertUnmarked(ATgetArgument(appl, i));
+			break;
+
+		case AT_LIST:
+			if((ATermList)t != ATempty) {
+				AT_assertUnmarked(ATgetFirst((ATermList)t));
+				AT_assertUnmarked((ATerm)ATgetNext((ATermList)t));
+			}
+			break;
+
+		case AT_PLACEHOLDER:
+			AT_assertUnmarked(ATgetPlaceholder((ATermPlaceholder)t));
+			break;
+	}
+}
+
+/*}}}  */
+/*{{{  void AT_assertMarked(ATerm t) */
+
+void AT_assertMarked(ATerm t)
+{
+	ATermAppl appl;
+	Symbol sym;
+	int i;
+
+	assert(IS_MARKED(t->header));
+	switch(ATgetType(t)) {
+		case AT_APPL:
+			appl = (ATermAppl)t;
+			sym = ATgetSymbol(appl);
+			assert(AT_isMarkedSymbol(sym));
+			for(i=0; i<ATgetArity(sym); i++)
+				AT_assertMarked(ATgetArgument(appl, i));
+			break;
+
+		case AT_LIST:
+			if((ATermList)t != ATempty) {
+				AT_assertMarked(ATgetFirst((ATermList)t));
+				AT_assertMarked((ATerm)ATgetNext((ATermList)t));
+			}
+			break;
+
+		case AT_PLACEHOLDER:
+			AT_assertMarked(ATgetPlaceholder((ATermPlaceholder)t));
+			break;
+	}
+}
+
+/*}}}  */

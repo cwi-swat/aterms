@@ -43,11 +43,13 @@ extern BlockBucket block_table[BLOCK_TABLE_SIZE];
 void AT_initMemory(int argc, char *argv[]);
 void AT_cleanupMemory();
 ATerm AT_allocate(int size);
-void  AT_free(int size, ATerm t);
+void  AT_freeTerm(int size, ATerm t);
 void  AT_collect(int size);
 ATerm AT_getAnnotations(ATerm t);
 ATerm AT_setAnnotations(ATerm t, ATerm annos);
 ATerm AT_removeAnnotations(ATerm t);
 ATbool AT_isValidTerm(ATerm term);
+void  AT_validateFreeList(int size);
+int AT_inAnyFreeList(ATerm t);
 
 #endif

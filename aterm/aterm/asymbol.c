@@ -128,11 +128,13 @@ void AT_printSymbol(Symbol sym, FILE *f)
 
 Symbol ATmakeSymbol(char *name, int arity, ATbool quoted)
 {
-  header_type   header = (quoted ? MASK_QUOTED : 0) | (arity << SHIFT_LENGTH);
+  header_type   header = SYMBOL_HEADER(arity, quoted);
   unsigned int  hash_val;
   char         *walk = name;
   SymEntry      cur;
   
+	assert(arity < MAX_ARITY);
+
   for(hash_val = arity*3; *walk; walk++)
     hash_val = 251 * hash_val + *walk;
   hash_val %= table_size;
@@ -145,7 +147,7 @@ Symbol ATmakeSymbol(char *name, int arity, ATbool quoted)
   if (cur == NULL) {
     Symbol free_entry;
 
-    cur = (SymEntry) AT_allocate(sizeof(struct SymEntry)/sizeof(header_type));
+    cur = (SymEntry) AT_allocate(TERM_SIZE_SYMBOL);
     cur->header = header;
     cur->next = hash_table[hash_val];
     cur->name = strdup(name);
@@ -164,6 +166,40 @@ Symbol ATmakeSymbol(char *name, int arity, ATbool quoted)
   }
 
   return cur->id;
+}
+
+/*}}}  */
+/*{{{  void AT_freeSymbol(SymEntry sym) */
+
+/**
+	* Free a symbol
+	*/
+
+void AT_freeSymbol(SymEntry sym)
+{
+	ATerm t = (ATerm)sym;
+
+	/* assert that sym is valid 
+	int i;
+
+	for(i=0; i<65353; i++)
+		if(sym == lookup_table[i])
+			break;
+
+	assert(i!=65353);
+	*/
+		
+	assert(sym->name);
+	free(sym->name);
+	sym->name = NULL;
+	
+	lookup_table[sym->id] = (SymEntry)SYM_SET_NEXT_FREE(first_free);
+	first_free = sym->id;
+
+	/* Put the node in the appropriate free list */
+	t->header = FREE_HEADER;
+	t->next  = at_freelist[TERM_SIZE_SYMBOL];
+	at_freelist[TERM_SIZE_SYMBOL] = t;
 }
 
 /*}}}  */
