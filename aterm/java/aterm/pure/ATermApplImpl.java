@@ -73,6 +73,11 @@ class ATermApplImpl
 	    list.add(fun.getName());
 	    return matchArguments(appl.getArgumentArray(), list);
 	  }
+	} else if (afun.getName().equals("fun") && !afun.isQuoted()) {
+	  if (!fun.isQuoted()) {
+	    list.add(fun.getName());
+	    return matchArguments(appl.getArgumentArray(), list);
+	  }
 	} else if (afun.getName().equals("id") && !afun.isQuoted()) {
 	  if (!fun.isQuoted()) {
 	    list.add(fun.getName());

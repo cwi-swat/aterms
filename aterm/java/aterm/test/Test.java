@@ -236,6 +236,17 @@ public class Test
   }
 
   //}}}
+  //{{{ public void testMatch()
+
+  public void testMatch()
+  {
+    ATerm t = factory.parse("node(\"Pico-eval\",box,182,21,62,26)");
+    List result = t.match("node(<str>,<fun>,<int>,<int>,<int>,<int>)");
+    test_assert(result != null);
+    System.out.println("pass: testMatch");
+  }
+
+  //}}}
   
   //{{{ public void testAll()
 
@@ -250,6 +261,7 @@ public class Test
     testParser();
     testList();
     testFiles();
+    testMatch();
     /*testMakeList();
     testMakePlaceholder();
     testMakeBlob();

@@ -100,6 +100,14 @@ class ATermPlaceholderImpl
 	  String str = (String)args.get(0);
 	  args.remove(0);
 	  return factory.makeAppl(factory.makeAFun(str, 0, true));
+	} else if (name.equals("id")) {
+	  String str = (String)args.get(0);
+	  args.remove(0);
+	  return factory.makeAppl(factory.makeAFun(str, 0, false));
+	} else if (name.equals("fun")) {
+	  String str = (String)args.get(0);
+	  args.remove(0);
+	  return factory.makeAppl(factory.makeAFun(str, 0, false));
 	}
       }
       if (name.equals("appl")) {
