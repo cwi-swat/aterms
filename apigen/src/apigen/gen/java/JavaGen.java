@@ -1297,10 +1297,12 @@ extends Generator
        * It could be replaced by subject = "t"
        * This is to be compatible when the strictType option is not set
        */
-    String subject = "((" + class_name + ")t)";
-      //println("  is_fsym(t) { " + subject + ".is" + operator_name + "() }");
-    println("  is_fsym(t) { (t instanceof " + class_name  + ")?" + subject + ".is" + operator_name + "():false }");
-    
+      String subject = "t";
+      println("  is_fsym(t) { (" + subject + "!=null) && " + subject + ".is" + operator_name + "() }");
+      // to be compatible with --lazyType
+      //String subject = "((" + class_name + ")t)";
+      //println("  is_fsym(t) { (t instanceof " + class_name  + ")?" + subject + ".is" + operator_name + "():false }");
+
     fields = type.altFieldIterator(alt.getId());
     while (fields.hasNext()) {
       Field field = (Field) fields.next();
