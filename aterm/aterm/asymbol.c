@@ -139,21 +139,36 @@ void AT_printSymbol(Symbol sym, FILE *f)
 }
 /*}}}  */
 
+/*{{{  unsigned int AT_hashSymbol(char *name, int arity) */
+
+/**
+	* Calculate the hash value of a symbol.
+	*/
+
+unsigned int AT_hashSymbol(char *name, int arity)
+{
+	unsigned int hash_val;
+  char *walk = name;
+
+  for(hash_val = arity*3; *walk; walk++)
+    hash_val = 251 * hash_val + *walk;
+  
+	return hash_val;
+}
+
+
+/*}}}  */
+
 /*{{{  Symbol ATmakeSymbol(char *name, int arity, ATbool quoted) */
 
 Symbol ATmakeSymbol(char *name, int arity, ATbool quoted)
 {
   header_type   header = SYMBOL_HEADER(arity, quoted);
-  unsigned int  hash_val;
-  char         *walk = name;
+  unsigned int  hash_val = AT_hashSymbol(name, arity) % table_size;
   SymEntry      cur;
   
 	assert(arity < MAX_ARITY);
 
-  for(hash_val = arity*3; *walk; walk++)
-    hash_val = 251 * hash_val + *walk;
-  hash_val %= table_size;
-  
   /* Find symbol in table */
   cur = hash_table[hash_val];
   while (cur && (cur->header != header || !streq(cur->name, name)))

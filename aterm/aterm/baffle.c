@@ -120,7 +120,7 @@ main(int argc, char *argv[])
 	/* Baffle user */
 	if (interpret)
 	{
-		AT_interpretBaf(input, output);
+		/*AT_interpretBaf(input, output);*/
 		exit(0);
 	}
 

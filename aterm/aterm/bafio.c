@@ -2,6 +2,8 @@
  * bafio.c
  */
 
+#define BAF_DEBUGx
+
 /*{{{  includes */
 
 #include <stdio.h>
@@ -11,35 +13,87 @@
 #include "_aterm.h"
 #include "aterm2.h"
 #include "memory.h"
+#include "asymbol.h"
+#include "util.h"
 
 /*}}}  */
 /*{{{  defines */
 
 #define	BAF_MAGIC	0xbaf
-#define BAF_VERSION	0x0100			/* version 1.0 */
+#define BAF_VERSION	0x0200			/* version 2.0 */
 
-#define CMD_RESET	AT_FREE			/* reuse */
-#define CMD_APPL	AT_APPL
-#define CMD_INT		AT_INT
-#define CMD_REAL	AT_REAL
-#define CMD_LIST	AT_LIST
-#define CMD_PLAC	AT_PLACEHOLDER
-#define CMD_BLOB	AT_BLOB
-#define CMD_SYM		AT_SYMBOL
-#define CMD_QSYM    (CMD_SYM+1)
-#define CMD_ANNO	(CMD_QSYM+1)	/* new */
+#define BAF_DEFAULT_TABLE_SIZE      1024
 
+#define BAF_LIST_BATCH_SIZE 64
+
+#define PLAIN_INT		      0
+#define ANNO_INT	        (PLAIN_INT | 1)
+
+#define PLAIN_REAL        2
+#define ANNO_REAL	        (PLAIN_REAL | 1)
+
+#define PLAIN_LIST	      4
+#define ANNO_LIST	        (PLAIN_LIST | 1)
+
+#define PLAIN_PLAC	      6
+#define ANNO_PLAC	        (PLAIN_PLAC | 1)
+
+#define PLAIN_BLOB	      8
+#define ANNO_BLOB	        (PLAIN_BLOB | 1)
+
+#define SYMBOL_OFFSET     10
+
+#define IS_ANNOTATED(n)   ((n) & 1 ? ATtrue : ATfalse)
+#define SYM_INDEX(n)      (((n)-SYMBOL_OFFSET)/2)
+#define SYM_COMMAND(n)    ((n)*2 + SYMBOL_OFFSET)
+#define PLAIN_CMD(n)      ((n) & ~1)
+
+#if 0
 #define TRM_STACK_REL(idx)	(term_stack_depth - (idx) + 10) /* skip CMD's */
 #define SYM_STACK_REL(idx)	(sym_stack_depth - (idx))
 
 #define DEFAULT_ARG_STACK_SIZE 1024
+#endif
 
 /*}}}  */
+/*{{{  types */
 
-/*{{{  global variables */
+typedef struct sym_entry {
+	Symbol sym;
+	struct sym_entry *next;
+	unsigned int count;
+	unsigned int index;
+} sym_entry;
+
+typedef struct trm_entry {
+	ATerm t;
+	struct trm_entry *next; /* Next in hash bucket  */
+} trm_entry;
+
+/*}}}  */
+/*{{{  variables */
 
 char bafio_id[] = "$Id$";
 
+static int cur_symbol = -1;
+static sym_entry *symbols = NULL;
+static unsigned int symbol_table_size = 0;
+static sym_entry **symbol_table = NULL;
+static sym_entry **sorted_symbols = NULL;
+
+static trm_entry *table = NULL;
+static int table_size = -1;
+static int hashtable_size = 0;
+static trm_entry **hashtable = NULL;
+static int next_free;
+
+static Symbol *read_symbols = NULL;
+static ATerm *read_table = NULL;
+
+/*}}}  */
+/*{{{  global variables */
+
+#if 0
 static int			term_stack_depth;
 static ATermTable	term_stack;
 
@@ -50,10 +104,12 @@ static ATerm *arg_stack;
 static int    arg_stack_depth;
 static int    arg_stack_size;
 
+static ATerm empty_args[MAX_ARITY] = { NULL };
+#endif
+
 static char *text_buffer = NULL;
 static int   text_buffer_size = 0;
 
-static ATerm empty_args[MAX_ARITY] = { NULL };
 
 /*}}}  */
 /*{{{  void AT_initBafIO(int argc, char *argv[]) */
@@ -64,6 +120,7 @@ static ATerm empty_args[MAX_ARITY] = { NULL };
 
 void AT_initBafIO(int argc, char *argv[])
 {
+#if 0
 	int i;
 
 	for(i=0; i<MAX_ARITY; i++)
@@ -78,6 +135,7 @@ void AT_initBafIO(int argc, char *argv[])
 						DEFAULT_ARG_STACK_SIZE);
 	arg_stack_depth = 0;
         ATprotectArray(arg_stack, DEFAULT_ARG_STACK_SIZE);
+#endif
 }
 
 /*}}}  */
@@ -92,6 +150,7 @@ AT_getBafVersion(int *major, int *minor)
 }
 
 /*}}}  */
+
 /*{{{  static int writeIntToBuf(unsigned int val, unsigned char *buf) */
 
 static
@@ -277,34 +336,38 @@ writeStringToFile(const char *str, int len, FILE *f)
 }
 
 /*}}}  */
-/*{{{  static int writeSymToFile(Symbol sym, FILE *f) */
+/*{{{  static int readStringFromFile(FILE *f) */
 
 static
 int
-writeSymToFile(Symbol sym, FILE *f)
+readStringFromFile(FILE *f)
 {
-	char *    name;
-	ATerm     sym_appl;
-	ATermInt  index_sym;
+	unsigned int len;
 
-	sym_appl = (ATerm)ATmakeApplArray(sym, empty_args);
-	index_sym = (ATermInt) ATtableGet(sym_stack, sym_appl);
-	if (index_sym != NULL)
-		return ATgetInt(index_sym);
-
-	index_sym = ATmakeInt(sym_stack_depth);
-	ATtablePut(sym_stack, sym_appl, (ATerm) index_sym);
-	if(writeIntToFile(ATisQuoted(sym) ? CMD_QSYM : CMD_SYM, f) < 0)
+	/* Get length of string */
+	if (readIntFromFile(&len, f) < 0)
 		return -1;
-	if(writeIntToFile(ATgetArity(sym), f) < 0)
-		return -1;
-	name = ATgetName(sym);
-	writeStringToFile(name, strlen(name)+1, f);
 
-	return sym_stack_depth++;
+	/* Assure buffer can hold the string */
+	if (text_buffer_size < (len+1))
+	{
+		text_buffer_size = len*1.5;
+		text_buffer = (char *) realloc(text_buffer, text_buffer_size);
+		if(!text_buffer)
+			ATerror("out of memory in readStringFromFile (%d)\n", text_buffer_size);
+	}
+
+	/* Read the actual string */
+	if (fread(text_buffer, 1, len, f) != len)
+		return -1;
+
+	/* Ok, return length of string */
+	return len;
 }
 
 /*}}}  */
+
+#if 0
 /*{{{  static int writeListToFile(ATermList list, FILE *file) */
 
 /* Forward declaration */
@@ -386,6 +449,34 @@ writeListToFile(ATermList list, FILE *file)
 
 	/* Ok */
 	return 0;
+}
+
+/*}}}  */
+/*{{{  static int writeSymToFile(Symbol sym, FILE *f) */
+
+static
+int
+writeSymToFile(Symbol sym, FILE *f)
+{
+	char *    name;
+	ATerm     sym_appl;
+	ATermInt  index_sym;
+
+	sym_appl = (ATerm)ATmakeApplArray(sym, empty_args);
+	index_sym = (ATermInt) ATtableGet(sym_stack, sym_appl);
+	if (index_sym != NULL)
+		return ATgetInt(index_sym);
+
+	index_sym = ATmakeInt(sym_stack_depth);
+	ATtablePut(sym_stack, sym_appl, (ATerm) index_sym);
+	if(writeIntToFile(ATisQuoted(sym) ? CMD_QSYM : CMD_SYM, f) < 0)
+		return -1;
+	if(writeIntToFile(ATgetArity(sym), f) < 0)
+		return -1;
+	name = ATgetName(sym);
+	writeStringToFile(name, strlen(name)+1, f);
+
+	return sym_stack_depth++;
 }
 
 /*}}}  */
@@ -544,36 +635,6 @@ ATwriteToBinaryFile(ATerm t, FILE *file)
 	ATtableDestroy(term_stack);
 
 	return result;
-}
-
-/*}}}  */
-/*{{{  static int readStringFromFile(FILE *f) */
-
-static
-int
-readStringFromFile(FILE *f)
-{
-	unsigned int len;
-
-	/* Get length of string */
-	if (readIntFromFile(&len, f) < 0)
-		return -1;
-
-	/* Assure buffer can hold the string */
-	if (text_buffer_size < len)
-	{
-		text_buffer_size = len*1.5;
-		text_buffer = (char *) realloc(text_buffer, text_buffer_size);
-		if(!text_buffer)
-			ATerror("out of memory in readStringFromFile (%d)\n", text_buffer_size);
-	}
-
-	/* Read the actual string */
-	if (fread(text_buffer, 1, len, f) != len)
-		return -1;
-
-	/* Ok, return length of string */
-	return len;
 }
 
 /*}}}  */
@@ -919,3 +980,792 @@ AT_interpretBaf(FILE *in, FILE *out)
 }
 
 /*}}}  */
+#endif
+
+/*{{{  static void add_symbol(Symbol sym) */
+
+/**
+	* Add a symbol to the symbol table.
+	*/
+
+static void add_symbol(Symbol sym)
+{
+	sym_entry *cur;
+	unsigned int hash_val = AT_hashSymbol(ATgetName(sym), ATgetArity(sym));
+
+	hash_val %= symbol_table_size;
+	cur = symbol_table[hash_val];
+
+	while(cur && cur->sym != sym)
+		cur = cur->next;
+
+	if(cur) {
+		cur->count++;
+	} else {
+		cur = &symbols[cur_symbol];
+		cur->next = symbol_table[hash_val];
+		symbol_table[hash_val] = cur;
+		cur->sym = sym;
+		cur->count = 1;
+		cur_symbol++;
+	}
+}
+
+/*}}}  */
+/*{{{  static void find_symbol(Symbol sym) */
+
+/**
+	* Find a symbol in the symbol table.
+	*/
+
+static int find_symbol(Symbol sym)
+{
+	sym_entry *cur;
+	unsigned int hash_val = AT_hashSymbol(ATgetName(sym), ATgetArity(sym));
+
+	hash_val %= symbol_table_size;
+	cur = symbol_table[hash_val];
+
+	while(cur && cur->sym != sym)
+		cur = cur->next;
+
+	assert(cur);
+	return cur->index;
+}
+
+/*}}}  */
+/*{{{  static void fill_symbols(ATerm t) */
+
+/**
+	* Fill symbol table.
+	*/
+
+static void fill_symbols(ATerm t)
+{
+	Symbol sym;
+	ATermList list;
+	int i, arity;
+
+	if(IS_MARKED(t->header))
+		return;
+
+	SET_MARK(t->header);
+
+	switch(ATgetType(t)) {
+		case AT_INT:
+		case AT_REAL:
+		case AT_BLOB:
+			return;
+
+		case AT_APPL:
+			sym = ATgetSymbol((ATermAppl)t);
+			add_symbol(sym);
+			arity = ATgetArity(sym);
+			for(i=0; i<arity; i++)
+				fill_symbols(ATgetArgument((ATermAppl)t, i));
+			break;
+
+		case AT_LIST:
+			list = (ATermList)t;
+			while(!ATisEmpty(list)) {
+				fill_symbols(ATgetFirst(list));
+				list = ATgetNext(list);
+			}
+			break;
+
+		case AT_PLACEHOLDER:
+			fill_symbols(ATgetPlaceholder((ATermPlaceholder)t));
+			break;
+			
+		default:
+			ATerror("fill_symbols: illegal term type: %d\n", ATgetType(t));
+			break;
+	}
+
+	if(HAS_ANNO(t->header))
+		fill_symbols(AT_getAnnotations(t));
+}
+
+/*}}}  */
+/*{{{  static int compare_symbols(void *sym1, void *sym2) */
+
+/**
+	* Compare two symbols on behalve of quicksort.
+	*/
+
+static int compare_symbols(const void *e1, const void *e2)
+{
+	sym_entry *sym1 = *((sym_entry **)e1);
+	sym_entry *sym2 = *((sym_entry **)e2);
+
+	return sym2->count - sym1->count;
+}
+
+/*}}}  */
+/*{{{  static ATbool write_symbol(Symbol sym, FILE *file) */
+
+/**
+	* Write a symbol to file.
+	*/
+
+static ATbool write_symbol(Symbol sym, FILE *file)
+{
+	char *name = ATgetName(sym);
+	if(writeStringToFile(name, strlen(name), file) < 0)
+		return ATfalse;
+
+	if(writeIntToFile(ATgetArity(sym), file) < 0)
+		return ATfalse;
+
+	if(writeIntToFile(ATisQuoted(sym), file) < 0)
+		return ATfalse;
+
+	return ATtrue;
+}
+
+/*}}}  */
+
+/*{{{  static int find_term(ATerm t) */
+
+/**
+	* Find a term in the hashqueue, and update queue priority.
+	*/
+
+static int find_term(ATerm t)
+{
+	trm_entry *cur;
+	unsigned int hnr = AT_hashnumber(t) % hashtable_size;
+
+	cur = hashtable[hnr];
+	assert(cur);
+	while(cur->t != t) {
+		cur = cur->next;
+		assert(cur);
+	}
+
+	return cur - table;
+}
+
+/*}}}  */
+
+/*{{{  static void fill_terms(ATerm t) */
+
+/**
+	* static void fill_terms(ATerm t)
+	*/
+
+static void fill_terms(ATerm t)
+{
+	unsigned int hnr;
+	ATerm annos;
+
+	if(IS_MARKED(t->header))
+		return;
+	SET_MARK(t->header);
+
+	annos = AT_getAnnotations(t);
+	if(annos)
+		fill_terms(annos);
+
+	switch(ATgetType(t)) {
+		case AT_INT:
+		case AT_REAL:
+		case AT_BLOB:
+			break;
+
+		case AT_APPL:
+			{
+				ATermAppl appl = (ATermAppl)t;
+				Symbol sym     = ATgetSymbol(appl);
+				int i, arity   = ATgetArity(sym);
+				for(i=0; i<arity; i++)
+					fill_terms(ATgetArgument(appl, i));
+			}
+			break;
+
+		case AT_LIST:
+			{
+				ATermList list = (ATermList)t;
+				while(!ATisEmpty(list)) {
+					fill_terms(ATgetFirst(list));
+					list = ATgetNext(list);
+				}
+			}
+			break;
+
+		case AT_PLACEHOLDER:
+			fill_terms(ATgetPlaceholder((ATermPlaceholder)t));
+			break;
+	}
+
+	hnr = AT_hashnumber(t) % hashtable_size;
+	table[next_free].t = t;
+	table[next_free].next = hashtable[hnr];
+	hashtable[hnr] = &table[next_free];
+	next_free++;
+}
+
+/*}}}  */
+/*{{{  static ATbool write_terms(FILE *file) */
+
+/**
+	* Write a term to file.
+	*/
+
+static ATbool write_terms(FILE *file)
+{
+	ATerm *list_elems = NULL;
+	int    list_size = 0;
+	int i;
+
+	for(i=0; i<table_size; i++) {
+		ATerm t = table[i].t;
+		switch(ATgetType(t)) {
+			case AT_INT:
+				/*{{{  Write an integer */
+
+				if(writeIntToFile(PLAIN_INT | (HAS_ANNO(t->header) ? 1 : 0), file) < 0)
+					return ATfalse;
+				if(writeIntToFile(ATgetInt((ATermInt)t), file) < 0)
+					return ATfalse;
+
+				/*}}}  */
+				break;
+			case AT_REAL:
+				/*{{{  Write a real */
+
+				{
+					static char buf[64]; /* Must be large enough to fit a double */
+
+					if(writeIntToFile(PLAIN_REAL | (HAS_ANNO(t->header) ? 1 : 0), file) < 0)
+						return ATfalse;
+					sprintf(buf, "%f", ATgetReal((ATermReal)t));
+					if(writeStringToFile(buf, strlen(buf)+1, file) < 0)
+						return ATfalse;
+				}
+
+				/*}}}  */
+				break;
+			case AT_BLOB:
+				/*{{{  Write a blob */
+
+				{
+					int size   = ATgetBlobSize((ATermBlob)t);
+					void *data = ATgetBlobData((ATermBlob)t);
+
+					if(writeIntToFile(PLAIN_BLOB | (HAS_ANNO(t->header) ? 1 : 0), file) < 0)
+						return ATfalse;
+					if(writeIntToFile(size, file) < 0)
+						return ATfalse;
+					if(writeStringToFile((char *)data, size, file) < 0)
+						return ATfalse;
+				}
+
+				/*}}}  */
+				break;
+			case AT_PLACEHOLDER:
+				/*{{{  Write a placeholder */
+
+				{
+					int plac_index = find_term(ATgetPlaceholder((ATermPlaceholder)t));
+
+					if(writeIntToFile(PLAIN_PLAC | (HAS_ANNO(t->header) ? 1 : 0), file) < 0)
+						return ATfalse;
+					if(writeIntToFile(plac_index, file) < 0)
+						return ATfalse;
+				}
+
+				/*}}}  */
+				break;
+			case AT_APPL:
+				/*{{{  Write an application */
+
+				{
+					ATermAppl appl = (ATermAppl)t;
+					Symbol sym     = ATgetSymbol(appl);
+					int arg, arity = ATgetArity(sym);
+
+					int sym_index  = find_symbol(sym);
+					int sym_cmd    = SYM_COMMAND(sym_index);
+
+					if(writeIntToFile(sym_cmd | (HAS_ANNO(t->header) ? 1 : 0), file) < 0)
+						return ATfalse;
+
+					for(arg=0; arg<arity; arg++) {
+						int arg_index = find_term(ATgetArgument(appl, arg));
+						if(writeIntToFile(arg_index, file) < 0)
+							return ATfalse;
+					}
+				}				
+
+				/*}}}  */
+				break;
+			case AT_LIST:
+				/*{{{  Write a list */
+
+				{
+					int size, cur;
+					ATermList list = (ATermList)t;
+
+					size = ATgetLength(list);
+
+					if(writeIntToFile(PLAIN_LIST | (HAS_ANNO(t->header) ? 1 : 0), file) < 0)
+						return ATfalse;
+					if(writeIntToFile(size, file) < 0)
+						return ATfalse;
+
+					if(size > list_size) {
+						list_elems = (ATerm *)realloc(list_elems, sizeof(ATerm)*size);
+						if(!list_elems)
+							ATerror("write_terms: out of memory.");
+						list_size = size;
+					}
+
+					for(cur=0; cur<size; cur++) {
+						list_elems[cur] = ATgetFirst(list);
+						list = ATgetNext(list);
+					}
+					
+					for(cur=size-1; cur>=0; cur--) {
+						int elem_index = find_term(list_elems[cur]);
+						if(writeIntToFile(elem_index, file) < 0)
+							return ATfalse;
+					}
+				}
+
+				/*}}}  */
+				break;
+		}
+
+		if(HAS_ANNO(t->header)) {
+			int anno_index = find_term(AT_getAnnotations(t));
+			if(writeIntToFile(anno_index, file) < 0)
+				return ATfalse;
+		}
+	}
+
+	return ATtrue;
+}
+
+/*}}}  */
+
+/*{{{  ATbool ATwriteToBinaryFile(ATerm t, FILE *file) */
+
+ATbool
+ATwriteToBinaryFile(ATerm t, FILE *file)
+{
+	int i, nr_syms;
+	ATbool result;
+
+	nr_syms = AT_calcUniqueSymbols(t);
+	table_size = AT_calcUniqueSubterms(t);
+
+	if(!silent) {
+		ATfprintf(stderr, "writing %d symbols and %d terms.\n", 
+							nr_syms, table_size);
+	}
+
+	/*{{{  Write header */
+
+	if(writeIntToFile(0,   file) < 0)
+		return ATfalse;
+
+	if(writeIntToFile(BAF_MAGIC,   file) < 0)
+		return ATfalse;
+
+	if(writeIntToFile(BAF_VERSION, file) < 0)
+		return ATfalse;
+
+	if(writeIntToFile(nr_syms, file) < 0)
+		return ATfalse;
+
+	if(writeIntToFile(table_size, file) < 0)
+		return ATfalse;
+
+	/*}}}  */
+
+	/*{{{  allocate symbol space */
+
+	symbols = (sym_entry *)calloc(nr_syms, sizeof(sym_entry));
+	if(!symbols)
+		ATerror("alloc_symbol_space: "
+						"cannot allocate space for %d symbols.\n", nr_syms);
+	cur_symbol = 0;
+
+	symbol_table_size = (nr_syms*4)/3;
+	symbol_table = (sym_entry **)calloc(symbol_table_size, 
+																			sizeof(sym_entry *));
+	if(!symbol_table)
+		ATerror("alloc_symbol_space: cannot allocate space for "
+						"symbol table of size: %d\n", symbol_table_size);
+
+	sorted_symbols = (sym_entry **)calloc(nr_syms, sizeof(sym_entry *));
+	if(!sorted_symbols)
+		ATerror("alloc_symbol_space: cannot allocate space for "
+						"sorted symbol table of size: %d\n", nr_syms);
+
+	/*}}}  */
+	/*{{{  allocate term space */
+
+	table = (trm_entry *)calloc(table_size, sizeof(trm_entry));
+	if(!table)
+		ATerror("ATwriteToBinaryFile: out of memory (%d terms)\n", table_size);
+
+	hashtable_size = (table_size*5)/4;
+	hashtable = (trm_entry **)calloc(hashtable_size, sizeof(trm_entry *));
+	if(!hashtable)
+		ATerror("ATwriteToBinaryFile: out of memory (%d buckets)\n", 
+						hashtable_size);
+
+	next_free = 0;
+
+	/*}}}  */
+	/*{{{  Gather, sort, and write symbols */
+
+	fill_symbols(t);
+	AT_unmarkTerm(t);
+
+	assert(nr_syms == cur_symbol);
+
+	for(i=0; i<nr_syms; i++)
+		sorted_symbols[i] = &symbols[i];
+ 
+	qsort((void *)sorted_symbols, nr_syms, 
+				sizeof(sym_entry *), compare_symbols);
+
+	for(i=0; i<nr_syms; i++) {
+		assert(i==0 || (sorted_symbols[i-1]->count >= sorted_symbols[i]->count));
+		sorted_symbols[i]->index = i;
+		if(!write_symbol(sorted_symbols[i]->sym, file))
+			return ATfalse;
+	}
+
+	/*}}}  */
+
+	fill_terms(t);
+	assert(next_free == table_size);
+	AT_unmarkTerm(t);
+	result = write_terms(file);
+
+	/*{{{  Free symbol space */
+
+	free(symbols);
+	symbols = NULL;
+
+	free(symbol_table);
+	free(sorted_symbols);
+
+	symbol_table = NULL;
+	sorted_symbols = NULL;
+
+	cur_symbol = -1;
+	symbol_table_size = 0;
+
+	/*}}}  */
+	/*{{{  Free term size */
+
+	free(table);
+	free(hashtable);
+
+	/*}}}  */
+
+	return result;
+}
+
+/*}}}  */
+
+/*{{{  static ATerm read_terms(FILE *file) */
+
+/**
+	* Read a list of terms from file.
+	*/
+
+static ATerm read_terms(FILE *file)
+{
+	int i;
+	ATerm result = NULL;
+
+	for(i=0; i<table_size; i++) {
+		ATbool has_anno = ATfalse;
+		unsigned int cmd;
+
+		if(readIntFromFile(&cmd, file) < 0)
+			return NULL;
+
+		if(IS_ANNOTATED(cmd)) {
+			has_anno = ATtrue;
+			cmd = PLAIN_CMD(cmd);
+		}
+
+		switch(cmd) {
+			case PLAIN_INT:
+				/*{{{  Read an integer term */
+
+				{
+					unsigned int val;
+					
+					if(readIntFromFile(&val, file) < 0)
+						return NULL;
+
+					result = (ATerm)ATmakeInt(val);
+				}
+
+				/*}}}  */
+				break;
+			case PLAIN_REAL:
+				/*{{{  Read a real term */
+
+				{
+					double val;
+
+					if(readStringFromFile(file) < 0)
+						return NULL;
+
+					sscanf(text_buffer, "%lf", &val); 
+					
+					result = (ATerm)ATmakeReal(val);
+				}
+
+				/*}}}  */
+				break;
+			case PLAIN_LIST:
+				/*{{{  Read one batch of a list. */
+
+				{
+					unsigned int lcv, index, len;
+					ATermList list = ATempty;
+					
+					if(readIntFromFile(&len, file) < 0)
+						return NULL;
+
+					for(lcv=0; lcv<len; lcv++) {
+						if(readIntFromFile(&index, file) < 0)
+							return NULL;
+
+						assert(index < i);
+						list = ATinsert(list, read_table[index]);
+					}
+					result = (ATerm)list;
+				}
+
+				/*}}}  */
+				break;
+			case PLAIN_PLAC:
+				/*{{{  Read a placeholder */
+
+				{
+					unsigned int index;
+
+					if(readIntFromFile(&index, file) < 0)
+						return NULL;
+
+					assert(index < i);
+
+					result = (ATerm)ATmakePlaceholder(read_table[index]);
+				}
+
+				/*}}}  */
+				break;
+			case PLAIN_BLOB:
+				/*{{{  Read a BLOB term */
+
+				{
+					void *data;
+					int len = readStringFromFile(file);
+					if(len < 0)
+						return NULL;
+					
+					data = malloc(len);
+					if(!data)
+						ATerror("read_term: out of memory when allocating "
+										"blob of size %d\n", len);
+					
+					memcpy(data, text_buffer, len);
+
+					result = (ATerm)ATmakeBlob(len, data);
+				}
+
+				/*}}}  */
+				break;
+			default:
+				/*{{{  Must be an appl */
+
+				{
+					int arg;
+					unsigned int arity, arg_index, symbol_index;
+					Symbol sym;
+					ATerm args[MAX_ARITY];
+					
+					symbol_index = SYM_INDEX(cmd);
+					assert(symbol_index < symbol_table_size);
+					
+					sym = read_symbols[symbol_index];
+					arity = ATgetArity(sym);
+					
+					for(arg=0; arg<arity; arg++) {
+						if(readIntFromFile(&arg_index, file) < 0)
+							return NULL;
+						assert(arg_index < i);
+						args[arg] = read_table[arg_index];
+						assert(args[arg]);
+					}
+					
+					result = (ATerm)ATmakeApplArray(sym, args);
+				}
+
+				/*}}}  */
+				break;
+		}
+
+		if(has_anno) {
+			unsigned int anno_index;
+
+			if(readIntFromFile(&anno_index, file) < 0)
+				return NULL;
+
+			assert(anno_index < i);
+			result = AT_setAnnotations(result, read_table[anno_index]);
+		}
+
+		read_table[i] = result;
+	}
+
+	return result;
+}
+
+/*}}}  */
+/*{{{  Symbol read_symbol(FILE *file) */
+
+/**
+	* Read a single symbol from file.
+	*/
+
+Symbol read_symbol(FILE *file)
+{
+	unsigned int arity, quoted;
+	int len;
+
+	if((len = readStringFromFile(file)) < 0)
+		return -1;
+
+	text_buffer[len] = '\0';
+
+	if(readIntFromFile(&arity, file) < 0)
+		return -1;
+
+	if(readIntFromFile(&quoted, file) < 0)
+		return -1;
+
+	return ATmakeSymbol(text_buffer, arity, quoted ? ATtrue : ATfalse);
+}
+
+/*}}}  */
+
+/*{{{  ATerm ATreadFromBinaryFile(FILE *file) */
+
+/**
+	* Read a term from a BAF file.
+	*/
+
+ATerm
+ATreadFromBinaryFile(FILE *file)
+{
+	int i;
+	unsigned int val;
+	ATerm result;
+
+	/*{{{  Read header */
+
+	if(readIntFromFile(&val,   file) < 0)
+		return ATfalse;
+
+	if(val == 0) {
+		if(readIntFromFile(&val,   file) < 0)
+			return ATfalse;
+	}
+
+	if(val != BAF_MAGIC) {
+		fprintf(stderr, "ATreadFromBinaryFile: not a BAF file!\n");
+		return ATfalse;
+	}
+
+	if(readIntFromFile(&val, file) < 0)
+		return ATfalse;
+
+	if(val != BAF_VERSION) {
+		fprintf(stderr, "ATreadFromBinaryFile: old BAF version, giving up!\n");
+		return ATfalse;
+	}
+
+	if(readIntFromFile(&symbol_table_size, file) < 0)
+		return ATfalse;
+
+	if(readIntFromFile(&val, file) < 0)
+		return ATfalse;
+
+	table_size = (int)val;
+
+	if(!silent)
+		ATfprintf(stderr, "reading %d symbols and %d terms.\n", 
+							symbol_table_size, table_size);
+
+	/*}}}  */
+	/*{{{  Allocate symbol table */
+
+	read_symbols = (Symbol *)calloc(symbol_table_size, sizeof(Symbol));
+	if(!read_symbols)
+		ATerror("ATreadFromBinaryFile: could not allocate table of size %d\n",
+						symbol_table_size);
+
+	/*}}}  */
+	/*{{{  Allocate and protect term space */
+
+	read_table = (ATerm *)calloc(table_size, sizeof(ATerm));
+	if(!read_table)
+		ATerror("ATwriteToBinaryFile: out of memory (%d terms)\n", table_size);
+
+	next_free = 0;
+
+	ATprotectArray(read_table, table_size);
+
+	/*}}}  */
+
+	/*{{{  Read and protect symbols */
+
+	for(i=0; i<symbol_table_size; i++) {
+		read_symbols[i] = read_symbol(file);
+		if(read_symbols[i] < 0)
+			ATerror("ATreadFromBinaryFile: corrupt symbol section in BAF file!\n");
+	  ATprotectSymbol(read_symbols[i]);
+	}
+
+	/*}}}  */
+
+  result = read_terms(file);
+
+	/*{{{  Unprotect and free term table */
+
+	ATunprotectArray(read_table);
+	free(read_table);
+	read_table = NULL;
+	next_free = -1;
+
+	/*}}}  */
+	/*{{{  Unprotect and free symboltable */
+
+	for(i=0; i<symbol_table_size; i++)
+		ATunprotectSymbol(read_symbols[i]);
+
+	free(read_symbols); /* Free symbol table */
+	read_symbols = NULL;
+	symbol_table_size = -1;
+
+	/*}}}  */
+ 
+	return result;
+}
+
+/*}}}  */
+
+
+

@@ -9,6 +9,7 @@
 #include "abool.h"
 #include "encoding.h"
 
+
 typedef int Symbol;
 
 /* The Symbol type */
@@ -34,5 +35,6 @@ ATbool AT_isValidSymbol(Symbol sym);
 ATbool AT_isMarkedSymbol(Symbol sym);
 void  AT_freeSymbol(SymEntry sym);
 void AT_markProtectedSymbols();
+unsigned int AT_hashSymbol(char *name, int arity);
 
 #endif

@@ -93,6 +93,36 @@ static int hash_info_after_gc[MAX_INFO_SIZES][3];
 
 /*}}}  */
 
+/*{{{  static int term_size(ATerm t) */
+
+/**
+  * Calculate the size (in words) of a term.
+  */
+
+static int term_size(ATerm t)
+{
+  int size = (HAS_ANNO(t->header) ? 3 : 2);
+
+  switch(ATgetType(t)) {
+    case AT_INT:
+    case AT_PLACEHOLDER:
+      size += 1;
+      break;
+    case AT_REAL:
+    case AT_LIST:
+			size += 2;
+			break;
+    case AT_BLOB:
+      size += 1;
+      break;
+    case AT_APPL:
+      size += ATgetArity(ATgetSymbol(t));
+      break;
+  }
+  return size;
+}
+
+/*}}}  */
 /*{{{  static unsigned hash_number(unsigned int header, int n, ATerm w[]) */
 
 static unsigned int hash_number(unsigned int header, int n, ATerm w[])
@@ -129,6 +159,18 @@ static unsigned int hash_number_anno(unsigned int header, int n, ATerm w[], ATer
 }
 
 /*}}}  */
+/*{{{  unsigned AT_hashnumber(ATerm t) */
+
+/**
+	* Calculate the hashnumber of a term.
+	*/
+
+unsigned int AT_hashnumber(ATerm t)
+{
+  return hash_number(t->header, term_size(t)-2, ((ATerm *)t)+2);
+}
+
+/*}}}  */
 /*{{{  static void hash_info(int stats[3][]) */
 
 static void hash_info(int stats[MAX_INFO_SIZES][3]) 
@@ -160,36 +202,6 @@ static void hash_info(int stats[MAX_INFO_SIZES][3])
 }
 
 /*}}}  */
-/*{{{  static int term_size(ATerm t) */
-
-/**
-  * Calculate the size (in words) of a term.
-  */
-
-static int term_size(ATerm t)
-{
-  int size = (HAS_ANNO(t->header) ? 3 : 2);
-
-  switch(ATgetType(t)) {
-    case AT_INT:
-    case AT_PLACEHOLDER:
-      size += 1;
-      break;
-    case AT_REAL:
-    case AT_LIST:
-			size += 2;
-			break;
-    case AT_BLOB:
-      size += 1;
-      break;
-    case AT_APPL:
-      size += ATgetArity(ATgetSymbol(t));
-      break;
-  }
-  return size;
-}
-
-/*}}}  */
 /*{{{  static void resize_hashtable() */
 
 /**
@@ -214,8 +226,13 @@ void resize_hashtable()
 	/*{{{  Create new term table */
 	hashtable = (ATerm *) realloc(hashtable, table_size * sizeof(ATerm));
 	if (!hashtable) {
-		ATerror("resize_hashtable: cannot realloc term table of size %d\n",
-						table_size);
+		fprintf(stderr, "warning: could not resize hashtable to class %d.\n",
+						table_class);
+		table_class--;
+		hashtable = oldtable;
+		table_size = oldsize;
+		table_mask = oldsize-1;
+		return;
 	}
 	/*}}}  */
 	
@@ -654,6 +671,7 @@ ATermAppl ATmakeAppl0(Symbol sym)
   header_type header = APPL_HEADER(0, 0, sym);
   unsigned int hnr = HNUM1(header);
   
+
   CHECK_ARITY(ATgetArity(sym), 0);
 
 	prev = NULL;

@@ -154,8 +154,9 @@ void mark_phase()
 
   /* Traverse protected terms */
   for(i=0; i<at_nrprotected; i++)
-		if(*at_protected[i])
+		if(*at_protected[i]) {
 			AT_markTerm(*at_protected[i]);
+		}
 
 	/* Traverse protected arrays */
 	for(i=0; i<at_nrprotected_arrays; i++) {

@@ -1441,7 +1441,7 @@ ATerm ATreadFromFile(FILE *file)
 	fnext_char(&c, file);
 	if(c == 0) {
 		/* Might be a BAF file */
-		return AT_readFromBinaryFile(file);
+		return ATreadFromBinaryFile(file);
 	} else {
 		/* Probably a text file */
 		return readFromTextFile(&c, file);
@@ -1843,8 +1843,9 @@ AT_markTerm(ATerm t)
 		t = *--current;
 			
 		if (!t) {
-			if(current != mark_stack)
-				ATerror("AT_markTerm: premature end of mark_stack.");
+			if(current != mark_stack) {
+				ATerror("AT_markTerm: premature end of mark_stack.\n");
+			}
 			break;
 		}
 
@@ -2112,6 +2113,72 @@ int
 AT_calcUniqueSubterms(ATerm t)
 {
     int result = calcUniqueSubterms(t);
+    AT_unmarkTerm(t);
+    return result;
+}
+
+
+/*}}}  */
+/*{{{  static int calcUniqueSymbols(ATerm t) */
+
+/**
+	* Calculate the number of unique subterms.
+	*/
+
+static int
+calcUniqueSymbols(ATerm t)
+{
+	int    i, arity, nr_unique = 0;
+	Symbol sym;
+	ATermList list;
+	
+	if (IS_MARKED(t->header))
+		return 0;
+	
+	switch (ATgetType(t)) {
+		case AT_INT:
+		case AT_REAL:
+		case AT_BLOB:
+		case AT_PLACEHOLDER:
+			break;
+			
+		case AT_APPL:
+			sym = ATgetSymbol((ATermAppl) t);
+			nr_unique = AT_isMarkedSymbol(sym) ? 0 : 1;
+			AT_markSymbol(sym);
+			arity = ATgetArity(sym);
+			for (i = 0; i < arity; i++)
+				nr_unique += calcUniqueSymbols(ATgetArgument((ATermAppl)t, i));
+			break;
+			
+		case AT_LIST:
+			list = (ATermList)t;
+			while(!ATisEmpty(list) && !IS_MARKED(list->header)) {
+			  nr_unique += calcUniqueSymbols(ATgetFirst(list));
+			  list = ATgetNext(list);
+			}
+		  break;
+	}
+	
+	if(HAS_ANNO(t->header))
+		nr_unique += calcUniqueSymbols(AT_getAnnotations(t));
+
+	SET_MARK(t->header);
+
+	return nr_unique;
+}
+
+/*}}}  */
+/*{{{  int AT_calcUniqueSymbols(ATerm t) */
+
+/**
+	* Calculate the number of unique symbols
+	*/
+
+int
+AT_calcUniqueSymbols(ATerm t)
+{
+    int result = calcUniqueSymbols(t);
     AT_unmarkTerm(t);
     return result;
 }
