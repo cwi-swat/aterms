@@ -588,9 +588,6 @@ public class JavaTif
 	  case ATerm.APPL:
 	    type = "<term>";
 	    break;
-	  case ATerm.LIST:
-	    type = "<list>";
-	    break;
 	  case ATerm.INT:
 	    type = "<int>";
 	    break;
@@ -598,7 +595,12 @@ public class JavaTif
 	    type = "<real>";
 	    break;
 	  case ATerm.PLACEHOLDER:
-	    newargs[i] = arg;
+	    type = arg.toString();
+	    if (!type.equals("<int>") && !type.equals("<str>")
+		&& !type.equals("<real>")) {
+	      type = "<term>";
+	    }
+	    //newargs[i] = arg;
 	    break;
 	}
 	if (newargs[i] == null) {

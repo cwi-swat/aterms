@@ -13,6 +13,8 @@ abstract public class AbstractTool
   private final static int MAX_HANDSHAKE = 512;
   private final static int MIN_MSG_SIZE  = 128;
 
+  private Object lockObject;
+
   protected ATermFactory factory;
   private boolean verbose = false;
   private Socket  socket;
@@ -41,6 +43,7 @@ abstract public class AbstractTool
 
     termSndVoid = factory.parse("snd-void");
     queueMap    = new HashMap();
+    lockObject  = this;
   }
 
   //}}}
@@ -70,6 +73,23 @@ abstract public class AbstractTool
     if (address == null) {
       address = InetAddress.getLocalHost();
     }
+  }
+
+  //}}}
+
+  //{{{ public void setLockObject(Object obj)
+
+  public void setLockObject(Object obj)
+  {
+    lockObject = obj;
+  }
+
+  //}}}
+  //{{{ public void setLockObject(Object obj)
+
+  public Object getLockObject()
+  {
+    return lockObject;
   }
 
   //}}}
@@ -105,6 +125,8 @@ abstract public class AbstractTool
       this.port = port;
     }
 
+    this.toolid = -1;
+
     connect();
   }
 
@@ -126,6 +148,23 @@ abstract public class AbstractTool
   public boolean isConnected()
   {
     return connected;
+  }
+
+  //}}}
+
+  //{{{ public void setVerbose(boolean on)
+
+  public void setVerbose(boolean on)
+  {
+    verbose = on;
+  }
+
+  //}}}
+  //{{{ public boolean getVerbose()
+
+  public boolean getVerbose()
+  {
+    return verbose;
   }
 
   //}}}
@@ -324,22 +363,24 @@ abstract public class AbstractTool
   public void handleIncomingTerm(ATerm t)
     throws IOException
   {
-    info("tool " + toolname + " handling term from toolbus: " + t);
-    ATerm result = handler(t);
-    if (t.match("rec-terminate(<term>)") != null) {
-      running = false;
-      connected = false;
-    }
+    synchronized (lockObject) {
+      info("tool " + toolname + " handling term from toolbus: " + t);
+      ATerm result = handler(t);
+      if (t.match("rec-terminate(<term>)") != null) {
+	running = false;
+	connected = false;
+      }
 
-    if (t.match("rec-do(<term>)") != null) {
-      sendTerm(termSndVoid);
-    } else if (result != null) {
-      sendTerm(result);
-    }
+      if (t.match("rec-do(<term>)") != null) {
+	sendTerm(termSndVoid);
+      } else if (result != null) {
+	sendTerm(result);
+      }
 
-    List terms = t.match("rec-ack-event(<term>)");
-    if (terms != null) {
-      ackEvent((ATerm)terms.get(0));
+      List terms = t.match("rec-ack-event(<term>)");
+      if (terms != null) {
+	ackEvent((ATerm)terms.get(0));
+      }
     }
   }
 

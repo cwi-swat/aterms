@@ -9,6 +9,8 @@ import aterm.*;
 public interface Tool
 {
   public void init(String[] args) throws UnknownHostException;
+  public void setLockObject(Object obj);
+  public Object getLockObject();
   public void connect() throws IOException;
   public void connect(String toolname, InetAddress address, int port)
     throws IOException;

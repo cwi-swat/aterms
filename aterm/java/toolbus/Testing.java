@@ -26,7 +26,7 @@ public class Testing
     bridge.run();
   }
 
-  public void listtest(ATermList l0)
+  public void listtest(ATerm l0)
   {
     System.out.println("listtest: " + l0);
     bridge.sendEvent(factory.parse("test-event(1{[key,val]})"));
