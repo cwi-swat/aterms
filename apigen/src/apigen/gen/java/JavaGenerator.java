@@ -1,6 +1,7 @@
 package apigen.gen.java;
 
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 import apigen.adt.Alternative;
@@ -38,7 +39,7 @@ public abstract class JavaGenerator extends Generator {
 		boolean verbose) {
 		super(directory, filename, ".java", verbose, false);
 		this.pkg = pkg;
-	    this.imports = standardImports;
+	    this.imports = new LinkedList(standardImports);
 	}
 
 	protected void printImports() {

@@ -6,10 +6,11 @@ import java.util.List;
 import apigen.adt.ADT;
 import apigen.adt.Alternative;
 import apigen.adt.Type;
-import apigen.gen.StringConversions;
 
 public class VisitorGenerator extends JavaGenerator {
 	private ADT adt;
+    private String apiName; 
+    private String className;
 
 	public VisitorGenerator(
 		ADT adt,
@@ -21,17 +22,19 @@ public class VisitorGenerator extends JavaGenerator {
 		boolean folding) {
 		super(directory, className(apiName), pkg, standardImports, verbose);
 		this.adt = adt;
+        this.apiName = apiName;
+        className = className(apiName);
+        
 	}
 
 	public static String className(String apiName) {
-		return StringConversions.capitalize(apiName) + "Visitor";
+		return  "Visitor";
 	}
 
 	protected void generate() {
 		printPackageDecl();
-		printImports();
-
-		println("public abstract class Visitor extends jjtraveler.VoidVisitor implements jjtraveler.Visitor);");
+	
+		println("public abstract class " + className + " extends jjtraveler.VoidVisitor");
 		println("{");
 		genVoidVisit();
 		genVisits(adt);
@@ -51,14 +54,19 @@ public class VisitorGenerator extends JavaGenerator {
 	}
 
 	private void genVisit(Type type, Alternative alt) {
-		String className = AlternativeGenerator.className(type, alt);
-		println("public abstract void visit_" + className + "(" + className + " arg ) throws jjtraveler.VisitFailure;");
+		String classImplName = AlternativeImplGenerator.className(type, alt);
+        String className = AlternativeGenerator.className(type, alt);
+        
+		println("public abstract void visit_" + className + "(" + classImplName + " arg ) throws jjtraveler.VisitFailure;");
 	}
 
 	private void genVoidVisit() {
-		println("public void voidVisit(jjtraveler.Visitor any) {");
-		println("if (any instanceof Visitable) {");        println("      ((Visitable) any).accept(this);");        println("    } else {");        println("      throw new jjtraveler.VisitFailure();");        println("    }");        println("  }");
-		println("}");
+        String visitable = GenericConstructorGenerator.className(apiName);
+        
+        //TODO Make the visitor in the else branch a variation point, by adding an instance variable
+        //in the visitable class which can be set via its constructor method (and per default Failure)
+        
+		println("  public void voidVisit(jjtraveler.Visitable any) throws jjtraveler.VisitFailure {");
+		println("    if (any instanceof " + visitable + ") {");        println("        ((" + visitable +") any).jjtAccept(this);");        println("    } else {");        println("      throw new jjtraveler.VisitFailure();");        println("    }");        println("  }");
 	}
-
 }

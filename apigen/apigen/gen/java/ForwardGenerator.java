@@ -25,7 +25,7 @@ public class ForwardGenerator extends JavaGenerator {
 	}
 
 	public static String className(String apiName) {
-		  return StringConversions.capitalize(apiName + "Fwd");
+		  return StringConversions.capitalize("Fwd");
 	}
 	 
 	protected void genVisits(ADT adt) {
@@ -42,7 +42,9 @@ public class ForwardGenerator extends JavaGenerator {
 
 	private void genVisit(Type type, Alternative alt) {
         String className =  AlternativeGenerator.className(type,alt);
-		println("public void visit_" + className + "(" + className + " arg ) throws jjtraveler.VisitFailure {");
+        String classImplName =  AlternativeImplGenerator.className(type,alt);
+        
+		println("public void visit_" + className + "(" + classImplName + " arg ) throws jjtraveler.VisitFailure {");
         println("  any.visit(arg);");
         println("}");
 		
@@ -50,8 +52,7 @@ public class ForwardGenerator extends JavaGenerator {
 
 	protected void generate() {
 		printPackageDecl();
-		printImports();
-        
+		
         println("class Fwd extends Visitor implements jjtraveler.Visitor");
         println("{");
         genConstructor();

@@ -60,7 +60,7 @@ public class MakeRulesGenerator extends  Generator {
 	protected void printAccumulatedVariable() {
 		print(prefix + "=\\\n" + 
 		getClassFileName(FactoryGenerator.className(name)) + " " + 
-		getClassFileName(GenericConstructorGenerator.getConstructorClassName(name)) + "\\\n");
+		getClassFileName(GenericConstructorGenerator.className(name)) + "\\\n");
 		
 		while(--bucket >= 0) {
 		  print("${" + prefix + bucket + "} ");

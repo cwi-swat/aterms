@@ -13,14 +13,14 @@ public class GenericConstructorGenerator extends JavaGenerator {
     
 	public GenericConstructorGenerator(String directory, String apiName, String pkg, boolean verbose, boolean visitable) {
 		
-		super(directory,getConstructorClassName(apiName),pkg,new LinkedList(),verbose); 
+		super(directory,className(apiName),pkg,new LinkedList(),verbose); 
 		
         this.visitable = visitable;
-		className = getConstructorClassName(apiName);
+		className = className(apiName);
 		factoryName = FactoryGenerator.className(apiName);
 	}
 	
-	public static String getConstructorClassName(String apiName) {
+	public static String className(String apiName) {
 			return StringConversions.makeCapitalizedIdentifier(apiName) + "Constructor";
 	}
     
@@ -66,6 +66,13 @@ public class GenericConstructorGenerator extends JavaGenerator {
 		println("    return (" + factoryName + ") getStaticFactory();");
 		println("  }");
 		println();
+        if (visitable) {
+          genAccept();
+        }
 		println("}");
 	  }
+      
+      private void genAccept() {
+          println("  abstract public void jjtAccept(Visitor v) throws jjtraveler.VisitFailure;"); 
+      }
 }

@@ -29,6 +29,7 @@ public class TypeImplGenerator extends JavaGenerator {
 
 	protected void generate() {
 		printPackageDecl();
+        
 	    imports.add("java.io.InputStream");
 	    imports.add("java.io.IOException");
 	   
@@ -44,7 +45,7 @@ public class TypeImplGenerator extends JavaGenerator {
 		String get_factory = "getStatic" + FactoryGenerator.className(apiName) + "()";
        
 			println("abstract public class " + class_impl_name + " extends " + 
-			GenericConstructorGenerator.getConstructorClassName(apiName));
+			GenericConstructorGenerator.className(apiName));
 			println("{");
 
 			println("  static " + class_name + " fromString(String str)");

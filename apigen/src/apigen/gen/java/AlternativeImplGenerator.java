@@ -55,7 +55,6 @@ public class AlternativeImplGenerator extends JavaGenerator {
 	protected void generate() {
 		
 		printPackageDecl();
-		printImports();
 		genAlternativeClassImpl(type, alt);
 	}
 
@@ -71,7 +70,7 @@ public class AlternativeImplGenerator extends JavaGenerator {
 
 	  private void genAlternativeClassImpl(Type type, Alternative alt)
 	  {
-	    println("public class " + className);
+	    println("abstract public class " + className);
 	    println("extends " + typeId);
 	    if (visitable) {
 	      println("implements jjtraveler.Visitable");
@@ -195,7 +194,7 @@ public class AlternativeImplGenerator extends JavaGenerator {
 			  println("      args.add((aterm.ATerm) getArgument(" + i + "));");
 			}
 			else {
-			  println("      args.add(((" + GenericConstructorGenerator.getConstructorClassName(apiName) + ") getArgument(" + i + ")).toTerm());");
+			  println("      args.add(((" + GenericConstructorGenerator.className(apiName) + ") getArgument(" + i + ")).toTerm());");
 			}
 		  }
 		  println("      setTerm(getFactory().make(getPattern(), args));");
@@ -446,14 +445,13 @@ public class AlternativeImplGenerator extends JavaGenerator {
 		println();
 		}
 
-	  // TODO: fix jjtraveler interface here
 	  private void genAltVisitableInterface(Type type, Alternative alt)
 	  {
 		String altClassName = AlternativeGenerator.className( type,alt );
 
-		println("  public void accept(jjtraveler.Visitor v) throws jjtraveler.VisitFailure");
+		println("  public void jjtAccept(Visitor v) throws jjtraveler.VisitFailure");
 		println("  {");
-		println("    v.visit" + altClassName + "(this);");
+		println("    v.visit_" + altClassName + "(this);");
 		println("  }");
 		println();
 	 }
