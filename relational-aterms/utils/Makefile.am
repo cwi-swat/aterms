@@ -1,4 +1,5 @@
 
+CLEANFILES = ${PACKAGE}-config
 
 bin_SCRIPTS = ${PACKAGE}-config
 

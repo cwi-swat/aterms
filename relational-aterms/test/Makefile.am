@@ -1,7 +1,9 @@
 
-AM_CFLAGS = -Wall -pedantic -g -O2
+AM_CFLAGS = -Wall -pedantic -g -O2 -DSRCDIR=\"$(srcdir)\"
 
 TESTS = test pico
+
+EXTRA_DIST = fac.ast
 
 INCLUDES = \
         -I$(top_srcdir)/src \

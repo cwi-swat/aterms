@@ -140,7 +140,7 @@ int main(int argc, char **argv) {
   ATinit(argc, argv, &bottomOfStack);
   ATR_init();
 
-  fac = ATreadFromNamedFile("fac.ast");
+  fac = ATreadFromNamedFile(SRCDIR "/fac.ast");
   
   ATprintf("fac ast: %t\n\n", fac);
   fac = makeEachNodeUnique(fac);
