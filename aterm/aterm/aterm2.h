@@ -156,6 +156,9 @@ ATerm     ATdictGet(ATerm dict, ATerm key);
 ATerm     ATdictPut(ATerm dict, ATerm key, ATerm value);
 ATerm     ATdictRemove(ATerm dict, ATerm key);
 
+/* Higher order functions */
+ATermList ATfilter(ATermList list, ATbool (*predicate)(ATerm));
+
 /* The ATermPlaceholder type */
 ATermPlaceholder ATmakePlaceholder(ATerm type);
 /*ATerm            ATgetPlaceholder(ATermPlaceholder ph);*/

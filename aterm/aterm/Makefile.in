@@ -1,45 +1,73 @@
+PRODUCT		= @PRODUCT@
+VERSION		= @VERSION@
 
-PRODUCT		= aterm
-VERSION		= 0.0.5
+srcdir		= @srcdir@
+top_srcdir	= @top_srcdir@
+prefix		= @prefix@
+exec_prefix	= @exec_prefix@
+bindir      = $(exec_prefix)/bin
+libdir      = $(exec_prefix)/lib
+includedir  = $(prefix)/include
+
+CC_GCC		= @CC_GCC@
+CC_CC		= @CC_CC@
+CC_DBG		= @CC_DBG@
+CC_PROF		= @CC_PROF@
+
+CFLAGS_CC	= @CFLAGS_CC@
+CFLAGS_GCC	= @CFLAGS_GCC@
+CFLAGS_DBG	= @CFLAGS_DBG@
+CFLAGS_PROF	= @CFLAGS_PROF@
+
+DEFS_CC		= @DEFS_CC@
+DEFS_GCC	= @DEFS_GCC@
+DEFS_DBG	= @DEFS_DBG@
+DEFS_PROF	= @DEFS_PROF@
+
+INCL_CC		= @INCL_CC@
+INCL_GCC	= @INCL_GCC@
+INCL_DBG	= @INCL_DBG@
+INCL_PROF	= @INCL_PROF@
+
+LFLAGS_CC	= @LFLAGS_CC@
+LFLAGS_GCC	= @LFLAGS_GCC@
+LFLAGS_DBG	= @LFLAGS_DBG@
+LFLAGS_PROF	= @LFLAGS_PROF@
+
+AR			= @AR@
+AR_FLAGS	= cr
+
+INSTALL		= @INSTALL@
+INSTALL_PRG	= @INSTALL_PRG@
+INSTALL_DAT	= @INSTALL_DAT@
 
 ATERMSRCS	= aterm.c list.c make.c memory.c symbol.c gc.c
 ATERMLIBS	= libATerm-gcc.a libATerm-cc.a libATerm-dbg.a libATerm-prof.a
-
-CC_CC		= cc
-CC_GCC		= gcc
-CC_DBG		= ${CC_GCC}
-CC_PROF		= ${CC_GCC}
-
-CFLAGS_CC	= -O ${DEFS_CC} ${INCL_CC}
-#CFLAGS_CC      = -g ${DEFS_CC} ${INCL_CC}
-CFLAGS_GCC	= -Wall -pedantic -O4 ${DEFS_GCC} ${INCL_GCC}
-CFLAGS_DBG	= -Wall -pedantic -g ${DEFS_DBG} ${INCL_DBG}
-CFLAGS_PROF	= -Wall -pedantic -pg ${DEFS_PROF} ${INCL_PROF}
-
-DEFS_CC		= -DVERSION="\"$(VERSION)\"" -DNDEBUG -DGC_ON
-DEFS_GCC	= -DVERSION="\"$(VERSION)\"" -DNDEBUG -DGC_ON
-DEFS_DBG	= -DVERSION="\"$(VERSION)\"" -DDEBUG_ALL -DGC_ON
-DEFS_PROF	= -DVERSION="\"$(VERSION)\"" -DDEBUG_ALL -DGC_ON
-
-INCL_CC		=
-INCL_GCC	=
-INCL_DBG	=
-INCL_PROF	=
-
-LFLAGS_CC	=
-LFLAGS_GCC	=
-LFLAGS_DBG	= -g
-LFLAGS_PROF	= -pg
+PUBLIC_INCL	= abool.h aterm1.h aterm2.h deprecated.h encoding.h symbol.h
+PRIVATE_INCL	= _aterm.h debug.h gc.h list.h make.h memory.h util.h
+ATERMINCL	= ${PUBLIC_INCL} ${PRIVATE_INCL}
+DISTFILES	= Makefile.in ${ATERMSRCS} ${ATERMINCL}
 
 OBJ_CC		= $(patsubst %.c,%-cc.o,$(ATERMSRCS))
 OBJ_GCC		= $(patsubst %.c,%-gcc.o,$(ATERMSRCS))
 OBJ_DBG		= $(patsubst %.c,%-dbg.o,$(ATERMSRCS))
 OBJ_PROF	= $(patsubst %.c,%-prof.o,$(ATERMSRCS))
 
-AR		= ar
-AR_FLAGS	= cr
-
 all: $(ATERMLIBS)
+
+clean:
+	@CLEAN@
+
+dist: ${DISTFILES}
+	@cp ${DISTFILES} ${DISTDIR}	
+
+install: ${ATERMLIBS} ${PUBLIC_INCL}
+	@for file in ${ATERMLIBS}; do \
+		${INSTALL_DAT} $$file ${libdir}; \
+	done
+	@for file in ${PUBLIC_INCL}; do \
+		${INSTALL_DAT} $$file ${includedir}; \
+	done
 
 %-cc.o: %.c
 	${CC_CC} ${CFLAGS_CC} -c -o $@ $<
@@ -64,9 +92,6 @@ libATerm-dbg.a: ${OBJ_DBG}
 
 libATerm-prof.a: ${OBJ_PROF}
 	${AR} ${AR_FLAGS} $@ ${OBJ_PROF}
-
-clean:
-	rm -f $(ATERMLIBS) *.o *~ core
 
 tag:
 	ctags -t *.[ch]

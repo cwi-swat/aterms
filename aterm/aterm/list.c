@@ -508,6 +508,42 @@ ATerm ATdictRemove(ATerm dict, ATerm key)
 }
 
 /*}}}  */
+/*{{{  ATermList ATfilter(ATermList list, ATbool (*predicate)(ATerm)) */
+
+/**
+	* Filter elements from a list.
+	*/
+
+ATermList ATfilter(ATermList list, ATbool (*predicate)(ATerm))
+{
+  int i = 0;
+  ATerm el = NULL;
+  ATermList l = list;
+	ATbool found = ATfalse;
+
+  while(!ATisEmpty(l)) {
+    el = ATgetFirst(l);
+    l = ATgetNext(l);
+		if(predicate(el)) {
+			if(i >= buffer_size) 
+				resize_buffer(i*2);
+			buffer[i++] = el;
+		} else
+			found = ATtrue;
+  }
+
+	if(!found)
+		return list;
+
+	/* Add all elements prior to this one to the tail of the list. */
+	list = ATempty;
+	for(--i; i>=0; i--)
+		list = ATinsert(list, buffer[i]);
+
+  return list;		
+}
+
+/*}}}  */
 
 /*{{{  ATermList ATgetArguments(ATermAppl appl) */
 

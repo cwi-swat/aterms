@@ -399,14 +399,10 @@ ATerm AT_allocate(int size)
 
 	while (!at_freelist[size])
 	{
-#ifdef GC_ON
 		int total = at_nrblocks[size]*(BLOCK_SIZE/size);
 		/*printf("alloc_since_gc[%d] = %d, total=%d\n", size,
 					 alloc_since_gc[size], total);*/
 		if((100*alloc_since_gc[size]) <= GC_THRESHOLD*total) {
-#else
-			if(1) {
-#endif
 				allocate_block(size);
 		} else {
 			gc_count++;
