@@ -11,8 +11,13 @@ exec_prefix = @exec_prefix@
 bindir      = $(exec_prefix)/bin
 libdir      = $(exec_prefix)/lib
 includedir  = $(prefix)/include
+classdir	= ${prefix}/classes
+
+SUBDIR_JAVA	= @SUBDIR_JAVA@
 
 DIRS		= aterm toolbus asfix test
+SUBDIRS		= ${DIRS} ${SUBDIR_JAVA}
+DISTDIRS	= ${DIRS} java1.2 doc
 DISTDIR		= ${PRODUCT}-${VERSION}
 DISTFILE	= ${DISTDIR}.tar.gz
 TMPDIR		= /tmp
@@ -24,7 +29,7 @@ INSTALL_PRG	= @INSTALL_PRG@
 DISTFILES	= configure.in configure Makefile.in install-sh
 
 all:
-	@for dir in ${DIRS}; \
+	@for dir in ${SUBDIRS}; \
 	do \
 		echo "make all in $$dir"; \
 		cd $$dir; ${MAKE} -s all; \
@@ -33,7 +38,7 @@ all:
 
 clean:
 	@${CLEAN}
-	@for dir in ${DIRS}; \
+	@for dir in ${SUBDIRS}; \
 	do \
 		echo "make clean in $$dir"; \
 		cd $$dir; ${MAKE} -s clean; \
@@ -55,17 +60,17 @@ dist: all
 	${INSTALL_DAT} TODO.txt  ${TMPDIR}/${DISTDIR}; \
 	cd ${TMPDIR}; \
 	cd ${DISTDIR}; \
-	mkdir ${DIRS}; \
+	mkdir ${DISTDIRS}; \
 	cd $$pwd; \
-	for dir in "${DIRS} doc"; \
+	for dir in ${DISTDIRS}; \
 	do \
 		cd $$pwd/$$dir; ${MAKE} -s DISTDIR=${TMPDIR}/${DISTDIR}/$$dir dist; \
 	done; \
 	cd ${TMPDIR}; tar cf - ${DISTDIR} | gzip -c > $$pwd/${DISTFILE}
 
 install: all
-	@mkdir -p ${bindir} ${libdir} ${includedir}
-	@for dir in ${DIRS}; \
+	@mkdir -p ${bindir} ${libdir} ${includedir} ${classdir}
+	@for dir in ${SUBDIRS}; \
 	do \
 		echo "make install in $$dir"; \
 		cd $$dir; ${MAKE} -s install; \
@@ -73,9 +78,10 @@ install: all
 	done
 
 tag:
-	@for dir in ${DIRS}; \
+	@for dir in ${SUBDIRS}; \
 	do \
 		echo "make tag in $$dir"; \
 		cd $$dir; ${MAKE} -s tag; \
 		cd ..; \
 	done
+

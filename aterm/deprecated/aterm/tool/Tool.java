@@ -113,7 +113,7 @@ abstract public class Tool implements Runnable
 
   //}
 
-  //{ public connect()
+  //{ public void connect()
 
   public void connect()
        throws IOException, ToolException

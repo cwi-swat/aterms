@@ -57,7 +57,6 @@ public class World
     this.table_size = table_size;
     this.pattern_cache_size = pattern_cache_size;
     
-    System.err.println("table-size: " + table_size);
     table = new HashedWeakRef[table_size];
     pattern_strings = new String[pattern_cache_size];
     pattern_terms   = new ATerm[pattern_cache_size];

@@ -1,6 +1,6 @@
 // Java tool interface class Testing
 // This file is generated automatically, please do not edit!
-// generation time: 20-Nov-98 4:45:48 PM
+// generation time: May 6, 1999 4:37:19 PM
 
 package aterm.tool;
 import aterm.*;
@@ -39,7 +39,7 @@ abstract public class Testing extends Tool
       sigTable.put(world.parse("rec-terminate(<testing>,<term>)"), new Boolean(true));
       sigTable.put(world.parse("rec-ack-event(<testing>,<term>)"), new Boolean(true));
       sigTable.put(world.parse("rec-eval(<testing>,question(square))"), new Boolean(true));
-      sigTable.put(world.parse("rec-do(<testing>,testit(<str>,f(<int>)))"), new Boolean(true));
+      sigTable.put(world.parse("rec-do(<testing>,testit(<str>,f([<int>])))"), new Boolean(true));
       sigTable.put(world.parse("rec-do(<testing>,testit(<str>,<int>))"), new Boolean(true));
       sigTable.put(world.parse("rec-do(<testing>,testit(<str>))"), new Boolean(true));
     } catch (ParseError e) { }

@@ -63,6 +63,11 @@ elif test ${CC_PROF} = cc; then
 	LFLAGS_PROF=-xpg
 fi
 
+AC_ARG_WITH(java,
+[  --with-java    with Java support. Note that only jdk-1.2 (Java-2) is supported!],
+SUBDIR_JAVA=java1.2,
+)
+
 AC_ARG_WITH(64bit,
 [  --with-64bit   create 64 bit cc version of the library (libAterm-cc64.a)],
 LIB_CC64=libATerm-cc64.a,
@@ -99,6 +104,7 @@ AC_SUBST(LFLAGS_CC64)
 AC_SUBST(LFLAGS_GCC)
 AC_SUBST(LFLAGS_DBG)
 AC_SUBST(LFLAGS_PROF)
+AC_SUBST(SUBDIR_JAVA)
 
 CLEAN="rm -f *~ a.out core *.o *.dvi *.log *.aux lib*.a"
 AC_SUBST(CLEAN)
@@ -131,5 +137,7 @@ AC_OUTPUT( \
 	aterm/Makefile \
 	test/Makefile \
 	toolbus/Makefile \
+	java1.2/Makefile java1.2/aterm/Makefile \
+	java1.2/aterm/tool/Makefile java1.2/aterm/util/Makefile \
 	, )
 

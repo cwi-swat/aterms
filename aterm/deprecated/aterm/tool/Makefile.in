@@ -1,0 +1,57 @@
+
+PRODUCT     = @PRODUCT@
+VERSION     = @VERSION@
+CLEAN       = @CLEAN@
+@SET_MAKE@
+
+srcdir      = @srcdir@
+top_srcdir  = @top_srcdir@
+prefix      = @prefix@
+exec_prefix = @exec_prefix@
+bindir      = $(exec_prefix)/bin
+libdir      = $(exec_prefix)/lib
+includedir  = $(prefix)/include
+classdir    = ${prefix}/classes
+
+INSTALL     = @INSTALL@
+INSTALL_DAT = @INSTALL_DAT@
+INSTALL_PRG = @INSTALL_PRG@
+
+SCRIPTS		= tifstojava
+DISTFILES   = Makefile.in test.tb test.tifs ${SCRIPTS} ${SOURCE}
+
+SOURCE = Testing.java JavaTif.java ToolBusChannel.java TestTool.java \
+		TestingTool.java ToolException.java \
+		Test.java Testing.java Tool.java 
+
+CLASSES	= $(patsubst %.java,%.class,$(SOURCE))
+
+all: ${CLASSES}
+
+Testing.java: test.tifs JavaTif.class
+	java -classpath ../..:$$CLASSPATH aterm.tool.JavaTif \
+			-tool testing -tifs test.tifs -package aterm.tool -class Testing
+
+%.tifs: %.tb
+	toolbus -gentifs $<
+
+%.class: %.java
+	javac -O -classpath ../..:$$CLASSPATH $<
+
+test: ${CLASSES}
+
+clean:
+	@rm -f ${CLASSES} Testing.java *~ core
+
+install: ${CLASSES}
+	@mkdir -p ${classdir}/aterm/tool
+	@for file in ${CLASSES}; do \
+		${INSTALL_DAT} $$file ${classdir}/aterm/tool; \
+	done
+	@for file in ${SCRIPTS}; do \
+		${INSTALL_PRG} $$file ${bindir}; \
+	done
+
+dist:
+	@cp ${DISTFILES} ${DISTDIR}
+

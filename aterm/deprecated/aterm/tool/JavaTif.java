@@ -32,14 +32,11 @@ public class JavaTif
 				pkg = args[++i];
       if(args[i].equals("-class"))
 				javaclass = args[++i];
-      if(args[i].equals("-output"))
-				output = args[++i];
     }
 
     if(tool == null || tifsfile == null)
       System.err.println("usage: javatif -tool <tool> -tifs <tifs> " +
-			 "[-class <class>][-output <file>]" +
-			 "[-package <package>]");
+			 "[-class <class>] [-package <package>]");
     else {
       if(javaclass == null)
         javaclass = TifGenerator.capitalize(tool, true) + "Tif";

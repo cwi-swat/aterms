@@ -23,7 +23,7 @@ public class TestingTool extends Testing
 
   void testit(String s0, ATermAppl a1)
   {
-    System.out.print("testit-3 called: s0=" + s0 + "a1=");
+    System.out.print("testit-3 called: s0=" + s0 + ", a1=");
     a1.println(System.out);
   }
 
@@ -33,7 +33,7 @@ public class TestingTool extends Testing
     System.out.print("question called: a0=");
     a0.println(System.out);
     try {
-      R = ATerm.the_world.parse("snd-value(answer(f(4, 3.2){[label,val]}))");
+      R = ATerm.the_world.parse("snd-value(answer(f([4], 3.2){[label,val]}))");
     } catch (ParseError e) { System.err.println("parse failure!"); }
     return R;
   }

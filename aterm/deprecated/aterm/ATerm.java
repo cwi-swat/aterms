@@ -334,6 +334,7 @@ public abstract class ATerm
 		try {
 			print(writer);
 			writer.write('\n');
+			writer.flush();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -367,6 +368,7 @@ public abstract class ATerm
 		try {
 			print(stream);
 			stream.write('\n');
+			stream.flush();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
