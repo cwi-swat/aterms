@@ -247,11 +247,7 @@ an integer is expected as argument and a new integer ATerm is constructed.
 
 \item 
 \begin{sloppypar}
-{\tt ATbool ATmatch(ATerm $t$, String $p$, ATerm $a_1$, ..., ATerm $a_n$)}:
-XXX Eigenlijk moet dit zijn:
-{\tt ATbool ATmatch(ATerm $t$, String $p$, ref ATerm $a_1$, ..., ref ATerm $a_n$)}:
-om aan te geven dat de $a_i$s variabelen zijn.
-XXX
+{\tt ATbool ATmatch(ATerm $t$, String $p$, ATerm *$a_1$, ..., ATerm *$a_n$)}:
 
 Match term $t$ against
 pattern $p$, and bind subterms that match with placeholders in
@@ -1005,8 +1001,8 @@ Several real-life cases are used that are based on actual applications:
 
 \begin{description}
 \item[COBOL Parse Table:] a generated parse table for COBOL including
-embedded SQL and CICS.  The grammar consists of 1885 productions and
-the generated automaton has 6151 states.  The parse table contains an
+embedded SQL and CICS.  The grammar consists of 2009 productions and
+the generated automaton has 6699 states.  The parse table contains an
 action-table (218592 non-empty entries) and a goto-table (95245
 non-empty entries).  This is an example of an abstract data type
 represented as \ATerm.
@@ -1022,6 +1018,13 @@ language, a domain specific language for describing financial products
 \cite{ADR95}.
 This component library consists of 10832 lines of code.
 
+\item[Casl specifications:] a collection of abstract syntax trees 
+represented as \aterms\ of
+98 Casl files,
+the total number of lines of Casl code is 2506.
+For more details on Casl and the abstract syntax tree representation
+in \aterm\ we refer to Section \ref{casfix}. 
+
 \item[LPO:] a linear process operator (LPO) describing the ``firewire''
 protocol with 1 bus and 9 links \cite{GL99, Lut99}.
 LPOs are the kernel of the $\mu$CRL ToolKit \cite{DG95}
@@ -1036,7 +1039,7 @@ These states are represented as \aterms, and are rather complex.
 \end{description}
 
 \noindent Measurements were performed on an ULTRA SPARC-5 (270 MHz) with 256 Mb
-of memory. All times measured are the user CPU time for that particular job.
+of memory. All times measured are the user CPU time for that particular job. 
 
 
 \subsection{Measurements}
@@ -1619,15 +1622,10 @@ quite similar, exchanging syntax trees between tools, although
 \aterms\ are more general in the sense that other types of
 information, such as unstructured binary objects and annotations, can
 also be represented as an \aterm.  Everything that can be represented
-by a grammar can both be represented in \aterms\ as well as ASDL.
+by a grammar can be represented in \aterms\ as well as ASDL.
 
 ASDL pickles and the BAF format for \aterms\ are comparable with respect to
 functionality, both are binary representations of (among others) syntax trees.
-There are, however, some differences.  Before a tool can process a tree
-obtained as an ASDL pickle, it has to unpickle it, which may require quite
-some memory. \textbf{XXX, maar BAF moet ook eerst geconveteerd worden
-naar intern term formaat.}
- 
 The pickle and unpickle functions are generated
 from the ASDL description and are thus application specific (this may be more
 efficient) whereas the reading and writing of BAF is entirely generic (this
@@ -1657,7 +1655,7 @@ COBOL Parse Table & 4212633 & 213683 & 2507957 \\ \hline
 \item \emph{High level}: compare at the level of parse trees or abstract syntax trees.
 ASDL is typically used to represent abstract syntax trees while
 \aterms\ can be used to represent both as we have discussed in
-Section~\ref{asfix-casfix}. To make a meaningfull comparison, we
+Section~\ref{asfix-casfix}. To make a meaningful comparison, we
 compare ASDL pickles with \asfix.  By providing an ASDL definition of
 \asfix\ we can compare the size of the same object in \asfix\ (\ascii\
 and BAF) and as ASDL pickle. This is done in Table \ref{asdlaterm2}
