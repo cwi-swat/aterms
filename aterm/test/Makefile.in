@@ -88,7 +88,10 @@ vararg1: vararg1.c
 	${CC_DBG} ${CFLAGS_DBG} ${INCL} ${LFLAGS} -o vararg1 vararg1.c ${LIBS_DBG}
 
 vararg2: vararg2.c
-	${CC_DBG} ${CFLAGS_DBG} ${INCL} ${LFLAGS} -o vararg2 vararg1.c ${LIBS_DBG}
+	${CC_DBG} ${CFLAGS_DBG} ${INCL} ${LFLAGS} -o vararg2 vararg2.c ${LIBS_DBG}
+
+vararg3: vararg3.c
+	${CC_DBG} ${CFLAGS_DBG} ${INCL} ${LFLAGS} -o vararg3 vararg3.c ${LIBS_DBG}
 
 test-tool: test-tool.c
 	$(CC_DBG) $(CFLAGS_DBG) $(INCL) $(LFLAGS) -o test-tool test-tool.c \

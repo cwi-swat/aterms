@@ -571,6 +571,12 @@ void testAnno(void)
 
   test_assert("anno", 6, ATisEqual(ATremoveAnnotation(t[0], label), term));
 
+	t[5] = ATparse("test-anno{[label,unique_anno(42)]}");
+	test_assert("anno", 7, ATgetAnnotation(t[5], ATparse("label")) != NULL);
+	AT_collect(2);
+	test_assert("anno", 8, ATisEqual(ATgetAnnotation(t[5],ATparse("label")),
+																	 ATparse("unique_anno(42)")));
+
   printf("annotation tests ok.\n");
 }
 
@@ -694,12 +700,15 @@ void testTable()
 }
 
 /*}}}  */
+/*{{{  void testBaffle() */
 
 void testBaffle()
 {
 	test_assert("baffle", 1, AT_calcUniqueSubterms(ATparse("f(a,[1])")) == 4);
 	printf("baffle tests ok.\n");
 }
+
+/*}}}  */
 
 /*{{{  int main(int argc, char *argv[]) */
 

@@ -2,28 +2,27 @@
 #include <stdio.h>
 #include <stdarg.h>
 
-va_list va_argtest(va_list args)
+va_list args;
+
+void va_argtest()
 {
 	printf("arg: %s\n", va_arg(args, char *));
-	return args;
 }
 
-void va_listtest(int nr, va_list args)
+void va_listtest(int nr)
 {
 	int i;
 
 	for(i=0; i<nr; i++) {
-		args = va_argtest(args);
+		va_argtest();
 	}
 	printf("%d arguments.\n", nr);
 }
 
 void va_test(int nr, ...)
 {
-  va_list args;
-
   va_start(args, nr);
-  va_listtest(nr, args);
+  va_listtest(nr);
   va_end(args);
 }
 
