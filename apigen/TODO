@@ -1,18 +1,15 @@
 Both versions:
-* Extend adt formalism with separated lists
 * Extend adt formalism with support for aterm annotations like:
   annotation(posinfo, Area) which declares that the annotation with
   label posinfo has type Area. Normal adt entries can then be used to
   define the Area type. Every sort should receive a hasAttributePosInfo
   or something. Note that this implies an explosion of functions in 
   case there are several annotations...
-* Use lex/yacc for a readable less abstract version of the adt formalism...
+* Use lex/yacc/javacc for a readable less abstract version of the adt formalism...
+* support list of builtin types
 
 C version:
 
 
 Java version:
-
-* builtin integer arguments should appear as 'int' not 'Integer' in the
-  make functions 
 * make reverse and concat for normal lists
