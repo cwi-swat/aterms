@@ -809,6 +809,21 @@ void AT_writeToStringBuffer(ATerm t, char *buffer)
 
 /*}}}  */
 
+/*{{{  static void store_char(int char) */
+
+/**
+	* Store a single character in the buffer
+	*/
+
+static void store_char(int c, int pos)
+{
+	if(pos >= buffer_size)
+		resize_buffer(buffer_size*2); /* Double the space */
+
+	buffer[pos] = c;
+}
+
+/*}}}  */
 /*{{{  static void fnext_char(int *c, FILE *f) */
 
 /**
@@ -891,60 +906,56 @@ static ATermAppl fparse_quoted_appl(int *c, FILE *f)
 
   /* First parse the identifier */
    fnext_char( c, f );
-   while( *c != '"' )
-   {
-      switch( *c )
-      {
-         case EOF:
-            return NULL;
-         case '\\':
-            fnext_char( c, f );
-            if( *c == EOF ) return NULL;
-            switch( *c )
-            {
-               case 'n':
-                  buffer[len++] = '\n';
-                  break;
-               case 'r':
-                  buffer[len++] = '\r';
-                  break;
-               case 't':
-                  buffer[len++] = '\t';
-                  break;
-               default:
-                  /*buffer[len++] = '\\';*/
-                  buffer[len++] = *c;
-                  break;
-            }
-            break;
-         default:
-            buffer[len++] = *c;
-            break;
-      }
-      fnext_char( c, f );
+   while( *c != '"' ) {
+		 switch( *c ) {
+			 case EOF:
+				 return NULL;
+			 case '\\':
+				 fnext_char( c, f );
+				 if( *c == EOF ) return NULL;
+				 switch( *c ) {
+					 case 'n':
+						 store_char('\n', len++);
+						 break;
+					 case 'r':
+						 store_char('\r', len++);
+						 break;
+					 case 't':
+						 store_char('\t', len++);
+						 break;
+					 default:
+						 store_char(*c, len++);
+						 break;
+				 }
+				 break;
+			 default:
+				 store_char(*c, len++);
+				 break;
+		 }
+		 fnext_char( c, f );
    }
-
-  buffer[len] = '\0';
-
-  name = strdup(buffer);
-  if(!name)
-    ATerror("fparse_quoted_appl: symbol to long.");
-
-  fnext_skip_layout(c, f);
-
-  /* Time to parse the arguments */
-  if(*c == '(') {
-    fnext_skip_layout(c, f);
-    args = fparse_terms(c, f);
-    if(args == NULL || *c != ')')
-      return NULL;
-    fnext_skip_layout(c, f);
-  }
-
-  /* Wrap up this function application */
-  sym = ATmakeSymbol(name, ATgetLength(args), ATtrue);
-  free(name);
-  return ATmakeApplList(sym, args);
+	 
+	 store_char('\0', len);
+	 
+	 name = strdup(buffer);
+	 if(!name)
+		 ATerror("fparse_quoted_appl: symbol to long.");
+	 
+	 fnext_skip_layout(c, f);
+	 
+	 /* Time to parse the arguments */
+	 if(*c == '(') {
+		 fnext_skip_layout(c, f);
+		 args = fparse_terms(c, f);
+		 if(args == NULL || *c != ')')
+			 return NULL;
+		 fnext_skip_layout(c, f);
+	 }
+	 
+	 /* Wrap up this function application */
+	 sym = ATmakeSymbol(name, ATgetLength(args), ATtrue);
+	 free(name);
+	 return ATmakeApplList(sym, args);
 }
 
 /*}}}  */
@@ -963,16 +974,16 @@ static ATermAppl fparse_unquoted_appl(int *c, FILE *f)
 
   /* First parse the identifier */
   while(isalnum(*c) || *c == '-' || *c == '_') {
-    buffer[len++] = *c;
+		store_char(*c, len++);
     fnext_char(c, f);
   }
-  buffer[len] = '\0';
+	store_char('\0', len++);
   name = strdup(buffer);
   if(!name)
     ATerror("fparse_unquoted_appl: symbol to long.");
 
   fskip_layout(c, f);
-
+	
   /* Time to parse the arguments */
   if(*c == '(') {
     fnext_skip_layout(c, f);
@@ -981,7 +992,7 @@ static ATermAppl fparse_unquoted_appl(int *c, FILE *f)
       return NULL;
     fnext_skip_layout(c, f);
   }
-
+	
   /* Wrap up this function application */
   sym = ATmakeSymbol(name, ATgetLength(args), ATfalse);
   free(name);
@@ -1211,60 +1222,57 @@ static ATermAppl sparse_quoted_appl(int *c, char **s)
   char *name;
 
   /* First parse the identifier */
-   snext_char( c, s );
-   while( *c != '"' )
-   {
-      switch( *c )
-      {
-         case EOF:
-            return NULL;
-         case '\\':
-            snext_char( c, s );
-            if( *c == EOF ) return NULL;
-            switch( *c )
-            {
-               case 'n':
-                  buffer[len++] = '\n';
-                  break;
-               case 'r':
-                  buffer[len++] = '\r';
-                  break;
-               case 't':
-                  buffer[len++] = '\t';
-                  break;
-               default:
-                  /*buffer[len++] = '\\';*/
-                  buffer[len++] = *c;
-                  break;
-            }
-            break;
-         default:
-            buffer[len++] = *c;
-            break;
-      }
-      snext_char( c, s );
-   }
-
-  buffer[len] = '\0';
-  name = strdup(buffer);
-  if(!name)
-    ATerror("fparse_quoted_appl: symbol to long.");
-
-  snext_skip_layout(c, s);
-
-  /* Time to parse the arguments */
-  if(*c == '(') {
-    snext_skip_layout(c, s);
-    args = sparse_terms(c, s);
-    if(args == NULL || *c != ')')
-      return NULL;
-    snext_skip_layout(c, s);
-  }
-
-  /* Wrap up this function application */
-  sym = ATmakeSymbol(name, ATgetLength(args), ATtrue);
-  free(name);
-  return ATmakeApplList(sym, args);
+	snext_char( c, s );
+	while( *c != '"' ) {
+		switch( *c ) {
+			case EOF:
+				return NULL;
+			case '\\':
+				snext_char( c, s );
+				if( *c == EOF ) return NULL;
+				switch( *c ) {
+					case 'n':
+						store_char('\n', len++);
+						break;
+					case 'r':
+						store_char('\r', len++);
+						break;
+					case 't':
+						store_char('\t', len++);
+						break;
+					default:
+						store_char(*c, len++);
+						break;
+				}
+				break;
+			default:
+				store_char(*c, len++);
+				break;
+		}
+		snext_char( c, s );
+	}
+	
+	store_char('\0', len);
+	
+	name = strdup(buffer);
+	if(!name)
+		ATerror("fparse_quoted_appl: symbol to long.");
+	 
+	snext_skip_layout(c, s);
+	
+	/* Time to parse the arguments */
+	if(*c == '(') {
+		snext_skip_layout(c, s);
+		args = sparse_terms(c, s);
+		if(args == NULL || *c != ')')
+			return NULL;
+		snext_skip_layout(c, s);
+	}
+	
+	/* Wrap up this function application */
+	sym = ATmakeSymbol(name, ATgetLength(args), ATtrue);
+	free(name);
+	return ATmakeApplList(sym, args);
 }
 
 /*}}}  */
@@ -1283,10 +1291,10 @@ static ATermAppl sparse_unquoted_appl(int *c, char **s)
 
   /* First parse the identifier */
   while(isalnum(*c) || *c == '-' || *c == '_') {
-    buffer[len++] = *c;
+		store_char(*c, len++);
     snext_char(c, s);
   }
-  buffer[len] = '\0';
+	store_char('\0', len);
   name = strdup(buffer);
   if(!name)
     ATerror("fparse_unquoted_appl: symbol to long.");
