@@ -7,7 +7,8 @@
 
 CLASSPATH_ENV	= CLASSPATH=${top_srcdir}:$(EXTERNAL_JARS)
 
-java_JAVA       = TomSignatureGenerator.java TomSignatureImplementation.java 
+java_JAVA       = TomSignatureGenerator.java TomSignatureImplementation.java\
+                  TomTypeConversions.java 
 
 javadir         = ${prefix}/classes/apigen/gen/tom
 JAVAROOT	= ${top_builddir}

@@ -3,13 +3,16 @@ package apigen.gen.java;
 import apigen.gen.StringConversions;
 import apigen.gen.TypeConverter;
 import apigen.gen.tom.TomSignatureImplementation;
+import apigen.gen.tom.TomTypeConversions;
 
 public class JavaTomSignatureImplementation implements TomSignatureImplementation {
-	private static TypeConverter converter;
+	private static TypeConverter javaConverter;
+	private static TypeConverter tomConverter;
     private boolean jtype = false;
 
 	static {
-		converter = new TypeConverter(new JavaTypeConversions());
+		javaConverter = new TypeConverter(new JavaTypeConversions());
+		tomConverter = new TypeConverter(new TomTypeConversions());
 	}
 
 	private String api_name;
@@ -20,8 +23,8 @@ public class JavaTomSignatureImplementation implements TomSignatureImplementatio
 	}
 
 	private String buildAltTypeName(String type, String alt) {
-		if (converter.isReserved(type)) {
-			return converter.getType(type);
+		if (tomConverter.isReserved(type)) {
+			return tomConverter.getType(type);
 		}
 		
 		return StringConversions.capitalize(type + "_" + StringConversions.capitalize(alt));
@@ -32,7 +35,7 @@ public class JavaTomSignatureImplementation implements TomSignatureImplementatio
 	}
 
 	public String StringImpl() {
-		return converter.StringType();
+		return javaConverter.StringType();
 	}
 
 	public String StringGetFunSym(String arg1) {
@@ -56,7 +59,7 @@ public class JavaTomSignatureImplementation implements TomSignatureImplementatio
 	}
 
 	public String IntegerImpl() {
-		return converter.IntegerType();
+		return javaConverter.IntegerType();
 	}
 
 	public String IntegerGetFunSym(String arg1) {
@@ -80,7 +83,7 @@ public class JavaTomSignatureImplementation implements TomSignatureImplementatio
 	}
 
 	public String DoubleImpl() {
-		return converter.RealType();
+		return javaConverter.RealType();
 	}
 
 	public String DoubleGetFunSym(String arg1) {
@@ -104,7 +107,7 @@ public class JavaTomSignatureImplementation implements TomSignatureImplementatio
 	}
 
 	public String ATermImpl() {
-		return converter.TermType();
+		return javaConverter.TermType();
 	}
 
 	public String ATermGetFunSym(String arg) {
@@ -129,7 +132,7 @@ public class JavaTomSignatureImplementation implements TomSignatureImplementatio
 	}
 
 	public String ATermListImpl() {
-		return converter.ListType();
+		return javaConverter.ListType();
 	}
 
 	public String ATermListGetFunSym(String arg) {
@@ -148,11 +151,11 @@ public class JavaTomSignatureImplementation implements TomSignatureImplementatio
 	}
 
 	public String TypeName(String type) {
-		if (converter.isReserved(type)) {
-			return converter.getType(type);
+		if (tomConverter.isReserved(type)) {
+			return tomConverter.getType(type);
 		}
 		
-		return StringConversions.makeCapitalizedIdentifier(converter.getType(type));
+		return StringConversions.makeCapitalizedIdentifier(tomConverter.getType(type));
 	}
 
 	public String TypeImpl(String type) {
@@ -230,8 +233,8 @@ public class JavaTomSignatureImplementation implements TomSignatureImplementatio
 		return "l.isEmpty()";
 	}
 
-	public String ListIsList(String type) {
-		return "true";
+	public String ListIsList(String term, String type) {
+		return "(" + term + "!= null) && " + term + ".isSort" + StringConversions.makeCapitalizedIdentifier(type) + "()";
 	}
 
 	public String ListmakeEmpty(String type) {

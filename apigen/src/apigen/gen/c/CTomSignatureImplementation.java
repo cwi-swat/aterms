@@ -232,7 +232,7 @@ public class CTomSignatureImplementation implements TomSignatureImplementation {
 		       "Empty(l)";
 	}
 
-	public String ListIsList(String type) {
+	public String ListIsList(String term, String type) {
 		// TODO Auto-generated method stub
 		return "not yet implemented";
 	}

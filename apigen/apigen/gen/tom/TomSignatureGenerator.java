@@ -170,12 +170,12 @@ public class TomSignatureGenerator extends Generator {
 					impl.ListHead(type.getId()),
 					impl.ListTail(type.getId()),
 					impl.ListEmpty(type.getId())));
-					
-			println("%oplist conc" + type.getId() + "(" + eltType + "*) {");
+			println("");
+			println("%oplist " + type.getId() + " conc" + eltType + "(" + eltType + "*) {");
 			println("  fsym { null }");
-			println("  is_fsym(t) {" + impl.ListIsList(type.getId()) + "}");
+			println("  is_fsym(t) {" + impl.ListIsList("t",type.getId()) + "}");
 			println("  make_empty() {" + impl.ListmakeEmpty(type.getId()) + "}");
-			println("  make_insert(e,l) {" + impl.ListmakeInsert(type.getId(), eltType));
+			println("  make_insert(e,l) {" + impl.ListmakeInsert(type.getId(), eltType) +"}");
 			println("}");
 		} else {
 			println(
