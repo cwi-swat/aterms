@@ -66,6 +66,7 @@ struct _ATermTable;
 typedef struct _ATermTable *ATermIndexedSet;
 typedef struct _ATermTable *ATermTable;
 
+
 /** The following functions implement the operations of
   * the 'standard' ATerm interface, and should appear
   * in some form in every implementation of the ATerm
@@ -236,6 +237,10 @@ ATbool ATdiff(ATerm t1, ATerm t2, ATerm *templ, ATerm *diffs);
 
 void ATsetChecking(ATbool on);
 ATbool ATgetChecking(void);
+
+/*int ATgetGCCount();*/
+extern int at_gc_count;
+#define ATgetGCCount()    (at_gc_count)
 
 int  ATcalcUniqueSubterms(ATerm t);
 int  ATcalcUniqueSymbols(ATerm t);
