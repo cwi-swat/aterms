@@ -126,15 +126,16 @@ equations
   $Attributes = { $Attr*1, cons(at-literal(""" $Char* """)), $Attr*2 },
   $AltId = afun($Char*),
   $TypeId  = sort-to-afun($Sort),
-  $AFProd  = 
-    build-asfix-prod(lex, $ModName, $Symbol*, $Sort, $Attributes, $ConsOption),
+%%  $AFProd  = 
+%%    build-asfix-prod(lex, $ModName, $Symbol*, $Sort, $Attributes, $ConsOption),
   $AFSort    = sort-to-lit($Sort),
-  $FieldType = sort-to-afun($Sort)
+  $FieldType = sort-to-afun($Sort),
+  $AFAttrs   = build-asfix-attrs($Attributes, $ConsOption)
   ===>
   lexical-to-adt($ModName, $Symbol* -> $Sort $Attributes, $ConsOption) = 
 %%    [ $TypeId, $AltId, appl($AFProd,<lex(Lexical)>) ],
     [ $TypeId, lex-to-cf, 
-      appl(prod([lex(sort($AFSort))],cf(sort($AFSort)),no-attrs),
+      appl(prod([lex(sort($AFSort))],cf(sort($AFSort)),$AFAttrs),
            [<lex(Lexical)>])]
 
 [equ-build-list-entries-empty]

@@ -6,6 +6,7 @@ exports
   context-free syntax
     sort-to-lit ( Sort )				-> AT-Literal
 
+    build-asfix-attrs ( Attributes, ConsOption )	-> ATerm
     build-asfix-attrs ( ModuleName, Attributes, ConsOption )	-> ATerm
     build-asfix-attr-list ( { Attribute "," }+, ConsOption )	-> ATerms
     build-asfix-attr ( Attribute, ConsOption )			-> ATerms

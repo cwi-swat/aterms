@@ -68,34 +68,35 @@ SPEC_SRCS1=\
    AUX-Build-AsFix2ME-ADT1.c AUX-Character-Class-Membership5.c\
    AUX-Character-Class-Membership4.c AUX-Character-Class-Membership3.c\
    AUX-Character-Class-Membership2.c AUX-Character-Class-Membership1.c\
-   AUX-Build-General-AsFix2ME-ADT6.c AUX-Build-General-AsFix2ME-ADT5.c\
-   AUX-Build-General-AsFix2ME-ADT4.c AUX-Build-General-AsFix2ME-ADT3.c\
-   AUX-Build-General-AsFix2ME-ADT2.c AUX-Build-General-AsFix2ME-ADT1.c
+   AUX-Build-General-AsFix2ME-ADT7.c AUX-Build-General-AsFix2ME-ADT6.c\
+   AUX-Build-General-AsFix2ME-ADT5.c AUX-Build-General-AsFix2ME-ADT4.c\
+   AUX-Build-General-AsFix2ME-ADT3.c AUX-Build-General-AsFix2ME-ADT2.c
 
 SPEC_SRCS2=\
-   AUX-Character-Arithmetic10.c AUX-Character-Arithmetic9.c\
-   AUX-Character-Arithmetic8.c AUX-Character-Arithmetic7.c\
-   AUX-Character-Arithmetic6.c AUX-Character-Arithmetic5.c\
-   AUX-Character-Arithmetic4.c AUX-Character-Arithmetic3.c\
-   AUX-Character-Arithmetic2.c AUX-Character-Arithmetic1.c\
-   AUX-Character-Class-Syntax8.c AUX-Character-Class-Syntax7.c\
-   AUX-Character-Class-Syntax6.c AUX-Character-Class-Syntax5.c\
-   AUX-Character-Class-Syntax4.c AUX-Character-Class-Syntax3.c\
-   AUX-Character-Class-Syntax2.c AUX-Character-Class-Syntax1.c\
-   AUX-Cons-Options1.c AUX-Sdf21.c AUX-ATerm-Utils8.c AUX-ATerm-Utils7.c\
-   AUX-ATerm-Utils6.c AUX-ATerm-Utils5.c AUX-ATerm-Utils4.c\
-   AUX-ATerm-Utils3.c AUX-ATerm-Utils2.c AUX-ATerm-Utils1.c AUX-Integers11.c\
-   AUX-Integers10.c AUX-Integers9.c AUX-Integers8.c AUX-Integers7.c\
-   AUX-Integers6.c AUX-Integers5.c AUX-Integers4.c AUX-Integers3.c\
-   AUX-Integers2.c AUX-Integers1.c AUX-Character-Normalization1.c\
-   AUX-Character-Syntax7.c AUX-Character-Syntax6.c AUX-Character-Syntax5.c\
-   AUX-Character-Syntax4.c AUX-Character-Syntax3.c AUX-Character-Syntax2.c\
-   AUX-Character-Syntax1.c AUX-Layout1.c AUX-Sdf2-Syntax1.c\
-   AUX-ATerm-Syntax1.c AUX-Booleans6.c AUX-Booleans5.c AUX-Booleans4.c\
-   AUX-Booleans3.c AUX-Booleans2.c AUX-Booleans1.c AUX-Basic-Integers4.c\
-   AUX-Basic-Integers3.c AUX-Basic-Integers2.c AUX-Basic-Integers1.c\
-   AUX-Alias-Sdf-Syntax1.c AUX-Restrictions-Sdf-Syntax1.c\
-   AUX-Label-Sdf-Syntax1.c AUX-Literals-Sdf-Syntax1.c AUX-Sorts-Sdf-Syntax1.c\
+   AUX-Build-General-AsFix2ME-ADT1.c AUX-Character-Arithmetic10.c\
+   AUX-Character-Arithmetic9.c AUX-Character-Arithmetic8.c\
+   AUX-Character-Arithmetic7.c AUX-Character-Arithmetic6.c\
+   AUX-Character-Arithmetic5.c AUX-Character-Arithmetic4.c\
+   AUX-Character-Arithmetic3.c AUX-Character-Arithmetic2.c\
+   AUX-Character-Arithmetic1.c AUX-Character-Class-Syntax8.c\
+   AUX-Character-Class-Syntax7.c AUX-Character-Class-Syntax6.c\
+   AUX-Character-Class-Syntax5.c AUX-Character-Class-Syntax4.c\
+   AUX-Character-Class-Syntax3.c AUX-Character-Class-Syntax2.c\
+   AUX-Character-Class-Syntax1.c AUX-Cons-Options1.c AUX-Sdf21.c\
+   AUX-ATerm-Utils8.c AUX-ATerm-Utils7.c AUX-ATerm-Utils6.c\
+   AUX-ATerm-Utils5.c AUX-ATerm-Utils4.c AUX-ATerm-Utils3.c\
+   AUX-ATerm-Utils2.c AUX-ATerm-Utils1.c AUX-Integers11.c AUX-Integers10.c\
+   AUX-Integers9.c AUX-Integers8.c AUX-Integers7.c AUX-Integers6.c\
+   AUX-Integers5.c AUX-Integers4.c AUX-Integers3.c AUX-Integers2.c\
+   AUX-Integers1.c AUX-Character-Normalization1.c AUX-Character-Syntax7.c\
+   AUX-Character-Syntax6.c AUX-Character-Syntax5.c AUX-Character-Syntax4.c\
+   AUX-Character-Syntax3.c AUX-Character-Syntax2.c AUX-Character-Syntax1.c\
+   AUX-Layout1.c AUX-Sdf2-Syntax1.c AUX-ATerm-Syntax1.c AUX-Booleans6.c\
+   AUX-Booleans5.c AUX-Booleans4.c AUX-Booleans3.c AUX-Booleans2.c\
+   AUX-Booleans1.c AUX-Basic-Integers4.c AUX-Basic-Integers3.c\
+   AUX-Basic-Integers2.c AUX-Basic-Integers1.c AUX-Alias-Sdf-Syntax1.c\
+   AUX-Restrictions-Sdf-Syntax1.c AUX-Label-Sdf-Syntax1.c\
+   AUX-Literals-Sdf-Syntax1.c AUX-Sorts-Sdf-Syntax1.c\
    AUX-CC-Sdf-Syntax1.c AUX-Priority-Sdf-Syntax1.c AUX-Regular-Sdf-Syntax1.c\
    AUX-Modular-Sdf-Syntax1.c AUX-Basic-Sdf-Syntax1.c AUX-Kernel-Sdf-Syntax1.c\
    AUX-Integer-Syntax1.c AUX-Literal-Syntax1.c AUX-IntCon1.c AUX-Literals1.c\

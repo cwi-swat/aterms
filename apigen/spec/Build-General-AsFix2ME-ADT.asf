@@ -29,6 +29,15 @@ equations
   build-asfix-attrs($ModName, {$Attr+}, $ConsOption) = 
     attrs([$AFAttr+,id($AFModName)])
 
+[equ-build-asfix-attrs-not-empty]
+  build-asfix-attr-list($Attr+, $ConsOption) = $AFAttr+
+  ===>
+  build-asfix-attrs({$Attr+}, $ConsOption) = 
+    attrs([$AFAttr+])
+
+[default-equ-build-asfix-attrs-empty]
+  build-asfix-attrs($Attributes, $ConsOption) = no-attrs 
+
 [equ-modname-to-lit]
   modname-to-lit(moduleid($Char*)) = at-literal(""" $Char* """)
 
