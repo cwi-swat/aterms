@@ -71,9 +71,7 @@ class ATermListImpl
   //{{{ public boolean match(ATerm pattern, List list)
 
   protected boolean match(ATerm pattern, List list)
-  {
-    System.err.println("match pattern: " + pattern + " against : " + list);
-    
+  { 
     if (pattern.getType() == LIST) {
       ATermList l = (ATermList)pattern;
 
