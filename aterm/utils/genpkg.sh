@@ -2,7 +2,7 @@
 
 url=http://www.cwi.nl/projects/MetaEnv/aterm
 
-keywords='library, baf, aterm, term, tree, sharing'
+keywords='meta-environment, library, baf, aterm, term, tree, sharing'
 
 desc() {
 cat <<ENDCAT
