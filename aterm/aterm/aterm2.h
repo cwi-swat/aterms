@@ -166,6 +166,8 @@ ATermList ATmakeList1(ATerm el0);
 /*ATbool ATisEmpty(ATermList list);*/
 #define ATisEmpty(list) ((ATbool)((list) == ATempty))
 
+ATermList ATgetTail(ATermList list, int start);
+ATermList ATreplaceTail(ATermList list, ATermList newtail, int start);
 ATermList ATgetPrefix(ATermList list);
 ATerm     ATgetLast(ATermList list);
 ATermList ATgetSlice(ATermList list, int start, int end);

@@ -98,6 +98,51 @@ static void resize_buffer(int n)
 
 /*}}}  */
 
+/*{{{  ATermList ATgetTail(ATermList list, int start) */
+
+ATermList ATgetTail(ATermList list, int start)
+{
+  if (start < 0) {
+    start = ATgetLength(list) + start;
+  }
+
+  while (start > 0) {
+    assert(!ATisEmpty(list));
+    list = ATgetNext(list);
+    start--;
+  }
+
+  return list;
+}
+
+/*}}}  */
+/*{{{  ATermList ATreplaceTail(ATermList list, ATermList newtail, int start) */
+
+ATermList ATreplaceTail(ATermList list, ATermList newtail, int start)
+{
+  int i, size;
+
+  if (start < 0) {
+    start = ATgetLength(list) + start;
+  }
+
+  size = start;
+  RESIZE_BUFFER(size);
+
+  for (i=0; i<start; i++) {
+    buffer[i] = ATgetFirst(list);
+    list = ATgetNext(list);
+  }
+
+  for (i=start-1; i>=0; i--) {
+    newtail = ATinsert(newtail, buffer[i]);
+    buffer[i] = NULL;
+  }
+
+  return newtail;
+}
+
+/*}}}  */
 /*{{{  ATermList ATgetPrefix(ATermList list) */
 
 /**

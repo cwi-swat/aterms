@@ -981,6 +981,13 @@ them.
 \Macro{ATisEmpty}{ATbool}{ATermList l}
 {Macro to test if list {\tt l} is empty}
 
+\Function{ATgetTail}{ATermList}{ATermList list, int start}
+{Return the sublist from {\tt start} to the end of {\tt list}.}
+
+\Function{ATreplaceTail}{ATermList}{ATermList list, ATermList newtail, 
+int start}
+{Replace the tail of {\tt list} from position {\tt start} with {\tt newtail}}
+
 \Function{ATgetPrefix}{ATermList}{ATermList list}
 {Return all but the last element of {\tt list}}
 

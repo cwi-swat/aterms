@@ -392,6 +392,16 @@ void testList(void)
 	      ATisEqual(ATfilter((ATermList)ATparse("[1,2,3,4,5,6,5,4,3,2,1]"),
 				 lower3), ATparse("[1,2,2,1]")));
 
+  test_assert("list-ops", 24,
+	      ATisEqual(ATgetTail((ATermList)ATparse("[1,2,3,4]"),2), ATparse("[3,4]")));
+  test_assert("list-ops", 25,
+	      ATisEqual(ATgetTail((ATermList)ATparse("[1,2,3,4]"),-2), ATparse("[3,4]")));
+
+  test_assert("list-ops", 26,
+	      ATisEqual(ATreplaceTail((ATermList)ATparse("[1,2,3,4]"),
+				      (ATermList)ATparse("[c,d]"), 2),
+			ATparse("[1,2,c,d]")));
+
   printf("list tests ok.\n");
 }
 
