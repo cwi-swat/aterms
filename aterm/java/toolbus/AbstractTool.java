@@ -14,7 +14,7 @@ abstract public class AbstractTool
   private final static int MIN_MSG_SIZE  = 128;
 
   protected ATermFactory factory;
-  private boolean verbose = true;
+  private boolean verbose = false;
   private Socket  socket;
   private InputStream inputStream;
   private OutputStream outputStream;
@@ -240,9 +240,6 @@ abstract public class AbstractTool
       }
       outputStream.write(ls);
       term.writeToTextFile(outputStream);
-      System.err.print("[");
-      term.writeToTextFile(System.err);
-      System.err.println("]");
       if (LENSPEC+size < MIN_MSG_SIZE) {
 	info("padding with " + (MIN_MSG_SIZE-(LENSPEC+size)) + " zero bytes.");
       }

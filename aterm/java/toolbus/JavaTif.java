@@ -202,6 +202,8 @@ public class JavaTif
   public void genTif()
     throws IOException
   {
+    System.out.println("generating file " + tool_interface + ".java");
+
     PrintWriter out =
       new PrintWriter(new FileOutputStream(tool_interface + ".java"));
     genTifHeader(out);
@@ -240,12 +242,12 @@ public class JavaTif
   public void genTool()
     throws IOException
     {
+      System.out.println("generating file " + tool_class + ".java");
+
       PrintWriter out = new PrintWriter(new FileOutputStream(tool_class
 							     + ".java"));
-      System.out.println("generating header");
       genHeader(out);
 
-      System.out.println("generating sig table");
       genSigTable(out);
       genPatternAttribs(out);
       out.println();
@@ -519,6 +521,8 @@ public class JavaTif
   private void genBridge()
     throws IOException
   {
+    System.out.println("generating file " + tool_bridge + ".java");
+
     PrintWriter out =
       new PrintWriter(new FileOutputStream(tool_bridge + ".java"));
     genBridgeHeader(out);

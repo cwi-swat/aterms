@@ -1191,6 +1191,7 @@ ATermAppl ATmakeAppl(Symbol sym, ...)
   va_start(args, sym);
   for (i=0; i<arity; i++) {
     arg_buffer[i] = va_arg(args, ATerm);
+    protected_buffer[i] = arg_buffer[i];
     CHECK_TERM(arg_buffer[i]);
   }
   va_end(args);
@@ -1232,7 +1233,7 @@ ATermAppl ATmakeAppl(Symbol sym, ...)
   }
 
   for (i=0; i<arity; i++) {
-    arg_buffer[i] = NULL;
+    protected_buffer[i] = NULL;
   }
 
   return (ATermAppl)cur;
@@ -1645,6 +1646,7 @@ ATermAppl ATmakeApplList(Symbol sym, ATermList args)
   HashNumber hnr;
 
   PARK_SYMBOL(sym);
+  protected_buffer[0] = (ATerm)args;
 
   CHECK_TERM((ATerm)args);
   assert(arity == ATgetLength(args));
@@ -1692,6 +1694,8 @@ ATermAppl ATmakeApplList(Symbol sym, ATermList args)
     cur->next = hashtable[hnr];
     hashtable[hnr] = cur;
   }
+
+  protected_buffer[0] = NULL;
 
   return (ATermAppl)cur;
 }

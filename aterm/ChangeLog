@@ -19,6 +19,12 @@
 
 $Id$
 
+2000/02/23 ({jong,olivierp}@cwi.nl)
+ * Fixed garbage collection bug reported by Arne de Bruijn <arne@knoware.nl>
+ * JavaTif now generates xxxTif.java interface, xxxTool.java class, and
+   xxxBridge.java class
+ * Version is now 1.5beta
+
 2000/02/20 (jong@cwi.nl)
  In utils/atrmannos.c:
  * Folding added

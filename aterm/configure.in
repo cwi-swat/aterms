@@ -22,7 +22,7 @@ dnl
 dnl $Id$
 
 AC_INIT(Makefile.in)
-AM_INIT_AUTOMAKE(aterm, 1.4.8beta)
+AM_INIT_AUTOMAKE(aterm, 1.5beta)
 
 dnl Default values
 CC_GCC=gcc
@@ -219,7 +219,8 @@ AC_OUTPUT( \
 	java/aterm/pure/Makefile \
 	java/aterm/test/Makefile \
         java/toolbus/Makefile \
+        java/toolbus/tifstojava \
 	doc/Makefile \
 	doc/examples/Makefile \
 	doc/spec/Makefile \
-	, )
+	, chmod +x java/toolbus/tifstojava)
