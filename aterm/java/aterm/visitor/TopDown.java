@@ -20,9 +20,9 @@ public class TopDown
   {
     visitor.visit(visitable);
 
-    int nr_children = visitable.getNrChildren();
+    int nr_children = visitable.getChildCount();
     for (int i=0; i<nr_children; i++) {
-      visit(visitable.getChild(i));
+      visit(visitable.getChildAt(i));
     }
   }
 
