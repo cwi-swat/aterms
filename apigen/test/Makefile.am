@@ -27,7 +27,7 @@ listtest_DEPENDENCIES	= liblist.a
 
 javadir = ${top_builddir}/test/classfiles
 JAVAROOT = ${top_builddir}
-CLASSPATH_ENV = CLASSPATH=${top_builddir}:${SHARED_OBJECTS}:${JAVA_ATERM}:${srcdir}/$(JAVAROOT)::$$CLASSPATH
+CLASSPATH_ENV = CLASSPATH=${top_builddir}:${SHARED_OBJECTS}:${JAVA_ATERM}:$(JAVAROOT)::$$CLASSPATH
 
 # The order of the following list is important
 check_JAVA = PeanoFactory.java PeanoTest.java
