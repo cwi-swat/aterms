@@ -20,6 +20,7 @@
 $Id$
 
 2000/02/05 (jong@cwi.nl)
+ * TODO file removed as we never us it anyway
  * CWI-phonenumbers removed from several info files
  * Some lingering AsFix remnants removed
  * .depend files removed as automake uses its own depency mechanism
