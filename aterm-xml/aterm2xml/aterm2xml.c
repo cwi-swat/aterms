@@ -393,10 +393,11 @@ int aterm2xml(ATerm at, char *filename)
   fprintf(xmlfp, "\n");
 
   tmpfp = xmlfp;
+  fclose(xmlfp);
+
   xmlfp = NULL;
 
   /* all done */
-  fclose(xmlfp);
 
   return(error);
 }
