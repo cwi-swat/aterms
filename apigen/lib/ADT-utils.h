@@ -14,5 +14,6 @@ ADTEntries     ADTsubstitute     (ADTEntries    entries,
 				  ADTSubstFunc  func,
 				  void         *user_data);
 
+ADTEntries ADTconcatEntries (ADTEntries l1, ADTEntries l2);
 
 #endif /* _ADT_UTIL_H */

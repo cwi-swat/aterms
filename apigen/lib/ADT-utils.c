@@ -43,3 +43,9 @@ ADTsubstitute(ADTEntries entries, ADTSubstFunc substitute, void *user_data)
 }
 
 /*}}}  */
+
+
+ADTEntries ADTconcatEntries (ADTEntries l1, ADTEntries l2)
+{
+  return (ADTEntries) ATconcat((ATermList) l1, (ATermList) l2);
+}
