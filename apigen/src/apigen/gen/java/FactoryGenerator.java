@@ -201,7 +201,7 @@ public class FactoryGenerator extends JavaGenerator {
 				println("    proto" + className + " = new " + className + "();");
 				println("    proto" + className + ".init(" + emptyHashCode + ", null, null, null);");
 				println("    empty" + className + " = (" + className + ") build(proto" + className + ");");
-				println("    empty" + className + ".init(" + emptyHashCode + ", null, null, null);");
+				println("    empty" + className + ".init(" + emptyHashCode + ", empty" + className + ", null, null);");
 				listTypesCount++;
 			} else {
 				Iterator alts = type.alternativeIterator();

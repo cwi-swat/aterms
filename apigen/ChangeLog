@@ -1,3 +1,8 @@
+2003-08-13    <pem@bach>
+
+	* apigen/gen/java/FactoryGenerator.java: fix a major bug in the 
+	  initialization of empty<List>: annotation was null!
+
 2003-08-10  (moreau@loria.fr)
  * fix several bugs related to Tom
  * introduced a TomTypeConverter
