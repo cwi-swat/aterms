@@ -1,3 +1,6 @@
+2003-04-22    <jurgenv@cwi.nl>
+  * Release 1.2
+
 2003-03-18    <jurgenv@cwi.nl>
   * shared-objects-config prints current name of exported jar file
     including the correct version number
