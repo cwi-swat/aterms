@@ -120,21 +120,6 @@ class ATermPlaceholderImpl
 
   //}}}
 
-  //{{{ public String toString()
-
-  public String toString()
-  {
-    String result;
-
-    result = type.toString();
-    if (type.getType() == LIST) {
-      result = "[" + result + "]";
-    }
-
-    return "<" + result + ">" + super.toString();
-  }
-
-  //}}}
   //{{{ public ATerm getPlaceholder()
 
   public ATerm getPlaceholder()

@@ -9,9 +9,13 @@ import java.util.*;
 public class PureFactory
   implements ATermFactory
 {
+  //{{{ Constants
+
   private static int DEFAULT_TERM_TABLE_SIZE = 43117;
   private static int DEFAULT_AFUN_TABLE_SIZE = 2003;;
   private static int DEFAULT_PATTERN_CACHE_SIZE = 4321;
+
+  //}}}
 
   private int term_table_size;
   private HashedWeakRef[] term_table;
@@ -20,6 +24,34 @@ public class PureFactory
   private HashedWeakRef[] afun_table;
 
   static protected ATermList empty;
+
+  //{{{ static boolean isBase64(int c)
+
+  static boolean isBase64(int c)
+  {
+    return Character.isLetterOrDigit((char)c) || c == '+' || c == '/';
+  }
+
+  //}}}
+  //{{{ static public int abbrevSize(int abbrev)
+
+  static public int abbrevSize(int abbrev)
+  {
+    int size = 1;
+
+    if (abbrev == 0) {
+      return 2;
+    }
+
+    while (abbrev > 0) {
+      size++;
+      abbrev /= 64;
+    }
+
+    return size;
+  }
+
+  //}}}
 
   //{{{ public PureFactory()
 
@@ -501,6 +533,43 @@ public class PureFactory
 
   //}}}
 
+  //{{{ private ATerm parseAbbrev(ATermReader reader)
+
+  private ATerm parseAbbrev(ATermReader reader)
+    throws IOException
+  {
+    ATerm result;
+    int abbrev;
+
+    int c = reader.read();
+
+    abbrev = 0;
+    while (isBase64(c)) {
+      abbrev *= 64;
+      if (c >= 'A' && c <= 'Z') { 
+	abbrev += c - 'A';
+      } else if (c >= 'a' && c <= 'z') {
+	abbrev += c - 'a' + 26;
+      } else if (c >= '0' && c <= '9') {
+	abbrev += c - '0' + 52;
+      } else if (c == '+') {
+	abbrev += 62;
+      } else if (c == '/') {
+	abbrev += 63;
+      } else {
+	throw new RuntimeException("not a base-64 digit: " + c);
+      }
+
+      c = reader.read();
+    }
+
+    result = reader.getTerm(abbrev);
+
+    return result;
+  }
+
+  //}}}
+
   //{{{ private ATerm parseNumber(ATermReader reader)
 
   private ATerm parseNumber(ATermReader reader)
@@ -660,12 +729,16 @@ public class PureFactory
     throws IOException
   {    
     ATerm result;
-    int c;
+    int c, start, end;
     String funname;
 
+    start = reader.getPosition();
     switch(reader.getLastChar()) {
       case -1:
 	throw new ParseError("premature EOF encountered.");
+
+      case '#':
+	return parseAbbrev(reader);
 
       case '[':
 	//{{{ Read a list
@@ -811,6 +884,9 @@ public class PureFactory
       result = result.setAnnotation(parse("result"), parse("true"));
     }
 
+    end = reader.getPosition();
+    reader.storeNextTerm(result, end-start);
+
     return result;    
   }
 
@@ -947,6 +1023,26 @@ public class PureFactory
 
   //}}}
 
+  //{{{ private ATerm readFromSharedTextFile(ATermReader reader)
+
+  private ATerm readFromSharedTextFile(ATermReader reader)
+    throws IOException
+  {
+    reader.initializeSharing();
+    return parseFromReader(reader);
+  }
+
+  //}}}
+  //{{{ private ATerm readFromTextFile(ATermReader reader)
+
+  private ATerm readFromTextFile(ATermReader reader)
+    throws IOException
+  {
+    return parseFromReader(reader);
+  }
+
+  //}}}
+
   //{{{ public ATerm readFromTextFile(InputStream stream)
 
   public ATerm readFromTextFile(InputStream stream)
@@ -954,7 +1050,26 @@ public class PureFactory
   {
     ATermReader reader = new ATermReader(new InputStreamReader(stream));
     reader.readSkippingWS();
-    return parseFromReader(reader);
+    
+    return readFromTextFile(reader);
+  }
+
+  //}}}
+  //{{{ public ATerm readFromSharedTextFile(InputStream stream)
+
+  public ATerm readFromSharedTextFile(InputStream stream)
+    throws IOException
+  {
+    ATermReader reader = new ATermReader(new InputStreamReader(stream));
+    reader.readSkippingWS();
+
+    if (reader.getLastChar() != '!') {
+      throw new IOException("not a shared text file!");
+    }
+
+    reader.readSkippingWS();
+    
+    return readFromSharedTextFile(reader);
   }
 
   //}}}
@@ -971,7 +1086,29 @@ public class PureFactory
   public ATerm readFromFile(InputStream stream)
     throws IOException
   {
-    return readFromTextFile(stream);
+    ATermReader reader = new ATermReader(new InputStreamReader(stream));
+    reader.readSkippingWS();
+
+    int last_char = reader.getLastChar();
+    if (last_char == '!') {
+      reader.readSkippingWS();
+      return readFromSharedTextFile(reader);
+    } else if (Character.isLetterOrDigit((char)last_char) ||
+	       last_char == '_' || last_char == '[' || last_char == '-') {
+      return readFromTextFile(reader);
+    } else {
+      throw new RuntimeException("BAF files are not supported by this factory.");
+    }
+  }
+
+  //}}}
+
+  //{{{ public ATerm readFromFile(String file)
+
+  public ATerm readFromFile(String file)
+    throws IOException
+  {
+    return readFromFile(new FileInputStream(file));
   }
 
   //}}}
@@ -1005,45 +1142,110 @@ class HashedWeakRef extends WeakReference
 
 class ATermReader
 {
+  private static final int INITIAL_TABLE_SIZE = 2048;
+  private static final int TABLE_INCREMENT    = 4096;
   private Reader reader;
   private int last_char;
+  private int pos;
+
+  private int nr_terms;
+  private ATerm[] table;
+
+  //{{{ public ATermReader(Reader reader)
 
   public ATermReader(Reader reader)
   {
     this.reader = reader;
     last_char   = -1;
+    pos = 0;
   }
+
+  //}}}
+
+  //{{{ public void initializeSharing()
+
+  public void initializeSharing()
+  {
+    table = new ATerm[INITIAL_TABLE_SIZE];
+    nr_terms = 0;
+  }
+
+  //}}}
+  //{{{ public void storeNextTerm(ATerm t, int size)
+
+  public void storeNextTerm(ATerm t, int size)
+  {
+    if (table == null) {
+      return;
+    }
+
+    if (size <= PureFactory.abbrevSize(nr_terms)) {
+      return;
+    }
+
+    if (nr_terms == table.length) {
+      ATerm[] new_table = new ATerm[table.length+TABLE_INCREMENT];
+      System.arraycopy(table, 0, new_table, 0, table.length);
+      table = new_table;
+    }
+
+    table[nr_terms++] = t;
+  }
+
+  //}}}
+  //{{{ public ATerm getTerm(int index)
+
+  public ATerm getTerm(int index)
+  {
+    if (index < 0 || index >= nr_terms) {
+      throw new RuntimeException("illegal index");
+    }
+    return table[index];
+  }
+
+  //}}}
+
+  //{{{ public int read()
 
   public int read()
     throws IOException
   {
     last_char = reader.read();
+    pos++;
     return last_char;
   }
 
-  public int readSkippingWS()
-    throws IOException
+  //}}}
+  //{{{ public int readSkippingWS()
+
+  public int readSkippingWS() throws IOException
   {
     do {
       last_char = reader.read();
+      pos++;
     } while (Character.isWhitespace((char)last_char));
 
     return last_char;
 
   }
 
-  public int skipWS()
-    throws IOException
+  //}}}
+  //{{{ public int skipWS()
+
+  public int skipWS() throws IOException
   {
     while (Character.isWhitespace((char)last_char)) {
       last_char = reader.read();
+      pos++;
     }
 
     return last_char;
   }
 
-  public int readOct()
-    throws IOException
+  //}}}
+  //{{{ public int readOct()
+
+  public int readOct() throws IOException
   {
     int val = Character.digit((char)last_char, 8);
     val += Character.digit((char)read(), 8);
@@ -1060,11 +1262,25 @@ class ATermReader
 
     return val;
   }
+
+  //}}}
   
+  //{{{ public int getLastChar()
+
   public int getLastChar()
   {
     return last_char;
   }
+
+  //}}}
+  //{{{ public int getPosition()
+
+  public int getPosition()
+  {
+    return pos;
+  }
+
+  //}}}
 }
 
 //}}}

@@ -198,9 +198,30 @@ public interface ATerm
      */
     public boolean equals(Object obj);
 
+    /**
+      * Write a term to a text file/stream.
+      *
+      * @param stream the stream to write to
+      */
     public void writeToTextFile(OutputStream stream)
       throws IOException;
 
+    /**
+      * Write a term to a shared text file/stream.
+      * An efficient shared ASCII representation of this term is written to
+      * the stream.
+      *
+      * @param stream the stream to write this term to
+      */
+    public void writeToSharedTextFile(OutputStream stream)
+      throws IOException;
+
+    /**
+      * Create a new term based on this term as a pattern and a list of arguments.
+      *
+      * @param args the list of arguments used to fill up holes in the pattern
+      *
+      */
     public ATerm make(List args);
 
     /**

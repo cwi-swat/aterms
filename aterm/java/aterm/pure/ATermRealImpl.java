@@ -69,14 +69,6 @@ class ATermRealImpl
   }
 
   //}}}
-  //{{{ public String toString()
-
-  public String toString()
-  {
-    return String.valueOf(value) + super.toString();
-  }
-
-  //}}}
   //{{{ public double getReal()
 
   public double getReal()

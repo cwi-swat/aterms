@@ -70,15 +70,6 @@ class ATermBlobImpl
 
   //}}}
 
-  //{{{ public String toString()
-
-  public String toString()
-  {
-    return String.valueOf(data.length) + "#" + String.valueOf(hashCode())
-      + super.toString();
-  }
-
-  //}}}
   //{{{ public byte[] getBlobData()
 
   public byte[] getBlobData()

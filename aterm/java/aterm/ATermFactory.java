@@ -7,6 +7,8 @@ import java.util.List;
 
 public interface ATermFactory
 {
+  static byte START_OF_SHARED_TEXT_FILE = (byte)'!';
+
   ATerm parse(String trm);
   ATerm make(String pattern, List args);
   ATerm make(ATerm pattern, List args);
@@ -41,8 +43,11 @@ public interface ATermFactory
   ATermAppl makeAppl(AFun fun, ATermList args);
 
   ATerm readFromTextFile(InputStream stream) throws IOException;
+  ATerm readFromSharedTextFile(InputStream stream) throws IOException;
   ATerm readFromBinaryFile(InputStream stream) throws IOException;
   ATerm readFromFile(InputStream stream) throws IOException;
+
+  ATerm readFromFile(String file) throws IOException;
 
   ATerm importTerm(ATerm term);
 }

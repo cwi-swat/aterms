@@ -71,14 +71,6 @@ class ATermIntImpl
   }
 
   //}}}
-  //{{{ public String toString()
-
-  public String toString()
-  {
-    return String.valueOf(value) + super.toString();
-  }
-
-  //}}}
   //{{{ public int getInt()
 
   public int getInt()

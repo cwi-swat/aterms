@@ -13,6 +13,7 @@ public class Test
   //{{{ public final static void main(String[] args)
 
   public final static void main(String[] args)
+    throws IOException
   {
     Test pureSuite = new Test(new PureFactory());
     pureSuite.testAll();
@@ -54,6 +55,7 @@ public class Test
     assert(term[0].getInt() == 3);
     assert(term[0] == term[1]);
 
+    System.out.println("toString: " + term[0]);
     assert(term[0].toString().equals("3"));
 
     List result;
@@ -205,11 +207,36 @@ public class Test
   }
 
   //}}}
+  //{{{ public void testFiles()
 
+  public void testFiles()
+    throws IOException
+  {
+    ATerm t1 = factory.readFromFile("test.trm");
+    System.out.println("done reading test.trm");
+    ATerm t2 = factory.readFromFile("test.taf");
+    System.out.println("done reading test.taf");
+
+    PrintStream stream = new PrintStream(new FileOutputStream("test.trm2"));
+    t1.writeToTextFile(stream);
+    stream.println();
+    stream.close();
+    System.out.println("done writing test.trm2");
+
+    stream = new PrintStream(new FileOutputStream("test.taf2"));
+    t1.writeToSharedTextFile(stream);
+    stream.close();
+    System.out.println("done writing test.taf2");
+
+    assert(t1.equals(t2));
+  }
+
+  //}}}
   
   //{{{ public void testAll()
 
   public void testAll()
+    throws IOException
   {
     testMakeInt();
     testMakeReal();
@@ -218,6 +245,7 @@ public class Test
     testAnnos();
     testParser();
     testList();
+    testFiles();
     /*testMakeList();
     testMakePlaceholder();
     testMakeBlob();

@@ -141,32 +141,6 @@ class ATermApplImpl
 
   //}}}
 
-  //{{{ public String toString()
-
-  public String toString()
-  {
-    StringBuffer result = new StringBuffer();
-
-    if (args.length == 0) {
-      return fun.toString() + super.toString();
-    }
-
-    result.append(fun.toString());
-    result.append('(');
-    for (int i=0; i<args.length; i++) {
-      if (i != 0) {
-	result.append(',');
-      }
-      result.append(args[i].toString());
-    }
-
-    result.append(')');
-    result.append(super.toString());
-
-    return result.toString();
-  }
-
-  //}}}
   //{{{ public AFun getAFun()
 
   public AFun getAFun()

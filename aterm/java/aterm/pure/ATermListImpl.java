@@ -136,35 +136,6 @@ class ATermListImpl
 
   //}}}
   
-  //{{{ public String toString()
-
-  public String toString()
-  {
-    StringBuffer result = new StringBuffer();
-
-    if (this == PureFactory.empty) {
-      return "[]";
-    }
-
-    result.append("[");
-
-    ATermList list = this;
-    while (!list.isEmpty()) {
-      result.append(list.getFirst().toString());
-      list = list.getNext();
-      if (!list.isEmpty()) {
-	result.append(",");
-      }
-    }
-    
-    result.append("]");
-    result.append(super.toString());
-
-    return result.toString();
-  }
-
-  //}}}
-  
   //{{{ public boolean isEmpty()
 
   public boolean isEmpty()
@@ -561,7 +532,7 @@ class ATermListImpl
 
   //}}}
 
-  //{{{ public vooid accept(ATermVisitor v)
+  //{{{ public void accept(ATermVisitor v)
 
   public void accept(ATermVisitor v)
     throws ATermVisitFailure
