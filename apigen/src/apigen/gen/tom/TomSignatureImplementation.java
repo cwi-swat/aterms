@@ -30,7 +30,7 @@ public interface TomSignatureImplementation {
 	String ATermGetSubTerm(String arg1, String arg2);
 	String ATermEquals(String arg1, String arg2);
 
-  	String ATermListName();
+  String ATermListName();
 	String ATermListImpl();
 	String ATermListGetFunSym(String arg);
 	String ATermListCmpFunSym(String arg1, String arg2);

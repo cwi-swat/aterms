@@ -31,7 +31,7 @@ public class JavaTomSignatureImplementation implements TomSignatureImplementatio
 	}
 
 	public String StringName() {
-		return "String";
+		return tomConverter.StringType();
 	}
 
 	public String StringImpl() {
@@ -55,7 +55,7 @@ public class JavaTomSignatureImplementation implements TomSignatureImplementatio
 	}
 
 	public String IntegerName() {
-		return "Integer";
+		return tomConverter.IntegerType();
 	}
 
 	public String IntegerImpl() {
@@ -71,7 +71,7 @@ public class JavaTomSignatureImplementation implements TomSignatureImplementatio
 	}
 
 	public String IntegerCmpFunSym(String s1, String s2) {
-		return s1 + ".equals(" + s2 + ")";
+		return "(" + s1 + " == " + s2 + ")";
 	}
 
 	public String IntegerEquals(String s1, String s2) {
@@ -79,7 +79,7 @@ public class JavaTomSignatureImplementation implements TomSignatureImplementatio
 	}
 
 	public String DoubleName() {
-		return "Double";
+		return tomConverter.RealType();
 	}
 
 	public String DoubleImpl() {
@@ -91,7 +91,7 @@ public class JavaTomSignatureImplementation implements TomSignatureImplementatio
 	}
 
 	public String DoubleCmpFunSym(String s1, String s2) {
-		return s1 + ".equals(" + s2 + ")";
+		return "(" + s1 + " == " + s2 + ")";
 	}
 
 	public String DoubleGetSubTerm(String term, String n) {
@@ -103,7 +103,7 @@ public class JavaTomSignatureImplementation implements TomSignatureImplementatio
 	}
 
 	public String ATermName() {
-		return "ATerm";
+		return tomConverter.TermType();
 	}
 
 	public String ATermImpl() {
@@ -128,7 +128,7 @@ public class JavaTomSignatureImplementation implements TomSignatureImplementatio
 
 
 	public String ATermListName() {
-		return "ATermList";
+		return tomConverter.ListType();
 	}
 
 	public String ATermListImpl() {

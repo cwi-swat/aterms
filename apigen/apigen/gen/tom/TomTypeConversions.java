@@ -5,11 +5,11 @@ import apigen.gen.TypeConversions;
 public class TomTypeConversions implements TypeConversions {
 
 	public String IntegerType() {
-		return "Integer";
+		return "int";
 	}
 
 	public String RealType() {
-		return "Double";
+		return "double";
 	}
 
 	public String TermType() {
