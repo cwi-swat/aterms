@@ -1418,6 +1418,7 @@ Typical example: jaxb (http://java.sun.com/xml/jaxb)
 \end{itemize}
 
 % }}}
+% {{{  Generative Programming
 
 \subsection{Generative Programming}
 \label{subsec:genprog}
@@ -1433,6 +1434,19 @@ be based on some abstract data type definition augmented with domain specific
 knowledge. In our case, the data type definitions are written in SDF, and
 the domain specific knowledge consists of the mapping of such datatypes
 to concrete \asfix\ representations.
+
+% }}}
+% {{{  JJForester
+
+\subsection{JJForester}
+Another approach to generating code from an SDF definition is
+taken in JJForester\cite{jKV2000}. JJForester is a combined parser
+generator, tree builder, and visitor generator for Java. The focus
+lies on the generation of tree manipulation and especially tree
+traversal support. Especially nice is the integration with 
+JJTraveler\cite{jVisser2001a}, providing generic visitor combinator support.
+
+% }}}
 
 % }}}
 % {{{  Conclusions
