@@ -483,11 +483,11 @@ ATerm ATdictPut(ATerm dict, ATerm key, ATerm value)
       pair = ATmakeList2(key, value);
       tmp = ATinsert(tmp, (ATerm)pair);
       for(--i; i>=0; i--)
-		tmp = ATinsert(tmp, buffer[i]);
+				tmp = ATinsert(tmp, buffer[i]);
       return (ATerm)tmp;
     } else {
       if(i >= buffer_size)
-		resize_buffer(i*2);
+				resize_buffer(i*2);
       buffer[i++] = (ATerm)pair;
     }
   }
@@ -626,10 +626,11 @@ ATermTable ATtableCreate(int initial_size, int maxload)
   if(!table)
 		ATerror("ATtableCreate: cannot allocate new ATermTable\n");
 
-  table->size = initial_size;
-  table->free_slots = initial_size;
-  table->max_load   = maxload;
-  table->entries = (ATermList *)malloc(table->size*sizeof(ATermList));
+  table->size        = initial_size;
+  table->nr_entries  = 0;
+	table->max_load    = maxload;
+  table->max_entries = (table->max_load*table->size)/100;
+  table->entries     = (ATermList *)malloc(table->size*sizeof(ATermList));
   if(!table->entries)
 		ATerror("ATtableCreate: cannot allocate %d entries.\n", table->size);
   for(i=0; i<table->size; i++)
@@ -661,21 +662,18 @@ void ATtableDestroy(ATermTable table)
 	* Store a new key/value pair in an ATermTable.
 	*/
 
-#define TABLE_HASH(key) ((unsigned int)(key)*MAGIC_K)
+#define TABLE_HASH(key,h) ((unsigned int)((key)>>2)*MAGIC_K ^ ((h)>>8))
 
 void ATtablePut(ATermTable table, ATerm key, ATerm value)
 {
-  unsigned int hnr = TABLE_HASH((unsigned int)key);
-  unsigned int cur_load;
+  unsigned int hnr = TABLE_HASH((unsigned int)key, key->header);
   hnr %= table->size;
-  if(ATisEmpty(table->entries[hnr]))
-	  table->free_slots--;
 
   table->entries[hnr] = (ATermList)ATdictPut((ATerm)table->entries[hnr], 
 											 key, value);
+	table->nr_entries++;
 
-  cur_load = 100*(table->size-table->free_slots)/table->size;
-  if(cur_load > table->max_load) {
+  if(table->nr_entries > table->max_entries) {
     /* Resize hashtable */
 		int i, old_size = table->size;
 		ATermList *old_entries = table->entries;
@@ -684,11 +682,11 @@ void ATtablePut(ATermTable table, ATerm key, ATerm value)
 		table->entries = calloc(table->size, sizeof(ATermList));
 		if(!table->entries)
 			ATerror("ATtablePut: cannot re-alloc to %d entries.\n", table->size);
+		table->max_entries   = (table->max_load*table->size)/100;
 		for(i=0; i<table->size; i++)
 			table->entries[i] = ATempty;
 		ATprotectArray((ATerm *)table->entries, table->size);
-		table->free_slots = table->size;
-
+		
 		for(i=0; i<old_size; i++) {
 			ATermList list = old_entries[i];
 			while(!ATisEmpty(list)) {
@@ -713,7 +711,7 @@ void ATtablePut(ATermTable table, ATerm key, ATerm value)
 
 ATerm ATtableGet(ATermTable table, ATerm key)
 {
-  unsigned int hnr = TABLE_HASH((unsigned int)key);
+  unsigned int hnr = TABLE_HASH((unsigned int)key, key->header);
   hnr %= table->size;
 	
   return ATdictGet((ATerm)table->entries[hnr], key);
@@ -728,13 +726,11 @@ ATerm ATtableGet(ATermTable table, ATerm key)
 
 void ATtableRemove(ATermTable table, ATerm key)
 {
-  unsigned int hnr = TABLE_HASH((unsigned int)key);
+  unsigned int hnr = TABLE_HASH((unsigned int)key, key->header);
   hnr %= table->size;
 
   table->entries[hnr] = (ATermList)ATdictRemove((ATerm)table->entries[hnr],key);
-
-  if(ATisEmpty(table->entries[hnr]))
-	  table->free_slots++;
+	table->nr_entries--;
 }
 
 /*}}}  */

@@ -338,11 +338,10 @@ makeArguments(ATermAppl appl, Symbol name, va_list *args)
 static ATerm
 makePlaceholder(ATermPlaceholder pat, va_list *args)
 {
-    ATerm type = ATgetPlaceholder(pat);
+	ATerm type = ATgetPlaceholder(pat);
 	
-    if (ATgetType(type) == AT_APPL) 
-	{
-	    ATermAppl appl = (ATermAppl) type;
+	if (ATgetType(type) == AT_APPL) {
+		ATermAppl appl = (ATermAppl) type;
 		Symbol sym = ATgetSymbol(appl);
 		if (sym == symbol_int && ATgetArity(sym) == 0)
 			return (ATerm) ATmakeInt(va_arg(*args, int));
@@ -355,21 +354,21 @@ makePlaceholder(ATermPlaceholder pat, va_list *args)
 		} else if(sym == symbol_placeholder)
 			return (ATerm) ATmakePlaceholder(va_arg(*args, ATerm));
 		else if(sym == symbol_term)
-		    return va_arg(*args, ATerm);
+			return va_arg(*args, ATerm);
 		else {
-		  ATbool makeAppl = ATfalse, quoted = ATfalse;
-		  char *name = ATgetName(sym);
-		  
-		  if(streq(name, "appl") || streq(name, "id"))
+			ATbool makeAppl = ATfalse, quoted = ATfalse;
+			char *name = ATgetName(sym);
+			
+			if(streq(name, "appl") || streq(name, "id"))
 				makeAppl = ATtrue;
-		  else if(streq(name, "str")) {
+			else if(streq(name, "str")) {
 				makeAppl = ATtrue;
 				quoted = ATtrue;
-		  }
-		  if(makeAppl) {
+			}
+			if(makeAppl) {
 				sym = ATmakeSymbol(va_arg(*args, char *), 0, quoted);
 				return (ATerm) makeArguments(appl, sym, args);
-		  }
+			}
 		}
 	}
 	ATerror("makePlaceholder: illegal pattern %t\n", pat);
@@ -453,29 +452,29 @@ ATbool AT_vmatchTerm(ATerm t, ATerm pat, va_list *args)
   int len;
 
   if(ATgetType(pat) == AT_PLACEHOLDER)
-	return matchPlaceholder(t, (ATermPlaceholder)pat, args);
+		return matchPlaceholder(t, (ATermPlaceholder)pat, args);
 
   if(ATgetType(pat) != ATgetType(t))
-	return ATfalse;
+		return ATfalse;
 
   switch(ATgetType(pat)) {
-	case AT_INT:
-	case AT_REAL:
-	case AT_BLOB:
-	  return ATisEqual(t, pat);
-	  break;
+		case AT_INT:
+		case AT_REAL:
+		case AT_BLOB:
+			return ATisEqual(t, pat);
+			break;
 
-	case AT_APPL:
-	  sym = ATgetSymbol((ATermAppl)t);
-	  psym = ATgetSymbol((ATermAppl)pat);
-	  if(!streq(ATgetName(sym), ATgetName(psym)) ||
-		 ATisQuoted(sym) != ATisQuoted(psym))
-		return ATfalse;
-	  return matchArguments((ATermAppl)t, (ATermAppl)pat, args);
-	  break;
-
-	case AT_LIST:
-	  /*{{{  Match a list */
+		case AT_APPL:
+			sym = ATgetSymbol((ATermAppl)t);
+			psym = ATgetSymbol((ATermAppl)pat);
+			if(!streq(ATgetName(sym), ATgetName(psym)) ||
+				 ATisQuoted(sym) != ATisQuoted(psym))
+				return ATfalse;
+			return matchArguments((ATermAppl)t, (ATermAppl)pat, args);
+			break;
+			
+		case AT_LIST:
+			/*{{{  Match a list */
 
 	  listpat = (ATermList)pat;
 	  list = (ATermList)t;
@@ -516,12 +515,12 @@ ATbool AT_vmatchTerm(ATerm t, ATerm pat, va_list *args)
 	  return AT_vmatchTerm(ATgetFirst(list), pat, args);
 
 	  /*}}}  */
-	  break;
+			break;
 
-	default:
-	  ATerror("AT_vmatchTerm: illegal type %d\n", ATgetType(pat));
-	  return ATfalse;
-	  break;
+		default:
+			ATerror("AT_vmatchTerm: illegal type %d\n", ATgetType(pat));
+			return ATfalse;
+			break;
   }
 }
 
@@ -591,10 +590,10 @@ static ATbool matchPlaceholder(ATerm t, ATermPlaceholder pat, va_list *args)
   ATbool matchAppl = ATfalse, matchStr = ATfalse, matchId = ATfalse;
 
   if(ATgetType(type) == AT_APPL) {
-	ATermAppl pappl = (ATermAppl)type;
-	Symbol psym = ATgetSymbol(pappl);
-	if(psym == symbol_int && ATgetArity(psym) == 0) {	  
-	  /*{{{  handle pattern <int> */
+		ATermAppl pappl = (ATermAppl)type;
+		Symbol psym = ATgetSymbol(pappl);
+		if(psym == symbol_int && ATgetArity(psym) == 0) {	  
+			/*{{{  handle pattern <int> */
 
 	  if(ATgetType(t) == AT_INT) {
 		int *arg = va_arg(*args, int *);
@@ -605,8 +604,8 @@ static ATbool matchPlaceholder(ATerm t, ATermPlaceholder pat, va_list *args)
 	  return ATfalse;
 
 	  /*}}}  */
-	} else if(psym == symbol_real && ATgetArity(psym) == 0) {
-	  /*{{{  handle pattern <real> */
+		} else if(psym == symbol_real && ATgetArity(psym) == 0) {
+			/*{{{  handle pattern <real> */
 
 	  if(ATgetType(t) == AT_REAL) {
 		double *arg = va_arg(*args, double *);
@@ -617,8 +616,8 @@ static ATbool matchPlaceholder(ATerm t, ATermPlaceholder pat, va_list *args)
 	  return ATfalse;
 
 	  /*}}}  */
-	} else if(psym == symbol_blob) {
-	  /*{{{  handle pattern <blob> */
+		} else if(psym == symbol_blob) {
+			/*{{{  handle pattern <blob> */
 
 	  if(ATgetType(t) == AT_BLOB) {
 		int *size  = va_arg(*args, int *);
@@ -632,8 +631,8 @@ static ATbool matchPlaceholder(ATerm t, ATermPlaceholder pat, va_list *args)
 	  return ATfalse;
 
 	  /*}}}  */
-	} else if(psym == symbol_placeholder) {
-	  /*{{{  handle pattern <placeholder> */
+		} else if(psym == symbol_placeholder) {
+			/*{{{  handle pattern <placeholder> */
 
 	  if(ATgetType(t) == AT_PLACEHOLDER) {
 		ATerm *type = va_arg(*args, ATerm *);
@@ -644,23 +643,23 @@ static ATbool matchPlaceholder(ATerm t, ATermPlaceholder pat, va_list *args)
 	  return ATfalse;
 
 	  /*}}}  */
-	} else if(psym == symbol_term) {
-	  ATerm *term = va_arg(*args, ATerm *);
-	  if(term)
-		*term = t;
-	  return ATtrue;
-	} else if(streq(ATgetName(psym), "appl")) {
-	  matchAppl = ATtrue;
-	} else if(streq(ATgetName(psym), "str")) {
-	  matchStr = ATtrue;
-	  matchAppl = ATtrue;
-	} else if(streq(ATgetName(psym), "id")) {
-	  matchId = ATtrue;
-	  matchAppl = ATtrue;
-	}
+		} else if(psym == symbol_term) {
+			ATerm *term = va_arg(*args, ATerm *);
+			if(term)
+				*term = t;
+			return ATtrue;
+		} else if(streq(ATgetName(psym), "appl")) {
+			matchAppl = ATtrue;
+		} else if(streq(ATgetName(psym), "str")) {
+			matchStr = ATtrue;
+			matchAppl = ATtrue;
+		} else if(streq(ATgetName(psym), "id")) {
+			matchId = ATtrue;
+			matchAppl = ATtrue;
+		}
 	 
-	if(matchAppl) {
-	  /*{{{  handle patterns <appl> and <str> */
+		if(matchAppl) {
+			/*{{{  handle patterns <appl> and <str> */
 	  Symbol sym;
 	  ATermAppl appl;
 	  int arity, parity;
@@ -688,7 +687,7 @@ static ATbool matchPlaceholder(ATerm t, ATermPlaceholder pat, va_list *args)
 	  return matchArguments(appl, pappl, args);
 
 	  /*}}}  */
-	}
+		}
   }
   ATerror("matchPlaceholder: illegal pattern %t\n", pat);
   return ATfalse;

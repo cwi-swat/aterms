@@ -65,8 +65,9 @@ typedef struct
 typedef struct ATermTable
 {
   int size;
-  int free_slots;
+  int nr_entries;
   int max_load;
+	int max_entries;
   ATermList *entries;
 } *ATermTable;
 

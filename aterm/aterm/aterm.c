@@ -117,7 +117,7 @@ ATinit(int argc, char *argv[], ATerm * bottomOfStack)
 
 	if (!silent)
 		ATfprintf(stderr, "  ATerm Library, version %s, built: %s\n",
-							VERSION, DATE);
+							VERSION, CURDATE);
 
 	/* Protect novice users that simply pass NULL as bottomOfStack */
 	if (bottomOfStack == NULL)
@@ -228,6 +228,9 @@ ATprotect(ATerm * term)
 	 * exact index of the first free slot. Otherwise, we need to increase the
 	 * at_protected array.
 	 */
+
+	assert(*term == NULL || AT_isValidTerm(*term)); /* Check the precondition */
+
 	if (at_nrprotected >= at_maxprotected) {
 		at_maxprotected += PROTECT_EXPAND_SIZE;
 		at_protected = (ATerm **) realloc(at_protected,
@@ -283,6 +286,12 @@ void ATprotectArray(ATerm *start, int size)
 	 * Otherwise, we need to resize at_protected_arrays.
 	 */
 	int idx;
+
+#ifndef NDEBUG
+  for(idx=0; idx<size; idx++) {
+		assert(start[idx] == NULL || AT_isValidTerm(start[idx]));
+	}
+#endif
 
 	if (at_nrprotected_arrays >= at_maxprotected_arrays) {
 		at_maxprotected_arrays += PROTECT_ARRAY_EXPAND_SIZE;
