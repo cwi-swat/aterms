@@ -5,6 +5,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <errno.h>
 #include <netdb.h>
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -21,12 +22,17 @@
 
 #define streq(s,t)	(!(strcmp((s),(t))))
 
-#define TB_HOST			"-TB_HOST"
-#define TB_PORT			"-TB_PORT"
-#define TB_TOOL_ID		"-TB_TOOL_ID"
-#define TB_TOOL_NAME	"-TB_TOOL_NAME"
+#define TB_HOST			 "-TB_HOST"
+#define TB_PORT			 "-TB_PORT"
+#define TB_TOOL_ID		 "-TB_TOOL_ID"
+#define TB_TOOL_NAME	 "-TB_TOOL_NAME"
+#define TB_HANDSHAKE_LEN 512
 
+#define MAX(a,b)  ((a) > (b) ? (a) : (b))
+
+#define MIN_MSG_SIZE          128
 #define MAX_CONNECT_ATTEMPTS 1024
+#define INITIAL_BUFFER_SIZE  1024
 
 /*}}}  */
 /*{{{  types */
@@ -62,8 +68,16 @@ static Connection *connections[FD_SETSIZE] = { NULL };
 static Symbol symbol_rec_do = NULL;
 static ATermAppl term_snd_void = NULL;
 
+/* term buffer */
+static int buffer_size = 0;
+static char *buffer = NULL;
+
 /* Static functions */
 static int connect_to_socket(const char *host, int port);
+static void resize_buffer(int size);
+static int mwrite(int fd, char *buf, int len);
+static int mread(int fd, char *buf, int len);
+static void handshake(Connection *connection);
 
 /*}}}  */
 
@@ -102,6 +116,13 @@ ATBinit(int argc, char *argv[], ATerm *stack_bottom)
 	ATprotectSymbol(symbol_rec_do);
 	ATprotect((ATerm *)&term_snd_void);
 
+	/* Allocate initial buffer */
+	buffer = (char *)malloc(INITIAL_BUFFER_SIZE);
+	if(!buffer)
+		ATerror("cannot allocate initial term buffer of size %d\n", 
+						INITIAL_BUFFER_SIZE);
+	buffer_size = INITIAL_BUFFER_SIZE;
+
 	/* Get hostname of machine that runs this particular tool */
 	return gethostname(this_host, MAXHOSTNAMELEN);
 }
@@ -119,6 +140,8 @@ ATBconnect(char *tool, char *host, int port, ATBhandler h, ATBchecker c)
 	Connection *connection = NULL;
 	int fd;
 	
+	port = port > 0 ? port : default_port;
+
 	/* Make new connection */
 	fd = connect_to_socket(host, port);
 
@@ -146,7 +169,7 @@ ATBconnect(char *tool, char *host, int port, ATBhandler h, ATBchecker c)
 	if (connection->host == NULL)
 		ATerror("ATBconnect: no memory for host.\n");
 
-	connection->port     = port > 0 ? port : default_port;
+	connection->port     = port;
 	connection->handler  = h;
 	connection->checker  = c;
 	connection->verbose  = ATfalse;
@@ -155,6 +178,9 @@ ATBconnect(char *tool, char *host, int port, ATBhandler h, ATBchecker c)
 	
 	/* Link connection in array */
 	connections[fd] = connection;
+
+	/* Perform the ToolBus handshake */
+	handshake(connection);
 
 	return fd;
 }
@@ -217,10 +243,15 @@ int ATBeventloop(void)
 
 int ATBsend(int fd, ATerm term)
 {
-  int result, len = AT_calcTextSize(term);
-  result = ATfprintf(connections[fd]->stream, "%-.7d:%t", len, term);
-  fflush(connections[fd]->stream);
-  return result;
+  int len = AT_calcTextSize(term) + 8 /* Add lenspec */;
+	int wirelen = MAX(len, MIN_MSG_SIZE);
+
+	resize_buffer(wirelen+1);               /* Add '\0' character */
+	sprintf(buffer, "%-.7d:", len);
+	AT_writeToStringBuffer(term, buffer+8);
+	if(mwrite(fd, buffer, wirelen) < 0)
+		ATerror("ATBsend: connection with ToolBus lost.\n");
+	return 0;
 }
 
 /*}}}  */
@@ -235,10 +266,27 @@ ATerm  ATBreceive(int fd)
   int len;
   ATerm t;
 
-  if(fscanf(connections[fd]->stream, "%7d:", &len) != 1)
-	ATerror("ATBreceive: error in lenspec.\n");
-  t = ATreadFromTextFile(connections[fd]->stream);
-  assert(AT_calcTextSize(t) == len); /* Very expensive! */
+  /* Read the first batch */
+  if(mread(fd, buffer, MIN_MSG_SIZE) <= 0) 
+	ATerror("ATBreceive: connection with ToolBus lost.\n");
+  
+  /* Retrieve the data length */
+  if(sscanf(buffer, "%7d:", &len) != 1)
+	ATerror("ATBreceive: error in lenspec: %s\n", buffer);
+  
+  /* Make sure the buffer is large enough */
+  resize_buffer(len);
+
+  if(len > MIN_MSG_SIZE) {
+	/* Read the rest of the data */
+	if(mread(fd, buffer+MIN_MSG_SIZE, len-MIN_MSG_SIZE) < 0)
+	  ATerror("ATBreceive: connection with ToolBus lost.\n");
+  }
+
+  /* Parse the string */
+  t = ATparse(buffer+8);
+  assert(t);
+
   return t;
 }
 
@@ -315,6 +363,10 @@ int ATBhandleOne(int fd)
 	ATbool recdo = ATfalse;
 
 	appl = (ATermAppl)ATBreceive(fd);
+
+	if(appl == NULL)
+	  return -1;
+
 	if(ATgetSymbol(appl) == symbol_rec_do)
 	  recdo = ATtrue;
 
@@ -339,22 +391,27 @@ int ATBhandleAny(void)
 {
     fd_set set;
 	static int last = -1;
-	int max, cur, count = 0;
+	int start, max, cur, count = 0;
 	
 	FD_ZERO(&set);
-	max = ATBgetDescriptors(&set);
+	max = ATBgetDescriptors(&set) + 1;
 	
-	count = select(max+1, &set, NULL, NULL, NULL);
+	count = select(max, &set, NULL, NULL, NULL);
 	assert(count > 0);
 
-	cur = last+1;
-	while(cur != last) {
-	  if(connections[cur] && FD_ISSET(connections[cur]->fd, &set)) {
+
+	start = last+1;	
+	cur = start;
+	do {
+	  if(connections[cur] && FD_ISSET(cur, &set)) {
 		last = cur;
-		return ATBhandleOne(cur);
+		if(ATBhandleOne(cur) < 0)
+		  return -1;
+		return cur;
 	  }
 	  cur = (cur+1) % max;
-	}
+	} while(cur != start);
+
 	ATerror("ATBhandleAny: bottom\n");
 	return -1;
 }
@@ -395,8 +452,8 @@ static int connect_to_unix_socket(int port)
   struct sockaddr_un usin;
   int attempt = 0;
 
+	sprintf (name, "/usr/tmp/%d", port);
   for(attempt=0; attempt<MAX_CONNECT_ATTEMPTS; attempt++) {
-    sprintf (name, "/usr/tmp/%d", port);
     if((sock = socket(AF_UNIX,SOCK_STREAM,0)) < 0)
 			ATerror("cannot open socket\n");
 
@@ -415,7 +472,8 @@ static int connect_to_unix_socket(int port)
       return sock;
     }
   }
-  ATerror("cannot connect after %d attempts, giving up.\n", attempt);
+  ATerror("connect_to_unix_socket: cannot connect to unix socket %s "
+					"after %d attempts, giving up.\n", name, attempt);
   return -1;
 }
 
@@ -457,7 +515,8 @@ static int connect_to_inet_socket(const char *host, int port)
       return sock;
     }
   }
-	ATerror("cannot connect after %d attempts, giving up.\n", attempt);
+	ATerror("connect_to_inet_socket: cannot connect after %d attempts, "
+					"giving up.\n", attempt);
 	return -1;
 }
 
@@ -477,4 +536,99 @@ static int connect_to_socket (const char *host, int port)
 }
 
 /*}}}  */
+/*{{{  static void resize_buffer(int size) */
 
+/**
+	* Make the term buffer big enough.
+	*/
+
+static void resize_buffer(int size)
+{
+	if(size > buffer_size) {
+		buffer = realloc(buffer, size);
+		if(buffer == NULL)
+			ATerror("resize_buffer: cannot allocate buffer of size %d\n", size);
+		buffer_size = size;
+	}
+}
+
+/*}}}  */
+
+/*{{{  static int mwrite(int fd, char *buf, int len) */
+
+/**
+	* Write a buffer to a file descriptor. 
+	* Make sure all data has been written.
+	*/
+
+static int mwrite(int fd, char *buf, int len)
+{
+  int cnt = 0, n;
+
+  while(cnt < len) {
+    if((n = write(fd, &buf[cnt], len-cnt)) <= 0) {
+      if(errno != EINTR)
+        return n;
+    } else
+      cnt += n;
+  }
+  assert(cnt == len);
+  return cnt;
+}
+
+/*}}}  */
+/*{{{  static int mread(int fd, char *buf, int len) */
+
+/**
+	* Read len bytes from fd in buf.
+	*/
+
+static int mread(int fd, char *buf, int len)
+{
+  int cnt = 0, n;
+
+  while(cnt < len){
+    if((n = read(fd, &buf[cnt], len - cnt)) <= 0) {
+      if(errno != EINTR)
+        return n;
+    } else
+      cnt += n;
+  }
+  assert(cnt == len);
+  return cnt;
+}
+
+/*}}}  */
+
+/*{{{  static void handshake(Connection *connection) */
+
+/**
+	* Execute the ToolBus handshake protocol.
+	*/
+
+static void handshake(Connection *conn)
+{
+	char buf[TB_HANDSHAKE_LEN];
+	char remote_toolname[TB_HANDSHAKE_LEN];
+	int  remote_tid;
+
+	sprintf(buf, "%s %s %d", conn->toolname, conn->host, conn->tid);
+	if(mwrite(conn->fd, buf, TB_HANDSHAKE_LEN) < 0)
+	  ATerror("handshake: mwrite failed.\n");
+
+	if(mread(conn->fd, buf, TB_HANDSHAKE_LEN) < 0)
+	  ATerror("handshake: cannot get tool-id!\n");
+
+    if(sscanf(buf, "%s %d", remote_toolname, &remote_tid) != 2)
+	  ATerror("handshake: protocol error, illegal tid spec: %s\n", buf);
+
+	if(!streq(remote_toolname, conn->toolname))
+	  ATerror("handshake: protocol error, wrong toolname %s != %s\n", 
+			  remote_toolname, conn->toolname);
+	
+	if(remote_tid < 0 || (conn->tid >= 0 && remote_tid != conn->tid))
+	  ATerror("handshake: illegal tid assigned by ToolBus (%d != %d)\n",
+			  remote_tid, conn->tid);
+}
+
+/*}}}  */

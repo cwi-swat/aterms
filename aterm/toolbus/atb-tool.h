@@ -3,6 +3,8 @@
 #define ATB_TOOL_H
 
 #include <aterm2.h>
+#include <sys/times.h>
+#include <sys/types.h>
 
 /* ToolBus callback functions */
 typedef ATermAppl (*ATBhandler)(int file_desc, ATermAppl input_term);
