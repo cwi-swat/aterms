@@ -590,6 +590,70 @@ public class World
   }
 
   //}
+  //{ public ATerm make(String pattern, Object arg1, arg2, arg3, arg4)
+
+  /**
+    * Make a new term given a pattern and three arguments.
+    * @param pattern The pattern (without placeholders) from which to create
+             a new term. The pattern must contain exactly three placeholders.
+    * @param arg1,arg2,arg3,arg4 See 
+             <A HREF=placeholders.html>the use of placeholders</A>
+    * @exception ParseError When pattern does not represent a valid
+             term.
+    */
+
+  public ATerm make(String pattern, Object arg1, Object arg2, Object arg3,
+										Object arg4)
+    throws ParseError
+  {
+    Vector v = new Vector(4);
+    v.addElement(arg1);
+    v.addElement(arg2);
+    v.addElement(arg3);
+    v.addElement(arg4);
+    return makeUsingString(pattern, v.elements());
+  }
+
+  //}
+  //{ public ATerm make(String pattern, Object arg1, arg2, arg3, arg4, arg5)
+
+  /**
+    * Make a new term given a pattern and three arguments.
+    * @param pattern The pattern (without placeholders) from which to create
+             a new term. The pattern must contain exactly three placeholders.
+    * @param arg1,arg2,arg3,arg4,arg5 See 
+             <A HREF=placeholders.html>the use of placeholders</A>
+    * @exception ParseError When pattern does not represent a valid
+             term.
+    */
+
+  public ATerm make(String pattern, Object arg1, Object arg2, Object arg3,
+										Object arg4, Object arg5)
+    throws ParseError
+  {
+    Vector v = new Vector(5);
+    v.addElement(arg1);
+    v.addElement(arg2);
+    v.addElement(arg3);
+    v.addElement(arg4);
+    v.addElement(arg5);
+    return makeUsingString(pattern, v.elements());
+  }
+
+  //}
+	//{ public ATerm make(String pattern, Enumeration e)
+
+	/**
+		* Make using a list of arguments
+		*/
+
+	public ATerm make(String pattern, Enumeration e)
+    throws ParseError
+	{
+		return makeUsingString(pattern, e);
+	}
+
+	//}
   //{ protected ATerm parsePattern(String pattern)
 
   /**
@@ -997,6 +1061,22 @@ public class World
 					throw new ParseError(channel, channel.last(), "illegal character");
 				}
     }
+
+		if(channel.last() == '{') {
+			ATermList annos;
+			// Parse annotation
+			if(channel.readNext() == '}') {
+				channel.readNext();
+				annos = empty;
+			} else {
+				annos = parseATermList(channel);
+				if(channel.last() != '}')
+					throw new ParseError(channel, channel.last(), "'}' expected");
+				channel.readNext();
+			}
+			result = result.setAnnotations(annos);	
+		}
+
     return result;
   }
 

@@ -33,7 +33,7 @@ public class TestingTool extends Testing
     System.out.print("question called: a0=");
     a0.println(System.out);
     try {
-      R = ATerm.the_world.parse("snd-value(answer(f(4, 3.2)))");
+      R = ATerm.the_world.parse("snd-value(answer(f(4, 3.2){[label,val]}))");
     } catch (ParseError e) { System.err.println("parse failure!"); }
     return R;
   }

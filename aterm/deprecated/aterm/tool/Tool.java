@@ -36,7 +36,7 @@ abstract public class Tool implements Runnable
   private String name = "unknown";
   private String host = null;
   private InetAddress address = null;
-  private int port = 8998;
+  private int port = 8999;
   private int toolid = -1;
   private Socket socket = null;
   private InputStream istream;

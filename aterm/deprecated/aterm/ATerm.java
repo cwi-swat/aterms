@@ -140,6 +140,59 @@ public abstract class ATerm
   }
 
   //}
+  //{ static public ATerm make(String pattern, Object arg1, arg2, arg3, arg4)
+
+  /**
+    * Make a new term given a pattern and three arguments.
+    * @param pattern The pattern (without placeholders) from which to create
+             a new term. The pattern must contain exactly three placeholders.
+    * @param arg1,arg2,arg3,arg4 See 
+             <A HREF=placeholders.html>the use of placeholders</A>
+    * @exception ParseError When pattern does not represent a valid
+             term.
+    */
+
+  static public ATerm make(String pattern, Object arg1, Object arg2, 
+													 Object arg3, Object arg4)
+    throws ParseError
+  {
+    return the_world.make(pattern, arg1, arg2, arg3, arg4);
+  }
+
+  //}
+  //{ static public ATerm make(String pattern, Object arg1, arg2, arg3, arg4, arg5)
+
+  /**
+    * Make a new term given a pattern and three arguments.
+    * @param pattern The pattern (without placeholders) from which to create
+             a new term. The pattern must contain exactly five placeholders.
+    * @param arg1,arg2,arg3,arg4,arg5 See 
+             <A HREF=placeholders.html>the use of placeholders</A>
+    * @exception ParseError When pattern does not represent a valid
+             term.
+    */
+
+  static public ATerm make(String pattern, Object arg1, Object arg2, 
+													 Object arg3, Object arg4, Object arg5)
+    throws ParseError
+  {
+    return the_world.make(pattern, arg1, arg2, arg3, arg4, arg5);
+  }
+
+  //}
+	//{ public ATerm make(String pattern, Enumeration e)
+
+	/**
+		* Make using a list of arguments
+		*/
+
+	static public ATerm make(String pattern, Enumeration e)
+    throws ParseError
+	{
+		return the_world.make(pattern, e);
+	}
+
+	//}
 
   //{ protected ATerm(World world, ATermList an)
 

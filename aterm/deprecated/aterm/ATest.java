@@ -148,6 +148,7 @@ public class ATest
 
     T[5] = world.parse("[1,2,3,4,5,6,7]");
     Ts[5] = (ATermList)T[5];
+	T[6] = world.parse("f(abc{[label,val]})");
 
     //{ test length
 
@@ -164,6 +165,8 @@ public class ATest
     //}
     //{ test lastIndexOf
 
+		System.out.println("Ts[0] = " + Ts[0] + ", lastIndexOf(1) = " +
+											 Ts[0].lastIndexOf(world.makeInt(1), -1));
     test(Ts[0].lastIndexOf(world.makeInt(1), -1) == 9, "lastIndexOf-1");
     test(Ts[0].lastIndexOf(world.makeInt(0), -1) == 0, "lastIndexOf-2");
     test(Ts[0].lastIndexOf(world.makeInt(10), -1) == -1, "lastIndexOf-3");

@@ -42,7 +42,7 @@ public class JavaTif
 			 "[-package <package>]");
     else {
       if(javaclass == null)
-        javaclass = TifGenerator.capitalize(tool, true);
+        javaclass = TifGenerator.capitalize(tool, true) + "Tif";
       TifGenerator gen = new TifGenerator();
       gen.readTifs(tifsfile);
       gen.selectTifs(tool);

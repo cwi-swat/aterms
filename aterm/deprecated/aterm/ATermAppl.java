@@ -129,7 +129,8 @@ public class ATermAppl extends ATerm
 					case '+':	case '=':	case '|':	case '~':
 					case '{':	case '}':	case '[':	case ']':
 					case ';':	case ':':	case '<':	case '>':
-					case ',':	case '.':	case '?':       case ' ':
+					case ',':	case '.':	case '?': case ' ':
+					case '/':
 						o.write(c);
 						break;
 					default:    

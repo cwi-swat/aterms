@@ -258,6 +258,9 @@ public class ATermList extends ATerm
   public int lastIndexOf(ATerm el, int start)
   {
     int index = 0, last = -1;
+		if(start < 0)
+			start += getLength();
+
     for(ATermList cur = this; !cur.isEmpty() && index<=start; 
 				cur = cur.getNext()) {
       if(cur.getFirst().equals(el))

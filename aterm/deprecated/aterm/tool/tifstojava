@@ -1,2 +1,2 @@
 #!/bin/sh
-java aterm.JavaTif $@
+java aterm.tool.JavaTif $@
