@@ -84,6 +84,12 @@ primes-cc: primes.c
 primes-gcc: primes.c
 	$(CC_DBG) $(CFLAGS_DBG) $(INCL) $(LFLAGS) -o primes-gcc primes.c $(LIBS_DBG)
 
+vararg1: vararg1.c
+	${CC_DBG} ${CFLAGS_DBG} ${INCL} ${LFLAGS} -o vararg1 vararg1.c ${LIBS_DBG}
+
+vararg2: vararg2.c
+	${CC_DBG} ${CFLAGS_DBG} ${INCL} ${LFLAGS} -o vararg2 vararg1.c ${LIBS_DBG}
+
 test-tool: test-tool.c
 	$(CC_DBG) $(CFLAGS_DBG) $(INCL) $(LFLAGS) -o test-tool test-tool.c \
 		$(LIBS_DBG) -L../toolbus -lATB-dbg -lsocket -lnsl

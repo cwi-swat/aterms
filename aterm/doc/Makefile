@@ -42,4 +42,7 @@ clean:
 		manual.dvi manual.ps \
 		encoding.ps header.ps 
 
+dist: at.ps manual.ps
+	cp at.ps manual.ps ${DISTDIR}
+
 # end of Makefile
