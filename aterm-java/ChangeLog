@@ -4,6 +4,8 @@ $Id$
  * Used backquotes to delay calling *-config scripts to after
    configure phase. Otherwise autobundle can't configure all packages
    before building them.
+ * Changed --with-jjtraveler to --with-JJTraveler because autobundle
+   demands that.
 
 2003-03-18 <jurgenv@cwi.nl>
  * Use shared-objects-config script to obtain last version of 
