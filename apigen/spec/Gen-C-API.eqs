@@ -11,9 +11,9 @@ equations
   gen-dict($API) = $Dict
   ===>
   gen-c-api($Prefix, $Prologue, $API) =
-        build-header-tag($CPrefix) $Header $$
-        build-source-tag($CPrefix) $Source $$
-        build-dict-tag($CPrefix) [ afuns([]), terms([$Dict]) ] $$
+        build-header-tag($Prefix) $Header $$
+        build-source-tag($Prefix) $Source $$
+        build-dict-tag($Prefix) [ afuns([]), terms([$Dict]) ] $$
 
 [equ-gen-header]
   gen-typedefs($API) = $Typedef*,
