@@ -507,7 +507,7 @@ void AT_freeTerm(int size, ATerm t)
 			/* fall-throughs are intended */
 			default:
 				found = ATtrue;
-				for(i=0; found && i<nrargs-6; i++)
+				for(i=nrargs-6; found && i>0; i--)
 					if(*(--arg_cur) != *(--arg_t))
 						found = ATfalse;
 				if(!found)
