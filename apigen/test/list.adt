@@ -3,6 +3,6 @@
     list(Modules, Module),
     list(Modules2, Module),
     constructor(ModuleList, Modules, list(<modules(Modules)>)),
-    separated-list(Separated,Module,[<wsl(Layout)>,"sep",<wsr(Layout)>]),
+    separated-list(Separated,Module,[l(<wsl(Layout)>),"sep",l(<wsr(Layout)>)]),
     constructor(Layout, Default, <string(str)>)
   ]

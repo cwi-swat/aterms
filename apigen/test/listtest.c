@@ -43,6 +43,7 @@ static void testList()
   sep[6] = concatSeparated(sep[6],l2,l1,sep[6]);
   assert(isEqualSeparated(reverseSeparated(sep[5]),sep[6])); 
   assert(getSeparatedLength(sep[6]) == 4);
+  assert(isEqualSeparated(SeparatedFromTerm(ATparse("[\"m2\",l(\"l2\"),\"sep\",l(\"l1\"),\"m1\",l(\"l2\"),\"sep\",l(\"l1\"),\"m2\",l(\"l2\"),\"sep\",l(\"l1\"),\"m1\"]")),sep[6]));
 }
 
 
