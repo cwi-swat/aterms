@@ -45,14 +45,14 @@ dnl {{{ Handle --with-aterm-java
 
 AC_PACKAGE_REQUIRE(aterm-java, aterm-java-config,
 	[  --with-aterm-java=DIR  ATerm-Java-library is in DIR])
-JAVA_ATERM="${ATERM_JAVA}/share/aterm-1.2beta.jar:${ATERM_JAVA}/share/jjtraveler-1.3.jar"
+JAVA_ATERM="`aterm-java-config`:${ATERM_JAVA}/share/jjtraveler-1.3.jar"
 AC_SUBST(JAVA_ATERM)
 dnl }}}
 dnl {{{ Handle --with-shared-objects
 
 AC_PACKAGE_REQUIRE(shared-objects, shared-objects-config,
 	[  --with-shared-objects=DIR  Shared-Objects-library is in DIR])
-SHARED_OBJECTS="${SHARED_OBJECTS}/share/shared-objects-1.1.jar"
+SHARED_OBJECTS=`shared-objects-config`
 AC_SUBST(SHARED_OBJECTS)
 dnl }}}
 dnl {{{ Handle --with-cflags

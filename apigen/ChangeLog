@@ -1,4 +1,8 @@
 
+2003-03-18  (jurgenv@cwi.nl)
+ * Use aterm-java-config and shared-objects-config to obtain the names
+   of the jar files.
+
 2003-03-15  (jurgenv@cwi.nl)
  * Added generation of jjtraveler interface
  * Fixed some bugs in C generation that were introduced in the last refactoring 
