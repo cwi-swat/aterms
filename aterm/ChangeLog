@@ -1,5 +1,9 @@
 $Id$
 
+2001/19/08 (olivierp@cwi.nl)
+ * Worked on bringing visitor implementation closer to Joost's official
+   framework.
+
 2001/06/08 (olivierp@cwi.nl)
  * Fixed implementation of AT(un)registerBlobDestructor
 

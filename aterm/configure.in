@@ -215,6 +215,7 @@ AC_OUTPUT( \
 	java/aterm/ATermVisitable.java \
 	java/aterm/ATermVisitor.java \
 	java/aterm/ATermVisitFailure.java \
+	java/aterm/ATermForward.java \
 	java/aterm/pure/Makefile \
 	java/aterm/pure/ATermVisitableImpl.java \
 	java/aterm/visitor/Makefile \
