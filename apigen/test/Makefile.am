@@ -102,15 +102,16 @@ builtins.c builtins.h: builtins.adt
 	$(ADTTOJAVA) \
 		--input ${top_srcdir}/test/$*.adt \
 		--name $* \
-		--output ${top_srcdir} \
+		--output ${top_builddir} \
 		--package test \
 		--version 0.1 \
 		--visitable
 	$(JAVAC) \
-		-classpath ${top_srcdir}:${JAVA_ATERM} \
-		${top_srcdir}/test/$($*_Main).java
+		-classpath ${top_srcdir}:${top_builddir}:${JAVA_ATERM} \
+		${top_srcdir}/test/$($*_Main).java \
+		-d ${top_builddir}
 	@(echo "#! /bin/sh"; \
-	  echo "CLASSPATH=.:${top_srcdir}:${JAVA_ATERM}"; \
+	  echo "CLASSPATH=.:${top_builddir}:${JAVA_ATERM}"; \
 	  echo "export CLASSPATH"; \
 	  echo "java test.$($*_Main) ${top_srcdir}/test") \
 	> $@ \
