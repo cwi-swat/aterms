@@ -964,6 +964,9 @@ extends Generator
       else if (field_type.equals("real")) {
         print("(Double) children.get(" + argnr + ")");
       }
+      else if (field_type.equals("term")) {
+        print("(aterm.ATerm) children.get(" + argnr + ")");
+      }
       else {
         print(field_type + ".fromTerm( (aterm.ATerm) children.get(" + argnr + "))");
       }
