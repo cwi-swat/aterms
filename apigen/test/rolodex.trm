@@ -1,0 +1,8 @@
+[
+home(["aap",voice(1)]),
+home(["noot",voice(2)]),
+home(["mies",voice(3)]),
+work(["artis",fax(4)]),
+work(["naturae",fax(5)]),
+work(["magistra",fax(6)])
+]

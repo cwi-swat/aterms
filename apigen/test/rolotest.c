@@ -33,6 +33,7 @@ static void testRolodex()
   list = makeRoloListMulti(rolo[1], list);
   list = makeRoloListMulti(rolo[0], list);
 
+  ATwarning("%t\n", list);
   list = visitRoloList(list, acceptRolodex);
 
   assert(ATisEqual(makeRolodexFromTerm(makeTermFromRolodex(rolo[0])), 

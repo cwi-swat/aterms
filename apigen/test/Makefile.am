@@ -7,15 +7,16 @@
 include ${top_srcdir}/make_rules
 
 ADTC		= ${top_builddir}/utils/adt-to-c --verbose
-ADTJAVA         = ${top_builddir}/utils/adt-to-java --verbose 
+ADTJAVA         = ${top_builddir}/utils/adt-to-java --verbose --visitable
 
-JAVATESTS = peano list
+JAVATESTS = peano list rolodex
 TESTS	  = listtest rolotest $(foreach j, ${JAVATESTS}, ${j}.java.sh)
 
 JAVAC=javac
 
 peano_Main = PeanoTest
 list_Main  = ListTest
+rolodex_Main = RoloTest
 
 # Building the C programs that are to be run during testing:
 check_PROGRAMS	= rolotest listtest
@@ -38,7 +39,7 @@ CLEANFILES		= ${check_PROGRAMS} ${check_LIBRARIES} \
 			*.java.sh peano/* list/* *.class
 
 EXTRA_DIST = rolodex.adt list.adt list.pro peano.adt \
-             PeanoTest.java ListTest.java  
+             PeanoTest.java ListTest.java  RoloTest.java rolodex.trm
 
 # Below the generation of Java and C API's:
 rolodex.c rolodex.h: rolodex.adt
@@ -66,5 +67,5 @@ list.c list.h: list.adt list.pro
 	@(echo "#! /bin/sh";\
 	  echo "CLASSPATH=.:${top_srcdir}:${JAVA_ATERM}:${SHARED_OBJECTS}";\
 	  echo "export CLASSPATH";\
-          echo "cd ${top_srcdir}" ;\
-	  echo "java test.$($*_Main)") > $@ && chmod +x $@
+          echo "cd ${top_srcdir}/test" ;\
+	  echo "java test.$($*_Main) ${top_srcdir}/test") > $@ && chmod +x $@
