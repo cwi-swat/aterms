@@ -1,5 +1,9 @@
 $Id$
 
+2003-07-21  Jurgen Vinju <jurgenv@cwi.nl>
+ * Set AC_PREREQ to 2.52 because in that version AC_COMPILE_IFELSE
+   is present.
+ 
 2003-07-09  Jurgen Vinju <jurgenv@cwi.nl>
  * Released aterm-2.0.2 by distchecking a checkout of 07/07/2003
  * Bumped to 2.0.3
