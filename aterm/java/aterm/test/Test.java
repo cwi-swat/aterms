@@ -191,6 +191,22 @@ public class Test
   }
 
   //}}}
+  //{{{ public void testList()
+
+  public void testList()
+  {
+    ATermList list = (ATermList)factory.parse("[1,2,3]");
+    ATermList result = list.remove(factory.parse("2"));
+    assert(result.equals(factory.parse("[1,3]")));
+    
+    list = (ATermList)factory.parse("[1,2,3]");
+    result = list.replace(factory.parse("99"), 1);
+    assert(result.equals(factory.parse("[1,99,3]")));
+  }
+
+  //}}}
+
+  
   //{{{ public void testAll()
 
   public void testAll()
@@ -201,6 +217,7 @@ public class Test
     testDict();
     testAnnos();
     testParser();
+    testList();
     /*testMakeList();
     testMakePlaceholder();
     testMakeBlob();
