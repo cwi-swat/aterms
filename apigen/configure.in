@@ -4,6 +4,7 @@ dnl
 
 dnl Process this file with autoconf to produce a configure script.
 AC_INIT(configure.in)
+AM_CONFIG_HEADER(config.h)
 AM_INIT_AUTOMAKE(apigen, 1.6)
 AC_PREREQ(2.13)
 
@@ -14,7 +15,7 @@ dnl Our own version of libdir whose value is set dynamically
 AC_SUBST(INSTLIBDIR)
 INSTLIBDIR="$libdir"
 
-AC_REQUIRE([AC_PROG_CC])
+AC_PROG_CC
 
 dnl What commands are needed to set the variable MAKE in Makefiles?
 AC_SET_MAKE
