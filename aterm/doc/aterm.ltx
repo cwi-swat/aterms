@@ -952,7 +952,95 @@ terms when the term size increases:
 
 \section{Applications}
 
+The \ATerm\ library is developed because there was need for such a generic and
+flexible datatype. The \ATerm\ library is already applied in quite a number
+of projects. In this section we will briefly discuss a number of these
+projects. Quite a number of these projects are triggered by the development
+of the new \asmetaenv\ \cite{BKMO97}.
+
 \subsection{Representing Parse Trees: AsFix, CasFix, etc.}
+
+A very first version of a \ATerm\ library was developed in combination
+with the \TB\ \cite{BK98}. This first version was used to represent
+terms which were transported between tools connected to the \TB. 
+Parallel to the development of the \TB, a formalism was developed
+to represent parse trees \cite{??}.
+The requirements for this formalism were:
+\begin{itemize}
+\item It should be easy machine processable.
+\item It should have a textual representation for human inspection.
+\item It should provide a mechanism to store auxilary information.
+\item The parse trees should be self-contained, thus all applied
+production rules must be available as well as the original layout
+and comments.
+\end{itemize}
+The first version of this formalism to represent parse trees was quite
+similar to the term representation used in the \TB.
+This observation triggered the combination of both datatypes into the
+\ATerm\ datatype.
+
+The \ATerm\ datatype proved to be a powerful and flexible mechanism
+to represent (abstract) syntax trees. By defining an appropriate set
+of function names specific formalisms for representing parse trees
+and (abstract) syntax trees can be created.
+
+\subsubsection{AsFix}
+
+\asfix\ is a formalism to represent \asdf\ modules and terms. Instead
+of giving the abstract syntax representation of modules and terms, it
+was decided to give the parse tree representation which not only
+contains the applied syntax rules but also all original layout and
+comments. This makes it possible to develop tools, such as (structure)
+editors and rewrite engines, which process \asfix\
+terms without consulting a common database.
+
+\ATerms\ can be used for representing parse trees
+by instantiating function symbols with appropriate values.
+Suppose we have the following function symbols:
+\begin{itemize}
+\item $\mbox{\tt prod}(T)$ represents production
+rule $T$.
+\item $\mbox{\tt appl}(T_1,T_2)$ represents
+applying production rule $T_1$ to the arguments $T_2$.
+\item $\mbox{\tt l}(T)$ represents literal $T$.
+\item $\mbox{\tt sort}(T)$ represents sort $T$.
+\item  $\mbox{\tt lex}(T_1,T_2)$ represents
+(lexical) token $T_1$ of sort  $T_2$.
+\item $\mbox{\tt w}(T)$ represents white space $T$.
+\end{itemize}
+With the functions defined above we can represent simple parse trees in
+\aterms.
+
+The following context-free syntax rules (in \sdf\ \cite{HHKR92.new}) are
+necessary to parse the input sentence {\tt true or false}.
+
+\begin{small}
+\begin{verbatim}
+sort Bool
+context-free syntax
+  true         -> Bool
+  false        -> Bool
+  Bool or Bool -> Bool {left}
+\end{verbatim}
+\end{small}
+The parse tree below represents the input sentence {\tt true or false}
+in \ATerms.
+
+\begin{small}
+\begin{verbatim}
+appl(prod([sort("Bool"),l("or"),sort("Bool")],sort("Bool"),
+          attrs([atr("left")])),
+     [appl(prod([l("true")],sort("Bool"),no-attrs),[l("true")]),
+      w(" "),l("or"),w(" "),
+      appl(prod([l("false")],sort("Bool"),no-attrs),[l("false")])
+     ])
+\end{verbatim}
+\end{small}
+Note that this parse tree is completely self-contained and does not depend
+on a separate grammar definition.
+It is clear that this way of representing parse trees contains a lot of
+redundant information. Therefor, both the maximal sharing and BAF are 
+essential to reduce the size of these terms.
 
 \subsection{ASF+SDF Meta-Environment}
 
