@@ -1,7 +1,7 @@
 #
 # vim:ts=8:sw=8:sts=0
 #
-# $Id: Makefile.am,v 1.7 2003/03/20 12:06:16 jurgenv Exp $
+# $Id$
 #
 
 include $(top_srcdir)/make_rules

@@ -1,27 +1,32 @@
 2003-08-15  (jurgenv@cwi.nl)
- * Generating reverse method is unnecessary again
- 
+ * Generating reverse method is unnecessary again.
+ * Renamed lib directory to lib-2.0 and old-lib directory to lib-1.0
+ * Renamed convert-old-adt tool to upgrade-adt
+
 2003-08-13  (jurgenv@cwi.nl)
- * Major change in code generation. The first step toward no more static references
-   to factories. All things related to patterns are moved to the generated factory
-   to prevent static methods. All generated classes have a constructor that 
-   initializes a local factory field. The factory is not added to the init method
-   to prevent copying the factory reference when it is not needed at all because of
-   sharing. 
+ * Major change in code generation. The first step toward no more static
+   references
+   to factories. All things related to patterns are moved to the generated
+   factory to prevent static methods. All generated classes have a
+   constructor that initializes a local factory field. The factory is
+   not added to the init method to prevent copying the factory reference
+   when it is not needed at all because of sharing.
  * The fromTerm() and fromString methods have been moved to the factory.
-   For example: Nat.fromTerm(ATerm trm) is now PeanoFactory.NatFromTerm(ATerm trm).
- * Each class overrides the equivalent method that uses an instanceof and then
-   super.equivalent. This prevents that the SharedObjectFactory returns an object
-   of the wrong type, but with the same hashCode.
- * Bootstrapped ApiGen with new ADT api
- * aterm-java was changed not to use static references to factories anymore. So
-   now apigen had to be adapted to the new aterm-java implementation. 
-   WARNING: because the ATerm library for Java has changed, it is now imperative
-   to regenerate all Java libraries.
-   
+   For example: Nat.fromTerm(ATerm trm) is now
+   PeanoFactory.NatFromTerm(ATerm trm).
+ * Each class overrides the equivalent method that uses an instanceof
+   and then
+   super.equivalent. This prevents that the SharedObjectFactory returns
+   an object of the wrong type, but with the same hashCode.
+ * Bootstrapped ApiGen with new ADT api * aterm-java was changed not to
+   use static references to factories anymore. So
+   now apigen had to be adapted to the new aterm-java implementation.
+   WARNING: because the ATerm library for Java has changed, it is now
+   imperative to regenerate all Java libraries.
+
 2003-08-13    <pem@bach>
-	* apigen/gen/java/FactoryGenerator.java: fix a major bug in the 
-	  initialization of empty<List>: annotation was null!
+ * apigen/gen/java/FactoryGenerator.java: fix a major bug in the
+   initialization of empty<List>: annotation was null!
 
 2003-08-10  (moreau@loria.fr)
  * fix several bugs related to Tom

@@ -74,8 +74,8 @@ Makefile
 utils/Makefile
 utils/adt-to-c
 utils/adt-to-java
-lib/Makefile
-old-lib/Makefile
+lib-1.0/Makefile
+lib-2.0/Makefile
 apigen/Makefile
 apigen/adt/Makefile
 apigen/gen/Makefile
