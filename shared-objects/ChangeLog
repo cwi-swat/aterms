@@ -1,5 +1,8 @@
 # $Id$
 
+Tue Feb 10 15:27:49 CET 2004 <m336@cwi.nl>
+ * upgrade auto* to: autoconf 2.59, automake 1.7.9, libtool 1.5.2
+
 Mon Feb  2 14:33:06 CET 2004 <jong@cwi.nl>
  * Makefile.am: add generated package file to CLEANFILES
  * configure.in: remove prereq on ac 2.13
