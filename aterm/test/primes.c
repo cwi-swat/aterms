@@ -71,7 +71,7 @@ int main(int argc, char *argv[])
 		if(strcmp(argv[i], "-max") == 0)
 			max = atoi(argv[++i]);
 
-	ATinit(argc, argv, NULL, &bottomOfStack);
+	ATinit(argc, argv, &bottomOfStack);
 
 	numbers = generate_numbers(max);
 	primes  = filter_non_primes(numbers);
