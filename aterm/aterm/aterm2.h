@@ -62,14 +62,15 @@ typedef struct
 	void       *data;
 } *ATermBlob;
 
-typedef struct ATermTable
-{
-  int size;
-  int nr_entries;
-  int max_load;
-	int max_entries;
-  ATermList *entries;
-} *ATermTable;
+/* gewijzigd door JFG */
+
+struct ATermTable;
+
+typedef struct ATermTable *ATermIndexedSet;
+typedef struct ATermTable *ATermTable;
+
+/* einde wijziging JFG */
+
 
 /** The following functions implement the operations of
   * the 'standard' ATerm interface, and should appear
@@ -167,13 +168,28 @@ ATerm     ATdictGet(ATerm dict, ATerm key);
 ATerm     ATdictPut(ATerm dict, ATerm key, ATerm value);
 ATerm     ATdictRemove(ATerm dict, ATerm key);
 
-ATermTable ATtableCreate(int initial_size, int max_load_pct);
+/* Gewijzigd door JFG */
+
+ATermTable ATtableCreate(long initial_size, int max_load_pct);
 void       ATtableDestroy(ATermTable table);
+void       ATtableReset(ATermTable table);
 void       ATtablePut(ATermTable table, ATerm key, ATerm value);
 ATerm	   ATtableGet(ATermTable table, ATerm key);
 void       ATtableRemove(ATermTable table, ATerm key);
 ATermList  ATtableKeys(ATermTable table);
 ATermList  ATtableValues(ATermTable table);
+
+ATermIndexedSet   
+           ATindexedSetCreate(long initial_size, int max_load_pct);
+void       ATindexedSetDestroy(ATermIndexedSet set);
+void       ATindexedSetReset(ATermIndexedSet set);
+long       ATindexedSetPut(ATermIndexedSet set, ATerm key, ATbool *new);
+long       ATindexedSetGet(ATermIndexedSet set, ATerm key);
+void       ATindexedSetRemove(ATermIndexedSet set, ATerm key);
+ATermList  ATindexedSetKeys(ATermIndexedSet set);
+ATerm      ATgetKeyAtIndex(ATermIndexedSet set, long index);
+
+/* Einde wijziging JFG */
 
 /* Higher order functions */
 ATermList ATfilter(ATermList list, ATbool (*predicate)(ATerm));

@@ -3,6 +3,8 @@
   * list.c: implementation of list functions.
   */
 
+/*{{{  includes */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -12,14 +14,22 @@
 #include "aterm2.h"
 #include "debug.h"
 
+/*}}}  */
+/*{{{  defines */
+
 #define DEFAULT_LIST_BUFFER 256
 #define RESIZE_BUFFER(n) if(n > buffer_size) resize_buffer(n)
 #define MAGIC_K	1999
+
+/*}}}  */
+/*{{{  variables */
 
 char list_id[] = "$Id$";
 
 static int buffer_size = 0;
 static ATerm *buffer;
+
+/*}}}  */
 
 /*{{{  void AT_initList(int argc, char *argv[]) */
 
@@ -639,187 +649,6 @@ ATermList ATgetArguments(ATermAppl appl)
 	}
 
   return result;
-}
-
-/*}}}  */
-/*{{{  ATermTable ATtableCreate(int initial_size, int maxload) */
-
-/**
-  * Create a new ATerm table.
-  */
-
-ATermTable ATtableCreate(int initial_size, int maxload)
-{
-  int i;
-  ATermTable table;
-
-  assert(initial_size > 0 && maxload > 0);
-  table = (ATermTable)calloc(1, sizeof(struct ATermTable));
-  if(!table)
-		ATerror("ATtableCreate: cannot allocate new ATermTable\n");
-
-  table->size        = initial_size;
-  table->nr_entries  = 0;
-	table->max_load    = maxload;
-  table->max_entries = (table->max_load*table->size)/100;
-  table->entries     = (ATermList *)malloc(table->size*sizeof(ATermList));
-  if(!table->entries)
-		ATerror("ATtableCreate: cannot allocate %d entries.\n", table->size);
-  for(i=0; i<table->size; i++)
-		table->entries[i] = ATempty;
-
-  ATprotectArray((ATerm *)table->entries, table->size);
-
-  return table;
-}
-
-/*}}}  */
-/*{{{  void ATtableDestroy(ATermTable table) */
-
-/**
-	* Destroy an ATermTable, freeing all memory associated with it.
-	*/
-
-void ATtableDestroy(ATermTable table)
-{
-  ATunprotectArray((ATerm *)table->entries);
-  free(table->entries);
-  free(table);
-}
-
-/*}}}  */
-/*{{{  void ATtablePut(ATermTable table, ATerm key, ATerm value) */
-
-/**
-	* Store a new key/value pair in an ATermTable.
-	*/
-
-#define TABLE_HASH(key,h) ((unsigned int)((key)>>2)*MAGIC_K ^ ((h)>>8))
-
-void ATtablePut(ATermTable table, ATerm key, ATerm value)
-{
-  unsigned int hnr = TABLE_HASH((unsigned int)key, key->header);
-  hnr %= table->size;
-
-	assert(AT_isValidTerm(key));
-	assert(AT_isValidTerm(value));
-
-  table->entries[hnr] = (ATermList)ATdictPut((ATerm)table->entries[hnr], 
-											 key, value);
-	table->nr_entries++;
-
-  if(table->nr_entries > table->max_entries) {
-    /* Resize hashtable */
-		int i, old_size = table->size;
-		ATermList *old_entries = table->entries;
-
-    table->size *= 2;
-		table->entries = calloc(table->size, sizeof(ATermList));
-		if(!table->entries)
-			ATerror("ATtablePut: cannot re-alloc to %d entries.\n", table->size);
-		table->max_entries   = (table->max_load*table->size)/100;
-		for(i=0; i<table->size; i++)
-			table->entries[i] = ATempty;
-		ATprotectArray((ATerm *)table->entries, table->size);
-		
-		for(i=0; i<old_size; i++) {
-			ATermList list = old_entries[i];
-			while(!ATisEmpty(list)) {
-				ATermList pair = (ATermList)ATgetFirst(list);
-				ATerm key, val;
-
-				assert(ATgetType(pair) == AT_LIST);
-
-				key = ATgetFirst(pair);
-				val = ATgetFirst(ATgetNext(pair));
-				ATtablePut(table, key, val);
-				list = ATgetNext(list);
-			}
-		}
-		ATunprotectArray((ATerm *)old_entries);
-		free(old_entries);
-  }
-}
-
-/*}}}  */
-/*{{{  ATerm ATtableGet(ATermTable table, ATerm key) */
-
-/**
-	* Retrieve a value from an ATermTable.
-	*/
-
-ATerm ATtableGet(ATermTable table, ATerm key)
-{
-  unsigned int hnr = TABLE_HASH((unsigned int)key, key->header);
-  hnr %= table->size;
-	
-  return ATdictGet((ATerm)table->entries[hnr], key);
-}
-
-/*}}}  */
-/*{{{  void ATtableRemove(ATermTable table, ATerm key) */
-
-/**
-	* Remove a key/value pair from an ATermTable.
-	*/
-
-void ATtableRemove(ATermTable table, ATerm key)
-{
-  unsigned int hnr = TABLE_HASH((unsigned int)key, key->header);
-  hnr %= table->size;
-
-  table->entries[hnr] = (ATermList)ATdictRemove((ATerm)table->entries[hnr],key);
-	table->nr_entries--;
-}
-
-/*}}}  */
-/*{{{  ATermList ATtableKeys(ATermTable table) */
-
-/**
-	* Retrieve a list of all keys in an ATermTable.
-	*/
-
-ATermList ATtableKeys(ATermTable table)
-{
-	int i;
-	ATermList keys = ATempty;
-	ATermList list;
-
-	for(i=0; i<table->size; i++) {
-		list = table->entries[i];
-		while(!ATisEmpty(list)) {
-			ATermList pair = (ATermList)ATgetFirst(list);
-			ATerm key = ATgetFirst(pair);
-			keys = ATinsert(keys, key);
-			list = ATgetNext(list);
-		}
-	}
-	return keys;
-}
-
-/*}}}  */
-/*{{{  ATermList ATtableValues(ATermTable table) */
-
-/**
-	* Retrieve a list of all values in an ATermTable.
-	*/
-
-ATermList ATtableValues(ATermTable table)
-{
-	int i;
-	ATermList values = ATempty;
-	ATermList list;
-
-	for(i=0; i<table->size; i++) {
-		list = table->entries[i];
-		while(!ATisEmpty(list)) {
-			ATermList pair = (ATermList)ATgetFirst(list);
-			ATerm val = ATgetFirst(ATgetNext(pair));
-			values = ATinsert(values, val);
-			list = ATgetNext(list);
-		}
-	}
-	return values;
 }
 
 /*}}}  */

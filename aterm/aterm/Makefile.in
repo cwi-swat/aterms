@@ -64,8 +64,8 @@ SCRIPTS		= baf2trm trm2baf trmcat
 BINARIES	= termsize baffle
 PROGS		= ${BINARIES} ${SCRIPTS}
 PROGSRCS	= termsize.c baffle.c
-ATERMSRCS	= aterm.c list.c make.c memory.c afun.c gc.c bafio.c \
-		version.c
+ATERMSRCS	= aterm.c list.c make.c memory.c afun.c gc.c hash.c bafio.c \
+		version.c 
 ATERMLIBS	= libATerm-gcc.a libATerm-cc.a libATerm-dbg.a libATerm-prof.a \
 		libATerm-ns.a ${LIB_CC64} ${LIB_SHARED}
 PUBLIC_INCL	= abool.h aterm1.h aterm2.h deprecated.h encoding.h afun.h
