@@ -28,6 +28,13 @@
 \newcommand{\metaenv}{{\sc Asf+Sdf}\ Meta-En\-vir\-on\-ment}
 \newcommand{\sdf}{\mbox{\sc Sdf}}
 
+\newcommand{\heading}[1]{\noindent\textbf{#1}}
+
+% }}}
+% {{{  snippet environment
+
+\newenvironment{snippet}{\begin{scriptsize}}{\end{scriptsize}\hrulefill}
+
 % }}}
 
 \begin{document}
@@ -935,9 +942,10 @@ needed to produce legible, type-safe \C\ code. Optimizations to the
 generated code can easily be obtained by removing type-safety checks,
 resulting in a more efficient production version of the code.
 
+% {{{  Generated types and functions
+
 \subsection{Generated types and functions}
 For each sortname in an \adt, we generate the following items:
-% {{{  Generated items
 
 \begin{itemize}
 
@@ -975,6 +983,7 @@ each of the fields in a sort.
 \end{itemize}
 
 % }}}
+% {{{  Implementation
 
 \subsection{Implementation}
 
@@ -1031,11 +1040,137 @@ of all exported \api\ functions. An abridged version of the header file
 
 % }}}
 
+% {{{  Term convertors
+
+\heading{Term convertors}
+\begin{snippet}
+\begin{verbatim}
+  Bool BoolFromTerm(ATerm t) { return (Bool)t; }
+  ATerm BoolToTerm(Bool arg) { return (ATerm)arg; }
+\end{verbatim}
+\end{snippet}
+
+% }}}
+% {{{  Equality tests
+
+\heading{Equality tests}
+\begin{snippet}
+\begin{verbatim}
+  ATbool isEqualBool(Bool arg0, Bool arg1) {
+    return ATisEqual((ATerm)arg0, (ATerm)arg1);
+  }
+\end{verbatim}
+\end{snippet}
+
+% }}}
+% {{{  Validity test
+
+\heading{Validity test}
+\begin{snippet}
+\begin{verbatim}
+  ATbool isValidBool(Bool arg) {
+    if (isBoolTrue(arg)) { return ATtrue; }
+    else if (isBoolFalse(arg)) { return ATtrue; }
+    else if (isBoolNot(arg)) { return ATtrue; }
+    else if (isBoolAnd(arg)) { return ATtrue; }
+    else if (isBoolOr(arg)) { return ATtrue; }
+    return ATfalse;
+}
+\end{verbatim}
+\end{snippet}
+
+% }}}
+% {{{  Inspectors
+
+\heading{Inspectors}
+\begin{snippet}
+\begin{verbatim}
+  inline ATbool isBoolTrue(Bool arg) {
+    static ATerm last_arg = NULL;
+    static int last_gc = -1;
+    static ATbool cached_result;
+
+    assert(arg != NULL);
+
+    if (last_gc != ATgetGCCount() || (ATerm)arg != last_arg) {
+      last_arg = (ATerm)arg;
+      cached_result = ATmatchTerm((ATerm)arg, patternBoolTrue);
+      last_gc = ATgetGCCount();
+    }
+
+    return cached_result;
+  }
+\end{verbatim}
+\end{snippet}
+
+% }}}
+% {{{  Query accessor
+
+\heading{Query accessor}
+\begin{snippet}
+\begin{verbatim}
+  ATbool hasBoolLhs(Bool arg) {
+    if (isBoolAnd(arg)) { return ATtrue; }
+    else if (isBoolOr(arg)) { return ATtrue; }
+    return ATfalse;
+  }
+\end{verbatim}
+\end{snippet}
+
+% }}}
+% {{{  Get accessor
+
+\heading{Get accessor}
+\begin{snippet}
+\begin{verbatim}
+  Bool getBoolLhs(Bool arg) {
+    if (isBoolAnd(arg)) {
+      return (Bool)ATgetFirst((ATermList)ATgetArgument((ATermAppl)arg, 1));
+    }
+    else 
+      return (Bool)ATgetFirst((ATermList)ATgetArgument((ATermAppl)arg, 1));
+  }
+\end{verbatim}
+\end{snippet}
+
+% }}}
+% {{{  Set accessor
+
+\heading{Set accessor}
+\begin{snippet}
+\begin{verbatim}
+  Bool setBoolLhs(Bool arg, Bool lhs)
+  {
+    if (isBoolAnd(arg)) {
+      return (Bool)
+        ATsetArgument((ATermAppl)arg,
+                      (ATerm)ATreplace((ATermList)ATgetArgument((ATermAppl)arg, 1),
+                                       (ATerm)lhs, 0), 1);
+    }
+    else if (isBoolOr(arg)) {
+      return (Bool)
+        ATsetArgument((ATermAppl)arg,
+                      (ATerm)ATreplace((ATermList)ATgetArgument((ATermAppl)arg, 1),
+                                       (ATerm)lhs, 0), 1);
+    }
+  
+    ATabort("Bool has no Lhs: %t\n", arg);
+    return (Bool)NULL;
+  }
+\end{verbatim}
+\end{snippet}
+
 % }}}
 
-\section{Code reduction in the \metaenv}
+% }}}
 
-\begin{figure}
+% }}}
+% {{{  Code reduction in the \metaenv
+
+\section{Code reduction in the \metaenv}
+\label{sec:reduction}
+
+\begin{figure}[htb]
 \begin{tabular}{|l|r|r|r|}
 \hline
 Component     & Before (LOC)  & After (LOC) & Reduction (\%) \\
@@ -1062,10 +1197,18 @@ module-db     &		1809  &	      1244  &	31	\\
 %% \hline
 
 \end{tabular}
-\caption{\label{table.reduction}Code Reduction}
+\caption{\label{fig:reduction}Code Reduction}
 \end{figure}
 
+
+% }}}
+% {{{  Related Work
+
 \section{Related Work}
+\label{sec:related}
+
+% {{{  Zephyr ASDL
+
 \subsection{Zephyr ASDL}
 \begin{itemize}
 \item Targeted at compiler building (much like ATerms)
@@ -1075,6 +1218,10 @@ module-db     &		1809  &	      1244  &	31	\\
 \item No sharing
 \item No garbage collection (in C/C++)
 \end{itemize}
+
+
+% }}}
+% {{{  COM/Corba IDL compiler
 
 \subsection{(D)COM/Corba IDL compiler}
 \begin{itemize}
@@ -1087,6 +1234,9 @@ module-db     &		1809  &	      1244  &	31	\\
 \item (D)COM very windows specific
 \end{itemize}
 
+% }}}
+% {{{  XML access
+
 \subsection{XML access}
 Comparable approach: generate classes from schema/DTD representing XML entities.
 Typical example: jaxb (http://java.sun.com/xml/jaxb)
@@ -1097,10 +1247,15 @@ Typical example: jaxb (http://java.sun.com/xml/jaxb)
 \item Code generation can be steered (using a spec. in XML)
 \end{itemize}
 
+% }}}
 
-\texttt{TODO: beef up examples + more and better explanation} \\
-\texttt{TODO: practical work in meta-environment + statistics on code reduction} \\
-\texttt{TODO: conclusions / future work} \\
+% }}}
+% {{{  Conclusions and Future Work
+
+\section{Conclusions and Future Work}
+\label{sec:conclusions}
+
+% }}}
 
 % {{{  Bibliography
 
@@ -1138,6 +1293,8 @@ is presented here.
 \end{scriptsize}
 
 % }}}
+% {{{  Example generated dictionary file
+
 \section{Example generated dictionary file}
 \label{app:bool_and_dict}
 An abbreviated version of the generated dictionary file for the
@@ -1147,6 +1304,8 @@ by an ellipsis (\texttt{...}).
 \begin{scriptsize}
 \verbatiminput{bool_and_dict}
 \end{scriptsize}
+
+% }}}
 % }}}
 
 \end{document}
