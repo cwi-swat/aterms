@@ -158,6 +158,8 @@ ATermList ATremoveElementAt(ATermList list, int idx);
 ATermList ATremoveAll(ATermList list, ATerm el);
 ATermList ATreplace(ATermList list, ATerm el, int idx);
 ATermList ATreverse(ATermList list);
+ATermList ATsort(ATermList list, int (*compare)(const ATerm t1, const ATerm t2));
+int       ATcompare(ATerm t1, ATerm t2);
 ATerm     ATdictCreate();
 ATerm     ATdictGet(ATerm dict, ATerm key);
 ATerm     ATdictPut(ATerm dict, ATerm key, ATerm value);

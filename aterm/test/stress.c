@@ -411,6 +411,19 @@ void testList(void)
 				      (ATermList)ATparse("[c,d]"), 2),
 			ATparse("[1,2,c,d]")));
 
+  test_assert("list-ops", 27,
+	      ATisEqual(ATsort((ATermList)ATparse("[3,2,1]"), ATcompare),
+			ATparse("[1,2,3]")));
+
+  test_assert("list-ops", 28,
+	      ATisEqual(ATsort((ATermList)ATparse("[[1,2],[1]]"), ATcompare),
+			ATparse("[[1],[1,2]]")));
+
+  test_assert("list-ops", 29,
+	      ATisEqual(ATsort((ATermList)ATparse("[c,f(b,1),a,b,f(b),1.3,1.2]"),
+			       ATcompare),
+			ATparse("[a,b,c,f(b),f(b,1),1.2,1.3]")));
+
   printf("list tests ok.\n");
 }
 
