@@ -1,5 +1,8 @@
 # $Id$
 
+2004/01/30 <jurgenv@cwi.nl>
+ * Compliant with automake-1.6
+
 2003/07/02    <jurgenv@cwi.nl>
  * Bumped to 1.4
  * Added javadoc comments to the SharedObject interface.
