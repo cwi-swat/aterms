@@ -1,9 +1,13 @@
 $Id$
 
 2002-07-29 (jurgenv@cwi.nl)
+  * Bumped to 0.2beta
+
+2002-07-29 (jurgenv@cwi.nl)
   * Changed configuration option --with-xml to --with-libxml2 to
     conform with autobundle
   * Delayed calling xml2-config to build time 
+  * Rereleased 0.1
 
 2002-07-24 (jurgenv@cwi.nl)
   * Made aterm2xml compliant with Meta-Environment commandline interface
