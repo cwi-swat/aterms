@@ -709,12 +709,52 @@ extends Generator
     genAltToTerm(type,alt);
     genOverrideProperties(type,alt);
     genAltGetAndSetMethods(type, alt);
+    genAltHashFunction(type, alt);
     if (visitable) {
       genAltVisitableInterface(type, alt);
     }
     
     println("}");
   }
+
+	private void genAltHashFunction(Type type, Alternative alt) 
+  {
+    int arity = computeAltArity(type, alt);
+    String goldenratio = "0x9e3779b9";
+    int magicinit = 0;
+    String initval = new String(new Integer(magicinit + arity).toString());
+        
+    if (!hasReservedTypeFields(type,alt)) {
+      println("  protected int hashFunction() {");
+      println("    int c = " + initval + " + (getAnnotations().hashCode()<<8);");
+      println("    int a = " + goldenratio + ";");
+      println("    int b = " + goldenratio + ";");
+      
+      String[] bucket = {"a","a","a","a","b","b","b","b","c","c","c","c"};
+      
+      for (int i = arity - 1; i >= 0; i--) {
+        int shift = (i%4) * 8;
+        println("    " + bucket[i%12] + 
+                " += (getArgument(" + i + ").hashCode() << " + 
+                shift + ");");
+      }
+  
+      println();
+      println("    a -= b; a -= c; a ^= (c >> 13);");
+      println("    b -= c; b -= a; b ^= (a << 8);");
+      println("    c -= a; c -= b; c ^= (b >> 13);");
+      println("    a -= b; a -= c; a ^= (c >> 12);");
+      println("    b -= c; b -= a; b ^= (a << 16);");
+      println("    c -= a; c -= b; c ^= (b >> 5);");
+      println("    a -= b; a -= c; a ^= (c >> 3);");
+      println("    b -= c; b -= a; b ^= (a << 10);");
+      println("    c -= a; c -= b; c ^= (b >> 15);");
+      println();
+      println("    return c;");
+      println("  }");
+    }
+	}
+
 
 	private void genAltToTerm(Type type, Alternative alt) {
     if (hasReservedTypeFields(type, alt)) {
