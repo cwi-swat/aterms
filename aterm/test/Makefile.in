@@ -1,4 +1,4 @@
-# @configure_input@
+# vim:ts=8:sw=8
 
 PRODUCT		= @PRODUCT@
 VERSION		= @VERSION@
@@ -7,9 +7,9 @@ srcdir		= @srcdir@
 top_srcdir	= @top_srcdir@
 prefix		= @prefix@
 exec_prefix	= @exec_prefix@
-bindir      = $(exec_prefix)/bin
-libdir      = $(exec_prefix)/lib
-includedir  = $(prefix)/include
+bindir      	= $(exec_prefix)/bin
+libdir      	= $(exec_prefix)/lib
+includedir  	= $(prefix)/include
 
 CC_GCC		= @CC_GCC@
 CC_CC		= @CC_CC@
@@ -69,17 +69,17 @@ dist: ${DISTFILES}
 install:
 
 stress-cc: stress.c
-	$(CC_CC) $(CFLAGS_CC) $(INCL) $(LFLAGS) -o stress-cc stress.c $(LIBS_CC)
+	$(CC_CC) $(CFLAGS_CC) $(DEFS_CC) $(INCL) $(LFLAGS) -o stress-cc stress.c $(LIBS_CC)
 
 stress-gcc: stress.c
-	$(CC_DBG) $(CFLAGS_DBG) $(INCL) $(LFLAGS) -o stress-gcc stress.c $(LIBS_DBG)
+	$(CC_DBG) $(CFLAGS_DBG) $(DEFS_GCC) $(INCL) $(LFLAGS) -o stress-gcc stress.c $(LIBS_DBG)
 
 asfixtest: asfixtest.c
-	$(CC_DBG) $(CFLAGS_DBG) $(INCL) $(LFLAGS) -o asfixtest asfixtest.c \
+	$(CC_DBG) $(CFLAGS_DBG) $(DEFS_DBG) $(INCL) $(LFLAGS) -o asfixtest asfixtest.c \
 	-L../asfix -lAsFix-gcc $(LIBS_DBG)
 
 primes-cc: primes.c
-	$(CC_CC) $(CFLAGS_CC) $(INCL) $(LFLAGS) -o primes-cc primes.c $(LIBS_CC)
+	$(CC_CC) $(CFLAGS_CC) $(DEFS_PROF) $(INCL) $(LFLAGS) -o primes-cc primes.c $(LIBS_CC)
 
 primes-gcc: primes.c
 	$(CC_DBG) $(CFLAGS_DBG) $(INCL) $(LFLAGS) -o primes-gcc primes.c $(LIBS_DBG)

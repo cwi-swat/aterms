@@ -1,3 +1,5 @@
+# vim:ts=8:sw=8
+
 PRODUCT		= @PRODUCT@
 VERSION		= @VERSION@
 
@@ -5,9 +7,9 @@ srcdir		= @srcdir@
 top_srcdir	= @top_srcdir@
 prefix		= @prefix@
 exec_prefix	= @exec_prefix@
-bindir      = $(exec_prefix)/bin
-libdir      = $(exec_prefix)/lib
-includedir  = $(prefix)/include
+bindir      	= $(exec_prefix)/bin
+libdir      	= $(exec_prefix)/lib
+includedir  	= $(prefix)/include
 
 CC_GCC		= @CC_GCC@
 CC_CC		= @CC_CC@
@@ -34,7 +36,7 @@ LFLAGS_GCC	= @LFLAGS_GCC@
 LFLAGS_DBG	= @LFLAGS_DBG@
 LFLAGS_PROF	= @LFLAGS_PROF@
 
-AR			= @AR@
+AR		= @AR@
 AR_FLAGS	= cr
 
 INSTALL		= @INSTALL@
@@ -74,16 +76,16 @@ install: ${ATBLIBS} ${PUBLIC_INCL} ${PROGS}
 	done
 
 %-cc.o: %.c
-	${CC_CC} ${CFLAGS_CC} -I../aterm -c -o $@ $<
+	${CC_CC} ${CFLAGS_CC} ${DEFS_CC} -I../aterm -c -o $@ $<
 
 %-gcc.o: %.c
-	${CC_GCC} ${CFLAGS_GCC} -I../aterm -c -o $@ $<
+	${CC_GCC} ${CFLAGS_GCC} ${DEFS_GCC} -I../aterm -c -o $@ $<
 
 %-dbg.o: %.c
-	${CC_DBG} ${CFLAGS_DBG} -I../aterm -c -o $@ $<
+	${CC_DBG} ${CFLAGS_DBG} ${DEFS_DBG} -I../aterm -c -o $@ $<
 
 %-prof.o: %.c
-	${CC_PROF} ${CFLAGS_PROF} -I../aterm -c -o $@ $<
+	${CC_PROF} ${CFLAGS_PROF} ${DEFS_PROF} -I../aterm -c -o $@ $<
 
 libATB-cc.a: ${OBJ_CC}
 	${AR} ${AR_FLAGS} $@ ${OBJ_CC}
