@@ -1,45 +1,50 @@
 
-PRODUCT		= aterm
-VERSION		= 0.0.1
+CC_CC		= cc
+CC_GCC		= gcc
 
-CC		= gcc
-CFLAGS		= -g -ansi -pedantic -Wall
-INCLUDES	= -I ../asfix -I../aterm
+CFLAGS_CC	= -O
+CFLAGS_GCC	= -g -ansi -pedantic -Wall
+
+INCL		= -I../asfix -I../aterm
 DEFS		=
-LFLAGS		= -g
-LIBS		= -L../asfix -lAsFix -L../aterm -lATerm -L$(EFENCE) -lefence
-AR		= ar
+LFLAGS		=
+
+#LIBS_GCC	= -L../aterm -lATerm-dbg -L$(EFENCE) -lefence
+LIBS_GCC	= -L../aterm -lATerm-dbg -L$(EFENCE)
+LIBS_CC		= -L../aterm -lATerm-cc
+AR			= ar
 
 EFENCE		= /home/olivierp/ElectricFence-2.0.5
-TESTS		= test-stress
-TESTPRGS	= stress asfixtest primes
+TESTPRGS	= stress-cc stress-gcc primes-cc primes-gcc asfixtest
 TESTSRCS	= stress.c asfixtest.c primes.c
 TESTOBJS	= stress.o asfixtest.o primes.o
 
-all: clean $(TESTPRGS) $(TESTS)
+all: $(TESTPRGS) $(TESTS)
 
-stress: stress.o
-	$(CC) $(LFLAGS) -o stress stress.o $(LIBS)
+stress-cc: stress.c
+	$(CC_CC) $(CFLAGS_CC) $(INCL) $(LFLAGS) -o stress-cc stress.c $(LIBS_CC)
 
-asfixtest: asfixtest.o
-	$(CC) $(LFLAGS) -o asfixtest asfixtest.o $(LIBS)
+stress-gcc: stress.c
+	$(CC_GCC) $(CFLAGS_GCC) $(INCL) $(LFLAGS) -o stress-gcc stress.c $(LIBS_GCC)
 
-primes: primes.o
-	$(CC) $(LFLAGS) -o primes primes.o $(LIBS)
+asfixtest: asfixtest.c
+	$(CC_GCC) $(CFLAGS_GCC) $(INCL) $(LFLAGS) -o asfixtest asfixtest.c \
+	-L../asfix -lAsFix $(LIBS_GCC)
 
-include ../implicit-rules
+primes-cc: primes.c
+	$(CC_CC) $(CFLAGS_CC) $(INCL) $(LFLAGS) -o primes-cc primes.c $(LIBS_CC)
 
-test-stress: stress
-	stress
+primes-gcc: primes.c
+	$(CC_GCC) $(CFLAGS_GCC) $(INCL) $(LFLAGS) -o primes-gcc primes.c $(LIBS_GCC)
 
 clean:
 	rm -f $(TESTPRGS) $(TESTOBJS) *~ core
 
 depend:
-	$(CC) -MM $(CFLAGS) $(DEFS) $(INCLUDES) $(TESTSRCS) > .depend
+	$(CC) -MM $(CFLAGS) $(DEFS) $(INCL) $(TESTSRCS) > .depend
 
 .depend:
-	$(CC) -MM $(CFLAGS) $(DEFS) $(INCLUDES) $(TESTSRCS) > .depend
+	$(CC) -MM $(CFLAGS) $(DEFS) $(INCL) $(TESTSRCS) > .depend
 
 include .depend
 

@@ -54,16 +54,16 @@ all: $(ATERMLIBS)
 	${CC_PROF} ${CFLAGS_PROF} -c -o $@ $<
 
 libATerm-cc.a: ${OBJ_CC}
-	${AR} ${AR_FLAGS} $@ $<
+	${AR} ${AR_FLAGS} $@ ${OBJ_CC}
 
 libATerm-gcc.a:	${OBJ_GCC}
-	${AR} ${AR_FLAGS} $@ $<
+	${AR} ${AR_FLAGS} $@ ${OBJ_GCC}
 
 libATerm-dbg.a: ${OBJ_DBG}
-	${AR} ${AR_FLAGS} $@ $<
+	${AR} ${AR_FLAGS} $@ ${OBJ_DBG}
 
 libATerm-prof.a: ${OBJ_PROF}
-	${AR} ${AR_FLAGS} $@ $<
+	${AR} ${AR_FLAGS} $@ ${OBJ_PROF}
 
 clean:
 	rm -f $(ATERMLIBS) *.o *~ core
