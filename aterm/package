@@ -23,5 +23,5 @@ nosharing	'generate a library that does no term sharing'
 requires
 
 configuration
-  dbg
+  dbg=on
 
