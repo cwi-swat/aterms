@@ -7,10 +7,10 @@ int main(int argc, char *argv[])
 {
   ATerm bottomOfStack;
 
+  ATerm data[20];
   ATinit(argc, argv, &bottomOfStack);
   initBuiltinsApi();
 
-  ATerm data[20];
 
   /* Note that there is still a bug in ApiGen,
    * If all of these constructors were in the same sort,
