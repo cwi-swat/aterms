@@ -545,7 +545,7 @@ void AT_init_gc_parameters(ATbool low_memory) {
     max_freeblocklist_size  = 100;
     min_nb_minor_since_last_major = 10;
     good_gc_ratio = 50;
-    small_allocation_rate_ratio = 25;
+    small_allocation_rate_ratio = 75;
     old_increase_rate_ratio = 50;
 #else
       /* 20MB for 10 sizes in average*/
@@ -553,7 +553,7 @@ void AT_init_gc_parameters(ATbool low_memory) {
     max_freeblocklist_size  = 1000;
     min_nb_minor_since_last_major = 100;
     good_gc_ratio = 40;
-    small_allocation_rate_ratio = 15;
+    small_allocation_rate_ratio = 45;
     old_increase_rate_ratio = 60;
 #endif
 #ifdef GC_VERBOSE

@@ -1,5 +1,9 @@
 $Id$
 
+2002-12-09  Pierre-Etienne Moreau  <pem@escher.loria.fr>
+ * increase the small_allocation_rate_ratio by a factor 3
+   this improves the efficiency without using much more memory
+
 2002-12-05  Pierre-Etienne Moreau  <pem@escher.loria.fr>
  * do not activate statistics
  * improve the "freeze" mechanism: when a block contains many old objects
