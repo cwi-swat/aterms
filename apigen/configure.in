@@ -65,9 +65,6 @@ AC_PACKAGE_REQUIRE(aterm, baffle,
 	[  --with-aterm=DIR        ATerm-library is in DIR])
 AC_SUBST(ATERM)
 
-ATERMBIN="${ATERM}/bin"
-AC_SUBST(ATERMBIN)
-
 ATERMINC="${ATERM}/include"
 AC_SUBST(ATERMINC)
 

@@ -4,10 +4,6 @@
     of labeling equations.
   * The -h option now shows the default locations of the APIGEN parsetable
      and the labeling equations.
-  * By default the generated ADT file is now in BAF. Motivation: the textual
-    form was illegible because it was not pretty printed and to get a human
-    readable form you had to manually pipe it through trm2baf and back through
-    baf2trm anyway. Might as well save the first step during generation then.
 
 2001/02/14 (jong@cwi.nl)
   * sdf2-to-adt script enhanced to conform to mainstream options
