@@ -6,7 +6,7 @@
 
 CLASSPATH_ENV	= CLASSPATH=${top_srcdir}:$(JAVA_ATERM):$(SHARED_OBJECTS)
 
-java_JAVA       = CGen.java
+java_JAVA       = CGen.java CTomSignatureGenerator.java
 
 javadir         = ${prefix}/classes/apigen/gen/c
 JAVAROOT	= ${top_builddir}
