@@ -10,10 +10,7 @@ module ATerm-Utils
       "#list"						-> ATermType
       "#appl"						-> ATermType
       "#placeholder"					-> ATermType
-      capitalize ( AFun )				-> AFun
       afun-concat ( AFun+ )				-> AFun
-
-      capitalize					-> AFun {reject}
 
       aterm-to-lit ( ATerm )				-> AT-Literal
 

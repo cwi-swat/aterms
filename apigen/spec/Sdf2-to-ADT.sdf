@@ -68,7 +68,7 @@ hiddens
     "$FieldWs"		-> ATerm
     "$Grammar"[0-9]*	-> Grammar
     "$ImpSection*"	-> ImpSection*
-    "$Label"		-> UQLiteral
+    "$Label"		-> Literal
     "$ListType"		-> AFun
     "$Literal"		-> Literal
     "$ModName"		-> ModuleName

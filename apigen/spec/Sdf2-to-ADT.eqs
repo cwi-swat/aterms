@@ -139,52 +139,52 @@ equations
 [equ-build-list-entries-iter-star]
   $FieldId = sdflit-to-afun($Label),
   $ElemType = sort-to-afun($Sort),
-  $ListType = afun-concat($ElemType capitalize($FieldId))
+  $ListType = afun-concat($ElemType $FieldId)
   ===>
   build-list-entries($Label : $Sort *) = 
      [$ListType, empty,  []],
-     [$ListType, single, [<head("", $ElemType)>]],
-     [$ListType, many,   [<head("", $ElemType)>,
-                          w(<first(wsAfter, SDFWhiteSpace)>),
-                          <[tail("", $ListType)]>]]
+     [$ListType, single, [<head($ElemType)>]],
+     [$ListType, many,   [<head($ElemType)>,
+                          w(<ws-after-first(Layout)>),
+                          <[tail($ListType)]>]]
 
 [equ-build-list-entries-iter-plus]
   $FieldId = sdflit-to-afun($Label),
   $ElemType = sort-to-afun($Sort),
-  $ListType = afun-concat($ElemType capitalize($FieldId))
+  $ListType = afun-concat($ElemType $FieldId)
   ===>
   build-list-entries($Label : $Sort +) = 
-     [$ListType, single, [<head("", $ElemType)>]],
-     [$ListType, many,   [<head("", $ElemType)>,
-                          w(<first(wsAfter, SDFWhiteSpace)>),
-                          <[tail("", $ListType)]>]]
+     [$ListType, single, [<head($ElemType)>]],
+     [$ListType, many,   [<head($ElemType)>,
+                          w(<ws-after-first(Layout)>),
+                          <[tail($ListType)]>]]
 
 [equ-build-list-entries-iter-sep-star]
   $FieldId = sdflit-to-afun($Label),
   $ElemType = sort-to-afun($Sort),
-  $ListType = afun-concat($ElemType capitalize($FieldId))
+  $ListType = afun-concat($ElemType $FieldId)
   ===>
   build-list-entries($Label : { $Sort $Sep } *) = 
      [$ListType, empty,[]],
-     [$ListType, single, [<head("", $ElemType)>]],
-     [$ListType, many,[<head("", $ElemType)>,
-                       w(<first(wsAfter, SDFWhiteSpace)>),
-                       <sep("", SDFSeparator)>,
-                       w(<sep(wsAfter, SDFWhiteSpace)>),
-                       <[tail("", $ListType)]>]]
+     [$ListType, single, [<head($ElemType)>]],
+     [$ListType, many,[<head($ElemType)>,
+                       w(<ws-after-first(Layout)>),
+                       <sep(Separator)>,
+                       w(<ws-after-sep(Layout)>),
+                       <[tail($ListType)]>]]
 
 [equ-build-list-entries-iter-sep-plus]
   $FieldId = sdflit-to-afun($Label),
   $ElemType = sort-to-afun($Sort),
-  $ListType = afun-concat($ElemType capitalize($FieldId))
+  $ListType = afun-concat($ElemType $FieldId)
   ===>
   build-list-entries($Label : { $Sort $Sep } +) = 
-     [$ListType, single, [<head("", $ElemType)>]],     
-     [$ListType, many,[<head("", $ElemType)>,
-                       w(<first(wsAfter, SDFWhiteSpace)>),
-                       <sep("", SDFSeparator)>,
-                       w(<sep(wsAfter, SDFWhiteSpace)>),
-                       <[tail("", $ListType)]>]]
+     [$ListType, single, [<head($ElemType)>]],     
+     [$ListType, many,[<head($ElemType)>,
+                       w(<ws-after-first(Layout)>),
+                       <sep(Separator)>,
+                       w(<ws-after-sep(Layout)>),
+                       <[tail($ListType)]>]]
 
 [default-equ-build-list-entries]
   build-list-entries($Symbol) =
@@ -211,16 +211,16 @@ equations
 [equ-build-asfix-appl-args-divide-explicit-label]
   build-asfix-appl-arg($Label:$Symbol) = $AFArg,
   build-asfix-appl-args($Symbol+) = $AFArgs,
-  sdflit-to-afun($Label) = $FieldId,
-  w(<$FieldId(wsAfter, SDFWhiteSpace)>) = $FieldWs
+  afun-concat(ws after sdflit-to-afun($Label)) = $FieldId,
+  w(<$FieldId(Layout)>) = $FieldWs
   ===>
   build-asfix-appl-args($Label:$Symbol $Symbol+) = $AFArg, $FieldWs, $AFArgs
 
 [default-build-asfix-appl-args-divide-implicit-label]
   build-asfix-appl-arg($Literal) = $AFArg,
   build-asfix-appl-args($Symbol+) = $AFArgs,
-  sdflit-to-lit($Literal) = $FieldId,
-  w(<$FieldId(wsAfter, SDFWhiteSpace)>) = $FieldWs
+  afun-concat(ws after sdflit-to-lit($Literal)) = $FieldId,
+  w(<$FieldId(Layout)>) = $FieldWs
   ===>
   build-asfix-appl-args($Literal $Symbol+) = $AFArg, $FieldWs, $AFArgs
 
@@ -234,37 +234,37 @@ equations
   $FieldId = sdflit-to-afun($Label),
   $FieldType = sort-to-afun($Sort)
   ===>
-  build-asfix-appl-arg($Label:$Sort) = <$FieldId("", $FieldType)>
+  build-asfix-appl-arg($Label:$Sort) = <$FieldId($FieldType)>
 
 [equ-build-asfix-appl-arg-iter-star]
   $FieldId = sdflit-to-afun($Label),
-  $FieldType = afun-concat(sort-to-afun($Sort) capitalize($FieldId))
+  $FieldType = afun-concat(sort-to-afun($Sort) $FieldId)
   ===>
   build-asfix-appl-arg($Label:$Sort *) = 
-	list(build-asfix-iter($Sort, l("*")),w(""),<$FieldId("", $FieldType)>)
+	list(build-asfix-iter($Sort, l("*")),w(""),<$FieldId($FieldType)>)
 
 % Plus-list transformed into star-list because AsFix1 demands this! %
 [equ-build-asfix-appl-arg-iter-plus]
   $FieldId = sdflit-to-afun($Label),
-  $FieldType = afun-concat(sort-to-afun($Sort) capitalize($FieldId))
+  $FieldType = afun-concat(sort-to-afun($Sort) $FieldId)
   ===>
   build-asfix-appl-arg($Label:$Sort +) = 
-	list(build-asfix-iter($Sort, l("*")),w(""),<$FieldId("", $FieldType)>)
+	list(build-asfix-iter($Sort, l("*")),w(""),<$FieldId($FieldType)>)
 
 [equ-build-asfix-appl-arg-iter-sep-star]
   $FieldId = sdflit-to-afun($Label),
-  $FieldType = afun-concat(sort-to-afun($Sort) capitalize($FieldId))
+  $FieldType = afun-concat(sort-to-afun($Sort) $FieldId)
   ===>
   build-asfix-appl-arg($Label:{ $Sort $Sep }*) =
-        list(build-asfix-iter-sep($Sort, $Sep, l("*")),w(""),<$FieldId("", $FieldType)>)
+        list(build-asfix-iter-sep($Sort, $Sep, l("*")),w(""),<$FieldId($FieldType)>)
 
 % Plus-list transformed into star-list because AsFix1 demands this! %
 [equ-build-asfix-appl-arg-iter-sep-plus]
   $FieldId = sdflit-to-afun($Label),
-  $FieldType = afun-concat(sort-to-afun($Sort) capitalize($FieldId))
+  $FieldType = afun-concat(sort-to-afun($Sort) $FieldId)
   ===>
   build-asfix-appl-arg($Label:{ $Sort $Sep }+) = 
-        list(build-asfix-iter-sep($Sort, $Sep, l("*")),w(""),<$FieldId("", $FieldType)>)
+        list(build-asfix-iter-sep($Sort, $Sep, l("*")),w(""),<$FieldId($FieldType)>)
 
 [equ-build-asfix-iter]
   $ElemSortName = sort-to-lit($Sort)
@@ -310,7 +310,8 @@ equations
 [equ-build-asfix-attr-prefer]      build-asfix-attr(prefer)      = l("prefer")
 
 [equ-build-asfix-attr-cons]
-  build-asfix-attr(cons(at-literal(""" $Char* """))) = ql(at-literal(""" "c" "o" "n" "s" "(" $Char* ")" """))
+  build-asfix-attr(cons(at-literal(""" $Char* """))) = 
+    ql(at-literal(""" "c" "o" "n" "s" "(" $Char* ")" """))
 
 [equ-lexicals-to-adt-empty]
   lexicals-to-adt() =
@@ -331,4 +332,4 @@ equations
   $AFSort = sort-to-lit($Sort)
   ===>
   lexical-to-adt($Symbol* -> $Sort $Attributes) = 
-	[ $TypeId, $AltId, lex(<lex("", SDFLexical)>,sort($AFSort)) ]
+	[ $TypeId, $AltId, lex(<lex(Lexical)>,sort($AFSort)) ]
