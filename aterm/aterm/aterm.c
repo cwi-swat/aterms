@@ -46,8 +46,6 @@
 #define PROTECT_ARRAY_INITIAL_SIZE 128
 #define PROTECT_ARRAY_EXPAND_SIZE  256
 
-#define HASH_PRIME 12007
-
 /*}}}  */
 /*{{{  globals */
 
