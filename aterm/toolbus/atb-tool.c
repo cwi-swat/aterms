@@ -424,7 +424,9 @@ ATerm  ATBreadTerm(int fd)
   t = ATparse(buffer+8);
   assert(t);
 
+  /*ATfprintf(stderr, "term before unpacking: %t\n\n", t);*/
   t = ATBunpack(t);
+  /*ATfprintf(stderr, "term after unpacking: %t\n\n", t);*/
 
   return t;
 }
@@ -822,22 +824,27 @@ ATerm ATBpack(ATerm t)
 static ATerm ATBunpack(ATerm t)
 {
   int i;
+  ATerm result, annos;
 
+  annos = AT_getAnnotations(t);
   switch (ATgetType(t)) {
   case AT_INT:
   case AT_REAL:
   case AT_BLOB:
-    return t;
+    result = t;
+    break;
 
   case AT_PLACEHOLDER:
     {
       ATerm type = ATgetPlaceholder((ATermPlaceholder)t);
       ATerm unpacked_type = ATBunpack(type);
       if (ATisEqual(unpacked_type, type)) {
-	return t;
+	result = t;
+      } else {
+        result = (ATerm)ATmakePlaceholder(unpacked_type);
       }
-      return (ATerm)ATmakePlaceholder(unpacked_type);
     }
+    break;
 
   case AT_APPL:
     {
@@ -856,7 +863,7 @@ static ATerm ATBunpack(ATerm t)
 	size = ATgetBlobSize(blob);
 	unpacked_term = ATreadFromBinaryString(data, size);
 
-	return unpacked_term;
+	result = unpacked_term;
       } else {
 	ATermList unpacked_args = ATempty;
 
@@ -864,9 +871,10 @@ static ATerm ATBunpack(ATerm t)
 	  unpacked_args = ATinsert(unpacked_args, ATBunpack(ATgetArgument(appl, i)));
 	}
 
-	return (ATerm)ATmakeApplList(fun, unpacked_args);
+	result = (ATerm)ATmakeApplList(fun, unpacked_args);
       }
     }
+    break;
 
   case AT_LIST:
     {
@@ -878,15 +886,20 @@ static ATerm ATBunpack(ATerm t)
 	list = ATgetNext(list);
       }
       
-      return (ATerm)ATreverse(unpacked_list);
+      result = (ATerm)ATreverse(unpacked_list);
     }
+    break;
 
   default:
     abort();
   }
 
-  return NULL;
+  if (annos != NULL) {
+    annos = ATBunpack(annos);
+    result = AT_setAnnotations(result, annos);
+  }
 
+  return result;
 }
 
 /*}}}  */
