@@ -22,7 +22,6 @@ AC_OUTPUT(
   Makefile
   aterm/Makefile
   aterm/pure/Makefile
-  aterm/test/Makefile
   aterm/visitor/Makefile
   test/Makefile
   config/Makefile

@@ -5,6 +5,9 @@
     order to get distcheck correct.
   * Added test subdirectory to SUBDIRS
   * Made tests that were in the test directory all active
+  * Fiddled with order of directories in SUBDIRS in order to get
+    distcheck correct.
+
 
 2002-10-20    <pem@bach>
   * aterm/pure/ATermListImpl.java: 
