@@ -9,6 +9,7 @@
 #include <assert.h>
 #include "memory.h"
 #include "symbol.h"
+#include "util.h"
 
 /*}}}  */
 /*{{{  defines */
@@ -391,6 +392,55 @@ testMake(void)
 
 void testMatch(void)
 {
+  ATerm t[8];
+  int i;
+  double r;
+  ATerm type;
+  char *name[2];
+  int size;
+  void *data;
+  ATermList list;
+
+  t[0] = ATmake("f(1,3.14,<placeholder>,a,\"b\",00000004:abcd)", 
+				ATmake("type"));
+  t[1] = ATmake("[1,2,3]");
+
+  test_assert("match", 1, ATmatch(ATmake("1"), "<int>", &i));
+  test_assert("match", 2, i == 1);
+  test_assert("match", 3, ATmatch(ATmake("3.14"), "<real>", &r));
+  test_assert("match", 4, r == 3.14);
+  
+  test_assert("match", 11, ATmatch(t[0], "f(<int>,<real>,<placeholder>,"
+								  "<appl>,<str>,<blob>)",
+              &i, &r, &type, &name[0], &name[1], &size, &data));
+  test_assert("match", 12, i == 1);
+  test_assert("match", 13, r == 3.14);
+  test_assert("match", 14, ATisEqual(type, ATmake("type")));
+  test_assert("match", 15, streq(name[0], "a"));
+  test_assert("match", 16, streq(name[1], "b"));
+  test_assert("match", 17, size == 4);
+  test_assert("match", 18, ((char *)data)[1] == 'b');
+
+			  
+  test_assert("match", 19, ATmatch(t[0], "<appl(1,<real>,<term>,<id>,"
+								 "<appl(<list>)>,<term>)>",
+              &name[0], &r, &t[7], &name[1], &name[2], &list, &t[6]));
+  test_assert("match", 20, r == 3.14);
+  test_assert("match", 21, streq(name[0], "f"));
+  test_assert("match", 22, streq(name[2], "b"));
+  test_assert("match", 23, ATisEqual(ATreadFromString("<type>"), t[7]));
+  test_assert("match", 24, size == 4);
+  test_assert("match", 25, ((char *)data)[1] == 'b');
+
+  test_assert("match", 26, ATmatch(t[1], "[1,<list>]", &list));
+  test_assert("match", 27, ATisEqual(ATmake("[2,3]"), list));
+
+  test_assert("match", 28, !ATmatch(ATmake("f"), "<str>", &name[0]));
+  test_assert("match", 29, !ATmatch(ATmake("\"f\""), "<id>", &name[0]));
+  test_assert("match", 30, !ATmatch(ATmake("f"), "<appl(1)>", &name[0]));
+  test_assert("match", 31, !ATmatch(ATmake("f(1)"), "<appl>", &name[0]));
+
+  printf("match tests ok.\n");
 }
 
 /*}}}  */
@@ -466,6 +516,7 @@ int main(int argc, char *argv[])
   testPrintf();
   testAnno();
   testMake();
+  testMatch();
 
   return 0;
 }
