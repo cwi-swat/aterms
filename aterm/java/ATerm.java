@@ -4,12 +4,13 @@ import java.util.List;
 
 /**
  * This is the base interface for all ATerm interfaces,
- * which will ultimately be implemented by separate
- * ATerm Factories.
+ * which will ultimately be implemented by two separate
+ * ATerm Factories (a native and a pure one).
  * 
  * 
- * @author $Author$
- * @version $Version$
+ * @author Pieter Olivier (olivierp@cwi.nl)
+ * @author Hayco de Jong (jong@cwi.nl)
+ * @version 0.1, Thu Jan 27 15:45:52 MET 2000
  */
 public interface ATerm {
 
@@ -74,9 +75,9 @@ public interface ATerm {
      * 
      * @return a list containing the subterms matching the placeholders
      * if the match succeeds, or null if the match fails.
-     * 
-     * @throws ParseError if pattern does not represent a valid term.
      *
+     * @throws ParseError if pattern cannot be parsed into a term.
+     * 
      * @see #match(ATerm)
      */
     public List match(String pattern) throws ParseError;
