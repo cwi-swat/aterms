@@ -36,7 +36,7 @@ import aterm.Visitor;
 class ATermIntImpl extends ATermImpl implements ATermInt {
 	int value;
 
-	public ATermIntImpl(PureFactory factory) {
+	protected ATermIntImpl(PureFactory factory) {
 		super(factory);
 	}
 

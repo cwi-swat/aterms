@@ -1,5 +1,8 @@
 $Id$
 
+2003/08/14 <jurgenv@cwi.nl>
+ * Made all constructors of ATerm implementations protected.
+ 
 2003/08/13 <jurgenv@cwi.nl>
  * Removed getStaticFactory methods and static references to factories to make
    use of multiple factories possible again. 

@@ -67,7 +67,7 @@ public class PureFactory extends SharedObjectFactory implements ATermFactory {
 
   public PureFactory(int termTableSize) {
     super(termTableSize);
- //   ATermImpl.initialize(this);
+
     protoList = new ATermListImpl(this);
     protoAppl = new ATermApplImpl(this);
     protoInt = new ATermIntImpl(this);

@@ -44,7 +44,7 @@ public abstract class ATermImpl extends ATermVisitableImpl implements ATerm, Sha
   private int hashCode;
   private int uniqueId;
  
-  public ATermImpl(PureFactory factory) {
+  protected ATermImpl(PureFactory factory) {
   	super();
   	this.factory = factory;
   }

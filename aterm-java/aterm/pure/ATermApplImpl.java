@@ -32,7 +32,7 @@ public class ATermApplImpl extends ATermImpl implements ATermAppl {
   AFun fun;
   ATerm[] args;
 
-  public ATermApplImpl(PureFactory factory) {
+  protected ATermApplImpl(PureFactory factory) {
     super(factory);
   }
 

@@ -31,7 +31,7 @@ import aterm.*;
 class ATermPlaceholderImpl extends ATermImpl implements ATermPlaceholder {
 	ATerm type;
 
-	public ATermPlaceholderImpl(PureFactory factory) {
+	protected ATermPlaceholderImpl(PureFactory factory) {
 		super(factory);
 	}
 

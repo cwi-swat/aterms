@@ -38,7 +38,7 @@ public class ATermListImpl extends ATermImpl implements ATermList {
 	ATermList next;
 	int length;
 
-	public ATermListImpl(PureFactory factory) {
+	protected ATermListImpl(PureFactory factory) {
 		super(factory);
 	}
 

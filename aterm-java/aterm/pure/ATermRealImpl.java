@@ -35,7 +35,7 @@ import aterm.Visitor;
 class ATermRealImpl extends ATermImpl implements ATermReal {
 	double value;
 
-	public ATermRealImpl(PureFactory factory) {
+	protected ATermRealImpl(PureFactory factory) {
 		super(factory);
 	}
 
