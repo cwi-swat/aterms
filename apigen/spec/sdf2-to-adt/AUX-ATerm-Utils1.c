@@ -10,19 +10,19 @@ static ATerm lf_AUX_ATerm_Utils1_3 ( ) ;
 static Symbol lf_AUX_ATerm_Utils1_4sym ;
 static ATerm lf_AUX_ATerm_Utils1_4 ( ) ;
 void register_AUX_ATerm_Utils1 ( ) {
-lf_AUX_ATerm_Utils1_1sym = ATmakeSymbol ( "prod(id(\"ATerm-Utils\"),w(\"\"),[ql(\"#int\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"ATermType\"),w(\"\"),no-attrs)"
+lf_AUX_ATerm_Utils1_1sym = ATmakeSymbol ( "prod(id(\"ATerm-Utils\"),w(\"\"),[ql(\"#placeholder\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"ATermType\"),w(\"\"),no-attrs)"
  , 0 , ATtrue ) ;
 ATprotectSymbol ( lf_AUX_ATerm_Utils1_1sym ) ;
-lf_AUX_ATerm_Utils1_2sym = ATmakeSymbol ( "prod(id(\"ATerm-Utils\"),w(\"\"),[ql(\"#list\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"ATermType\"),w(\"\"),no-attrs)" , 0 , ATtrue ) ;
+lf_AUX_ATerm_Utils1_2sym = ATmakeSymbol ( "prod(id(\"ATerm-Utils\"),w(\"\"),[ql(\"#appl\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"ATermType\"),w(\"\"),no-attrs)" , 0 , ATtrue ) ;
 ATprotectSymbol ( lf_AUX_ATerm_Utils1_2sym ) ;
-lf_AUX_ATerm_Utils1_3sym = ATmakeSymbol ( "prod(id(\"ATerm-Utils\"),w(\"\"),[ql(\"#appl\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"ATermType\"),w(\"\"),no-attrs)" , 0 , ATtrue ) ;
+lf_AUX_ATerm_Utils1_3sym = ATmakeSymbol ( "prod(id(\"ATerm-Utils\"),w(\"\"),[ql(\"#list\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"ATermType\"),w(\"\"),no-attrs)" , 0 , ATtrue ) ;
 ATprotectSymbol ( lf_AUX_ATerm_Utils1_3sym ) ;
-lf_AUX_ATerm_Utils1_4sym = ATmakeSymbol ( "prod(id(\"ATerm-Utils\"),w(\"\"),[ql(\"#placeholder\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"ATermType\"),w(\"\"),no-attrs)" , 0 , ATtrue ) ;
+lf_AUX_ATerm_Utils1_4sym = ATmakeSymbol ( "prod(id(\"ATerm-Utils\"),w(\"\"),[ql(\"#int\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"ATermType\"),w(\"\"),no-attrs)" , 0 , ATtrue ) ;
 ATprotectSymbol ( lf_AUX_ATerm_Utils1_4sym ) ;
-register_prod ( ATparse ( "prod(id(\"ATerm-Utils\"),w(\"\"),[ql(\"#int\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"ATermType\"),w(\"\"),no-attrs)" ) , lf_AUX_ATerm_Utils1_1 , lf_AUX_ATerm_Utils1_1sym ) ;
-register_prod ( ATparse ( "prod(id(\"ATerm-Utils\"),w(\"\"),[ql(\"#list\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"ATermType\"),w(\"\"),no-attrs)" ) , lf_AUX_ATerm_Utils1_2 , lf_AUX_ATerm_Utils1_2sym ) ;
-register_prod ( ATparse ( "prod(id(\"ATerm-Utils\"),w(\"\"),[ql(\"#appl\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"ATermType\"),w(\"\"),no-attrs)" ) , lf_AUX_ATerm_Utils1_3 , lf_AUX_ATerm_Utils1_3sym ) ;
-register_prod ( ATparse ( "prod(id(\"ATerm-Utils\"),w(\"\"),[ql(\"#placeholder\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"ATermType\"),w(\"\"),no-attrs)" ) , lf_AUX_ATerm_Utils1_4 , lf_AUX_ATerm_Utils1_4sym ) ;
+register_prod ( ATparse ( "prod(id(\"ATerm-Utils\"),w(\"\"),[ql(\"#placeholder\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"ATermType\"),w(\"\"),no-attrs)" ) , lf_AUX_ATerm_Utils1_1 , lf_AUX_ATerm_Utils1_1sym ) ;
+register_prod ( ATparse ( "prod(id(\"ATerm-Utils\"),w(\"\"),[ql(\"#appl\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"ATermType\"),w(\"\"),no-attrs)" ) , lf_AUX_ATerm_Utils1_2 , lf_AUX_ATerm_Utils1_2sym ) ;
+register_prod ( ATparse ( "prod(id(\"ATerm-Utils\"),w(\"\"),[ql(\"#list\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"ATermType\"),w(\"\"),no-attrs)" ) , lf_AUX_ATerm_Utils1_3 , lf_AUX_ATerm_Utils1_3sym ) ;
+register_prod ( ATparse ( "prod(id(\"ATerm-Utils\"),w(\"\"),[ql(\"#int\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"ATermType\"),w(\"\"),no-attrs)" ) , lf_AUX_ATerm_Utils1_4 , lf_AUX_ATerm_Utils1_4sym ) ;
 }
 void resolve_AUX_ATerm_Utils1 ( ) {
 }

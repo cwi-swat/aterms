@@ -5,12 +5,12 @@ static Symbol lf_AUX_Sdf2_to_ADT21_1sym ;
 static ATerm lf_AUX_Sdf2_to_ADT21_1 ( ATerm arg1 ) ;
 static Symbol ef1sym ;
 static funcptr ef1 ;
-static Symbol ef3sym ;
-static funcptr ef3 ;
-static Symbol ef4sym ;
-static funcptr ef4 ;
 static Symbol ef2sym ;
 static funcptr ef2 ;
+static Symbol ef4sym ;
+static funcptr ef4 ;
+static Symbol ef3sym ;
+static funcptr ef3 ;
 static Symbol lf2sym ;
 static ATerm lf2 ( ATerm arg1 ) ;
 void register_AUX_Sdf2_to_ADT21 ( ) {
@@ -23,14 +23,14 @@ register_prod ( ATparse ( "prod(id(\"Sdf2-to-ADT\"),w(\"\"),[ql(\"sdflit-to-lit\
 register_prod ( ATparse ( "listtype(sort(\"CHAR\"))" ) , lf2 , lf2sym ) ;
 }
 void resolve_AUX_Sdf2_to_ADT21 ( ) {
-ef1 = lookup_func ( ATreadFromString ( "prod(id(\"GEN-LexConsFuncs\"),w(\"\"),[ql(\"literal\"),w(\"\"),ql(\"(\"),w(\"\"),iter(sort(\"CHAR\"),w(\"\"),l(\"*\")),w(\"\"),ql(\")\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"Literal\"),w(\"\"),no-attrs)" ) ) ;
-ef1sym = lookup_sym ( ATreadFromString ( "prod(id(\"GEN-LexConsFuncs\"),w(\"\"),[ql(\"literal\"),w(\"\"),ql(\"(\"),w(\"\"),iter(sort(\"CHAR\"),w(\"\"),l(\"*\")),w(\"\"),ql(\")\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"Literal\"),w(\"\"),no-attrs)" ) ) ;
-ef2 = lookup_func ( ATreadFromString ( "prod(id(\"GEN-LexConsFuncs\"),w(\"\"),[ql(\"at-literal\"),w(\"\"),ql(\"(\"),w(\"\"),iter(sort(\"CHAR\"),w(\"\"),l(\"*\")),w(\"\"),ql(\")\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"AT-Literal\"),w(\"\"),no-attrs)" ) ) ;
-ef2sym = lookup_sym ( ATreadFromString ( "prod(id(\"GEN-LexConsFuncs\"),w(\"\"),[ql(\"at-literal\"),w(\"\"),ql(\"(\"),w(\"\"),iter(sort(\"CHAR\"),w(\"\"),l(\"*\")),w(\"\"),ql(\")\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"AT-Literal\"),w(\"\"),no-attrs)" ) ) ;
-ef3 = lookup_func ( ATreadFromString ( "prod(id(\"Literals-Sdf-Syntax\"),w(\"\"),[sort(\"UQLiteral\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"Literal\"),w(\"\"),no-attrs)" ) ) ;
-ef3sym = lookup_sym ( ATreadFromString ( "prod(id(\"Literals-Sdf-Syntax\"),w(\"\"),[sort(\"UQLiteral\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"Literal\"),w(\"\"),no-attrs)" ) ) ;
-ef4 = lookup_func ( ATreadFromString ( "prod(id(\"GEN-LexConsFuncs\"),w(\"\"),[ql(\"uqliteral\"),w(\"\"),ql(\"(\"),w(\"\"),iter(sort(\"CHAR\"),w(\"\"),l(\"*\")),w(\"\"),ql(\")\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"UQLiteral\"),w(\"\"),no-attrs)" ) ) ;
-ef4sym = lookup_sym ( ATreadFromString ( "prod(id(\"GEN-LexConsFuncs\"),w(\"\"),[ql(\"uqliteral\"),w(\"\"),ql(\"(\"),w(\"\"),iter(sort(\"CHAR\"),w(\"\"),l(\"*\")),w(\"\"),ql(\")\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"UQLiteral\"),w(\"\"),no-attrs)" ) ) ;
+ef1 = lookup_func ( ATreadFromString ( "prod(id(\"Literals-Sdf-Syntax\"),w(\"\"),[sort(\"UQLiteral\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"Literal\"),w(\"\"),no-attrs)" ) ) ;
+ef1sym = lookup_sym ( ATreadFromString ( "prod(id(\"Literals-Sdf-Syntax\"),w(\"\"),[sort(\"UQLiteral\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"Literal\"),w(\"\"),no-attrs)" ) ) ;
+ef2 = lookup_func ( ATreadFromString ( "prod(id(\"GEN-LexConsFuncs\"),w(\"\"),[ql(\"uqliteral\"),w(\"\"),ql(\"(\"),w(\"\"),iter(sort(\"CHAR\"),w(\"\"),l(\"*\")),w(\"\"),ql(\")\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"UQLiteral\"),w(\"\"),no-attrs)" ) ) ;
+ef2sym = lookup_sym ( ATreadFromString ( "prod(id(\"GEN-LexConsFuncs\"),w(\"\"),[ql(\"uqliteral\"),w(\"\"),ql(\"(\"),w(\"\"),iter(sort(\"CHAR\"),w(\"\"),l(\"*\")),w(\"\"),ql(\")\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"UQLiteral\"),w(\"\"),no-attrs)" ) ) ;
+ef3 = lookup_func ( ATreadFromString ( "prod(id(\"GEN-LexConsFuncs\"),w(\"\"),[ql(\"at-literal\"),w(\"\"),ql(\"(\"),w(\"\"),iter(sort(\"CHAR\"),w(\"\"),l(\"*\")),w(\"\"),ql(\")\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"AT-Literal\"),w(\"\"),no-attrs)" ) ) ;
+ef3sym = lookup_sym ( ATreadFromString ( "prod(id(\"GEN-LexConsFuncs\"),w(\"\"),[ql(\"at-literal\"),w(\"\"),ql(\"(\"),w(\"\"),iter(sort(\"CHAR\"),w(\"\"),l(\"*\")),w(\"\"),ql(\")\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"AT-Literal\"),w(\"\"),no-attrs)" ) ) ;
+ef4 = lookup_func ( ATreadFromString ( "prod(id(\"GEN-LexConsFuncs\"),w(\"\"),[ql(\"literal\"),w(\"\"),ql(\"(\"),w(\"\"),iter(sort(\"CHAR\"),w(\"\"),l(\"*\")),w(\"\"),ql(\")\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"Literal\"),w(\"\"),no-attrs)" ) ) ;
+ef4sym = lookup_sym ( ATreadFromString ( "prod(id(\"GEN-LexConsFuncs\"),w(\"\"),[ql(\"literal\"),w(\"\"),ql(\"(\"),w(\"\"),iter(sort(\"CHAR\"),w(\"\"),l(\"*\")),w(\"\"),ql(\")\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"Literal\"),w(\"\"),no-attrs)" ) ) ;
 }
 void init_AUX_Sdf2_to_ADT21 ( ) {
 }
@@ -39,26 +39,26 @@ FUNC_ENTRY ( lf_AUX_Sdf2_to_ADT21_1sym , ATmakeAppl ( lf_AUX_Sdf2_to_ADT21_1sym 
 if ( check_sym ( arg0 , ef1sym ) ) {
 {
 ATerm atmp00 = arg_0 ( arg0 ) ;
-if ( check_sym ( atmp00 , lf2sym ) ) {
-{
-ATerm atmp000 = arg_0 ( atmp00 ) ;
-FUNC_EXIT ( ( * ef2 ) ( lf2 ( make_list ( atmp000 ) ) ) ) ;
-}
-}
-}
-}
-if ( check_sym ( arg0 , ef3sym ) ) {
-{
-ATerm atmp00 = arg_0 ( arg0 ) ;
-if ( check_sym ( atmp00 , ef4sym ) ) {
+if ( check_sym ( atmp00 , ef2sym ) ) {
 {
 ATerm atmp000 = arg_0 ( atmp00 ) ;
 if ( check_sym ( atmp000 , lf2sym ) ) {
 {
 ATerm atmp0000 = arg_0 ( atmp000 ) ;
-FUNC_EXIT ( ( * ef2 ) ( lf2 ( cons ( make_list_char ( 34 ) , cons ( make_list ( atmp0000 ) , make_list ( make_char ( 34 ) ) ) ) ) ) ) ;
+FUNC_EXIT ( ( * ef3 ) ( lf2 ( cons ( make_list_char ( 34 ) , cons ( make_list ( atmp0000 ) , make_list ( make_char ( 34 ) ) ) ) ) ) ) ;
 }
 }
+}
+}
+}
+}
+if ( check_sym ( arg0 , ef4sym ) ) {
+{
+ATerm atmp00 = arg_0 ( arg0 ) ;
+if ( check_sym ( atmp00 , lf2sym ) ) {
+{
+ATerm atmp000 = arg_0 ( atmp00 ) ;
+FUNC_EXIT ( ( * ef3 ) ( lf2 ( make_list ( atmp000 ) ) ) ) ;
 }
 }
 }

@@ -45,7 +45,10 @@ FUNC_ENTRY ( lf_AUX_Sdf2_to_ADT11_2sym , ATmakeAppl ( lf_AUX_Sdf2_to_ADT11_2sym 
 if ( check_sym ( arg0 , lf_AUX_Sdf2_to_ADT11_1sym ) ) {
 {
 ATerm atmp00 = arg_0 ( arg0 ) ;
-if ( not_empty_list ( atmp00 ) ) {
+if ( ! not_empty_list ( atmp00 ) ) {
+FUNC_EXIT_CONST ( constant0 , ( * ef1 ) ( lf3 ( make_list ( null ( ) ) ) ) ) ;
+}
+else {
 ( tmp [ 0 ] = list_head ( atmp00 ) ) ;
 ( tmp [ 1 ] = list_tail ( atmp00 ) ) ;
 ( tmp [ 2 ] = ( * ef2 ) ( tmp [ 0 ] ) ) ;
@@ -63,9 +66,6 @@ FUNC_EXIT ( ( * ef1 ) ( lf3 ( cons ( make_list ( tmp [ 4 ] ) , make_list ( tmp [
 }
 }
 }
-}
-else {
-FUNC_EXIT_CONST ( constant0 , ( * ef1 ) ( lf3 ( make_list ( null ( ) ) ) ) ) ;
 }
 }
 }
@@ -78,7 +78,10 @@ ATerm tmp [ 8 ] ;
 FUNC_ENTRY ( lf_AUX_Sdf2_to_ADT11_2_recursivesym , ATmakeAppl ( lf_AUX_Sdf2_to_ADT11_2_recursivesym , arg0 ) ) ;
 {
 ATerm atmp00 = arg0 ;
-if ( not_empty_list ( atmp00 ) ) {
+if ( ! not_empty_list ( atmp00 ) ) {
+FUNC_EXIT_CONST ( constant0 , ( * ef1 ) ( lf3 ( make_list ( null ( ) ) ) ) ) ;
+}
+else {
 ( tmp [ 0 ] = list_head ( atmp00 ) ) ;
 ( tmp [ 1 ] = list_tail ( atmp00 ) ) ;
 ( tmp [ 2 ] = ( * ef2 ) ( tmp [ 0 ] ) ) ;
@@ -96,9 +99,6 @@ FUNC_EXIT ( ( * ef1 ) ( lf3 ( cons ( make_list ( tmp [ 4 ] ) , make_list ( tmp [
 }
 }
 }
-}
-else {
-FUNC_EXIT_CONST ( constant0 , ( * ef1 ) ( lf3 ( make_list ( null ( ) ) ) ) ) ;
 }
 }
 FUNC_EXIT ( make_nf1 ( lf_AUX_Sdf2_to_ADT11_2_recursivesym , lf_AUX_Sdf2_to_ADT11_1 ( arg0 ) ) ) ;

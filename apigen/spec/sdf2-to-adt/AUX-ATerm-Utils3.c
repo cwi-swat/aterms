@@ -5,38 +5,38 @@ static Symbol lf_AUX_ATerm_Utils3_2_recursivesym ;
 static ATerm lf_AUX_ATerm_Utils3_2_recursive ( ATerm arg1 ) ;
 static Symbol lf_AUX_ATerm_Utils3_2sym ;
 static ATerm lf_AUX_ATerm_Utils3_2 ( ATerm arg1 ) ;
-static Symbol ef3sym ;
-static funcptr ef3 ;
-static Symbol lf_AUX_ATerm_Utils3_1sym ;
-static ATerm lf_AUX_ATerm_Utils3_1 ( ATerm arg1 ) ;
-static Symbol ef1sym ;
-static funcptr ef1 ;
 static Symbol ef2sym ;
 static funcptr ef2 ;
+static Symbol ef3sym ;
+static funcptr ef3 ;
+static Symbol ef1sym ;
+static funcptr ef1 ;
 static Symbol lf3sym ;
 static ATerm lf3 ( ATerm arg1 ) ;
+static Symbol lf_AUX_ATerm_Utils3_1sym ;
+static ATerm lf_AUX_ATerm_Utils3_1 ( ATerm arg1 ) ;
 void register_AUX_ATerm_Utils3 ( ) {
 lf_AUX_ATerm_Utils3_2_recursivesym = ATmakeSymbol ( "prod(id(\"ATerm-Utils\"),w(\"\"),[ql(\"afun-concat\"),w(\"\"),ql(\"(\"),w(\"\"),iter(sort(\"AFun\"),w(\"\"),l(\"+\")),w(\"\"),ql(\")\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"AFun\"),w(\"\"),no-attrs)"
  , 1 , ATtrue ) ;
 ATprotectSymbol ( lf_AUX_ATerm_Utils3_2_recursivesym ) ;
 lf_AUX_ATerm_Utils3_2sym = ATmakeSymbol ( "prod(id(\"ATerm-Utils\"),w(\"\"),[ql(\"afun-concat\"),w(\"\"),ql(\"(\"),w(\"\"),iter(sort(\"AFun\"),w(\"\"),l(\"+\")),w(\"\"),ql(\")\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"AFun\"),w(\"\"),no-attrs)" , 1 , ATtrue ) ;
 ATprotectSymbol ( lf_AUX_ATerm_Utils3_2sym ) ;
-lf_AUX_ATerm_Utils3_1sym = ATmakeSymbol ( "listtype(sort(\"AFun\"))" , 1 , ATtrue ) ;
-ATprotectSymbol ( lf_AUX_ATerm_Utils3_1sym ) ;
 lf3sym = ATmakeSymbol ( "listtype(sort(\"CHAR\"))" , 1 , ATtrue ) ;
 ATprotectSymbol ( lf3sym ) ;
+lf_AUX_ATerm_Utils3_1sym = ATmakeSymbol ( "listtype(sort(\"AFun\"))" , 1 , ATtrue ) ;
+ATprotectSymbol ( lf_AUX_ATerm_Utils3_1sym ) ;
 register_prod ( ATparse ( "listtype(sort(\"AFun\"))" ) , lf_AUX_ATerm_Utils3_1 , lf_AUX_ATerm_Utils3_1sym ) ;
 register_prod ( ATparse ( "prod(id(\"ATerm-Utils\"),w(\"\"),[ql(\"afun-concat\"),w(\"\"),ql(\"(\"),w(\"\"),iter(sort(\"AFun\"),w(\"\"),l(\"+\")),w(\"\"),ql(\")\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"AFun\"),w(\"\"),no-attrs)" ) , lf_AUX_ATerm_Utils3_2 , lf_AUX_ATerm_Utils3_2sym ) ;
 register_prod ( ATparse ( "prod(id(\"ATerm-Utils\"),w(\"\"),[ql(\"afun-concat\"),w(\"\"),ql(\"(\"),w(\"\"),iter(sort(\"AFun\"),w(\"\"),l(\"+\")),w(\"\"),ql(\")\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"AFun\"),w(\"\"),no-attrs)" ) , lf_AUX_ATerm_Utils3_2_recursive , lf_AUX_ATerm_Utils3_2_recursivesym ) ;
 register_prod ( ATparse ( "listtype(sort(\"CHAR\"))" ) , lf3 , lf3sym ) ;
 }
 void resolve_AUX_ATerm_Utils3 ( ) {
-ef1 = lookup_func ( ATreadFromString ( "prod(id(\"ATerm-Syntax\"),w(\"\"),[sort(\"AT-Literal\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"AFun\"),w(\"\"),attrs(l(\"{\"),w(\"\"),[l(\"constructor\")],w(\"\"),l(\"}\")))" ) ) ;
-ef1sym = lookup_sym ( ATreadFromString ( "prod(id(\"ATerm-Syntax\"),w(\"\"),[sort(\"AT-Literal\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"AFun\"),w(\"\"),attrs(l(\"{\"),w(\"\"),[l(\"constructor\")],w(\"\"),l(\"}\")))" ) ) ;
-ef2 = lookup_func ( ATreadFromString ( "prod(id(\"GEN-LexConsFuncs\"),w(\"\"),[ql(\"at-literal\"),w(\"\"),ql(\"(\"),w(\"\"),iter(sort(\"CHAR\"),w(\"\"),l(\"*\")),w(\"\"),ql(\")\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"AT-Literal\"),w(\"\"),no-attrs)" ) ) ;
-ef2sym = lookup_sym ( ATreadFromString ( "prod(id(\"GEN-LexConsFuncs\"),w(\"\"),[ql(\"at-literal\"),w(\"\"),ql(\"(\"),w(\"\"),iter(sort(\"CHAR\"),w(\"\"),l(\"*\")),w(\"\"),ql(\")\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"AT-Literal\"),w(\"\"),no-attrs)" ) ) ;
-ef3 = lookup_func ( ATreadFromString ( "prod(id(\"GEN-LexConsFuncs\"),w(\"\"),[ql(\"afun\"),w(\"\"),ql(\"(\"),w(\"\"),iter(sort(\"CHAR\"),w(\"\"),l(\"*\")),w(\"\"),ql(\")\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"AFun\"),w(\"\"),no-attrs)" ) ) ;
-ef3sym = lookup_sym ( ATreadFromString ( "prod(id(\"GEN-LexConsFuncs\"),w(\"\"),[ql(\"afun\"),w(\"\"),ql(\"(\"),w(\"\"),iter(sort(\"CHAR\"),w(\"\"),l(\"*\")),w(\"\"),ql(\")\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"AFun\"),w(\"\"),no-attrs)" ) ) ;
+ef1 = lookup_func ( ATreadFromString ( "prod(id(\"GEN-LexConsFuncs\"),w(\"\"),[ql(\"afun\"),w(\"\"),ql(\"(\"),w(\"\"),iter(sort(\"CHAR\"),w(\"\"),l(\"*\")),w(\"\"),ql(\")\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"AFun\"),w(\"\"),no-attrs)" ) ) ;
+ef1sym = lookup_sym ( ATreadFromString ( "prod(id(\"GEN-LexConsFuncs\"),w(\"\"),[ql(\"afun\"),w(\"\"),ql(\"(\"),w(\"\"),iter(sort(\"CHAR\"),w(\"\"),l(\"*\")),w(\"\"),ql(\")\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"AFun\"),w(\"\"),no-attrs)" ) ) ;
+ef2 = lookup_func ( ATreadFromString ( "prod(id(\"ATerm-Syntax\"),w(\"\"),[sort(\"AT-Literal\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"AFun\"),w(\"\"),attrs(l(\"{\"),w(\"\"),[l(\"constructor\")],w(\"\"),l(\"}\")))" ) ) ;
+ef2sym = lookup_sym ( ATreadFromString ( "prod(id(\"ATerm-Syntax\"),w(\"\"),[sort(\"AT-Literal\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"AFun\"),w(\"\"),attrs(l(\"{\"),w(\"\"),[l(\"constructor\")],w(\"\"),l(\"}\")))" ) ) ;
+ef3 = lookup_func ( ATreadFromString ( "prod(id(\"GEN-LexConsFuncs\"),w(\"\"),[ql(\"at-literal\"),w(\"\"),ql(\"(\"),w(\"\"),iter(sort(\"CHAR\"),w(\"\"),l(\"*\")),w(\"\"),ql(\")\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"AT-Literal\"),w(\"\"),no-attrs)" ) ) ;
+ef3sym = lookup_sym ( ATreadFromString ( "prod(id(\"GEN-LexConsFuncs\"),w(\"\"),[ql(\"at-literal\"),w(\"\"),ql(\"(\"),w(\"\"),iter(sort(\"CHAR\"),w(\"\"),l(\"*\")),w(\"\"),ql(\")\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"AT-Literal\"),w(\"\"),no-attrs)" ) ) ;
 }
 void init_AUX_ATerm_Utils3 ( ) {
 }
@@ -53,46 +53,10 @@ if ( not_empty_list ( atmp00 ) ) {
 ( tmp [ 1 ] = list_tail ( atmp00 ) ) ;
 {
 if ( not_empty_list ( tmp [ 1 ] ) ) {
-if ( check_sym ( tmp [ 0 ] , ef3sym ) ) {
+if ( check_sym ( tmp [ 0 ] , ef2sym ) ) {
 ( tmp [ 2 ] = arg_0 ( tmp [ 0 ] ) ) ;
 {
-if ( check_sym ( tmp [ 2 ] , lf3sym ) ) {
-( tmp [ 3 ] = arg_0 ( tmp [ 2 ] ) ) ;
-( tmp [ 4 ] = lf_AUX_ATerm_Utils3_2 ( lf_AUX_ATerm_Utils3_1 ( make_list ( tmp [ 1 ] ) ) ) ) ;
-if ( check_sym ( tmp [ 4 ] , ef3sym ) ) {
-( tmp [ 5 ] = arg_0 ( tmp [ 4 ] ) ) ;
-if ( check_sym ( tmp [ 5 ] , lf3sym ) ) {
-( tmp [ 6 ] = arg_0 ( tmp [ 5 ] ) ) ;
-FUNC_EXIT ( ( * ef3 ) ( lf3 ( cons ( make_list ( tmp [ 3 ] ) , cons ( make_list_char ( 45 ) , make_list ( tmp [ 6 ] ) ) ) ) ) ) ;
-}
-}
-if ( check_sym ( tmp [ 4 ] , ef1sym ) ) {
-( tmp [ 5 ] = arg_0 ( tmp [ 4 ] ) ) ;
-if ( check_sym ( tmp [ 5 ] , ef2sym ) ) {
-( tmp [ 6 ] = arg_0 ( tmp [ 5 ] ) ) ;
-if ( check_sym ( tmp [ 6 ] , lf3sym ) ) {
-( tmp [ 7 ] = arg_0 ( tmp [ 6 ] ) ) ;
-if ( not_empty_list ( tmp [ 7 ] ) ) {
-if ( term_equal ( list_head ( tmp [ 7 ] ) , make_char ( 34 ) ) ) {
-( tmp [ 8 ] = list_tail ( tmp [ 7 ] ) ) ;
-if ( not_empty_list ( tmp [ 8 ] ) ) {
-( tmp [ 9 ] = list_prefix ( tmp [ 8 ] ) ) ;
-if ( term_equal ( list_last ( tmp [ 8 ] ) , make_char ( 34 ) ) ) {
-FUNC_EXIT ( make_nf1 ( ef1sym , ( * ef2 ) ( lf3 ( cons ( make_list_char ( 34 ) , cons ( make_list ( tmp [ 3 ] ) , cons ( make_list_char ( 45 ) , cons ( make_list ( tmp [ 9 ] ) , make_list ( make_char ( 34 ) ) ) ) ) ) ) ) ) ) ;
-}
-}
-}
-}
-}
-}
-}
-}
-}
-}
-if ( check_sym ( tmp [ 0 ] , ef1sym ) ) {
-( tmp [ 2 ] = arg_0 ( tmp [ 0 ] ) ) ;
-{
-if ( check_sym ( tmp [ 2 ] , ef2sym ) ) {
+if ( check_sym ( tmp [ 2 ] , ef3sym ) ) {
 ( tmp [ 3 ] = arg_0 ( tmp [ 2 ] ) ) ;
 {
 if ( check_sym ( tmp [ 3 ] , lf3sym ) ) {
@@ -108,9 +72,9 @@ if ( not_empty_list ( tmp [ 6 ] ) ) {
 ( tmp [ 8 ] = list_last ( tmp [ 6 ] ) ) ;
 if ( term_equal ( tmp [ 8 ] , make_char ( 34 ) ) ) {
 ( tmp [ 9 ] = lf_AUX_ATerm_Utils3_2 ( lf_AUX_ATerm_Utils3_1 ( make_list ( tmp [ 1 ] ) ) ) ) ;
-if ( check_sym ( tmp [ 9 ] , ef1sym ) ) {
+if ( check_sym ( tmp [ 9 ] , ef2sym ) ) {
 ( tmp [ 10 ] = arg_0 ( tmp [ 9 ] ) ) ;
-if ( check_sym ( tmp [ 10 ] , ef2sym ) ) {
+if ( check_sym ( tmp [ 10 ] , ef3sym ) ) {
 ( tmp [ 11 ] = arg_0 ( tmp [ 10 ] ) ) ;
 if ( check_sym ( tmp [ 11 ] , lf3sym ) ) {
 ( tmp [ 12 ] = arg_0 ( tmp [ 11 ] ) ) ;
@@ -120,7 +84,7 @@ if ( term_equal ( list_head ( tmp [ 12 ] ) , make_char ( 34 ) ) ) {
 if ( not_empty_list ( tmp [ 13 ] ) ) {
 ( tmp [ 14 ] = list_prefix ( tmp [ 13 ] ) ) ;
 if ( term_equal ( list_last ( tmp [ 13 ] ) , make_char ( 34 ) ) ) {
-FUNC_EXIT ( make_nf1 ( ef1sym , ( * ef2 ) ( lf3 ( cons ( make_list_char ( 34 ) , cons ( make_list ( tmp [ 7 ] ) , cons ( make_list_char ( 45 ) , cons ( make_list ( tmp [ 14 ] ) , make_list ( make_char ( 34 ) ) ) ) ) ) ) ) ) ) ;
+FUNC_EXIT ( make_nf1 ( ef2sym , ( * ef3 ) ( lf3 ( cons ( make_list_char ( 34 ) , cons ( make_list ( tmp [ 7 ] ) , cons ( make_list_char ( 45 ) , cons ( make_list ( tmp [ 14 ] ) , make_list ( make_char ( 34 ) ) ) ) ) ) ) ) ) ) ;
 }
 }
 }
@@ -128,14 +92,50 @@ FUNC_EXIT ( make_nf1 ( ef1sym , ( * ef2 ) ( lf3 ( cons ( make_list_char ( 34 ) ,
 }
 }
 }
-if ( check_sym ( tmp [ 9 ] , ef3sym ) ) {
+if ( check_sym ( tmp [ 9 ] , ef1sym ) ) {
 ( tmp [ 10 ] = arg_0 ( tmp [ 9 ] ) ) ;
 if ( check_sym ( tmp [ 10 ] , lf3sym ) ) {
 ( tmp [ 11 ] = arg_0 ( tmp [ 10 ] ) ) ;
-FUNC_EXIT ( make_nf1 ( ef1sym , ( * ef2 ) ( lf3 ( cons ( make_list_char ( 34 ) , cons ( make_list ( tmp [ 7 ] ) , cons ( make_list_char ( 45 ) , cons ( make_list ( tmp [ 11 ] ) , make_list ( make_char ( 34 ) ) ) ) ) ) ) ) ) ) ;
+FUNC_EXIT ( make_nf1 ( ef2sym , ( * ef3 ) ( lf3 ( cons ( make_list_char ( 34 ) , cons ( make_list ( tmp [ 7 ] ) , cons ( make_list_char ( 45 ) , cons ( make_list ( tmp [ 11 ] ) , make_list ( make_char ( 34 ) ) ) ) ) ) ) ) ) ) ;
 }
 }
 }
+}
+}
+}
+}
+}
+}
+}
+}
+}
+}
+if ( check_sym ( tmp [ 0 ] , ef1sym ) ) {
+( tmp [ 2 ] = arg_0 ( tmp [ 0 ] ) ) ;
+{
+if ( check_sym ( tmp [ 2 ] , lf3sym ) ) {
+( tmp [ 3 ] = arg_0 ( tmp [ 2 ] ) ) ;
+( tmp [ 4 ] = lf_AUX_ATerm_Utils3_2 ( lf_AUX_ATerm_Utils3_1 ( make_list ( tmp [ 1 ] ) ) ) ) ;
+if ( check_sym ( tmp [ 4 ] , ef1sym ) ) {
+( tmp [ 5 ] = arg_0 ( tmp [ 4 ] ) ) ;
+if ( check_sym ( tmp [ 5 ] , lf3sym ) ) {
+( tmp [ 6 ] = arg_0 ( tmp [ 5 ] ) ) ;
+FUNC_EXIT ( ( * ef1 ) ( lf3 ( cons ( make_list ( tmp [ 3 ] ) , cons ( make_list_char ( 45 ) , make_list ( tmp [ 6 ] ) ) ) ) ) ) ;
+}
+}
+if ( check_sym ( tmp [ 4 ] , ef2sym ) ) {
+( tmp [ 5 ] = arg_0 ( tmp [ 4 ] ) ) ;
+if ( check_sym ( tmp [ 5 ] , ef3sym ) ) {
+( tmp [ 6 ] = arg_0 ( tmp [ 5 ] ) ) ;
+if ( check_sym ( tmp [ 6 ] , lf3sym ) ) {
+( tmp [ 7 ] = arg_0 ( tmp [ 6 ] ) ) ;
+if ( not_empty_list ( tmp [ 7 ] ) ) {
+if ( term_equal ( list_head ( tmp [ 7 ] ) , make_char ( 34 ) ) ) {
+( tmp [ 8 ] = list_tail ( tmp [ 7 ] ) ) ;
+if ( not_empty_list ( tmp [ 8 ] ) ) {
+( tmp [ 9 ] = list_prefix ( tmp [ 8 ] ) ) ;
+if ( term_equal ( list_last ( tmp [ 8 ] ) , make_char ( 34 ) ) ) {
+FUNC_EXIT ( make_nf1 ( ef2sym , ( * ef3 ) ( lf3 ( cons ( make_list_char ( 34 ) , cons ( make_list ( tmp [ 3 ] ) , cons ( make_list_char ( 45 ) , cons ( make_list ( tmp [ 9 ] ) , make_list ( make_char ( 34 ) ) ) ) ) ) ) ) ) ) ;
 }
 }
 }
@@ -176,46 +176,10 @@ if ( not_empty_list ( atmp00 ) ) {
 ( tmp [ 1 ] = list_tail ( atmp00 ) ) ;
 {
 if ( not_empty_list ( tmp [ 1 ] ) ) {
-if ( check_sym ( tmp [ 0 ] , ef3sym ) ) {
+if ( check_sym ( tmp [ 0 ] , ef2sym ) ) {
 ( tmp [ 2 ] = arg_0 ( tmp [ 0 ] ) ) ;
 {
-if ( check_sym ( tmp [ 2 ] , lf3sym ) ) {
-( tmp [ 3 ] = arg_0 ( tmp [ 2 ] ) ) ;
-( tmp [ 4 ] = lf_AUX_ATerm_Utils3_2 ( lf_AUX_ATerm_Utils3_1 ( make_list ( tmp [ 1 ] ) ) ) ) ;
-if ( check_sym ( tmp [ 4 ] , ef3sym ) ) {
-( tmp [ 5 ] = arg_0 ( tmp [ 4 ] ) ) ;
-if ( check_sym ( tmp [ 5 ] , lf3sym ) ) {
-( tmp [ 6 ] = arg_0 ( tmp [ 5 ] ) ) ;
-FUNC_EXIT ( ( * ef3 ) ( lf3 ( cons ( make_list ( tmp [ 3 ] ) , cons ( make_list_char ( 45 ) , make_list ( tmp [ 6 ] ) ) ) ) ) ) ;
-}
-}
-if ( check_sym ( tmp [ 4 ] , ef1sym ) ) {
-( tmp [ 5 ] = arg_0 ( tmp [ 4 ] ) ) ;
-if ( check_sym ( tmp [ 5 ] , ef2sym ) ) {
-( tmp [ 6 ] = arg_0 ( tmp [ 5 ] ) ) ;
-if ( check_sym ( tmp [ 6 ] , lf3sym ) ) {
-( tmp [ 7 ] = arg_0 ( tmp [ 6 ] ) ) ;
-if ( not_empty_list ( tmp [ 7 ] ) ) {
-if ( term_equal ( list_head ( tmp [ 7 ] ) , make_char ( 34 ) ) ) {
-( tmp [ 8 ] = list_tail ( tmp [ 7 ] ) ) ;
-if ( not_empty_list ( tmp [ 8 ] ) ) {
-( tmp [ 9 ] = list_prefix ( tmp [ 8 ] ) ) ;
-if ( term_equal ( list_last ( tmp [ 8 ] ) , make_char ( 34 ) ) ) {
-FUNC_EXIT ( make_nf1 ( ef1sym , ( * ef2 ) ( lf3 ( cons ( make_list_char ( 34 ) , cons ( make_list ( tmp [ 3 ] ) , cons ( make_list_char ( 45 ) , cons ( make_list ( tmp [ 9 ] ) , make_list ( make_char ( 34 ) ) ) ) ) ) ) ) ) ) ;
-}
-}
-}
-}
-}
-}
-}
-}
-}
-}
-if ( check_sym ( tmp [ 0 ] , ef1sym ) ) {
-( tmp [ 2 ] = arg_0 ( tmp [ 0 ] ) ) ;
-{
-if ( check_sym ( tmp [ 2 ] , ef2sym ) ) {
+if ( check_sym ( tmp [ 2 ] , ef3sym ) ) {
 ( tmp [ 3 ] = arg_0 ( tmp [ 2 ] ) ) ;
 {
 if ( check_sym ( tmp [ 3 ] , lf3sym ) ) {
@@ -231,9 +195,9 @@ if ( not_empty_list ( tmp [ 6 ] ) ) {
 ( tmp [ 8 ] = list_last ( tmp [ 6 ] ) ) ;
 if ( term_equal ( tmp [ 8 ] , make_char ( 34 ) ) ) {
 ( tmp [ 9 ] = lf_AUX_ATerm_Utils3_2 ( lf_AUX_ATerm_Utils3_1 ( make_list ( tmp [ 1 ] ) ) ) ) ;
-if ( check_sym ( tmp [ 9 ] , ef1sym ) ) {
+if ( check_sym ( tmp [ 9 ] , ef2sym ) ) {
 ( tmp [ 10 ] = arg_0 ( tmp [ 9 ] ) ) ;
-if ( check_sym ( tmp [ 10 ] , ef2sym ) ) {
+if ( check_sym ( tmp [ 10 ] , ef3sym ) ) {
 ( tmp [ 11 ] = arg_0 ( tmp [ 10 ] ) ) ;
 if ( check_sym ( tmp [ 11 ] , lf3sym ) ) {
 ( tmp [ 12 ] = arg_0 ( tmp [ 11 ] ) ) ;
@@ -243,7 +207,7 @@ if ( term_equal ( list_head ( tmp [ 12 ] ) , make_char ( 34 ) ) ) {
 if ( not_empty_list ( tmp [ 13 ] ) ) {
 ( tmp [ 14 ] = list_prefix ( tmp [ 13 ] ) ) ;
 if ( term_equal ( list_last ( tmp [ 13 ] ) , make_char ( 34 ) ) ) {
-FUNC_EXIT ( make_nf1 ( ef1sym , ( * ef2 ) ( lf3 ( cons ( make_list_char ( 34 ) , cons ( make_list ( tmp [ 7 ] ) , cons ( make_list_char ( 45 ) , cons ( make_list ( tmp [ 14 ] ) , make_list ( make_char ( 34 ) ) ) ) ) ) ) ) ) ) ;
+FUNC_EXIT ( make_nf1 ( ef2sym , ( * ef3 ) ( lf3 ( cons ( make_list_char ( 34 ) , cons ( make_list ( tmp [ 7 ] ) , cons ( make_list_char ( 45 ) , cons ( make_list ( tmp [ 14 ] ) , make_list ( make_char ( 34 ) ) ) ) ) ) ) ) ) ) ;
 }
 }
 }
@@ -251,14 +215,50 @@ FUNC_EXIT ( make_nf1 ( ef1sym , ( * ef2 ) ( lf3 ( cons ( make_list_char ( 34 ) ,
 }
 }
 }
-if ( check_sym ( tmp [ 9 ] , ef3sym ) ) {
+if ( check_sym ( tmp [ 9 ] , ef1sym ) ) {
 ( tmp [ 10 ] = arg_0 ( tmp [ 9 ] ) ) ;
 if ( check_sym ( tmp [ 10 ] , lf3sym ) ) {
 ( tmp [ 11 ] = arg_0 ( tmp [ 10 ] ) ) ;
-FUNC_EXIT ( make_nf1 ( ef1sym , ( * ef2 ) ( lf3 ( cons ( make_list_char ( 34 ) , cons ( make_list ( tmp [ 7 ] ) , cons ( make_list_char ( 45 ) , cons ( make_list ( tmp [ 11 ] ) , make_list ( make_char ( 34 ) ) ) ) ) ) ) ) ) ) ;
+FUNC_EXIT ( make_nf1 ( ef2sym , ( * ef3 ) ( lf3 ( cons ( make_list_char ( 34 ) , cons ( make_list ( tmp [ 7 ] ) , cons ( make_list_char ( 45 ) , cons ( make_list ( tmp [ 11 ] ) , make_list ( make_char ( 34 ) ) ) ) ) ) ) ) ) ) ;
 }
 }
 }
+}
+}
+}
+}
+}
+}
+}
+}
+}
+}
+if ( check_sym ( tmp [ 0 ] , ef1sym ) ) {
+( tmp [ 2 ] = arg_0 ( tmp [ 0 ] ) ) ;
+{
+if ( check_sym ( tmp [ 2 ] , lf3sym ) ) {
+( tmp [ 3 ] = arg_0 ( tmp [ 2 ] ) ) ;
+( tmp [ 4 ] = lf_AUX_ATerm_Utils3_2 ( lf_AUX_ATerm_Utils3_1 ( make_list ( tmp [ 1 ] ) ) ) ) ;
+if ( check_sym ( tmp [ 4 ] , ef1sym ) ) {
+( tmp [ 5 ] = arg_0 ( tmp [ 4 ] ) ) ;
+if ( check_sym ( tmp [ 5 ] , lf3sym ) ) {
+( tmp [ 6 ] = arg_0 ( tmp [ 5 ] ) ) ;
+FUNC_EXIT ( ( * ef1 ) ( lf3 ( cons ( make_list ( tmp [ 3 ] ) , cons ( make_list_char ( 45 ) , make_list ( tmp [ 6 ] ) ) ) ) ) ) ;
+}
+}
+if ( check_sym ( tmp [ 4 ] , ef2sym ) ) {
+( tmp [ 5 ] = arg_0 ( tmp [ 4 ] ) ) ;
+if ( check_sym ( tmp [ 5 ] , ef3sym ) ) {
+( tmp [ 6 ] = arg_0 ( tmp [ 5 ] ) ) ;
+if ( check_sym ( tmp [ 6 ] , lf3sym ) ) {
+( tmp [ 7 ] = arg_0 ( tmp [ 6 ] ) ) ;
+if ( not_empty_list ( tmp [ 7 ] ) ) {
+if ( term_equal ( list_head ( tmp [ 7 ] ) , make_char ( 34 ) ) ) {
+( tmp [ 8 ] = list_tail ( tmp [ 7 ] ) ) ;
+if ( not_empty_list ( tmp [ 8 ] ) ) {
+( tmp [ 9 ] = list_prefix ( tmp [ 8 ] ) ) ;
+if ( term_equal ( list_last ( tmp [ 8 ] ) , make_char ( 34 ) ) ) {
+FUNC_EXIT ( make_nf1 ( ef2sym , ( * ef3 ) ( lf3 ( cons ( make_list_char ( 34 ) , cons ( make_list ( tmp [ 3 ] ) , cons ( make_list_char ( 45 ) , cons ( make_list ( tmp [ 9 ] ) , make_list ( make_char ( 34 ) ) ) ) ) ) ) ) ) ) ;
 }
 }
 }
@@ -284,12 +284,12 @@ FUNC_EXIT ( tmp [ 0 ] ) ;
 FUNC_EXIT ( make_nf1 ( lf_AUX_ATerm_Utils3_2_recursivesym , lf_AUX_ATerm_Utils3_1 ( arg0 ) ) ) ;
 }
 }
-ATerm lf3 ( ATerm arg0 ) {
-CONS_ENTRY ( lf3sym , ATmakeAppl ( lf3sym , arg0 ) ) ;
-CONS_EXIT ( make_nf1 ( lf3sym , arg0 ) ) ;
-}
 ATerm lf_AUX_ATerm_Utils3_1 ( ATerm arg0 ) {
 CONS_ENTRY ( lf_AUX_ATerm_Utils3_1sym , ATmakeAppl ( lf_AUX_ATerm_Utils3_1sym , arg0 ) ) ;
 CONS_EXIT ( make_nf1 ( lf_AUX_ATerm_Utils3_1sym , arg0 ) ) ;
+}
+ATerm lf3 ( ATerm arg0 ) {
+CONS_ENTRY ( lf3sym , ATmakeAppl ( lf3sym , arg0 ) ) ;
+CONS_EXIT ( make_nf1 ( lf3sym , arg0 ) ) ;
 }
 

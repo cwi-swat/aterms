@@ -43,12 +43,6 @@ if ( not_empty_list ( atmp000 ) ) {
 if ( term_equal ( tmp [ 0 ] , make_char ( 34 ) ) ) {
 ( tmp [ 1 ] = list_tail ( atmp000 ) ) ;
 {
-if ( is_single_element ( tmp [ 1 ] ) ) {
-if ( term_equal ( list_head ( tmp [ 1 ] ) , make_char ( 34 ) ) ) {
-FUNC_EXIT_CONST ( constant0 , ( * ef1 ) ( lf2 ( ( ATerm ) ATmakeList ( 2 , char_table [ 34 ] , char_table [ 34 ] ) ) ) ) ;
-}
-}
-{
 if ( not_empty_list ( tmp [ 1 ] ) ) {
 ( tmp [ 2 ] = list_head ( tmp [ 1 ] ) ) ;
 if ( term_equal ( tmp [ 2 ] , make_char ( 34 ) ) ) {
@@ -71,6 +65,10 @@ FUNC_EXIT ( tmp [ 5 ] ) ;
 }
 }
 }
+}
+if ( is_single_element ( tmp [ 1 ] ) ) {
+if ( term_equal ( list_head ( tmp [ 1 ] ) , make_char ( 34 ) ) ) {
+FUNC_EXIT_CONST ( constant0 , ( * ef1 ) ( lf2 ( ( ATerm ) ATmakeList ( 2 , char_table [ 34 ] , char_table [ 34 ] ) ) ) ) ;
 }
 }
 }

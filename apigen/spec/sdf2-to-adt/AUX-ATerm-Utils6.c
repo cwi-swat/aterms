@@ -9,10 +9,10 @@ static Symbol ef1sym ;
 static funcptr ef1 ;
 static Symbol lf2sym ;
 static ATerm lf2 ( ATerm arg1 ) ;
-static Symbol ef2sym ;
-static funcptr ef2 ;
 static Symbol lf3sym ;
 static ATerm lf3 ( ATerm arg1 ) ;
+static Symbol ef2sym ;
+static funcptr ef2 ;
 void register_AUX_ATerm_Utils6 ( ) {
 lf_AUX_ATerm_Utils6_1sym = ATmakeSymbol ( "prod(id(\"ATerm-Utils\"),w(\"\"),[ql(\"aterms-to-lit\"),w(\"\"),ql(\"(\"),w(\"\"),sort(\"ATerms\"),w(\"\"),ql(\")\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"AT-Literal\"),w(\"\"),no-attrs)"
  , 1 , ATtrue ) ;
@@ -47,7 +47,10 @@ ATerm atmp00 = arg_0 ( arg0 ) ;
 if ( check_sym ( atmp00 , lf2sym ) ) {
 {
 ATerm atmp000 = arg_0 ( atmp00 ) ;
-if ( not_empty_list ( atmp000 ) ) {
+if ( ! not_empty_list ( atmp000 ) ) {
+FUNC_EXIT_CONST ( constant0 , ( * ef2 ) ( lf3 ( ( ATerm ) ATmakeList ( 2 , char_table [ 34 ] , char_table [ 34 ] ) ) ) ) ;
+}
+else {
 ( tmp [ 0 ] = list_head ( atmp000 ) ) ;
 ( tmp [ 1 ] = list_tail ( atmp000 ) ) ;
 if ( not_empty_list ( tmp [ 1 ] ) ) {
@@ -87,9 +90,6 @@ FUNC_EXIT ( ( * ef2 ) ( lf3 ( cons ( make_list_char ( 34 ) , cons ( make_list ( 
 }
 }
 }
-}
-else {
-FUNC_EXIT_CONST ( constant0 , ( * ef2 ) ( lf3 ( ( ATerm ) ATmakeList ( 2 , char_table [ 34 ] , char_table [ 34 ] ) ) ) ) ;
 }
 if ( is_single_element ( atmp000 ) ) {
 ( tmp [ 0 ] = list_head ( atmp000 ) ) ;

@@ -17,17 +17,17 @@ lf_AUX_Integer_Syntax1_1sym = ATmakeSymbol ( "listtype(sort(\"CHAR\"))"
 ATprotectSymbol ( lf_AUX_Integer_Syntax1_1sym ) ;
 lf_AUX_Integer_Syntax1_2sym = ATmakeSymbol ( "prod(id(\"GEN-LexConsFuncs\"),w(\"\"),[ql(\"natcon\"),w(\"\"),ql(\"(\"),w(\"\"),iter(sort(\"CHAR\"),w(\"\"),l(\"*\")),w(\"\"),ql(\")\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"NatCon\"),w(\"\"),no-attrs)" , 1 , ATtrue ) ;
 ATprotectSymbol ( lf_AUX_Integer_Syntax1_2sym ) ;
-lf_AUX_Integer_Syntax1_3sym = ATmakeSymbol ( "prod(id(\"Integer-Syntax\"),w(\"\"),[sort(\"NatCon\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"IntCon\"),w(\"\"),attrs(l(\"{\"),w(\"\"),[l(\"constructor\")],w(\"\"),l(\"}\")))" , 1 , ATtrue ) ;
+lf_AUX_Integer_Syntax1_3sym = ATmakeSymbol ( "prod(id(\"Integer-Syntax\"),w(\"\"),[sort(\"IntCon\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"Int\"),w(\"\"),attrs(l(\"{\"),w(\"\"),[l(\"constructor\")],w(\"\"),l(\"}\")))" , 1 , ATtrue ) ;
 ATprotectSymbol ( lf_AUX_Integer_Syntax1_3sym ) ;
 lf_AUX_Integer_Syntax1_4sym = ATmakeSymbol ( "prod(id(\"Integer-Syntax\"),w(\"\"),[ql(\"-\"),w(\"\"),sort(\"NatCon\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"IntCon\"),w(\"\"),no-attrs)" , 1 , ATtrue ) ;
 ATprotectSymbol ( lf_AUX_Integer_Syntax1_4sym ) ;
-lf_AUX_Integer_Syntax1_5sym = ATmakeSymbol ( "prod(id(\"Integer-Syntax\"),w(\"\"),[sort(\"IntCon\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"Int\"),w(\"\"),attrs(l(\"{\"),w(\"\"),[l(\"constructor\")],w(\"\"),l(\"}\")))" , 1 , ATtrue ) ;
+lf_AUX_Integer_Syntax1_5sym = ATmakeSymbol ( "prod(id(\"Integer-Syntax\"),w(\"\"),[sort(\"NatCon\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"IntCon\"),w(\"\"),attrs(l(\"{\"),w(\"\"),[l(\"constructor\")],w(\"\"),l(\"}\")))" , 1 , ATtrue ) ;
 ATprotectSymbol ( lf_AUX_Integer_Syntax1_5sym ) ;
 register_prod ( ATparse ( "listtype(sort(\"CHAR\"))" ) , lf_AUX_Integer_Syntax1_1 , lf_AUX_Integer_Syntax1_1sym ) ;
 register_prod ( ATparse ( "prod(id(\"GEN-LexConsFuncs\"),w(\"\"),[ql(\"natcon\"),w(\"\"),ql(\"(\"),w(\"\"),iter(sort(\"CHAR\"),w(\"\"),l(\"*\")),w(\"\"),ql(\")\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"NatCon\"),w(\"\"),no-attrs)" ) , lf_AUX_Integer_Syntax1_2 , lf_AUX_Integer_Syntax1_2sym ) ;
-register_prod ( ATparse ( "prod(id(\"Integer-Syntax\"),w(\"\"),[sort(\"NatCon\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"IntCon\"),w(\"\"),attrs(l(\"{\"),w(\"\"),[l(\"constructor\")],w(\"\"),l(\"}\")))" ) , lf_AUX_Integer_Syntax1_3 , lf_AUX_Integer_Syntax1_3sym ) ;
+register_prod ( ATparse ( "prod(id(\"Integer-Syntax\"),w(\"\"),[sort(\"IntCon\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"Int\"),w(\"\"),attrs(l(\"{\"),w(\"\"),[l(\"constructor\")],w(\"\"),l(\"}\")))" ) , lf_AUX_Integer_Syntax1_3 , lf_AUX_Integer_Syntax1_3sym ) ;
 register_prod ( ATparse ( "prod(id(\"Integer-Syntax\"),w(\"\"),[ql(\"-\"),w(\"\"),sort(\"NatCon\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"IntCon\"),w(\"\"),no-attrs)" ) , lf_AUX_Integer_Syntax1_4 , lf_AUX_Integer_Syntax1_4sym ) ;
-register_prod ( ATparse ( "prod(id(\"Integer-Syntax\"),w(\"\"),[sort(\"IntCon\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"Int\"),w(\"\"),attrs(l(\"{\"),w(\"\"),[l(\"constructor\")],w(\"\"),l(\"}\")))" ) , lf_AUX_Integer_Syntax1_5 , lf_AUX_Integer_Syntax1_5sym ) ;
+register_prod ( ATparse ( "prod(id(\"Integer-Syntax\"),w(\"\"),[sort(\"NatCon\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"IntCon\"),w(\"\"),attrs(l(\"{\"),w(\"\"),[l(\"constructor\")],w(\"\"),l(\"}\")))" ) , lf_AUX_Integer_Syntax1_5 , lf_AUX_Integer_Syntax1_5sym ) ;
 }
 void resolve_AUX_Integer_Syntax1 ( ) {
 }

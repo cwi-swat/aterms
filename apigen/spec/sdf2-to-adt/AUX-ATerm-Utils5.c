@@ -78,11 +78,9 @@ if ( check_sym ( atmp100 , lf2sym ) ) {
 ATerm atmp1000 = arg_0 ( atmp100 ) ;
 if ( not_empty_list ( atmp1000 ) ) {
 ( tmp [ 1 ] = list_head ( atmp1000 ) ) ;
+{
 ( tmp [ 2 ] = list_tail ( atmp1000 ) ) ;
-if ( term_equal ( atmp000010 , tmp [ 1 ] ) ) {
-( arg1 = make_nf1 ( ef1sym , ( * ef2 ) ( lf2 ( make_list ( tmp [ 2 ] ) ) ) ) ) ;
-goto lbl_lf_AUX_ATerm_Utils5_1 ;
-}
+{
 if ( check_sym ( atmp000010 , ef1sym ) ) {
 ( tmp [ 3 ] = arg_0 ( atmp000010 ) ) ;
 if ( check_sym ( tmp [ 3 ] , ef2sym ) ) {
@@ -140,6 +138,12 @@ FUNC_EXIT ( tmp [ 23 ] ) ;
 }
 }
 }
+}
+}
+}
+if ( term_equal ( atmp000010 , tmp [ 1 ] ) ) {
+( arg1 = make_nf1 ( ef1sym , ( * ef2 ) ( lf2 ( make_list ( tmp [ 2 ] ) ) ) ) ) ;
+goto lbl_lf_AUX_ATerm_Utils5_1 ;
 }
 }
 }

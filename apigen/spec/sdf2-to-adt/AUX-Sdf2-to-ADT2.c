@@ -16,8 +16,8 @@ register_prod ( ATparse ( "prod(id(\"Sdf2-to-ADT\"),w(\"\"),[ql(\"sdf-to-adt-con
 void resolve_AUX_Sdf2_to_ADT2 ( ) {
 ef1 = lookup_func ( ATreadFromString ( "prod(id(\"Sdf2-to-ADT\"),w(\"\"),[ql(\"sdf-to-adt\"),w(\"\"),ql(\"(\"),w(\"\"),sort(\"SDF\"),w(\"\"),ql(\",\"),w(\"\"),sort(\"ConsOption\"),w(\"\"),ql(\")\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"ATerm\"),w(\"\"),no-attrs)" ) ) ;
 ef1sym = lookup_sym ( ATreadFromString ( "prod(id(\"Sdf2-to-ADT\"),w(\"\"),[ql(\"sdf-to-adt\"),w(\"\"),ql(\"(\"),w(\"\"),sort(\"SDF\"),w(\"\"),ql(\",\"),w(\"\"),sort(\"ConsOption\"),w(\"\"),ql(\")\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"ATerm\"),w(\"\"),no-attrs)" ) ) ;
-ef2 = lookup_func ( ATreadFromString ( "prod(id(\"Sdf2-to-ADT\"),w(\"\"),[ql(\"cons-expand\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"ConsOption\"),w(\"\"),no-attrs)" ) ) ;
-ef2sym = lookup_sym ( ATreadFromString ( "prod(id(\"Sdf2-to-ADT\"),w(\"\"),[ql(\"cons-expand\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"ConsOption\"),w(\"\"),no-attrs)" ) ) ;
+ef2 = lookup_func ( ATreadFromString ( "prod(id(\"Cons-Options\"),w(\"\"),[ql(\"cons-expand\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"ConsOption\"),w(\"\"),no-attrs)" ) ) ;
+ef2sym = lookup_sym ( ATreadFromString ( "prod(id(\"Cons-Options\"),w(\"\"),[ql(\"cons-expand\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"ConsOption\"),w(\"\"),no-attrs)" ) ) ;
 }
 void init_AUX_Sdf2_to_ADT2 ( ) {
 }

@@ -5,12 +5,12 @@ static Symbol lf_AUX_ATerm_Syntax1_1sym ;
 static ATerm lf_AUX_ATerm_Syntax1_1 ( ATerm arg1 ) ;
 static Symbol lf_AUX_ATerm_Syntax1_2sym ;
 static ATerm lf_AUX_ATerm_Syntax1_2 ( ATerm arg1 ) ;
-static Symbol lf_AUX_ATerm_Syntax1_4sym ;
-static ATerm lf_AUX_ATerm_Syntax1_4 ( ATerm arg1 ) ;
+static Symbol lf_AUX_ATerm_Syntax1_3sym ;
+static ATerm lf_AUX_ATerm_Syntax1_3 ( ATerm arg1 ) ;
 static Symbol lf_AUX_ATerm_Syntax1_5sym ;
-static ATerm lf_AUX_ATerm_Syntax1_5 ( ATerm arg1 ) ;
+static ATerm lf_AUX_ATerm_Syntax1_5 ( ATerm arg1 , ATerm arg2 ) ;
 static Symbol lf_AUX_ATerm_Syntax1_6sym ;
-static ATerm lf_AUX_ATerm_Syntax1_6 ( ATerm arg1 ) ;
+static ATerm lf_AUX_ATerm_Syntax1_6 ( ATerm arg1 , ATerm arg2 ) ;
 static Symbol lf_AUX_ATerm_Syntax1_7sym ;
 static ATerm lf_AUX_ATerm_Syntax1_7 ( ATerm arg1 ) ;
 static Symbol lf_AUX_ATerm_Syntax1_8sym ;
@@ -22,77 +22,77 @@ static ATerm lf_AUX_ATerm_Syntax1_10 ( ATerm arg1 ) ;
 static Symbol lf_AUX_ATerm_Syntax1_11sym ;
 static ATerm lf_AUX_ATerm_Syntax1_11 ( ATerm arg1 ) ;
 static Symbol lf_AUX_ATerm_Syntax1_12sym ;
-static ATerm lf_AUX_ATerm_Syntax1_12 ( ATerm arg1 , ATerm arg2 ) ;
+static ATerm lf_AUX_ATerm_Syntax1_12 ( ATerm arg1 ) ;
 static Symbol lf_AUX_ATerm_Syntax1_13sym ;
-static ATerm lf_AUX_ATerm_Syntax1_13 ( ATerm arg1 , ATerm arg2 ) ;
-static Symbol lf_AUX_ATerm_Syntax1_3sym ;
-static ATerm lf_AUX_ATerm_Syntax1_3 ( ATerm arg1 ) ;
+static ATerm lf_AUX_ATerm_Syntax1_13 ( ATerm arg1 ) ;
 static Symbol lf_AUX_ATerm_Syntax1_14sym ;
 static ATerm lf_AUX_ATerm_Syntax1_14 ( ATerm arg1 ) ;
+static Symbol lf_AUX_ATerm_Syntax1_4sym ;
+static ATerm lf_AUX_ATerm_Syntax1_4 ( ATerm arg1 ) ;
 void register_AUX_ATerm_Syntax1 ( ) {
 lf_AUX_ATerm_Syntax1_1sym = ATmakeSymbol ( "listtype(sort(\"CHAR\"))"
  , 1 , ATtrue ) ;
 ATprotectSymbol ( lf_AUX_ATerm_Syntax1_1sym ) ;
 lf_AUX_ATerm_Syntax1_2sym = ATmakeSymbol ( "prod(id(\"GEN-LexConsFuncs\"),w(\"\"),[ql(\"afun\"),w(\"\"),ql(\"(\"),w(\"\"),iter(sort(\"CHAR\"),w(\"\"),l(\"*\")),w(\"\"),ql(\")\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"AFun\"),w(\"\"),no-attrs)" , 1 , ATtrue ) ;
 ATprotectSymbol ( lf_AUX_ATerm_Syntax1_2sym ) ;
-lf_AUX_ATerm_Syntax1_4sym = ATmakeSymbol ( "prod(id(\"ATerm-Syntax\"),w(\"\"),[iter-sep(l(\"{\"),w(\"\"),sort(\"ATerm\"),w(\"\"),ql(\",\"),w(\"\"),l(\"}\"),w(\"\"),l(\"*\"))],w(\"\"),l(\"->\"),w(\"\"),sort(\"ATerms\"),w(\"\"),attrs(l(\"{\"),w(\"\"),[l(\"avoid\")],w(\"\"),l(\"}\")))" , 1 , ATtrue ) ;
-ATprotectSymbol ( lf_AUX_ATerm_Syntax1_4sym ) ;
-lf_AUX_ATerm_Syntax1_5sym = ATmakeSymbol ( "prod(id(\"ATerm-Syntax\"),w(\"\"),[ql(\"[\"),w(\"\"),iter-sep(l(\"{\"),w(\"\"),sort(\"ATerm\"),w(\"\"),ql(\",\"),w(\"\"),l(\"}\"),w(\"\"),l(\"*\")),w(\"\"),ql(\"]\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"ATermList\"),w(\"\"),no-attrs)" , 1 , ATtrue ) ;
+lf_AUX_ATerm_Syntax1_3sym = ATmakeSymbol ( "prod(id(\"ATerm-Syntax\"),w(\"\"),[ql(\"<\"),w(\"\"),sort(\"ATerm\"),w(\"\"),ql(\">\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"ATerm\"),w(\"\"),attrs(l(\"{\"),w(\"\"),[l(\"constructor\")],w(\"\"),l(\"}\")))" , 1 , ATtrue ) ;
+ATprotectSymbol ( lf_AUX_ATerm_Syntax1_3sym ) ;
+lf_AUX_ATerm_Syntax1_5sym = ATmakeSymbol ( "prod(id(\"ATerm-Syntax\"),w(\"\"),[sort(\"AFun\"),w(\"\"),ql(\"(\"),w(\"\"),iter-sep(l(\"{\"),w(\"\"),sort(\"ATerm\"),w(\"\"),ql(\",\"),w(\"\"),l(\"}\"),w(\"\"),l(\"+\")),w(\"\"),ql(\")\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"ATerm\"),w(\"\"),attrs(l(\"{\"),w(\"\"),[l(\"constructor\")],w(\"\"),l(\"}\")))" , 2 , ATtrue ) ;
 ATprotectSymbol ( lf_AUX_ATerm_Syntax1_5sym ) ;
-lf_AUX_ATerm_Syntax1_6sym = ATmakeSymbol ( "prod(id(\"ATerm-Syntax\"),w(\"\"),[sort(\"IntCon\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"ACon\"),w(\"\"),attrs(l(\"{\"),w(\"\"),[l(\"constructor\")],w(\"\"),l(\"}\")))" , 1 , ATtrue ) ;
+lf_AUX_ATerm_Syntax1_6sym = ATmakeSymbol ( "prod(id(\"ATerm-Syntax\"),w(\"\"),[sort(\"ATerm\"),w(\"\"),sort(\"Ann\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"ATerm\"),w(\"\"),attrs(l(\"{\"),w(\"\"),[l(\"constructor\")],w(\"\"),l(\"}\")))" , 2 , ATtrue ) ;
 ATprotectSymbol ( lf_AUX_ATerm_Syntax1_6sym ) ;
-lf_AUX_ATerm_Syntax1_7sym = ATmakeSymbol ( "prod(id(\"ATerm-Syntax\"),w(\"\"),[sort(\"AT-Literal\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"AFun\"),w(\"\"),attrs(l(\"{\"),w(\"\"),[l(\"constructor\")],w(\"\"),l(\"}\")))" , 1 , ATtrue ) ;
+lf_AUX_ATerm_Syntax1_7sym = ATmakeSymbol ( "prod(id(\"ATerm-Syntax\"),w(\"\"),[sort(\"AFun\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"ATerm\"),w(\"\"),attrs(l(\"{\"),w(\"\"),[l(\"constructor\")],w(\"\"),l(\"}\")))" , 1 , ATtrue ) ;
 ATprotectSymbol ( lf_AUX_ATerm_Syntax1_7sym ) ;
-lf_AUX_ATerm_Syntax1_8sym = ATmakeSymbol ( "prod(id(\"ATerm-Syntax\"),w(\"\"),[ql(\"{\"),w(\"\"),iter-sep(l(\"{\"),w(\"\"),sort(\"ATerm\"),w(\"\"),ql(\",\"),w(\"\"),l(\"}\"),w(\"\"),l(\"+\")),w(\"\"),ql(\"}\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"Ann\"),w(\"\"),attrs(l(\"{\"),w(\"\"),[l(\"constructor\")],w(\"\"),l(\"}\")))" , 1 , ATtrue ) ;
+lf_AUX_ATerm_Syntax1_8sym = ATmakeSymbol ( "prod(id(\"ATerm-Syntax\"),w(\"\"),[sort(\"ATermList\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"ATerm\"),w(\"\"),attrs(l(\"{\"),w(\"\"),[l(\"constructor\")],w(\"\"),l(\"}\")))" , 1 , ATtrue ) ;
 ATprotectSymbol ( lf_AUX_ATerm_Syntax1_8sym ) ;
 lf_AUX_ATerm_Syntax1_9sym = ATmakeSymbol ( "prod(id(\"ATerm-Syntax\"),w(\"\"),[sort(\"ACon\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"ATerm\"),w(\"\"),attrs(l(\"{\"),w(\"\"),[l(\"constructor\")],w(\"\"),l(\"}\")))" , 1 , ATtrue ) ;
 ATprotectSymbol ( lf_AUX_ATerm_Syntax1_9sym ) ;
-lf_AUX_ATerm_Syntax1_10sym = ATmakeSymbol ( "prod(id(\"ATerm-Syntax\"),w(\"\"),[sort(\"ATermList\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"ATerm\"),w(\"\"),attrs(l(\"{\"),w(\"\"),[l(\"constructor\")],w(\"\"),l(\"}\")))" , 1 , ATtrue ) ;
+lf_AUX_ATerm_Syntax1_10sym = ATmakeSymbol ( "prod(id(\"ATerm-Syntax\"),w(\"\"),[ql(\"{\"),w(\"\"),iter-sep(l(\"{\"),w(\"\"),sort(\"ATerm\"),w(\"\"),ql(\",\"),w(\"\"),l(\"}\"),w(\"\"),l(\"+\")),w(\"\"),ql(\"}\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"Ann\"),w(\"\"),attrs(l(\"{\"),w(\"\"),[l(\"constructor\")],w(\"\"),l(\"}\")))" , 1 , ATtrue ) ;
 ATprotectSymbol ( lf_AUX_ATerm_Syntax1_10sym ) ;
-lf_AUX_ATerm_Syntax1_11sym = ATmakeSymbol ( "prod(id(\"ATerm-Syntax\"),w(\"\"),[sort(\"AFun\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"ATerm\"),w(\"\"),attrs(l(\"{\"),w(\"\"),[l(\"constructor\")],w(\"\"),l(\"}\")))" , 1 , ATtrue ) ;
+lf_AUX_ATerm_Syntax1_11sym = ATmakeSymbol ( "prod(id(\"ATerm-Syntax\"),w(\"\"),[sort(\"AT-Literal\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"AFun\"),w(\"\"),attrs(l(\"{\"),w(\"\"),[l(\"constructor\")],w(\"\"),l(\"}\")))" , 1 , ATtrue ) ;
 ATprotectSymbol ( lf_AUX_ATerm_Syntax1_11sym ) ;
-lf_AUX_ATerm_Syntax1_12sym = ATmakeSymbol ( "prod(id(\"ATerm-Syntax\"),w(\"\"),[sort(\"ATerm\"),w(\"\"),sort(\"Ann\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"ATerm\"),w(\"\"),attrs(l(\"{\"),w(\"\"),[l(\"constructor\")],w(\"\"),l(\"}\")))" , 2 , ATtrue ) ;
+lf_AUX_ATerm_Syntax1_12sym = ATmakeSymbol ( "prod(id(\"ATerm-Syntax\"),w(\"\"),[sort(\"IntCon\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"ACon\"),w(\"\"),attrs(l(\"{\"),w(\"\"),[l(\"constructor\")],w(\"\"),l(\"}\")))" , 1 , ATtrue ) ;
 ATprotectSymbol ( lf_AUX_ATerm_Syntax1_12sym ) ;
-lf_AUX_ATerm_Syntax1_13sym = ATmakeSymbol ( "prod(id(\"ATerm-Syntax\"),w(\"\"),[sort(\"AFun\"),w(\"\"),ql(\"(\"),w(\"\"),iter-sep(l(\"{\"),w(\"\"),sort(\"ATerm\"),w(\"\"),ql(\",\"),w(\"\"),l(\"}\"),w(\"\"),l(\"+\")),w(\"\"),ql(\")\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"ATerm\"),w(\"\"),attrs(l(\"{\"),w(\"\"),[l(\"constructor\")],w(\"\"),l(\"}\")))" , 2 , ATtrue ) ;
+lf_AUX_ATerm_Syntax1_13sym = ATmakeSymbol ( "prod(id(\"ATerm-Syntax\"),w(\"\"),[ql(\"[\"),w(\"\"),iter-sep(l(\"{\"),w(\"\"),sort(\"ATerm\"),w(\"\"),ql(\",\"),w(\"\"),l(\"}\"),w(\"\"),l(\"*\")),w(\"\"),ql(\"]\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"ATermList\"),w(\"\"),no-attrs)" , 1 , ATtrue ) ;
 ATprotectSymbol ( lf_AUX_ATerm_Syntax1_13sym ) ;
-lf_AUX_ATerm_Syntax1_3sym = ATmakeSymbol ( "listtype(sort(\"ATerm\"),ql(\",\"))" , 1 , ATtrue ) ;
-ATprotectSymbol ( lf_AUX_ATerm_Syntax1_3sym ) ;
-lf_AUX_ATerm_Syntax1_14sym = ATmakeSymbol ( "prod(id(\"ATerm-Syntax\"),w(\"\"),[ql(\"<\"),w(\"\"),sort(\"ATerm\"),w(\"\"),ql(\">\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"ATerm\"),w(\"\"),attrs(l(\"{\"),w(\"\"),[l(\"constructor\")],w(\"\"),l(\"}\")))" , 1 , ATtrue ) ;
+lf_AUX_ATerm_Syntax1_14sym = ATmakeSymbol ( "prod(id(\"ATerm-Syntax\"),w(\"\"),[iter-sep(l(\"{\"),w(\"\"),sort(\"ATerm\"),w(\"\"),ql(\",\"),w(\"\"),l(\"}\"),w(\"\"),l(\"*\"))],w(\"\"),l(\"->\"),w(\"\"),sort(\"ATerms\"),w(\"\"),attrs(l(\"{\"),w(\"\"),[l(\"avoid\")],w(\"\"),l(\"}\")))" , 1 , ATtrue ) ;
 ATprotectSymbol ( lf_AUX_ATerm_Syntax1_14sym ) ;
+lf_AUX_ATerm_Syntax1_4sym = ATmakeSymbol ( "listtype(sort(\"ATerm\"),ql(\",\"))" , 1 , ATtrue ) ;
+ATprotectSymbol ( lf_AUX_ATerm_Syntax1_4sym ) ;
 register_prod ( ATparse ( "listtype(sort(\"CHAR\"))" ) , lf_AUX_ATerm_Syntax1_1 , lf_AUX_ATerm_Syntax1_1sym ) ;
 register_prod ( ATparse ( "prod(id(\"GEN-LexConsFuncs\"),w(\"\"),[ql(\"afun\"),w(\"\"),ql(\"(\"),w(\"\"),iter(sort(\"CHAR\"),w(\"\"),l(\"*\")),w(\"\"),ql(\")\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"AFun\"),w(\"\"),no-attrs)" ) , lf_AUX_ATerm_Syntax1_2 , lf_AUX_ATerm_Syntax1_2sym ) ;
-register_prod ( ATparse ( "listtype(sort(\"ATerm\"),ql(\",\"))" ) , lf_AUX_ATerm_Syntax1_3 , lf_AUX_ATerm_Syntax1_3sym ) ;
-register_prod ( ATparse ( "prod(id(\"ATerm-Syntax\"),w(\"\"),[iter-sep(l(\"{\"),w(\"\"),sort(\"ATerm\"),w(\"\"),ql(\",\"),w(\"\"),l(\"}\"),w(\"\"),l(\"*\"))],w(\"\"),l(\"->\"),w(\"\"),sort(\"ATerms\"),w(\"\"),attrs(l(\"{\"),w(\"\"),[l(\"avoid\")],w(\"\"),l(\"}\")))" ) , lf_AUX_ATerm_Syntax1_4 , lf_AUX_ATerm_Syntax1_4sym ) ;
-register_prod ( ATparse ( "prod(id(\"ATerm-Syntax\"),w(\"\"),[ql(\"[\"),w(\"\"),iter-sep(l(\"{\"),w(\"\"),sort(\"ATerm\"),w(\"\"),ql(\",\"),w(\"\"),l(\"}\"),w(\"\"),l(\"*\")),w(\"\"),ql(\"]\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"ATermList\"),w(\"\"),no-attrs)" ) , lf_AUX_ATerm_Syntax1_5 , lf_AUX_ATerm_Syntax1_5sym ) ;
-register_prod ( ATparse ( "prod(id(\"ATerm-Syntax\"),w(\"\"),[sort(\"IntCon\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"ACon\"),w(\"\"),attrs(l(\"{\"),w(\"\"),[l(\"constructor\")],w(\"\"),l(\"}\")))" ) , lf_AUX_ATerm_Syntax1_6 , lf_AUX_ATerm_Syntax1_6sym ) ;
-register_prod ( ATparse ( "prod(id(\"ATerm-Syntax\"),w(\"\"),[sort(\"AT-Literal\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"AFun\"),w(\"\"),attrs(l(\"{\"),w(\"\"),[l(\"constructor\")],w(\"\"),l(\"}\")))" ) , lf_AUX_ATerm_Syntax1_7 , lf_AUX_ATerm_Syntax1_7sym ) ;
-register_prod ( ATparse ( "prod(id(\"ATerm-Syntax\"),w(\"\"),[ql(\"{\"),w(\"\"),iter-sep(l(\"{\"),w(\"\"),sort(\"ATerm\"),w(\"\"),ql(\",\"),w(\"\"),l(\"}\"),w(\"\"),l(\"+\")),w(\"\"),ql(\"}\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"Ann\"),w(\"\"),attrs(l(\"{\"),w(\"\"),[l(\"constructor\")],w(\"\"),l(\"}\")))" ) , lf_AUX_ATerm_Syntax1_8 , lf_AUX_ATerm_Syntax1_8sym ) ;
+register_prod ( ATparse ( "prod(id(\"ATerm-Syntax\"),w(\"\"),[ql(\"<\"),w(\"\"),sort(\"ATerm\"),w(\"\"),ql(\">\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"ATerm\"),w(\"\"),attrs(l(\"{\"),w(\"\"),[l(\"constructor\")],w(\"\"),l(\"}\")))" ) , lf_AUX_ATerm_Syntax1_3 , lf_AUX_ATerm_Syntax1_3sym ) ;
+register_prod ( ATparse ( "listtype(sort(\"ATerm\"),ql(\",\"))" ) , lf_AUX_ATerm_Syntax1_4 , lf_AUX_ATerm_Syntax1_4sym ) ;
+register_prod ( ATparse ( "prod(id(\"ATerm-Syntax\"),w(\"\"),[sort(\"AFun\"),w(\"\"),ql(\"(\"),w(\"\"),iter-sep(l(\"{\"),w(\"\"),sort(\"ATerm\"),w(\"\"),ql(\",\"),w(\"\"),l(\"}\"),w(\"\"),l(\"+\")),w(\"\"),ql(\")\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"ATerm\"),w(\"\"),attrs(l(\"{\"),w(\"\"),[l(\"constructor\")],w(\"\"),l(\"}\")))" ) , lf_AUX_ATerm_Syntax1_5 , lf_AUX_ATerm_Syntax1_5sym ) ;
+register_prod ( ATparse ( "prod(id(\"ATerm-Syntax\"),w(\"\"),[sort(\"ATerm\"),w(\"\"),sort(\"Ann\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"ATerm\"),w(\"\"),attrs(l(\"{\"),w(\"\"),[l(\"constructor\")],w(\"\"),l(\"}\")))" ) , lf_AUX_ATerm_Syntax1_6 , lf_AUX_ATerm_Syntax1_6sym ) ;
+register_prod ( ATparse ( "prod(id(\"ATerm-Syntax\"),w(\"\"),[sort(\"AFun\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"ATerm\"),w(\"\"),attrs(l(\"{\"),w(\"\"),[l(\"constructor\")],w(\"\"),l(\"}\")))" ) , lf_AUX_ATerm_Syntax1_7 , lf_AUX_ATerm_Syntax1_7sym ) ;
+register_prod ( ATparse ( "prod(id(\"ATerm-Syntax\"),w(\"\"),[sort(\"ATermList\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"ATerm\"),w(\"\"),attrs(l(\"{\"),w(\"\"),[l(\"constructor\")],w(\"\"),l(\"}\")))" ) , lf_AUX_ATerm_Syntax1_8 , lf_AUX_ATerm_Syntax1_8sym ) ;
 register_prod ( ATparse ( "prod(id(\"ATerm-Syntax\"),w(\"\"),[sort(\"ACon\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"ATerm\"),w(\"\"),attrs(l(\"{\"),w(\"\"),[l(\"constructor\")],w(\"\"),l(\"}\")))" ) , lf_AUX_ATerm_Syntax1_9 , lf_AUX_ATerm_Syntax1_9sym ) ;
-register_prod ( ATparse ( "prod(id(\"ATerm-Syntax\"),w(\"\"),[sort(\"ATermList\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"ATerm\"),w(\"\"),attrs(l(\"{\"),w(\"\"),[l(\"constructor\")],w(\"\"),l(\"}\")))" ) , lf_AUX_ATerm_Syntax1_10 , lf_AUX_ATerm_Syntax1_10sym ) ;
-register_prod ( ATparse ( "prod(id(\"ATerm-Syntax\"),w(\"\"),[sort(\"AFun\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"ATerm\"),w(\"\"),attrs(l(\"{\"),w(\"\"),[l(\"constructor\")],w(\"\"),l(\"}\")))" ) , lf_AUX_ATerm_Syntax1_11 , lf_AUX_ATerm_Syntax1_11sym ) ;
-register_prod ( ATparse ( "prod(id(\"ATerm-Syntax\"),w(\"\"),[sort(\"ATerm\"),w(\"\"),sort(\"Ann\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"ATerm\"),w(\"\"),attrs(l(\"{\"),w(\"\"),[l(\"constructor\")],w(\"\"),l(\"}\")))" ) , lf_AUX_ATerm_Syntax1_12 , lf_AUX_ATerm_Syntax1_12sym ) ;
-register_prod ( ATparse ( "prod(id(\"ATerm-Syntax\"),w(\"\"),[sort(\"AFun\"),w(\"\"),ql(\"(\"),w(\"\"),iter-sep(l(\"{\"),w(\"\"),sort(\"ATerm\"),w(\"\"),ql(\",\"),w(\"\"),l(\"}\"),w(\"\"),l(\"+\")),w(\"\"),ql(\")\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"ATerm\"),w(\"\"),attrs(l(\"{\"),w(\"\"),[l(\"constructor\")],w(\"\"),l(\"}\")))" ) , lf_AUX_ATerm_Syntax1_13 , lf_AUX_ATerm_Syntax1_13sym ) ;
-register_prod ( ATparse ( "prod(id(\"ATerm-Syntax\"),w(\"\"),[ql(\"<\"),w(\"\"),sort(\"ATerm\"),w(\"\"),ql(\">\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"ATerm\"),w(\"\"),attrs(l(\"{\"),w(\"\"),[l(\"constructor\")],w(\"\"),l(\"}\")))" ) , lf_AUX_ATerm_Syntax1_14 , lf_AUX_ATerm_Syntax1_14sym ) ;
+register_prod ( ATparse ( "prod(id(\"ATerm-Syntax\"),w(\"\"),[ql(\"{\"),w(\"\"),iter-sep(l(\"{\"),w(\"\"),sort(\"ATerm\"),w(\"\"),ql(\",\"),w(\"\"),l(\"}\"),w(\"\"),l(\"+\")),w(\"\"),ql(\"}\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"Ann\"),w(\"\"),attrs(l(\"{\"),w(\"\"),[l(\"constructor\")],w(\"\"),l(\"}\")))" ) , lf_AUX_ATerm_Syntax1_10 , lf_AUX_ATerm_Syntax1_10sym ) ;
+register_prod ( ATparse ( "prod(id(\"ATerm-Syntax\"),w(\"\"),[sort(\"AT-Literal\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"AFun\"),w(\"\"),attrs(l(\"{\"),w(\"\"),[l(\"constructor\")],w(\"\"),l(\"}\")))" ) , lf_AUX_ATerm_Syntax1_11 , lf_AUX_ATerm_Syntax1_11sym ) ;
+register_prod ( ATparse ( "prod(id(\"ATerm-Syntax\"),w(\"\"),[sort(\"IntCon\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"ACon\"),w(\"\"),attrs(l(\"{\"),w(\"\"),[l(\"constructor\")],w(\"\"),l(\"}\")))" ) , lf_AUX_ATerm_Syntax1_12 , lf_AUX_ATerm_Syntax1_12sym ) ;
+register_prod ( ATparse ( "prod(id(\"ATerm-Syntax\"),w(\"\"),[ql(\"[\"),w(\"\"),iter-sep(l(\"{\"),w(\"\"),sort(\"ATerm\"),w(\"\"),ql(\",\"),w(\"\"),l(\"}\"),w(\"\"),l(\"*\")),w(\"\"),ql(\"]\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"ATermList\"),w(\"\"),no-attrs)" ) , lf_AUX_ATerm_Syntax1_13 , lf_AUX_ATerm_Syntax1_13sym ) ;
+register_prod ( ATparse ( "prod(id(\"ATerm-Syntax\"),w(\"\"),[iter-sep(l(\"{\"),w(\"\"),sort(\"ATerm\"),w(\"\"),ql(\",\"),w(\"\"),l(\"}\"),w(\"\"),l(\"*\"))],w(\"\"),l(\"->\"),w(\"\"),sort(\"ATerms\"),w(\"\"),attrs(l(\"{\"),w(\"\"),[l(\"avoid\")],w(\"\"),l(\"}\")))" ) , lf_AUX_ATerm_Syntax1_14 , lf_AUX_ATerm_Syntax1_14sym ) ;
 }
 void resolve_AUX_ATerm_Syntax1 ( ) {
 }
 void init_AUX_ATerm_Syntax1 ( ) {
 }
+ATerm lf_AUX_ATerm_Syntax1_4 ( ATerm arg0 ) {
+CONS_ENTRY ( lf_AUX_ATerm_Syntax1_4sym , ATmakeAppl ( lf_AUX_ATerm_Syntax1_4sym , arg0 ) ) ;
+CONS_EXIT ( make_nf1 ( lf_AUX_ATerm_Syntax1_4sym , arg0 ) ) ;
+}
 ATerm lf_AUX_ATerm_Syntax1_14 ( ATerm arg0 ) {
 CONS_ENTRY ( lf_AUX_ATerm_Syntax1_14sym , ATmakeAppl ( lf_AUX_ATerm_Syntax1_14sym , arg0 ) ) ;
 CONS_EXIT ( make_nf1 ( lf_AUX_ATerm_Syntax1_14sym , arg0 ) ) ;
 }
-ATerm lf_AUX_ATerm_Syntax1_3 ( ATerm arg0 ) {
-CONS_ENTRY ( lf_AUX_ATerm_Syntax1_3sym , ATmakeAppl ( lf_AUX_ATerm_Syntax1_3sym , arg0 ) ) ;
-CONS_EXIT ( make_nf1 ( lf_AUX_ATerm_Syntax1_3sym , arg0 ) ) ;
+ATerm lf_AUX_ATerm_Syntax1_13 ( ATerm arg0 ) {
+CONS_ENTRY ( lf_AUX_ATerm_Syntax1_13sym , ATmakeAppl ( lf_AUX_ATerm_Syntax1_13sym , arg0 ) ) ;
+CONS_EXIT ( make_nf1 ( lf_AUX_ATerm_Syntax1_13sym , arg0 ) ) ;
 }
-ATerm lf_AUX_ATerm_Syntax1_13 ( ATerm arg0 , ATerm arg1 ) {
-CONS_ENTRY ( lf_AUX_ATerm_Syntax1_13sym , ATmakeAppl ( lf_AUX_ATerm_Syntax1_13sym , arg0 , arg1 ) ) ;
-CONS_EXIT ( make_nf2 ( lf_AUX_ATerm_Syntax1_13sym , arg0 , arg1 ) ) ;
-}
-ATerm lf_AUX_ATerm_Syntax1_12 ( ATerm arg0 , ATerm arg1 ) {
-CONS_ENTRY ( lf_AUX_ATerm_Syntax1_12sym , ATmakeAppl ( lf_AUX_ATerm_Syntax1_12sym , arg0 , arg1 ) ) ;
-CONS_EXIT ( make_nf2 ( lf_AUX_ATerm_Syntax1_12sym , arg0 , arg1 ) ) ;
+ATerm lf_AUX_ATerm_Syntax1_12 ( ATerm arg0 ) {
+CONS_ENTRY ( lf_AUX_ATerm_Syntax1_12sym , ATmakeAppl ( lf_AUX_ATerm_Syntax1_12sym , arg0 ) ) ;
+CONS_EXIT ( make_nf1 ( lf_AUX_ATerm_Syntax1_12sym , arg0 ) ) ;
 }
 ATerm lf_AUX_ATerm_Syntax1_11 ( ATerm arg0 ) {
 CONS_ENTRY ( lf_AUX_ATerm_Syntax1_11sym , ATmakeAppl ( lf_AUX_ATerm_Syntax1_11sym , arg0 ) ) ;
@@ -114,17 +114,17 @@ ATerm lf_AUX_ATerm_Syntax1_7 ( ATerm arg0 ) {
 CONS_ENTRY ( lf_AUX_ATerm_Syntax1_7sym , ATmakeAppl ( lf_AUX_ATerm_Syntax1_7sym , arg0 ) ) ;
 CONS_EXIT ( make_nf1 ( lf_AUX_ATerm_Syntax1_7sym , arg0 ) ) ;
 }
-ATerm lf_AUX_ATerm_Syntax1_6 ( ATerm arg0 ) {
-CONS_ENTRY ( lf_AUX_ATerm_Syntax1_6sym , ATmakeAppl ( lf_AUX_ATerm_Syntax1_6sym , arg0 ) ) ;
-CONS_EXIT ( make_nf1 ( lf_AUX_ATerm_Syntax1_6sym , arg0 ) ) ;
+ATerm lf_AUX_ATerm_Syntax1_6 ( ATerm arg0 , ATerm arg1 ) {
+CONS_ENTRY ( lf_AUX_ATerm_Syntax1_6sym , ATmakeAppl ( lf_AUX_ATerm_Syntax1_6sym , arg0 , arg1 ) ) ;
+CONS_EXIT ( make_nf2 ( lf_AUX_ATerm_Syntax1_6sym , arg0 , arg1 ) ) ;
 }
-ATerm lf_AUX_ATerm_Syntax1_5 ( ATerm arg0 ) {
-CONS_ENTRY ( lf_AUX_ATerm_Syntax1_5sym , ATmakeAppl ( lf_AUX_ATerm_Syntax1_5sym , arg0 ) ) ;
-CONS_EXIT ( make_nf1 ( lf_AUX_ATerm_Syntax1_5sym , arg0 ) ) ;
+ATerm lf_AUX_ATerm_Syntax1_5 ( ATerm arg0 , ATerm arg1 ) {
+CONS_ENTRY ( lf_AUX_ATerm_Syntax1_5sym , ATmakeAppl ( lf_AUX_ATerm_Syntax1_5sym , arg0 , arg1 ) ) ;
+CONS_EXIT ( make_nf2 ( lf_AUX_ATerm_Syntax1_5sym , arg0 , arg1 ) ) ;
 }
-ATerm lf_AUX_ATerm_Syntax1_4 ( ATerm arg0 ) {
-CONS_ENTRY ( lf_AUX_ATerm_Syntax1_4sym , ATmakeAppl ( lf_AUX_ATerm_Syntax1_4sym , arg0 ) ) ;
-CONS_EXIT ( make_nf1 ( lf_AUX_ATerm_Syntax1_4sym , arg0 ) ) ;
+ATerm lf_AUX_ATerm_Syntax1_3 ( ATerm arg0 ) {
+CONS_ENTRY ( lf_AUX_ATerm_Syntax1_3sym , ATmakeAppl ( lf_AUX_ATerm_Syntax1_3sym , arg0 ) ) ;
+CONS_EXIT ( make_nf1 ( lf_AUX_ATerm_Syntax1_3sym , arg0 ) ) ;
 }
 ATerm lf_AUX_ATerm_Syntax1_2 ( ATerm arg0 ) {
 CONS_ENTRY ( lf_AUX_ATerm_Syntax1_2sym , ATmakeAppl ( lf_AUX_ATerm_Syntax1_2sym , arg0 ) ) ;

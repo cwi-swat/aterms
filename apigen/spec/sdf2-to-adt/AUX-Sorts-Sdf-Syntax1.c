@@ -15,14 +15,14 @@ lf_AUX_Sorts_Sdf_Syntax1_1sym = ATmakeSymbol ( "listtype(sort(\"CHAR\"))"
 ATprotectSymbol ( lf_AUX_Sorts_Sdf_Syntax1_1sym ) ;
 lf_AUX_Sorts_Sdf_Syntax1_2sym = ATmakeSymbol ( "prod(id(\"GEN-LexConsFuncs\"),w(\"\"),[ql(\"sort\"),w(\"\"),ql(\"(\"),w(\"\"),iter(sort(\"CHAR\"),w(\"\"),l(\"*\")),w(\"\"),ql(\")\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"Sort\"),w(\"\"),no-attrs)" , 1 , ATtrue ) ;
 ATprotectSymbol ( lf_AUX_Sorts_Sdf_Syntax1_2sym ) ;
-lf_AUX_Sorts_Sdf_Syntax1_3sym = ATmakeSymbol ( "prod(id(\"Sorts-Sdf-Syntax\"),w(\"\"),[sort(\"Sort\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"Symbol\"),w(\"\"),no-attrs)" , 1 , ATtrue ) ;
+lf_AUX_Sorts_Sdf_Syntax1_3sym = ATmakeSymbol ( "prod(id(\"Sorts-Sdf-Syntax\"),w(\"\"),[ql(\"sorts\"),w(\"\"),sort(\"Symbols\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"Grammar\"),w(\"\"),no-attrs)" , 1 , ATtrue ) ;
 ATprotectSymbol ( lf_AUX_Sorts_Sdf_Syntax1_3sym ) ;
-lf_AUX_Sorts_Sdf_Syntax1_4sym = ATmakeSymbol ( "prod(id(\"Sorts-Sdf-Syntax\"),w(\"\"),[ql(\"sorts\"),w(\"\"),sort(\"Symbols\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"Grammar\"),w(\"\"),no-attrs)" , 1 , ATtrue ) ;
+lf_AUX_Sorts_Sdf_Syntax1_4sym = ATmakeSymbol ( "prod(id(\"Sorts-Sdf-Syntax\"),w(\"\"),[sort(\"Sort\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"Symbol\"),w(\"\"),no-attrs)" , 1 , ATtrue ) ;
 ATprotectSymbol ( lf_AUX_Sorts_Sdf_Syntax1_4sym ) ;
 register_prod ( ATparse ( "listtype(sort(\"CHAR\"))" ) , lf_AUX_Sorts_Sdf_Syntax1_1 , lf_AUX_Sorts_Sdf_Syntax1_1sym ) ;
 register_prod ( ATparse ( "prod(id(\"GEN-LexConsFuncs\"),w(\"\"),[ql(\"sort\"),w(\"\"),ql(\"(\"),w(\"\"),iter(sort(\"CHAR\"),w(\"\"),l(\"*\")),w(\"\"),ql(\")\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"Sort\"),w(\"\"),no-attrs)" ) , lf_AUX_Sorts_Sdf_Syntax1_2 , lf_AUX_Sorts_Sdf_Syntax1_2sym ) ;
-register_prod ( ATparse ( "prod(id(\"Sorts-Sdf-Syntax\"),w(\"\"),[sort(\"Sort\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"Symbol\"),w(\"\"),no-attrs)" ) , lf_AUX_Sorts_Sdf_Syntax1_3 , lf_AUX_Sorts_Sdf_Syntax1_3sym ) ;
-register_prod ( ATparse ( "prod(id(\"Sorts-Sdf-Syntax\"),w(\"\"),[ql(\"sorts\"),w(\"\"),sort(\"Symbols\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"Grammar\"),w(\"\"),no-attrs)" ) , lf_AUX_Sorts_Sdf_Syntax1_4 , lf_AUX_Sorts_Sdf_Syntax1_4sym ) ;
+register_prod ( ATparse ( "prod(id(\"Sorts-Sdf-Syntax\"),w(\"\"),[ql(\"sorts\"),w(\"\"),sort(\"Symbols\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"Grammar\"),w(\"\"),no-attrs)" ) , lf_AUX_Sorts_Sdf_Syntax1_3 , lf_AUX_Sorts_Sdf_Syntax1_3sym ) ;
+register_prod ( ATparse ( "prod(id(\"Sorts-Sdf-Syntax\"),w(\"\"),[sort(\"Sort\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"Symbol\"),w(\"\"),no-attrs)" ) , lf_AUX_Sorts_Sdf_Syntax1_4 , lf_AUX_Sorts_Sdf_Syntax1_4sym ) ;
 }
 void resolve_AUX_Sorts_Sdf_Syntax1 ( ) {
 }

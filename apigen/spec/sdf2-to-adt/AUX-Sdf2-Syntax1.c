@@ -2,9 +2,9 @@
 
 #include  "asc-support.h"
 static Symbol lf_AUX_Sdf2_Syntax1_1sym ;
-static ATerm lf_AUX_Sdf2_Syntax1_1 ( ) ;
+static ATerm lf_AUX_Sdf2_Syntax1_1 ( ATerm arg1 ) ;
 static Symbol lf_AUX_Sdf2_Syntax1_2sym ;
-static ATerm lf_AUX_Sdf2_Syntax1_2 ( ) ;
+static ATerm lf_AUX_Sdf2_Syntax1_2 ( ATerm arg1 ) ;
 static Symbol lf_AUX_Sdf2_Syntax1_3sym ;
 static ATerm lf_AUX_Sdf2_Syntax1_3 ( ATerm arg1 ) ;
 static Symbol lf_AUX_Sdf2_Syntax1_4sym ;
@@ -12,44 +12,44 @@ static ATerm lf_AUX_Sdf2_Syntax1_4 ( ATerm arg1 ) ;
 static Symbol lf_AUX_Sdf2_Syntax1_5sym ;
 static ATerm lf_AUX_Sdf2_Syntax1_5 ( ATerm arg1 ) ;
 static Symbol lf_AUX_Sdf2_Syntax1_6sym ;
-static ATerm lf_AUX_Sdf2_Syntax1_6 ( ATerm arg1 ) ;
+static ATerm lf_AUX_Sdf2_Syntax1_6 ( ) ;
 static Symbol lf_AUX_Sdf2_Syntax1_7sym ;
-static ATerm lf_AUX_Sdf2_Syntax1_7 ( ATerm arg1 ) ;
+static ATerm lf_AUX_Sdf2_Syntax1_7 ( ) ;
 void register_AUX_Sdf2_Syntax1 ( ) {
-lf_AUX_Sdf2_Syntax1_1sym = ATmakeSymbol ( "prod(id(\"Sdf2-Syntax\"),w(\"\"),[ql(\"<START>\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"Symbol\"),w(\"\"),no-attrs)"
- , 0 , ATtrue ) ;
+lf_AUX_Sdf2_Syntax1_1sym = ATmakeSymbol ( "prod(id(\"Sdf2-Syntax\"),w(\"\"),[ql(\"definition\"),w(\"\"),sort(\"Definition\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"SDF\"),w(\"\"),no-attrs)"
+ , 1 , ATtrue ) ;
 ATprotectSymbol ( lf_AUX_Sdf2_Syntax1_1sym ) ;
-lf_AUX_Sdf2_Syntax1_2sym = ATmakeSymbol ( "prod(id(\"Sdf2-Syntax\"),w(\"\"),[ql(\"<Start>\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"Symbol\"),w(\"\"),no-attrs)" , 0 , ATtrue ) ;
+lf_AUX_Sdf2_Syntax1_2sym = ATmakeSymbol ( "prod(id(\"Sdf2-Syntax\"),w(\"\"),[ql(\"context-free\"),w(\"\"),ql(\"restrictions\"),w(\"\"),sort(\"Restrictions\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"Grammar\"),w(\"\"),no-attrs)" , 1 , ATtrue ) ;
 ATprotectSymbol ( lf_AUX_Sdf2_Syntax1_2sym ) ;
-lf_AUX_Sdf2_Syntax1_3sym = ATmakeSymbol ( "prod(id(\"Sdf2-Syntax\"),w(\"\"),[ql(\"lexical\"),w(\"\"),ql(\"priorities\"),w(\"\"),sort(\"Priorities\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"Grammar\"),w(\"\"),no-attrs)" , 1 , ATtrue ) ;
+lf_AUX_Sdf2_Syntax1_3sym = ATmakeSymbol ( "prod(id(\"Sdf2-Syntax\"),w(\"\"),[ql(\"lexical\"),w(\"\"),ql(\"restrictions\"),w(\"\"),sort(\"Restrictions\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"Grammar\"),w(\"\"),no-attrs)" , 1 , ATtrue ) ;
 ATprotectSymbol ( lf_AUX_Sdf2_Syntax1_3sym ) ;
 lf_AUX_Sdf2_Syntax1_4sym = ATmakeSymbol ( "prod(id(\"Sdf2-Syntax\"),w(\"\"),[ql(\"context-free\"),w(\"\"),ql(\"priorities\"),w(\"\"),sort(\"Priorities\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"Grammar\"),w(\"\"),no-attrs)" , 1 , ATtrue ) ;
 ATprotectSymbol ( lf_AUX_Sdf2_Syntax1_4sym ) ;
-lf_AUX_Sdf2_Syntax1_5sym = ATmakeSymbol ( "prod(id(\"Sdf2-Syntax\"),w(\"\"),[ql(\"lexical\"),w(\"\"),ql(\"restrictions\"),w(\"\"),sort(\"Restrictions\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"Grammar\"),w(\"\"),no-attrs)" , 1 , ATtrue ) ;
+lf_AUX_Sdf2_Syntax1_5sym = ATmakeSymbol ( "prod(id(\"Sdf2-Syntax\"),w(\"\"),[ql(\"lexical\"),w(\"\"),ql(\"priorities\"),w(\"\"),sort(\"Priorities\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"Grammar\"),w(\"\"),no-attrs)" , 1 , ATtrue ) ;
 ATprotectSymbol ( lf_AUX_Sdf2_Syntax1_5sym ) ;
-lf_AUX_Sdf2_Syntax1_6sym = ATmakeSymbol ( "prod(id(\"Sdf2-Syntax\"),w(\"\"),[ql(\"context-free\"),w(\"\"),ql(\"restrictions\"),w(\"\"),sort(\"Restrictions\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"Grammar\"),w(\"\"),no-attrs)" , 1 , ATtrue ) ;
+lf_AUX_Sdf2_Syntax1_6sym = ATmakeSymbol ( "prod(id(\"Sdf2-Syntax\"),w(\"\"),[ql(\"<Start>\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"Symbol\"),w(\"\"),no-attrs)" , 0 , ATtrue ) ;
 ATprotectSymbol ( lf_AUX_Sdf2_Syntax1_6sym ) ;
-lf_AUX_Sdf2_Syntax1_7sym = ATmakeSymbol ( "prod(id(\"Sdf2-Syntax\"),w(\"\"),[ql(\"definition\"),w(\"\"),sort(\"Definition\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"SDF\"),w(\"\"),no-attrs)" , 1 , ATtrue ) ;
+lf_AUX_Sdf2_Syntax1_7sym = ATmakeSymbol ( "prod(id(\"Sdf2-Syntax\"),w(\"\"),[ql(\"<START>\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"Symbol\"),w(\"\"),no-attrs)" , 0 , ATtrue ) ;
 ATprotectSymbol ( lf_AUX_Sdf2_Syntax1_7sym ) ;
-register_prod ( ATparse ( "prod(id(\"Sdf2-Syntax\"),w(\"\"),[ql(\"<START>\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"Symbol\"),w(\"\"),no-attrs)" ) , lf_AUX_Sdf2_Syntax1_1 , lf_AUX_Sdf2_Syntax1_1sym ) ;
-register_prod ( ATparse ( "prod(id(\"Sdf2-Syntax\"),w(\"\"),[ql(\"<Start>\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"Symbol\"),w(\"\"),no-attrs)" ) , lf_AUX_Sdf2_Syntax1_2 , lf_AUX_Sdf2_Syntax1_2sym ) ;
-register_prod ( ATparse ( "prod(id(\"Sdf2-Syntax\"),w(\"\"),[ql(\"lexical\"),w(\"\"),ql(\"priorities\"),w(\"\"),sort(\"Priorities\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"Grammar\"),w(\"\"),no-attrs)" ) , lf_AUX_Sdf2_Syntax1_3 , lf_AUX_Sdf2_Syntax1_3sym ) ;
+register_prod ( ATparse ( "prod(id(\"Sdf2-Syntax\"),w(\"\"),[ql(\"definition\"),w(\"\"),sort(\"Definition\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"SDF\"),w(\"\"),no-attrs)" ) , lf_AUX_Sdf2_Syntax1_1 , lf_AUX_Sdf2_Syntax1_1sym ) ;
+register_prod ( ATparse ( "prod(id(\"Sdf2-Syntax\"),w(\"\"),[ql(\"context-free\"),w(\"\"),ql(\"restrictions\"),w(\"\"),sort(\"Restrictions\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"Grammar\"),w(\"\"),no-attrs)" ) , lf_AUX_Sdf2_Syntax1_2 , lf_AUX_Sdf2_Syntax1_2sym ) ;
+register_prod ( ATparse ( "prod(id(\"Sdf2-Syntax\"),w(\"\"),[ql(\"lexical\"),w(\"\"),ql(\"restrictions\"),w(\"\"),sort(\"Restrictions\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"Grammar\"),w(\"\"),no-attrs)" ) , lf_AUX_Sdf2_Syntax1_3 , lf_AUX_Sdf2_Syntax1_3sym ) ;
 register_prod ( ATparse ( "prod(id(\"Sdf2-Syntax\"),w(\"\"),[ql(\"context-free\"),w(\"\"),ql(\"priorities\"),w(\"\"),sort(\"Priorities\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"Grammar\"),w(\"\"),no-attrs)" ) , lf_AUX_Sdf2_Syntax1_4 , lf_AUX_Sdf2_Syntax1_4sym ) ;
-register_prod ( ATparse ( "prod(id(\"Sdf2-Syntax\"),w(\"\"),[ql(\"lexical\"),w(\"\"),ql(\"restrictions\"),w(\"\"),sort(\"Restrictions\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"Grammar\"),w(\"\"),no-attrs)" ) , lf_AUX_Sdf2_Syntax1_5 , lf_AUX_Sdf2_Syntax1_5sym ) ;
-register_prod ( ATparse ( "prod(id(\"Sdf2-Syntax\"),w(\"\"),[ql(\"context-free\"),w(\"\"),ql(\"restrictions\"),w(\"\"),sort(\"Restrictions\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"Grammar\"),w(\"\"),no-attrs)" ) , lf_AUX_Sdf2_Syntax1_6 , lf_AUX_Sdf2_Syntax1_6sym ) ;
-register_prod ( ATparse ( "prod(id(\"Sdf2-Syntax\"),w(\"\"),[ql(\"definition\"),w(\"\"),sort(\"Definition\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"SDF\"),w(\"\"),no-attrs)" ) , lf_AUX_Sdf2_Syntax1_7 , lf_AUX_Sdf2_Syntax1_7sym ) ;
+register_prod ( ATparse ( "prod(id(\"Sdf2-Syntax\"),w(\"\"),[ql(\"lexical\"),w(\"\"),ql(\"priorities\"),w(\"\"),sort(\"Priorities\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"Grammar\"),w(\"\"),no-attrs)" ) , lf_AUX_Sdf2_Syntax1_5 , lf_AUX_Sdf2_Syntax1_5sym ) ;
+register_prod ( ATparse ( "prod(id(\"Sdf2-Syntax\"),w(\"\"),[ql(\"<Start>\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"Symbol\"),w(\"\"),no-attrs)" ) , lf_AUX_Sdf2_Syntax1_6 , lf_AUX_Sdf2_Syntax1_6sym ) ;
+register_prod ( ATparse ( "prod(id(\"Sdf2-Syntax\"),w(\"\"),[ql(\"<START>\")],w(\"\"),l(\"->\"),w(\"\"),sort(\"Symbol\"),w(\"\"),no-attrs)" ) , lf_AUX_Sdf2_Syntax1_7 , lf_AUX_Sdf2_Syntax1_7sym ) ;
 }
 void resolve_AUX_Sdf2_Syntax1 ( ) {
 }
 void init_AUX_Sdf2_Syntax1 ( ) {
 }
-ATerm lf_AUX_Sdf2_Syntax1_7 ( ATerm arg0 ) {
-CONS_ENTRY ( lf_AUX_Sdf2_Syntax1_7sym , ATmakeAppl ( lf_AUX_Sdf2_Syntax1_7sym , arg0 ) ) ;
-CONS_EXIT ( make_nf1 ( lf_AUX_Sdf2_Syntax1_7sym , arg0 ) ) ;
+ATerm lf_AUX_Sdf2_Syntax1_7 ( ) {
+CONS_ENTRY ( lf_AUX_Sdf2_Syntax1_7sym , ATmakeAppl0 ( lf_AUX_Sdf2_Syntax1_7sym ) ) ;
+CONS_EXIT ( make_nf0 ( lf_AUX_Sdf2_Syntax1_7sym ) ) ;
 }
-ATerm lf_AUX_Sdf2_Syntax1_6 ( ATerm arg0 ) {
-CONS_ENTRY ( lf_AUX_Sdf2_Syntax1_6sym , ATmakeAppl ( lf_AUX_Sdf2_Syntax1_6sym , arg0 ) ) ;
-CONS_EXIT ( make_nf1 ( lf_AUX_Sdf2_Syntax1_6sym , arg0 ) ) ;
+ATerm lf_AUX_Sdf2_Syntax1_6 ( ) {
+CONS_ENTRY ( lf_AUX_Sdf2_Syntax1_6sym , ATmakeAppl0 ( lf_AUX_Sdf2_Syntax1_6sym ) ) ;
+CONS_EXIT ( make_nf0 ( lf_AUX_Sdf2_Syntax1_6sym ) ) ;
 }
 ATerm lf_AUX_Sdf2_Syntax1_5 ( ATerm arg0 ) {
 CONS_ENTRY ( lf_AUX_Sdf2_Syntax1_5sym , ATmakeAppl ( lf_AUX_Sdf2_Syntax1_5sym , arg0 ) ) ;
@@ -63,12 +63,12 @@ ATerm lf_AUX_Sdf2_Syntax1_3 ( ATerm arg0 ) {
 CONS_ENTRY ( lf_AUX_Sdf2_Syntax1_3sym , ATmakeAppl ( lf_AUX_Sdf2_Syntax1_3sym , arg0 ) ) ;
 CONS_EXIT ( make_nf1 ( lf_AUX_Sdf2_Syntax1_3sym , arg0 ) ) ;
 }
-ATerm lf_AUX_Sdf2_Syntax1_2 ( ) {
-CONS_ENTRY ( lf_AUX_Sdf2_Syntax1_2sym , ATmakeAppl0 ( lf_AUX_Sdf2_Syntax1_2sym ) ) ;
-CONS_EXIT ( make_nf0 ( lf_AUX_Sdf2_Syntax1_2sym ) ) ;
+ATerm lf_AUX_Sdf2_Syntax1_2 ( ATerm arg0 ) {
+CONS_ENTRY ( lf_AUX_Sdf2_Syntax1_2sym , ATmakeAppl ( lf_AUX_Sdf2_Syntax1_2sym , arg0 ) ) ;
+CONS_EXIT ( make_nf1 ( lf_AUX_Sdf2_Syntax1_2sym , arg0 ) ) ;
 }
-ATerm lf_AUX_Sdf2_Syntax1_1 ( ) {
-CONS_ENTRY ( lf_AUX_Sdf2_Syntax1_1sym , ATmakeAppl0 ( lf_AUX_Sdf2_Syntax1_1sym ) ) ;
-CONS_EXIT ( make_nf0 ( lf_AUX_Sdf2_Syntax1_1sym ) ) ;
+ATerm lf_AUX_Sdf2_Syntax1_1 ( ATerm arg0 ) {
+CONS_ENTRY ( lf_AUX_Sdf2_Syntax1_1sym , ATmakeAppl ( lf_AUX_Sdf2_Syntax1_1sym , arg0 ) ) ;
+CONS_EXIT ( make_nf1 ( lf_AUX_Sdf2_Syntax1_1sym , arg0 ) ) ;
 }
 
