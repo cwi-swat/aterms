@@ -1,0 +1,15 @@
+package 
+identification
+   name=balanced-binary-trees
+   version=0.1
+   location=http://www.cwi.nl/~storm
+   info=http://www.cwi.nl/~storm
+   description='binary balanced trees on top of aterms."
+
+   keywords=meta-environment, aterm
+
+configuration interface
+
+requires
+  aterm 2.3.1
+
