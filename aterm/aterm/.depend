@@ -58,7 +58,3 @@ gc-prof.o: gc.c _aterm.h aterm2.h aterm1.h encoding.h abool.h afun.h \
 bafio-prof.o: bafio.c _aterm.h aterm2.h aterm1.h encoding.h abool.h afun.h \
  memory.h util.h
 version-prof.o: version.c version.h
-termsize.o: termsize.c _aterm.h aterm2.h aterm1.h encoding.h abool.h \
- afun.h
-baffle.o: baffle.c bafio.h aterm1.h encoding.h abool.h util.h aterm2.h \
- afun.h

@@ -538,7 +538,7 @@ ATbool
 writeToTextFile(ATerm t, FILE * f)
 {
     Symbol          sym;
-    ATerm           arg, trm;
+    ATerm           arg;
     int             i, arity;
     ATermAppl       appl;
     ATermList       list;
@@ -619,34 +619,35 @@ writeToTextFile(ATerm t, FILE * f)
 				ATerror("ATwriteToTextFile: not a term but a symbol: %y\n", t);
 				return ATfalse;
     }
-    trm = (ATerm) AT_getAnnotations(t);
-    if (trm) {
-			fputc('{', f);
-			writeToTextFile(trm, f);
-			fputc('}', f);
-		}
+
     return ATtrue;
 }
 
 ATbool
 ATwriteToTextFile(ATerm t, FILE * f)
 {
-    ATbool          result = ATtrue;
+	ATbool result = ATtrue;
+	ATerm annos;
 
-    if (ATgetType(t) == AT_LIST)
-    {
-	fputc('[', f);
+	if (ATgetType(t) == AT_LIST) {
+		fputc('[', f);
 
-	if (!ATisEmpty((ATermList) t))
+		if (!ATisEmpty((ATermList) t))
 	    result = writeToTextFile(t, f);
 
-	fputc(']', f);
-    }
-    else
-    {
-	result = writeToTextFile(t, f);
-    }
-    return result;
+		fputc(']', f);
+	} else {
+		result = writeToTextFile(t, f);
+	}
+
+	annos = (ATerm) AT_getAnnotations(t);
+	if (annos) {
+		fputc('{', f);
+		result &= writeToTextFile(annos, f);
+		fputc('}', f);
+	}
+
+	return result;
 }
 
 /*}}}  */
@@ -2155,6 +2156,7 @@ calcUniqueSymbols(ATerm t)
 		case AT_PLACEHOLDER:
 			if (!at_lookup_table[AS_PLACEHOLDER]->count++)
 				nr_unique = 1;
+			nr_unique += calcUniqueSymbols(ATgetPlaceholder((ATermPlaceholder)t));
 			break;
 			
 		case AT_APPL:
@@ -2337,3 +2339,96 @@ int AT_calcTermDepth(ATerm t)
 }
 
 /*}}}  */
+
+#ifdef NO_SHARING
+/*{{{  ATbool ATisEqual(ATerm t1, ATerm t2) */
+
+/**
+ * Check for deep ATerm equality (only useful when sharing is disabled)
+ */
+
+ATbool AT_isEqual(ATerm t1, ATerm t2)
+{
+	int type;
+	ATbool result = ATtrue;
+
+	if(t1 == t2)
+		return ATtrue;
+
+	type = ATgetType(t1);
+	if(type != ATgetType(t2))
+		return ATfalse;
+
+	switch(type) {
+	  case AT_APPL:
+			{
+				ATermAppl appl1 = (ATermAppl)t1, appl2 = (ATermAppl)t2;
+				AFun sym = ATgetAFun(appl1);
+				int i, arity = ATgetArity(sym);
+
+				if(sym != ATgetAFun(appl2))
+					return ATfalse;
+
+				for(i=0; i<arity; i++)
+					if(!ATisEqual(ATgetArgument(appl1, i), ATgetArgument(appl2, i)))
+						return ATfalse;
+			}
+		break;
+
+	  case AT_LIST:
+			{
+				ATermList list1 = (ATermList)t1, list2 = (ATermList)t2;
+				if(ATgetLength(list1) != ATgetLength(list2))
+					return ATfalse;
+
+				while(!ATisEmpty(list1)) {
+					if(!ATisEqual(ATgetFirst(list1), ATgetFirst(list2)))
+						return ATfalse;
+
+					list1 = ATgetNext(list1);
+					list2 = ATgetNext(list2);
+				}
+			}
+		break;
+
+  	case AT_INT:
+			result = ATgetInt((ATermInt)t1) == ATgetInt((ATermInt)t2);
+			break;
+
+  	case AT_REAL:
+		  result = ATgetReal((ATermReal)t1) == ATgetReal((ATermReal)t2);
+			break;
+
+	  case AT_BLOB:
+			result = (ATgetBlobData((ATermBlob)t1) == ATgetBlobData((ATermBlob)t2)) &&
+				(ATgetBlobSize((ATermBlob)t1) == ATgetBlobSize((ATermBlob)t2));
+			break;
+
+	  case AT_PLACEHOLDER:
+			result = ATisEqual(ATgetPlaceholder((ATermPlaceholder)t1), 
+												 ATgetPlaceholder((ATermPlaceholder)t1));
+			break;
+
+	  default:
+			ATerror("illegal term type: %d\n", type);
+	}
+
+  if(result) {
+	  if(HAS_ANNO(t1->header)) {
+			if(HAS_ANNO(t2->header)) {
+				result = ATisEqual(AT_getAnnotations(t1), AT_getAnnotations(t2));
+			} else {
+				result = ATfalse;
+			}
+		} else if(HAS_ANNO(t2->header)) {
+			result = ATfalse;
+		}
+	}
+
+	return result;
+}
+
+/*}}}  */
+
+#endif
+

@@ -16,27 +16,32 @@ CC_GCC		= @CC_GCC@
 CC_CC		= @CC_CC@
 CC_DBG		= @CC_DBG@
 CC_PROF		= @CC_PROF@
+CC_NS		= @CC_DBG@
 
 CFLAGS_CC	= @CFLAGS_CC@
 CFLAGS_GCC	= @CFLAGS_GCC@
 CFLAGS_DBG	= @CFLAGS_DBG@
 CFLAGS_PROF	= @CFLAGS_PROF@
+CFLAGS_NS	= @CFLAGS_DBG@
 
 DEFS		= -DCURDATE="\"${CURDATE}\"" -DVERSION="\"${VERSION}\""
 DEFS_CC		= @DEFS_CC@
 DEFS_GCC	= @DEFS_GCC@
 DEFS_DBG	= @DEFS_DBG@
 DEFS_PROF	= @DEFS_PROF@
+DEFS_NS		= @DEFS_DBG@ -DNO_SHARING
 
 INCL_CC		= @INCL_CC@
 INCL_GCC	= @INCL_GCC@
 INCL_DBG	= @INCL_DBG@
 INCL_PROF	= @INCL_PROF@
+INCL_NS		= @INCL_NS@
 
 LFLAGS_CC	= @LFLAGS_CC@
 LFLAGS_GCC	= @LFLAGS_GCC@
 LFLAGS_DBG	= @LFLAGS_DBG@
 LFLAGS_PROF	= @LFLAGS_PROF@
+LFLAGS_NS	= @LFLAGS_DBG@
 
 LIBS		= @LIBS@
 
@@ -53,7 +58,8 @@ PROGS		= ${BINARIES} ${SCRIPTS}
 PROGSRCS	= termsize.c baffle.c
 ATERMSRCS	= aterm.c list.c make.c memory.c afun.c gc.c bafio.c \
 		version.c
-ATERMLIBS	= libATerm-gcc.a libATerm-cc.a libATerm-dbg.a libATerm-prof.a
+ATERMLIBS	= libATerm-gcc.a libATerm-cc.a libATerm-dbg.a libATerm-prof.a \
+		libATerm-ns.a
 PUBLIC_INCL	= abool.h aterm1.h aterm2.h deprecated.h encoding.h afun.h
 PRIVATE_INCL	= _aterm.h debug.h gc.h list.h make.h memory.h util.h bafio.h \
 		version.h
@@ -65,6 +71,7 @@ OBJ_CC		= $(patsubst %.c,%-cc.o,$(ATERMSRCS))
 OBJ_GCC		= $(patsubst %.c,%-gcc.o,$(ATERMSRCS))
 OBJ_DBG		= $(patsubst %.c,%-dbg.o,$(ATERMSRCS))
 OBJ_PROF	= $(patsubst %.c,%-prof.o,$(ATERMSRCS))
+OBJ_NS		= $(patsubst %.c,%-ns.o,$(ATERMSRCS))
 
 all: $(ATERMLIBS) $(PROGS)
 
@@ -97,6 +104,9 @@ install: all ${PUBLIC_INCL}
 %-prof.o: %.c
 	${CC_PROF} ${CFLAGS_PROF} ${DEFS_PROF} -c -o $@ $<
 
+%-ns.o: %.c
+	${CC_NS} ${CFLAGS_NS} ${DEFS_NS} -c -o $@ $<
+
 libATerm-cc.a: ${OBJ_CC}
 	${AR} ${AR_FLAGS} $@ ${OBJ_CC}
 
@@ -109,6 +119,9 @@ libATerm-dbg.a: ${OBJ_DBG}
 libATerm-prof.a: ${OBJ_PROF}
 	${AR} ${AR_FLAGS} $@ ${OBJ_PROF}
 
+libATerm-ns.a: ${OBJ_NS}
+	${AR} ${AR_FLAGS} $@ ${OBJ_NS}
+
 baffle: baffle.c libATerm-cc.a
 	${CC_CC} ${CFLAGS_CC} -o $@ $< -L. -lATerm-cc ${LIBS}
 
@@ -119,6 +132,7 @@ version-cc.o: version.c ${ATERMINCL} ${ATERMSRCS}
 version-gcc.o: version.c ${ATERMINCL} ${ATERMSRCS}
 version-dbg.o: version.c ${ATERMINCL} ${ATERMSRCS}
 version-prof.o: version.c ${ATERMINCL} ${ATERMSRCS}
+version-ns.o: version.c ${ATERMINCL} ${ATERMSRCS}
 
 tag:
 	ctags *.[ch]
@@ -132,6 +146,8 @@ depend:
 	cat /tmp/.gendep | sed "s/.o:/-dbg.o:/"  >> .depend
 	$(CC_GCC) -MM $(DEFS_PROF) $(INCL_PROF) $(ATERMSRCS) > /tmp/.gendep
 	cat /tmp/.gendep | sed "s/.o:/-prof.o:/" >> .depend
+	$(CC_GCC) -MM $(DEFS_NS) $(INCL_NS) $(ATERMSRCS) > /tmp/.gendep
+	cat /tmp/.gendep | sed "s/.o:/-ns.o:/" >> .depend
 	$(CC_GCC) -MM $(DEFS_GCC) $(INCL_GCC) $(PROGSRCS) >> .depend
 	rm -f /tmp/.gendep
 

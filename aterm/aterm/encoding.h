@@ -67,5 +67,6 @@
 
 /* This assumes 32 bits int */
 typedef unsigned int header_type;
+#define HEADER_BITS 32
 
 #endif

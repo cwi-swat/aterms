@@ -97,12 +97,25 @@ typedef struct
 	int nr_times_top; /* # occurences of this symbol as topsymbol */
 } sym_entry;
 
+typedef struct
+{
+  AFun   sym;
+	int    arity;
+	int    nr_terms;
+	int    term_width;
+	ATerm *terms;
+	int   *nr_topsyms;
+	int   *sym_width;
+	int  **topsyms;
+} sym_read_entry;
+
 /*}}}  */
 /*{{{  variables */
 
 char bafio_id[] = "$Id$";
 
 static int nr_unique_symbols = -1;
+static sym_read_entry *read_symbols;
 static sym_entry *sym_entries = NULL;
 
 static char *text_buffer = NULL;
@@ -110,6 +123,8 @@ static int   text_buffer_size = 0;
 
 static char bit_buffer     = '\0';
 static int  bits_in_buffer = 0; /* how many bits in bit_buffer are used */
+
+static FILE *bitlog;
 
 /*}}}  */
 /*{{{  void AT_initBafIO(int argc, char *argv[]) */
@@ -120,6 +135,7 @@ static int  bits_in_buffer = 0; /* how many bits in bit_buffer are used */
 
 void AT_initBafIO(int argc, char *argv[])
 {
+	bitlog = fopen("bitlog.txt", "w");
 }
 
 /*}}}  */
@@ -180,11 +196,15 @@ writeIntToBuf(unsigned int val, unsigned char *buf)
 }
 
 /*}}}  */
+/*{{{  static int writeBitsToFile(unsigned int val, int nr_bits, FILE *file) */
+
 static
 int
 writeBitsToFile(unsigned int val, int nr_bits, FILE *file)
 {
 	int cur_bit;
+
+	fprintf(bitlog, "bits written: %d (width=%d)\n", val, nr_bits);
 	
 	for (cur_bit=0; cur_bit<nr_bits; cur_bit++) {
 		bit_buffer <<= 1;
@@ -193,50 +213,81 @@ writeBitsToFile(unsigned int val, int nr_bits, FILE *file)
 		if (++bits_in_buffer == 8) {
 			if (fputc((int)bit_buffer, file) == EOF)
 				return -1;
+			fprintf(bitlog, "byte written: %02X\n", bit_buffer);
 			bits_in_buffer = 0;
 			bit_buffer = '\0';
 		}
 	}
+
+	fflush(bitlog);
 	
 	/* Ok */
 	return 0;
 }
+
+/*}}}  */
+/*{{{  static int flushBitsToFile(FILE *file) */
 
 static
 int
 flushBitsToFile(FILE *file)
 {
-	if(bits_in_buffer > 0)
-		return (fputc((int)bit_buffer, file) == EOF) ? -1 : 0;
-	bits_in_buffer = 0;
-	bit_buffer = '\0';
+	int result = 0;
+	if(bits_in_buffer > 0) {
+		int left = 8-bits_in_buffer;
+		bit_buffer <<= left;
+		result = (fputc((int)bit_buffer, file) == EOF) ? -1 : 0;
+		bits_in_buffer = 0;
+		bit_buffer = '\0';
+	}
 	
-	/* Ok */
-	return 0;
+	return result;
 }
+
+/*}}}  */
+/*{{{  static int readBitsFromFile(unsigned int *val, int nr_bits, FILE *file */
 
 static
 int
 readBitsFromFile(unsigned int *val, int nr_bits, FILE *file)
 {
-	int cur_bit;
+	int cur_bit, mask = 1;
 
+	*val = 0;
 	for (cur_bit=0; cur_bit<nr_bits; cur_bit++) {
 		if (bits_in_buffer == 0) {
 			int val = fgetc(file);
+			fprintf(bitlog, "byte read: %02X (width=%d)\n", val, nr_bits);
 			if (val == EOF)
 				return -1;
 			bit_buffer = (char) val;
+			bits_in_buffer = 8;
 		}
-		*val <<= 1;
-		*val |= (bit_buffer & 0x01);
-		bit_buffer >>= 1;
+		*val |= (bit_buffer & 0x80 ? mask : 0);
+		mask <<= 1;
+		bit_buffer <<= 1;
 		bits_in_buffer--;
 	}
-	
+
+	fprintf(bitlog, "bits read: %d (width=%d)\n", *val, nr_bits);
+	fflush(bitlog);
+
 	/* Ok */
 	return 0;
 }
+
+/*}}}  */
+/*{{{  static int flushBitsFromFile(FILE *file) */
+
+static
+int
+flushBitsFromFile(FILE *file)
+{
+	bits_in_buffer = 0;
+	return 0;
+}
+
+/*}}}  */
 /*{{{  static int writeIntToFile(unsigned int val, FILE *file) */
 
 static
@@ -390,6 +441,7 @@ static ATbool write_symbol(Symbol sym, FILE *file)
 }
 
 /*}}}  */
+/*{{{  static void print_sym_entries() */
 
 static void
 print_sym_entries()
@@ -424,43 +476,55 @@ print_sym_entries()
 	}
 }
 
-static sym_entry *get_top_symbol(ATerm t)
+/*}}}  */
+/*{{{  static sym_entry *get_top_symbol(ATerm t) */
+
+/**
+	* Retrieve the top symbol of a term. Could be a special symbol
+  * (AS_INT, AS_REAL, etc) when the term is not an AT_APPL.
+	*/
+
+static sym_entry *get_top_symbol(ATerm t, ATbool anno_done)
 {
 	Symbol sym;
 
-	if (HAS_ANNO(t->header))
+	if (HAS_ANNO(t->header) && !anno_done)
 		sym = AS_ANNOTATION;
-
-	switch (ATgetType(t)) {
-		case AT_INT:
-			sym = AS_INT;
-			break;
-		case AT_REAL:
-			sym = AS_REAL;
-			break;
-		case AT_BLOB:
-			sym = AS_BLOB;
-			break;
-		case AT_PLACEHOLDER:
-			sym = AS_PLACEHOLDER;
-			break;
-		case AT_LIST:
-			sym = (ATisEmpty((ATermList)t) ? AS_EMPTY_LIST : AS_LIST);
-			break;
-		case AT_APPL:
-			sym = ATgetAFun((ATermAppl)t);
-			break;
-		default:
-			ATerror("get_top_symbol: illegal term (%n)\n", t);
-			sym = -1;
-			break;
+	else { 
+		switch (ATgetType(t)) {
+		  case AT_INT:
+				sym = AS_INT;
+				break;
+		  case AT_REAL:
+				sym = AS_REAL;
+				break;
+		  case AT_BLOB:
+				sym = AS_BLOB;
+				break;
+		  case AT_PLACEHOLDER:
+				sym = AS_PLACEHOLDER;
+				break;
+		  case AT_LIST:
+				sym = (ATisEmpty((ATermList)t) ? AS_EMPTY_LIST : AS_LIST);
+				break;
+		  case AT_APPL:
+				sym = ATgetAFun((ATermAppl)t);
+				break;
+		  default:
+				ATerror("get_top_symbol: illegal term (%n)\n", t);
+				sym = -1;
+				break;
+		}
 	}
 	
 	return &sym_entries[at_lookup_table[sym]->index];
 }
 
+/*}}}  */
+/*{{{  static int bit_width(int val) */
+
 /* How many bits are needed to represent <val> */
-int bit_width(int val)
+static int bit_width(int val)
 {
 	int nr_bits = 0;
 	
@@ -474,6 +538,14 @@ int bit_width(int val)
 	
 	return nr_bits;
 }
+
+/*}}}  */
+/*{{{  static void build_arg_tables() */
+
+/**
+	* Build argument tables given the fact that the
+  * terms have been sorted by symbol.
+	*/
 
 static void build_arg_tables()
 {
@@ -528,7 +600,8 @@ static void build_arg_tables()
 							break;
 					}
 				}
-				if (!get_top_symbol(arg)->nr_times_top++)
+				if (!get_top_symbol(arg, 
+						 sym_entries[cur_sym].id == AS_ANNOTATION)->nr_times_top++)
 					total_top_symbols++;
 			}
 			tss = &cur_entry->top_symbols[cur_arg];
@@ -569,14 +642,29 @@ static void build_arg_tables()
 	}
 }
 
+/*}}}  */
+/*{{{  static void add_term(sym_entry *entry, ATerm t) */
+
+/**
+	* Add a term to the termtable of a symbol.
+	*/
 static void add_term(sym_entry *entry, ATerm t)
 {
 	unsigned int hnr = AT_hashnumber(t) % entry->termtable_size;
+	ATfprintf(stderr, "position of term %t in sym table %y = %d\n",
+						t, entry->id, entry->cur_index);
 	entry->terms[entry->cur_index].t = t;
 	entry->terms[entry->cur_index].next = entry->termtable[hnr];
 	entry->termtable[hnr] = &entry->terms[entry->cur_index];
 	entry->cur_index++;
 }
+
+/*}}}  */
+/*{{{  static void collect_terms(ATerm t) */
+
+/**
+	* Collect all terms in the appropriate symbol table.
+	*/
 
 static void collect_terms(ATerm t)
 {
@@ -602,30 +690,38 @@ static void collect_terms(ATerm t)
 			case AT_LIST:
 				{
 					ATermList list = (ATermList)t;
-
+					if(ATisEmpty(list))
+						sym = AS_EMPTY_LIST;
+					else {
+						sym = AS_LIST;
+						collect_terms(ATgetFirst(list));
+						collect_terms((ATerm)ATgetNext(list));
+					}
+				}
+			#if 0 /* <PO> buggy */
 					while(!ATisEmpty(list) && !IS_MARKED(list->header)) {
 						SET_MARK(list->header);
 						collect_terms(ATgetFirst(list));
 						entry = &sym_entries[at_lookup_table[AS_LIST]->index];
 						assert(entry->id == AS_LIST);
-						add_term(entry, (ATerm)list);
-						
-						/* handle annotation */
-						annos = AT_getAnnotations((ATerm)list);
-						if (annos) {
-							entry = &sym_entries[at_lookup_table[AS_ANNOTATION]->index];
-							assert(entry->id == AS_ANNOTATION);
-							collect_terms((ATerm)annos);
-							add_term(entry, (ATerm)list);
-						}
-
+						add_term(entry, (ATerm)list);						
 						list = ATgetNext(list);
 					}
-					if(IS_MARKED(list->header))
-						return;
-					t = (ATerm)list;
-					sym = AS_EMPTY_LIST;
-				}
+					if(!IS_MARKED(ATempty->header)) {
+						entry = &sym_entries[at_lookup_table[AS_EMPTY_LIST]->index];
+						add_term(entry, (ATerm)ATempty);
+					}
+
+					/* handle annotation */
+					annos = AT_getAnnotations(t);
+					if (annos) {
+						entry = &sym_entries[at_lookup_table[AS_ANNOTATION]->index];
+						assert(entry->id == AS_ANNOTATION);
+						collect_terms((ATerm)annos);
+						add_term(entry, t);
+					}
+					return;
+		#endif
 				break;
 			case AT_APPL:
 				{
@@ -643,6 +739,9 @@ static void collect_terms(ATerm t)
 				break;
 		}
 		entry = &sym_entries[at_lookup_table[sym]->index];
+		if(entry->id != sym)
+			ATfprintf(stderr, "sym=%y, entry->id = %y\n", sym, entry->id);
+
 		assert(entry->id == sym);
 		add_term(entry, t);
 		
@@ -659,13 +758,22 @@ static void collect_terms(ATerm t)
 	}
 }
 
-ATbool write_symbols(FILE *file)
+/*}}}  */
+/*{{{  static ATbool write_symbols(FILE *file) */
+
+/**
+	* Write all symbols in a term to file.
+	*/
+
+static ATbool write_symbols(FILE *file)
 {
 	int sym_idx, arg_idx, top_idx;
 	
 	for(sym_idx=0; sym_idx<nr_unique_symbols; sym_idx++) {
 		sym_entry *cur_sym = &sym_entries[sym_idx];
 		if (!write_symbol(cur_sym->id, file))
+			return ATfalse;
+		if (writeIntToFile(cur_sym->nr_terms, file) < 0)
 			return ATfalse;
 
 		for(arg_idx=0; arg_idx<cur_sym->arity; arg_idx++) {
@@ -676,14 +784,23 @@ ATbool write_symbols(FILE *file)
 				top_symbol *ts = &cur_sym->top_symbols[arg_idx].symbols[top_idx];
 				if (writeIntToFile(ts->index, file)<0)
 					return ATfalse;
-				if (writeIntToFile(ts->count, file)<0)
-					return ATfalse;
+				/* <PO> count not needed! 
+					 if (writeIntToFile(ts->count, file)<0)
+					 return ATfalse;
+					 */
 			}
 		}
 	}
 	
 	return ATtrue;
 }
+
+/*}}}  */
+/*{{{  static int find_term(sym_entry *entry, ATerm t) */
+
+/**
+	* Find a term in a sym_entry.
+	*/
 
 static int find_term(sym_entry *entry, ATerm t)
 {
@@ -699,6 +816,13 @@ static int find_term(sym_entry *entry, ATerm t)
 	return cur - entry->terms;
 }
 
+/*}}}  */
+/*{{{  static top_symbol *find_top_symbol(top_symbols *syms, AFun sym) */
+
+/**
+	* Find a top symbol in a topsymbol table.
+	*/
+
 static top_symbol *find_top_symbol(top_symbols *syms, AFun sym)
 {
 	unsigned int hnr = sym % syms->toptable_size;
@@ -713,113 +837,160 @@ static top_symbol *find_top_symbol(top_symbols *syms, AFun sym)
 	return cur;
 }
 
-/* forward declaration */
-static ATbool write_term(ATerm, FILE *);
+/*}}}  */
+/*{{{  static ATbool write_arg(sym_entry *trm_sym, ATerm arg, arg_idx, file, anno_done) */
 
-static ATbool
-write_arg(sym_entry *trm_sym, ATerm arg, int arg_idx, FILE *file)
+/**
+	* Write an argument to file.
+	*/
+
+/* forward declaration */
+static ATbool write_term(ATerm, FILE *, ATbool);
+
+static ATbool write_arg(sym_entry *trm_sym, ATerm arg, int arg_idx, 
+												FILE *file, ATbool anno_done)
 {
 	top_symbol *ts;
 	sym_entry *arg_sym;
 	int arg_trm_idx;
+	AFun sym;
 	
-	ts = find_top_symbol(&trm_sym->top_symbols[arg_idx],
-											 get_top_symbol(arg)->id);
+	sym = get_top_symbol(arg, anno_done)->id;
+	ts = find_top_symbol(&trm_sym->top_symbols[arg_idx], sym);
+
+	/*ATfprintf(stderr, "writing topsymbol index of %y = %d\n", ts->s, ts->code);*/
 	if(writeBitsToFile(ts->code, ts->code_width, file)<0)
 		return ATfalse;
 	
 	arg_sym = &sym_entries[ts->index];
-	assert(arg_sym->id == get_top_symbol(arg)->id);
 	
 	arg_trm_idx = find_term(arg_sym, arg);
+/*	ATfprintf(stderr, "writing arg term index of %t = %d\n",
+						arg, arg_trm_idx);*/
 	if(writeBitsToFile(arg_trm_idx, arg_sym->term_width, file)<0)
 		return ATfalse;
-	
-	if(arg_trm_idx >= arg_sym->cur_index && !write_term(arg, file))
+
+	ATfprintf(stderr, "argument %t at index %d (cur_index of %y = %d)\n",
+						arg, arg_trm_idx, arg_sym->id, arg_sym->cur_index);
+	if(arg_trm_idx >= arg_sym->cur_index && 
+		 !write_term(arg, file, anno_done))
 			return ATfalse;
 	
 	return ATtrue;
 }
 
-static ATbool
-write_term(ATerm t, FILE *file)
+/*}}}  */
+/*{{{  static ATbool write_term(ATerm t, FILE *file, ATbool anno_done) */
+
+/**
+	* Write a term to file.
+	*/
+
+static ATbool write_term(ATerm t, FILE *file, ATbool anno_done)
 {
 	int arg_idx;
 	sym_entry *trm_sym = NULL;
+	ATerm annos;
 
-	switch(ATgetType(t)) {
-		case AT_INT:
-			if (flushBitsToFile(file)<0)
-				return ATfalse;
-			if (writeIntToFile(ATgetInt((ATermInt)t), file)<0)
-				return ATfalse;
-			trm_sym = &sym_entries[at_lookup_table[AS_INT]->index];
-			break;
-		case AT_REAL:
-			{
-				static char buf[64]; /* must be able to hold str-rep of double */
-				sprintf(buf, "%f", ATgetReal((ATermReal)t));
+	annos = AT_getAnnotations(t);
+
+	ATfprintf(stderr, "write term: %t (%d)\n", t, anno_done);
+	if(!anno_done && annos) {
+		ATfprintf(stderr, "  writing annotated term, term=%t, annos=%t\n",
+							t, annos);
+		trm_sym = &sym_entries[at_lookup_table[AS_ANNOTATION]->index];
+		if(!write_arg(trm_sym, t, 0, file, ATtrue))
+			return ATfalse;
+		if(!write_arg(trm_sym, annos, 1, file, ATfalse)) 
+			return ATfalse;
+	} else {
+		switch(ATgetType(t)) {
+		  case AT_INT:
+				if(writeBitsToFile(ATgetInt((ATermInt)t), HEADER_BITS, file) < 0)
+					return ATfalse;
+#if 0
 				if (flushBitsToFile(file)<0)
 					return ATfalse;
-				if (writeStringToFile(buf, strlen(buf), file)<0)
+				if (writeIntToFile(ATgetInt((ATermInt)t), file)<0)
 					return ATfalse;
-				trm_sym = &sym_entries[at_lookup_table[AS_REAL]->index];
-			}
-			break;
-		case AT_BLOB:
-			{
-				ATermBlob blob = (ATermBlob)t;
-				if (flushBitsToFile(file)<0)
-					return ATfalse;
-				if (writeStringToFile(ATgetBlobData(blob), ATgetBlobSize(blob),file)<0)
-					return ATfalse;
-				trm_sym = &sym_entries[at_lookup_table[AS_BLOB]->index];
-			}
-			break;
-		case AT_PLACEHOLDER:
-			{
-				ATerm type = ATgetPlaceholder((ATermPlaceholder)t);
-				trm_sym = &sym_entries[at_lookup_table[AS_PLACEHOLDER]->index];
-				if(!write_arg(trm_sym, type, 0, file))
-					return ATfalse;
-			}
-			break;
-		case AT_LIST:
-			{
-				ATermList list = (ATermList)t;
-				if (ATisEmpty(list))
-					trm_sym = &sym_entries[at_lookup_table[AS_EMPTY_LIST]->index];
-				else {
-					trm_sym = &sym_entries[at_lookup_table[AS_LIST]->index];
-					if(!write_arg(trm_sym, ATgetFirst(list), 0, file))
+#endif
+				trm_sym = &sym_entries[at_lookup_table[AS_INT]->index];
+				break;
+		  case AT_REAL:
+				{
+					static char buf[64]; /* must be able to hold str-rep of double */
+					sprintf(buf, "%f", ATgetReal((ATermReal)t));
+					if (flushBitsToFile(file)<0)
 						return ATfalse;
-					if(!write_arg(trm_sym, (ATerm)ATgetNext(list), 1, file))
+					if (writeStringToFile(buf, strlen(buf), file)<0)
+						return ATfalse;
+					trm_sym = &sym_entries[at_lookup_table[AS_REAL]->index];
+				}
+			break;
+		  case AT_BLOB:
+				{
+					ATermBlob blob = (ATermBlob)t;
+					if (flushBitsToFile(file)<0)
+						return ATfalse;
+					if (writeStringToFile(ATgetBlobData(blob), ATgetBlobSize(blob),file)<0)
+						return ATfalse;
+					trm_sym = &sym_entries[at_lookup_table[AS_BLOB]->index];
+				}
+			break;
+		  case AT_PLACEHOLDER:
+				{
+					ATerm type = ATgetPlaceholder((ATermPlaceholder)t);
+					trm_sym = &sym_entries[at_lookup_table[AS_PLACEHOLDER]->index];
+					if(!write_arg(trm_sym, type, 0, file, ATfalse))
 						return ATfalse;
 				}
-			}
 			break;
-		case AT_APPL:
-			{
-				int arity;
-				AFun sym = ATgetAFun(t);
-				trm_sym = &sym_entries[at_lookup_table[sym]->index];
-				assert(sym == trm_sym->id);
-				arity = ATgetArity(sym);
-				for (arg_idx=0; arg_idx<arity; arg_idx++) {
-					ATerm cur_arg = ATgetArgument((ATermAppl)t, arg_idx);
-					if(!write_arg(trm_sym, cur_arg, arg_idx, file))
-						return ATfalse;
+		  case AT_LIST:
+				{
+					ATermList list = (ATermList)t;
+					if (ATisEmpty(list))
+						trm_sym = &sym_entries[at_lookup_table[AS_EMPTY_LIST]->index];
+					else {
+						trm_sym = &sym_entries[at_lookup_table[AS_LIST]->index];
+						if(!write_arg(trm_sym, ATgetFirst(list), 0, file, ATfalse))
+							return ATfalse;
+						if(!write_arg(trm_sym, (ATerm)ATgetNext(list), 1, file, ATfalse))
+							return ATfalse;
+					}
 				}
-			}
 			break;
-		default:
-			ATerror("write_term: illegal term\n");
+		  case AT_APPL:
+				{
+					int arity;
+					AFun sym = ATgetAFun(t);
+					trm_sym = &sym_entries[at_lookup_table[sym]->index];
+					assert(sym == trm_sym->id);
+					arity = ATgetArity(sym);
+					for (arg_idx=0; arg_idx<arity; arg_idx++) {
+						ATerm cur_arg = ATgetArgument((ATermAppl)t, arg_idx);
+						if(!write_arg(trm_sym, cur_arg, arg_idx, file, ATfalse))
+							return ATfalse;
+					}
+				}
 			break;
+		  default:
+				ATerror("write_term: illegal term\n");
+				break;
+		}
 	}
-	trm_sym->cur_index++;
+  if(trm_sym->terms[trm_sym->cur_index].t != t) {
+		ATerror("terms out of sync at pos %d of sym %y, "
+						"term in table was %d, expected %t\n", trm_sym->cur_index,
+						trm_sym->id, trm_sym->terms[trm_sym->cur_index].t, t);
+	}
+		trm_sym->cur_index++;
+	ATfprintf(stderr, "term=%t, trm_sym=%y, cur_index=%d\n", t, trm_sym->id,
+						trm_sym->cur_index);
 	
 	return ATtrue;
 }
+
+/*}}}  */
 
 /*{{{  ATbool ATwriteToBinaryFile(ATerm t, FILE *file) */
 
@@ -830,6 +1001,7 @@ ATwriteToBinaryFile(ATerm t, FILE *file)
 	int nr_symbols = AT_symbolTableSize();
 	int lcv, cur;
 	int nr_bits;
+	AFun sym;
 	
 	nr_unique_symbols = AT_calcUniqueSymbols(t);
 
@@ -839,6 +1011,8 @@ ATwriteToBinaryFile(ATerm t, FILE *file)
 						nr_unique_symbols);
 	
 	nr_bits = bit_width(nr_unique_symbols);
+
+	/*{{{  Collect all unique symbols in the input term */
 
 	for(lcv=cur=0; lcv<nr_symbols; lcv++) {
 		SymEntry entry = at_lookup_table[lcv];
@@ -869,8 +1043,11 @@ ATwriteToBinaryFile(ATerm t, FILE *file)
 			cur++;
 		}
 	}
-	
+
 	assert(cur == nr_unique_symbols);
+
+	/*}}}  */
+	
 	
 	ATfprintf(stderr, "writing %d symbols, %d terms.\n",
 						nr_unique_symbols, nr_unique_terms);
@@ -885,6 +1062,8 @@ ATwriteToBinaryFile(ATerm t, FILE *file)
 	build_arg_tables();
 	print_sym_entries();
 	
+	/*{{{  write header */
+
 	if(writeIntToFile(0, file) < 0)
 		return ATfalse;
 
@@ -899,11 +1078,18 @@ ATwriteToBinaryFile(ATerm t, FILE *file)
 
 	if(writeIntToFile(nr_unique_terms, file) < 0)
 		return ATfalse;
+
+	/*}}}  */
 	
 	if(!write_symbols(file))
 		return ATfalse;
-	
-	if (!write_term(t, file))
+
+	/* Write the top symbol */
+	sym = get_top_symbol(t, ATfalse)->id;
+	if(writeIntToFile(get_top_symbol(t, ATfalse)-sym_entries, file) < 0)
+		return ATfalse;
+
+	if (!write_term(t, file, ATfalse)) /* sym == AS_ANNOTATION)) */
 		return ATfalse;
 	
 	if (flushBitsToFile(file)<0)
@@ -913,6 +1099,7 @@ ATwriteToBinaryFile(ATerm t, FILE *file)
 }
 
 /*}}}  */
+
 
 /*{{{  Symbol read_symbol(FILE *file) */
 
@@ -941,6 +1128,220 @@ Symbol read_symbol(FILE *file)
 
 /*}}}  */
 
+/*{{{  ATbool read_all_symbols(FILE *file) */
+
+/**
+	* Read all symbols from file.
+	*/
+
+ATbool read_all_symbols(FILE *file)
+{
+	unsigned int val;
+	int i, j, k, arity;
+
+	for(i=0; i<nr_unique_symbols; i++) {
+		/*{{{  Read the actual symbol */
+
+		Symbol sym = read_symbol(file);
+		if(sym < 0)
+			ATerror("read_symbols: error reading symbol, giving up.\n");
+
+		read_symbols[i].sym = sym;
+		ATprotectSymbol(sym);
+		arity = ATgetArity(sym);
+		read_symbols[i].arity = arity;
+
+		/*}}}  */
+		/*{{{  Read term count and allocate space */
+
+		if(readIntFromFile(&val, file) < 0)
+			return ATfalse;
+		read_symbols[i].nr_terms = val;
+		read_symbols[i].term_width = bit_width(val);
+		read_symbols[i].terms = (ATerm *)calloc(val, sizeof(ATerm));
+		if(!read_symbols[i].terms)
+			ATerror("read_symbols: could not allocate space for %d terms.\n", val);
+		ATprotectArray(read_symbols[i].terms, val);
+
+		/*}}}  */
+		
+		/*{{{  Allocate space for topsymbol information */
+
+		read_symbols[i].nr_topsyms = (int *)calloc(arity, sizeof(int));
+		if(!read_symbols[i].nr_topsyms)
+			ATerror("read_all_symbols: out of memory trying to allocate "
+							"space for %d arguments.\n", arity);
+
+		read_symbols[i].sym_width = (int *)calloc(arity, sizeof(int));
+		if(!read_symbols[i].sym_width)
+			ATerror("read_all_symbols: out of memory trying to allocate "
+							"space for %d arguments .\n", arity);
+
+		read_symbols[i].topsyms = (int **)calloc(arity, sizeof(int *));
+		if(!read_symbols[i].topsyms)
+			ATerror("read_all_symbols: out of memory trying to allocate "
+							"space for %d arguments.\n", arity);
+
+		/*}}}  */
+
+		for(j=0; j<read_symbols[i].arity; j++) {
+			if(readIntFromFile(&val, file) < 0)
+				return ATfalse;
+
+			read_symbols[i].nr_topsyms[j] = val;
+			read_symbols[i].sym_width[j] = bit_width(val);
+			read_symbols[i].topsyms[j] = (int *)calloc(val, sizeof(int));
+			if(!read_symbols[i].topsyms[j])
+				ATerror("read_symbols: could not allocate space for %d top symbols.\n",
+								val);
+
+			for(k=0; k<read_symbols[i].nr_topsyms[j]; k++) {
+				if(readIntFromFile(&val, file) < 0)
+					return ATfalse;
+				read_symbols[i].topsyms[j][k] = val;
+			}
+		}
+
+/*		ATfprintf(stderr, "symbol %y read, with %d terms and top symbol counts: ",
+							sym, read_symbols[i].nr_terms);
+		for(j=0; j<arity; j++)
+			ATfprintf(stderr, "%d, ", read_symbols[i].nr_topsyms[j]);
+		ATfprintf(stderr, "\n");
+		*/
+	}
+
+	return ATtrue;
+}
+
+/*}}}  */
+/*{{{  ATerm read_term(sym_read_entry *sym, FILE *file) */
+
+ATerm read_term(sym_read_entry *sym, FILE *file)
+{
+	unsigned int val;
+	int i, arity = sym->arity;
+	sym_read_entry *arg_sym;
+	ATerm inline_args[MAX_INLINE_ARITY];
+	ATerm *args = inline_args;
+	ATerm result;
+
+	if(arity > MAX_INLINE_ARITY) {
+		args = calloc(arity, sizeof(ATerm));
+		ATprotectArray(args, arity);
+		if(!args)
+			ATerror("could not allocate space for %d arguments.\n", arity);
+	}
+
+	ATfprintf(stderr, "reading term over symbol %y\n", sym->sym);
+	for(i=0; i<arity; i++) {
+		ATfprintf(stderr, "  reading argument %d (%d)", i, sym->sym_width[i]);
+	  if(readBitsFromFile(&val, sym->sym_width[i], file) < 0)
+			return NULL;
+		arg_sym = &read_symbols[sym->topsyms[i][val]];
+/*		ATfprintf(stderr, "argument %d, symbol index = %d, symbol = %y\n", 
+							i, val, arg_sym->sym);*/
+
+		ATfprintf(stderr, "  argsym = %y (term width = %d)\n",
+							arg_sym->sym, arg_sym->term_width);
+		if(readBitsFromFile(&val, arg_sym->term_width, file) < 0)
+			return NULL;
+/*		ATfprintf(stderr, "arg term index = %d\n", val);*/
+		if(!arg_sym->terms[val]) {
+			arg_sym->terms[val] = read_term(arg_sym, file);
+			if(!arg_sym->terms[val])
+				return NULL;
+			ATfprintf(stderr, "sym=%y, index=%d, t=%t\n", arg_sym->sym, 
+								val, arg_sym->terms[val]);				
+		}
+
+		args[i] = arg_sym->terms[val];
+	}
+
+	switch(sym->sym) {
+		case AS_INT:
+			/*{{{  Read an integer */
+
+			if(readBitsFromFile(&val, HEADER_BITS, file) < 0)
+				return NULL;
+
+			result = (ATerm)ATmakeInt((int)val);
+
+			/*}}}  */
+			break;
+		case AS_REAL:
+			/*{{{  Read a real */
+
+			{
+				double real;
+
+				if(flushBitsFromFile(file) < 0)
+					return ATfalse;
+				if(readStringFromFile(file) < 0)
+					return ATfalse;
+				sscanf(text_buffer, "%lf", &real);
+				result = (ATerm)ATmakeReal(real);
+			}
+
+			/*}}}  */
+			break;
+		case AS_BLOB:
+			/*{{{  Read a blob */
+
+			{
+				int len;
+				char *data;
+
+				if(flushBitsFromFile(file) < 0)
+					return ATfalse;
+				if((len = readStringFromFile(file)) < 0)
+					return ATfalse;
+
+				data = malloc(len);
+				if(!data)
+					ATerror("could not allocate space for blob of size %d\n", len);
+
+				result = (ATerm)ATmakeBlob(len, data);
+			}
+
+			/*}}}  */
+			break;
+		case AS_PLACEHOLDER:
+			result = (ATerm)ATmakePlaceholder(args[0]);
+			break;
+		case AS_LIST:
+			result = (ATerm)ATinsert((ATermList)args[1], args[0]);
+			break;
+		case AS_EMPTY_LIST:
+			result = (ATerm)ATempty;
+			break;
+		case AS_ANNOTATION:
+			result = AT_setAnnotations(args[0], args[1]);
+			ATfprintf(stderr, "Annotations: %t / %t = %t\n", 
+								args[0], args[1], result);
+			break;
+		default:
+			/* Must be a function application */
+			result = (ATerm)ATmakeApplArray(sym->sym, args);
+
+			/*
+			ATfprintf(stderr, "building application from the arguments:\n");
+			for(i=0; i<arity; i++)
+				ATfprintf(stderr, "  %d = %t\n", i, args[i]);
+
+			ATfprintf(stderr, "result = %t\n", result);
+			*/
+	}
+
+	if(arity > MAX_INLINE_ARITY) {
+		ATunprotectArray(args);
+		free(args);
+	}
+
+	return result;
+}
+
+/*}}}  */
+
 /*{{{  ATerm ATreadFromBinaryFile(FILE *file) */
 
 /**
@@ -950,38 +1351,70 @@ Symbol read_symbol(FILE *file)
 ATerm
 ATreadFromBinaryFile(FILE *file)
 {
-	unsigned int val;
+	unsigned int val, nr_unique_terms;
 	ATerm result = NULL;
 
 	/*{{{  Read header */
 
 	if(readIntFromFile(&val,   file) < 0)
-		return ATfalse;
+		return NULL;
 
 	if(val == 0) {
 		if(readIntFromFile(&val,   file) < 0)
-			return ATfalse;
+			return NULL;
 	}
 
 	if(val != BAF_MAGIC) {
 		fprintf(stderr, "ATreadFromBinaryFile: not a BAF file!\n");
-		return ATfalse;
+		return NULL;
 	}
 
 	if(readIntFromFile(&val, file) < 0)
-		return ATfalse;
+		return NULL;
 
 	if(val != BAF_VERSION) {
 		fprintf(stderr, "ATreadFromBinaryFile: old BAF version, giving up!\n");
-		return ATfalse;
+		return NULL;
 	}
 
+  if(readIntFromFile(&val, file) < 0)
+	  return NULL;
+  nr_unique_symbols = val;
+		
+	if(readIntFromFile(&nr_unique_terms, file) < 0)
+		return NULL;
+
+	fprintf(stderr, "reading %d unique symbols and %d unique terms.\n",
+					nr_unique_symbols, nr_unique_terms);
+
 	/*}}}  */
+	/*{{{  Allocate symbol space */
+
+	read_symbols = (sym_read_entry *)calloc(nr_unique_symbols,
+																					sizeof(sym_read_entry));
+	if(!read_symbols)
+		ATerror("ATreadFromBinaryFile: out of memory when allocating %d syms.\n",
+						nr_unique_symbols);
+
+	/*}}}  */
+
+	if(!read_all_symbols(file))
+		return NULL;
+
+	if(readIntFromFile(&val, file) < 0)
+		return NULL;
+
+	result = read_term(&read_symbols[val], file);
  
+	fflush(bitlog);
+
 	return result;
 }
 
 /*}}}  */
+
+
+
 
 
 

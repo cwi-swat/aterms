@@ -271,7 +271,7 @@ int ATlastIndexOf(ATermList list, ATerm el, int start)
   int i, len;
 
   if(start < 0)
-    start += ATgetLength(list)+1;
+    start += ATgetLength(list);
   len = start+1;
 
   RESIZE_BUFFER(len);
@@ -320,13 +320,16 @@ ATermList ATremoveElement(ATermList list, ATerm t)
   ATerm el = NULL;
   ATermList l = list;
 
-  while(!ATisEmpty(l) && !ATisEqual(el, t)) {
+	while(!ATisEmpty(l)) {
     el = ATgetFirst(l);
     l = ATgetNext(l);
     if(i >= buffer_size) 
       resize_buffer(i*2);
     buffer[i++] = el;
- }
+		if(ATisEqual(el, t))
+			break;
+	}
+
 
 	if(ATisEmpty(l))
 		return list;

@@ -50,7 +50,16 @@ ATerm ATreadFromFile(FILE *file);
 #define ATgetType(t) GET_TYPE((t)->header)
 
 /* ATbool ATisEqual(ATerm t1, ATerm t2); */
+#ifdef NO_SHARING
+extern ATbool AT_isEqual(ATerm t1, ATerm t2);
+#define ATisEqual(t1,t2) (AT_isEqual((ATerm)(t1), (ATerm)(t2)))
+/* The casts are needed because we want to allow the user
+   to easily check the equality of other ATerm types like 
+	 ATermList, ATermAppl, etc. */
+#else
 #define ATisEqual(t1,t2) ((ATerm)(t1) == (ATerm)(t2))
+#endif
+
 
 ATbool ATwriteToTextFile(ATerm t, FILE *file);
 ATbool ATwriteToBinaryFile(ATerm t, FILE *file);

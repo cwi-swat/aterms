@@ -75,7 +75,9 @@ static int alloc_since_gc[MAX_TERM_SIZE] = { 0 };
 static unsigned int table_class = 14;
 static unsigned int table_size;
 static unsigned int table_mask;
+#ifndef NO_SHARING
 static int maxload = 80;
+#endif
 static ATerm *hashtable;
 
 static int destructor_count = 0;
@@ -145,6 +147,7 @@ static unsigned int hash_number(unsigned int header, int n, ATerm w[])
 /*}}}  */
 /*{{{  static unsigned hash_number_anno(unsigned int header, int n, w[], anno) */
 
+#ifndef NO_SHARING
 static unsigned int hash_number_anno(unsigned int header, int n, ATerm w[], ATerm anno)
 {
 	int i;
@@ -157,6 +160,7 @@ static unsigned int hash_number_anno(unsigned int header, int n, ATerm w[], ATer
 
   return F(hnr);
 }
+#endif
 
 /*}}}  */
 /*{{{  unsigned AT_hashnumber(ATerm t) */
@@ -175,6 +179,7 @@ unsigned int AT_hashnumber(ATerm t)
 
 static void hash_info(int stats[MAX_INFO_SIZES][3]) 
 {
+#ifndef NO_SHARING
 	int i, len;
 	static int count[MAX_INFO_SIZES];
 
@@ -199,6 +204,7 @@ static void hash_info(int stats[MAX_INFO_SIZES][3])
 	for(i=0; i<MAX_INFO_SIZES; i++) {
 		STATS(stats[i], count[i]);
 	}
+#endif
 }
 
 /*}}}  */
@@ -305,7 +311,10 @@ void resize_hashtable()
 void AT_initMemory(int argc, char *argv[])
 {
   int i;
+
+#ifndef NO_SHARING
 	unsigned int hnr;
+#endif
 
 	table_class = 17;
 
@@ -340,11 +349,15 @@ void AT_initMemory(int argc, char *argv[])
 	/*}}}  */
 	/*{{{  Create term term table */
 
+#ifdef NO_SHARING
+	hashtable = NULL;
+#else
   hashtable = (ATerm *)calloc(table_size, sizeof(ATerm ));
   if(!hashtable) {
     ATerror("AT_initMemory: cannot allocate term table of size %d\n", 
 	    table_size);
   }
+#endif
 
   for(i=0; i<BLOCK_TABLE_SIZE; i++) {
 		block_table[i].first_before = NULL;
@@ -357,8 +370,11 @@ void AT_initMemory(int argc, char *argv[])
   ATempty = (ATermList)AT_allocate(TERM_SIZE_LIST);
   ATempty->header = EMPTY_HEADER(0);
   ATempty->next = NULL;
+
+#ifndef NO_SHARING
 	hnr = hash_number(ATempty->header, 0, NULL);
   hashtable[hnr & table_mask] = (ATerm)ATempty;
+#endif
 	ATprotect((ATerm *)&ATempty);
 
 	/*}}}  */
@@ -426,6 +442,9 @@ void AT_cleanupMemory()
 			fprintf(f, "%8d\n", info[i][IDX_TOTAL]);
 		}
 
+#ifdef NO_SHARING
+		fprintf(f, "sharing has been disabled.\n");
+#else
 		for(i=0; i<table_size; i++) {
 			int size = 0;
 			ATerm cur = hashtable[i];
@@ -440,6 +459,7 @@ void AT_cleanupMemory()
 				}
 			}
 		}
+#endif
 	}
 }
 
@@ -511,8 +531,11 @@ ATerm AT_allocate(int size)
 		if((100*alloc_since_gc[size]) <= GC_THRESHOLD*total) {
 		/*if(1) {*/
 				allocate_block(size);
+#ifndef NO_SHARING
+				/* Hashtable might need resizing. */
 				if(total_nodes*100 > table_size*maxload)
 					resize_hashtable();
+#endif
 		} else {
 			gc_count++;
 			if(infoflags & INFO_HASHING)
@@ -532,6 +555,452 @@ ATerm AT_allocate(int size)
 }
 
 /*}}}  */
+
+#ifdef NO_SHARING
+
+/*{{{  void AT_freeTerm(int size, ATerm t) */
+
+/**
+	* Free a term of a particular size.
+	*/
+
+void AT_freeTerm(int size, ATerm t)
+{
+	/* Put the node in the appropriate free list */
+	t->header = FREE_HEADER;
+	t->next  = at_freelist[size];
+	at_freelist[size] = t;
+}
+
+/*}}}  */
+
+/*{{{  ATermAppl ATmakeAppl(Symbol sym, ...) */
+
+/**
+  * Create a new ATermAppl. The argument count can be found in the symbol.
+  */
+
+ATermAppl ATmakeAppl(Symbol sym, ...)
+{
+  int i, arity = ATgetArity(sym);
+  ATerm cur;
+  header_type header;
+
+  va_list args;
+
+  va_start(args, sym);
+
+  header = APPL_HEADER(0, arity > MAX_INLINE_ARITY ?
+		MAX_INLINE_ARITY+1 : arity, sym);
+
+	cur = AT_allocate(arity + ARG_OFFSET);
+	cur->header = header;
+	for(i=0; i<arity; i++)
+		ATgetArgument(cur, i) = va_arg(args, ATerm);
+
+  va_end(args);
+  
+  return (ATermAppl)cur;
+}
+
+/*}}}  */
+/*{{{  ATermAppl ATmakeAppl0(Symbol sym) */
+
+/**
+  * Create an ATermAppl with zero arguments.
+  */
+
+ATermAppl ATmakeAppl0(Symbol sym)
+{
+  ATerm cur;
+  header_type header = APPL_HEADER(0, 0, sym);
+  
+  CHECK_ARITY(ATgetArity(sym), 0);
+
+	cur = AT_allocate(ARG_OFFSET);
+	cur->header = header;
+
+  return (ATermAppl) cur;  
+}
+
+/*}}}  */
+/*{{{  ATermAppl ATmakeAppl1(Symbol sym, ATerm arg0) */
+
+/**
+  * Create an ATermAppl with one argument.
+  */
+
+ATermAppl ATmakeAppl1(Symbol sym, ATerm arg0)
+{
+  ATerm cur;
+  header_type header = APPL_HEADER(0, 1, sym);
+ 
+  CHECK_ARITY(ATgetArity(sym), 1);
+ 
+	cur = AT_allocate(ARG_OFFSET+1);
+	cur->header = header;
+	ATgetArgument(cur, 0) = arg0;
+
+  return (ATermAppl) cur;  
+}
+
+/*}}}  */
+/*{{{  ATermAppl ATmakeAppl2(Symbol sym, arg0, arg1) */
+
+/**
+  * Create an ATermAppl with one argument.
+  */
+
+ATermAppl ATmakeAppl2(Symbol sym, ATerm arg0, ATerm arg1)
+{
+  ATerm cur;
+  header_type header = APPL_HEADER(0, 2, sym);
+  
+  CHECK_ARITY(ATgetArity(sym), 2);
+
+	cur = AT_allocate(ARG_OFFSET+2);
+	cur->header = header;
+	ATgetArgument(cur, 0) = arg0;
+	ATgetArgument(cur, 1) = arg1;
+
+  return (ATermAppl)cur;  
+}
+
+/*}}}  */
+/*{{{  ATermAppl ATmakeAppl3(Symbol sym, ATerm arg0, arg1, arg2) */
+
+/**
+  * Create an ATermAppl with one argument.
+  */
+
+ATermAppl ATmakeAppl3(Symbol sym, ATerm arg0, ATerm arg1, ATerm arg2)
+{
+  ATerm cur;
+  header_type header = APPL_HEADER(0, 3, sym);
+  
+  CHECK_ARITY(ATgetArity(sym), 3);
+
+	cur = AT_allocate(ARG_OFFSET+3);
+	cur->header = header;
+	ATgetArgument(cur, 0) = arg0;
+	ATgetArgument(cur, 1) = arg1;
+	ATgetArgument(cur, 2) = arg2;
+
+  return (ATermAppl)cur;  
+}
+
+/*}}}  */
+/*{{{  ATermAppl ATmakeAppl4(Symbol sym, ATerm arg0, arg1, arg2, a3) */
+
+/**
+  * Create an ATermAppl with four arguments.
+  */
+
+ATermAppl ATmakeAppl4(Symbol sym, ATerm arg0, ATerm arg1, ATerm arg2, ATerm arg3)
+{
+  ATerm cur;
+  header_type header = APPL_HEADER(0, 4, sym);
+  
+  CHECK_ARITY(ATgetArity(sym), 4);
+
+	cur = AT_allocate(ARG_OFFSET+4);
+	cur->header = header;
+	ATgetArgument(cur, 0) = arg0;
+	ATgetArgument(cur, 1) = arg1;
+	ATgetArgument(cur, 2) = arg2;
+	ATgetArgument(cur, 3) = arg3;
+
+  return (ATermAppl)cur;  
+}
+
+/*}}}  */
+/*{{{  ATermAppl ATmakeAppl5(Symbol sym, ATerm arg0, arg1, arg2, a3, a4) */
+
+/**
+  * Create an ATermAppl with five arguments.
+  */
+
+ATermAppl ATmakeAppl5(Symbol sym, ATerm arg0, ATerm arg1, ATerm arg2, 
+		    ATerm arg3, ATerm arg4)
+{
+  ATerm cur;
+  header_type header = APPL_HEADER(0, 5, sym);
+
+  CHECK_ARITY(ATgetArity(sym), 5);
+
+	cur = AT_allocate(ARG_OFFSET+5);
+	cur->header = header;
+	ATgetArgument(cur, 0) = arg0;
+	ATgetArgument(cur, 1) = arg1;
+	ATgetArgument(cur, 2) = arg2;
+	ATgetArgument(cur, 3) = arg3;
+	ATgetArgument(cur, 4) = arg4;
+
+  return (ATermAppl)cur;  
+}
+
+/*}}}  */
+/*{{{  ATermAppl ATmakeAppl6(Symbol sym, ATerm arg0, arg1, arg2, a3, a4, a5) */
+
+/**
+  * Create an ATermAppl with six arguments.
+  */
+
+ATermAppl ATmakeAppl6(Symbol sym, ATerm arg0, ATerm arg1, ATerm arg2, 
+		    ATerm arg3, ATerm arg4, ATerm arg5)
+{
+  ATerm cur;
+  header_type header = APPL_HEADER(0, 6, sym);
+  
+  CHECK_ARITY(ATgetArity(sym), 6);
+
+	cur = AT_allocate(ARG_OFFSET+6);
+	cur->header = header;
+	ATgetArgument(cur, 0) = arg0;
+	ATgetArgument(cur, 1) = arg1;
+	ATgetArgument(cur, 2) = arg2;
+	ATgetArgument(cur, 3) = arg3;
+	ATgetArgument(cur, 4) = arg4;
+	ATgetArgument(cur, 5) = arg5;
+
+  return (ATermAppl)cur;  
+}
+
+/*}}}  */
+/*{{{  ATermAppl ATmakeApplList(Symbol sym, ATermList args) */
+
+/**
+  * Build a function application from a symbol and a list of arguments.
+  */
+
+ATermAppl ATmakeApplList(Symbol sym, ATermList args)
+{
+  int i, arity = ATgetArity(sym);
+  ATerm cur;
+  header_type header = APPL_HEADER(0, arity > MAX_INLINE_ARITY ?
+																	 MAX_INLINE_ARITY+1 : arity, sym);
+	
+  assert(arity == ATgetLength(args));
+
+	cur = AT_allocate(ARG_OFFSET + arity);
+	cur->header = header;
+	for(i=0; i<arity; i++) {
+		ATgetArgument(cur, i) = ATgetFirst(args);
+		args = ATgetNext(args);
+	}
+  
+  return (ATermAppl)cur;
+}
+
+/*}}}  */
+/*{{{  ATermAppl ATmakeApplArray(Symbol sym, ATerm args[]) */
+
+/**
+  * Build a function application from a symbol and an array of arguments.
+  */
+
+ATermAppl ATmakeApplArray(Symbol sym, ATerm args[])
+{
+  int i, arity = ATgetArity(sym);
+  ATerm cur;
+  header_type header = APPL_HEADER(0, arity > MAX_INLINE_ARITY ?
+		MAX_INLINE_ARITY+1 : arity, sym);
+
+	cur = AT_allocate(ARG_OFFSET + arity);
+	cur->header = header;
+	for(i=0; i<arity; i++)
+		ATgetArgument(cur, i) = args[i];
+  
+  return (ATermAppl)cur;
+}
+
+/*}}}  */
+
+/*{{{  ATermInt ATmakeInt(int val) */
+
+/**
+  * Create an ATermInt
+  */
+
+ATermInt ATmakeInt(int val)
+{
+  ATerm cur;
+  header_type header = INT_HEADER(0);
+ 
+	cur = AT_allocate(3);
+	cur->header = header;
+	((ATermInt)cur)->value = val;
+
+  return (ATermInt)cur;  
+}
+
+/*}}}  */
+/*{{{  ATermReal ATmakeReal(double val) */
+
+/**
+  * Create an ATermReal
+  */
+
+ATermReal ATmakeReal(double val)
+{
+  ATerm cur;
+  header_type header = REAL_HEADER(0);
+
+	cur = AT_allocate(4);
+	cur->header = header;
+	((ATermReal)cur)->value = val;
+
+  return (ATermReal)cur;  
+}
+
+/*}}}  */
+
+/*{{{  ATermList ATmakeList1(ATerm el) */
+
+/**
+  * Build a list with one element.
+  */
+
+ATermList ATmakeList1(ATerm el)
+{
+  ATerm cur;
+  header_type header = LIST_HEADER(0, 1);
+
+	cur = AT_allocate(TERM_SIZE_LIST);
+	cur->header = header;
+	ATgetFirst((ATermList)cur) = el;
+	ATgetNext((ATermList)cur) = ATempty;
+
+  return (ATermList) cur;
+}
+
+/*}}}  */
+/*{{{  ATermList ATinsert(ATermList tail, ATerm el) */
+
+/**
+  * Insert an element at the front of a list.
+  */
+
+ATermList ATinsert(ATermList tail, ATerm el)
+{
+  ATerm cur;
+  header_type header = LIST_HEADER(0, (GET_LENGTH(tail->header)+1));
+
+	cur = AT_allocate(TERM_SIZE_LIST);
+	cur->header = header;
+	ATgetFirst((ATermList)cur) = el;
+	ATgetNext((ATermList)cur) = tail;
+	
+  return (ATermList) cur;
+}
+
+/*}}}  */
+
+/*{{{  ATermPlaceholder ATmakePlaceholder(ATerm type) */
+
+/**
+  * Create a new placeholder.
+  */
+
+ATermPlaceholder ATmakePlaceholder(ATerm type)
+{
+  ATerm cur;
+  header_type header = PLACEHOLDER_HEADER(0);
+
+	cur = AT_allocate(3);
+	cur->header = header;
+	((ATermPlaceholder)cur)->ph_type = type;
+
+  return (ATermPlaceholder) cur;
+
+}
+
+/*}}}  */
+
+/*{{{  ATermBlob ATmakeBlob(void *data, int size) */
+
+/**
+  * Create a new BLOB (Binary Large OBject)
+  */
+
+ATermBlob ATmakeBlob(int size, void *data)
+{
+  ATerm cur;
+  header_type header = BLOB_HEADER(0, size);
+
+	cur = AT_allocate(3);
+	cur->header = header;
+	((ATermBlob)cur)->data = data;
+
+  return (ATermBlob)cur;
+}
+
+/*}}}  */
+
+/*{{{  ATerm AT_setAnnotations(ATerm t, ATermList annos) */
+
+/**
+  * Change the annotations of a term.
+  */
+
+ATerm AT_setAnnotations(ATerm t, ATerm annos)
+{
+  int i, size = term_size(t);
+  header_type header;
+  ATerm cur;
+
+  assert(annos != NULL);
+
+	header = t->header;
+  if(HAS_ANNO(header))
+    size--;
+  else
+    SET_ANNO(header);
+
+	/* We need to create a new term */
+	cur = AT_allocate(size+1);
+	cur->header = header;
+
+	for(i=2; i<size; i++)
+		((ATerm *)cur)[i] = ((ATerm *)t)[i];
+	((ATerm *)cur)[i] = annos;
+
+  return cur;
+}
+
+/*}}}  */
+/*{{{  ATerm AT_removeAnnotations(ATerm t) */
+
+/**
+  * Remove all annotations of a term.
+  */
+
+ATerm AT_removeAnnotations(ATerm t)
+{
+  int i, size;
+  header_type header;
+  ATerm cur;
+  
+  if(!HAS_ANNO(t->header))
+    return t;
+
+	header = t->header;
+  CLR_ANNO(header);
+  size = term_size(t)-1;
+
+	/* We need to create a new term */
+	cur = AT_allocate(size);
+	cur->header = header;
+	for(i=2; i<size; i++)
+		((ATerm *)cur)[i] = ((ATerm *)t)[i];
+
+  return cur;
+}
+
+/*}}}  */
+
+#else
+
 /*{{{  void AT_freeTerm(int size, ATerm t) */
 
 /**
@@ -1074,28 +1543,6 @@ ATermAppl ATmakeApplArray(Symbol sym, ATerm args[])
 }
 
 /*}}}  */
-/*{{{  ATermAppl ATsetArgument(ATermAppl appl, ATerm arg, int n) */
-
-/**
-  * Change one argument of an application.
-  */
-
-ATermAppl ATsetArgument(ATermAppl appl, ATerm arg, int n)
-{
-  int i, arity;
-  Symbol sym = ATgetSymbol(appl);
-
-  arity = ATgetArity(sym);
-	assert(n >= 0 && n < arity);
-
-  for(i=0; i<arity; i++)
-		arg_buffer[i] = ATgetArgument(appl, i);
-	arg_buffer[n] = arg;
-
-  return ATmakeApplArray(sym, arg_buffer);
-}
-
-/*}}}  */
 
 /*{{{  ATermInt ATmakeInt(int val) */
 
@@ -1158,45 +1605,6 @@ ATermReal ATmakeReal(double val)
 
 /*}}}  */
 
-/*{{{  ATermList ATmakeList(int n, ...) */
-
-/**
-  * Create a list with n arguments.
-  */
-
-ATermList ATmakeList(int n, ...)
-{
-  int i;
-  va_list args;
-  ATermList l;
-  static ATerm *elems = 0;
-  static int maxelems = 0;
-
-  /* See if we have enough space to store the elements */
-  if(n > maxelems) {
-	if(!elems)
-	  elems = (ATerm *)malloc(n*sizeof(ATerm));
-	else
-      elems = (ATerm *)realloc(elems, n*sizeof(ATerm));
-    if(!elems)
-      ATerror("ATmakeListn: cannot allocate space for %d terms.\n", n);
-    maxelems = n;
-  }
-
-  va_start(args, n);
-
-  for(i=0; i<n; i++)
-    elems[i] = va_arg(args, ATerm);
-
-  l = ATempty;
-  for(i=n-1; i>=0; i--)
-    l = ATinsert(l, elems[i]);
-
-  va_end(args);
-  return l;
-}
-
-/*}}}  */
 /*{{{  ATermList ATmakeList1(ATerm el) */
 
 /**
@@ -1331,70 +1739,6 @@ ATermBlob ATmakeBlob(int size, void *data)
 
 /*}}}  */
 
-/*{{{  void ATregisterBlobDestructor(ATbool (*destructor)(ATermBlob)) */
-
-/**
-  * Add a blob destructor.
-  */
-
-void ATregisterBlobDestructor(ATbool (*destructor)(ATermBlob))
-{
-  int i;
-
-  for(i=0; i<MAX_DESTRUCTORS; i++) {
-    if(destructors[i] == NULL) {
-      destructors[i] = destructor;
-      if(i>=destructor_count)
-	destructor_count = i+1;
-      return;
-    }
-  }
-}
-
-/*}}}  */
-/*{{{  void ATunregisterBlobDestructor(ATbool (*destructor)(ATermBlob)) */
-
-/**
-  * Add a blob destructor.
-  */
-
-void ATunregisterBlobDestructor(ATbool (*destructor)(ATermBlob))
-{
-  int i;
-
-  for(i=0; i<MAX_DESTRUCTORS; i++) {
-    if(destructors[i] == destructor) {
-      destructors[i] = NULL;
-      break;
-    }
-  }
-
-  for(i=MAX_DESTRUCTORS-1; i>=0; i--) {
-    if(destructors[i] != NULL) {
-      destructor_count = i+1;
-      return;
-    }
-  }
-}
-
-/*}}}  */
-
-/*{{{  ATermList AT_getAnnotations(ATerm t) */
-
-/**
-  * Retrieve the annotations of a term.
-  */
-
-ATerm AT_getAnnotations(ATerm t)
-{
-  if(HAS_ANNO(t->header)) {
-    int size = term_size(t);
-    return ((ATerm *)t)[size-1];
-  }
-  return NULL;
-}
-
-/*}}}  */
 /*{{{  ATerm AT_setAnnotations(ATerm t, ATermList annos) */
 
 /**
@@ -1522,6 +1866,134 @@ ATerm AT_removeAnnotations(ATerm t)
       ((ATerm *)cur)[i] = ((ATerm *)t)[i];
   }
   return cur;
+}
+
+/*}}}  */
+#endif
+
+/*{{{  ATermAppl ATsetArgument(ATermAppl appl, ATerm arg, int n) */
+
+/**
+  * Change one argument of an application.
+  */
+
+ATermAppl ATsetArgument(ATermAppl appl, ATerm arg, int n)
+{
+  int i, arity;
+  Symbol sym = ATgetSymbol(appl);
+
+  arity = ATgetArity(sym);
+	assert(n >= 0 && n < arity);
+
+  for(i=0; i<arity; i++)
+		arg_buffer[i] = ATgetArgument(appl, i);
+	arg_buffer[n] = arg;
+
+  return ATmakeApplArray(sym, arg_buffer);
+}
+
+/*}}}  */
+/*{{{  ATermList ATmakeList(int n, ...) */
+
+/**
+  * Create a list with n arguments.
+  */
+
+ATermList ATmakeList(int n, ...)
+{
+  int i;
+  va_list args;
+  ATermList l;
+  static ATerm *elems = 0;
+  static int maxelems = 0;
+
+  /* See if we have enough space to store the elements */
+  if(n > maxelems) {
+	if(!elems)
+	  elems = (ATerm *)malloc(n*sizeof(ATerm));
+	else
+      elems = (ATerm *)realloc(elems, n*sizeof(ATerm));
+    if(!elems)
+      ATerror("ATmakeListn: cannot allocate space for %d terms.\n", n);
+    maxelems = n;
+  }
+
+  va_start(args, n);
+
+  for(i=0; i<n; i++)
+    elems[i] = va_arg(args, ATerm);
+
+  l = ATempty;
+  for(i=n-1; i>=0; i--)
+    l = ATinsert(l, elems[i]);
+
+  va_end(args);
+  return l;
+}
+
+/*}}}  */
+
+/*{{{  void ATregisterBlobDestructor(ATbool (*destructor)(ATermBlob)) */
+
+/**
+  * Add a blob destructor.
+  */
+
+void ATregisterBlobDestructor(ATbool (*destructor)(ATermBlob))
+{
+  int i;
+
+  for(i=0; i<MAX_DESTRUCTORS; i++) {
+    if(destructors[i] == NULL) {
+      destructors[i] = destructor;
+      if(i>=destructor_count)
+	destructor_count = i+1;
+      return;
+    }
+  }
+}
+
+/*}}}  */
+/*{{{  void ATunregisterBlobDestructor(ATbool (*destructor)(ATermBlob)) */
+
+/**
+  * Add a blob destructor.
+  */
+
+void ATunregisterBlobDestructor(ATbool (*destructor)(ATermBlob))
+{
+  int i;
+
+  for(i=0; i<MAX_DESTRUCTORS; i++) {
+    if(destructors[i] == destructor) {
+      destructors[i] = NULL;
+      break;
+    }
+  }
+
+  for(i=MAX_DESTRUCTORS-1; i>=0; i--) {
+    if(destructors[i] != NULL) {
+      destructor_count = i+1;
+      return;
+    }
+  }
+}
+
+/*}}}  */
+
+/*{{{  ATermList AT_getAnnotations(ATerm t) */
+
+/**
+  * Retrieve the annotations of a term.
+  */
+
+ATerm AT_getAnnotations(ATerm t)
+{
+  if(HAS_ANNO(t->header)) {
+    int size = term_size(t);
+    return ((ATerm *)t)[size-1];
+  }
+  return NULL;
 }
 
 /*}}}  */
