@@ -36,9 +36,9 @@
 #include <string.h>
 
 #include "tafio.h"
-#include "byteio.h"
 #include "aterm2.h"
 #include "_aterm.h"
+#include "_afun.h"
 #include "memory.h"
 
 /*}}}  */

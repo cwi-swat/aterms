@@ -19,6 +19,12 @@
 
 $Id$
 
+2000/8/15 ({jong,olivierp}@cwi.nl)
+  * Version is now 1.4.1
+  * Introduced _afun.h exporting afun-functionality for internal use
+  * moved #inclusion of byteio.h to _afun.h so installed includes
+    no longer need byteio.h
+
 2000/8/8
   * Version is now 1.4.0
   * Added shared textual aterm format (.taf files)

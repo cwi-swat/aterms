@@ -18,8 +18,6 @@
 #    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 #
 # $Id$
-#
-# vim:ts=8:sw=8
 
 include ../make_rules
 
@@ -34,10 +32,10 @@ ALLSRCS			= aterm.c list.c make.c memory.c afun.c gc.c \
 			hash.c bafio.c byteio.c tafio.c version.c
 
 PUBLIC_INCL		= abool.h atypes.h aterm1.h aterm2.h deprecated.h \
-			encoding.h afun.h byteio.h
+			encoding.h afun.h
 
-PRIVATE_INCL		= _aterm.h debug.h gc.h list.h make.h memory.h \
-			util.h bafio.h version.h tafio.h
+PRIVATE_INCL		= _aterm.h _afun.h debug.h gc.h list.h make.h \
+			memory.h util.h bafio.h version.h tafio.h byteio.h
 
 CFLAGS			= -Wall -g -O2
 
@@ -66,3 +64,4 @@ version-gcc.o:  version.c $(ALLINCLUDES) $(ALLSRCS)
 version-dbg.o:  version.c $(ALLINCLUDES) $(ALLSRCS)
 version-prof.o: version.c $(ALLINCLUDES) $(ALLSRCS)
 
+# vim:ts=8:sw=8:sts=0
