@@ -193,7 +193,7 @@ reading and writing (Section~\ref{reading}) of \ATerms,
 and annotating (Section~\ref{annotating}). The total
 of only 13 functions provide enough functionality for most users to
 build simple applications with \ATerms.  We refer to this interface as
-the \emph{level one} interface of the \ATerm\ datatype.
+the \emph{level one} interface of the \ATerm\ data type.
 
 To accommodate ``power'' users of \ATerms\ we also provide a
 \emph{level two} interface, which provides a more sophisticated set of
@@ -288,7 +288,7 @@ by parsing
 the string $s$. When a parse error occurs, a message is printed, and
 a special error value is returned.
 
-\item {\tt ATerm readFromTextFile(File $f$)}: Creates a new term by 
+\item {\tt ATerm ATreadFromTextFile(File $f$)}: Creates a new term by 
 parsing the data from file $f$. Again, parse errors result in a 
 message being printed and an error value being returned.
 
@@ -783,7 +783,7 @@ In all cases, annotations are represented using an extra word
 at the end of the term object. The single annotation bit in the header
 indicates whether or not an annotation is present. Only when this
 bit is set, an extra word is allocated that points to a term
-with type {\tt AT\_LIST}, which represents the list of annotations.
+with type {\tt LIST}, which represents the list of annotations.
 
 %}}}
 
@@ -861,7 +861,7 @@ over this function symbol instead of the index of the argument in
 the total term table.
 
 \subsubsection{Example}
-As an example, we show how the term {\tt mult(s(s(z),s(z)))} is represented
+As an example, we show how the term {\tt mult(s(s(z)),s(z))} is represented
 in \baf. This term contains three function symbols: {\tt mult} with
 arity two, {\tt s} with arity one, and {\tt z} with arity zero.
 When grouping the subterms by function symbol we get:
@@ -873,7 +873,7 @@ When grouping the subterms by function symbol we get:
 0: {\tt mult}               	& 1: {\tt s} 	& 2: {\tt z}       \\
 \hline
 {\tt mult(s(s(z)),s(z))}	& {\tt s(s(z))}	& {\tt z} \\
-                   		& s(z)    	&   \\
+                   		& {\tt s(z)}    &   \\
 \hline
 \end{tabular}
 \end{center}
@@ -917,7 +917,7 @@ written as strings to improve the readability.}:
 
 
 \noindent Following this symbol information, the actual term {\tt
-mult(s(s(z),s(z))} can be encoded using only a handful of bits. Note
+mult(s(s(z)),s(z))} can be encoded using only a handful of bits. Note
 that the first function symbol in the symbol table is always the top
 function symbol of the term (in this case: {\tt mult}):
 
@@ -1184,7 +1184,7 @@ and percentage of compression achieved (column 3).
 Next, we give the results of compressing the Ascii version of each term
 with {\tt gzip} (column 4), and compression achieved (column 5).
 The compression factors are near 96\% in both cases.
-The worst case compression of {\tt zip} (66\%) is considerably
+The worst case compression of {\tt gzip} (66\%) is considerably
 better than that of \baf\ (12\%).
 
 \begin{table}[tb]
@@ -1480,8 +1480,8 @@ Montana~\cite{Karasick98}, These systems either provide an explicit
 intermediate format (Eli, Ast, SUIF) or they provide a programmable
 interface to the intermediate data (VTP, Montana).  Lamb's
 IDL~\cite{Lamb-IDL} and OMG's IDL~\cite{OMG-IDL} are frameworks for
-representing intermediate data that are not tight to a specific
-compiler construction paradigm but have similar objectives as the
+representing intermediate data that are not tied to a specific
+compiler construction paradigm but have objectives similar to the
 systems already mentioned.
 \end{sloppypar}
 
@@ -1584,7 +1584,7 @@ representing parse tables as well.
 
 \subsection{Conclusions}
 
-As stated in the introduction, \ATerms\ are intended to form an \emph{open}
+As stated in the introduction, \ATerms\ are intended to form an \emph{open},
 \emph{simple}, 
 \emph{efficient}, \emph{concise}, and \emph{language
 independent} solution for the exchange of complex data structures

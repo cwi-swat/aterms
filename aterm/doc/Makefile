@@ -4,7 +4,8 @@ CHAPS	= at.ltx
 PICS	= header.ps encoding.ps hierarchy.ps
 
 # fig2dev-3.2 is essential
-FIG2DEV	= /home/mdejonge/bin/fig2dev-3.2
+#FIG2DEV	= /home/mdejonge/bin/fig2dev-3.2
+FIG2DEV	= fig2dev
 
 EXAMPLEDIR		= examples
 EXAMPLEFILES	= init.c make.c match.c prot.c app1.c app2.c app3.c \
