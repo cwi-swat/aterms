@@ -544,11 +544,8 @@ void usage(void)
           "\t-i filename    Read ATerm from filename (default stdin)\n"
           "\t-o filename    Write XML to filename (default stdout)\n"
           "\t-v             Verbose mode\n"
-          "\t-V             Reveal version (i.e. %s)\n",
-          myname, myversion);
+          "\t-V             Reveal version (i.e. %s)\n", myname, myversion);
 }
-
-/*}}}  */
 
 /*}}}  */
 
