@@ -19,6 +19,9 @@
 
 $Id$
 
+2000/7/14 (jong@cwi.nl)
+  * Improved dependencies and cleaning in toolbus/Makefile.am
+
 2000/7/14 ({jong,olivierp}@cwi.nl)
   * relaxed ATerm parser to accept TB legacy constructs (:,?,$)
   * added tblog tool that can be used as a replacement for the old

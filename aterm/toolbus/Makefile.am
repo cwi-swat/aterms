@@ -52,6 +52,8 @@ include_HEADERS		= $(PUBLIC_INCL)
 
 EXTRA_DIST		= $(ALLSRCS)
 
+CLEANFILES		= tblog-interface.tifs logger.tif.c logger.tif.h \
+			tblog_dict.c tblog_dict.h
 
 # static only libraries
 libATB_a_SOURCES	=
@@ -72,7 +74,7 @@ logger.tif.c logger.tif.h : tblog-interface.tifs
 logger.tif.o: logger.tif.c logger.tif.h
 
 tblog_dict.o: tblog_dict.c tblog_dict.h
-tblog.o: tblog_dict.h
+tblog.o: tblog_dict.h logger.tif.h
 
 %_dict.c %_dict.h: %.dict ${top_builddir}/utils/dicttoc
 	${top_builddir}/utils/dicttoc -dict $<
@@ -86,5 +88,3 @@ tblog.o: tblog_dict.h
 	@if [ "a${VPATH}" != "a" ]; then \
 	  mv ${srcdir}/test2.tifs $@ ;\
 	fi
-
-
