@@ -196,7 +196,12 @@ AT_vmakeTerm(ATerm pat, va_list *args)
 
 		case AT_LIST:
 			/*{{{  Handle list */
+
 			list = (ATermList) pat;
+
+			if(ATisEmpty(list))
+			  return pat;
+
 			nr_args = ATgetLength(list);
 			arglist = ATmakeList0();
 			while (--nr_args > 0)
@@ -224,6 +229,7 @@ AT_vmakeTerm(ATerm pat, va_list *args)
 			}
 
 			return (ATerm) list;
+
 			/*}}}  */
 		break;
 
