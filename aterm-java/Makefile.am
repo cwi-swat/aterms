@@ -22,7 +22,7 @@ javadoc: ${JAVADOCDIR}.tar.gz
 
 ${JARFILE}:
 	jar cf ${JARFILE} \
-	`cd ${top_builddir} && find . -name '*.java' -o -name '*.class'`
+	`cd ${top_builddir} && find . -name '*.class'`
 
 JAVA_FILES = $(patsubst %,$(srcdir)/aterm/%.java,$(JAVA_CLASSES)) \
 	$(srcdir)/aterm/pure/PureFactory.java
