@@ -497,6 +497,9 @@ int main(int argc,char *argv[])
       case 'o':
 	outfile = strdup(optarg);
 	break;
+      case 't':
+	textmode = true;
+	break;
       case 'V':
 	fprintf(stderr,"%s v%s\n", myname, myversion);
 	exit(0);
