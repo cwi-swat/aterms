@@ -1,5 +1,7 @@
 SUBDIRS = aterm utils test doc
 
+ACLOCAL_FLAGS = -I .
+
 CLEANFILES = ${PACKAGE}-${VERSION}.pkg
 
 DIST_SUBDIRS = aterm utils test doc
