@@ -179,7 +179,7 @@ void testBlob()
   fflush(file);
   fseek(file, 0, SEEK_SET);
   b[2] = (ATermBlob)ATreadFromTextFile(file);
-  test_assert("blob", 1, strcmp(ATgetBlobData(b[0]), ATgetBlobData(b[2])) == 0);
+  test_assert("blob", 2, strcmp(ATgetBlobData(b[0]), ATgetBlobData(b[2])) == 0);
 
   ATregisterBlobDestructor(blob_destructor_false);
   ATregisterBlobDestructor(blob_destructor_false);

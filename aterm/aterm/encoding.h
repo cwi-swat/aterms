@@ -63,14 +63,14 @@ typedef unsigned int header_type;
 #ifdef AT_64BIT
 #define TERM_SIZE_INT         3
 #define TERM_SIZE_REAL        3
-#define TERM_SIZE_BLOB        3
+#define TERM_SIZE_BLOB        4
 #define TERM_SIZE_LIST        4
 #define TERM_SIZE_PLACEHOLDER 3
 #define TERM_SIZE_SYMBOL      (sizeof(struct _SymEntry)/sizeof(header_type))
 #else
 #define TERM_SIZE_INT         3
 #define TERM_SIZE_REAL        4
-#define TERM_SIZE_BLOB        3
+#define TERM_SIZE_BLOB        4
 #define TERM_SIZE_LIST        4
 #define TERM_SIZE_PLACEHOLDER 3
 #define TERM_SIZE_SYMBOL      (sizeof(struct _SymEntry)/sizeof(header_type))
@@ -111,8 +111,12 @@ typedef unsigned int header_type;
 #define PLACEHOLDER_HEADER(anno)  ((anno) | (AT_PLACEHOLDER << SHIFT_TYPE) | \
            1 << SHIFT_ARITY)
 
+/*
 #define BLOB_HEADER(anno,len)     ((anno) | (AT_BLOB << SHIFT_TYPE) | \
 				   ((MachineWord)(len) << SHIFT_LENGTH))
+				   */
+#define BLOB_HEADER(anno)	  ((anno) | (AT_BLOB << SHIFT_TYPE) | \
+				   (1 << SHIFT_ARITY))
 
 #define SYMBOL_HEADER(arity,quoted) \
 	(((quoted) ? MASK_QUOTED : 0) | \

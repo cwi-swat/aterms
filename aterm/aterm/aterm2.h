@@ -58,6 +58,7 @@ typedef struct
 {
 	header_type header;
 	ATerm       next;
+	int	    size;
 	void       *data;
 } *ATermBlob;
 
@@ -198,7 +199,7 @@ ATermBlob ATmakeBlob(int size, void *data);
 #define ATgetBlobData(blob) ((blob)->data)
 
 /*int     ATgetBlobSize(ATermBlob blob);*/
-#define ATgetBlobSize(blob) ((int)GET_LENGTH((blob)->header))
+#define ATgetBlobSize(blob) ((blob)->size)
 
 void    ATregisterBlobDestructor(ATbool (*destructor)(ATermBlob));
 void    ATunregisterBlobDestructor(ATbool (*destructor)(ATermBlob));

@@ -2576,22 +2576,20 @@ ATermBlob ATmakeBlob(int size, void *data)
 {
   ATermBlob protoBlob;
   ATerm cur;
-  header_type header = BLOB_HEADER(0, size);
+  header_type header = BLOB_HEADER(0);
   HashNumber hnr;
-
-  if (size > MAX_LENGTH) {
-    ATabort("Attempt to create blob > MAX_SIZE (%d > %d)\n", size, MAX_LENGTH);
-  }
 
   protoBlob = (ATermBlob) protoTerm;
   protoBlob->header = header;
   CHECK_HEADER(protoBlob->header);
+  protoBlob->size = size;
   protoBlob->data = data;
 
   hnr = hash_number((ATerm) protoBlob, TERM_SIZE_BLOB);
 
   cur = hashtable[hnr & table_mask];
   while (cur && (!EQUAL_HEADER(cur->header,header)
+		 || ((ATermBlob)cur)->size != size
 		 || ((ATermBlob)cur)->data != data)) {
     cur = cur->next;
   }
@@ -2603,6 +2601,7 @@ ATermBlob ATmakeBlob(int size, void *data)
     cur->header = header;
     CHECK_HEADER(cur->header);
     ((ATermBlob)cur)->data = data;
+    ((ATermBlob)cur)->size = size;
     cur->next = hashtable[hnr];
     hashtable[hnr] = cur;
   }
