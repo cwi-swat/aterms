@@ -36,7 +36,8 @@
 
 \begin{frontmatter}
 
-\title{Generation of Abstract Programming Interfaces \\
+\title{Generation of \\
+  Abstract Programming Interfaces \\
   from Syntax Definitions \\
   $Revision$}
 
@@ -613,14 +614,14 @@ very type-unsafe and obfuscated:
 
 % {{{  Level Two: Extracting lhs from "true and false"
 
-\begin{footnotesize}
+\begin{scriptsize}
 \begin{verbatim}
   ATerm extract_bool_lhs(ATerm t) {
     ATermList args = ATgetArgument(t, 1);  // get arguments from AsFix "appl"
     return ATgetFirst(args);               // lhs is the first of these args.
   }
 \end{verbatim}
-\end{footnotesize}
+\end{scriptsize}
 
 % }}}
 
@@ -641,7 +642,7 @@ of \aterms\ as a data structure implementation in hand-crafted tools.
 \item The esoteric art of writing down multi-line, quote-escaped string
 patterns and the subsequent substitution of parts of these patterns to
 contain the desired placeholders at the correct locations, is so error
-prone that it is almost guaranteed to go wrong somewhere. Practical
+prone that it is almost guaranteed to go wrong at some point. Practical
 experience in the \metaenv\ has proven this many times over. Handcrafted
 \aterm-patterns proliferate through numerous versions of various tools,
 and after a while all sorts of ``mysterious'' bugs creep up where one tool
@@ -650,19 +651,30 @@ that deep down some part of an input term does not satisfy a particular
 assertion. Obviously, these errors are often due to pattern mismatches,
 misplaced placeholders, or ill-escaped quotes.
 
-\item Even when the patterns are written down correctly, or if the Level
-Two interface is used (which doesn't use \aterm-patterns), there is
-much work to be done when the application syntax changes.
+\item Even if the patterns are written down correctly, or when the Level
+Two interface is used (which doesn't use \aterm-patterns), there is much
+work to be done when the application syntax changes.
 
-Suppose for example that the syntax of our boolean conjunction
-changes from {\footnotesize\texttt{Bool "and" Bool -> Bool}} into
-{\footnotesize\texttt{"and" "(" Bool, Bool ")" -> Bool}}.  Conceptually
-nothing has changed: we mean exactly the same arguments when we address
-them as the lhs, rhs, and result terms in both syntaxes.  However,
-in the underlying parse tree the location of \emph{all three} subterms
-has changed, which in turn means that all accessor functions we might
-have written to work on boolean conjunction terms, must be adapted to
-reflect these positional changes.
+Suppose for example that we want to change the syntax of our boolean
+conjunction from infix notation:
+
+\begin{quote}
+  \texttt{Bool "and" Bool -> Bool}
+\end{quote}
+
+\noindent
+into prefix notation:
+
+\begin{quote}
+  \texttt{"and" "(" Bool "," Bool ")" -> Bool}
+\end{quote}
+
+\noindent Conceptually nothing has changed: we mean exactly the same
+arguments when we address them as \texttt{lhs}, \texttt{rhs}, and
+\texttt{result} terms in both syntaxes. However, in the underlying parse
+tree the location of \emph{all three} subterms has changed! This in turn
+means that all tools that manipulate, e.g. the \texttt{lhs} of boolean
+terms, have to be updated to reflect this structural change in position.
 
 In fact, there is hardly any room for flexibility with respect to changes
 in the syntax, unless the arguments happen to remain at their original
@@ -671,17 +683,16 @@ has to be updated.
 
 \item With such inflexibility with respect to the application syntax
 in mind, imagine what would happen if the structure of the parse
-trees (\asfix) \emph{itself} were to change! Every tool based on the
-\emph{\asfix\ representation} of parse trees would have to be updated to
+trees (\asfix) \emph{itself} were to change! Every tool based on
+the \emph{representation} of parse trees would have to be updated to
 reflect the structural changes in the format. In our practical case of
-the \metaenv\ where we wanted to rid \asfix\ of some legacy constructs
-and in general needed to upgrade the format, this would have meant some
-sort of modification to virtually \emph{every} tool in the \metaenv\
---- an arduous task indeed!
+the \metaenv\ where we wanted to rid \asfix\ of some legacy constructs,
+this meant modification of virtually \emph{every} tool --- an arduous
+task indeed!
 
 \end{itemize}
 
-Although this article uses tools from the \metaenv\ as a running example,
+Although this paper uses tools from the \metaenv\ as a running example,
 the maintenance issues addressed here are not specific to parse trees
 at all. The issues are fundamental to all applications that use \aterms\
 as its data structure representation.
@@ -698,47 +709,45 @@ as its data structure representation.
 Abstracting from implementation details about the facts that there
 is such a thing as a parse tree format and that this format in turn
 is implemented using \aterms, it is easy to name several operations a
-toolbuilder would like, given a \sdf\ syntax definition.
+toolbuilder would like, given a syntax definition.
 
 % {{{  What you want to be able to do, given an SDF definition
 
-Typical things a toolbuilder would like to have, given our boolean
-syntax are:
+As an example we consider the booleans again. Some of the typical things
+a toolbuilder would like to be able to do given the boolean syntax are:
 
 \begin{itemize}
 
-\item A type definition for booleans (it is better to have a type
+\item Use a type definition for booleans (it is better to have a type
       \texttt{Bool} than to use the generic \texttt{ATerm} type);
 
 \item Create the basic booleans: \texttt{true}, and \texttt{false};
 
 \item Create a compound boolean term using basic and other compound boolean terms;
 
-\item Given an arbitrary term, ask: \emph{is this a valid boolean term?}
+\item Given an arbitrary term, test if it is a valid boolean term;
 
 \item Given an arbitrary boolean term, distinguish between a basic term
-      and a compound term, e.g. by asking: \emph{Does this boolean have
-      a left-hand side?}
+      and a compound term, e.g. by testing if it has a \texttt{lhs} or
+      \texttt{rhs};
 
-\item Give me the right-hand side of this boolean term;
+\item Extract the \texttt{lhs} and \texttt{rhs} of a given boolean term;
 
-\item Replace the left-hand side of a compound boolean term by another
-      boolean term.
+\item Replace the \texttt{lhs} and \texttt{rhs} of a compound boolean
+      term by another boolean term;
+
+\item etc.
 
 \end{itemize}
 
 % }}}
 
 Fortunately, this wishlist is not at all utopian. All the information
-necessary to generate an \api, and (much more important) an actual
-\emph{implementation} of such an \api, is present in the \sdf-definition.
+necessary to generate a library of access functions that perform the
+operations mentioned, is actually present in the \sdf-definition of
+the grammar.
 
-Because we want to generate code in a variety of target languages, we
-opted for a ``frontend-backend'' approach. First the necessary information
-is extracted from an \sdf\ specification into a proprietary intermediate
-format (frontend), which is then be re-used in several code-generation
-phases (backend).
-
+\texttt{TODO: fix introduction of ADT format}
 The intermediate format is called \emph{annotated data type}, or \adt\
 for short. It holds the minimal amount of information for each syntax
 rule in the original \sdf\ specification. In particular, for each rule
@@ -943,6 +952,10 @@ exported \api\ functions.
 % }}}
 
 % }}}
+
+\texttt{TODO: beef up examples + more and better explanation} \\
+\texttt{TODO: practical work in meta-environment + statistics on code reduction} \\
+\texttt{TODO: conclusions / future work} \\
 
 % {{{  Bibliography
 
