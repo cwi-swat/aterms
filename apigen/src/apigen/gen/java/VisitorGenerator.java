@@ -36,7 +36,6 @@ public class VisitorGenerator extends JavaGenerator {
 	
 		println("public abstract class " + className + " extends jjtraveler.VoidVisitor");
 		println("{");
-		genVoidVisit();
 		genVisits(adt);
 		println("}");
 	}
@@ -60,18 +59,4 @@ public class VisitorGenerator extends JavaGenerator {
 		println("public abstract void visit_" + className + "(" + classImplName + " arg ) throws jjtraveler.VisitFailure;");
 	}
 
-	private void genVoidVisit() {
-        String visitable = GenericConstructorGenerator.className(apiName);
-        
-        //TODO Make the visitor in the else branch a variation point, by adding an instance variable
-        //in the visitable class which can be set via its constructor method (and per default Failure)
-        
-		println("  public void voidVisit(jjtraveler.Visitable any) throws jjtraveler.VisitFailure {");
-		println("    if (any instanceof " + visitable + ") {");
-		println("        ((" + visitable +") any).accept(this);");
-		println("    } else {");
-		println("      throw new jjtraveler.VisitFailure();");
-		println("    }");
-		println("  }");
-	}
 }

@@ -11,6 +11,7 @@ import apigen.gen.StringConversions;
 
 public class ForwardGenerator extends JavaGenerator {
     private ADT adt;
+    private String apiName;
     
 	public ForwardGenerator(
 	    ADT adt,
@@ -22,6 +23,7 @@ public class ForwardGenerator extends JavaGenerator {
 		boolean folding) {
 		super(directory, className(apiName), pkg, standardImports, verbose);
 		this.adt = adt;
+		this.apiName = apiName;
 	}
 
 	public static String className(String apiName) {
@@ -56,7 +58,8 @@ public class ForwardGenerator extends JavaGenerator {
         println("public class Fwd extends Visitor implements jjtraveler.Visitor");
         println("{");
         genConstructor();
-		genVisits(adt);
+	genVoidVisit();
+	genVisits(adt);
         println("}");
 	}
 
@@ -67,4 +70,15 @@ public class ForwardGenerator extends JavaGenerator {
        println("}");
 	}
 
+	private void genVoidVisit() {
+        String visitable = GenericConstructorGenerator.className(apiName);
+        
+		println("  public void voidVisit(jjtraveler.Visitable v) throws jjtraveler.VisitFailure {");
+		println("    if (v instanceof " + visitable + ") {");
+		println("        ((" + visitable +") v).accept(this);");
+		println("    } else {");
+		println("      any.visit(v);");
+		println("    }");
+		println("  }");
+	}
 }
