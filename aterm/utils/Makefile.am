@@ -6,7 +6,7 @@ EXTRA_DIST		= $(bin_SCRIPTS) $(noinst_SCRIPTS)
 
 INCLUDES		= -I$(top_srcdir)/aterm
 
-LDFLAGS			= -L$(top_builddir)/aterm/
+AM_LDFLAGS			= -L$(top_builddir)/aterm/
 
 LDLIBS			= -lATerm
 
