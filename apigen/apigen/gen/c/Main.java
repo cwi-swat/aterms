@@ -83,7 +83,7 @@ public class Main {
 			
 			adt = new ADT(factory.readFromFile(input));
 			APIGenerator apigen = 
-			new APIGenerator(adt, output, prefix, prologue, verbose, true);
+			new APIGenerator(adt, output, prefix, prologue, verbose, true, make_term_compatibility);
 			apigen.run();
 			new TomSignatureGenerator(adt,new CTomSignatureImplementation(),".",output,verbose,true).run();
 			new CDictionaryGenerator(factory, adt, ".", output, prefix, 

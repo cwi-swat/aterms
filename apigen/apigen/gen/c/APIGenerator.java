@@ -16,7 +16,7 @@ public class APIGenerator extends CGenerator {
     
 	/* Optimization disabled because of possible presence of annotations! */
 	private static final boolean OPTIMIZE_WITHOUT_ANNOS = false;
-	private boolean make_term_compatibility;
+	private boolean make_term_compatibility = false;
 	
 	private String prefix;
 	private String prologue;
@@ -30,12 +30,14 @@ public class APIGenerator extends CGenerator {
 	public Map afuns_by_name;
 	public Map afuns_by_afun;
 	
-	public APIGenerator(ADT adt, String apiName, String prefix, String prologue, boolean verbose, boolean folding) {
+	public APIGenerator(ADT adt, String apiName, String prefix, String prologue, boolean verbose, boolean folding,
+	boolean make_term_compatibility) {
 		super(".", apiName, verbose, folding);
 		this.adt = adt;
 		this.apiName = apiName;
 		this.prefix = prefix;
 		this.prologue = prologue;
+		this.make_term_compatibility = make_term_compatibility;
 		
 		afuns_by_name = new HashMap();
 		afuns_by_afun = new HashMap();
