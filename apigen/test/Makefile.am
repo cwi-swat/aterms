@@ -42,7 +42,8 @@ ListTestAPI =  ListFactory.java ListConstructor.java ModulesImpl.java \
                Modules_Body.java Modules.java ModuleListImpl.java \
 	       ModuleList_ModulesImpl.java ModuleList_Modules.java \
 	       ModuleList.java Module.java ModuleImpl.java \
-	       Module_DefaultImpl.java Module_Default.java
+	       Module_DefaultImpl.java Module_Default.java \
+	       Modules_Empty.java Modules_EmptyImpl.java
 
 check_JAVA = ${PeanoTestAPI} PeanoTest.java \
 	     ${ListTestAPI} ListTest.java
@@ -87,4 +88,4 @@ ${ListTestAPI}: list.adt
 	           --output ${top_builddir}/test \
 		   --package test \
 		   --name list \
-		   --classpath ${top_builddir}
+		   --classpath ${top_builddir} 
