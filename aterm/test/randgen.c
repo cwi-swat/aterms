@@ -162,7 +162,7 @@ int main(int argc, char *argv[])
 				magic_perc = 0;
 			if(magic_perc > 100)
 				magic_perc = 100;
-		} else if(streq(argv[i], "-help")) {
+		} else if(streq(argv[i], "-help") || streq(argv[i], "-h")) {
 			usage(argv[0]);
 			help = ATtrue;
 		}

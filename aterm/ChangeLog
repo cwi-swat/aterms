@@ -19,6 +19,10 @@
 
 $Id$
 
+2000/4/25 (olivierp@cwi.nl)
+   * Version 1.0.1: fixed overflow bug in gc heuristics.
+   * Fixed alignment bug in memory.c
+	
 2000/4/18 (mdejonge@cwi.nl)
    * make dist no longer depends on the existence of ./toolbus/tifstoc
 
