@@ -37,6 +37,9 @@
 \begin{document}
 \maketitle
 
+%----[ TABLE OF CONTENTS ]----
+\tableofcontents
+
 %----[ INTRODUCTION ]----
 \section{Introduction}\label{intro}
 This manual describes the functionality provided in the \ATlib.
@@ -71,7 +74,7 @@ During a garbage collect, the \ATlib\ searches the stack and registers for
 function (\emph{automatic} variables). All \aterm\ variables which were
 \emph{not} created locally, must be protected by a call to \ATprotect. For
 entire arrays of \aterms, \ATprotectArray\ should be used. Note that not
-the \aterm variable itself, but its address is passed to \ATprotect. 
+the \aterm\ variable itself, but its address is passed to \ATprotect. 
 
 The following code demonstrates the protection of a global \aterm\ and a
 global array of \aterms.
@@ -79,17 +82,17 @@ global array of \aterms.
 \example{prot.c}
 
 %----[ BINARY ATERM FORMAT ]----
-\subsection{Binary \aterm\ Format ({\sc BAF})}\label{baf}
+\subsection{Binary \aterm\ Format ({\sc baf})}\label{baf}
 In addition to being able to parse terms in textual format and write
 textual representations of \aterms, the \ATlib\ can also work with a binary
 representation of the terms. This representation is called {\sc baf} which
 is short for ``Binary \ATerm\ Format''. It uses a compact, binary version
 of \aterms\ for reading and writing. An \aterm\ which is in a {\sc baf}
 file can be constructed more efficiently than its textual counterpart.
-Users of the \ATlib\ are urged to use {\tt BAF} versions when exchanging
+Users of the \ATlib\ are urged to use {\sc baf} versions when exchanging
 \aterms\ between different components. Although the \ATlib\ does not put
 any constraints on names of \aterm-files, the user is encouraged to use the
-extension {\tt .baf} for {\sc BAF} files. This will avoid confusion between
+extension {\tt .baf} for {\sc baf} files. This will avoid confusion between
 textual representations and binary ones.  Textual representations could use
 the extention {\tt .trm}.
 
@@ -173,9 +176,9 @@ The following {\tt C}-types are defined in the level one interface:
 \item {\tt ATreadFromTextFile(FILE *file);}\\
 	Reads (parses) an \aterm\ from a \emph{text} file.
 \item {\tt ATreadFromBinaryFile(FILE *file);}\\
-	Reads an \aterm\ from a {\sc BAF} file (See Section~\ref{baf})
+	Reads an \aterm\ from a {\sc baf} file (See Section~\ref{baf})
 \item {\tt ATreadFromFile(FILE *file);}\\
-	Reads an \aterm from a file. A magic number detection is done to see if
+	Reads an \aterm\ from a file. A magic number detection is done to see if
 	the file is in {\tt BAF}. If so, it will read binary, otherwise it will
 	read the text file and parse it to an \aterm.
 \item {\tt ATparse(s)}:\\
@@ -193,12 +196,63 @@ The following {\tt C}-types are defined in the level one interface:
 	Writes term {\tt t} to an internal string buffer. The beginning of this
 	buffer is returned. Note that the contents of this buffer are volatile
 	and may be overwritten by any call to the \ATlib.
-\item {\tt \aterm\ ATsetAnnotation(\aterm\ t, \aterm\ label, \aterm\
-								   anno);}\\
+\item {\tt \aterm\ ATsetAnnotation(\aterm\ t, \aterm\ label, \aterm\ anno);}\\
 	Creates a version of {\tt t} that is annotated with label {\tt label}
 	and annotation {\tt anno}.
-\end{itemize}
+\item {\tt \aterm\ ATgetAnnotation(\aterm\ t, \aterm\ label);}\\
+	Retrieves annotation of {\tt t} with label {\tt label}.
+\item {\tt \aterm\ ATremoveAnnotation(\aterm\ t, \aterm\ label);}\\
+	Returns a version of {\tt t} which has its annotation with label
+	{\tt label} removed.
+\item {\tt void ATinit(int argc, char *argv[], \aterm\ *bottomOfStack);}\\
+	Initializes the \ATlib. See Section~\ref{init}.
+\item {\tt int ATprintf(const char *format, ...);}\\
+      {\tt int ATfprintf(FILE *stream, const char *format, ...);}\\
+      {\tt int ATvfprintf(FILE *stream, const char *format, ...);}\\
+	Similar, to the well-known {\tt C}-functions {\tt printf}, {\tt fprintf}
+	and {\tt vfprintf}, these function print a formatted string. The
+	formats {\tt c, d, i, o, u, x, X, e, E, f, g, G, p, s} behave as can be
+	expected from {\tt printf}. In addition the conversion specifiers
+	{\tt l, n, t} and {\tt y} are supported:
 
+	\begin{small}
+	\begin{center}
+	\begin{tabular}{|c|l|}
+	\hline
+	Conversion specifier & Action \\
+	\hline
+	{\tt l} & print an \aterm-list \\
+	{\tt n} & print information about an \aterm \\
+	{\tt t} & print an \aterm \\
+	{\tt y} & print the symbol of an \aterm \\
+	\hline
+	\end{tabular}
+	\end{center}
+	\end{small}
+		
+\item {\tt void ATsetErrorHandler(void (*handler)(const char *format, va\_list args));}\\
+	Sets up an errorhandler for the \ATlib. This handler will be called
+	when an errormessage is sent to {\tt ATerror}. If no handler is set,
+	the message is printed to {\tt stderr} through {\tt ATfprintf} and the
+	\ATlib\ then calls {\tt abort()}. 
+\item {\tt void ATerror(const char *format, ...);}\\
+	Function similar to {\tt fprintf}. If an errorhandler has been setup
+	through call to {\tt ATsetErrorHandler}, this handler will be called.
+	Otherwise {\tt ATerror} prints a formatted message to {\tt stderr},
+	through {\tt ATvfprintf} (q.v.) followed by a call to {\tt abort}.
+\item {\tt void ATprotect(\aterm\ *atp);}\\
+	Protects an \aterm\ from being freed at garbage collection. See
+	Section~\ref{prot}.
+\item {\tt void ATunprotecte(\aterm\ *atp);}\\
+	Releases protection of an \aterm\ which has previously been protected
+	through a call to {\tt ATprotect}.
+\item {\tt void ATprotectArray(\aterm\ *start, int size);}\\
+	Protects an array of {\tt size} \aterms\ starting at {\tt start}.
+\item {\tt void ATunprotectArray(\aterm\ *start);}\\
+	Releases protection of the array of \aterms\ which starts at {\tt
+	start}.
+
+\end{itemize}
 %--------------------[ LEVEL TWO INTERFACE ]--------------------
 
 \section{Level Two Interface}\label{lvl2}
