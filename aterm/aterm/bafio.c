@@ -743,24 +743,17 @@ static ATerm readFromBinaryFile(FILE *f)
 }
 
 /*}}}  */
-/*{{{  ATerm ATreadFromBinaryFile(FILE *f) */
+/*{{{  ATerm AT_readFromBinaryFile(FILE *f) */
 
 /**
-	* Read a term from a BAF file.
+	* Read an ATerm from a file, CMD_RESET must have been read already.
 	*/
 
-ATerm
-ATreadFromBinaryFile(FILE *f)
+ATerm AT_readFromBinaryFile(FILE *f)
 {
 	ATerm t;
-	unsigned int command, magic;
-	unsigned int version, major, minor;
+	unsigned int magic, version, major, minor;
 	unsigned int nr_unique_subterms;
-	
-
-	readIntFromFile(&command, f);
-	if(command != CMD_RESET)
-		ATerror("not a BAF file (no CMD_RESET)\n");
 
 	readIntFromFile(&magic, f);
 	if(magic != BAF_MAGIC)
@@ -794,6 +787,25 @@ ATreadFromBinaryFile(FILE *f)
 	ATtableDestroy(term_stack);
 
 	return t;
+}
+
+/*}}}  */
+/*{{{  ATerm ATreadFromBinaryFile(FILE *f) */
+
+/**
+	* Read a term from a BAF file.
+	*/
+
+ATerm
+ATreadFromBinaryFile(FILE *f)
+{
+	unsigned int command;
+
+	readIntFromFile(&command, f);
+	if(command != CMD_RESET)
+		ATerror("not a BAF file (no CMD_RESET)\n");
+
+	return AT_readFromBinaryFile(f);
 }
 
 /*}}}  */

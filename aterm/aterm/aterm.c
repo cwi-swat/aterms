@@ -1020,10 +1020,10 @@ fskip_layout(int *c, FILE * f)
 static void
 fnext_skip_layout(int *c, FILE * f)
 {
-    do
-    {
-	fnext_char(c, f);
-    } while (isspace(*c));
+	do
+  {
+		fnext_char(c, f);
+	} while (isspace(*c));
 }
 
 /*}}}  */
@@ -1333,6 +1333,43 @@ fparse_term(int *c, FILE * f)
 }
 
 /*}}}  */
+/*{{{  ATerm readFromTextFile(FILE *file) */
+
+/**
+	* Read a term from a text file. The first character has been read.
+	*/
+
+ATerm
+readFromTextFile(int *c, FILE *file)
+{
+	ATerm term;
+	fskip_layout(c, file);
+		
+	term = fparse_term(c, file);
+
+	if (term)
+  {
+		ungetc(*c, file);
+	}
+	else
+  {
+		int i;
+		fprintf(stderr, "readFromTextFile: parse error at line %d, col %d:\n",
+						line, col);
+		for (i = 0; i < ERROR_SIZE; ++i)
+		{
+			char c = error_buf[(i + error_idx) % ERROR_SIZE];
+			if (c)
+				fprintf(stderr, "%c", c);
+		}
+		fprintf(stderr, "\n");
+		fflush(stderr);
+	}
+		
+	return term;
+}
+
+/*}}}  */
 /*{{{  ATerm ATreadFromTextFile(FILE *file) */
 
 /**
@@ -1342,41 +1379,40 @@ fparse_term(int *c, FILE * f)
 ATerm
 ATreadFromTextFile(FILE * file)
 {
-    int             c;
-    ATerm           term;
+    int c;
 
     line = 0;
     col = 0;
     error_idx = 0;
     memset(error_buf, 0, ERROR_SIZE);
 
-    fnext_skip_layout(&c, file);
-
-    term = fparse_term(&c, file);
-
-    if (term)
-    {
-	ungetc(c, file);
-    }
-    else
-    {
-	int             i;
-	fprintf(stderr, "ATreadFromTextFile: parse error at line %d, col %d:\n",
-		line, col);
-	for (i = 0; i < ERROR_SIZE; ++i)
-	{
-	    char            c = error_buf[(i + error_idx) % ERROR_SIZE];
-	    if (c)
-		fprintf(stderr, "%c", c);
-	}
-	fprintf(stderr, "\n");
-	fflush(stderr);
-    }
-
-    return term;
+		fnext_char(&c, file);
+		return readFromTextFile(&c, file);
 }
 
 /*}}}  */
+/*{{{  ATerm ATreadFromFile(FILE *file) */
+
+/**
+	* Read an ATerm from a file that could be binary or text.
+	*/
+
+ATerm ATreadFromFile(FILE *file)
+{
+	int c;
+
+	fnext_char(&c, file);
+	if(c == 0) {
+		/* Might be a BAF file */
+		return AT_readFromBinaryFile(file);
+	} else {
+		/* Probably a text file */
+		return readFromTextFile(&c, file);
+	}
+}
+
+/*}}}  */
+
 
 #define snext_char(c,s) ((*c) = *(*s)++)
 #define sskip_layout(c,s) while(isspace(*c)) snext_char(c,s)

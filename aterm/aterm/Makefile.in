@@ -98,8 +98,8 @@ libATerm-dbg.a: ${OBJ_DBG}
 libATerm-prof.a: ${OBJ_PROF}
 	${AR} ${AR_FLAGS} $@ ${OBJ_PROF}
 
-baffle: baffle.c libATerm-dbg.a
-	${CC_DBG} ${CFLAGS_DBG} -o $@ $< -L. -lATerm-dbg
+baffle: baffle.c libATerm-cc.a
+	${CC_CC} ${CFLAGS_CC} -o $@ $< -L. -lATerm-cc
 
 termsize: termsize.c libATerm-cc.a
 	${CC_CC} ${CFLAGS_CC} -o $@ $< -L. -lATerm-cc
