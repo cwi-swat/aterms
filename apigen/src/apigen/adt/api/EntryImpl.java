@@ -36,49 +36,49 @@ abstract public class EntryImpl extends ADTConstructor
     return false;
   }
 
-  public boolean hasSort()
+  public boolean hasType()
   {
     return false;
   }
 
-  public boolean hasAlt()
+  public boolean hasAlternative()
   {
     return false;
   }
 
-  public boolean hasPat()
+  public boolean hasPattern()
   {
     return false;
   }
 
-  public String getSort()
+  public String getType()
   {
-     throw new RuntimeException("This Entry has no Sort");
+     throw new RuntimeException("This Entry has no Type");
   }
 
-  public Entry setSort(String _sort)
+  public Entry setType(String _type)
   {
-     throw new RuntimeException("This Entry has no Sort");
+     throw new RuntimeException("This Entry has no Type");
   }
 
-  public String getAlt()
+  public String getAlternative()
   {
-     throw new RuntimeException("This Entry has no Alt");
+     throw new RuntimeException("This Entry has no Alternative");
   }
 
-  public Entry setAlt(String _alt)
+  public Entry setAlternative(String _alternative)
   {
-     throw new RuntimeException("This Entry has no Alt");
+     throw new RuntimeException("This Entry has no Alternative");
   }
 
-  public ATerm getPat()
+  public ATerm getPattern()
   {
-     throw new RuntimeException("This Entry has no Pat");
+     throw new RuntimeException("This Entry has no Pattern");
   }
 
-  public Entry setPat(ATerm _pat)
+  public Entry setPattern(ATerm _pattern)
   {
-     throw new RuntimeException("This Entry has no Pat");
+     throw new RuntimeException("This Entry has no Pattern");
   }
 
 

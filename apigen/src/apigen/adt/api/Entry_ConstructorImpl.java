@@ -8,9 +8,9 @@ extends Entry
   protected aterm.ATerm getPattern() {
     return pattern;
   }
-  private static int index_sort = 0;
-  private static int index_alt = 1;
-  private static int index_pat = 2;
+  private static int index_type = 0;
+  private static int index_alternative = 1;
+  private static int index_pattern = 2;
   public shared.SharedObject duplicate() {
     Entry_Constructor clone = new Entry_Constructor();
      clone.init(hashCode(), getAnnotations(), getAFun(), getArgumentArray());
@@ -54,49 +54,49 @@ extends Entry
     return true;
   }
 
-  public boolean hasSort()
+  public boolean hasType()
   {
     return true;
   }
 
-  public boolean hasAlt()
+  public boolean hasAlternative()
   {
     return true;
   }
 
-  public boolean hasPat()
+  public boolean hasPattern()
   {
     return true;
   }
 
-  public String getSort()
+  public String getType()
   {
-   return ((aterm.ATermAppl) this.getArgument(index_sort)).getAFun().getName();
+   return ((aterm.ATermAppl) this.getArgument(index_type)).getAFun().getName();
   }
 
-  public Entry setSort(String _sort)
+  public Entry setType(String _type)
   {
-    return (Entry) super.setArgument(getFactory().makeAppl(getFactory().makeAFun(_sort, 0, true)), index_sort);
+    return (Entry) super.setArgument(getFactory().makeAppl(getFactory().makeAFun(_type, 0, true)), index_type);
   }
 
-  public String getAlt()
+  public String getAlternative()
   {
-   return ((aterm.ATermAppl) this.getArgument(index_alt)).getAFun().getName();
+   return ((aterm.ATermAppl) this.getArgument(index_alternative)).getAFun().getName();
   }
 
-  public Entry setAlt(String _alt)
+  public Entry setAlternative(String _alternative)
   {
-    return (Entry) super.setArgument(getFactory().makeAppl(getFactory().makeAFun(_alt, 0, true)), index_alt);
+    return (Entry) super.setArgument(getFactory().makeAppl(getFactory().makeAFun(_alternative, 0, true)), index_alternative);
   }
 
-  public ATerm getPat()
+  public ATerm getPattern()
   {
-   return this.getArgument(index_pat);
+   return this.getArgument(index_pattern);
   }
 
-  public Entry setPat(ATerm _pat)
+  public Entry setPattern(ATerm _pattern)
   {
-    return (Entry) super.setArgument(_pat, index_pat);
+    return (Entry) super.setArgument(_pattern, index_pattern);
   }
 
   public aterm.ATermAppl setArgument(aterm.ATerm arg, int i) {
