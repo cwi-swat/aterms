@@ -21,7 +21,8 @@ PRIVATE_INCL		= _aterm.h _afun.h debug.h gc.h list.h make.h \
 			md5.h
 
 #CFLAGS			= -Wall -g -O2 -DDMALLOC -I/ufs/olivierp/include
-CFLAGS			= -Wall -g -O2
+#CFLAGS			= -Wall -g -O2
+CFLAGS			= -Wall -g -O
 
 ALLINCLUDES		= ${PUBLIC_INCL} ${PRIVATE_INCL}
 
