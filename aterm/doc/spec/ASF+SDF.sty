@@ -1,0 +1,735 @@
+\def\BEFORECOMMENT{}
+\def\AFTERCOMMENT{}
+\def\SHOWCOMMENTS{\def\BEFORECOMMENT{}\def\AFTERCOMMENT{}} 
+\def\NOSHOWCOMMENTS{\long\def\BEFORECOMMENT##1\AFTERCOMMENT{}}
+
+\def\fpreamble{}
+\def\froman     {\fpreamble\ffam\fontshape{n}\selectfont}
+\def\fitalic    {\fpreamble\ffam\fontshape{it}\selectfont}
+\def\fbold      {\fpreamble\ffam\fontseries{b}\fontshape{n}\selectfont}
+\def\fsmallcaps {\fpreamble\ffam\fontshape{sc}\selectfont}
+\def\ftag       {\fpreamble\ffam\small\selectfont}
+\def\ftext      {\fpreamble\normalfont\selectfont}
+\def\fnormal    {\fpreamble\ffam\fontseries{m}\fontshape{n}\selectfont}
+\def\fkeyword   {\fpreamble\fontfamily{cmtt}\fontseries{b}\fontshape{n}\selectfont}
+\def\ftwr       {\fpreamble\ttfamily\upshape}
+\def\flarge     {\fpreamble\ffam\large\fontshape{n}\fontseries{m}\selectfont}
+\def\flargebold {\fpreamble\ffam\large\fontshape{n}\fontseries{bx}\selectfont}
+\def\ComputerModernStyle{\def\ffam{\fontfamily{cmr}}}
+\def\SansSerifStyle{\def\ffam{\fontfamily{cmss}}}
+\def\TypeWriterStyle{\def\ffam{\fontfamily{cmtt}}}
+\def\nfssStyle#1{\def\ffam{\fontfamily{#1}}}
+\ComputerModernStyle % default
+\def\nfssFunsItStyle{
+        \ComputerModernStyle
+        \def\fnormal{\ffam\series{m}\shape{it}\selectfont}
+}
+\newcounter{FSTYLE}
+\def\SUBSCRIPT{\def\fpreamble{\fontsize{8}{8pt}}}
+\def\SUPERSCRIPT{\def\fpreamble{\fontsize{8}{8pt}}}
+\def\ENDSUBSCRIPT{}
+\def\ENDSUPERSCRIPT{}
+\def\M@THSTYLE{}
+\def\SlidesStyle{
+\def\ffam{\fontfamily{cmss}}
+\def\SUBSCRIPT{\def\fpreamble{\fontsize{12}{12pt}}}
+\def\SUPERSCRIPT{\def\fpreamble{\fontsize{12}{12pt}}}   
+\def\fbold{\tt} 
+\let\oldMODULEBEGIN=\MODULEBEGIN
+\def\MODULEBEGIN##1{\oldMODULEBEGIN{##1}\parskip=0pt}
+}       
+\def\SectNr{\hfill}
+\def\PageNr{\hfill}
+
+\def\ModuleIs#1{\def\M@DULEHEADER{#1}}
+\ModuleIs{section}
+\def\ModuleHeading#1#2{
+        \csname\M@DULEHEADER\endcsname{#1}
+        \label{Mod:#2}
+        \resetASDFequationCounter%
+}
+
+\def\AUTOHEADER{\gdef\HEADER{0}}
+\def\NOAUTOHEADER{\gdef\HEADER{1}}
+\AUTOHEADER
+\def\MODULEBEGIN#1{
+\begingroup
+        \indexMODULEdef{#1}
+\ifcase\HEADER
+        \ModuleHeading{#1}{#1}
+        \gdef\module##1{}
+        \gdef\submodule##1{}
+        \gdef\subsubmodule##1{}
+\or
+        \gdef\module##1{\ModuleHeading{##1}{#1}}
+        \gdef\submodule##1{{\ModuleIs{sub\M@DULEHEADER}\ModuleHeading{##1}{#1}}}
+        \gdef\subsubmodule##1{{\ModuleIs{subsub\M@DULEHEADER}\ModuleHeading{##1}{#1}}}
+\fi
+%       \setlength{\parskip}{0pt}
+}
+\def\MODULEEND{\endgroup}
+\def\RMNEXTLINE#1\par{} 
+\def\NOTATIONFILES{}
+\def\NONOTATIONFILES{\def\inputifundef##1##2{}}
+\def\MODDEFINED#1{%\ifundefined{NOT:#1}\expandafter\def\csname NOT:#1\endcsname{}
+}
+\def\SHOWSYNTAX{\SHOWIMPORTS\SHOWEXPORTS\SHOWHIDDENS}
+\def\NOSYNTAX{\NOIMPORTS\NOEXPORTS\NOHIDDENS}
+\def\METASECTION#1{\METAVAR{#1}\\}  % meta var
+\def\SHOWEXPORTS{
+ \def\EXPORTSBEGIN{\par\FIRSTINDENT\KW{\KWEXPORTS}\nopagebreak\par}
+ \def\EXPORTSEND{}
+}
+\def\NOEXPORTS{\def\EXPORTSBEGIN##1\EXPORTSEND{}}
+\SHOWEXPORTS
+\def\SHOWHIDDENS{
+\def\HIDDENSBEGIN{\par\FIRSTINDENT\KW{\KWHIDDENS}\nopagebreak\par}
+\def\HIDDENSEND{}}
+\def\NOHIDDENS{
+\def\HIDDENSBEGIN##1\HIDDENSEND{}}
+\SHOWHIDDENS
+\def\SORTS#1{\par\SECONDINDENT\KW{\KWSORTS}{  %
+{ %\def\SORT##1{{\froman ##1}\indexSORTdef{##1}}%
+\begin{minipage}[t]{10cm}\raggedright\def\LINESEP{} #1\end{minipage}}}}
+\def\IMP#1{{\froman #1}\modref{#1}\indexMODULE{#1}}
+\def\SHOWIMPORTS{
+\def\IMPORTS##1{\par\FIRSTINDENT\KW{\KWIMPORTS}{ %
+ { \def\IMP####1{{\froman ####1}\modref{####1}\indexMODULE{####1}}
+        \begin{minipage}[t]{12cm}\raggedright ##1\end{minipage}%
+        %\smallskip%
+}}}}
+\def\SHOWIMPORTS{
+\def\IMPORTS##1{{
+ \par
+ \def\SORT####1{\IMP{####1}}
+ \setbox0=\hbox{\FIRSTINDENT\KW{\KWIMPORTS}}%
+ \hangindent\wd0\hangafter=1%
+ \noindent\raggedright\box0\ ##1}}
+}
+\def\SHOWIMPORTS{
+\def\IMPORTS##1{%
+{ \def\SORT####1{\IMP{####1}}
+ \setbox0=\hbox{\FIRSTINDENT\KW{\KWIMPORTS}\ }%
+ \dimen0=\hsize%
+ \advance\dimen0 by -\wd0%
+ \par\noindent%
+ \hbox{\box0\begin{minipage}[t]{\dimen0}\raggedright ##1\end{minipage}}%
+}}}
+\def\NOIMPORTS{\def\IMPORTS##1{}}
+\SHOWIMPORTS
+\def\LEXSYNBEGIN#1\LEXSYNEND{
+\par\SECONDINDENT\KW{\KWLEXICALSYNTAX}\par\noindent\SYNALIGN{#1}
+}
+
+\def\LEXFUN#1#2{\fnormal #1 & $\rightarrow$ #2\penalty0\cr}
+\def\METALEXFUN#1{\METAVAR{#1}\penalty0\cr}
+\def\LINESEP{\\}
+\def\SKIPAMOUNT{2ex}
+
+\def\SYNALIGN#1{{%
+\def\LINESEP{\noalign{\vskip\SKIPAMOUNT}}%
+\tabskip=\THIRDINDENTAMOUNT%
+\halign to \hsize{%
+##\hfil\tabskip=0pt%
+&##\hfil\tabskip=0pt%
+&##\hfil\tabskip=0pt plus 1000pt minus 1000pt\crcr%
+#1\crcr}}%\noindent
+}
+
+\def\CFGBEGIN#1\CFGEND{%
+\par\SECONDINDENT\KW{\KWCONTEXTFREESYNTAX}\par\noindent\SYNALIGN{#1}}
+
+\def\CFFUNLINESEP{\cr}
+
+\def\CFGFUN#1#2#3#4{\CFGFUNC{#1}{#2}{#3}{#4}}
+
+\def\CFGFUNC#1#2#3#4{\fnormal #1 & $\rightarrow$ #2 & #3 \parbox[t]{5cm}{\ftext #4}\penalty0\cr}
+
+\def\METACFGFUN#1{\METAVAR{#1}\penalty0\cr} % meta var
+
+\def\ATTRIBUTES#1{$\left\{ #1 \right\}$}
+\def\SHOWPRIORITIES{
+\def\PRIORITIESBEGIN##1\PRIORITIESEND{{
+\par\SECONDINDENT\KW{\KWPRIORITIES}
+\par\THIRDINDENT%
+\dimen0=\hsize\advance\dimen0 by -\THIRDINDENTAMOUNT%
+\def\COMMA{, }%
+\begin{minipage}[t]{\dimen0}##1\end{minipage}}}
+}
+\def\NOPRIORITIES{\def\PRIORITIESBEGIN##1\PRIORITIESEND{}}
+\SHOWPRIORITIES
+
+\def\PRIORCHAIN#1#2{{#1#2}}
+\def\PRIORCHAINGROUP#1#2#3{\{#1:\hspace{5pt}{#2}\}#3 }
+
+\def\PRIOGT{\hspace{5pt}$>$\hspace{5pt}}
+\def\PRIOLT{\hspace{5pt}$<$\hspace{5pt}}
+%%
+%% group assoc + list
+%%
+\def\FunctionListB#1#2{\{#1:\hspace{5pt}#2\}}
+%%
+%% list of functions
+%%
+\def\FunctionListC#1{\penalty-20\{#1\}}
+
+\def\PRIOFUNa#1#2{\mbox{#1 $\rightarrow$ #2}}
+\def\PRIOFUNb#1{\mbox{#1}}
+\def\SHOWVARIABLES{
+\def\VARIABLESBEGIN##1\VARIABLESEND{{%
+        \par\SECONDINDENT\KW{\KWVARIABLES}
+        \par\noindent\SYNALIGN{##1}
+}}}
+\def\NOVARIABLES{\def\VARIABLESBEGIN##1\VARIABLESEND{}}
+\SHOWVARIABLES
+
+\def\VARDECL#1#2{%
+\CFGFUN{{\def\SORT##1{\VAR{}{}{##1\/}}\def\LEX##1{\VAR{}{}{##1\/}}\fitalic #1\/}%
+}{#2}{}{}}
+%& $\;\; \rightarrow$ #2\penalty0\cr}
+\def\NOEQUATIONS{\long\def\EQUATIONSBEGIN##1\EQUATIONSEND{}}
+\def\SHOWEQUATIONS{\long\def\EQUATIONSBEGIN{\par\FIRSTINDENT\KW{\KWEQUATIONS}\par}      
+%\def\EQUATIONSBEGIN{\subsection*{\KW{\KWEQUATIONS}}\par}       
+\def\EQUATIONSEND{}}
+\SHOWEQUATIONS
+\def\NOTAGS{\def\ASDF@tagKind{0}}
+\def\SYMTAGS{\def\ASDF@tagKind{1}}
+\def\NUMTAGS{\def\ASDF@tagKind{2}}
+\SYMTAGS                                % default
+\def\LEFTTAGS{\def\ASDF@tagPos{0}}
+\def\RIGHTTAGS{\def\ASDF@tagPos{1}}
+\RIGHTTAGS                              % default
+\def\LTAG#1{%
+\ifnum\ASDF@tagPos=0% 0 : left tags
+%\makebox[0pt][l]{\TAG{#1}}%
+\TAG{#1}%
+\fi%
+}
+\def\RTAG#1{
+  \ifnum\ASDF@tagPos=1 % 1 : right tags
+        \TAG{#1}
+  \fi
+}
+\def\REFTAG#1{\ref{Eq:#1}}
+\def\PAGEREFTAG#1{\pageref{Eq:#1}}
+\def\NoTAGREFS{\def\ASDF@refsNoRefs{0}}
+\def\YesTAGREFS{\def\ASDF@refsNoRefs{1}}
+\NoTAGREFS                              % default
+\def\NOTAGREF@WARNING{0}
+\def\STAG#1{\ftag[#1]}
+\newcounter{ASDFequation}%[section]
+\def\resetASDFequationCounter{\setcounter{ASDFequation}{0}}
+\def\EQNRSinSECT{}      %\numberwithin{equation}{section}}
+\def\TAG#1{
+  \ifcase\ASDF@tagKind % 0 : no tags
+        \ifnum1=\ASDF@refsNoRefs
+          \ifnum1=\NOTAGREF@WARNING
+             \TOAUX{\noexpand\newlabel{Eq:#1}{{#1.NOREFtoNOTAG}{\thepage}}}
+          \fi
+        \fi
+  \or % 1 : symbolic tags
+        \MBOX{\STAG{#1}}
+        \ifnum1=\ASDF@refsNoRefs
+                \TOAUX{\noexpand\newlabel{Eq:#1}{{#1}{\thepage}}}
+        \fi
+  \or % 2 : numbered tags
+        \stepcounter{ASDFequation}
+        \MBOX{\STAG{\theASDFequation}}
+        \ifnum1=\ASDF@refsNoRefs
+                \TOAUX{\noexpand\newlabel{Eq:#1}{{\theASDFequation}{\thepage}}}
+        \fi
+\fi}
+\def\TOAUX#1{\immediate\write\@mainaux{#1}}
+\def\CONDALIGNED{\def\CONDSTYLE{0}}
+\def\CONDCENTERED{\def\CONDSTYLE{1}}
+\CONDALIGNED
+\def\CONDENV#1#2{%      
+\ifcase\CONDSTYLE% 0 
+        {\def\POSCOND##1##2##3{ ##1 \; & \; ##3 \; & \; ##2} 
+         \def\NEGCOND##1##2##3{ ##1 \; & \; ##3 \; & \; ##2}
+        \begin{array}[t]{*{#1}{@{}r@{}c@{}l@{}}}
+                #2
+        \end{array}}
+\or
+        {\def\POSCOND##1##2##3{ ##1 \; ##3 \; ##2}
+         \def\NEGCOND##1##2##3{ ##1 \; ##3 \; ##2}
+        \begin{array}[t]{@{}*{#1}{@{}c@{}}@{}}
+                #2
+        \end{array}}
+\fi}
+\def\METACOND#1{\smash{\METAVAR{#1}}}
+\def\CONDCOMMASEP{,\HSPACE\HSPACE\HSPACE}
+\def\CONDLINESEP{\penalty1000\\}
+\def\CONDCOMMENT#1{\multicolumn{3}{@{}l@{}}{%
+\begin{minipage}{\CONDCOMMENT@WID}\smallskip#1\smallskip\end{minipage}}}
+
+\def\CONDCOMMENTWID#1{\def\CONDCOMMENT@WID{#1}}
+\def\CONDCOMMENT@WID{10cm}
+\def\LTERM#1#2{\MBOX{\lower3.5pt\hbox{%
+\begin{minipage}[#1]{\fill}\fnormal\begin{tabbing}#2\end{tabbing}\end{minipage}}}}
+\def\TERM#1#2{\MBOX{%
+\begin{minipage}[#1]{\fill}\fnormal\begin{tabbing}#2\end{tabbing}\end{minipage}}}
+\long\def\FREETERM#1{{\fnormal\begin{tabbing}#1\end{tabbing}}}
+\long\def\FREETERM#1{\begin{minipage}{\hsize}%
+{\fnormal\begin{tabbing}#1\end{tabbing}}%
+\end{minipage}}
+\def\HSPACE{\hspace{3pt}}
+\def\BRACKETSPACE{\hspace{.5pt}}
+\def\TABSET{\=}
+\def\TABPLUS{\+}
+\def\TABMIN{\-}
+\def\n{\protect\backslash n}
+
+\def\LEX#1{\protect\MBOX{#1}}
+
+\def\KW#1{\protect\MBOX{\protect\fbold #1}}                   
+\def\COMMA{\protect\froman,\protect\hspace{10pt}}
+\def\SORT#1{\protect\MBOX{{\protect\froman #1}\protect\indexSORT{#1}}}
+\def\QLEX#1{\protect\DQLEX{#1}}
+\def\DQLEX#1{\protect\MBOX{{\protect\froman``}{\protect\fnormal #1\/}{\protect\froman''}}}
+\def\SQLEX#1{\protect\MBOX{{\protect\froman`}{\protect\fnormal #1\/}{\protect\froman'}}}
+\def\ULEX#1{\protect\MBOX{\protect\froman #1\/}}
+\def\SLEX#1{\protect\MBOX{$\protect\M@THSTYLE\protect#1$}} 
+\def\NORMALLEXICALS{\def\LITLEX##1##2{##2}}
+\def\TTLEXICALS{\def\LITLEX##1##2{{\hbox{\ftwr ##1}}}}
+\NORMALLEXICALS % default
+\def\VISIBLESPACES{\def\SPACE{\SQCUPSPACE}}
+\def\INVISIBLESPACES{\def\SPACE{\INVISSPACE}}
+\def\CON#1{\protect\MBOX{\protect\fnormal #1\protect\indexCON{#1}}}
+\def\METAVAR#1{{\froman #1}}
+\newcommand{\NUMLEX}[1]{\protect\MBOX{\froman #1}}
+\def\var#1{\B@DY{#1}}
+\def\B@DY#1{\protect\MBOX{\def\ULEX{}{\fitalic #1}}}
+\def\V@NDEX#1{{\SUBSCRIPT\froman #1\ENDSUBSCRIPT}}
+\def\VAR#1#2#3{$\B@DY{#3}$}
+\def\VARPl#1#2#3{$\B@DY{#3}^{\,+}$}
+\def\VARS#1#2#3{$\B@DY{#3}^{\,\ast}$}
+\def\VARI#1#2#3{$\B@DY{#3}_{\V@NDEX{#2}}$}
+\def\VARIPl#1#2#3{$\B@DY{#3}^{\,+}_{\V@NDEX{#2}}$}
+\def\VARIS#1#2#3{$\B@DY{#3}^{\ast}_{\V@NDEX{#2}}$}
+\def\VARP#1#2#3{${\B@DY{#3}}^{\,#1}$}
+\def\VARPPl#1#2#3{${\B@DY{#3}^{\,+#1}}$}
+\def\VARPS#1#2#3{${\B@DY{#3}^{\ast#1}}$}
+\def\VARPI#1#2#3{$\B@DY{#3}_{\V@NDEX{#2}}^{\,#1}$}
+\def\VARPIPl#1#2#3{${\B@DY{#3}^{\,+#1}_{\V@NDEX{#2}}}$}
+\def\VARPIS#1#2#3{${\B@DY{#3}^{\,\ast#1}_{\V@NDEX{#2}}}$}
+\def\VARPISPl#1#2{}
+\def\PERMUTEPRIMESTAR{
+\def\VARPPl##1##2##3{${\B@DY{##3}^{\,##1+}}$}
+\def\VARPS##1##2##3{${\B@DY{##3}^{\,##1\ast}}$}
+\def\VARPIPl##1##2##3{${\B@DY{##3}^{\,##1+}_{\V@NDEX{##2}}}$}
+\def\VARPIS##1##2##3{${B@DY{##3}^{\,##1\ast}_{\V@NDEX{##2}}}$}
+}
+\newif\ifINDEX
+\INDEXfalse
+\def\iFUNDEF#1{{\bf #1}}        % makes page number bold
+
+\def\BULLETSORT{
+        \def\SORT##1{\protect\SLEX{\protect\bullet}}%
+}
+
+\def\CFGFUNINDEX#1#2#3{\ifINDEX{%
+\UNDEFLEX%
+\protect\index{#1@{\protect\fnormal #1 $\protect\rightarrow$ #2}|iFUNDEF}}\fi}
+
+\def\UNDEFL#1{#1}
+\def\UNDEFLL#1#2{#1#2}
+\def\UNDEFLLL#1#2#3{#1#2#3}
+
+\def\UNDEFLEX{%
+\def\SORT##1{-}%
+\def\KW##1{##1}%
+\def\COMMA##1{,}%
+\def\SORT##1{##1}%
+\def\LEX##1{##1}%
+\def\QLEX##1{##1}%
+\def\DQLEX##1{##1}%
+\def\SQLEX##1{##1}%
+\def\ULEX##1{##1}%
+%\def\SLEX##1{##1}%
+\def\CON##1{##1}%
+%\def\VAR##1{##1}%
+%\def\IVAR##1{##1}%
+\def\NUMLEX##1{##1}%
+}
+
+\def\indexSORT#1{\ifINDEX\protect\index{#1@{{\protect\froman #1 (sort)}}}\fi}
+\def\indexSORTdef#1{\ifINDEX\protect\index{#1@{{\protect\froman #1 (sort)}}|iFUNDEF}\fi}
+\def\indexMODULE#1{\ifINDEX\protect\index{#1@{{\protect\froman #1 (module)}}}\fi}
+\def\indexMODULEdef#1{\ifINDEX\protect\index{#1@{{\protect\froman #1 (module)}}|iFUNDEF}\fi}
+\def\indexCON#1{\ifINDEX\protect\index{#1@{{\protect\fnormal #1}}}\fi}
+\def\TYPE#1{%
+        \protect\MBOX{{\fbold type:} \fnormal\small%
+        $\begin{array}[c]{@{}l@{}}#1\end{array}$}%
+}
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{ASF+SDF}[1995/11/01 $Id$]
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%  command             semantics                  ASCII equivalent
+%%
+\def\conc{+\kern-.4em+}                         %% ++
+\def\minmin{-\kern-.5em-}                       %% --
+\def\ATSYM{@}                                   %% @
+\def\NotEqual{\neq}                             %% !=
+\def\IsEqual{\stackrel{?}{=}}                   %% ?=
+\def\longNotEqual{\neq}                         %% !==
+\def\longIsEqual{\stackrel{?}{=}}               %% ?==
+\def\longEqual{\equiv}                          %% ==
+
+\def\SQCUPSPACE{\hbox{\tt\char`\ }}             %% definition of visible space
+\def\INVISSPACE{\space{}}                       %% invisible space
+
+\def\SPACE{$\SQCUPSPACE$}                       %% visible space
+
+\def\rrightarrow{\rightarrow\kern-.9em\rightarrow}
+\def\llongrightarrow{\longrightarrow\kern-1.4em\longrightarrow}
+\def\llongleftarrow{\longleftarrow\kern-1.4em\longleftarrow}
+\def\RRightarrow{\Rightarrow\kern-.9em\Rightarrow}
+\def\LLongrightarrow{\Longrightarrow\kern-1.4em\Longrightarrow}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%% see \TeX book page 308
+%%
+\expandafter\ifx\csname ifundefined\endcsname\relax
+        \def\ifundefined#1{\expandafter\ifx\csname #1\endcsname\relax}
+        \def\Define#1{\expandafter\def\csname #1\endcsname{}}
+        \def\inputifundef#1#2{\ifundefined{#2}\input{#1/#2}\Define{#2}\fi}
+%       \typeout{yes}
+%\else
+%       \typeout{no}
+\fi
+
+%\ifundefined{Define}
+%       \def\Define#1{\expandafter\def\csname #1\endcsname{}}
+%       \typeout{yes}
+%\else
+%       \typeout{no}
+%\fi
+%
+%\ifundefined{inputifundef}
+%       \def\inputifundef#1#2{\ifundefined{#2}\input{#1/#2}\Define{#2}\fi}
+%       \typeout{yes}
+%\else
+%       \typeout{no}
+%\fi
+%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Define{ASF+SDF.sty}
+
+\newlength{\idepth}
+\newlength{\idelta}
+\setlength{\idepth}{\textwidth}
+\def\ihv#1#2{\settowidth{\idelta}{#1}%
+        \addtolength{\idepth}{-\idelta}%
+        \mbox{#1\parbox[t]{\idepth}{#2\vspace{4pt}}}%
+        \settowidth{\idelta}{#1}%
+        \addtolength{\idepth}{\idelta}}
+
+% \tracingmacros=1
+
+\long\def\hv#1{\settowidth{\idelta}{{#1}}
+        \ifnum\idelta<\idepth%
+                \parbox[t]{\idelta}{\protect{#1}\vspace{4pt}}%
+        \else
+                \parbox[t]{\idepth}{\protect{#1}\vspace{4pt}}%
+        \fi}
+
+\def\MBOX#1{\mbox{#1}}
+%\setlength{\fboxsep}{0pt}
+
+\def\FIRSTINDENT{\noindent\hspace*{\FIRSTINDENTAMOUNT}}
+\def\SECONDINDENT{\FIRSTINDENT\hspace*{1em}}
+\def\THIRDINDENT{\FIRSTINDENT\hspace*{2em}}
+
+\def\NODISPLAYSYNTAX{
+ \def\FIRSTINDENTAMOUNT{0pt}
+ \def\THIRDINDENTAMOUNT{2em}
+}
+\def\DISPLAYSYNTAX#1#2{
+ \def\FIRSTINDENTAMOUNT{#1}
+ %\dimen0=#1\dimen1=2em\advance\dimen0by\dimen1\edef\THIRDINDENTAMOUNT{\dimen0}
+ \def\THIRDINDENTAMOUNT{#2}
+}
+\NODISPLAYSYNTAX
+\def\KWIMPORTS{{imports}}
+\def\KWEXPORTS{{exports}}
+\def\KWHIDDENS{{hiddens}}
+\def\KWEQUATIONS{{equations}}
+\def\KWSORTS{sorts}
+\def\KWCONTEXTFREESYNTAX{context-free syntax}
+\def\KWLEXICALSYNTAX{lexical syntax}
+\def\KWPRIORITIES{priorities}
+\def\KWVARIABLES{variables}
+\def\KWOLWHEN{when}
+\def\KWWHEN{when}
+\def\KWOTHERWISE{otherwise}
+        \def\fun#1{\CON{#1}}
+        \def\sort#1{\SORT{#1}}
+        \def\modref#1{\@ifundefined{r@Mod:#1}{}{$^{\ref{Mod:#1}}$}}
+        \def\Mod#1{{\froman #1}\modref{#1}}
+\def\VS{}%\\[-5pt]}      % compensation for vertical space between EQs
+\def\VSC{}%\\[-2pt]}     % compensation for vertical space between CEQs
+\def\METAEQUa#1{\METAVAR{#1}}
+\def\LEFT@ALIGNAMOUNT{2.5em}
+\def\LEFTALIGNED{
+        \def\SET@ALIGNMENT{0}   
+        \def\LEFT@COLUMN{\LEFT@ALIGNAMOUNT}%{\parindent}
+}
+\def\CENTERED{
+        \def\SET@ALIGNMENT{1}
+        \def\LEFT@COLUMN{0pt plus 1000pt minus 1000pt}
+}
+\LEFTALIGNED    % is default
+\long\def\SLSEQENV#1#2{%
+$$%
+        %\displ@y%
+        \tabskip=\LEFT@COLUMN%
+        \halign to \displaywidth{%
+                $\@lign\displaystyle{##}$%
+                \tabskip=0pt plus 1000pt minus 1000pt%
+                \crcr%
+        \begin{array}{*{#1}{@{}l@{}r@{}l@{}c@{}l@{}l}} 
+                #2
+        \end{array}\cr
+        }%
+$$%
+}
+%\long
+\def\SLSEQENV#1#2{%
+$$%
+        %\displ@y%
+        \tabskip=0pt%
+        \halign to \displaywidth{%
+        &% repeat forever
+                $\displaystyle{##}$%
+                \tabskip=\LEFT@COLUMN%
+        &%      
+                $\displaystyle{##}$%
+                \tabskip=0pt%
+        &%      
+                $\displaystyle{##}$%
+                \tabskip=0pt%
+        &%      
+                $\;\;\displaystyle{##}\;\;$%
+                \tabskip=0pt%
+        &%      
+                $\displaystyle{##}$%
+                \tabskip=0pt%
+        &%      
+                $\displaystyle{##}$%
+                \tabskip=0pt%
+        &%      
+                \LLAP{$##$}%%           %\tabskip=0pt%
+                \tabskip=\LEFT@COLUMN%
+        \crcr
+        #2
+        \cr}%
+$$}
+\def\SLSeq#1#2#3#4#5{       
+        \LTAG{#1}    &                  & #3 & #5 & #4 &                        & \RTAG{#1}}
+\def\SLSeqDEFAULT#1#2#3#4#5{       
+        \LTAG{#1}    &                  & #3 & #5 & #4 & \;\;\KW{\KWOTHERWISE}  & \RTAG{#1}}
+\def\SLWhenEq#1#2#3#4#5{
+        \LTAG{#1}    &                  & #3 & #5 & #4 & \;\;\KW{\KWOLWHEN} #2  & \RTAG{#1}}
+\def\SLImpliesEq#1#2#3#4#5{ 
+        \LTAG{#1}    & #2\Rightarrow\;\;& #3 & #5 & #4 &                        & \RTAG{#1}}
+
+\def\SLSEQCOLSEP{&}
+\def\SLSEQLINESEP{\penalty0\cr} %%%%% ???????????
+\def\RLAP#1{\rlap{#1}}
+\def\LLAP#1{\llap{#1}}
+
+\def\FIXEDLEFTTAGS{\def\LEFT@COLUMN{0cm}\def\RLAP##1{\hbox{##1\ }}\LEFTTAGS}
+\def\NOFIXEDLEFTTAGS{\def\RLAP##1{\rlap{##1}}\LEFTTAGS}
+
+\def\LHSRIGHTALIGNED{\def\LHSFILL{\hfill}}
+\def\LHSLEFTALIGNED{\def\LHSFILL{}}
+\LHSLEFTALIGNED
+\long\def\OLCEQENV#1{%
+$$%
+        %\displ@y%
+        \tabskip=0pt%
+        \halign to \displaywidth{%
+                \tabskip=0pt%
+                \RLAP{$\@lign\displaystyle{##}$}%
+                \tabskip=\LEFT@COLUMN%
+        &%      
+                \LHSFILL%
+                $\@lign\displaystyle{##}$%
+                \tabskip=0pt%
+        &%      
+                $\@lign\displaystyle{##}$%
+                \tabskip=0pt%
+        &%      
+                $\@lign\displaystyle{##}$%
+                \tabskip=0pt%
+        &%      
+                $\@lign\displaystyle{##}$%
+                \tabskip=0pt%
+        &%      
+                $\@lign\displaystyle{##}$%
+                \tabskip=0pt plus 1000pt minus 1000pt%
+        &%      
+                \hfil%
+                \LLAP{$\@lign##$}%
+                \tabskip=0pt\crcr%
+        #1\crcr}%
+$$}
+
+\def\OLCEQLINESEP{}% {\penalty0\cr}
+
+\def\OLSeq#1#2#3#4#5{%       
+\LTAG{#1} & #3 & \; #5\; & #4 & & & \RTAG{#1}\penalty0\cr%
+}
+\def\OLSeqDEFAULT#1#2#3#4#5{%       
+\LTAG{#1} & #3 & \; #5 \; & #4 \quad \KW{\KWOTHERWISE} & & & \RTAG{#1}\penalty0\cr%
+}
+\def\OLImpliesCeq#1#2#3#4#5{% 
+\LTAG{#1}%
+&#2 \Rightarrow \; & #3 & \; #5 \;   & #4 &  & \RTAG{#1}\penalty0\cr%
+}
+\def\OLWhenCeq#1#2#3#4#5{%   
+\LTAG{#1}%
+& #3 & \; #5 \; & #4 \quad \KW{\KWWHEN} \; \; #2 & & & \RTAG{#1}\penalty0\cr%
+}
+\def\OLWhenCeqDEFAULT#1#2#3#4#5{%   
+\LTAG{#1}%
+& #3 & \;#5 \;& #4 \quad \KW{\KWWHEN} \; \; #2 \quad \KW{\KWOTHERWISE} && \RTAG{#1}\penalty0\cr%
+}
+\def\OLMLWhenCeq#1#2#3#4#5{%   
+\LTAG{#1}%
+& #3  & \;#5\; & #4  &  & & \RTAG{#1}   \cr
+&     &                & \KW{\KWWHEN} \; \; #2      \penalty0\cr
+}
+\def\OLMLWhenCeqDEFAULT#1#2#3#4#5{%   
+\LTAG{#1}%
+& #3  & \;#5\; & #4  & & & \RTAG{#1}    \cr
+&     &        & \KW{\KWWHEN} \; \; #2 \cr
+&     &        & \KW{\KWOTHERWISE} \penalty0\cr
+}
+        
+\long\def\MLCEQENV#1{%
+\ifcase\SET@ALIGNMENT
+$$%
+        %\displ@y%
+        \halign to \displaywidth{%
+                \tabskip=0pt%
+                \RLAP{$\@lign\displaystyle{##}$}%
+                \tabskip=\LEFT@COLUMN%
+        &%      
+                $\@lign\displaystyle{##}$%
+                \tabskip=0pt plus 1000pt minus 1000pt%
+        &%      
+                \hfil%
+                \LLAP{$\@lign##$}%
+                \tabskip=0pt\crcr%
+        #1\crcr}%
+$$%
+\or
+$$%
+        %\displ@y%
+        \halign to \displaywidth{%
+                \tabskip=0pt%
+                \RLAP{$\@lign\displaystyle{##}$}%
+                \tabskip=\LEFT@COLUMN%
+        &%      
+                $\hfil\@lign\displaystyle{##}\hfil$%
+                \tabskip=0pt plus 1000pt minus 1000pt%
+        &%      
+                \hfil%
+                \LLAP{$\@lign##$}%
+                \tabskip=0pt\crcr%
+        #1\crcr}%
+$$%
+\fi}
+
+\newlength{\MLSEPHEIGHT}
+\setlength{\MLSEPHEIGHT}{5pt}
+
+\def\MLCEQLINESEP{\noalign{\rule{0cm}{\MLSEPHEIGHT}}} %{\penalty0\cr} %\displaybreak[0]\\}
+
+\def\MLSeq#1#2#3#4#5{%
+  \LTAG{#1} & #3  \;\; #5 \;\;  #4      & \RTAG{#1}\penalty0\cr
+}
+\def\MLSeqDEFAULT#1#2#3#4#5{
+  \LTAG{#1} & #3  \;\; #5 \;\;  
+              \begin{array}[t]{@{}l}#4\\\KW{\KWOTHERWISE}\end{array}    
+            & \RTAG{#1}\penalty0\cr
+}
+
+\def\MLImpliesCeq#1#2#3#4#5{% 
+  \LTAG{#1} & \frac{#2}{\displaystyle#3\;\;#5\;\;#4} & \RTAG{#1}\penalty0\cr%
+}
+\def\MLImpliesCeqDEFAULT#1#2#3#4#5{% 
+  \LTAG{#1} & \frac{#2}{\displaystyle #3\;\;#5\;\;#4} 
+              \quad \KW{\KWOTHERWISE} & \RTAG{#1}\penalty0\cr%
+}
+\def\MLWhenCeq#1#2#3#4#5{%    
+  \LTAG{#1} &
+  \begin{array}[t]{@{}l@{}c@{}l@{}} 
+        #3    & \;\; #5\;\; & #4                \\
+              &         & \KW{\KWWHEN}  \\
+              &         & \quad #2      
+  \end{array}   
+                                        & \RTAG{#1}\penalty0\cr
+}
+\def\MLWhenCeqDEFAULT#1#2#3#4#5{%    
+  \LTAG{#1} &
+  \begin{array}[t]{@{}l@{}c@{}l@{}} 
+        #3    & \;\; #5\;\; & #4                \\
+              &         & \KW{\KWWHEN}  \\
+              &         & \quad #2      \\
+              &         & \KW{\KWOTHERWISE}
+  \end{array}   
+                                        & \RTAG{#1}\penalty0\cr
+}
+
+\def\MLSeqRhsOnNL#1#2#3#4#5{%
+  \LTAG{#1} 
+        & {\def\LTERM##1##2{\TERM{t}{##2}}#3} & \RTAG{#1}\cr 
+        & #5 \; \; #4           &          \penalty0\cr
+}
+
+\def\MLSeqRhsOnNLDEFAULT#1#2#3#4#5{%
+  \LTAG{#1} 
+        & {\def\LTERM##1##2{\TERM{t}{##2}}#3} & \RTAG{#1}\cr 
+        & #5 \; \; #4           &          \cr
+        & \KW{\KWOTHERWISE} \penalty0\cr
+}
+
+
+\def\MLImpliesCeqRhsOnNL#1#2#3#4#5{% 
+  \LTAG{#1} & 
+  \frac{#2}{\displaystyle \begin{array}{l}#3 \;\; #5\\#4\end{array}}
+                                        & \RTAG{#1}\penalty0\cr%
+}
+\def\MLImpliesCeqRhsOnNLDEFAULT#1#2#3#4#5{% 
+  \LTAG{#1} &
+  \frac{#2}{\displaystyle \begin{array}{l}#3 \;\; #5\\#4\end{array}} \quad \KW{\KWOTHERWISE}
+                                        & \RTAG{#1}\penalty0\cr%
+}
+
+
+\def\MLWhenCeqRhsOnNL#1#2#3#4#5{%    
+  \LTAG{#1} &
+  \begin{array}[t]{@{}l@{}c@{}l@{}} 
+        #3 &                            \\
+        \multicolumn{3}{r}{#5 \;\; #4}          \\
+           &         & \KW{\KWWHEN}     \\
+           &         & \quad #2         
+  \end{array}   
+                                        & \RTAG{#1}\penalty0\cr
+}
+
+\def\MLWhenCeqRhsOnNLDEFAULT#1#2#3#4#5{%    
+  \LTAG{#1} &
+  \begin{array}[t]{@{}l@{}l@{}} 
+        \multicolumn{2}{@{}l}{#3}               \\
+        #5 \;\; & #4                    \\
+                & \KW{\KWWHEN} \;\; #2  \\
+                & \KW{\KWOTHERWISE} 
+  \end{array}   
+                                        & \RTAG{#1}\penalty0\cr
+}
+
