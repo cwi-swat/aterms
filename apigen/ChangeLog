@@ -1,5 +1,9 @@
 # $Id$
 
+Mon Nov 24 16:05:19 CET 2003 <jong@cwi.nl>
+ * fixed list-generation, separated-list generation
+ * tests are working again
+
 Thu Nov 20 11:31:31 CET 2003 <jong@cwi.nl>
  * introduce ADTReader which does the multiple input file ADT reading.
  * refactor Tom generation out of the apigen's Main (into
