@@ -17,12 +17,10 @@ rolodex_Main = RoloTest
 builtins_Main = BuiltinsTest
 
 INCLUDES = \
-	-I$(ATERM)/include \
-	-I$(PT_SUPPORT)/include
+	-I$(ATERM)/include 
 
 LDFLAGS = \
-	-L$(ATERM)/lib \
-	-I$(PT_SUPPORT)/lib
+	-L$(ATERM)/lib 
 
 # Build the C programs that are to be run during testing:
 check_PROGRAMS	= rolotest listtest builtinstest

@@ -1,5 +1,10 @@
 # $Id$
 
+Mon Dec 15 11:53:59 CET 2003 <{jong,jurgenv}@cwi.nl>
+ * Added new builtin field datatype <chars>. The API representation is char* for
+   C and String for Java. The ATerm representation is an ATermList containing the
+   ASCII values of the <chars> in the string. 
+   
 Thu Dec  4 13:38:22 CET 2003 <{jong,jurgenv}@cwi.nl>
  * Separated lists with builtins fixed in Java. We are planning to 
    reduce normal lists to separated lists with no separators in the near

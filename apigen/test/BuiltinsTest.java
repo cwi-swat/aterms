@@ -46,9 +46,11 @@ public class BuiltinsTest {
 
   
         test.builtins.types.Lexical L = factory.makeLexical_Default("hello");
-        
         testAssert(L.getString().equals("hello"), "string getter from a chars builtin");
-        testAssert(L.toTerm().isEqual(factory.getPureFactory().parse("string([104,101,108,108,111])")), "term representation of chars");
+        
+        aterm.ATerm atermLex = factory.getPureFactory().parse("string([104,101,108,108,111])");
+        testAssert(L.toTerm().isEqual(atermLex), "term representation of chars");
+        testAssert(factory.LexicalFromTerm(atermLex).isEqual(L), "chars fromTerm");
     }
 
     public final static void main(String[] args) {

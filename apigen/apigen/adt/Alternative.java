@@ -128,7 +128,7 @@ public class Alternative {
                     String typeName = type.toString();
 
                     if (typeName.equals("chars")) {
-                        return pattern.getFactory().parse("<list>");
+                        return pattern.getFactory().parse("[<list>]");
                     } else if (isBasicATermType(typeName)) {
                         return pattern.getFactory().makePlaceholder(type);
                     } else {

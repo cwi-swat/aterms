@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <assert.h>
+#include <string.h>
 
 #include "builtins.h"
 
@@ -33,6 +34,10 @@ int main(int argc, char *argv[])
   data[4] = (ATerm) makeDLst((ATermList) ATparse("[one]"));
   assert(data[4] && ATisEqual(data[4], ATparse("list([one])")));
 
+  data[5] = (ATerm) makeLexicalDefault("hello");
+  assert(data[5] && ATisEqual(data[5], ATparse("string([104,101,108,108,111])")));
+
+  assert(strcmp(getLexicalString((Lexical) data[5]), "hello") == 0);
 
   return 0;
 }
