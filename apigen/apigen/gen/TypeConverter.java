@@ -3,7 +3,7 @@ package apigen.gen;
 import java.util.HashMap;
 import java.util.Map;
 
-public class TypeConverter {
+public class TypeConverter implements TypeConversions {
 	private Map reservedTypes;
 
 	public TypeConverter(TypeConversions conv) {
@@ -26,5 +26,21 @@ public class TypeConverter {
 		} else {
 			return t;
 		}
+	}
+
+	public String IntegerType() {
+		return (String) reservedTypes.get("int");
+	}
+
+	public String RealType() {
+		return (String) reservedTypes.get("real");
+	}
+
+	public String StringType() {
+		return (String) reservedTypes.get("str");
+	}
+
+	public String TermType() {
+		return (String) reservedTypes.get("term");
 	}
 }
