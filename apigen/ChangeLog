@@ -1,3 +1,6 @@
+2001/12/13 (jurgenv@cwi.nl)
+ * Added --with-asf-support needed for compiled specifications.
+
 2001/11/29 (jurgenv@cwi.nl)
  * Removed automatic quote insertion in production attributes.
  * Regenerated with new parsetable generator and adapted asf[e,c].

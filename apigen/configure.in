@@ -54,22 +54,6 @@ ASCLIB=${ASC_SUPPORT}/lib
 AC_SUBST(ASCLIB)
 
 dnl }}}
-dnl {{{ Handle --with-pt-support
-
-AC_PACKAGE_REQUIRE(pt-support, unparsePT,
-	[  --with-pt-support=DIR   ParseTree is in DIR])
-AC_SUBST(PT_SUPPORT)
-
-dnl PTINC=${PT_SUPPORT}/include
-dnl AC_SUBST(PTINC)
-dnl 
-dnl PTLIB=${PT_SUPPORT}/lib
-dnl AC_SUBST(PTLIB)
-
-PTBIN=${PT_SUPPORT}/bin
-AC_SUBST(PTBIN)
-
-dnl }}}
 dnl {{{ Handle --with-pgen
 
 AC_PACKAGE_REQUIRE(pgen, sdf2table,
@@ -78,6 +62,29 @@ AC_SUBST(PGEN)
 
 PGENBIN=${PGEN}/bin
 AC_SUBST(PGENBIN)
+
+dnl }}}
+dnl {{{ Handle --with-pt-support
+ 
+AC_PACKAGE_REQUIRE(pt-support, unparsePT,
+      [  --with-pt-support=DIR   ParseTree is in DIR])
+AC_SUBST(PT_SUPPORT)
+ 
+dnl PTINC=${PT_SUPPORT}/include
+dnl AC_SUBST(PTINC)
+dnl 
+dnl PTLIB=${PT_SUPPORT}/lib
+dnl AC_SUBST(PTLIB)
+ 
+PTBIN=${PT_SUPPORT}/bin
+AC_SUBST(PTBIN)
+ 
+dnl }}}
+dnl {{{ Handle --with-asf-support
+
+AC_PACKAGE_REQUIRE(asf-support, asf-support-config,
+	[  --with-asf-support=DIR  asf-support is in DIR])
+AC_SUBST(ASF_SUPPORT)
 
 dnl }}}
 dnl {{{ Handle --with-sglr
