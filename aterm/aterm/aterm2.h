@@ -62,6 +62,14 @@ typedef struct
 	void       *data;
 } *ATermBlob;
 
+typedef struct ATermTable
+{
+  int size;
+  int free_slots;
+  int max_load;
+  ATermList *entries;
+} *ATermTable;
+
 /** The following functions implement the operations of
   * the 'standard' ATerm interface, and should appear
   * in some form in every implementation of the ATerm
@@ -155,6 +163,12 @@ ATerm     ATdictCreate();
 ATerm     ATdictGet(ATerm dict, ATerm key);
 ATerm     ATdictPut(ATerm dict, ATerm key, ATerm value);
 ATerm     ATdictRemove(ATerm dict, ATerm key);
+
+ATermTable ATtableCreate();
+void       ATtableDestroy(ATermTable table);
+void       ATtablePut(ATermTable table, ATerm key, ATerm value);
+ATerm	   ATtableGet(ATermTable table, ATerm key);
+void       ATtableRemove(ATermTable table, ATerm key);
 
 /* Higher order functions */
 ATermList ATfilter(ATermList list, ATbool (*predicate)(ATerm));

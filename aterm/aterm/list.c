@@ -5,11 +5,13 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <assert.h>
 #include "list.h"
 #include "aterm2.h"
 
 #define DEFAULT_LIST_BUFFER 256
 #define RESIZE_BUFFER(n) if(n > buffer_size) resize_buffer(n)
+#define MAGIC_K	1999
 
 char list_id[] = "$Id$";
 
@@ -455,11 +457,11 @@ ATerm ATdictPut(ATerm dict, ATerm key, ATerm value)
       pair = ATmakeList2(key, value);
       tmp = ATinsert(tmp, (ATerm)pair);
       for(--i; i>=0; i--)
-	tmp = ATinsert(tmp, buffer[i]);
+		tmp = ATinsert(tmp, buffer[i]);
       return (ATerm)tmp;
     } else {
       if(i >= buffer_size)
-	resize_buffer(i*2);
+		resize_buffer(i*2);
       buffer[i++] = (ATerm)pair;
     }
   }
@@ -583,5 +585,99 @@ ATermList ATgetArguments(ATermAppl appl)
 
 /*}}}  */
 
+/**
+  * Create a new ATerm table.
+  */
+
+ATermTable ATtableCreate(int initial_size, int maxload)
+{
+  int i;
+  ATermTable table;
+
+  assert(initial_size > 0 && maxload > 0);
+  table = (ATermTable)calloc(1, sizeof(struct ATermTable));
+  if(!table)
+	ATerror("ATtableCreate: cannot allocate new ATermTable\n");
+
+  table->size = initial_size;
+  table->free_slots = initial_size;
+  table->max_load   = maxload;
+  table->entries = (ATermList *)malloc(table->size*sizeof(ATermList));
+  if(!table->entries)
+	ATerror("ATtableCreate: cannot allocate %d entries.\n", table->size);
+  for(i=0; i<table->size; i++)
+	table->entries[i] = ATempty;
+
+  ATprotectArray((ATerm *)table->entries, table->size);
+
+  return table;
+}
+
+void ATtableDestroy(ATermTable table)
+{
+  ATunprotectArray((ATerm *)table->entries);
+  free(table->entries);
+  free(table);
+}
+
+#define TABLE_HASH(key) ((unsigned int)(key)*MAGIC_K)
+
+void ATtablePut(ATermTable table, ATerm key, ATerm value)
+{
+  unsigned int hnr = TABLE_HASH((unsigned int)key);
+  unsigned int cur_load;
+  hnr %= table->size;
+  if(ATisEmpty(table->entries[hnr]))
+	  table->free_slots--;
+
+  table->entries[hnr] = (ATermList)ATdictPut((ATerm)table->entries[hnr], 
+											 key, value);
+
+  cur_load = 100*(table->size-table->free_slots)/table->size;
+  if(cur_load > table->max_load) {
+    /* Resize hashtable */
+	int i, old_size = table->size;
+	ATermList *old_entries = table->entries;
+
+    table->size *= 2;
+	table->entries = calloc(table->size, sizeof(ATermList));
+	if(!table->entries)
+	  ATerror("ATtablePut: cannot re-alloc to %d entries.\n", table->size);
+	ATprotectArray((ATerm *)table->entries, table->size);
+	table->free_slots = table->size;
+
+	for(i=0; i<old_size; i++) {
+	  ATermList list = old_entries[i];
+	  while(!ATisEmpty(list)) {
+		ATermList pair = (ATermList)ATgetFirst(list);
+		ATerm key = ATgetFirst(pair);
+		ATerm val = ATgetFirst(ATgetNext(pair));
+		ATtablePut(table, key, val);
+		list = ATgetNext(list);
+	  }
+	}
+	ATunprotectArray((ATerm *)old_entries);
+	free(old_entries);
+  }
+}
+
+ATerm ATtableGet(ATermTable table, ATerm key)
+{
+  unsigned int hnr = TABLE_HASH((unsigned int)key);
+  hnr %= table->size;
+	
+  return ATdictGet((ATerm)table->entries[hnr], key);
+}
+
+void ATtableRemove(ATermTable table, ATerm key)
+{
+  unsigned int hnr = TABLE_HASH((unsigned int)key);
+  hnr %= table->size;
+
+  table->entries[hnr] = (ATermList)ATdictRemove((ATerm)table->entries[hnr],key);
+
+  if(ATisEmpty(table->entries[hnr]))
+	  table->free_slots++;
+}
 
 

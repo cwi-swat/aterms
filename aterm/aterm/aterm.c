@@ -1975,7 +1975,70 @@ calcCoreSize(ATerm t)
 int
 AT_calcCoreSize(ATerm t)
 {
-    int             result = calcCoreSize(t);
+    int result = calcCoreSize(t);
+    AT_unmarkTerm(t);
+    return result;
+}
+
+
+/*}}}  */
+/*{{{  static int calcUniqueSubterms(ATerm t) */
+
+/**
+	* Calculate the number of unique subterms.
+	*/
+
+static int
+calcUniqueSubterms(ATerm t)
+{
+    int    i, arity, nr_unique = 0;
+    Symbol sym;
+
+    if (IS_MARKED(t->header))
+		return 0;
+
+    SET_MARK(t->header);
+    nr_unique++;
+
+    switch (ATgetType(t))
+    {
+		case AT_INT:
+		case AT_REAL:
+		case AT_BLOB:
+		case AT_PLACEHOLDER:
+			break;
+
+		case AT_APPL:
+			sym = ATgetSymbol((ATermAppl) t);
+			arity = ATgetArity(sym);
+			for (i = 0; i < arity; i++)
+				nr_unique += calcUniqueSubterms(ATgetArgument((ATermAppl)t, i));
+			break;
+
+		case AT_LIST:
+			if (!ATisEmpty((ATermList) t))
+			{
+				nr_unique += calcUniqueSubterms(ATgetFirst((ATermList) t));
+				nr_unique += calcUniqueSubterms((ATerm)ATgetNext((ATermList)t));
+			}
+			break;
+    }
+
+    return nr_unique;
+}
+
+
+/*}}}  */
+/*{{{  int AT_calcUniqueSubterms(ATerm t) */
+
+/**
+	* Calculate the number of unique subterms.
+	*/
+
+int
+AT_calcUniqueSubterms(ATerm t)
+{
+    int result = calcUniqueSubterms(t);
     AT_unmarkTerm(t);
     return result;
 }

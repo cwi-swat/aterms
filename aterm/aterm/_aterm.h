@@ -19,6 +19,7 @@ void AT_markTerm(ATerm t);
 void AT_unmarkTerm(ATerm t);
 int  AT_calcTextSize(ATerm t);
 int  AT_calcCoreSize(ATerm t);
+int  AT_calcUniqueSubterms(ATerm t);
 void AT_writeToStringBuffer(ATerm t, char *buffer);
 void AT_assertUnmarked(ATerm t);
 void AT_assertMarked(ATerm t);
