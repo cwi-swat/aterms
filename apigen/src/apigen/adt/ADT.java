@@ -22,7 +22,7 @@ import aterm.ATerm;
 import aterm.ATermAppl;
 
 public class ADT {
-		List modules;
+	List modules;
     List types;
     List bottomTypes;
     Map modulesTypes;
@@ -269,29 +269,44 @@ public class ADT {
     		throw new RuntimeException("The type " + typename + " is unknown");
     }
     
-    // Warning: if there are cycle, tchou tchou TODO
     public Set getImportsClosureForModule(String moduleName) {
-    	Set result = new HashSet();
-    	Iterator modulesIt = moduleIterator();
-    	
-    //	System.out.println("getImportsClosureForModule for "+moduleName);
-    	
-    	while(modulesIt.hasNext()) {
-    		Module currentModule = (Module)modulesIt.next();
-    		String currentModuleName = currentModule.getModulename().getName();
-    		if(moduleName.equals(currentModuleName)) {
-    			Imports imported = currentModule.getImports();
-    			//System.out.println(currentModuleName+" has imports:"+imported);
-    			result.add(currentModuleName);
-    			//System.out.println("getImportsClosureForModule adding "+currentModuleName);
-    			while(!imported.isEmpty()) {
-    				result.addAll(getImportsClosureForModule(imported.getHead().getName()));
-    				imported = imported.getTail();
-    			}
-    			break;
-    		}
-    	}
-    	return result;
+    		Set result = new HashSet();
+    	    	computeImportsClosureForModule(result,moduleName);
+    		return result;
     }
     
+    private void computeImportsClosureForModule(Set result,String moduleName) {
+    	    //	System.out.println("moduleName = " + moduleName);
+    	    Module currentModule = getModuleFromName(moduleName);
+    	    if(currentModule==null) {
+    	    		return;
+    	    }
+    	
+    	    String currentModuleName = currentModule.getModulename().getName();
+    	    result.add(currentModuleName);
+    	
+    	
+    	    Imports imported = currentModule.getImports();
+    	    while(!imported.isEmpty()) {
+    	    		String name = imported.getHead().getName();
+    	    		if(!result.contains(name)) {
+    	    			computeImportsClosureForModule(result,name);
+    	    		}
+    	    		imported = imported.getTail();
+    	    }
+    	
+    //	System.out.println("result = " + result);
+    }
+    
+    private Module getModuleFromName(String moduleName) {
+        	Iterator modulesIt = moduleIterator();
+    	    	while(modulesIt.hasNext()) {
+    	    		Module currentModule = (Module)modulesIt.next();
+    	    		String currentModuleName = currentModule.getModulename().getName();
+    	    		if(moduleName.equals(currentModuleName)) {
+    	    			return currentModule;
+    	    		}
+    	    	}
+    	    	return null;
+    	}
 }
