@@ -1,3 +1,11 @@
+2000/09/27 (jong@cwi.nl)
+  * Version 0.6
+  * Fixed capitalization bug in build-valid-c-afun's
+  * Relaxed syntax in C-FILE-NAME to allow `-'
+  * Any existing `-' characters are stripped in the prefix,
+    this fixes a bug where '-' characters where passed all the way
+    through to C functionnames (where they are illegal)
+
 2000/09/20 (jong@cwi.nl)
   * removed capitalization of FieldId's in build-valid-c-afun
   * sorted variables in Gen-C-API.sdf alphabetically.

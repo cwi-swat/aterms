@@ -6,7 +6,7 @@ module Gen-C-API
     sorts C-API C-FILE-TAG C-API-FILE C-PREFIX C-FILE-NAME
 
     lexical syntax
-      [a-zA-Z0-9\_\.]+					-> C-FILE-NAME
+      [a-zA-Z0-9\_\-\.]+				-> C-FILE-NAME
       C-FILE-NAME [\:]					-> C-FILE-TAG
 
     context-free syntax
@@ -87,6 +87,8 @@ module Gen-C-API
       replace-holes-terms ( ATerms )			-> ATerms
       replace-placeholder( ATerm )			-> ATerm
 
+      build-legal-prefix( C-FILE-NAME )			-> C-FILE-NAME
+
     variables
       "$ActualArg*"		-> { C-EXPR "," }*
       "$ActualArg"		-> C-ID
@@ -106,6 +108,7 @@ module Gen-C-API
       "$ATerms"[0-9]*		-> { ATerm "," }*
       "$CFieldId"		-> AFun
       "$Char*"[0-9]* 		-> CHAR*
+      "$CPrefix"		-> C-FILE-NAME
       "$Dict"[0-9]*		-> { ATerm "," }*
       "$DictHeader"		-> C-INCLUDE-FILE
       "$Elems"[0-9]*		-> { ATerm "," }*

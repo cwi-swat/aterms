@@ -6,7 +6,7 @@ dnl
 
 dnl Process this file with autoconf to produce a configure script.
 AC_INIT(configure.in)
-AM_INIT_AUTOMAKE(apigen, 0.5)
+AM_INIT_AUTOMAKE(apigen, 0.6)
 
 dnl Our own version of libdir whose value is set dynamically
 AC_SUBST(INSTLIBDIR)

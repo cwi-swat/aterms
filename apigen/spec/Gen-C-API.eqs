@@ -5,14 +5,15 @@ equations
 	gen-c-api($Prefix, $Prologue, generate-api($ADT))
 
 [equ-gen-c-api]
-  gen-header($Prefix, $Prologue, $API) = $Header,
-  gen-source($Prefix, $API) = $Source,
+  build-legal-prefix($Prefix) = $CPrefix,
+  gen-header($CPrefix, $Prologue, $API) = $Header,
+  gen-source($CPrefix, $API) = $Source,
   gen-dict($API) = $Dict
   ===>
-  gen-c-api($Prefix, $Prologue, $API) =
-        build-header-tag($Prefix) $Header $$
-        build-source-tag($Prefix) $Source $$
-        build-dict-tag($Prefix) [ afuns([]), terms([$Dict]) ] $$
+  gen-c-api($CPrefix, $Prologue, $API) =
+        build-header-tag($CPrefix) $Header $$
+        build-source-tag($CPrefix) $Source $$
+        build-dict-tag($CPrefix) [ afuns([]), terms([$Dict]) ] $$
 
 [equ-gen-header]
   gen-typedefs($API) = $Typedef*,
@@ -466,9 +467,12 @@ equations
 [equ-build-c-int-succ]
   build-c-int(succ($Nat)) = succ(build-c-int($Nat))
 
-[equ-build-valid-c-afun]
+[equ-build-valid-c-afun-no-prefix]
+  build-valid-c-afun("", $FieldId) = build-valid-afun($FieldId)
+
+[default-build-valid-c-afun]
   build-valid-afun($FieldId) = $ValidId,
-  afun-concat($FieldPrefix $ValidId) = $AFun
+  afun-concat($FieldPrefix capitalize($ValidId)) = $AFun
   ===>
   build-valid-c-afun($FieldPrefix, $FieldId) = $AFun
 
@@ -583,3 +587,10 @@ equations
 
 [equ-replace-placeholder]
   replace-placeholder(<[$ATerm]>) = <list>
+
+[default-build-legal-prefix]
+  build-legal-prefix($Prefix) = $Prefix
+
+[equ-build-legal-prefix-dash]
+  build-legal-prefix(c-file-name($Char*1 "-" $Char*2)) =
+    build-legal-prefix(c-file-name($Char*1 $Char*2))
