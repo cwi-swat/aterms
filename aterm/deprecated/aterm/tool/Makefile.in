@@ -20,12 +20,12 @@ INSTALL_PRG = @INSTALL_PRG@
 SCRIPTS		= tifstojava java-adapter
 DISTFILES   = Makefile.in test.tb test.tifs ${SCRIPTS} ${SOURCE}
 
-SOURCE = EventQueue.java Testing.java JavaTif.java ToolBusChannel.java TestTool.java \
+SOURCE = Testing.java JavaTif.java ToolBusChannel.java TestTool.java \
 		TestingTool.java ToolException.java \
 		Test.java Testing.java Tool.java 
 
 CLASSES	= $(patsubst %.java,%.class,$(SOURCE)) \
-	TifGenerator.class SpecOrderVector.class
+	TifGenerator.class SpecOrderVector.class EventQueue.class
 
 all: ${CLASSES}
 
