@@ -70,9 +70,9 @@ class TifGenerator
 
   //}
 
-  //{ static String capitalize(String str, boolean firstCap)
+  //{ static public String capitalize(String str, boolean firstCap)
 
-  static String capitalize(String str, boolean firstCap)
+  static public String capitalize(String str, boolean firstCap)
   {
     StringBuffer name = new StringBuffer();
     for(int i=0; i<str.length(); i++) {

@@ -306,20 +306,20 @@ abstract public class Tool implements Runnable
   {
     try {
       while(running && istream != null) {
-	channel.reset();
-	channel.read();
-	ATerm t = world.parseATerm(channel);
-	if(verbose) {
-	  System.err.print("tool " + name + " has read term: ");
-	  t.print(System.err);
-	  System.err.println("");
-	}
-	handleOne(t);
+				channel.reset();
+				channel.read();
+				ATerm t = world.parseATerm(channel);
+				if(verbose) {
+					System.err.print("tool " + name + " has read term: ");
+					t.print(System.err);
+					System.err.println("");
+				}
+				handleOne(t);
       }
     } catch (IOException e) {
       error("IOException while reading incoming ToolBus term", null);
     } catch (ParseError e) {
-      error("parse error while reading incoming ToolBus term", null);
+      error("parse error while reading incoming ToolBus term", e);
     }
   }
 
@@ -395,12 +395,13 @@ abstract public class Tool implements Runnable
   } 
 
   //}
-  //{ protected void error(String msg, ToolException e)
+  //{ protected void error(String msg, Exception e)
 
-  protected void error(String msg, ToolException e)
+  protected void error(String msg, Exception e)
   {
     System.err.println("warning from tool " + name + ": " + msg);
-    System.err.println("exception: " + e.toString());
+		if(e != null)
+			System.err.println("exception: " + e.toString());
   }
 
   //}
