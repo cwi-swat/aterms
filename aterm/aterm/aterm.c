@@ -20,6 +20,12 @@ ATbool ATwriteToTextFile(ATerm t, FILE *f)
   ATermAppl appl;
 
   switch(ATgetType(t)) {
+    case AT_INT:
+      fprintf(f, "%d", ((ATermInt)t)->value);
+      break;
+    case AT_REAL:
+      fprintf(f, "%f", ((ATermReal)t)->value);
+      break;
     case AT_APPL:
       /*{{{  Print application */
       appl = (ATermAppl)t;

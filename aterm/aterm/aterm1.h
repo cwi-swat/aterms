@@ -49,6 +49,9 @@ void   ATsetAnnotation(ATerm t, ATerm label, ATerm anno);
 ATerm  ATgetAnnotation(ATerm t, ATerm label);
 void   ATremoveAnnotation(ATerm t, ATerm label);
 
+void ATprotect(ATerm *atp);
+void ATunprotect(ATerm *atp);
+
 /**
   * We also define some functions that are specific
   * for the C implementation of ATerms, but are part

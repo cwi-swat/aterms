@@ -73,8 +73,8 @@ ATermInt ATmakeInt(int value);
 int      ATgetInt(ATermInt term);
 
 /* The ATermReal type */
-ATermInt ATmakeReal(double value);
-double   ATgetReal(ATermReal term);
+ATermReal ATmakeReal(double value);
+double    ATgetReal(ATermReal term);
 
 /* The ATermAppl type */
 ATermAppl ATmakeAppl(Symbol sym, ...);

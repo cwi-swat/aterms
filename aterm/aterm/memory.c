@@ -149,7 +149,6 @@ ATermAppl ATmakeAppl(Symbol sym, ...)
       break;
     case 1:  return ATmakeAppl1(sym, NEXTARG);
       break;
-#if 0
     case 2:  return ATmakeAppl2(sym, NEXTARG, NEXTARG);
       break;
     case 3:  return ATmakeAppl3(sym, NEXTARG, NEXTARG, NEXTARG);
@@ -162,7 +161,6 @@ ATermAppl ATmakeAppl(Symbol sym, ...)
     case 6:  return ATmakeAppl6(sym, NEXTARG, NEXTARG, NEXTARG, NEXTARG, 
 				NEXTARG, NEXTARG);
       break;
-#endif
 
     default:
       ATerror("makeAppl with > 6 args not implemented yet.");
@@ -188,7 +186,7 @@ ATermAppl ATmakeAppl0(Symbol sym)
   
   CHECK_ARITY(ATgetArity(sym), 0);
 
-  header = APPL_HEADER(0, 0, AT_APPL, sym);
+  header = APPL_HEADER(0, 0, sym);
   cur = hashtable[hnr];
   while(cur && cur->header != header)
     cur = cur->next;
@@ -200,7 +198,7 @@ ATermAppl ATmakeAppl0(Symbol sym)
     hashtable[hnr] = cur;
   }
 
-  return (ATermAppl )cur;  
+  return (ATermAppl) cur;  
 }
 
 /*}}}  */
@@ -220,7 +218,7 @@ ATermAppl ATmakeAppl1(Symbol sym, ATerm arg0)
  
   CHECK_ARITY(ATgetArity(sym), 1);
  
-  header = APPL_HEADER(0, 1, AT_APPL, sym);
+  header = APPL_HEADER(0, 1, sym);
   cur = hashtable[hnr];
   while(cur && (cur->header != header || ATgetArgument(cur, 0) != arg0))
     cur = cur->next;
@@ -233,7 +231,7 @@ ATermAppl ATmakeAppl1(Symbol sym, ATerm arg0)
     hashtable[hnr] = cur;
   }
 
-  return (ATermAppl)cur;  
+  return (ATermAppl) cur;  
 }
 
 /*}}}  */
@@ -253,7 +251,7 @@ ATermAppl ATmakeAppl2(Symbol sym, ATerm arg0, ATerm arg1)
   
   CHECK_ARITY(ATgetArity(sym), 2);
 
-  header = APPL_HEADER(0, 2, AT_APPL, sym);
+  header = APPL_HEADER(0, 2, sym);
 
   cur = hashtable[hnr];
   while(cur && (cur->header != header || 
@@ -291,7 +289,7 @@ ATermAppl ATmakeAppl3(Symbol sym, ATerm arg0, ATerm arg1, ATerm arg2)
   
   CHECK_ARITY(ATgetArity(sym), 3);
 
-  header = APPL_HEADER(0, 3, AT_APPL, sym);
+  header = APPL_HEADER(0, 3, sym);
   cur = hashtable[hnr];
   while(cur && (cur->header != header ||
 		ATgetArgument(cur, 0) != arg0 ||
@@ -330,7 +328,7 @@ ATermAppl ATmakeAppl4(Symbol sym, ATerm arg0, ATerm arg1, ATerm arg2, ATerm arg3
   
   CHECK_ARITY(ATgetArity(sym), 4);
 
-  header = APPL_HEADER(0, 4, AT_APPL, sym);
+  header = APPL_HEADER(0, 4, sym);
   cur = hashtable[hnr];
   while(cur && (cur->header != header ||
 		ATgetArgument(cur, 0) != arg0 ||
@@ -372,7 +370,7 @@ ATermAppl ATmakeAppl5(Symbol sym, ATerm arg0, ATerm arg1, ATerm arg2,
   
   CHECK_ARITY(ATgetArity(sym), 5);
 
-  header = APPL_HEADER(0, 5, AT_APPL, sym);
+  header = APPL_HEADER(0, 5, sym);
   cur = hashtable[hnr];
   while(cur && (cur->header != header ||
 		ATgetArgument(cur, 0) != arg0 ||
@@ -416,7 +414,7 @@ ATermAppl ATmakeAppl6(Symbol sym, ATerm arg0, ATerm arg1, ATerm arg2,
   
   CHECK_ARITY(ATgetArity(sym), 6);
 
-  header = APPL_HEADER(0, 6, AT_APPL, sym);
+  header = APPL_HEADER(0, 6, sym);
   cur = hashtable[hnr];
   while(cur && (cur->header != header ||
 		ATgetArgument(cur, 0) != arg0 ||
@@ -456,23 +454,53 @@ ATermInt ATmakeInt(int val)
   ATerm cur;
   header_type header;
 
-  unsigned int hnr = (((unsigned int)sym) >> 2) ^ val;
-  hnr %= table_size;
+  unsigned int hnr = val % table_size;
  
-  header = INT_HEADER(0, 1, AT_APPL, sym);
+  header = INT_HEADER(0);
   cur = hashtable[hnr];
-  while(cur && (cur->header != header || ATgetArgument(cur, 0) != arg0))
+	while(cur && (cur->header != header || ((ATermInt)cur)->value != val))
     cur = cur->next;
 
   if(!cur) {
     cur = AT_allocate(3);
     cur->header = header;
-    ATgetArgument(cur, 0) = arg0;
+		((ATermInt)cur)->value = val;
     cur->next = hashtable[hnr];
     hashtable[hnr] = cur;
   }
 
-  return (ATermAppl)cur;  
+  return (ATermInt)cur;  
+}
+
+/*}}}  */
+
+/*{{{  ATermReal ATmakeReal(double val) */
+
+/**
+  * Create an ATermReal
+  */
+
+ATermReal ATmakeReal(double val)
+{
+  ATerm cur;
+  header_type header;
+
+  unsigned int hnr = ((int) val) % table_size;
+ 
+  header = REAL_HEADER(0);
+  cur = hashtable[hnr];
+	while(cur && (cur->header != header || ((ATermReal)cur)->value != val))
+    cur = cur->next;
+
+  if(!cur) {
+    cur = AT_allocate(4);
+    cur->header = header;
+		((ATermReal)cur)->value = val;
+    cur->next = hashtable[hnr];
+    hashtable[hnr] = cur;
+  }
+
+  return (ATermReal)cur;  
 }
 
 /*}}}  */

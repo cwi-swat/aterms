@@ -51,6 +51,24 @@ testSymbol(void)
 }
 
 void
+testOther(void)
+{
+	ATermInt  aint[8];
+	ATermReal real[8];
+
+	aint[0] = ATmakeInt(1234);
+	real[0] = ATmakeReal((double)1.2345678);
+
+	fprintf(stdout, "aint[%d] = ", 0);
+	ATwriteToTextFile((ATerm)aint[0], stdout);
+	fprintf(stdout, "\n");
+
+	fprintf(stdout, "real[%d] = ", 0);
+	ATwriteToTextFile((ATerm)real[0], stdout);
+	fprintf(stdout, "\n");
+}
+
+void
 testAppl(void)
 {
   int i;
@@ -90,6 +108,7 @@ int main(int argc, char *argv[])
   testAlloc();
   testSymbol();
   testAppl();
+  testOther();
 
   return 0;
 }
