@@ -46,14 +46,14 @@
 #define FINISH(hnr)	   (hnr)
 
 #define HASHNUMBER3(t)\
-        FINISH(COMBINE(START(((MachineWord*)t)[0]), ((MachineWord*)t)[2]))
+FINISH(COMBINE(START(((MachineWord*)t)[0]), ((MachineWord*)t)[2]))
 
 #define HASHNUMBER4(t)\
-        FINISH(COMBINE(COMBINE(START(((MachineWord*)t)[0]), \
-	    ((MachineWord*)t)[2]),((MachineWord*)t)[3]))
+FINISH(COMBINE(COMBINE(START(((MachineWord*)t)[0]), \
+		       ((MachineWord*)t)[2]),((MachineWord*)t)[3]))
 
 #define HASHINT(val) \
-	FINISH(COMBINE(START( (AT_INT<<SHIFT_TYPE) ), val))
+FINISH(COMBINE(START( (AT_INT<<SHIFT_TYPE) ), val))
 
 #ifdef AT_64BIT 
 #define FOLD(w)        ((HN(w)) ^ (HN(w) >> 32))
@@ -1125,41 +1125,17 @@ void AT_freeTerm(int size, ATerm t)
       ATabort("### cannot find term %n at %p in hashtable at pos %d"
 	      ", header = %d\n", t, t, hnr, t->header);
     }
-    assert(cur);
+    if (cur == t) {
+      if(prev)
+	prev->next = cur->next;
+      else
+	hashtable[hnr] = cur->next;
 
-    if(t->header != cur->header)
-      continue;
-
-    arg_cur = ((ATerm *)cur) + ARG_OFFSET + nrargs;
-    arg_t = ((ATerm *)t) + ARG_OFFSET + nrargs;
-
-    switch(nrargs) {
-      /* fall-throughs are intended */
-      default:
-	found = ATtrue;
-	for(i=nrargs-6; found && i>0; i--)
-	  if(*(--arg_cur) != *(--arg_t))
-	    found = ATfalse;
-	if(!found)
-	  continue;
-      case 6: if(*(--arg_cur) != *(--arg_t)) continue;
-      case 5: if(*(--arg_cur) != *(--arg_t)) continue;
-      case 4: if(*(--arg_cur) != *(--arg_t)) continue;
-      case 3: if(*(--arg_cur) != *(--arg_t)) continue;
-      case 2: if(*(--arg_cur) != *(--arg_t)) continue;
-      case 1: if(*(--arg_cur) != *(--arg_t)) continue;
-      case 0:
-		/* Actually free the node */
-		if(prev)
-		  prev->next = cur->next;
-		else
-		  hashtable[hnr] = cur->next;
-
-		/* Put the node in the appropriate free list */
-		t->header = FREE_HEADER;
-		t->next  = at_freelist[size];
-		at_freelist[size] = t;
-		return;
+      /* Put the node in the appropriate free list */
+      t->header = FREE_HEADER;
+      t->next  = at_freelist[size];
+      at_freelist[size] = t;
+      return;
     }
   } while(((prev=cur), (cur=cur->next)));
 }
@@ -2408,14 +2384,14 @@ ATbool AT_isValidTerm(ATerm term)
 
   /* Check if we point to the start of a term. Pointers inside terms
      are not allowed.
-   */
+     */
   if(offset % (cur->size*sizeof(header)))
     return ATfalse;
 
   /* <PO> was: 
      if((((header_type)term - (header_type)&cur->data) % cur->size) != 0)
      return ATfalse;
-   */
+     */
 
   header = term->header;
   type = GET_TYPE(header);

@@ -328,7 +328,7 @@ Symbol ATmakeSymbol(char *name, int arity, ATbool quoted)
   
   if(arity >= MAX_ARITY) {
     ATabort("cannot handle symbols with arity %d (max=%d)\n",
-	    arity, MAX_ARITY);
+	    arity, MAX_ARITY-1);
   }
 
   /* Find symbol in table */

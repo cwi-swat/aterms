@@ -33,8 +33,8 @@ static ATerm *buffer;
 /*{{{  void AT_initList(int argc, char *argv[]) */
 
 /**
-  * Initialize list operations
-  */
+ * Initialize list operations
+ */
 
 void AT_initList(int argc, char *argv[])
 {
@@ -46,32 +46,32 @@ void AT_initList(int argc, char *argv[])
 	    DEFAULT_LIST_BUFFER);
   }
 
-	ATprotectArray(buffer, buffer_size);
+  ATprotectArray(buffer, buffer_size);
 }
 
 /*}}}  */
 /*{{{  static void resize_buffer(int n) */
 
 /**
-  * Make sure the buffer is large enough for a particular operation
-  */
+ * Make sure the buffer is large enough for a particular operation
+ */
 
 static void resize_buffer(int n)
 {
-	int old_size = buffer_size;
-	ATunprotectArray(buffer);
+  int old_size = buffer_size;
+  ATunprotectArray(buffer);
 
   buffer_size = n;
   buffer = (ATerm *)realloc(buffer, buffer_size*sizeof(ATerm));
 
-	memset(buffer+old_size, 0, (buffer_size - old_size) * sizeof(ATerm));
+  memset(buffer+old_size, 0, (buffer_size - old_size) * sizeof(ATerm));
 
   if(!buffer) {
     ATerror("resize_buffer: cannot allocate list buffer of size %d\n",
 	    DEFAULT_LIST_BUFFER);
   }
 
-	ATprotectArray(buffer, buffer_size);
+  ATprotectArray(buffer, buffer_size);
 }
 
 /*}}}  */
@@ -120,7 +120,7 @@ ATermList ATreplaceTail(ATermList list, ATermList newtail, int start)
   /* Preserve annotations */
   if (AT_getAnnotations((ATerm)list) != NULL) {
     newtail = (ATermList)AT_setAnnotations((ATerm)newtail,
-                                           AT_getAnnotations((ATerm)list));
+					   AT_getAnnotations((ATerm)list));
   }
 
   return newtail;
@@ -130,8 +130,8 @@ ATermList ATreplaceTail(ATermList list, ATermList newtail, int start)
 /*{{{  ATermList ATgetPrefix(ATermList list) */
 
 /**
-  * Build a new list containing all elements of list, except the last one.
-  */
+ * Build a new list containing all elements of list, except the last one.
+ */
 
 ATermList ATgetPrefix(ATermList list)
 {
@@ -146,8 +146,8 @@ ATermList ATgetPrefix(ATermList list)
 
   for(--i; i>=0; i--) {
     result = ATinsert(result, buffer[i]);
-		buffer[i] = NULL;
-	}
+    buffer[i] = NULL;
+  }
 
   return result;
 }
@@ -156,9 +156,9 @@ ATermList ATgetPrefix(ATermList list)
 /*{{{  ATerm ATgetLast(ATermList list) */
 
 /**
-  * Retrieve the last element of 'list'.
-  * When 'list' is the empty list, NULL is returned.
-  */
+ * Retrieve the last element of 'list'.
+ * When 'list' is the empty list, NULL is returned.
+ */
 
 ATerm ATgetLast(ATermList list)
 {
@@ -175,10 +175,10 @@ ATerm ATgetLast(ATermList list)
 /*{{{  ATermList ATgetSlice(ATermList list, int start, int end) */
 
 /**
-  * Retrieve a slice of elements from list.
-  * The first element in the slice is the element at position start.
-  * The last element is the element at end-1.
-  */
+ * Retrieve a slice of elements from list.
+ * The first element in the slice is the element at position start.
+ * The last element is the element at end-1.
+ */
 
 ATermList ATgetSlice(ATermList list, int start, int end)
 {
@@ -189,16 +189,16 @@ ATermList ATgetSlice(ATermList list, int start, int end)
 
   for(i=0; i<start; i++)
     list = ATgetNext(list);
- 
+
   for(i=0; i<size; i++) {
     buffer[i] = ATgetFirst(list);
     list = ATgetNext(list);
   }
-  
+
   for(--i; i>=0; i--) {
     result = ATinsert(result, buffer[i]);
-		buffer[i] = NULL;
-	}
+    buffer[i] = NULL;
+  }
 
   return result;
 }
@@ -207,8 +207,8 @@ ATermList ATgetSlice(ATermList list, int start, int end)
 /*{{{  ATermList ATinsertAt(ATermList list, ATerm el, int index) */
 
 /**
-  * Insert 'el' at position 'index' in 'list'.
-  */
+ * Insert 'el' at position 'index' in 'list'.
+ */
 
 ATermList ATinsertAt(ATermList list, ATerm el, int index)
 {
@@ -229,8 +229,8 @@ ATermList ATinsertAt(ATermList list, ATerm el, int index)
   /* Insert elements before 'index' */
   for(--i; i>=0; i--) {
     result = ATinsert(result, buffer[i]);
-		buffer[i] = NULL;
-	}
+    buffer[i] = NULL;
+  }
 
   return result;
 }
@@ -239,8 +239,8 @@ ATermList ATinsertAt(ATermList list, ATerm el, int index)
 /*{{{  ATermlist ATappend(ATermList list, ATerm el) */
 
 /**
-  * Append 'el' to the end of 'list'
-  */
+ * Append 'el' to the end of 'list'
+ */
 
 ATermList ATappend(ATermList list, ATerm el)
 {
@@ -259,8 +259,8 @@ ATermList ATappend(ATermList list, ATerm el)
   /* Insert elements at the front of the list */
   for(--i; i>=0; i--) {
     result = ATinsert(result, buffer[i]);
-		buffer[i] = NULL;
-	}
+    buffer[i] = NULL;
+  }
 
   return result;
 }
@@ -269,18 +269,18 @@ ATermList ATappend(ATermList list, ATerm el)
 /*{{{  ATermList ATconcat(ATermList list1, ATermList list2) */
 
 /**
-  * Concatenate list2 to the end of list1.
-  */
+ * Concatenate list2 to the end of list1.
+ */
 
 ATermList ATconcat(ATermList list1, ATermList list2)
 {
   int i, len = ATgetLength(list1);
   ATermList result = list2;
 
-	if(len == 0)
-		return list2;
-	if(ATisEqual(list2, ATempty))
-		return list1;
+  if(len == 0)
+    return list2;
+  if(ATisEqual(list2, ATempty))
+    return list1;
 
   RESIZE_BUFFER(len);
 
@@ -293,8 +293,8 @@ ATermList ATconcat(ATermList list1, ATermList list2)
   /* Insert elements at the front of the list */
   for(--i; i>=0; i--) {
     result = ATinsert(result, buffer[i]);
-		buffer[i] = NULL;
-	}
+    buffer[i] = NULL;
+  }
 
   return result;
 }
@@ -303,11 +303,11 @@ ATermList ATconcat(ATermList list1, ATermList list2)
 /*{{{  int ATindexOf(ATermList list, ATerm el, int start) */
 
 /**
-  * Return the index of the first occurence of 'el' in 'list',
-  * Start searching at index 'start'.
-  * Return -1 when 'el' is not present after 'start'.
-  * Note that 'start' must indicate a valid position in 'list'.
-  */
+ * Return the index of the first occurence of 'el' in 'list',
+ * Start searching at index 'start'.
+ * Return -1 when 'el' is not present after 'start'.
+ * Note that 'start' must indicate a valid position in 'list'.
+ */
 
 int ATindexOf(ATermList list, ATerm el, int start)
 {
@@ -331,10 +331,10 @@ int ATindexOf(ATermList list, ATerm el, int start)
 /*{{{  int ATlastIndexOf(ATermList list, ATerm el, int start) */
 
 /**
-  * Search backwards for 'el' in 'list'. Start searching at
-  * index 'start'. Return the index of the first occurence of 'l'
-  * encountered, or -1 when 'el' is not present before 'start'.
-  */
+ * Search backwards for 'el' in 'list'. Start searching at
+ * index 'start'. Return the index of the first occurence of 'l'
+ * encountered, or -1 when 'el' is not present before 'start'.
+ */
 
 int ATlastIndexOf(ATermList list, ATerm el, int start)
 {
@@ -352,12 +352,12 @@ int ATlastIndexOf(ATermList list, ATerm el, int start)
   }
   for(--i; i>=0; i--) {
     if(ATisEqual(buffer[i], el)) {
-			int result = i;
-			while(i>=0)
-				buffer[i--] = NULL;
+      int result = i;
+      while(i>=0)
+	buffer[i--] = NULL;
       return result;
-		}
-		buffer[i] = NULL;
+    }
+    buffer[i] = NULL;
   }
 
   return -1;
@@ -367,9 +367,9 @@ int ATlastIndexOf(ATermList list, ATerm el, int start)
 /*{{{  ATerm ATelementAt(ATermList list, int index) */
 
 /**
-  * Retrieve the element at 'index' from 'list'.
-  * Return NULL when index not in list.
-  */
+ * Retrieve the element at 'index' from 'list'.
+ * Return NULL when index not in list.
+ */
 
 ATerm ATelementAt(ATermList list, int index)
 {
@@ -386,8 +386,8 @@ ATerm ATelementAt(ATermList list, int index)
 /*{{{  ATermList ATremoveElement(ATermList list, ATerm el) */
 
 /**
-  * Remove one occurence of an element from a list.
-  */
+ * Remove one occurence of an element from a list.
+ */
 
 ATermList ATremoveElement(ATermList list, ATerm t)
 {
@@ -408,16 +408,16 @@ ATermList ATremoveElement(ATermList list, ATerm t)
 
   if(!ATisEqual(el, t))
     return list;
-  
+
   list = l; /* Skip element to be removed */
-  
+
   /* We found the element. Add all elements prior to this 
      one to the tail of the list. */
   for(i-=2; i>=0; i--) {
     list = ATinsert(list, buffer[i]);
     buffer[i] = NULL;
   }
-  
+
   return list;
 }
 
@@ -425,8 +425,8 @@ ATermList ATremoveElement(ATermList list, ATerm t)
 /*{{{  ATermList ATremoveElementAt(ATermList list, int idx) */
 
 /**
-  * Remove an element from a specific position in a list.
-  */
+ * Remove an element from a specific position in a list.
+ */
 
 ATermList ATremoveElementAt(ATermList list, int idx)
 {
@@ -441,7 +441,7 @@ ATermList ATremoveElementAt(ATermList list, int idx)
   list = ATgetNext(list);
   for(--i; i>=0; i--) {
     list = ATinsert(list, buffer[i]);
-		buffer[i] = NULL;
+    buffer[i] = NULL;
   }
 
   return list;
@@ -451,36 +451,36 @@ ATermList ATremoveElementAt(ATermList list, int idx)
 /*{{{  ATermList ATremoveAll(ATermList list, ATerm t) */
 
 /**
-	* Remove all occurences of an element from a list
-	*/
+ * Remove all occurences of an element from a list
+ */
 
 ATermList ATremoveAll(ATermList list, ATerm t)
 {
   int i = 0;
   ATerm el = NULL;
   ATermList l = list;
-	ATbool found = ATfalse;
+  ATbool found = ATfalse;
 
   while(!ATisEmpty(l)) {
     el = ATgetFirst(l);
     l = ATgetNext(l);
-		if(!ATisEqual(el, t)) {
-			if(i >= buffer_size) 
-				resize_buffer(i*2);
-			buffer[i++] = el;
-		} else
-			found = ATtrue;
+    if(!ATisEqual(el, t)) {
+      if(i >= buffer_size) 
+	resize_buffer(i*2);
+      buffer[i++] = el;
+    } else
+      found = ATtrue;
   }
 
-	if(!found)
-		return list;
+  if(!found)
+    return list;
 
-	/* Add all elements prior to this one to the tail of the list. */
-	list = ATempty;
-	for(--i; i>=0; i--) {
-		list = ATinsert(list, buffer[i]);
-		buffer[i] = NULL;
-	}
+  /* Add all elements prior to this one to the tail of the list. */
+  list = ATempty;
+  for(--i; i>=0; i--) {
+    list = ATinsert(list, buffer[i]);
+    buffer[i] = NULL;
+  }
 
   return list;	
 }
@@ -489,8 +489,8 @@ ATermList ATremoveAll(ATermList list, ATerm t)
 /*{{{  ATermList ATreplace(ATermList list, ATerm el, int idx) */
 
 /**
-  * Replace one element of a list.
-  */
+ * Replace one element of a list.
+ */
 
 ATermList ATreplace(ATermList list, ATerm el, int idx)
 {
@@ -499,8 +499,8 @@ ATermList ATreplace(ATermList list, ATerm el, int idx)
   RESIZE_BUFFER(idx);
 
   for(i=0; i<idx; i++) {
-	buffer[i] = ATgetFirst(list);
-	list = ATgetNext(list);
+    buffer[i] = ATgetFirst(list);
+    list = ATgetNext(list);
   }
   /* Skip the old element */
   list = ATgetNext(list);
@@ -508,9 +508,9 @@ ATermList ATreplace(ATermList list, ATerm el, int idx)
   list = ATinsert(list, el);
   /* Add the prefix */
   for(--i; i>=0; i--) {
-		list = ATinsert(list, buffer[i]);
-		buffer[i] = NULL;
-	}
+    list = ATinsert(list, buffer[i]);
+    buffer[i] = NULL;
+  }
 
   return list;
 }
@@ -519,19 +519,19 @@ ATermList ATreplace(ATermList list, ATerm el, int idx)
 /*{{{  ATermList ATreverse(ATermList list) */
 
 /**
-	* Reverse a list
-	*/
+ * Reverse a list
+ */
 
 ATermList ATreverse(ATermList list)
 {
-	ATermList result = ATempty;
+  ATermList result = ATempty;
 
-	while(!ATisEmpty(list)) {
-		result = ATinsert(result, ATgetFirst(list));
-		list = ATgetNext(list);
-	}
-	
-	return result;
+  while(!ATisEmpty(list)) {
+    result = ATinsert(result, ATgetFirst(list));
+    list = ATgetNext(list);
+  }
+
+  return result;
 }
 
 /*}}}  */
@@ -595,7 +595,7 @@ int ATcompare(ATerm t1, ATerm t2)
   } else if (type1 > type2) {
     return 1;
   }
-    
+
   switch (ATgetType(t1)) {
     case AT_INT:
       /*{{{  Compare two ints */
@@ -719,8 +719,8 @@ int ATcompare(ATerm t1, ATerm t2)
 /*{{{  ATerm ATdictCreate() */
 
 /**
-  * Create a new dictionary.
-  */
+ * Create a new dictionary.
+ */
 
 ATerm ATdictCreate()
 {
@@ -731,36 +731,36 @@ ATerm ATdictCreate()
 /*{{{  ATerm ATdictPut(ATerm dict, ATerm key, ATerm value) */
 
 /**
-  * Set an element of a 'dictionary list'. This is a list consisting
-  * of [key,value] pairs.
-  */
+ * Set an element of a 'dictionary list'. This is a list consisting
+ * of [key,value] pairs.
+ */
 
 ATerm ATdictPut(ATerm dict, ATerm key, ATerm value)
 {
   int i = 0;
   ATermList pair, tmp = (ATermList)dict;
-  
+
   /* Search for the key */
   while(!ATisEmpty(tmp)) {
     pair = (ATermList)ATgetFirst(tmp);
     tmp = ATgetNext(tmp);
     if(ATisEqual(ATgetFirst(pair), key)) {
-			pair = ATmakeList2(key, value);
+      pair = ATmakeList2(key, value);
       tmp = ATinsert(tmp, (ATerm)pair);
       for(--i; i>=0; i--) {
-				tmp = ATinsert(tmp, buffer[i]);
-				buffer[i] = NULL;
-			}
+	tmp = ATinsert(tmp, buffer[i]);
+	buffer[i] = NULL;
+      }
       return (ATerm)tmp;
     } else {
       if(i >= buffer_size)
-				resize_buffer(i*2);
+	resize_buffer(i*2);
       buffer[i++] = (ATerm)pair;
     }
   }
 
   /* The key is not in the dictionary */
-	pair = ATmakeList2(key, value);
+  pair = ATmakeList2(key, value);
   return (ATerm)ATinsert((ATermList)dict, (ATerm)pair);
 }
 
@@ -768,8 +768,8 @@ ATerm ATdictPut(ATerm dict, ATerm key, ATerm value)
 /*{{{  ATerm ATdictGet(ATerm dict, ATerm key) */
 
 /**
-  * Retrieve a value from a dictionary list.
-  */
+ * Retrieve a value from a dictionary list.
+ */
 
 ATerm ATdictGet(ATerm dict, ATerm key)
 {
@@ -794,8 +794,8 @@ ATerm ATdictGet(ATerm dict, ATerm key)
 /*{{{  ATerm ATdictRemove(ATerm dict, ATerm key) */
 
 /**
-  * Remove a [key,value] pair from a dictionary list.
-  */
+ * Remove a [key,value] pair from a dictionary list.
+ */
 
 ATerm ATdictRemove(ATerm dict, ATerm key)
 {
@@ -821,36 +821,38 @@ ATerm ATdictRemove(ATerm dict, ATerm key)
 /*{{{  ATermList ATfilter(ATermList list, ATbool (*predicate)(ATerm)) */
 
 /**
-	* Filter elements from a list.
-	*/
+ * Filter elements from a list.
+ */
 
 ATermList ATfilter(ATermList list, ATbool (*predicate)(ATerm))
 {
   int i = 0;
   ATerm el = NULL;
   ATermList l = list;
-	ATbool found = ATfalse;
+  ATbool found = ATfalse;
 
   while(!ATisEmpty(l)) {
     el = ATgetFirst(l);
     l = ATgetNext(l);
-		if(predicate(el)) {
-			if(i >= buffer_size) 
-				resize_buffer(i*2);
-			buffer[i++] = el;
-		} else
-			found = ATtrue;
+    if(predicate(el)) {
+      if(i >= buffer_size)  {
+	resize_buffer(i*2);
+      }
+      buffer[i++] = el;
+    } else {
+      found = ATtrue;
+    }
   }
 
-	if(!found)
-		return list;
+  if(!found)
+    return list;
 
-	/* Add all elements prior to this one to the tail of the list. */
-	list = ATempty;
-	for(--i; i>=0; i--) {
-		list = ATinsert(list, buffer[i]);
-		buffer[i] = NULL;
-	}
+  /* Add all elements prior to this one to the tail of the list. */
+  list = ATempty;
+  for(--i; i>=0; i--) {
+    list = ATinsert(list, buffer[i]);
+    buffer[i] = NULL;
+  }
 
   return list;		
 }
@@ -860,9 +862,9 @@ ATermList ATfilter(ATermList list, ATbool (*predicate)(ATerm))
 /*{{{  ATermList ATgetArguments(ATermAppl appl) */
 
 /**
-  * Retrieve the list of arguments of a function application.
-  * This function facilitates porting of old aterm-lib or ToolBus code.
-  */
+ * Retrieve the list of arguments of a function application.
+ * This function facilitates porting of old aterm-lib or ToolBus code.
+ */
 
 ATermList ATgetArguments(ATermAppl appl)
 {
@@ -876,8 +878,8 @@ ATermList ATgetArguments(ATermAppl appl)
 
   for(--i; i>=0; i--) {
     result = ATinsert(result, buffer[i]);
-		buffer[i] = NULL;
-	}
+    buffer[i] = NULL;
+  }
 
   return result;
 }
