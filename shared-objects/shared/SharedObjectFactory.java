@@ -27,7 +27,7 @@ public class SharedObjectFactory {
   private int minId;
   private int indexId;
   private int currentId;
-  
+
   private int nbCall = 0;
   private int nbFoundReference = 0;
   private int nbFoundExactReference = 0;
@@ -36,8 +36,7 @@ public class SharedObjectFactory {
   private int nbProjectionCollision = 0;
   private int nbHashingCollision = 0;
   private int nbSwapEntry = 0;
-  private int nbIdRegeneration =0;
-
+  private int nbIdRegeneration = 0;
 
   public SharedObjectFactory() {
     this(10);
@@ -45,7 +44,6 @@ public class SharedObjectFactory {
 
   public SharedObjectFactory(int initialLogSize) {
 
-    
     this.logSize = initialLogSize;
     this.hashMask = hashMask();
     this.table = new Entry[hashSize()];
@@ -54,16 +52,16 @@ public class SharedObjectFactory {
     this.tableSize = new int[hashSize()];
     this.initialCapacity = hashSize();
     this.loadFactor = 3.0f; //0.75f;
-      //this.loadFactor = 0.75f;
+    //this.loadFactor = 0.75f;
 
     this.maxThreshold = (int) (hashSize() * loadFactor);
     this.minThreshold = 0;
 
-    this.maxId = (1<<31) -1;
-    this.minId = -(1<<31);
+    this.maxId = (1 << 31) - 1;
+    this.minId = - (1 << 31);
     this.currentId = this.minId;
-      //System.out.println("MAXID="+this.maxId);
-      //System.out.println("MINID="+this.currentId);
+    //System.out.println("MAXID="+this.maxId);
+    //System.out.println("MINID="+this.currentId);
     this.indexId = 0;
     this.usedId = new int[1];
     this.usedId[0] = this.maxId;
@@ -114,7 +112,6 @@ public class SharedObjectFactory {
     table = new Entry[hashSize()];
     tableSize = new int[hashSize()];
 
-    int oldRemoved = nbRemoved;
     for (int i = oldCapacity; i-- > 0;) {
       for (Entry old = oldMap[i]; old != null;) {
         // Remove references to garbage collected term
@@ -136,8 +133,6 @@ public class SharedObjectFactory {
       }
     }
     oldMap = null;
-    //System.out.println("rehash: newCapacity = " + hashSize() + " (" + (nbRemoved - oldRemoved) + " removal)");
-    //System.out.println(this);
   }
 
   /*
@@ -145,44 +140,30 @@ public class SharedObjectFactory {
    */
   public void cleanup() {
     Entry tab[] = table;
-    int oldRemoved = nbRemoved;
+
     for (int i = tab.length; i-- > 0;) {
       for (Entry e = tab[i], prev = null; e != null; e = e.next) {
         if (e.get() == null) {
           // Remove a reference to a garbage collected term
           if (prev != null) {
             prev.next = e.next;
-          } else {
+          }
+          else {
             tab[i] = e.next;
           }
           nbRemoved++;
           tableSize[i]--;
-        } else {
+        }
+        else {
           prev = e;
         }
       }
     }
-    //System.out.println("cleanup: " + (nbRemoved - oldRemoved) + " removed references");
 
   }
-  /*
-    static ReferenceQueue rq = new ReferenceQueue();  
-    public void cleanup() {
-    Entry e;
-      //System.gc();
-      System.out.println("cleanup2: ");
-      while ((e = (Entry)rq.poll()) != null) {
-      System.out.println("e = " + e);
-      }
-      }
-  */
 
   public String toString() {
     Entry tab[] = table;
-
-    //System.out.println("start cleanup");
-    //System.gc();
-    //cleanup();
 
     String s = "";
     s += "table_size            = " + table.length + "\n";
@@ -192,7 +173,7 @@ public class SharedObjectFactory {
     s += "#BuiltObject          = " + nbAdd + "\n";
     s += "#RemovedReference     = " + nbRemoved + "\n";
     s += "#ID Regeneration      = " + nbIdRegeneration + "\n";
-    
+
     double repartition = 0.0;
     double n = (double) (nbAdd - nbRemoved);
     double m = (double) tab.length;
@@ -202,12 +183,18 @@ public class SharedObjectFactory {
       repartition += bj * (1 + bj) / 2;
     }
 
-    s += "#element              = " + (int) n + " [" + (nbAdd - nbRemoved) + "]\n";
+    s += "#element              = "
+      + (int) n
+      + " ["
+      + (nbAdd - nbRemoved)
+      + "]\n";
 
     double bestRepartition = (n / (2.0 * m)) * (n + 2.0 * m - 1.0);
 
     s += "repartition           = " + (repartition / bestRepartition) + "\n";
-    s += "#lookup/build         = " + ((double) (nbFoundReference + nbAdd) / (double) nbCall) + "\n";
+    s += "#lookup/build         = "
+      + ((double) (nbFoundReference + nbAdd) / (double) nbCall)
+      + "\n";
     //((double)(nbFoundReference) / (double)nbCall) + "\n";
     s += "projectionCollision   = " + nbProjectionCollision + "\n";
     s += "hashingCollision      = " + nbHashingCollision + "\n";
@@ -224,61 +211,48 @@ public class SharedObjectFactory {
             usedSlot++;
           }
         }
-      } else {
+      }
+      else {
         emptyEntry++;
       }
 
-      if(false) {
-        if (tableSize[idx] > 2 * loadFactor) {
-          //System.out.println(idx + " --> " + tableSize[idx] + " elements (usedSlot = " + usedSlot + ")");
-          
-          for(Entry e = tab[idx] ; e != null ; e = e.next) {
-            System.out.println("\t" + e.get());
-          }
-        }
-      }
     }
-    //s += "maxThreshold = " + maxThreshold + "\n";
     s += "used = " + (tab.length - emptyEntry) + "\tempty = " + emptyEntry;
 
     return s;
   }
 
- 
-
-  /*
-   * To build an object
-   */
-
   public SharedObject build(SharedObject prototype) {
     nbCall++;
-    
+
     SharedObject foundObj;
     Entry tab[] = table;
     int hash = prototype.hashCode();
     int index = hashKey(hash);
-    
+
     for (Entry e = tab[index], prev = null; e != null; e = e.next) {
       foundObj = (SharedObject) e.get();
       if (foundObj == null) {
-          // Found a reference to a garbage collected term
-          // remove it to speed up lookups.
+        // Found a reference to a garbage collected term
+        // remove it to speed up lookups.
         if (prev != null) {
           prev.next = e.next;
           e.clear();
-        } else {
+        }
+        else {
           tab[index] = e.next;
           e.clear();
         }
         nbRemoved++;
         tableSize[index]--;
-      } else {
-          // Found a reference
+      }
+      else {
+        // Found a reference
         nbFoundReference++;
         if (prototype.equivalent(foundObj)) {
           nbFoundExactReference++;
-          
-            // swap the found object
+
+          // swap the found object
           if (prev != null && (e.value - tab[index].value > 5)) {
             nbSwapEntry++;
             prev.next = e.next;
@@ -287,50 +261,53 @@ public class SharedObjectFactory {
           }
           e.value++;
           return foundObj;
-        } else {
-            // create or lookup collision
+        }
+        else {
+          // create or lookup collision
           nbProjectionCollision++;
           if (foundObj.hashCode() == hash) {
             nbHashingCollision++;
-              //System.out.println("*** hashing collision ***");
-              //System.out.println("proto  = " + prototype);
-              //System.out.println(" found = " + foundObj);
+            //System.out.println("*** hashing collision ***");
+            //System.out.println("proto  = " + prototype);
+            //System.out.println(" found = " + foundObj);
           }
         }
-        
+
         prev = e;
       }
     }
-    
-      // No similar SharedObject found, so build a new one
+
+    // No similar SharedObject found, so build a new one
     int count = nbAdd - nbRemoved;
     if (false && count < minThreshold) {
       //System.out.println("count = " + count + " < tminThreshold = " + minThreshold);
       decreaseCapacity();
       tab = table;
       index = hashKey(hash);
-    } else if (count >= maxThreshold) {
-        /*
-         * Very simple strategy:
-         *  - try a cleanup
-         *  - rehash next time
-         */
+    }
+    else if (count >= maxThreshold) {
+      /*
+       * Very simple strategy:
+       *  - try a cleanup
+       *  - rehash next time
+       */
       if (!cleanupDone) {
         cleanupDone = true;
         System.gc();
         cleanup();
-      } else {
+      }
+      else {
         cleanupDone = false;
         increaseCapacity();
         tab = table;
         index = hashKey(hash);
       }
     }
-    
+
     foundObj = prototype.duplicate();
-    if(prototype instanceof SharedObjectWithID) {
-      ((SharedObjectWithID)foundObj).setUniqueIdentifier(getFreshId());
-    }    
+    if (prototype instanceof SharedObjectWithID) {
+      ((SharedObjectWithID) foundObj).setUniqueIdentifier(getFreshId());
+    }
     tab[index] = new Entry(foundObj, tab[index]);
     nbAdd++;
     tableSize[index]++;
@@ -338,60 +315,63 @@ public class SharedObjectFactory {
   }
 
   private int getFreshId() {
-      //System.out.println("CurrentId: "+currentId+" vs "+usedId[indexId]);
+    //System.out.println("CurrentId: "+currentId+" vs "+usedId[indexId]);
     if (currentId < usedId[indexId]) {
-      if (currentId == -(1<<31)) {
-      //  System.out.println("First ID"+currentId);
+      if (currentId == - (1 << 31)) {
+        //  System.out.println("First ID"+currentId);
       }
-      return currentId++; 
-    } else {
-        // We try the next index in the usedId array
+      return currentId++;
+    }
+    else {
+      // We try the next index in the usedId array
       do {
         indexId++;
-        if ( indexId < usedId.length ) {
-            //System.out.println("loop CurrentId: "+(currentId+1)+" vs "+usedId[indexId]);
-          if(++currentId < usedId[indexId]) {
-              //System.out.println("ID"+currentId);
+        if (indexId < usedId.length) {
+          //System.out.println("loop CurrentId: "+(currentId+1)+" vs "+usedId[indexId]);
+          if (++currentId < usedId[indexId]) {
+            //System.out.println("ID"+currentId);
             return currentId++;
           }
-        } else {
+        }
+        else {
           regenerate();
           return getFreshId();
         }
       }
-      while(true);
+      while (true);
     }
   }
-  
+
   private void regenerate() {
     nbIdRegeneration++;
     //System.out.println("Regeneration of fresh unique IDs");
     ArrayList list = new ArrayList();
-      // Collect all used Ids
-    for (int i=0 ;i<table.length; i++) {
+    // Collect all used Ids
+    for (int i = 0; i < table.length; i++) {
       for (Entry e = table[i]; e != null; e = e.next) {
-        
+
         if (e.get() instanceof SharedObjectWithID)
-          list.add(new Integer(((SharedObjectWithID)e.get()).getUniqueIdentifier()));
+          list.add(
+            new Integer(((SharedObjectWithID) e.get()).getUniqueIdentifier()));
       }
     }
     list.add(new Integer(maxId));
     int newSize = list.size();
-    if (newSize >= (maxId-minId)) {
+    if (newSize >= (maxId - minId)) {
       //System.out.println("No more unique identifier");
       System.exit(1);
     }
     usedId = new int[newSize];
-    for (int i=0; i<newSize;i++) {
-      usedId[i] = ((Integer)list.get(i)).intValue();
+    for (int i = 0; i < newSize; i++) {
+      usedId[i] = ((Integer) list.get(i)).intValue();
     }
-      // Sort array and reinitialize every thing
+    // Sort array and reinitialize every thing
     Arrays.sort(usedId);
     //System.out.println("New Array with size "+newSize+" from "+usedId[0]+" to "+usedId[newSize-2]);
     indexId = 0;
-    currentId=minId;
+    currentId = minId;
   }
-  
+
   private static class Entry extends WeakReference {
     protected Entry next;
     protected int value = 0;
