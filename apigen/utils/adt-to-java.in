@@ -105,7 +105,7 @@ do
       shift; OPT_PACKAGE=$1 ;;
 
     -m | --import)
-      shift; OPT_IMPORTS="${OPT_IMPORTS} -import $1" ;;
+      shift; OPT_IMPORTS="${OPT_IMPORTS} --import $1" ;;
 
     -n | --name)
       shift; NAME="$1";;
