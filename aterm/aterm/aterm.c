@@ -301,7 +301,7 @@ void ATunprotectArray(ATerm *start)
 				at_protected_arrays[at_nrprotected_arrays].start;
 			at_protected_arrays[lcv].size = 
 				at_protected_arrays[at_nrprotected_arrays].size;
-			at_protected_arrays[at_nrprotected--].start = NULL;
+			at_protected_arrays[at_nrprotected_arrays--].start = NULL;
 			break;
 		}
 	}
