@@ -20,7 +20,10 @@ ATerm patternBoolAnd = NULL;
  * afun10 = assoc(x)
  * afun11 = left
  *
- * patternBoolAnd = appl(prod([cf(sort("Bool")),cf(opt(layout)),lit("and"),cf(opt(layout)),cf(sort("Bool"))],cf(sort("Bool")),attrs([assoc(left)])),[<term>,<term>,lit("and"),<term>,<term>])
+ * patternBoolAnd = appl(prod([cf(sort("Bool")),cf(opt(layout)),lit("and"),
+ *                       cf(opt(layout)),cf(sort("Bool"))],cf(sort("Bool")),
+ *                       attrs([assoc(left)])),
+ *                       [<term>,<term>,lit("and"),<term>,<term>])
  *
  */
 
