@@ -8,7 +8,7 @@ www-dist: ${DISTFILE}
 	chgrp sen ${WWWDIR}/${DISTFILE}
 	chmod g+w ${WWWDIR}/${DISTFILE}
 
-EXTRA_DIST = make_rules $(wildcard *.pkg)
+EXTRA_DIST = $(wildcard *.pkg)
 
 noinst_SCRIPTS = ${PACKAGE}-${VERSION}.pkg
 

@@ -1,5 +1,8 @@
 # $Id$
 
+Fri Aug 29 10:13:03 CEST 2003 <jong@cwi.nl>
+ * remove make_rules and update Makefile.ams accordingly
+
 Wed Aug 27 14:23:46 CEST 2003 <{jong,kooiker}@cwi.nl>
  * cleanup generated code, so it doesn't contain so many warnings for Eclipse
  * remove all warnings found by Eclipse in the non-generated code 
