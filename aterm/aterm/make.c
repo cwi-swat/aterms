@@ -65,7 +65,14 @@ ATerm ATvmake(const char *pat);
 ATbool ATvmatchTerm(ATerm t, ATerm pat);
 
 /*}}}  */
+/*{{{  void AT_vmakeSetArgs(va_list args) */
 
+void AT_vmakeSetArgs(va_list newargs)
+{
+  args = newargs;	
+}
+
+/*}}} */
 /*{{{  ATerm AT_getPattern(const char *pat) */
 
 /**

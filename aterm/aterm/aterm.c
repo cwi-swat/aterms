@@ -2341,7 +2341,7 @@ int AT_calcTermDepth(ATerm t)
 /*}}}  */
 
 #ifdef NO_SHARING
-/*{{{  ATbool ATisEqual(ATerm t1, ATerm t2) */
+/*{{{  ATbool AT_isEqual(ATerm t1, ATerm t2) */
 
 /**
  * Check for deep ATerm equality (only useful when sharing is disabled)
