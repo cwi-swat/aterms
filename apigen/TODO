@@ -15,3 +15,4 @@ Java version:
 
 * builtin integer arguments should appear as 'int' not 'Integer' in the
   make functions 
+* make reverse and concat for normal lists
