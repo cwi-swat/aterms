@@ -593,7 +593,7 @@ void generate_code(FILE *f, ATermList tifs, ATermList original,
 {
   int count;
 
-	generate_prologue(f, tool, "implementation");
+	generate_prologue(f, tool, "Implementation");
 	fprintf(f, "#include \"%s\"\n\n", header);
 	count = generate_signature(f, original);
 	generate_handler(f, tifs, tool);
