@@ -15,6 +15,7 @@
 
 \newcommand{\aterm}{\mbox{ATerm}}
 \newcommand{\aterms}{\mbox{ATerms}}
+\newcommand{\atlib}{\mbox{ATerm-Library}}
 
 \newcommand{\asfix}{\mbox{AsFix}}
 
@@ -22,8 +23,11 @@
 \newcommand{\sdf}{\mbox{\sc Sdf}}
 \newcommand{\asf}{\mbox{\sc Asf}}
 \newcommand{\asdf}{\mbox{\sc Asf+Sdf}}
-\newcommand{\asmetaenv}{{\sc Asf+Sdf}\ Meta-En\-vir\-on\-ment}
+\newcommand{\metaenv}{{\sc Asf+Sdf}\ Meta-En\-vir\-on\-ment}
 \newcommand{\api}{\mbox{\sc api}}
+
+\newcommand{\C}{\mbox{\sc C}}
+\newcommand{\java}{\mbox{\sc Java}}
 
 % }}}
 
@@ -48,6 +52,7 @@
 % {{{  Abstract
 
 \begin{abstract}
+\label{abstract}
 
 Syntax definition languages are used to describe the syntax of a language.
 Terms over these languages are parsed to produce parse trees.  These parse
@@ -65,19 +70,18 @@ this \api{} in various programming languages.
 % }}}
 % {{{  Introduction
 
-\section{Introduction}\label{intro}
+\section{Introduction}
+\label{sec:intro}
 
 Syntax definition languages such as \sdf~\cite{HHKR92} can be used
 to specify the syntax of a (programming) language in a formal way. An
-integrated environment such as the \asmetaenv~\cite{Kli93} can be used to
+integrated environment such as the \metaenv~\cite{Kli93} can be used to
 develop syntax definitions and specify rewrite rules. These rules can be
 applied to terms which are parsed over the specified language. The view
-on the language as used in the \asmetaenv{} is of a formal, high level
+on the language as used in the \metaenv\ is of a formal, high level
 nature, which helps develop applications at the level of the (abstract)
 syntax. Specifications written in this way can be compiled to a target
 machine specific, executable program.
-
-% }}}
 
 % {{{  \subsection{\asdf\ in a nutshell}
 
@@ -115,6 +119,7 @@ Some examples of valid boolean terms are:
 % {{{  \subsection{Annotated Terms: the \aterm\ syntax}
 
 \subsection{Annotated Terms: the \aterm\ syntax}
+\label{sec:aterm-syntax}
 
 The definition of \aterms{} as well as its syntax in \sdf\ can be
 found in~\cite{BJKO2000}. A more concise version of the syntax is
@@ -150,9 +155,10 @@ and (with annotation):
 % {{{  \subsection{\asdf\ Parse Trees: the \asfix\ syntax}
 
 \subsection{\asdf\ Parse Trees: the \asfix\ syntax}
+\label{sec:asfix-syntax}
 
 When a term such as \texttt{true and not false} is parsed using the
-\asmetaenv\ parser \texttt{sglr}, it yields a parse tree represented in a
+\metaenv\ parser \texttt{sglr}, it yields a parse tree represented in a
 format called \asfix. These parse trees are actually \aterms, preserving
 lots of information about the input (such as the layout used in the input
 term), as well as adding syntax-derived facts such as associativity and
@@ -208,6 +214,168 @@ appl(
   appl(prod([lit("false")],cf(sort("Bool")),no-attrs),[lit("false")])])
 \end{verbatim}
 \end{footnotesize}
+
+% }}}
+
+% }}}
+
+% }}}
+% {{{  Using the \atlib\ to access parse trees
+
+\section{Using the \atlib\ to access parse trees}
+\label{sec:using-atlib}
+
+We briefly discuss the two layers of access provided by the \C\
+implementation of the \atlib, and show the steps needed to gain access
+to specific elements of a parse tree. Similar statements are needed in
+the \java\ implementation.
+
+% {{{  Accessing Parse Trees using the Level One interface
+
+\subsection{Accessing Parse Trees using the Level One interface}
+\label{sec:aterm-lvl1}
+
+The level one interface offers easy to learn, but less
+efficient access by using the \emph{make and match} paradigm. Terms are
+constructed using \texttt{ATmake}:
+
+% {{{  ATmake example
+
+\begin{footnotesize}
+\begin{verbatim}
+  ATermAppl appl = ATmake("phone(<int>)", 5554242);
+\end{verbatim}
+\end{footnotesize}
+
+% }}}
+
+\noindent and can be inspected using \texttt{ATmatch}:
+
+% {{{  ATmatch example
+
+\begin{footnotesize}
+\begin{verbatim}
+  int number;
+  ATmatch("phone(5554242)", "phone(<int>)", &number);
+\end{verbatim}
+\end{footnotesize}
+
+% }}}
+
+The \C\ code necessary to write down say, the pattern for the boolean
+\texttt{true} from our running example appears more intricate already,
+as we have to escape all the quotes (the \verb+"+ characters) from
+interpretation by the compiler.
+
+% {{{  Parse Tree for "true"
+
+\begin{footnotesize}
+\begin{verbatim}
+ ATermAppl true = ATparse(
+   "appl(prod([lit(\"true\")],cf(sort(\"Bool\")),no-attrs),[lit(\"true\")])");
+\end{verbatim}
+\end{footnotesize}
+
+% }}}
+
+As another example, consider a \C\ function that extracts the left-hand
+side from a boolean conjunction. It needs to match the parse tree
+of the incoming term against the pattern for the syntax production
+for {\footnotesize\texttt{Bool "and" Bool -> Bool \{left\}} } with a
+\texttt{<term>} placeholder at the correct spot. Because the pattern
+is written as a \C\ string, we once again need to escape all quotes.
+Moreover, the string representation of the match-pattern is so long
+that it does not fit on one line, and we need to resort to ANSI \C\
+string concatenation\footnote{Strings can be split over multiple lines by
+ending lines with a \texttt{"} and starting the next line with another
+\texttt{"}.} to span the
+string over multiple lines.
+
+% {{{  Level One: Extracting lhs from "true and false"
+
+\begin{footnotesize}
+\begin{verbatim}
+  ATerm extract_bool_lhs(ATerm t) {
+    ATerm lhs;
+    char *bool_and_lhs_pattern = 
+      "appl(prod([cf(sort(\"Bool\")),cf(opt(layout)),lit(\"and\"),cf(opt(layout)),"
+      "cf(sort(\"Bool\"))],cf(sort(\"Bool\")),attrs([assoc(\"left\")])),[<term>],"
+      "layout([\" \"]),lit(\"and\"),layout([\" \"]),appl(prod([lit(\"false\")],"
+      "cf(sort(\"Bool\")),no-attrs),[lit(\"false\")])])";
+  
+    ATmatch(t, bool_and_lhs_pattern, &lhs);
+    return lhs;
+  }
+\end{verbatim}
+\end{footnotesize}
+
+% }}}
+
+% }}}
+% {{{  Accessing Parse Trees using the Level Two interface
+
+\subsection{Accessing Parse Trees using the Level Two interface}
+\label{sec:aterm-lvl2}
+
+Extracting information from an \aterm\ using the \texttt{ATmatch} is
+inefficient. Each time the function is invoked, the pattern has to be
+parsed before any matching can be done. Also, if you \emph{know} which
+part of the \aterm\ you need, there is really no need to build any sort
+of matching automaton. Instead you can just \emph{get} the element you
+are looking for. In our boolean example, if we \emph{know} for sure that
+we have a valid \texttt{and}-term, we can directly extract its left-hand
+side. If, however, our incoming term can be any arbitrary \aterm, we can
+no longer safely extract a subterm, we have to match the term against the
+pattern for an \texttt{and}-term, to see if it even has a left-hand side.
+
+Therefore, if we assume as a precondition to our function that it will
+always be called with a valid boolean \texttt{and}-term, we can use
+more direct \aterm-calls, such as \texttt{ATgetFirst} to get the head
+of a list, and \texttt{ATgetArgument} to get a specific argument from
+a function application.
+
+In particular, recalling that in \asfix, we are dealing with
+\texttt{appl(prod, [args])} patterns, the \texttt{args} are always the
+second argument of the \texttt{appl}. If we look closely at the \asfix\
+pattern for our \texttt{and}-terms, we notice that the left-hand side
+is the first element from this list of \texttt{args}. The extraction
+function can now be simplified to the more efficient:
+
+% {{{  Level Two: Extracting lhs from "true and false"
+
+\begin{footnotesize}
+\begin{verbatim}
+  ATerm extract_bool_lhs(ATerm t) {
+    ATermList args = ATgetArgument(t, 1);  // get arguments from AsFix "appl"
+    return ATgetFirst(args);               // lhs is the first of these args.
+  }
+\end{verbatim}
+\end{footnotesize}
+
+% }}}
+
+% }}}
+
+% {{{  Maintenance issues
+
+\subsection{Maintenance issues}
+\label{sec:maintenance}
+
+There are a number of serious maintenance issues inherent in both
+approaches.
+
+First of all, manually typing in multi-line string patterns with exotic
+escaping and partial substitution schemes is so error prone that it is
+guaranteed to go wrong somewhere. Practical experience in the \metaenv\
+has proven this time and again. Handwritten \aterm-patterns proliferate
+through various versions of different tools, and after a while all sorts
+of ``mysterious'' bugs appear where one tool cannot handle the output
+of another tool, often due to some pattern mismatch between tools,
+or a typo in escaping one of the many quotes.
+
+#2 Changes in the syntax of "Bool and Bool -> Bool"
+
+#3 Changes in the AsFix format.
 
 % }}}
 
