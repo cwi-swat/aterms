@@ -117,6 +117,7 @@ public class TomSignatureGenerator extends Generator {
 				impl.IntegerGetSubTerm("t", "n"),
 				impl.IntegerEquals("t1", "t2")));
 		println();
+		/*
 		println(
 			TypeTermTemplate(
 				impl.DoubleName(),
@@ -126,6 +127,7 @@ public class TomSignatureGenerator extends Generator {
 				impl.DoubleGetSubTerm("t", "n"),
 				impl.DoubleEquals("t1", "t2")));
 		println();
+		*/
 		println(
 			TypeTermTemplate(
 				impl.ATermName(),
@@ -142,9 +144,9 @@ public class TomSignatureGenerator extends Generator {
 				impl.ATermListGetFunSym("t"),
 				impl.ATermListCmpFunSym("s1", "s2"),
 				impl.ATermListEquals("t1", "t2"),
-				"l.getFirst()",
-				"l.getNext()",
-				"l.isEmpty()"));
+				impl.ATermListGetFirst("l"),
+				impl.ATermListGetNext("l"),
+				impl.ATermListIsEmpty("l")));
 		println();
 	}
 

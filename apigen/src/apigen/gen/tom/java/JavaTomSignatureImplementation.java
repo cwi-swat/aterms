@@ -149,6 +149,18 @@ public class JavaTomSignatureImplementation implements TomSignatureImplementatio
 		return s1 + ".equals(" + s2 + ")";
 	}
 
+	public String ATermListGetFirst(String arg) {
+		return arg + ".getFirst()";
+	}
+	
+	public String ATermListGetNext(String arg) {
+		return arg + ".getNext()";
+	}
+	
+	public String ATermListIsEmpty(String arg) {
+		return arg + ".isEmpty()";
+	}
+	
 	public String TypeName(String type) {
 		if (tomConverter.isReserved(type)) {
 			return tomConverter.getType(type);

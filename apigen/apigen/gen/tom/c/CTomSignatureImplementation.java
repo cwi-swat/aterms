@@ -3,13 +3,12 @@ package apigen.gen.tom.c;
 import apigen.gen.StringConversions;
 import apigen.gen.TypeConverter;
 import apigen.gen.c.CTypeConversions;
-import apigen.gen.tom.TomGenerationParameters;
 import apigen.gen.tom.TomSignatureImplementation;
 
 public class CTomSignatureImplementation implements TomSignatureImplementation {
 	private static TypeConverter converter;
 	private boolean jtype;
-	private String prefix;
+	private String prefix = "";
 
 	public CTomSignatureImplementation(CTomGenerationParameters params) {
 		this.prefix = params.getPrefix();
@@ -61,7 +60,7 @@ public class CTomSignatureImplementation implements TomSignatureImplementation {
 	}
 
 	public String IntegerGetFunSym(String arg1) {
-		return arg1;
+		return "(void*)"+ arg1;
 	}
 
 	public String IntegerGetSubTerm(String term, String n) {
@@ -109,7 +108,7 @@ public class CTomSignatureImplementation implements TomSignatureImplementation {
 	}
 
 	public String ATermGetFunSym(String arg) {
-		return "((ATgetType(" + arg + ") == AT_APPL)?ATgetAFun((ATermAppl)" + arg + "):NULL)";
+		return "(void*)((ATgetType(" + arg + ") == AT_APPL)?ATgetAFun((ATermAppl)" + arg + "):NULL)";
 	}
 
 	public String ATermCmpFunSym(String s1, String s2) {
@@ -133,7 +132,7 @@ public class CTomSignatureImplementation implements TomSignatureImplementation {
 	}
 
 	public String ATermListGetFunSym(String arg) {
-		return "((ATgetType(" + arg + ") == AT_LIST)?ATmakeAFun(\"conc\",1,ATfalse)):NULL)";
+		return "(void*) ((ATgetType(" + arg + ") == AT_LIST)?ATmakeAFun(\"conc\",1,ATfalse):NULL)";
 	}
 
 	public String ATermListCmpFunSym(String s1, String s2) {
@@ -144,6 +143,18 @@ public class CTomSignatureImplementation implements TomSignatureImplementation {
 		return "ATisEqual(" + s1 + "," + s2 + ")";
 	}
 
+	public String ATermListGetFirst(String arg) {
+		return "(void*) ATgetFirst((ATermList)" + arg + ")";
+	}
+	
+	public String ATermListGetNext(String arg) {
+		return "(void*) ATgetNext((ATermList)" + arg + ")";
+	}
+	
+	public String ATermListIsEmpty(String arg) {
+		return "ATisEmpty((ATermList)" + arg + ")";
+	}
+	
 	public String TypeName(String type) {
 		return buildTypeName(type);
 	}

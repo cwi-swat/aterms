@@ -38,6 +38,7 @@ public class Main {
 	private static CTomGenerationParameters buildDefaultParameters() {
 		CTomGenerationParameters params = new CTomGenerationParameters();
 		params.setOutputDirectory(".");
+		params.setPrefix("");
 		return params;
 	}
 

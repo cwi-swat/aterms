@@ -34,7 +34,10 @@ public interface TomSignatureImplementation {
 	String ATermListGetFunSym(String arg);
 	String ATermListCmpFunSym(String arg1, String arg2);
 	String ATermListEquals(String arg1, String arg2);
-
+	String ATermListGetFirst(String arg);
+	String ATermListGetNext(String arg);
+	String ATermListIsEmpty(String arg);
+	
 	String TypeName(String type);
 	String TypeImpl(String type);
 	String TypeGetFunSym(String arg1);
