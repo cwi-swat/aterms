@@ -1,10 +1,8 @@
 package apigen.gen.java;
 
 import java.io.FileInputStream;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -18,6 +16,7 @@ import apigen.adt.api.ADTFactory;
 import apigen.adt.api.Entries;
 import apigen.gen.TypeConverter;
 import apigen.gen.tom.TomSignatureGenerator;
+import aterm.ATermList;
 import aterm.ParseError;
 
 public class Main {
@@ -27,7 +26,7 @@ public class Main {
 	private static boolean folding = false;
 	private static boolean verbose = false;
 
-	private static TypeConverter converter = null;
+	private static TypeConverter converter = new TypeConverter(new JavaTypeConversions());
 
 	private static String basedir = ".";
 	private static String pkg = "";
@@ -35,51 +34,44 @@ public class Main {
 	private static String apiName = "";
 	private static String prefix = "";
 
-	/**
-	 * Load the Java type conversions
-	 */
-	static {
-		converter = new TypeConverter(new JavaTypeConversions());
-	}
-
 	private static void usage() {
 		System.err.println("usage: JavaGen [options]");
 		System.err.println("options:");
-		System.err.println("\t-i || --input <in>              [-]");
-		System.err.println("\t-f || --folding                 [off]");
-		System.err.println("\t-o || --output <outputdir>        [\".\"]");
-		System.err.println("\t-p || --package <package>        [\"\"]");
-		System.err.println("\t-i || --import <package>         (can be repeated)");
-		System.err.println("\t-n || --name <api name>          [improvised]");
-		System.err.println("\t-t || --visitable                [off]");
-		System.err.println("\t-j || --jtom                     [off]");
-		System.err.println("\t-v || --verbose                  [off]");
-		System.err.println("\t--jtype                    [off]");
+		System.err.println("\t-i | --input <in>              [multiple allowed]");
+		System.err.println("\t-f | --folding                 [off]");
+		System.err.println("\t-o | --output <outputdir>      [\".\"]");
+		System.err.println("\t-p | --package <package>       [\"\"]");
+		System.err.println("\t-i | --import <package>        (can be repeated)");
+		System.err.println("\t-n | --name <api name>         [unspecified]");
+		System.err.println("\t-t | --visitable               [off]");
+		System.err.println("\t-j | --jtom                    [off]");
+		System.err.println("\t--jtype                        [off]");
+		System.err.println("\t-v | --verbose                 [off]");
 	}
 
 	public static void main(String[] args) {
-		String input = "-";
+		List inputFiles = new LinkedList();
 		imports = new LinkedList();
-		InputStream inputStream;
 
 		if (args.length == 0) {
 			usage();
 		}
 
 		for (int i = 0; i < args.length; i++) {
-		  if ("--input".startsWith(args[i]) || "-i".startsWith(args[i])) {
-			  input = args[++i];
-		  }
-		  else if ("--folding".startsWith(args[i]) || "-f".startsWith(args[i])) {
-			  folding = true;
-		  }
-		  else if ("--output".startsWith(args[i]) || "-o".startsWith(args[i])) {
-			  basedir = args[++i];
-		  }
-		  else if ("--package".startsWith(args[i]) || "-p".startsWith(args[i])) {
-			  pkg = args[++i];
-		  }
-		  else if ("--import".startsWith(args[i]) || "-m".startsWith(args[i])) {
+			if ("--input".startsWith(args[i]) || "-i".startsWith(args[i])) {
+				String file = args[++i];
+				inputFiles.add(file);
+			}
+			else if ("--folding".startsWith(args[i]) || "-f".startsWith(args[i])) {
+				folding = true;
+			}
+			else if ("--output".startsWith(args[i]) || "-o".startsWith(args[i])) {
+				basedir = args[++i];
+			}
+			else if ("--package".startsWith(args[i]) || "-p".startsWith(args[i])) {
+				pkg = args[++i];
+			}
+			else if ("--import".startsWith(args[i]) || "-m".startsWith(args[i])) {
 				imports.add(args[++i]);
 			}
 			else if ("--name".startsWith(args[i]) || "-n".startsWith(args[i])) {
@@ -91,6 +83,9 @@ public class Main {
 			else if ("--jtom".startsWith(args[i]) || "-j".startsWith(args[i])) {
 				jtom = true;
 			}
+			else if ("--jtype".startsWith(args[i])) {
+				jtype = true;
+			}
 			else if ("--verbose".startsWith(args[i]) || "-v".startsWith(args[i])) {
 				verbose = true;
 			}
@@ -98,59 +93,47 @@ public class Main {
 				usage();
 				return;
 			}
-			else if ("--jtype".startsWith(args[i])) {
-				jtype = true;
-			}
 			else {
-				System.err.println("Error: Not a valid option "+args[i]);
+				System.err.println("Error: Not a valid option " + args[i]);
 				usage();
 				return;
 			}
 		}
 
-		if (input.equals("-")) {
-			inputStream = System.in;
+		if ("".equals(apiName)) {
+			System.err.println("Error: Please give a name for the API");
+			usage();
+			return;
 		}
-		else {
-			try {
-				inputStream = new FileInputStream(input);
-				if (apiName.equals("")) {
-					if (input.equals("-")) {
-						System.err.println("Error: Please give a name to the API");
-						usage();
-						return;
-					}
-					else {
-						File apiFile = new File(input);
-						String apiFileName = apiFile.getName();
-						apiName = apiFileName.substring(0, apiFileName.lastIndexOf('.'));
-					}
-				}
-
-				run(inputStream);
-
-			}
-			catch (FileNotFoundException e) {
-				System.out.println("Error: Failed to open ADT file: " + input + " for reading");
-			}
-		}
+		run(inputFiles);
 
 	}
 
-	static public void run(InputStream input) {
+	static public void run(List inputFiles) {
+		Iterator iter = inputFiles.iterator();
+		String fileName = "";
 		try {
 			ADTFactory factory = new ADTFactory();
-			Entries entries = factory.EntriesFromFile(input);
+			ATermList all = factory.getEmpty();
+			while (iter.hasNext()) {
+				fileName = (String) iter.next();
+				FileInputStream fis = new FileInputStream(fileName);
+				all = all.concat((ATermList) factory.readFromFile(fis));
+			}
+			Entries entries = factory.EntriesFromTerm(all);
 			generateAPI(new ADT(entries));
 		}
-		catch (ParseError e) {
-			System.err.println("Error: A parse error occurred in the ADT file:"+e);
+		catch (FileNotFoundException e) {
+			System.err.println("Error: File not found: " + fileName);
 		}
 		catch (IOException e) {
-			System.err.println("Error: Could not read ADT from input: " + input);
+			System.err.println("Error: Could not read ADT from input: " + fileName);
+		}
+		catch (ParseError e) {
+			System.err.println("Error: A parse error occurred in the ADT file:" + e);
 		}
 		catch (RuntimeException e) {
-			System.err.println("Error: "+e.getMessage());
+			System.err.println("Error: " + e.getMessage());
 		}
 	}
 
