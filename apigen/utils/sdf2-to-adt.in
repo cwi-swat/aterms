@@ -38,7 +38,7 @@ Parameters:
 Default locations:
    APIGEN-parsetable = ${APITABLE}
   Labeling equations = ${ADDLABELS}
-  Labeling equations = ${SDF2TOADT}
+  Compiled generator = ${SDF2TOADT}
 
 Example: ${PRG} --remove-cons -i Booleans.sdf -o Booleans.adt
 
