@@ -1,6 +1,5 @@
 package apigen.gen.tom;
 
-
 public interface TomSignatureImplementation {
 	String StringName();
 	String StringImpl();
@@ -30,7 +29,7 @@ public interface TomSignatureImplementation {
 	String ATermGetSubTerm(String arg1, String arg2);
 	String ATermEquals(String arg1, String arg2);
 
-  String ATermListName();
+	String ATermListName();
 	String ATermListImpl();
 	String ATermListGetFunSym(String arg);
 	String ATermListCmpFunSym(String arg1, String arg2);
@@ -52,7 +51,7 @@ public interface TomSignatureImplementation {
 
 	String FieldName(String id);
 	String FieldType(String type);
-	
+
 	String ListHead(String type);
 	String ListTail(String type);
 	String ListEmpty(String type);

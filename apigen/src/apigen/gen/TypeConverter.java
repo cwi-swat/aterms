@@ -15,11 +15,11 @@ public class TypeConverter implements TypeConversions {
 	public TypeConverter(TypeConversions conv) {
 		reservedTypes = new HashMap();
 
-		reservedTypes.put("int", conv.IntegerType());
-		reservedTypes.put("real", conv.RealType());
-		reservedTypes.put("str", conv.StringType());
-		reservedTypes.put("term", conv.TermType());
-		reservedTypes.put("list", conv.ListType());
+		reservedTypes.put("int", conv.getIntegerType());
+		reservedTypes.put("real", conv.getRealType());
+		reservedTypes.put("str", conv.getStringType());
+		reservedTypes.put("term", conv.getTermType());
+		reservedTypes.put("list", conv.getListType());
 
 	}
 
@@ -48,35 +48,35 @@ public class TypeConverter implements TypeConversions {
 	/**
 	 * Returns the implementation type of: int
 	 */
-	public String IntegerType() {
+	public String getIntegerType() {
 		return (String) reservedTypes.get("int");
 	}
 
 	/**
 	 * Returns the implementation type of: real
 	 */
-	public String RealType() {
+	public String getRealType() {
 		return (String) reservedTypes.get("real");
 	}
 
 	/**
 	 * Returns the implementation type of: str
 	 */
-	public String StringType() {
+	public String getStringType() {
 		return (String) reservedTypes.get("str");
 	}
 
 	/**
 	 * Returns the implementation type of: term
 	 */
-	public String TermType() {
+	public String getTermType() {
 		return (String) reservedTypes.get("term");
 	}
 
 	/**
 	 * Returns the implementation type of: list
 	 */
-	public String ListType() {
+	public String getListType() {
 		return (String) reservedTypes.get("list");
 	}
 

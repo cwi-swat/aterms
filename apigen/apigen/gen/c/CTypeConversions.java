@@ -3,25 +3,24 @@ package apigen.gen.c;
 import apigen.gen.TypeConversions;
 
 public class CTypeConversions implements TypeConversions {
-	
-	public String IntegerType() {
+
+	public String getIntegerType() {
 		return "int";
 	}
 
-	public String RealType() {
+	public String getRealType() {
 		return "float";
 	}
 
-	
-	public String TermType() {
+	public String getTermType() {
 		return "ATerm";
 	}
 
-	public String ListType() {
+	public String getListType() {
 		return "ATermList";
 	}
-	
-	public String StringType() {
+
+	public String getStringType() {
 		return "char*";
 	}
 }

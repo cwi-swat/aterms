@@ -31,11 +31,11 @@ public class JavaTomSignatureImplementation implements TomSignatureImplementatio
 	}
 
 	public String StringName() {
-		return tomConverter.StringType();
+		return tomConverter.getStringType();
 	}
 
 	public String StringImpl() {
-		return javaConverter.StringType();
+		return javaConverter.getStringType();
 	}
 
 	public String StringGetFunSym(String arg1) {
@@ -55,11 +55,11 @@ public class JavaTomSignatureImplementation implements TomSignatureImplementatio
 	}
 
 	public String IntegerName() {
-		return tomConverter.IntegerType();
+		return tomConverter.getIntegerType();
 	}
 
 	public String IntegerImpl() {
-		return javaConverter.IntegerType();
+		return javaConverter.getIntegerType();
 	}
 
 	public String IntegerGetFunSym(String arg1) {
@@ -79,11 +79,11 @@ public class JavaTomSignatureImplementation implements TomSignatureImplementatio
 	}
 
 	public String DoubleName() {
-		return tomConverter.RealType();
+		return tomConverter.getRealType();
 	}
 
 	public String DoubleImpl() {
-		return javaConverter.RealType();
+		return javaConverter.getRealType();
 	}
 
 	public String DoubleGetFunSym(String arg1) {
@@ -103,11 +103,11 @@ public class JavaTomSignatureImplementation implements TomSignatureImplementatio
 	}
 
 	public String ATermName() {
-		return tomConverter.TermType();
+		return tomConverter.getTermType();
 	}
 
 	public String ATermImpl() {
-		return javaConverter.TermType();
+		return javaConverter.getTermType();
 	}
 
 	public String ATermGetFunSym(String arg) {
@@ -128,11 +128,11 @@ public class JavaTomSignatureImplementation implements TomSignatureImplementatio
 
 
 	public String ATermListName() {
-		return tomConverter.ListType();
+		return tomConverter.getListType();
 	}
 
 	public String ATermListImpl() {
-		return javaConverter.ListType();
+		return javaConverter.getListType();
 	}
 
 	public String ATermListGetFunSym(String arg) {

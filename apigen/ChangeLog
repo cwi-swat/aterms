@@ -1,5 +1,14 @@
 # $Id$
 
+Thu Nov 20 11:31:31 CET 2003 <jong@cwi.nl>
+ * introduce ADTReader which does the multiple input file ADT reading.
+ * refactor Tom generation out of the apigen's Main (into
+   apigen.gen.tom.{c,java}.Main) because Tom-generation does not affect
+   the core API generation (rather it adds to it).
+ * introduce TomGenerationParameters which encapsulate the --jtype notion
+   (it extends GenerationParameters, so it automatically gets --verbose,
+    --prefix, ...)
+
 Tue Nov 18 11:33:44 CET 2003 <jong@cwi.nl>
  * refactor generation parameters into generic and (java-) specific parameters.
    Still have to put jtom specifics (-jtype) in TomGenerationParameters.

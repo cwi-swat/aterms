@@ -82,6 +82,8 @@ apigen/gen/Makefile
 apigen/gen/c/Makefile
 apigen/gen/java/Makefile
 apigen/gen/tom/Makefile
+apigen/gen/tom/c/Makefile
+apigen/gen/tom/java/Makefile
 test/Makefile
 doc/Makefile
 ,

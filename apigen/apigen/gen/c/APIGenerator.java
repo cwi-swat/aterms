@@ -18,7 +18,6 @@ import apigen.adt.SeparatedListType;
 import apigen.adt.Step;
 import apigen.adt.Type;
 import apigen.adt.api.Separators;
-import apigen.gen.GenerationParameters;
 import apigen.gen.StringConversions;
 import apigen.gen.TypeConverter;
 import aterm.AFun;
@@ -32,18 +31,14 @@ import aterm.ATermReal;
 public class APIGenerator extends CGenerator {
 	private ADT adt;
 	private String apiName;
-	private boolean termCompatibility = false;
 	private String prefix;
-	private String prologue;
 	private String macro;
 
 	public AFunRegister afunRegister;
 
-	public APIGenerator(ADT adt, GenerationParameters params, String prologue, boolean termCompatibility) {
+	public APIGenerator(CGenerationParameters params, ADT adt) {
 		super(params);
 		this.adt = adt;
-		this.prologue = prologue;
-		this.termCompatibility = termCompatibility;
 		this.apiName = params.getApiName();
 		this.prefix = params.getPrefix();
 		afunRegister = new AFunRegister();
@@ -341,6 +336,7 @@ public class APIGenerator extends CGenerator {
 	}
 
 	private void copyPrologueFileToHeader() {
+		String prologue = getCGenerationParameters().getPrologue();
 		if (prologue != null) {
 			hprintFoldOpen("prologue");
 			InputStream stream;
@@ -393,9 +389,6 @@ public class APIGenerator extends CGenerator {
 		hprintln("#define " + macro);
 	}
 
-	//}}}
-	//{{{ private void genTypes(API api)
-
 	private void genTypes(ADT api) {
 		Iterator types = api.typeIterator();
 		bothPrintFoldOpen("typedefs");
@@ -408,9 +401,6 @@ public class APIGenerator extends CGenerator {
 		bothPrintFoldClose();
 		bothPrintln();
 	}
-
-	//}}}
-	//	{{{ private void genInitFunction(API api)
 
 	private void genInitFunction() {
 		String decl = "void " + prefix + "init" + StringConversions.makeCapitalizedIdentifier(apiName) + "Api(void)";
@@ -427,9 +417,6 @@ public class APIGenerator extends CGenerator {
 		hprintln();
 	}
 
-	//}}}
-	//	{{{ private String buildDictInitFunc(String name)
-
 	private String buildDictInitFunc(String name) {
 		StringBuffer buf = new StringBuffer();
 		for (int i = 0; i < name.length(); i++) {
@@ -443,9 +430,6 @@ public class APIGenerator extends CGenerator {
 		}
 		return buf.toString();
 	}
-
-	//}}}
-	//{{{ private void genTermConversions(API api)
 
 	private void genTermConversions(ADT api) {
 		Iterator types = api.typeIterator();
@@ -464,7 +448,7 @@ public class APIGenerator extends CGenerator {
 	private void genToTerm(String type_id, String type_name) {
 		String decl;
 
-		if (termCompatibility) {
+		if (getCGenerationParameters().isTermCompatibility()) {
 			String old_macro =
 				"#define " + prefix + "makeTermFrom" + type_id + "(t)" + " (" + prefix + type_id + "ToTerm(t))";
 			hprintln(old_macro);
@@ -480,7 +464,7 @@ public class APIGenerator extends CGenerator {
 	}
 
 	private void genFromTerm(String type_id, String type_name) {
-		if (termCompatibility) {
+		if (getCGenerationParameters().isTermCompatibility()) {
 			String old_macro =
 				"#define " + prefix + "make" + type_id + "FromTerm(t)" + " (" + prefix + type_id + "FromTerm(t))";
 			hprintln(old_macro);
@@ -494,9 +478,6 @@ public class APIGenerator extends CGenerator {
 		println("}");
 		printFoldClose();
 	}
-
-	//}}}
-	//{{{ private void genIsEquals(API api)
 
 	private void genIsEquals(ADT api) {
 		Iterator types = api.typeIterator();
@@ -522,9 +503,6 @@ public class APIGenerator extends CGenerator {
 
 		bothPrintFoldClose();
 	}
-
-	//}}}
-	//{{{ private String genConstructorImpl(ATerm pattern)
 
 	private String genConstructorImpl(ATerm pattern) {
 		String result = null;
@@ -632,9 +610,6 @@ public class APIGenerator extends CGenerator {
 		return "(ATerm)ATmakeReal(" + ((ATermReal) pattern).getReal() + ")";
 	}
 
-	//}}}
-	//{{{ private void genConstructors(API api)
-
 	private void genConstructors(ADT api) {
 		Iterator types = api.typeIterator();
 		bothPrintFoldOpen("constructors");
@@ -702,10 +677,6 @@ public class APIGenerator extends CGenerator {
 		}
 	}
 
-	//}}}
-
-	//{{{ private void genSortVisitors(API api)
-
 	private void genSortVisitors(ADT api) {
 		Iterator types = api.typeIterator();
 		bothPrintFoldOpen("sort visitors");
@@ -756,18 +727,12 @@ public class APIGenerator extends CGenerator {
 		bothPrintFoldClose();
 	}
 
-	//}}}
-	//{{{ private String genAcceptor(Field field)
-
 	private String genAcceptor(Field field) {
 		String type = buildTypeName(field.getType());
 		String name = "accept" + StringConversions.makeCapitalizedIdentifier(field.getId());
 
 		return type + " (*" + name + ")(" + type + ")";
 	}
-
-	//}}}
-	//{{{ private void genSortVisitorAltImpl(String type, Alternative alt)
 
 	private void genSortVisitorAltImpl(Type type, Alternative alt) {
 		String type_id = StringConversions.makeIdentifier(type.getId());
@@ -806,10 +771,6 @@ public class APIGenerator extends CGenerator {
 		println(");");
 		println("  }");
 	}
-
-	//}}}
-
-	//{{{ private void genGetField(Type type, Field field)
 
 	private void genGetField(Type type, Field field) {
 		String type_name = buildTypeName(type);
@@ -854,17 +815,10 @@ public class APIGenerator extends CGenerator {
 		printFoldClose();
 	}
 
-	//}}}
-	//	{{{ private void genEpilogue(API api)
-
 	private void genEpilogue() {
 		hprintln();
 		hprintln("#endif /* " + macro + " */");
 	}
-
-	//}}}
-
-	//{{{ private void genSetField(Type type, Field field)
 
 	private void genSetField(Type type, Field field) {
 		String type_id = StringConversions.makeIdentifier(type.getId());
@@ -918,10 +872,6 @@ public class APIGenerator extends CGenerator {
 		printFoldClose();
 	}
 
-	//}}}
-	//{{{ private void genSetterSteps(Iterator steps, List parentPath, String
-	// arg)
-
 	private void genSetterSteps(Iterator steps, List parentPath, String arg) {
 		if (steps.hasNext()) {
 			Step step = (Step) steps.next();
@@ -951,10 +901,6 @@ public class APIGenerator extends CGenerator {
 			print(arg);
 		}
 	}
-
-	//}}}
-
-	//	{{{ private void genGetterSteps(Iterator steps, String arg)
 
 	private void genGetterSteps(Iterator steps, String arg) {
 		if (steps.hasNext()) {
@@ -989,10 +935,6 @@ public class APIGenerator extends CGenerator {
 			print(arg);
 		}
 	}
-
-	//}}}
-
-	//	{{{ private void genHasField(Type type, Field field)
 
 	private void genHasField(Type type, Field field) {
 		String type_id = StringConversions.makeIdentifier(type.getId());
@@ -1032,18 +974,11 @@ public class APIGenerator extends CGenerator {
 		printFoldClose();
 	}
 
-	//}}}
-
-	//{{{ private String buildConstructorName(Type type, Alternative alt)
-
 	private String buildConstructorName(Type type, Alternative alt) {
 		String type_id = StringConversions.makeIdentifier(type.getId());
 		String alt_id = StringConversions.makeCapitalizedIdentifier(alt.getId());
 		return prefix + "make" + type_id + alt_id;
 	}
-
-	//}}}
-	//{{{ private String buildConstructorDecl(Type type, Alternative alt)
 
 	private String buildConstructorDecl(Type type, Alternative alt) {
 		String type_name = buildTypeName(type);
@@ -1125,9 +1060,6 @@ public class APIGenerator extends CGenerator {
 		printFoldClose();
 	}
 
-	//}}}
-	//{{{ private void genIsAlt(Type type, Alternative alt)
-
 	private void genIsAlt(Type type, Alternative alt) {
 		String type_name = buildTypeName(type);
 		String decl = "inline ATbool " + buildIsAltName(type, alt) + "(" + type_name + " arg)";
@@ -1136,8 +1068,6 @@ public class APIGenerator extends CGenerator {
 		boolean contains_placeholder = alt.containsPlaceholder();
 		int alt_count = type.getAlternativeCount();
 		boolean inverted = false;
-
-		//{{{ Create match_code
 
 		pattern =
 			prefix
@@ -1152,8 +1082,6 @@ public class APIGenerator extends CGenerator {
 			match_code.append(", NULL");
 		}
 		match_code.append(")");
-
-		//}}}
 
 		hprintln(decl + ";");
 
@@ -1174,16 +1102,11 @@ public class APIGenerator extends CGenerator {
 			int pat_type = alt.getPatternType();
 			alts_left.keepByType(pat_type);
 			if (alts_left.size() != alt_count) {
-				//{{{ Check term types
-
 				println("  if (ATgetType((ATerm)arg) != " + getATermTypeName(pat_type) + ") {");
 				println("    return ATfalse;");
 				println("  }");
-
-				//}}}
 			}
 			if (pat_type == ATerm.APPL) {
-				//{{{ Check function symbols
 				if (alt instanceof ATermAppl) {
 					AFun afun = ((ATermAppl) alt.buildMatchPattern()).getAFun();
 					alt_count = alts_left.size();
@@ -1194,12 +1117,8 @@ public class APIGenerator extends CGenerator {
 						println("  }");
 					}
 				}
-
-				//}}}
 			}
 			else if (pat_type == ATerm.LIST) {
-				//{{{ Check list length
-
 				ATermList matchPattern = (ATermList) alt.buildMatchPattern();
 				if (matchPattern.isEmpty()) {
 					alts_left.clear();
@@ -1213,8 +1132,6 @@ public class APIGenerator extends CGenerator {
 					println("    return ATfalse;");
 					println("  }");
 				}
-
-				//}}}
 			}
 
 			if (alts_left.size() == 0) {
@@ -1247,10 +1164,6 @@ public class APIGenerator extends CGenerator {
 		printFoldClose();
 	}
 
-	//}}}
-
-	//	{{{ private String[] genReservedTypeGetter(String type)
-
 	private String[] genReservedTypeGetter(String type) {
 		String pre = "";
 		String post = "";
@@ -1272,9 +1185,6 @@ public class APIGenerator extends CGenerator {
 		return result;
 	}
 
-	//}}}
-	//{{{ private String genReservedTypeSetterArg(String type, String id)
-
 	private String genReservedTypeSetterArg(String type, String id) {
 		if (type.equals("int")) {
 			return "ATmakeInt(" + id + ")";
@@ -1289,10 +1199,6 @@ public class APIGenerator extends CGenerator {
 			return id;
 		}
 	}
-
-	//}}}
-
-	//{{{ private String getATermTypeName(int type)
 
 	private String getATermTypeName(int type) {
 		switch (type) {
@@ -1313,16 +1219,9 @@ public class APIGenerator extends CGenerator {
 		}
 	}
 
-	//}}}
-
-	//{{{ private String buildIsAltName(Type type, Alternative alt)
-
 	private String buildIsAltName(Type type, Alternative alt) {
 		return buildIsAltName(type, alt.getId());
 	}
-
-	//}}}
-	//{{{ private String buildIsAltName(Type type, String altId)
 
 	private String buildIsAltName(Type type, String altId) {
 		return prefix
@@ -1331,10 +1230,6 @@ public class APIGenerator extends CGenerator {
 			+ StringConversions.makeCapitalizedIdentifier(altId);
 	}
 
-	//}}}
-
-	//{{{ private String buildGetterName(Type type, Field field)
-
 	private String buildGetterName(Type type, Field field) {
 		String type_id = StringConversions.makeIdentifier(type.getId());
 		String fieldId = StringConversions.makeCapitalizedIdentifier(field.getId());
@@ -1342,16 +1237,9 @@ public class APIGenerator extends CGenerator {
 		return prefix + "get" + type_id + fieldId;
 	}
 
-	//}}}
-
-	//{{{ private void printFoldOpen(PrintStream out, String comment)
-
 	private String buildTypeName(Type type) {
 		return buildTypeName(type.getId());
 	}
-
-	//}}}
-	//{{{ private String buildTypeName(String typeId)
 
 	private String buildTypeName(String typeId) {
 		TypeConverter conv = new TypeConverter(new CTypeConversions());
@@ -1365,8 +1253,6 @@ public class APIGenerator extends CGenerator {
 			return prefix + StringConversions.makeCapitalizedIdentifier(name);
 		}
 	}
-
-	//}}}
 
 	public AFunRegister getAFunRegister() {
 		return afunRegister;

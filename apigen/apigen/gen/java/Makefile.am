@@ -1,6 +1,4 @@
-#
 # $Id: Makefile.am,v 1.7 2001/07/16 13:41:54 jong Exp $
-#
 
 CLASSPATH_ENV = CLASSPATH=${top_srcdir}:$(EXTERNAL_JARS)
 
@@ -14,7 +12,6 @@ java_JAVA = \
 	GenericConstructorGenerator.java \
 	JavaGenerationParameters.java \
 	JavaGenerator.java \
-	JavaTomSignatureImplementation.java \
 	JavaTypeConversions.java \
 	ListTypeGenerator.java \
 	Main.java \

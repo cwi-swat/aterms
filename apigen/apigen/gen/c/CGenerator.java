@@ -2,20 +2,23 @@ package apigen.gen.c;
 
 import java.io.PrintStream;
 
-import apigen.gen.GenerationParameters;
 import apigen.gen.Generator;
 
 abstract public class CGenerator extends Generator {
 	private static final String SOURCE_FILE_EXTENSION = ".c";
 	private static final String HEADER_FILE_EXTENSION = ".h";
-	
+
 	private PrintStream headerStream;
 
-	public CGenerator(GenerationParameters params) {
+	public CGenerator(CGenerationParameters params) {
 		super(params);
 		setDirectory(params.getOutputDirectory());
 		setExtension(SOURCE_FILE_EXTENSION);
 		setFileName(params.getApiName());
+	}
+
+	public CGenerationParameters getCGenerationParameters() {
+		return (CGenerationParameters) getGenerationParameters();
 	}
 
 	/**

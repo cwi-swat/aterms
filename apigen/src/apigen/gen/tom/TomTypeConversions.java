@@ -4,23 +4,23 @@ import apigen.gen.TypeConversions;
 
 public class TomTypeConversions implements TypeConversions {
 
-	public String IntegerType() {
+	public String getIntegerType() {
 		return "int";
 	}
 
-	public String RealType() {
+	public String getRealType() {
 		return "double";
 	}
 
-	public String TermType() {
+	public String getTermType() {
 		return "ATerm";
 	}
 
-	public String ListType() {
+	public String getListType() {
 		return "ATermList";
 	}
 
-  public String StringType() {
+	public String getStringType() {
 		return "String";
 	}
 }
