@@ -148,6 +148,10 @@ public class JavaTomSignatureImplementation implements TomSignatureImplementatio
 	}
 
 	public String TypeName(String type) {
+		if (converter.isReserved(type)) {
+			return type;
+		}
+		
 		return StringConversions.makeCapitalizedIdentifier(converter.getType(type));
 	}
 
