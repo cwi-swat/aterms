@@ -8,6 +8,7 @@ exec_prefix=@exec_prefix@
     datadir=@datadir@
     SGLRBIN=@SGLRBIN@
     EVALBIN=@EVALBIN@
+   ATERMBIN=@ATERMBIN@
  ASOURCEBIN=@ASOURCEBIN@
     PKGDATA=${datadir}/@PACKAGE@
         PRG=`basename $0`
@@ -19,20 +20,26 @@ exec_prefix=@exec_prefix@
 
 usage() {
 cat << ENDCAT >&2
-Usage: $PRG [options]
+Usage: $PRG -i <sdf2-specification> [options]
 
-Options:
+Parameters:
   
-  -i | --input <IN>      specify input specification
-  -o | --output <OUT>    specify name of generated ADT [default: <IN>.adt]
-  -t | --table <TBL>     explicitly name the APIGEN-table to use
-  -e | --expand-cons     put cons-annotations in term patterns  [default]
-  -r | --remove-cons     remove cons-annotations from term patterns
-  -v | --verbose         be verbose during generation
-  -s | --skip-cleanup    skip cleanup phase (useful for debugging)
+  -i | --input  <FILE>   specify input specification       [not specified]
+  -o | --output <FILE>   specify name of generated ADT     [default: <IN>.adt]
+  -t | --table  <FILE>   specify the APIGEN-table to use   [see below]
+  -l | --label  <FILE>   specify labeling equations        [see below]
+  -e | --expand-cons     propagate cons-annotations        [on]
+  -r | --remove-cons     remove cons-annotations           [off]
+  -v | --verbose         be verbose during generation      [off]
+  -s | --skip-cleanup    skip cleanup (debugging aid)      [off]
   -h | --help            display this information
 
-Example: $PRG --remove-cons -i Booleans.sdf -o Booleans.adt
+Default locations:
+   APIGEN-parsetable = ${APITABLE}
+  Labeling equations = ${ADDLABELS}
+
+Example: ${PRG} --remove-cons -i Booleans.sdf -o Booleans.adt
+
 ENDCAT
 }
 
@@ -49,7 +56,7 @@ info () {
 # {{{  error()
 
 error() {
-  echo $* >&2
+  echo "${PRG}: $*" >&2
   exit 1
 }
 
@@ -66,7 +73,7 @@ cleanup() {
   else
     info "- No cleanup, here are your intermediate files:"
     if [ ${VERBOSE} -gt 0 ]; then
-      ls -l .api_[0-5]_$$
+      ls -l .api_[0-4]_$$
     fi
   fi
 }
@@ -96,6 +103,7 @@ ADDLABELS=${PKGDATA}/AddLabels.asf
 # binaries
      SGLR=${SGLRBIN}/sglr
   ASOURCE=${ASOURCEBIN}/asource
+  TRM2BAF=${ATERMBIN}/trm2baf
 SDF2TOADT=${bindir}/Sdf2-to-ADT
 EVALUATOR=${EVALBIN}/asfe
 APPLYFUNC=${EVALBIN}/apply-function
@@ -130,6 +138,9 @@ do
     -t | --table)
       shift; APITABLE=$1 ;;
 
+    -l | --label)
+      shift; ADDLABELS=$1 ;;
+
     -v | --VERBOSE)
       VERBOSE=1 ;;
 
@@ -140,7 +151,7 @@ do
       usage; exit 0 ;;
 
     *)
-      error "Unknown option: $1"
+      error "unknown option: $1"
   esac
   shift
 done
@@ -150,15 +161,14 @@ done
 # {{{ Sanity checks and variable setup
 
 if [ "a${INPUT}" == "a" ]; then
-  error "${PRG}: please specify an input file"
+  error "no input file specified (use -i <file>)"
 fi
 
-[ -f ${INPUT} ] || error "${PRG}: no such file: ${INPUT}"
-[ -f ${APITABLE} ] || error "${PRG}: no such file: ${APITABLE}"
+[ -f ${INPUT} ] || error "no such file: ${INPUT}"
+[ -f ${APITABLE} ] || error "no such file: ${APITABLE}"
 
-MODULE=`basename $INPUT .sdf`
 if [ "a$OUTPUT" == "a" ]; then
-  OUTPUT=${MODULE}.adt
+  OUTPUT=${INPUT}.adt
 fi
 
 # }}}
@@ -166,8 +176,6 @@ fi
 # {{{  Generate API
 
 trap cleanup EXIT
-
-#set -x
 
 info "Generating ${OUTPUT} from ${INPUT}:"
 
@@ -181,6 +189,6 @@ ${EVALUATOR} -w on -e ${ADDLABELS} -i .api_2_$$ -o .api_3_$$ || err
 info " - Generating ADT (${SDF2TOADT})"
 func="sdf-to-adt-${CONSOPT}"
 ${APPLYFUNC} -f ${func} -s ATerm -m Sdf2-to-ADT < .api_3_$$ > .api_4_$$ || err
-${SDF2TOADT} < .api_4_$$ | ${ASOURCE} > ${OUTPUT} || err
+${SDF2TOADT} < .api_4_$$ | ${ASOURCE} | ${TRM2BAF} > ${OUTPUT} || err
 
 # }}}
