@@ -4,6 +4,7 @@
 # $Id$
 #
 
+CLASSPATH := $(ATERM)/classes:$(CLASSPATH)
 
 java_JAVA       = CGen.java
 
