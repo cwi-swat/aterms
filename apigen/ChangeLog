@@ -1,3 +1,6 @@
+2001/03/02 (jong@cwi.nl)
+ * change == to = in shell-scripts to check string-equality
+
 2001/02/28 (jong@cwi.nl)
  * apigen classes are now built before the utils directory is entered
  * several references to ${top_srcdir} changed to ${top_builddir}

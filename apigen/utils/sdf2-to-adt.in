@@ -160,7 +160,7 @@ done
 
 # {{{ sanity checks and variable setup
 
-if [ "a${INPUT}" == "a" ]; then
+if [ "a${INPUT}" = "a" ]; then
   error "no input file specified (use -i <file>)"
 else
   require ${INPUT}
@@ -168,7 +168,7 @@ fi
 
 require ${APITABLE}
 
-if [ "a$OUTPUT" == "a" ]; then
+if [ "a${OUTPUT}" = "a" ]; then
   OUTPUT=${INPUT}.adt
 fi
 
