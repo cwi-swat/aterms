@@ -342,8 +342,10 @@ int ATBeventloop(void)
   int fd;
   while(ATtrue) {
     fd = ATBhandleAny();
-    if(fd < 0)
+    if(fd < 0) {
+      fprintf(stderr, "warning: connection with ToolBus was lost.\n");
       return -1;
+    }
   }
 }
 
@@ -363,8 +365,10 @@ int ATBwriteTerm(int fd, ATerm term)
   resize_buffer(wirelen+1);               /* Add '\0' character */
   sprintf(buffer, "%-.7d:", len);
   AT_writeToStringBuffer(term, buffer+8);
-  if(mwrite(fd, buffer, wirelen) < 0)
-    ATerror("ATBwriteTerm: connection with ToolBus lost.\n");
+  if(mwrite(fd, buffer, wirelen) < 0) {
+    return -1;
+  }
+
   return 0;
 }
 
@@ -381,8 +385,9 @@ ATerm  ATBreadTerm(int fd)
   ATerm t;
 
   /* Read the first batch */
-  if(mread(fd, buffer, MIN_MSG_SIZE) <= 0) 
-    ATerror("ATBreadTerm: connection with ToolBus lost.\n");
+  if(mread(fd, buffer, MIN_MSG_SIZE) <= 0) {
+    return NULL;
+  }
 
   /* Retrieve the data length */
   if(sscanf(buffer, "%7d:", &len) != 1)
@@ -393,8 +398,9 @@ ATerm  ATBreadTerm(int fd)
 
   if(len > MIN_MSG_SIZE) {
     /* Read the rest of the data */
-    if(mread(fd, buffer+MIN_MSG_SIZE, len-MIN_MSG_SIZE) < 0)
-      ATerror("ATBreadTerm: connection with ToolBus lost.\n");
+    if (mread(fd, buffer+MIN_MSG_SIZE, len-MIN_MSG_SIZE) < 0) {
+      return NULL;
+    }
   }
   buffer[len] = '\0';
 
@@ -480,8 +486,9 @@ int ATBhandleOne(int fd)
 
   appl = (ATermAppl)ATBreadTerm(fd);
 
-  if(appl == NULL)
+  if (appl == NULL) {
     return -1;
+  }
 
   result = connections[fd]->handler(fd, (ATerm)appl);
 
