@@ -2032,7 +2032,7 @@ AT_markTerm(ATerm t)
 			
 		if (!t) {
 			if(current != mark_stack) {
-				ATerror("AT_markTerm: premature end of mark_stack.\n");
+				ATabort("AT_markTerm: premature end of mark_stack.\n");
 			}
 			break;
 		}
