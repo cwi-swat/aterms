@@ -10,16 +10,10 @@ import apigen.gen.StringConversions;
 
 public class TypeGenerator extends JavaGenerator {
 	private Type type;
-	private String superClassName;
-	private String factoryName;
-	private String apiName;
 
 	protected TypeGenerator(GenerationParameters params, Type type) {
 		super(params);
 		this.type = type;
-		this.apiName = params.getApiName();
-		this.superClassName = GenericConstructorGenerator.className(params.getApiName());
-		this.factoryName = FactoryGenerator.className(params.getApiName());
 	}
 
 	public String getClassName() {
@@ -27,19 +21,28 @@ public class TypeGenerator extends JavaGenerator {
 	}
 
 	public String getPackageName() {
+		String apiName = getGenerationParameters().getApiName();
 		return StringConversions.decapitalize(apiName) + '.' + packageName(type);
 	}
 
 	public String getQualifiedClassName() {
-		return qualifiedClassName(type);
+		return qualifiedClassName(getGenerationParameters(), type);
 	}
 
-	public static String qualifiedClassName(String type) {
-		return packageName(type) + '.' + className(type);
+	public static String qualifiedClassName(GenerationParameters params, String type) {
+		StringBuffer buf = new StringBuffer();
+		buf.append(params.getPackageName());
+		buf.append('.');
+		buf.append(StringConversions.decapitalize(params.getApiName()));
+		buf.append('.');
+		buf.append(packageName(type));
+		buf.append('.');
+		buf.append(className(type));
+		return buf.toString();
 	}
 
-	public static String qualifiedClassName(Type type) {
-		return qualifiedClassName(type.getId());
+	public static String qualifiedClassName(GenerationParameters params, Type type) {
+		return qualifiedClassName(params, type.getId());
 	}
 
 	public static String packageName(Type type) {
@@ -71,8 +74,10 @@ public class TypeGenerator extends JavaGenerator {
 	}
 
 	protected void genTypeClassImpl(Type type) {
+		GenerationParameters params = getGenerationParameters();
 		String classImplName = className(type);
 		String className = TypeGenerator.className(type.getId());
+		String superClassName = GenericConstructorGenerator.qualifiedClassName(params);
 
 		println("abstract public class " + classImplName + " extends " + superClassName + " {");
 
@@ -89,27 +94,32 @@ public class TypeGenerator extends JavaGenerator {
 	}
 
 	protected void genInitMethod() {
-		println("  protected void init(int hashCode, aterm.ATermList annos, aterm.AFun fun,	aterm.ATerm[] args) {");
+		println("  public void init(int hashCode, aterm.ATermList annos, aterm.AFun fun,	aterm.ATerm[] args) {");
 		println("    super.init(hashCode, annos, fun, args);");
 		println("  }");
+		println();
 	}
 
 	protected void genInitHashcodeMethod() {
-		println("  protected void initHashCode(aterm.ATermList annos, aterm.AFun fun, aterm.ATerm[] i_args) {");
+		println("  public void initHashCode(aterm.ATermList annos, aterm.AFun fun, aterm.ATerm[] i_args) {");
 		println("  	super.initHashCode(annos, fun, i_args);");
 		println("  }");
+		println();
 	}
 
 	protected void genConstructor(String classImplName) {
+		String factoryName = FactoryGenerator.qualifiedClassName(getGenerationParameters());
 		println("  protected " + classImplName + "(" + factoryName + " factory) {");
 		println("     super(factory);");
 		println("  }");
+		println();
 	}
 
 	protected void genIsEqual(String class_name) {
 		println("  public boolean isEqual(" + class_name + " peer) {");
 		println("    return super.isEqual(peer);");
 		println("  }");
+		println();
 	}
 
 	protected void genDefaultGetAndSetMethods(Type type) {
@@ -163,7 +173,6 @@ public class TypeGenerator extends JavaGenerator {
 
 	protected void genDefaultIsMethod(Alternative alt) {
 		println("  public boolean is" + StringConversions.makeCapitalizedIdentifier(alt.getId()) + "() {");
-		println("  {");
 		println("    return false;");
 		println("  }");
 		println();

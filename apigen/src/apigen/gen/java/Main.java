@@ -14,7 +14,7 @@ import apigen.adt.SeparatedListType;
 import apigen.adt.Type;
 import apigen.adt.api.ADTFactory;
 import apigen.adt.api.Entries;
-import apigen.gen.*;
+import apigen.gen.GenerationParameters;
 import apigen.gen.TypeConverter;
 import apigen.gen.tom.TomSignatureGenerator;
 import aterm.ATermList;
@@ -49,7 +49,7 @@ public class Main {
 		if (args.length == 0) {
 			usage();
 		}
-		
+
 		params.setOutputDirectory(".");
 		params.setVerbose(false);
 		params.setFolding(false);

@@ -19,7 +19,7 @@ public class MakeRulesGenerator extends Generator {
 	private String prefix;
 
 	public MakeRulesGenerator(ADT adt, GenerationParameters params) {
-		super();
+		super(params);
 		this.adt = adt;
 		this.name = StringConversions.makeCapitalizedIdentifier(params.getApiName());
 		this.prefix = name + "API";

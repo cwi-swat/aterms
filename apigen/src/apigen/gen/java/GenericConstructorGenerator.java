@@ -20,15 +20,27 @@ public class GenericConstructorGenerator extends JavaGenerator {
 		this.apiName = params.getApiName();
 		this.visitable = params.isVisitable();
 		this.className = className(params.getApiName());
-		this.factoryName = FactoryGenerator.className(params.getApiName());
+		this.factoryName = FactoryGenerator.className(params);
 	}
 
 	public String getClassName() {
 		return className;
 	}
 
-	public static String className(String apiName) {
-		return StringConversions.makeCapitalizedIdentifier(apiName) + "Constructor";
+	public static String className(String name) {
+		return StringConversions.makeCapitalizedIdentifier(name) + "Constructor";
+	}
+	
+	public static String qualifiedClassName(GenerationParameters params) {
+		StringBuffer buf = new StringBuffer();
+		buf.append(params.getPackageName());
+		buf.append('.');
+		buf.append(StringConversions.decapitalize(params.getApiName()));
+		buf.append('.');
+		buf.append(StringConversions.makeCapitalizedIdentifier(params.getApiName()));
+		buf.append("Constructor");
+		System.err.println("GenericConstructorGenerator.className: " + buf.toString());
+		return buf.toString();
 	}
 
 	protected void generate() {
@@ -63,14 +75,14 @@ public class GenericConstructorGenerator extends JavaGenerator {
 	}
 
 	private void genInitMethod() {
-		println("  protected void init(int hashCode, aterm.ATermList annos, aterm.AFun fun, aterm.ATerm[] args) {");
+		println("  public void init(int hashCode, aterm.ATermList annos, aterm.AFun fun, aterm.ATerm[] args) {");
 		println("    super.init(hashCode, annos, fun, args);");
 		println("  }");
 		println();
 	}
 
 	private void genInitHashcodeMethod() {
-		println("  protected void initHashCode(aterm.ATermList annos, aterm.AFun fun, aterm.ATerm[] args) {");
+		println("  public void initHashCode(aterm.ATermList annos, aterm.AFun fun, aterm.ATerm[] args) {");
 		println("    super.initHashCode(annos, fun, args);");
 		println("  }");
 		println();

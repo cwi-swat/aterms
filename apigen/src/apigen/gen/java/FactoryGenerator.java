@@ -22,15 +22,29 @@ public class FactoryGenerator extends JavaGenerator {
 		super(params);
 		this.adt = adt;
 		this.apiName = params.getApiName();
-		this.className = className(params.getApiName());
+		this.className = className(params);
 	}
 
 	public String getClassName() {
 		return className;
 	}
+	
+	public static String className(String name) {
+		return StringConversions.capitalize(name) + "Factory";
+	}
+	
+	public static String className(GenerationParameters params) {
+		return className(params.getApiName());
+	}
 
-	public static String className(String apiName) {
-		return StringConversions.makeCapitalizedIdentifier(apiName) + "Factory";
+	public static String qualifiedClassName(GenerationParameters params) {
+		StringBuffer buf = new StringBuffer();
+		buf.append(params.getPackageName());
+		buf.append('.');
+		buf.append(StringConversions.decapitalize(params.getApiName()));
+		buf.append('.');
+		buf.append(className(params.getApiName()));
+		return buf.toString();
 	}
 
 	protected void generate() {
@@ -105,11 +119,12 @@ public class FactoryGenerator extends JavaGenerator {
 	}
 
 	private void genFactoryEmptyLists(ADT api) {
+		GenerationParameters params = getGenerationParameters();
 		Iterator types = api.typeIterator();
 		while (types.hasNext()) {
 			Type type = (Type) types.next();
 			if (type instanceof ListType) {
-				String className = TypeGenerator.qualifiedClassName(type);
+				String className = TypeGenerator.qualifiedClassName(params, type);
 				println("  private " + className + " empty" + className + ";");
 			}
 		}
@@ -337,6 +352,8 @@ public class FactoryGenerator extends JavaGenerator {
 	}
 
 	private void genFactoryPrivateMembers(ADT api) {
+		GenerationParameters params = getGenerationParameters();
+
 		// TODO: maybe ATermFactory is enough instead of PureFactory
 		println("  private aterm.pure.PureFactory factory;");
 		println();
@@ -344,7 +361,7 @@ public class FactoryGenerator extends JavaGenerator {
 		Iterator types = api.typeIterator();
 		while (types.hasNext()) {
 			Type type = (Type) types.next();
-			String typeClassName = TypeGenerator.qualifiedClassName(type);
+			String typeClassName = TypeGenerator.qualifiedClassName(params, type);
 			Iterator alts = type.alternativeIterator();
 
 			if (type instanceof ListType) {
@@ -395,7 +412,8 @@ public class FactoryGenerator extends JavaGenerator {
 	}
 
 	private void genMakeMethod(Type type, Alternative alt) {
-		String altClassName = AlternativeGenerator.qualifiedClassName(type, alt);
+		GenerationParameters params = getGenerationParameters();
+		String altClassName = AlternativeGenerator.qualifiedClassName(params, type, alt);
 		String makeMethodName = "make" + concatTypeAlt(type, alt);
 		String funVar = funVariable(type, alt);
 
@@ -411,10 +429,11 @@ public class FactoryGenerator extends JavaGenerator {
 	}
 
 	private void genInternalMakeMethod(Type type, Alternative alt) {
-		String altClassName = AlternativeGenerator.qualifiedClassName(type, alt);
+		GenerationParameters params = getGenerationParameters();
+		String altClassName = AlternativeGenerator.qualifiedClassName(params, type, alt);
 		String protoVar = prototypeVariable(type, alt);
 
-		print("  protected " + altClassName + " make" + concatTypeAlt(type, alt));
+		print("  public " + altClassName + " make" + concatTypeAlt(type, alt));
 		println("(aterm.AFun fun, aterm.ATerm[] args, aterm.ATermList annos) {");
 		println("    synchronized (" + protoVar + ") {");
 		println("      " + protoVar + ".initHashCode(annos, fun, args);");
@@ -425,7 +444,8 @@ public class FactoryGenerator extends JavaGenerator {
 	}
 
 	private void genAltToTerm(Type type, Alternative alt) {
-		String className = AlternativeGenerator.qualifiedClassName(type, alt);
+		GenerationParameters params = getGenerationParameters();
+		String className = AlternativeGenerator.qualifiedClassName(params, type, alt);
 
 		println("  public aterm.ATerm toTerm(" + className + " arg) {");
 		println("    java.util.List args = new java.util.LinkedList();");
@@ -480,6 +500,7 @@ public class FactoryGenerator extends JavaGenerator {
 				listTypesCount++;
 			}
 			else {
+				GenerationParameters params = getGenerationParameters();
 				Iterator alts = type.alternativeIterator();
 				while (alts.hasNext()) {
 					Alternative alt = (Alternative) alts.next();
@@ -503,7 +524,7 @@ public class FactoryGenerator extends JavaGenerator {
 							+ type.getAltArity(alt)
 							+ ", false);");
 					println(
-						"    " + protoVar + " = new " + AlternativeGenerator.qualifiedClassName(type, alt) + "(this);");
+						"    " + protoVar + " = new " + AlternativeGenerator.qualifiedClassName(params, type, alt) + "(this);");
 					println();
 				}
 			}
@@ -594,7 +615,9 @@ public class FactoryGenerator extends JavaGenerator {
 	}
 
 	private void genAltFromTerm(Type type, Alternative alt) {
-		String returnType = TypeGenerator.qualifiedClassName(type);
+		GenerationParameters params = getGenerationParameters();
+
+		String returnType = TypeGenerator.qualifiedClassName(params, type);
 		String methodName = concatTypeAlt(type, alt) + "FromTerm";
 
 		println("  protected " + returnType + " " + methodName + "(aterm.ATerm trm) {");
@@ -654,7 +677,9 @@ public class FactoryGenerator extends JavaGenerator {
 	}
 
 	private void genTypeFromTermMethod(Type type) {
-		String returnType = TypeGenerator.qualifiedClassName(type);
+		GenerationParameters params = getGenerationParameters();
+
+		String returnType = TypeGenerator.qualifiedClassName(params, type);
 		String methodName = TypeGenerator.className(type) + "FromTerm";
 
 		println("  public " + returnType + " " + methodName + "(aterm.ATerm trm) {");
@@ -680,7 +705,9 @@ public class FactoryGenerator extends JavaGenerator {
 	}
 
 	protected void genTypeFromStringMethod(Type type) {
-		String returnType = TypeGenerator.qualifiedClassName(type);
+		GenerationParameters params = getGenerationParameters();
+
+		String returnType = TypeGenerator.qualifiedClassName(params, type);
 		String fromString = TypeGenerator.className(type.getId()) + "FromString";
 		String fromTerm = TypeGenerator.className(type.getId()) + "FromTerm";
 
@@ -691,7 +718,9 @@ public class FactoryGenerator extends JavaGenerator {
 	}
 
 	protected void genTypeFromFileMethod(Type type) {
-		String returnType = TypeGenerator.qualifiedClassName(type);
+		GenerationParameters params = getGenerationParameters();
+
+		String returnType = TypeGenerator.qualifiedClassName(params, type);
 		String fromFile = TypeGenerator.className(type.getId()) + "FromFile";
 		String fromTerm = TypeGenerator.className(type.getId()) + "FromTerm";
 
@@ -866,23 +895,23 @@ public class FactoryGenerator extends JavaGenerator {
 		return getClassName();
 	}
 
-	private String concatTypeAlt(Type type, Alternative alt) {
+	public static String concatTypeAlt(Type type, Alternative alt) {
 		return TypeGenerator.className(type) + "_" + AlternativeGenerator.className(alt);
 	}
 
-	private String alternativeVariable(String pre, Type type, Alternative alt) {
+	private static String alternativeVariable(String pre, Type type, Alternative alt) {
 		return pre + '_' + concatTypeAlt(type, alt);
 	}
 
-	private String patternVariable(Type type, Alternative alt) {
+	private static String patternVariable(Type type, Alternative alt) {
 		return alternativeVariable("pattern", type, alt);
 	}
 
-	private String prototypeVariable(Type type, Alternative alt) {
+	private static String prototypeVariable(Type type, Alternative alt) {
 		return alternativeVariable("proto", type, alt);
 	}
 
-	private String funVariable(Type type, Alternative alt) {
+	private static String funVariable(Type type, Alternative alt) {
 		return alternativeVariable("fun", type, alt);
 	}
 }

@@ -6,24 +6,19 @@ import java.io.FileOutputStream;
 import java.io.PrintStream;
 
 public abstract class Generator {
+	private GenerationParameters params;
+
 	private String directory;
 	private String fileName;
 	private String extension;
-	private boolean verbose;
 	private PrintStream stream;
 
-	public Generator() {
-		this("", "", "");
-	}
-	
-	public Generator(String extension) {
-		this("", "", extension);
+	public Generator(GenerationParameters params) {
+		this.params = params;
 	}
 
-	public Generator(String directory, String fileName, String extension) {
-		this.directory = directory;
-		this.fileName = fileName;
-		this.extension = extension;
+	public GenerationParameters getGenerationParameters() {
+		return params;
 	}
 
 	/**
@@ -71,7 +66,7 @@ public abstract class Generator {
 	 * Print a message on stderr if the verbose option is set to true
 	 */
 	public void info(String msg) {
-		if (verbose) {
+		if (params.isVerbose()) {
 			System.err.println(msg);
 		}
 	}
@@ -137,14 +132,6 @@ public abstract class Generator {
 
 	public void setStream(PrintStream stream) {
 		this.stream = stream;
-	}
-
-	public boolean isVerbose() {
-		return verbose;
-	}
-
-	public void setVerbose(boolean verbose) {
-		this.verbose = verbose;
 	}
 
 	public void setDirectory(String directory) {

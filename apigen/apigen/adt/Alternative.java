@@ -1,14 +1,15 @@
 package apigen.adt;
 
+import java.util.List;
+
 import apigen.adt.api.Separator;
 import apigen.adt.api.Separators;
 import aterm.AFun;
 import aterm.ATerm;
 import aterm.ATermAppl;
+import aterm.ATermFactory;
 import aterm.ATermList;
 import aterm.ATermPlaceholder;
-import aterm.ATermFactory;
-import java.util.*;
 
 public class Alternative {
 
@@ -68,18 +69,24 @@ public class Alternative {
 			ATerm ph = ((ATermPlaceholder) match_pattern).getPlaceholder();
 			if (ph.match("int") != null) {
 				return ATerm.INT;
-			} else if (ph.match("real") != null) {
+			}
+			else if (ph.match("real") != null) {
 				return ATerm.REAL;
-			} else if (ph.match("str") != null) {
+			}
+			else if (ph.match("str") != null) {
 				return ATerm.APPL;
-			} else if (ph.match("list") != null) {
+			}
+			else if (ph.match("list") != null) {
 				return ATerm.LIST;
-			} else if (ph.match("term") != null) {
+			}
+			else if (ph.match("term") != null) {
 				return ATerm.APPL;
-			} else {
+			}
+			else {
 				throw new RuntimeException("strange root pattern: " + match_pattern);
 			}
-		} else {
+		}
+		else {
 			return match_pattern.getType();
 		}
 	}
@@ -125,11 +132,13 @@ public class Alternative {
 					ATerm ph = ((ATermPlaceholder) t).getPlaceholder();
 					if (ph.getType() == ATerm.LIST) {
 						return pattern.getFactory().parse("<list>");
-					} else {
+					}
+					else {
 						ATerm type = ((ATermAppl) ph).getArgument(0);
 						if (isReservedType(type.toString())) {
 							return pattern.getFactory().makePlaceholder(type);
-						} else {
+						}
+						else {
 							return pattern.getFactory().parse("<term>");
 						}
 					}
@@ -139,84 +148,84 @@ public class Alternative {
 				return t;
 		}
 	}
-	
+
 	protected static Alternative makeEmptyListConstructor(ATermFactory factory) {
-			Alternative empty = new Alternative("empty", factory.parse("[]"));
-			return empty;
+		Alternative empty = new Alternative(ListType.EMPTY_LIST_ALT_NAME, factory.parse("[]"));
+		return empty;
 	}
-		
-	protected static Alternative makeManyListConstructor(ATermFactory factory, String ListType, String ElementType) {
+
+	protected static Alternative makeManyListConstructor(ATermFactory factory, String listType, String elementType) {
 		Alternative many =
 			new Alternative(
-				"many",
-				factory.parse("[<head(" + ElementType + ")>,<[tail(" + ListType + ")]>]"));
+				ListType.MANY_LIST_ALT_NAME,
+				factory.parse("[<head(" + elementType + ")>,<[tail(" + listType + ")]>]"));
 
 		return many;
 	}
-	
+
 	public static Alternative makeSingletonListConstructor(ATermFactory factory, String elementType) {
 		Alternative single =
-				new Alternative(
-					"single",
-					factory.parse("[<head(" + elementType + ")>]"));
+			new Alternative(ListType.SINGLE_LIST_ALT_NAME, factory.parse("[<head(" + elementType + ")>]"));
 
-			return single;	
-		}
-			
-	protected static Alternative makeManySeparatedListConstructor(ATermFactory factory, String ListType, String ElementType, Separators separators) {
+		return single;
+	}
+
+	protected static Alternative makeManySeparatedListConstructor(
+		ATermFactory factory,
+		String listType,
+		String elementType,
+		Separators separators) {
 		String pattern = "[";
-		
-		pattern += "<head(" + ElementType + ")>";
+
+		pattern += "<head(" + elementType + ")>";
 		pattern += ",";
-		
+
 		for (; !separators.isEmpty(); separators = separators.getTail()) {
 			Separator sep = separators.getHead();
-			
+
 			pattern += sep.toString();
 			pattern += ",";
 		}
-		
-		pattern += "<[tail(" + ListType + ")]>";
+
+		pattern += "<[tail(" + listType + ")]>";
 		pattern += "]";
-		
-		return new Alternative("many", factory.parse(pattern));
-		
+
+		return new Alternative(ListType.MANY_LIST_ALT_NAME, factory.parse(pattern));
+
 	}
 
 	public boolean isEmpty() {
 		List subst = getPattern().match("[]");
-		return getId().equals("empty") && (subst != null);
+		return getId().equals(ListType.EMPTY_LIST_ALT_NAME) && (subst != null);
 	}
-	
+
 	public boolean isMany() {
-		if(getPattern().getType() == ATerm.LIST) {
+		if (getPattern().getType() == ATerm.LIST) {
 			ATermList l = (ATermList) getPattern();
 			ATerm headPh = l.getFirst();
-			ATerm tailList = l. getNext(); 
-		
-			if(headPh != null 
-			   && headPh.getType() == ATerm.PLACEHOLDER 
-			   && tailList.getType() == ATerm.LIST) {
-				ATerm head = ((ATermPlaceholder)headPh).getPlaceholder();
-				ATerm tailPh = ((ATermList)tailList).getFirst();
-				if(tailPh != null && tailPh.getType() == ATerm.PLACEHOLDER) {
-					ATerm tail = ((ATermPlaceholder)tailPh).getPlaceholder();
-				
+			ATerm tailList = l.getNext();
+
+			if (headPh != null && headPh.getType() == ATerm.PLACEHOLDER && tailList.getType() == ATerm.LIST) {
+				ATerm head = ((ATermPlaceholder) headPh).getPlaceholder();
+				ATerm tailPh = ((ATermList) tailList).getFirst();
+				if (tailPh != null && tailPh.getType() == ATerm.PLACEHOLDER) {
+					ATerm tail = ((ATermPlaceholder) tailPh).getPlaceholder();
+
 					ATerm headPattern = getPattern().getFactory().parse("head(<term>)");
 					ATerm tailPattern = getPattern().getFactory().parse("[tail(<term>)]");
-		
+
 					List subst1 = head.match(headPattern);
 					List subst2 = tail.match(tailPattern);
-					//System.out.println("head = " + head);	
-					//System.out.println("tail = " + tail);	
-		
+					//System.out.println("head = " + head);
+					//System.out.println("tail = " + tail);
+
 					//System.out.println("headMatch = "+ subst1);
 					//System.out.println("tailMatch = "+ subst2);
-					
-					if(getId().equals("many") && (subst1!=null) && (subst2!=null)) {
+
+					if (getId().equals(ListType.MANY_LIST_ALT_NAME) && (subst1 != null) && (subst2 != null)) {
 						return true;
 					}
-					
+
 				}
 			}
 		}
@@ -237,6 +246,4 @@ public class Alternative {
 		return "alt[" + id + ", " + pattern + "]";
 	}
 
-	
-	
 }

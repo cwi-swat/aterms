@@ -9,22 +9,16 @@ import apigen.gen.GenerationParameters;
 import apigen.gen.StringConversions;
 
 public class AlternativeGenerator extends JavaGenerator {
-	private boolean visitable;
 	private Type type;
 	private Alternative alt;
-	private String apiName;
-	private String altId;
 	private String className;
 	private String superClassName;
 
 	protected AlternativeGenerator(GenerationParameters params, Type type, Alternative alt) {
 		super(params);
-		this.apiName = params.getApiName();
-		this.visitable = params.isVisitable();
 		this.type = type;
 		this.alt = alt;
-		this.altId = alt.getId();
-		this.className = buildClassName(altId);
+		this.className = buildClassName(alt.getId());
 		this.superClassName = TypeGenerator.className(type);
 	}
 
@@ -32,8 +26,16 @@ public class AlternativeGenerator extends JavaGenerator {
 		return className;
 	}
 
-	public static String qualifiedClassName(Type type, Alternative alt) {
-		return StringConversions.decapitalize(type.getId()) + '.' + className(alt);
+	public static String qualifiedClassName(GenerationParameters params, Type type, Alternative alt) {
+		StringBuffer buf = new StringBuffer();
+		buf.append(params.getPackageName());
+		buf.append('.');
+		buf.append(StringConversions.decapitalize(params.getApiName()));
+		buf.append('.');
+		buf.append(TypeGenerator.packageName(type));
+		buf.append('.');
+		buf.append(className(alt));
+		return buf.toString();
 	}
 
 	private static String buildClassName(String alt) {
@@ -59,15 +61,16 @@ public class AlternativeGenerator extends JavaGenerator {
 	}
 
 	private void genAlternativeClass(Type type, Alternative alt) {
+		boolean visitable = getGenerationParameters().isVisitable();
 		print("public class " + className + " extends " + superClassName);
 		if (visitable) {
 			print("  implements jjtraveler.Visitable");
 		}
 		println(" {");
 
+		genAltConstructor();
 		genInitMethod();
 		genInitHashcodeMethod();
-		genAltConstructor();
 		genAltFieldIndexMembers(type, alt);
 		genAltDuplicateMethod(type, alt);
 		genAltEquivalentMethod(type, alt);
@@ -85,21 +88,25 @@ public class AlternativeGenerator extends JavaGenerator {
 	}
 
 	private void genInitMethod() {
-		println("  protected void init(int hashCode, aterm.ATermList annos, aterm.AFun fun,	aterm.ATerm[] args) {");
+		println("  public void init(int hashCode, aterm.ATermList annos, aterm.AFun fun,	aterm.ATerm[] args) {");
 		println("    super.init(hashCode, annos, fun, args);");
 		println("  }");
+		println();
 	}
 
 	private void genInitHashcodeMethod() {
-		println("  protected void initHashCode(aterm.ATermList annos, aterm.AFun fun, aterm.ATerm[] i_args) {");
+		println("  public void initHashCode(aterm.ATermList annos, aterm.AFun fun, aterm.ATerm[] i_args) {");
 		println("  	super.initHashCode(annos, fun, i_args);");
 		println("  }");
+		println();
 	}
 
 	private void genAltConstructor() {
-		println("  protected " + className + "(" + FactoryGenerator.className(apiName) + " factory) {");
+		GenerationParameters params = getGenerationParameters();
+		println("  public " + className + "(" + FactoryGenerator.qualifiedClassName(params) + " factory) {");
 		println("    super(factory);");
 		println("  }");
+		println();
 	}
 
 	private void genAltHashFunction(Type type, Alternative alt) {
@@ -153,6 +160,7 @@ public class AlternativeGenerator extends JavaGenerator {
 			println();
 			println("    return c;");
 			println("  }");
+			println();
 		}
 	}
 
@@ -176,16 +184,17 @@ public class AlternativeGenerator extends JavaGenerator {
 		return -1;
 	}
 
-	private String buildGetFactoryMethodCall(String factoryName) {
+	private static String buildGetFactoryMethodCall(GenerationParameters params) {
+		String factoryName = FactoryGenerator.className(params);
 		return "get" + factoryName + "()";
 	}
 
 	private void genAltToTerm() {
-		String factoryName = FactoryGenerator.className(apiName);
+		GenerationParameters params = getGenerationParameters();
 
 		println("  public aterm.ATerm toTerm() {");
 		println("    if (term == null) {");
-		println("      term = " + buildGetFactoryMethodCall(factoryName) + ".toTerm(this);");
+		println("      term = " + buildGetFactoryMethodCall(params) + ".toTerm(this);");
 		println("    }");
 		println("    return term;");
 		println("  }");
@@ -226,9 +235,7 @@ public class AlternativeGenerator extends JavaGenerator {
 		String fieldClass,
 		String fieldIndex) {
 		// setter
-		println("  public " + superClassName + " set" + fieldName + "(" + fieldClass + " " + fieldId + ")");
-		println("  {");
-
+		println("  public " + superClassName + " set" + fieldName + "(" + fieldClass + " " + fieldId + ") {");
 		print("    return (" + superClassName + ") super.setArgument(");
 
 		if (fieldType.equals("str")) {
@@ -245,14 +252,12 @@ public class AlternativeGenerator extends JavaGenerator {
 		}
 
 		println(", " + fieldIndex + ");");
-
 		println("  }");
+		println();
 	}
 
 	private void genFieldGetterMethod(String fieldName, String fieldType, String fieldClass, String fieldIndex) {
-		// getter
-		println("  public " + fieldClass + " get" + fieldName + "()");
-		println("  {");
+		println("  public " + fieldClass + " get" + fieldName + "() {");
 
 		if (fieldType.equals("str")) {
 			println("   return ((aterm.ATermAppl) this.getArgument(" + fieldIndex + ")).getAFun().getName();");
@@ -271,6 +276,7 @@ public class AlternativeGenerator extends JavaGenerator {
 		}
 
 		println("  }");
+		println();
 	}
 
 	private void genOverrideProperties(Type type, Alternative alt) {
@@ -296,8 +302,7 @@ public class AlternativeGenerator extends JavaGenerator {
 	}
 
 	private void genOverrideHasMethod(Field field) {
-		println("  public boolean has" + StringConversions.makeCapitalizedIdentifier(field.getId()) + "()");
-		println("  {");
+		println("  public boolean has" + StringConversions.makeCapitalizedIdentifier(field.getId()) + "() {");
 		println("    return true;");
 		println("  }");
 		println();
@@ -372,24 +377,22 @@ public class AlternativeGenerator extends JavaGenerator {
 	}
 
 	private void genAltMake(Type type, Alternative alt) {
-		String altClassName = className(alt);
+		GenerationParameters params = getGenerationParameters();
+		String getFactoryMethod = buildGetFactoryMethodCall(params);
+		String makeMethod = "make" + FactoryGenerator.concatTypeAlt(type, alt);
 
-		println("  protected aterm.ATermAppl make(aterm.AFun fun, aterm.ATerm[] i_args," + " aterm.ATermList annos) {");
-		println(
-			"    return get"
-				+ FactoryGenerator.className(apiName)
-				+ "().make"
-				+ altClassName
-				+ "(fun, i_args, annos);");
+		println("  protected aterm.ATermAppl make(aterm.AFun fun, aterm.ATerm[] args," + " aterm.ATermList annos) {");
+		println("    return " + getFactoryMethod + "." + makeMethod + "(fun, args, annos);");
 		println("  }");
+		println();
 	}
 
 	private void genAltDuplicateMethod(Type type, Alternative alt) {
 		String altClassName = className(alt);
 
 		println("  public shared.SharedObject duplicate() {");
-		println("    " + altClassName + " clone = new " + altClassName + "(factory);");
-		println("     clone.init(hashCode(), getAnnotations(), getAFun(), " + "getArgumentArray());");
+		println("    " + altClassName + " clone = new " + altClassName + "(getPeanoFactory());");
+		println("    clone.init(hashCode(), getAnnotations(), getAFun(), " + "getArgumentArray());");
 		println("    return clone;");
 		println("  }");
 		println();
@@ -402,13 +405,13 @@ public class AlternativeGenerator extends JavaGenerator {
 		println("    }");
 		println("    return false;");
 		println("  }");
+		println();
 	}
 
 	private void genAltVisitableInterface(Type type, Alternative alt) {
 		String altClassName = className(alt);
 
-		println("  public void accept(Visitor v) throws jjtraveler.VisitFailure");
-		println("  {");
+		println("  public void accept(Visitor v) throws jjtraveler.VisitFailure {");
 		println("    v.visit_" + altClassName + "(this);");
 		println("  }");
 		println();
@@ -431,6 +434,7 @@ public class AlternativeGenerator extends JavaGenerator {
 	}
 
 	public String getPackageName() {
+		String apiName = getGenerationParameters().getApiName();
 		return StringConversions.decapitalize(apiName) + '.' + TypeGenerator.packageName(type);
 	}
 

@@ -15,7 +15,7 @@ public class ListTypeGenerator extends TypeGenerator {
 		this.type = type;
 		this.typeName = TypeGenerator.className(type);
 		this.elementTypeName = TypeGenerator.className(type.getElementType());
-		this.factory = FactoryGenerator.className(params.getApiName());
+		this.factory = FactoryGenerator.qualifiedClassName(params);
 	}
 
 	public String getTypeName() {

@@ -23,9 +23,10 @@ public abstract class JavaGenerator extends Generator {
 	}
 
 	protected JavaGenerator(GenerationParameters params) {
-		super(".java");
+		super(params);
 		this.basePackageName = params.getPackageName();
 		this.imports = params.getImports();
+		setExtension(".java");
 		setDirectory(buildDirectoryName(params.getOutputDirectory(), params.getPackageName()));
 	}
 
@@ -36,7 +37,7 @@ public abstract class JavaGenerator extends Generator {
 	public String getFileName() {
 		return getClassName();
 	}
-	
+
 	private String buildDirectoryName(String baseDir, String pkgName) {
 		StringBuffer buf = new StringBuffer();
 		buf.append(baseDir);
@@ -92,7 +93,7 @@ public abstract class JavaGenerator extends Generator {
 	}
 
 	protected String buildActualTypedAltArgumentList(Iterator fields) {
-		String result = "";
+		StringBuffer buf = new StringBuffer();
 
 		while (fields.hasNext()) {
 			Field field = (Field) fields.next();
@@ -100,39 +101,47 @@ public abstract class JavaGenerator extends Generator {
 			String field_type = field.getType();
 
 			if (field_type.equals("str")) {
-				result += "factory.makeAppl(factory.makeAFun(" + field_id + ", 0, true))";
+				buf.append("factory.makeAppl(factory.makeAFun(");
+				buf.append(field_id);
+				buf.append(", 0, true))");
 			}
 			else if (field_type.equals("int")) {
-				result += "factory.makeInt(" + field_id + ")";
+				buf.append("factory.makeInt(");
+				buf.append(field_id);
+				buf.append(")");
 			}
 			else if (field_type.equals("real")) {
-				result += "factory.makeReal(" + field_id + ")";
+				buf.append("factory.makeReal(");
+				buf.append(field_id);
+				buf.append(")");
 			}
 			else {
-				result += field_id;
+				buf.append(field_id);
 			}
 
 			if (fields.hasNext()) {
-				result += ", ";
+				buf.append(", ");
 			}
 		}
 
-		return result;
+		return buf.toString();
 	}
 
 	protected String buildActualNullArgumentList(Iterator fields) {
-		String result = "";
+		StringBuffer buf = new StringBuffer();
 
 		while (fields.hasNext()) {
 			Field field = (Field) fields.next();
-			result += "(" + TypeGenerator.className(field.getType()) + ") null";
+			buf.append('(');
+			buf.append(TypeGenerator.className(field.getType()));
+			buf.append(") null");
 
 			if (fields.hasNext()) {
-				result += ", ";
+				buf.append(", ");
 			}
 		}
 
-		return result;
+		return buf.toString();
 	}
 
 	/**
@@ -146,12 +155,13 @@ public abstract class JavaGenerator extends Generator {
 	}
 
 	protected String buildFormalTypedArgumentList(Iterator fields) {
+		GenerationParameters params = getGenerationParameters();
 		StringBuffer buf = new StringBuffer();
-		
+
 		while (fields.hasNext()) {
 			Field field = (Field) fields.next();
-			
-			buf.append(TypeGenerator.qualifiedClassName(field.getType()));
+
+			buf.append(TypeGenerator.qualifiedClassName(params, field.getType()));
 			buf.append(' ');
 			buf.append(getFieldId(field.getId()));
 

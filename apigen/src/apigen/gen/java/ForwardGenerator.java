@@ -19,7 +19,7 @@ public class ForwardGenerator extends JavaGenerator {
 		setDirectory(params.getOutputDirectory());
 		setFileName(getClassName());
 		this.adt = adt;
-		this.constructor = GenericConstructorGenerator.className(params.getApiName());
+		this.constructor = GenericConstructorGenerator.qualifiedClassName(params);
 	}
 
 	public String getClassName() {
