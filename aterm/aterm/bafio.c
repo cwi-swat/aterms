@@ -124,8 +124,6 @@ static int   text_buffer_size = 0;
 static char bit_buffer     = '\0';
 static int  bits_in_buffer = 0; /* how many bits in bit_buffer are used */
 
-static FILE *bitlog;
-
 /*}}}  */
 /*{{{  void AT_initBafIO(int argc, char *argv[]) */
 
@@ -135,7 +133,6 @@ static FILE *bitlog;
 
 void AT_initBafIO(int argc, char *argv[])
 {
-	bitlog = fopen("bitlog.txt", "w");
 }
 
 /*}}}  */
@@ -204,8 +201,6 @@ writeBitsToFile(unsigned int val, int nr_bits, FILE *file)
 {
 	int cur_bit;
 
-	fprintf(bitlog, "bits written: %d (width=%d)\n", val, nr_bits);
-	
 	for (cur_bit=0; cur_bit<nr_bits; cur_bit++) {
 		bit_buffer <<= 1;
 		bit_buffer |= (val & 0x01);
@@ -213,14 +208,11 @@ writeBitsToFile(unsigned int val, int nr_bits, FILE *file)
 		if (++bits_in_buffer == 8) {
 			if (fputc((int)bit_buffer, file) == EOF)
 				return -1;
-			fprintf(bitlog, "byte written: %02X\n", bit_buffer);
 			bits_in_buffer = 0;
 			bit_buffer = '\0';
 		}
 	}
 
-	fflush(bitlog);
-	
 	/* Ok */
 	return 0;
 }
@@ -257,7 +249,6 @@ readBitsFromFile(unsigned int *val, int nr_bits, FILE *file)
 	for (cur_bit=0; cur_bit<nr_bits; cur_bit++) {
 		if (bits_in_buffer == 0) {
 			int val = fgetc(file);
-			fprintf(bitlog, "byte read: %02X (width=%d)\n", val, nr_bits);
 			if (val == EOF)
 				return -1;
 			bit_buffer = (char) val;
@@ -268,9 +259,6 @@ readBitsFromFile(unsigned int *val, int nr_bits, FILE *file)
 		bit_buffer <<= 1;
 		bits_in_buffer--;
 	}
-
-	fprintf(bitlog, "bits read: %d (width=%d)\n", *val, nr_bits);
-	fflush(bitlog);
 
 	/* Ok */
 	return 0;
@@ -443,8 +431,8 @@ static ATbool write_symbol(Symbol sym, FILE *file)
 /*}}}  */
 /*{{{  static void print_sym_entries() */
 
-static void
-print_sym_entries()
+void
+AT_print_sym_entries()
 {
 	int cur_sym, cur_arg;
 	
@@ -651,8 +639,6 @@ static void build_arg_tables()
 static void add_term(sym_entry *entry, ATerm t)
 {
 	unsigned int hnr = AT_hashnumber(t) % entry->termtable_size;
-	ATfprintf(stderr, "position of term %t in sym table %y = %d\n",
-						t, entry->id, entry->cur_index);
 	entry->terms[entry->cur_index].t = t;
 	entry->terms[entry->cur_index].next = entry->termtable[hnr];
 	entry->termtable[hnr] = &entry->terms[entry->cur_index];
@@ -739,8 +725,8 @@ static void collect_terms(ATerm t)
 				break;
 		}
 		entry = &sym_entries[at_lookup_table[sym]->index];
-		if(entry->id != sym)
-			ATfprintf(stderr, "sym=%y, entry->id = %y\n", sym, entry->id);
+		/*if(entry->id != sym)
+			ATfprintf(stderr, "sym=%y, entry->id = %y\n", sym, entry->id);*/
 
 		assert(entry->id == sym);
 		add_term(entry, t);
@@ -870,8 +856,8 @@ static ATbool write_arg(sym_entry *trm_sym, ATerm arg, int arg_idx,
 	if(writeBitsToFile(arg_trm_idx, arg_sym->term_width, file)<0)
 		return ATfalse;
 
-	ATfprintf(stderr, "argument %t at index %d (cur_index of %y = %d)\n",
-						arg, arg_trm_idx, arg_sym->id, arg_sym->cur_index);
+	/*ATfprintf(stderr, "argument %t at index %d (cur_index of %y = %d)\n",
+						arg, arg_trm_idx, arg_sym->id, arg_sym->cur_index);*/
 	if(arg_trm_idx >= arg_sym->cur_index && 
 		 !write_term(arg, file, anno_done))
 			return ATfalse;
@@ -894,10 +880,10 @@ static ATbool write_term(ATerm t, FILE *file, ATbool anno_done)
 
 	annos = AT_getAnnotations(t);
 
-	ATfprintf(stderr, "write term: %t (%d)\n", t, anno_done);
+	/*ATfprintf(stderr, "write term: %t (%d)\n", t, anno_done);*/
 	if(!anno_done && annos) {
-		ATfprintf(stderr, "  writing annotated term, term=%t, annos=%t\n",
-							t, annos);
+		/*ATfprintf(stderr, "  writing annotated term, term=%t, annos=%t\n",
+							t, annos);*/
 		trm_sym = &sym_entries[at_lookup_table[AS_ANNOTATION]->index];
 		if(!write_arg(trm_sym, t, 0, file, ATtrue))
 			return ATfalse;
@@ -984,14 +970,45 @@ static ATbool write_term(ATerm t, FILE *file, ATbool anno_done)
 						trm_sym->id, trm_sym->terms[trm_sym->cur_index].t, t);
 	}
 		trm_sym->cur_index++;
-	ATfprintf(stderr, "term=%t, trm_sym=%y, cur_index=%d\n", t, trm_sym->id,
-						trm_sym->cur_index);
+	/*ATfprintf(stderr, "term=%t, trm_sym=%y, cur_index=%d\n", t, trm_sym->id,
+						trm_sym->cur_index);*/
 	
 	return ATtrue;
 }
 
 /*}}}  */
 
+/*{{{  static void free_write_space() */
+
+/**
+	* Free all space allocated by the bafio write functions.
+	*/
+
+static void free_write_space()
+{
+	int i, j;
+
+	for(i=0; i<nr_unique_symbols; i++) {
+		sym_entry *entry = &sym_entries[i];
+
+		free(entry->terms);
+		free(entry->termtable);
+
+		for(j=0; j<entry->arity; j++) {
+			top_symbols *topsyms = &entry->top_symbols[j];
+			free(topsyms->symbols);
+			free(topsyms->toptable);
+			free(topsyms);
+		}
+
+		free(entry->top_symbols);
+	}
+	free(sym_entries);
+
+	sym_entries = NULL;
+}
+
+/*}}}  */
 /*{{{  ATbool ATwriteToBinaryFile(ATerm t, FILE *file) */
 
 ATbool
@@ -1049,8 +1066,8 @@ ATwriteToBinaryFile(ATerm t, FILE *file)
 	/*}}}  */
 	
 	
-	ATfprintf(stderr, "writing %d symbols, %d terms.\n",
-						nr_unique_symbols, nr_unique_terms);
+	/*ATfprintf(stderr, "writing %d symbols, %d terms.\n",
+						nr_unique_symbols, nr_unique_terms);*/
 	
 	collect_terms(t);
 	AT_unmarkTerm(t);
@@ -1060,7 +1077,7 @@ ATwriteToBinaryFile(ATerm t, FILE *file)
 		sym_entries[lcv].cur_index = 0;
 	
 	build_arg_tables();
-	print_sym_entries();
+	/*print_sym_entries();*/
 	
 	/*{{{  write header */
 
@@ -1094,6 +1111,8 @@ ATwriteToBinaryFile(ATerm t, FILE *file)
 	
 	if (flushBitsToFile(file)<0)
 		return ATfalse;
+
+	free_write_space();
 
 	return ATtrue;
 }
@@ -1232,17 +1251,17 @@ ATerm read_term(sym_read_entry *sym, FILE *file)
 			ATerror("could not allocate space for %d arguments.\n", arity);
 	}
 
-	ATfprintf(stderr, "reading term over symbol %y\n", sym->sym);
+	/*ATfprintf(stderr, "reading term over symbol %y\n", sym->sym);*/
 	for(i=0; i<arity; i++) {
-		ATfprintf(stderr, "  reading argument %d (%d)", i, sym->sym_width[i]);
+		/*ATfprintf(stderr, "  reading argument %d (%d)", i, sym->sym_width[i]);*/
 	  if(readBitsFromFile(&val, sym->sym_width[i], file) < 0)
 			return NULL;
 		arg_sym = &read_symbols[sym->topsyms[i][val]];
 /*		ATfprintf(stderr, "argument %d, symbol index = %d, symbol = %y\n", 
 							i, val, arg_sym->sym);*/
 
-		ATfprintf(stderr, "  argsym = %y (term width = %d)\n",
-							arg_sym->sym, arg_sym->term_width);
+		/*ATfprintf(stderr, "  argsym = %y (term width = %d)\n",
+							arg_sym->sym, arg_sym->term_width);*/
 		if(readBitsFromFile(&val, arg_sym->term_width, file) < 0)
 			return NULL;
 /*		ATfprintf(stderr, "arg term index = %d\n", val);*/
@@ -1250,8 +1269,8 @@ ATerm read_term(sym_read_entry *sym, FILE *file)
 			arg_sym->terms[val] = read_term(arg_sym, file);
 			if(!arg_sym->terms[val])
 				return NULL;
-			ATfprintf(stderr, "sym=%y, index=%d, t=%t\n", arg_sym->sym, 
-								val, arg_sym->terms[val]);				
+			/*ATfprintf(stderr, "sym=%y, index=%d, t=%t\n", arg_sym->sym, 
+								val, arg_sym->terms[val]);				*/
 		}
 
 		args[i] = arg_sym->terms[val];
@@ -1316,8 +1335,6 @@ ATerm read_term(sym_read_entry *sym, FILE *file)
 			break;
 		case AS_ANNOTATION:
 			result = AT_setAnnotations(args[0], args[1]);
-			ATfprintf(stderr, "Annotations: %t / %t = %t\n", 
-								args[0], args[1], result);
 			break;
 		default:
 			/* Must be a function application */
@@ -1338,6 +1355,31 @@ ATerm read_term(sym_read_entry *sym, FILE *file)
 	}
 
 	return result;
+}
+
+/*}}}  */
+
+/*{{{  static void free_read_space() */
+
+/**
+	* Free all temporary space allocated by the baf read functions.
+	*/
+
+static void free_read_space()
+{
+	int i, j;
+
+	for(i=0; i<nr_unique_symbols; i++) {
+		sym_read_entry *entry = &read_symbols[i];
+
+		free(entry->terms);
+		free(entry->nr_topsyms);
+		free(entry->sym_width);
+
+		for(j=0; j<entry->arity; j++)
+			free(entry->topsyms[j]);
+		free(entry->topsyms);
+	}
 }
 
 /*}}}  */
@@ -1406,7 +1448,7 @@ ATreadFromBinaryFile(FILE *file)
 
 	result = read_term(&read_symbols[val], file);
  
-	fflush(bitlog);
+	free_read_space();
 
 	return result;
 }
