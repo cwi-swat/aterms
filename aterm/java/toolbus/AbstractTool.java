@@ -308,7 +308,16 @@ abstract public class AbstractTool
   {
     ATerm result;
     byte[] lspecBuf = new byte[LENSPEC];
-    inputStream.read(lspecBuf);
+    int index;
+
+    index = 0;
+    while (index != LENSPEC) {
+      int bytes_read = inputStream.read(lspecBuf, index, LENSPEC-index);
+      if (bytes_read <= 0) {
+	throw new IOException("ToolBus connection terminated");
+      }
+      index += bytes_read;
+    }
 
     String lspec = new String(lspecBuf);
 
@@ -319,7 +328,15 @@ abstract public class AbstractTool
     bytesLeft -= LENSPEC;
 
     byte[] data = new byte[bytesLeft];
-    inputStream.read(data);
+    index = 0;
+    while (index != bytesLeft) {
+      int bytes_read = inputStream.read(data, index, bytesLeft-index);
+      if (bytes_read <= 0) {
+	throw new IOException("ToolBus connection terminated");
+      }
+      index += bytes_read;
+    }
+
     String stringdata = new String(data);
 
     //info("data read (" + bytesLeft + " bytes): '" + stringdata + "'");
@@ -451,6 +468,7 @@ abstract public class AbstractTool
       appl = queue.nextEvent();
       if (appl != null) {
 	sendTerm(factory.make("snd-event(<term>)", appl));
+	return;
       }
     }
   }
