@@ -99,7 +99,7 @@ public class Main {
         if (params.isGenerateJar()) {
         	try {
             PrintStream out = new PrintStream(new FileOutputStream("apigen.env"));
-            //out.println("APINAME=" + params.getApiName());
+            out.println("APINAME=" + params.getApiName());
             out.println("VERSION=" + params.getVersion());
             out.println("DIRECTORY=" + params.getOutputDirectory());
             out.println("FILES=\"" + buf.toString() + '"');

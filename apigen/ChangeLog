@@ -3,6 +3,7 @@
 Tue Sep 28 13:41:05 CEST 2004 <{jurgenv,jong}@cwi.nl>
  * Printing of APINAME was commented out in the Main of the Java generator,
    that's why the script adt-to-java was broken.
+ * adt-to-java script complains if it can not find and APINAME now.
 
 Wed Sep 22 12:24:44 CEST 2004 <jurgenv@cwi.nl>
  * Fixed some distcheck problems in apigen/adt/api
