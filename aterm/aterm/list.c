@@ -278,13 +278,13 @@ ATerm ATelementAt(ATermList list, int index)
 }
 
 /*}}}  */
-/*{{{  ATermList ATremove(ATermList list, ATerm el) */
+/*{{{  ATermList ATremoveElement(ATermList list, ATerm el) */
 
 /**
   * Remove one occurence of an element from a list.
   */
 
-ATermList ATremove(ATermList list, ATerm t)
+ATermList ATremoveElement(ATermList list, ATerm t)
 {
   int i = 0;
   ATerm el = NULL;
@@ -310,13 +310,13 @@ ATermList ATremove(ATermList list, ATerm t)
 }
 
 /*}}}  */
-/*{{{  ATermList ATremoveAt(ATermList list, int idx) */
+/*{{{  ATermList ATremoveElementAt(ATermList list, int idx) */
 
 /**
   * Remove an element from a specific position in a list.
   */
 
-ATermList ATremoveAt(ATermList list, int idx)
+ATermList ATremoveElementAt(ATermList list, int idx)
 {
   int i;
 
@@ -408,7 +408,7 @@ ATermList ATdictRemove(ATermList dict, ATerm key)
   while(!ATisEmpty(tmp)) {
     pair = (ATermList)ATgetFirst(tmp);
     if(ATisEqual(ATgetFirst(pair), key))
-      return ATremoveAt(dict, idx);
+      return ATremoveElementAt(dict, idx);
 
     tmp = ATgetNext(tmp);
     idx++;
