@@ -7,7 +7,7 @@ dnl By default generate static libraries only
 AM_DISABLE_SHARED
 
 AC_PROG_CC
-AC_PROG_LIBTOOL
+AM_PROG_LIBTOOL
 
 CURDATE=`date`
 
