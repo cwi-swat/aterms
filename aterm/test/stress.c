@@ -1317,52 +1317,52 @@ void testCompare()
   char *data4 = "ik ben bata";
   ATerm atblob4 = (ATerm)ATmakeBlob(strlen(data4)+1, data4);
 
-  test_assert("type-cmp", 0,  ATcompare(atappl, atint) == -1);
-  test_assert("type-cmp", 1,  ATcompare(atint, atreal) == -1);
-  test_assert("type-cmp", 2,  ATcompare(atreal, atlist) == -1);
-  test_assert("type-cmp", 3,  ATcompare(atlist, atplaceholder) == -1);
-  test_assert("type-cmp", 4,  ATcompare(atplaceholder, atblob) == -1);
+  test_assert("type-cmp", 0,  ATcompare(atappl, atint) < 0);
+  test_assert("type-cmp", 1,  ATcompare(atint, atreal) < 0);
+  test_assert("type-cmp", 2,  ATcompare(atreal, atlist) < 0);
+  test_assert("type-cmp", 3,  ATcompare(atlist, atplaceholder) < 0);
+  test_assert("type-cmp", 4,  ATcompare(atplaceholder, atblob) < 0);
 
 
   test_assert("appl-cmp", 0, ATcompare(atappl,atappl) == 0);
-  test_assert("appl-cmp", 1, ATcompare(atappl0,atappl) == 1);
-  test_assert("appl-cmp", 1, ATcompare(atappl1,atappl) == 1);
-  test_assert("appl-cmp", 2, ATcompare(atappl2,atappl) == -1);
-  test_assert("appl-cmp", 3, ATcompare(atappl3,atappl) == -1);
+  test_assert("appl-cmp", 1, ATcompare(atappl0,atappl) > 0);
+  test_assert("appl-cmp", 1, ATcompare(atappl1,atappl) > 0);
+  test_assert("appl-cmp", 2, ATcompare(atappl2,atappl) < 0);
+  test_assert("appl-cmp", 3, ATcompare(atappl3,atappl) < 0);
 
   test_assert("int-cmp", 0, ATcompare(atint,atint) == 0);
-  test_assert("int-cmp", 1, ATcompare(atint4,atint) == 1);
-  test_assert("int-cmp", 3, ATcompare(atint5,atint) == -1);
+  test_assert("int-cmp", 1, ATcompare(atint4,atint) > 0);
+  test_assert("int-cmp", 3, ATcompare(atint5,atint) < 0);
 
   test_assert("real-cmp", 0, ATcompare(atreal,atreal) == 0);
-  test_assert("real-cmp", 1, ATcompare(atreal6,atreal) == 1);
-  test_assert("real-cmp", 3, ATcompare(atreal7,atreal) == -1);
+  test_assert("real-cmp", 1, ATcompare(atreal6,atreal) > 0);
+  test_assert("real-cmp", 3, ATcompare(atreal7,atreal) < 0);
 
   test_assert("list-cmp", 0, ATcompare(atlist,atlist) == 0);
-  test_assert("list-cmp", 1, ATcompare(atlist1,atlist) == 1);
-  test_assert("list-cmp", 2, ATcompare(atlist2,atlist) == 1);
-  test_assert("list-cmp", 3, ATcompare(atlist3,atlist) == -1);
-  test_assert("list-cmp", 3, ATcompare(atlist4,atlist) == -1);
+  test_assert("list-cmp", 1, ATcompare(atlist1,atlist) > 0);
+  test_assert("list-cmp", 2, ATcompare(atlist2,atlist) > 0);
+  test_assert("list-cmp", 3, ATcompare(atlist3,atlist) < 0);
+  test_assert("list-cmp", 3, ATcompare(atlist4,atlist) < 0);
 
   test_assert("placeholder-cmp", 0, 
 	      ATcompare(atplaceholder,atplaceholder) == 0);
   test_assert("placeholder-cmp", 1, 
-	      ATcompare(atplaceholder1,atplaceholder) == -1);
+	      ATcompare(atplaceholder1,atplaceholder) < 0);
   test_assert("placeholder-cmp", 2, 
-	      ATcompare(atplaceholder2,atplaceholder) == 1);
+	      ATcompare(atplaceholder2,atplaceholder) > 0);
 
   test_assert("anno-cmp", 0, ATcompare(atanno,atanno) == 0);
-  test_assert("anno-cmp", 1, ATcompare(atanno1,atanno) == -1);
-  test_assert("anno-cmp", 2, ATcompare(atanno2,atanno) == -1);
-  test_assert("anno-cmp", 3, ATcompare(atanno3,atanno) == 1);
-  test_assert("anno-cmp", 4, ATcompare(atanno4,atanno) == 1);
+  test_assert("anno-cmp", 1, ATcompare(atanno1,atanno) < 0);
+  test_assert("anno-cmp", 2, ATcompare(atanno2,atanno) < 0);
+  test_assert("anno-cmp", 3, ATcompare(atanno3,atanno) > 0);
+  test_assert("anno-cmp", 4, ATcompare(atanno4,atanno) > 0);
 
-  test_assert("blob-cmp", 0, ATcompare(atblob,atblob2) == -1);
-  test_assert("blob-cmp", 1, ATcompare(atblob2,atblob) == 1);
+  test_assert("blob-cmp", 0, ATcompare(atblob,atblob2) < 0);
+  test_assert("blob-cmp", 1, ATcompare(atblob2,atblob) > 0);
   test_assert("blob-cmp", 2, ATcompare(atblob,atblob) == 0);
 
-  test_assert("blob-cmp", 3, ATcompare(atblob,atblob3) == -1);
-  test_assert("blob-cmp", 4, ATcompare(atblob4,atblob) == -1);
+  test_assert("blob-cmp", 3, ATcompare(atblob,atblob3) < 0);
+  test_assert("blob-cmp", 4, ATcompare(atblob4,atblob) < 0);
 
   printf("compare tests ok.\n");
 }
