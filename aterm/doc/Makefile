@@ -8,9 +8,9 @@ EXAMPLEFILES	= init.c make.c match.c prot.c app1.c app2.c app3.c \
 				  plac.c
 EXAMPLES		= $(patsubst %,$(EXAMPLEDIR)/%,$(EXAMPLEFILES))
 
-install: all
+doc: at.ps manual.ps
 
-all: at.ps manual.ps
+all: 
 
 at.ps: at.dvi $(PICS)
 
@@ -46,5 +46,7 @@ clean:
 
 dist: at.ps manual.ps
 	cp at.ps manual.ps ${DISTDIR}
+
+install:
 
 # end of Makefile
