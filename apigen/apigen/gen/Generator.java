@@ -1,5 +1,6 @@
 package apigen.gen;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
@@ -193,5 +194,21 @@ public abstract class Generator {
       System.exit(1);
     }
   }
+  
+  protected void createFileStream(String name, String ext, String directory) {
+	  char sep = File.separatorChar;
+	  File base = new File(directory);
+    
+	  if (!base.exists()) {
+		if(!base.mkdirs()) {
+		  throw new RuntimeException("could not create output directory " + directory);
+		}
+	  }
+	  else if (!base.isDirectory()) {
+		throw new RuntimeException(directory + " is not a directory");
+	  }
+    
+	  createStream(directory + sep + name + ext);
+	}
 
 }

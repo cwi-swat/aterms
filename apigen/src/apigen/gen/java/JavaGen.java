@@ -167,11 +167,18 @@ extends Generator
     }
   }
 
-  private void genMakeIncludeFile(ADT api) {
+ 
+  private void genTomSignatureFile(ADT api) {
+	  JavaTomSignatureGenerator tgen = new JavaTomSignatureGenerator();
+	  
+	  tgen.genTomSignatureFile(basedir,api_name,api);
+  }
+
+private void genMakeIncludeFile(ADT api) {
     char sep = File.separatorChar;
     String cap_api_name = capitalize(buildId(api_name));
       //createFileStream(basedir + sep + cap_api_name + "MakeRules","");
-    createFileStream(cap_api_name + "MakeRules","");
+    createFileStream(cap_api_name + "MakeRules","", basedir);
     String prefix = cap_api_name + "API";
     
     info("generating " + cap_api_name + "MakeRules");
@@ -390,7 +397,7 @@ extends Generator
         println();        
         println("    " + altClassName + ".initializePattern();");
         println("    " + funVar + " = makeAFun(\"" + 
-                altClassName + "\", " + computeAltArity(type,alt) + ", false);");
+                altClassName + "\", " + type.getAltArity(alt) + ", false);");
         println("    " + protoVar + " = new " + altClassName + "();");      
       }
       println();
@@ -407,18 +414,7 @@ extends Generator
     }
   }
 
-	private int computeAltArity(Type type, Alternative alt) {
-    // There must be a better way to do this, it can be computed when building
-    // the ADT datastructures
-		Iterator fields = type.altFieldIterator(alt.getId());
-    int arity = 0;
-    
-    for(arity = 0; fields.hasNext(); fields.next()) {
-      arity++;
-    }
-    
-    return arity;
-  }
+
 
   
 	private void genTypeClassFiles(ADT api) throws IOException {
@@ -538,27 +534,7 @@ extends Generator
 
   
   private void createClassStream(String class_name) {
-    createFileStream(class_name, ".java"); 
-  }
-  
-  private void createTomSignatureStream(String name) {
-    createFileStream(name, ".t");
-  }
-  
-  private void createFileStream(String name, String ext) {
-    char sep = File.separatorChar;
-    File base = new File(basedir);
-    
-    if (!base.exists()) {
-      if(!base.mkdirs()) {
-        throw new RuntimeException("could not create output directory " + basedir);
-      }
-    }
-    else if (!base.isDirectory()) {
-      throw new RuntimeException(basedir + " is not a directory");
-    }
-    
-    createStream(basedir + sep + name + ext);
+    createFileStream(class_name, ".java", basedir); 
   }
 	
   private void genTypeClass(Type type) {
@@ -769,7 +745,7 @@ extends Generator
 	private void genAltHashFunction(Type type, Alternative alt) 
   {       
     if (!hasReservedTypeFields(type,alt)) {
-      int arity = computeAltArity(type, alt);
+      int arity = type.getAltArity(alt);
       String goldenratio = "0x9e3779b9";
       int changingArg = guessChangingArgument(type,alt);
       String initval;
@@ -866,7 +842,7 @@ extends Generator
 	}
 
 	private boolean hasReservedTypeFields(Type type, Alternative alt) {
-		return computeAltArityNotReserved(type,alt) < computeAltArity(type,alt);
+		return computeAltArityNotReserved(type,alt) < type.getAltArity(alt);
 	}
 
 
@@ -951,7 +927,7 @@ extends Generator
 		String alt_classname = buildAltClassName(type,alt);
 		
 		println("  public aterm.ATermAppl setArgument(aterm.ATerm arg, int i) {");
-		if (computeAltArity(type,alt) > 0) {
+		if (type.getAltArity(alt) > 0) {
 		  println("    switch(i) {");
 		
 		  Iterator fields = type.altFieldIterator(alt.getId());
@@ -1198,139 +1174,7 @@ extends Generator
 
   //}}}
 
-  private void genTomSignatureFile(ADT api) {
-    String filename = buildId(api_name);
-    createTomSignatureStream(filename);
-    
-    info("generating " + filename + ".t");
-    
-    genTomBuiltinTypes();
-    genTomTypes(api);
-  }
-
-	private void genTomBuiltinTypes() {
-    println("%typeterm String {");
-    println("  implement { String }");
-    println("  get_fun_sym(t) { t }");
-    println("  cmp_fun_sym(s1,s2) { s1.equals(s2) }");
-    println("  get_subterm(t,n) { null }");
-    println("  equals(t1,t2) { t1.equals(t2) }");
-    println("}");
-    println();
-    println("%typeterm Integer {");
-    println("  implement { Integer }");
-    println("  get_fun_sym(t) { t }");
-    println("  cmp_fun_sym(s1,s2) { s1.equals(s2) }");
-    println("  get_subterm(t,n) { null }");
-    println("  equals(t1,t2) { t1.equals(t2) }");
-    println("}");
-    println();
-    println("%typeterm Double {");
-    println("  implement { Double }");
-    println("  get_fun_sym(t) { t }");
-    println("  cmp_fun_sym(s1,s2) { s1.equals(s2) }");
-    println("  get_subterm(t,n) { null }");
-    println("  equals(t1,t2) { t1.equals(t2) }");
-    println("}");
-    println();
-    println("%typeterm ATerm {");
-    println("  implement { ATerm }");
-    println("  get_fun_sym(t) { ((t instanceof ATermAppl)?((ATermAppl)t).getAFun():null) }");
-    println("  cmp_fun_sym(s1,s2) { s1 == s2 }");
-    println("  get_subterm(t,n) { (((ATermAppl)t).getArgument(n)) }");
-    println("  equals(t1,t2) { t1.equals(t2) }");
-    println("}");
-    println();
-   
-    println();
-	}
-
-
-  private void genTomTypes(ADT api) {
-    Iterator types = api.typeIterator();
-    
-    while (types.hasNext()) {
-      Type type = (Type) types.next(); 
-      genTomType(type);
-    }
-  }
-
-  private void genTomType(Type type) {
-    String class_name = buildClassName(type);
-    println("%typeterm " + class_name + " {");
-    println("  implement { " + class_name + " }");
-    println("  get_fun_sym(t) { null }");
-    println("  cmp_fun_sym(s1,s2) { false }");
-    println("  get_subterm(t,n) { null }");
-    println("  equals(t1,t2) { t1.equals(t2) }");
-    println("}");
-    println();
-    
-    genTomAltOperators(type);
-  }
-
-  private void genTomAltOperators(Type type) {
-    Iterator alts = type.alternativeIterator();
-    
-    while (alts.hasNext()) {
-      Alternative alt = (Alternative) alts.next();
-      genTomAltOperator(type, alt);
-    }
-  }
-
-  private void genTomAltOperator(Type type, Alternative alt) {
-    String class_name = buildClassName(type);
-    String operator_name = buildId(alt.getId());
-    String alt_class_name = buildAltClassName(type,alt);
-      
-    print  ("%op " + class_name + " " + operator_name); // operator_name if Tom can deal with it
-    
-    Iterator fields = type.altFieldIterator(alt.getId());
-    if (fields.hasNext()) {
-      print("(");
-      while (fields.hasNext()) {
-        Field field = (Field) fields.next();
-        String field_id = buildId(field.getId());
-        String field_class = buildClassName(field.getType());
-        String field_type = field_class;
-        print  (field_id + ":" + field_type);
-      
-        if (fields.hasNext()) {
-          print (", ");
-        }
-      }
-      print(")");
-    }
-    println(" {");
-    println("  fsym { }");
-
-    String subject = "t";
-    println("  is_fsym(t) { (" + subject + "!=null) && " + subject + ".is" + capitalize(operator_name) + "() }");
-
-    fields = type.altFieldIterator(alt.getId());
-    while (fields.hasNext()) {
-      Field field = (Field) fields.next();
-      String field_id = buildId(field.getId());
-      println("  get_slot(" + field_id + ",t) { " + subject + ".get" + capitalize(field_id) +
-              "() }");
-    }
- 
-
-    String arg = "(";
-    int arity = computeAltArity(type,alt);
-    for(int i = 0; i < arity; i++) {
-      arg += ("t" + i);
-      if (i < arity - 1) {
-        arg += ", ";
-      }
-    }
-    arg += ")";
-    println("  make" + arg + " { get" + api_factory + "().make" + alt_class_name + 
-            arg + "}");
-    
-    println("}");
-    println();    
-  }
+  
 
   //{{{ private String buildClassName(Type type)
 

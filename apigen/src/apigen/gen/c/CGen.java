@@ -259,6 +259,7 @@ extends Generator {
 	}
 
 	//}}}
+	
 	//{{{ private String buildDictInitFunc(String name)
 
 	private String buildDictInitFunc(String name) {
