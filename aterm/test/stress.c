@@ -385,6 +385,9 @@ testMake(void)
 	test_assert("make", 7, ATisEqual(ATmake("<placeholder>", ATmakeInt(7)),
 		ATmakePlaceholder((ATerm)ATmakeInt(7))));
 
+	test_assert("make", 8, ATisEqual(ATmake("w(<str>)", " "),
+					 ATparse("w(\" \")")));
+
 	fprintf(stderr, "The following tests should generate parse errors.\n");
 	ATparse("<int");
 	ATparse("f(<int>,<int>,<int>,<int>,<int>,<int>,<int>,<int>,<int>,<int>,<int>,<int>,<int>,<int>,<int>,<int>,<int>,<int>,<int>,<int>asdfaksdjfhasjkhf)");
