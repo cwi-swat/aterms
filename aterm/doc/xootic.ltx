@@ -1,3 +1,5 @@
+% {{{  Audience info and Layout demands.
+
 %% Audience:
 %% 
 %% The Xootic Magazine (XoM) is an english magazine for ex-ooti's: a
@@ -21,6 +23,8 @@
 %% 
 %% 7. Large tables and figures are printed in one column of total page
 %%    width.
+
+% }}}
 
 \documentclass[a4paper,twocolumn]{article}
 
@@ -92,5 +96,115 @@ ATerms scales up to the manipulation of ATerms in the giga-byte range.
 \end{abstract}
 
 %}}}
+%{{{ \section{Introduction}
+
+\section*{Introduction}
+\label{section:intro}
+
+Cut and paste operations on complex data structures are standard in most
+desktop software environments: one can easily clip a part of a spreadsheet
+and paste it into  a text document.  The exchange of complex data is
+also common in distributed applications: complex queries, transaction
+records, and more complex data are exchanged between different parts of a
+distributed application.  Compilers and programming environments consist
+of tools such as editors, parsers, optimizers, and code generators that
+exchange syntax trees, intermediate code, and the like.
+
+\begin{sloppypar}
+How is this exchange of complex data structures between applications
+achieved?  One solution is Microsoft's Object Linking and Embedding
+(OLE)~\cite{OLE}.  This is a platform-specific, proprietary, set of
+primitives to construct Windows applications. Another, language-specific,
+solution is to use Java's serialization interface~\cite{Java}. This
+allows writing and reading Java objects as sequential byte streams. Yet
+another solution is to use OMG's Interface Definition Language (part
+of the Common Object Broker Architecture~\cite{OMG-IDL}) to define data
+structures in a language-neutral way. Specific language-bindings provide
+the mapping from IDL data structures to language-specific data structures.
+\end{sloppypar}
+
+All these solutions have their merits but do not really qualify
+when looking for an \emph{open}, \emph{simple}, \emph{efficient},
+\emph{concise}, and \emph{language independent} solution for the
+exchange of complex data structures between distributed applications.
+To be more specific, we are interested in a solution with the following
+characteristics:
+
+\begin{description}
+
+\item{\emph{Open\/}:} independent of any specific hardware or software platform.
+
+\item{\emph{Simple\/}:} the procedural interface should contain 10 rather
+than 100 functions.
+
+\item{\emph{Efficient\/}:} operations on data structures should be fast.
+
+\item{\emph{Concise\/}:} inside an application the storage of data structures
+should be as small as possible by using compact representations and by
+exploiting sharing. Between applications the transmission of data
+structures should be fast by using a compressed representation with
+fast encoding and decoding.  Transmission should preserve any
+sharing of in-memory representation in the data structures.
+
+\item{\emph{Language-independent\/}:} data structures can be created and
+manipulated in any suitable programming language.
+
+\item{\emph{Annotations\/}:} applications can transparently extend
+the main data structures with annotations of their own
+to represent non-structural information.
+
+\end{description}
+
+In this paper we describe the data type of \emph{Annotated Terms}, or
+just \emph{ATerms}, that have the above characteristics.  They form
+a solution for our implementation needs in the areas of interactive
+programming environments \cite{Kli93.meta,BKMO97} and distributed
+applications~\cite{BK98} but are more widely applicable.  Typically,
+we want to exchange and process tree-like data structures such as
+parse trees, abstract syntax trees, parse tables, generated code, and
+formatted source texts. The applications involved include parsers,
+type checkers, compilers, formatters, syntax-directed editors, and
+user-interfaces written in a variety of languages.  Typically, a parser
+may add annotations to nodes in the tree describing the coordinates
+of their corresponding source text and a formatter may add font or
+color information to be used by an editor when displaying the textual
+representation of the tree.
+
+The \ATerm\ data type has been designed to represent such tree-like
+data structures and it is therefore very natural to use \ATerms\ both
+for the internal representation of data inside an application and for
+the exchange of information between applications.  Besides function
+applications that are needed to represent the basic tree structure,
+a small number of other primitives are provided to make the \ATerm\
+data type more generally applicable.  These include integer constants,
+real number constants, binary large data objects (``blobs''), lists of
+\ATerms, and placeholders to represent typed gaps in \ATerms.  Using the
+comprehensive set of primitives and operations on \ATerms, it is possible
+to perform operations on an \ATerm\ received from another application
+without first converting it to an application-specific representation.
+
+% First, we will give a quick overview of \ATerms\
+% (Section~\ref{aterms-at-a-glance}).  Next, we discuss implementation
+% issues (Section~\ref{implementation}) and give some insight in performance
+% issues (Section~\ref{measurements}).  An overview of applications
+% (Section~\ref{applications}) and an overview of related work and a
+% discussion (Section~\ref{discussion}) conclude this paper.
+
+%}}}
+% {{{  \section{Availability}
+
+\section*{Availability}
+\label{section:avail}
+
+The \ATerm\ library is available on the web at
+\texttt{http://www.cwi.nl/projects/MetaEnv/aterm}.
+
+% }}}
+% {{{  References
+
+\bibliographystyle{alpha}
+\bibliography{thesis}
+
+% }}}
 
 \end{document}
