@@ -29,11 +29,6 @@ public class ListTypeImplGenerator extends TypeImplGenerator {
 
 	protected void generate() {
 		printPackageDecl();
-
-		// TODO: test whether these are actually still needed
-		imports.add("java.io.InputStream");
-		imports.add("java.io.IOException");
-
 		printImports();
 		println();
 		genListTypeClassImpl();

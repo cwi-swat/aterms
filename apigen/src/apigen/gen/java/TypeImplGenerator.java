@@ -28,11 +28,6 @@ public class TypeImplGenerator extends JavaGenerator {
 
 	protected void generate() {
 		printPackageDecl();
-
-        // TODO: are these still needed?
-		imports.add("java.io.InputStream");
-		imports.add("java.io.IOException");
-
 		printImports();
 		println();
 
@@ -44,10 +39,7 @@ public class TypeImplGenerator extends JavaGenerator {
 		String class_name = TypeGenerator.className(type.getId());
 
 		println(
-			"abstract public class "
-				+ class_impl_name
-				+ " extends "
-				+ GenericConstructorGenerator.className(apiName));
+			"abstract public class " + class_impl_name + " extends " + GenericConstructorGenerator.className(apiName));
 		println("{");
 
 		genConstructor(class_impl_name);
@@ -74,12 +66,7 @@ public class TypeImplGenerator extends JavaGenerator {
 		println("  }");
 	}
 	protected void genConstructor(String class_impl_name) {
-		println(
-			"  protected "
-				+ class_impl_name
-				+ "("
-				+ FactoryGenerator.className(apiName)
-				+ " factory) {");
+		println("  protected " + class_impl_name + "(" + FactoryGenerator.className(apiName) + " factory) {");
 		println("     super(factory);");
 		println("  }");
 	}
@@ -107,41 +94,21 @@ public class TypeImplGenerator extends JavaGenerator {
 
 	protected void genDefaultGetAndSetMethod(Type type, Field field) {
 		String class_name = TypeGenerator.className(type.getId());
-		String field_name =
-			StringConversions.makeCapitalizedIdentifier(field.getId());
+		String field_name = StringConversions.makeCapitalizedIdentifier(field.getId());
 		String field_id = getFieldId(field.getId());
 		String field_type_id = TypeGenerator.className(field.getType());
 
 		// getter    
 		println("  public " + field_type_id + " get" + field_name + "()");
 		println("  {");
-		println(
-			"     throw new RuntimeException(\"This "
-				+ class_name
-				+ " has no "
-				+ field_name
-				+ "\");");
+		println("     throw new UnsupportedOperationException(\"This " + class_name + " has no " + field_name + "\");");
 		println("  }");
 		println();
 
 		// setter
-		println(
-			"  public "
-				+ class_name
-				+ " set"
-				+ field_name
-				+ "("
-				+ field_type_id
-				+ " "
-				+ field_id
-				+ ")");
+		println("  public " + class_name + " set" + field_name + "(" + field_type_id + " " + field_id + ")");
 		println("  {");
-		println(
-			"     throw new RuntimeException(\"This "
-				+ class_name
-				+ " has no "
-				+ field_name
-				+ "\");");
+		println("     throw new IllegalArgumentException(\"Illegal argument: \" + " + field_id + ");");
 		println("  }");
 		println();
 	}
@@ -156,10 +123,7 @@ public class TypeImplGenerator extends JavaGenerator {
 	}
 
 	protected void genDefaultHasMethod(Field field) {
-		println(
-			"  public boolean has"
-				+ StringConversions.makeCapitalizedIdentifier(field.getId())
-				+ "()");
+		println("  public boolean has" + StringConversions.makeCapitalizedIdentifier(field.getId()) + "()");
 		println("  {");
 		println("    return false;");
 		println("  }");
@@ -167,10 +131,7 @@ public class TypeImplGenerator extends JavaGenerator {
 	}
 
 	protected void genDefaultIsMethod(Alternative alt) {
-		println(
-			"  public boolean is"
-				+ StringConversions.makeCapitalizedIdentifier(alt.getId())
-				+ "()");
+		println("  public boolean is" + StringConversions.makeCapitalizedIdentifier(alt.getId()) + "()");
 		println("  {");
 		println("    return false;");
 		println("  }");
@@ -178,10 +139,7 @@ public class TypeImplGenerator extends JavaGenerator {
 	}
 
 	protected void genIsTypeMethod(Type type) {
-		println(
-			"  public boolean isSort"
-				+ TypeGenerator.className(type)
-				+ "()  {");
+		println("  public boolean isSort" + TypeGenerator.className(type) + "()  {");
 		println("    return true;");
 		println("  }");
 		println();

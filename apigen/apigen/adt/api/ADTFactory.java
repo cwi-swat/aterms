@@ -1,11 +1,9 @@
 package apigen.adt.api;
 
-import aterm.*;
 import aterm.pure.PureFactory;
 public class ADTFactory extends PureFactory
 {
   private Entries protoEntries;
-  private aterm.ATerm patternEntriesMany;
   private aterm.AFun funEntry_Constructor;
   private Entry protoEntry_Constructor;
   private aterm.ATerm patternEntry_Constructor;
@@ -16,7 +14,6 @@ public class ADTFactory extends PureFactory
   private Entry protoEntry_SeparatedList;
   private aterm.ATerm patternEntry_SeparatedList;
   private Separators protoSeparators;
-  private aterm.ATerm patternSeparatorsMany;
   private aterm.AFun funSeparator_Default;
   private Separator protoSeparator_Default;
   private aterm.ATerm patternSeparator_Default;

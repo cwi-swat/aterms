@@ -27,11 +27,6 @@ public class SeparatedListTypeImplGenerator extends ListTypeImplGenerator {
 
     protected void generate() {
         printPackageDecl();
-
-        // TODO: test whether these import are needed!
-        imports.add("java.io.InputStream");
-        imports.add("java.io.IOException");
-
         printImports();
         println();
         genSeparatedListTypeClassImpl();

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
+    <classpathentry excluding="test/" kind="src" path=""/>
     <classpathentry kind="src" path="/JJTraveler"/>
     <classpathentry kind="src" path="/aterm-java"/>
-    <classpathentry excluding="test/" kind="src" path=""/>
     <classpathentry kind="src" path="/shared-objects"/>
     <classpathentry kind="var" path="JRE_LIB" sourcepath="JRE_SRC"/>
-    <classpathentry kind="output" path=""/>
+    <classpathentry kind="output" path="bin"/>
 </classpath>

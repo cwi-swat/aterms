@@ -17,6 +17,5 @@ api:
 		--folding \
 		--package apigen.adt.api \
 		--name ADT \
-		--import 'aterm.*' \
 		--verbose
 	mv ${srcdir}/ADTMakeRules ${srcdir}/ADTMakeRules.am

@@ -1,8 +1,5 @@
 package apigen.adt.api;
 
-import aterm.*;
-import java.io.InputStream;
-import java.io.IOException;
 
 abstract public class SeparatorImpl extends ADTConstructor
 {
@@ -35,12 +32,12 @@ abstract public class SeparatorImpl extends ADTConstructor
 
   public aterm.ATerm getTermPattern()
   {
-     throw new RuntimeException("This Separator has no TermPattern");
+     throw new UnsupportedOperationException("This Separator has no TermPattern");
   }
 
   public Separator setTermPattern(aterm.ATerm _termPattern)
   {
-     throw new RuntimeException("This Separator has no TermPattern");
+     throw new IllegalArgumentException("Illegal argument: " + _termPattern);
   }
 
 }

@@ -1,8 +1,5 @@
 package apigen.adt.api;
 
-import aterm.*;
-import java.io.InputStream;
-import java.io.IOException;
 
 abstract public class SeparatorsImpl extends aterm.pure.ATermListImpl
 {
