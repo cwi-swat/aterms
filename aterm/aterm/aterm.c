@@ -105,6 +105,23 @@ AT_cleanup(void)
 
 /*}}}  */
 
+/*{{{  void ATinitialize(int argc, char *argv[]) */
+
+/**
+ * Initialize ATerm library without supplying bottom of stack.
+ * the stackbottom is determined in this function.
+ * This variant might work better with some compilers (gcc)
+ * that optimize local variables in 'main' into global variables.
+ */ 
+
+void ATinitialize(int argc, char *argv[])
+{
+  ATerm bottom;
+
+  ATinit(argc, argv, &bottom);
+}
+
+/*}}}  */
 /*{{{  void ATinit(int argc, char *argv[], ATerm *bottomOfStack) */
 
 /**

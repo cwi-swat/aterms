@@ -94,6 +94,16 @@ static void handshake(Connection *connection);
 
 /*}}}  */
 
+/*{{{  int ATBinitialize(int argc, char *argv[]) */
+
+int ATBinitialize(int argc, char *argv[])
+{
+  ATerm bottom;
+
+  return ATBinit(argc, argv, &bottom);
+}
+
+/*}}}  */
 /*{{{  int ATBinit(int argc, char *argv[], ATerm *stack_bottom) */
 
 /**

@@ -83,6 +83,7 @@ void ATunprotectArray(ATerm *start);
   */
 
 void ATinit(int argc, char *argv[], ATerm *bottomOfStack);
+void ATinitialize(int argc, char *argv[]);
 void ATsetWarningHandler(void (*handler)(const char *format, va_list args));
 void ATsetErrorHandler(void (*handler)(const char *format, va_list args));
 void ATsetAbortHandler(void (*handler)(const char *format, va_list args));
