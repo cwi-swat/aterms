@@ -15,7 +15,13 @@ module ATerm-Utils
       aterm-to-lit ( ATerm )				-> AT-Literal
 
       merge-adts ( ATerm , ATerm )			-> ATerm
+   
+      quote-all-funs( ATerm )           -> ATerm 
 
+hiddens
+  context-free syntax
+      quote-all-funs-in-list( ATerms)           -> ATerms {prefer}
+  
   hiddens
     context-free syntax
       aterms-to-lit ( ATerms )				-> AT-Literal
@@ -28,9 +34,9 @@ module ATerm-Utils
       "$AFun+"		-> AFun+
       "$AltId"		-> AFun
       "$Anno+"		-> { ATerm "," }+
-      "$ATerm"		-> ATerm
-      "$ATerm*"		-> { ATerm "," }*
-      "$ATerm+"		-> { ATerm "," }+
+      "$ATerm"[0-9]*		-> ATerm
+      "$ATerm*"[0-9]*		-> { ATerm "," }*
+      "$ATerm+"[0-9]*		-> { ATerm "," }+
       "$Char"		-> CHAR
       "$Char*"[0-9]*	-> CHAR*
       "$Entry"[0-9]*	-> ATerm
@@ -39,4 +45,5 @@ module ATerm-Utils
       "$L"		-> AT-Literal
       "$Pattern"[0-9]*	-> ATerm
       "$TypeId"		-> AFun
+      "$AT-Literal"[0-9]* -> AT-Literal
 

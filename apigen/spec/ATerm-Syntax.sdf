@@ -19,7 +19,7 @@
 %%%    $Id$
 
 module ATerm-Syntax
-   imports Literal-Syntax Integer-Syntax
+   imports Literal-Syntax Integer-Syntax Booleans
 
    exports
       sorts ATermList ACon AFun ATerm ATerms Ann

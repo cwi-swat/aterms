@@ -123,3 +123,24 @@ equations
     ===>
     escape(at-literal(""" $Char $Char* """)) = $L
 
+
+  [equ-quote-all-funs-unquoted-constant]
+    quote-all-funs(afun($Char*)) = at-literal(""" $Char* """)
+
+  [equ-quote-all-funs-unquoted-constant]
+    quote-all-funs-in-list($ATerm+) = $ATerm+2
+    ===>
+    quote-all-funs(afun($Char*)($ATerm+)) = 
+      at-literal(""" $Char* """)($ATerm+2)
+
+  [default-quote-all-funs]
+    quote-all-funs($ATerm) = $ATerm
+
+  [equ-quote-all-funs-in-list-singleton]
+    quote-all-funs-in-list($ATerm) = quote-all-funs($ATerm)
+
+  [equ-quote-all-funs-in-list-more]
+    quote-all-funs($ATerm) = $ATerm2,
+    quote-all-funs-in-list($ATerm+) = $ATerm+2
+    ===>
+    quote-all-funs-in-list($ATerm, $ATerm+) = $ATerm2, $ATerm+2

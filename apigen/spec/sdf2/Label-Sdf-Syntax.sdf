@@ -24,7 +24,4 @@ imports Kernel-Sdf-Syntax Literals-Sdf-Syntax ATerm-Syntax
 exports
   context-free syntax
     Literal ":" Symbol   -> Symbol
-    "cons" "(" ATerm ")" -> Attribute
-    "constructor"        -> Attribute
-    "memo"               -> Attribute  
-    "traverse"           -> Attribute
+

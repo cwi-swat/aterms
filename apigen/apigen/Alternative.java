@@ -4,7 +4,8 @@ import aterm.*;
 
 public class Alternative
 {
-  private final static String[] RESERVED_TYPES = { "int", "real", "str" };
+  private final static String[] RESERVED_TYPES = 
+    { "int", "real", "str", "term" };
 
   String id;
   ATerm  pattern;

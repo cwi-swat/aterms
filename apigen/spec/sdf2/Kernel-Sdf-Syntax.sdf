@@ -24,6 +24,7 @@ imports Symbols Grammar-Syntax
 exports
   sorts Attribute Attributes Production Productions
   context-free syntax
+   ATerm                           -> Attribute  {avoid}
     "{" {Attribute ","}* "}"       -> Attributes
                                    -> Attributes
     Symbols "->" Symbol Attributes -> Production

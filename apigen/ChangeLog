@@ -1,3 +1,18 @@
+2001/09/27 (jurgenv@cwi.nl)
+ * Made some changes in the Sdf grammar:
+     - added:   ATerm                      -> Attribute 
+     - removed: "cons" "(" term:ATerm ")"  -> Attribute 
+                "constructor"              -> Attribute 
+                "memo"                     -> Attribute 
+                "traverse"                 -> Attribute 
+     - refactored the ATerm grammar a bit
+ * Added the builtin type "term" to adt-to-c. The generated C type for this
+   type is "ATerm". 
+ * Adapted sdf2-to-adt to generate the new AsFix attribute format. See the
+   ChangeLog of pt-support for details.
+ * In sdf2-to-adt all AFun literals are now automatically quoted, mimicking the
+   behaviour of the pgen normalizer.
+
 2001/08/07 ({jong,olivierp}@cwi.nl)
  * Retracted quotes in cons list
  * Version is now 1.1beta

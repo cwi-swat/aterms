@@ -36,7 +36,8 @@ public class CGen
   private final static String[][] RESERVED_TYPES =
   { { "int",  "int"    },
     { "real", "double" },
-    { "str",  "char *" }
+    { "str",  "char *" },
+    { "term", "ATerm"  }
   };
 
   //}}}
