@@ -4,20 +4,19 @@ import apigen.gen.StringConversions;
 import apigen.gen.TomSignatureImplementation;
 import apigen.gen.TypeConverter;
 
-public class JavaTomSignatureImplementation 
-implements TomSignatureImplementation {
+public class JavaTomSignatureImplementation implements TomSignatureImplementation {
 	private static TypeConverter converter;
-	
+
 	static {
 		converter = new TypeConverter(new JavaTypeConversions());
 	}
-	
+
 	private String api_name;
-	
+
 	public JavaTomSignatureImplementation(String api_name) {
 		this.api_name = api_name;
 	}
-	
+
 	private String buildAltTypeName(String type, String alt) {
 		return StringConversions.capitalize(type + "_" + StringConversions.capitalize(alt));
 	}
@@ -103,11 +102,7 @@ implements TomSignatureImplementation {
 	}
 
 	public String ATermGetFunSym(String arg) {
-		return "(("
-			+ arg
-			+ " instanceof ATermAppl)?((ATermAppl)"
-			+ arg
-			+ ").getAFun():null)";
+		return "((" + arg + " instanceof ATermAppl)?((ATermAppl)" + arg + ").getAFun():null)";
 	}
 
 	public String ATermCmpFunSym(String s1, String s2) {
@@ -159,12 +154,7 @@ implements TomSignatureImplementation {
 	}
 
 	public String OperatorIsFSym(String term, String type, String alt) {
-		return "("
-			+ term
-			+ "!= null) &&"
-			+ term
-			+ ".is"
-			+ StringConversions.makeCapitalizedIdentifier(alt) + "()";
+		return "(" + term + "!= null) &&" + term + ".is" + StringConversions.makeCapitalizedIdentifier(alt) + "()";
 	}
 
 	public String OperatorGetSlot(String term, String type, String slot) {
