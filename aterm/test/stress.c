@@ -178,7 +178,7 @@ testAppl(void)
   assert(apples[2] != apples[3]);
   assert(apples[0] != apples[1]);
 
-  printf("application tests ok.\n");
+  ATprintf("application tests ok.\n");
 }
 
 /*}}}  */
@@ -389,9 +389,28 @@ testMake(void)
 	test_assert("make", 8, ATisEqual(ATmake("w(<str>)", " "),
 					 ATparse("w(\" \")")));
 
+	ATprintf("ATmake with 9 args: %t\n",
+			 ATmake("f(<int>,<int>,<int>,<int>,<int>,"
+					"<int>,<int>,<int>,<int>)", 1, 2, 3, 4, 5, 6, 7, 8, 9));
+ 
+	ATprintf("ATmakeAppl: %t\n",
+				ATmakeAppl(ATmakeSymbol("f", 9, ATfalse), ATmakeInt(1),
+                           ATmakeInt(2),ATmakeInt(3),ATmakeInt(4),
+                           ATmakeInt(5),ATmakeInt(6),ATmakeInt(7),
+						   ATmakeInt(8),ATmakeInt(9)));
+
+	test_assert("make", 9, ATisEqual(ATmake("f(<int>,<int>,<int>,<int>,<int>,"
+											"<int>,<int>,<int>,<int>)", 
+											1, 2, 3, 4, 5, 6, 7, 8, 9), 
+				ATmakeAppl(ATmakeSymbol("f", 9, ATfalse), ATmakeInt(1),
+                           ATmakeInt(2),ATmakeInt(3),ATmakeInt(4),
+                           ATmakeInt(5),ATmakeInt(6),ATmakeInt(7),
+						   ATmakeInt(8),ATmakeInt(9))));
+
 	fprintf(stderr, "The following tests should generate parse errors.\n");
 	ATparse("<int");
 	ATparse("f(<int>,<int>,<int>,<int>,<int>,<int>,<int>,<int>,<int>,<int>,<int>,<int>,<int>,<int>,<int>,<int>,<int>,<int>,<int>,<int>asdfaksdjfhasjkhf)");
+
 	printf("make tests ok.\n");
 }
 
@@ -505,12 +524,10 @@ void testAnno(void)
 }
 
 /*}}}  */
-
 /*{{{  void testGC() */
 
 void testGC()
 {
-#if 0
 	ATerm t[8];
 
 	t[0] = ATparse("abc");
@@ -526,7 +543,6 @@ void testGC()
 	test_assert("gc", 3, AT_isValidTerm(t[3]));
 	test_assert("gc", 4, !AT_isValidTerm(t[4]));
 	test_assert("gc", 5, !AT_isValidTerm(t[5]));
-#endif
 }
 
 /*}}}  */
@@ -554,7 +570,9 @@ int main(int argc, char *argv[])
   testAnno();
   testMake();
   testMatch();
-	testGC();
+/*
+  testGC();
+  */
 
   return 0;
 }
