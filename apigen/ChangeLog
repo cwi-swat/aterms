@@ -1,5 +1,8 @@
 # $Id$
 
+Tue Feb  3 18:11:16 CET 2004 <kooiker@cwi.nl>
+ * Fixed bug not adding prefix to C version of list reverse functions 
+
 Mon Jan 26 09:42:14 CET 2004 <{jurgenv,jong}@cwi.nl>
  * Generate protect functions instead of protect macros such that
    we get early compile warnings

@@ -214,7 +214,7 @@ public class APIGenerator extends CGenerator {
 
 	private void genSeparatedReverse(SeparatedListType type, String typeId, String typeName) {
 
-		String decl = typeName + " reverse" + typeId + "(" + typeName + " arg)";
+		String decl = typeName + " " + prefix +  "reverse" + typeId + "(" + typeName + " arg)";
 		String listNext = "      list = ATgetNext(list);";
 		int sepCount = type.getSeparators().getLength();
 
