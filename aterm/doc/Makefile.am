@@ -19,12 +19,24 @@ EXAMPLEFILES = init.c make.c match.c prot.c app1.c app2.c app3.c \
                plac.c
 EXAMPLES     = $(patsubst %,$(EXAMPLEDIR)/%,$(EXAMPLEFILES))
 
-doc: at.ps manual.ps
+JAVA_CLASSES	= AFun ATerm ATermInt ATermReal ATermBlob ATermAppl \
+		ATermList ATermPlaceholder ATermFactory
+JAVA_FILES	= $(patsubst %,../java/aterm/%.java,$(JAVA_CLASSES))
+
+doc: at.ps manual.ps java-api.ps
+
+# This uses the TexDoclet available at c2_tech.com
+javadoc: $(JAVA_FILES)
+	javadoc -public \
+		-doclet com.c2_tech.doclets.TexDoclet \
+		-docletpath ${TEXDOCLET} \
+		-output java-api.ltx \
+		-noinherited \
+		$(JAVA_FILES)
 
 all: 
 
 at.ps: at.dvi $(PICS)
-
 at.dvi: at.ltx aterm.ltx spec/ATerm.mtx $(CHAPS) $(PICS)
 
 manual.dvi: manual.ltx $(EXAMPLES)
@@ -38,9 +50,10 @@ manual.ps: manual.dvi
 	latex ${srcdir}/manual.ltx ;\
 	dvips -o $@ $<
 
-spell: at.ltx
-#	detex at.ltx | spell +words.txt
-	detex manual.ltx | spell -b +words.txt
+java-api.dvi: java-api.ltx
+
+java-api.ps: java-api.dvi
+	dvips -o $@ $<
 
 clean:
 	rm -f *~ at.aux at.bbl at.blg at.dvi at.log at.ps \

@@ -1,5 +1,8 @@
 $Id$
 
+2001/04/24 (jong@cwi.nl)
+ * Added java-api documentation in LaTeX
+
 2001/04/04 ({jong,olivierp}@cwi.nl)
  * Fixed locking in Java toolbus support
  * Added support for <str> pattern in Java library

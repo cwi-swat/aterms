@@ -15,15 +15,13 @@ import java.io.*;
  */
 public class ParseError extends RuntimeException {
 
-    /**
-     * Constructs a ParseError given a description of the error
-     *
-     *
-     * @param msg the error message describing the parse error.
-     *
-     */
-    public ParseError(String msg) {
-	super(msg);
-    }
+  /**
+   * Constructs a ParseError given a description of the error
+   *
+   * @param msg the error message describing the parse error.
+   */
+  public ParseError(String msg) {
+    super(msg);
+  }
 
 }

@@ -1,0 +1,3239 @@
+\documentclass[11pt]{report}
+\def\bl{\mbox{}\newline\mbox{}\newline{}}
+\usepackage{ifthen}
+\newcommand{\hide}[2]{
+\ifthenelse{\equal{#1}{inherited}}%
+{}%
+{}%
+}
+\newcommand{\entityintro}[3]{%
+  \hbox to \hsize{%
+    \vbox{%
+      \hbox to .2in{}%
+    }%
+    {\bf #1}%
+    \dotfill\pageref{#2}%
+  }
+  \makebox[\hsize]{%
+    \parbox{.4in}{}%
+    \parbox[l]{5in}{%
+      \vspace{1mm}\it%
+      #3%
+      \vspace{1mm}%
+    }%
+  }%
+}
+\newcommand{\isep}[0]{%
+\setlength{\itemsep}{-.4ex}
+}
+\newcommand{\sld}[0]{%
+\setlength{\topsep}{0em}
+\setlength{\partopsep}{0em}
+\setlength{\parskip}{0em}
+\setlength{\parsep}{-1em}
+}
+\newcommand{\headref}[3]{%
+\ifthenelse{#1 = 1}{%
+\addcontentsline{toc}{section}{\hspace{\qquad}\protect\numberline{}{#3}}%
+}{}%
+\ifthenelse{#1 = 2}{%
+\addcontentsline{toc}{subsection}{\hspace{\qquad}\protect\numerline{}{#3}}%
+}{}%
+\ifthenelse{#1 = 3}{%
+\addcontentsline{toc}{subsubsection}{\hspace{\qquad}\protect\numerline{}{#3}}%
+}{}%
+\label{#3}%
+\makebox[\textwidth][l]{#2 #3}%
+}%
+\newcommand{\membername}[1]{{\it #1}\linebreak}
+\newcommand{\divideents}[1]{\vskip -1em\indent\rule{2in}{.5mm}}
+\newcommand{\refdefined}[1]{
+\expandafter\ifx\csname r@#1\endcsname\relax
+\relax\else
+{$($ in \ref{#1}, page \pageref{#1}$)$}
+\fi}
+\newcommand{\startsection}[4]{
+\gdef\classname{#2}
+\subsection{\label{#3}{\bf {\sc #1} #2}}{
+\rule[1em]{\hsize}{4pt}\vskip -1em
+\vskip .1in 
+#4
+}%
+}
+\newcommand{\startsubsubsection}[2]{
+\subsubsection{\sc #1}{%
+\rule[1em]{\hsize}{2pt}%
+#2}
+}
+\usepackage{color}
+\date{\today}
+\pagestyle{myheadings}
+\addtocontents{toc}{\protect\def\protect\packagename{}}
+\addtocontents{toc}{\protect\def\protect\classname{}}
+\markboth{\protect\packagename -- \protect\classname}{\protect\packagename -- \protect\classname}
+\oddsidemargin 0in
+\evensidemargin 0in
+% \topmargin -.8in
+\chardef\bslash=`\\
+\textheight 9.4in
+\textwidth 6.5in
+\begin{document}
+\sloppy
+\raggedright
+\tableofcontents
+\gdef\packagename{}
+\gdef\classname{}
+\newpage
+\def\packagename{aterm}
+\chapter{\bf Package aterm}{
+\vskip -.25in
+\hbox to \hsize{\it Package Contents\hfil Page}
+\rule{\hsize}{.7mm}
+\vskip .13in
+\hbox{\bf Interfaces}
+\entityintro{AFun}{l0}{An AFun represents a function symbol}
+\entityintro{ATerm}{l1}{This is the base interface for all ATerm interfaces,
+ which will ultimately be implemented by two separate
+ ATerm Factories (a native and a pure one).}
+\entityintro{ATermAppl}{l2}{An ATermAppl represents a function application.}
+\entityintro{ATermBlob}{l3}{This interface describes the functionality of an ATermBlob
+ (Binary Large OBject).}
+\entityintro{ATermFactory}{l4}{An ATermFactory is responsible for making new ATerms.}
+\entityintro{ATermInt}{l5}{This interface describes the functionality of an ATermInt}
+\entityintro{ATermList}{l6}{This interface describes the functionality of an ATermList}
+\entityintro{ATermPlaceholder}{l7}{This interface describes the functionality of an ATermPlaceholder}
+\entityintro{ATermReal}{l8}{This interface describes the functionality of an ATermReal}
+\vskip .1in
+\rule{\hsize}{.7mm}
+\vskip .1in
+\newpage
+\section{Interfaces}{
+\startsection{Interface}{AFun}{l0}{%
+{\small An AFun represents a function symbol}
+\vskip .1in 
+\startsubsubsection{Declaration}{
+\fbox{\vbox{
+\hbox{\vbox{\small public interface 
+AFun}}
+}}}
+\startsubsubsection{Methods}{
+\vskip -2em
+\begin{itemize}
+\item{\vskip -1.9ex 
+\membername{getArity}
+{\tt public int {\bf getArity}(  )
+\label{l9}\label{l10}}%end signature
+\begin{itemize}
+\sld
+\item{
+\sld
+{\bf Usage}
+  \begin{itemize}\isep
+   \item{
+Gets the arity of this application. Arity is the number
+ of arguments of a function application.
+}%end item
+  \end{itemize}
+}
+\item{{\bf Returns} - 
+the number of arguments that applications of this
+ function symbol have. 
+}%end item
+\end{itemize}
+}%end item
+\divideents{getName}
+\item{\vskip -1.9ex 
+\membername{getName}
+{\tt public String {\bf getName}(  )
+\label{l11}\label{l12}}%end signature
+\begin{itemize}
+\sld
+\item{
+\sld
+{\bf Usage}
+  \begin{itemize}\isep
+   \item{
+Gets the name of the function symbol
+}%end item
+  \end{itemize}
+}
+\item{{\bf Returns} - 
+the name of this function symbol. 
+}%end item
+\end{itemize}
+}%end item
+\divideents{isQuoted}
+\item{\vskip -1.9ex 
+\membername{isQuoted}
+{\tt public boolean {\bf isQuoted}(  )
+\label{l13}\label{l14}}%end signature
+\begin{itemize}
+\sld
+\item{
+\sld
+{\bf Usage}
+  \begin{itemize}\isep
+   \item{
+Checks if this application is quoted. A quoted application looks
+ like this: "foo", whereas an unquoted looks like this: foo.
+}%end item
+  \end{itemize}
+}
+\item{{\bf Returns} - 
+true if this application is quoted, false otherwise. 
+}%end item
+\end{itemize}
+}%end item
+\end{itemize}
+}
+\hide{inherited}{
+}
+}
+\startsection{Interface}{ATerm}{l1}{%
+{\small This is the base interface for all ATerm interfaces,
+ which will ultimately be implemented by two separate
+ ATerm Factories (a native and a pure one).}
+\vskip .1in 
+\startsubsubsection{Declaration}{
+\fbox{\vbox{
+\hbox{\vbox{\small public interface 
+ATerm}}
+\noindent\hbox{\vbox{{\bf implements} 
+ATermVisitable}}
+}}}
+\startsubsubsection{Fields}{
+\begin{itemize}
+\item{
+public static final int INT\begin{itemize}\item{\vskip -.9ex A term of type INT}\end{itemize}
+}
+\item{
+public static final int REAL\begin{itemize}\item{\vskip -.9ex A term of type REAL}\end{itemize}
+}
+\item{
+public static final int APPL\begin{itemize}\item{\vskip -.9ex A term of type APPL (function application)}\end{itemize}
+}
+\item{
+public static final int LIST\begin{itemize}\item{\vskip -.9ex A term of type LIST}\end{itemize}
+}
+\item{
+public static final int PLACEHOLDER\begin{itemize}\item{\vskip -.9ex A term of type PLACEHOLDER}\end{itemize}
+}
+\item{
+public static final int BLOB\begin{itemize}\item{\vskip -.9ex A term of type BLOB (Binary Large OBject)}\end{itemize}
+}
+\end{itemize}
+}
+\startsubsubsection{Methods}{
+\vskip -2em
+\begin{itemize}
+\item{\vskip -1.9ex 
+\membername{equals}
+{\tt public boolean {\bf equals}( {\tt java.lang.Object } {\bf obj} )
+\label{l15}\label{l16}}%end signature
+\begin{itemize}
+\sld
+\item{
+\sld
+{\bf Usage}
+  \begin{itemize}\isep
+   \item{
+Checks equality of this term against any java object.
+ Note that for two terms to be equal, any annotations they
+ might have must be equal as well.
+}%end item
+  \end{itemize}
+}
+\item{
+\sld
+{\bf Parameters}
+\sld\isep
+  \begin{itemize}
+\sld\isep
+   \item{
+\sld
+{\tt obj} - the object to check for equality.}
+  \end{itemize}
+}%end item
+\item{{\bf Returns} - 
+true iff term equals obj (including annotations). 
+}%end item
+\item{{\bf See Also}
+  \begin{itemize}
+   \item{{\tt aterm.ATerm.isEqual} {\small 
+\refdefined{l17}}%end \small
+}%end item
+  \end{itemize}
+}%end item
+\end{itemize}
+}%end item
+\divideents{getAnnotation}
+\item{\vskip -1.9ex 
+\membername{getAnnotation}
+{\tt public ATerm {\bf getAnnotation}( {\tt aterm.ATerm } {\bf label} )
+\label{l18}\label{l19}}%end signature
+\begin{itemize}
+\sld
+\item{
+\sld
+{\bf Usage}
+  \begin{itemize}\isep
+   \item{
+Gets a annotation associated with specific label from this term.
+}%end item
+  \end{itemize}
+}
+\item{
+\sld
+{\bf Parameters}
+\sld\isep
+  \begin{itemize}
+\sld\isep
+   \item{
+\sld
+{\tt label} - the label of the desired annotation.}
+  \end{itemize}
+}%end item
+\item{{\bf Returns} - 
+the annotation associated with label, or null if
+ annotation with specified label does not exist. 
+}%end item
+\item{{\bf See Also}
+  \begin{itemize}
+   \item{{\tt aterm.ATerm.setAnnotation} {\small 
+\refdefined{l20}}%end \small
+}%end item
+  \end{itemize}
+}%end item
+\end{itemize}
+}%end item
+\divideents{getAnnotations}
+\item{\vskip -1.9ex 
+\membername{getAnnotations}
+{\tt public ATermList {\bf getAnnotations}(  )
+\label{l21}\label{l22}}%end signature
+\begin{itemize}
+\sld
+\item{
+\sld
+{\bf Usage}
+  \begin{itemize}\isep
+   \item{
+Gets all annotations of this term.
+}%end item
+  \end{itemize}
+}
+\item{{\bf Returns} - 
+all annotations of this term 
+}%end item
+\item{{\bf See Also}
+  \begin{itemize}
+   \item{{\tt aterm.ATerm.setAnnotations} {\small 
+\refdefined{l23}}%end \small
+}%end item
+  \end{itemize}
+}%end item
+\end{itemize}
+}%end item
+\divideents{getFactory}
+\item{\vskip -1.9ex 
+\membername{getFactory}
+{\tt public ATermFactory {\bf getFactory}(  )
+\label{l24}\label{l25}}%end signature
+\begin{itemize}
+\sld
+\item{
+\sld
+{\bf Usage}
+  \begin{itemize}\isep
+   \item{
+Retrieves the factory responsible for creating this ATerm.
+}%end item
+  \end{itemize}
+}
+\item{{\bf Returns} - 
+the factory that created this ATerm object. 
+}%end item
+\end{itemize}
+}%end item
+\divideents{getType}
+\item{\vskip -1.9ex 
+\membername{getType}
+{\tt public int {\bf getType}(  )
+\label{l26}\label{l27}}%end signature
+\begin{itemize}
+\sld
+\item{
+\sld
+{\bf Usage}
+  \begin{itemize}\isep
+   \item{
+Gets the type of this term.
+}%end item
+  \end{itemize}
+}
+\item{{\bf Returns} - 
+the type of this ATerm. 
+}%end item
+\item{{\bf See Also}
+  \begin{itemize}
+   \item{{\tt aterm.ATerm.INT} {\small 
+\refdefined{l28}}%end \small
+}%end item
+   \item{{\tt aterm.ATerm.REAL} {\small 
+\refdefined{l29}}%end \small
+}%end item
+   \item{{\tt aterm.ATerm.APPL} {\small 
+\refdefined{l30}}%end \small
+}%end item
+   \item{{\tt aterm.ATerm.LIST} {\small 
+\refdefined{l31}}%end \small
+}%end item
+   \item{{\tt aterm.ATerm.PLACEHOLDER} {\small 
+\refdefined{l32}}%end \small
+}%end item
+   \item{{\tt aterm.ATerm.BLOB} {\small 
+\refdefined{l33}}%end \small
+}%end item
+  \end{itemize}
+}%end item
+\end{itemize}
+}%end item
+\divideents{hashCode}
+\item{\vskip -1.9ex 
+\membername{hashCode}
+{\tt public int {\bf hashCode}(  )
+\label{l34}\label{l35}}%end signature
+\begin{itemize}
+\sld
+\item{
+\sld
+{\bf Usage}
+  \begin{itemize}\isep
+   \item{
+Gets a hashcode value of this term.
+}%end item
+  \end{itemize}
+}
+\item{{\bf Returns} - 
+the hashcode of this term. 
+}%end item
+\end{itemize}
+}%end item
+\divideents{isEqual}
+\item{\vskip -1.9ex 
+\membername{isEqual}
+{\tt public boolean {\bf isEqual}( {\tt aterm.ATerm } {\bf term} )
+\label{l36}\label{l37}}%end signature
+\begin{itemize}
+\sld
+\item{
+\sld
+{\bf Usage}
+  \begin{itemize}\isep
+   \item{
+Checks equality of this term against another term.
+ This method exists to keep a tight relation to the C-library.
+ Experienced Java programmers might feel more comfortable using
+ the \#equals\refdefined{l38}  method.
+}%end item
+  \end{itemize}
+}
+\item{
+\sld
+{\bf Parameters}
+\sld\isep
+  \begin{itemize}
+\sld\isep
+   \item{
+\sld
+{\tt term} - the term to check for equality.}
+  \end{itemize}
+}%end item
+\item{{\bf Returns} - 
+true iff terms are equal (including
+ any annotations they might have!), false otherwise. 
+}%end item
+\item{{\bf See Also}
+  \begin{itemize}
+   \item{{\tt aterm.ATerm.equals(Object)} {\small 
+\refdefined{l39}}%end \small
+}%end item
+  \end{itemize}
+}%end item
+\end{itemize}
+}%end item
+\divideents{make}
+\item{\vskip -1.9ex 
+\membername{make}
+{\tt public ATerm {\bf make}( {\tt java.util.List } {\bf args} )
+\label{l40}\label{l41}}%end signature
+\begin{itemize}
+\sld
+\item{
+\sld
+{\bf Usage}
+  \begin{itemize}\isep
+   \item{
+Create a new term based on this term as a pattern and a list of arguments.
+}%end item
+  \end{itemize}
+}
+\item{
+\sld
+{\bf Parameters}
+\sld\isep
+  \begin{itemize}
+\sld\isep
+   \item{
+\sld
+{\tt args} - the list of arguments used to fill up holes in the pattern}
+  \end{itemize}
+}%end item
+\end{itemize}
+}%end item
+\divideents{match}
+\item{\vskip -1.9ex 
+\membername{match}
+{\tt public List {\bf match}( {\tt aterm.ATerm } {\bf pattern} )
+\label{l42}\label{l43}}%end signature
+\begin{itemize}
+\sld
+\item{
+\sld
+{\bf Usage}
+  \begin{itemize}\isep
+   \item{
+Matches this term against a term pattern. A list containing
+ the subterms matching the placeholders in the pattern is
+ built as this term is matched against the pattern.
+}%end item
+  \end{itemize}
+}
+\item{
+\sld
+{\bf Parameters}
+\sld\isep
+  \begin{itemize}
+\sld\isep
+   \item{
+\sld
+{\tt pattern} - The term pattern to match this term against.}
+  \end{itemize}
+}%end item
+\item{{\bf Returns} - 
+a list containing the subterms matching the placeholders
+ if the match succeeds, or null if the match fails. 
+}%end item
+\end{itemize}
+}%end item
+\divideents{match}
+\item{\vskip -1.9ex 
+\membername{match}
+{\tt public List {\bf match}( {\tt java.lang.String } {\bf pattern} )
+\label{l44}\label{l45}}%end signature
+\begin{itemize}
+\sld
+\item{
+\sld
+{\bf Usage}
+  \begin{itemize}\isep
+   \item{
+Matches this term against a String pattern. The pattern is
+ parsed into a term, which this term is then matched against.
+}%end item
+  \end{itemize}
+}
+\item{
+\sld
+{\bf Parameters}
+\sld\isep
+  \begin{itemize}
+\sld\isep
+   \item{
+\sld
+{\tt pattern} - the string pattern to match this term against.}
+  \end{itemize}
+}%end item
+\item{{\bf Returns} - 
+a list containing the subterms matching the placeholders
+ if the match succeeds, or null if the match fails. 
+}%end item
+\item{{\bf Exceptions}
+  \begin{itemize}
+\sld
+   \item{\vskip -.6ex{\tt ParseError} - if pattern cannot be parsed into a term.}
+  \end{itemize}
+}%end item
+\item{{\bf See Also}
+  \begin{itemize}
+   \item{{\tt aterm.ATerm.match(ATerm)} {\small 
+\refdefined{l46}}%end \small
+}%end item
+  \end{itemize}
+}%end item
+\end{itemize}
+}%end item
+\divideents{removeAnnotation}
+\item{\vskip -1.9ex 
+\membername{removeAnnotation}
+{\tt public ATerm {\bf removeAnnotation}( {\tt aterm.ATerm } {\bf label} )
+\label{l47}\label{l48}}%end signature
+\begin{itemize}
+\sld
+\item{
+\sld
+{\bf Usage}
+  \begin{itemize}\isep
+   \item{
+Removes a specific annotation from this term.
+}%end item
+  \end{itemize}
+}
+\item{
+\sld
+{\bf Parameters}
+\sld\isep
+  \begin{itemize}
+\sld\isep
+   \item{
+\sld
+{\tt label} - the label of the annotation to be removed.}
+  \end{itemize}
+}%end item
+\item{{\bf Returns} - 
+a new version of this term without the annotation. 
+}%end item
+\item{{\bf See Also}
+  \begin{itemize}
+   \item{{\tt aterm.ATerm.setAnnotation} {\small 
+\refdefined{l20}}%end \small
+}%end item
+  \end{itemize}
+}%end item
+\end{itemize}
+}%end item
+\divideents{removeAnnotations}
+\item{\vskip -1.9ex 
+\membername{removeAnnotations}
+{\tt public ATerm {\bf removeAnnotations}(  )
+\label{l49}\label{l50}}%end signature
+\begin{itemize}
+\sld
+\item{
+\sld
+{\bf Usage}
+  \begin{itemize}\isep
+   \item{
+Removes all annotations of this term.
+}%end item
+  \end{itemize}
+}
+\item{{\bf Returns} - 
+a new version of this term without annotations. 
+}%end item
+\item{{\bf See Also}
+  \begin{itemize}
+   \item{{\tt aterm.ATerm.setAnnotations} {\small 
+\refdefined{l23}}%end \small
+}%end item
+  \end{itemize}
+}%end item
+\end{itemize}
+}%end item
+\divideents{setAnnotation}
+\item{\vskip -1.9ex 
+\membername{setAnnotation}
+{\tt public ATerm {\bf setAnnotation}( {\tt aterm.ATerm } {\bf label},
+{\tt aterm.ATerm } {\bf anno} )
+\label{l51}\label{l52}}%end signature
+\begin{itemize}
+\sld
+\item{
+\sld
+{\bf Usage}
+  \begin{itemize}\isep
+   \item{
+Sets annotation of this term with given label. If no annotation
+ with this label exists, a new annotation is created, otherwise
+ the existing annotation is updated.
+}%end item
+  \end{itemize}
+}
+\item{
+\sld
+{\bf Parameters}
+\sld\isep
+  \begin{itemize}
+\sld\isep
+   \item{
+\sld
+{\tt label} - the label of the annotation.}
+   \item{
+\sld
+{\tt anno} - the annotation itself.}
+  \end{itemize}
+}%end item
+\item{{\bf Returns} - 
+a new version of this term with the requested annotation. 
+}%end item
+\item{{\bf See Also}
+  \begin{itemize}
+   \item{{\tt aterm.ATerm.getAnnotation} {\small 
+\refdefined{l53}}%end \small
+}%end item
+  \end{itemize}
+}%end item
+\end{itemize}
+}%end item
+\divideents{setAnnotations}
+\item{\vskip -1.9ex 
+\membername{setAnnotations}
+{\tt public ATerm {\bf setAnnotations}( {\tt aterm.ATermList } {\bf annos} )
+\label{l54}\label{l55}}%end signature
+\begin{itemize}
+\sld
+\item{
+\sld
+{\bf Usage}
+  \begin{itemize}\isep
+   \item{
+Sets all annotations of this term.
+}%end item
+  \end{itemize}
+}
+\item{
+\sld
+{\bf Parameters}
+\sld\isep
+  \begin{itemize}
+\sld\isep
+   \item{
+\sld
+{\tt annos} - the annotations to set.}
+  \end{itemize}
+}%end item
+\item{{\bf Returns} - 
+a new version of this term with the requested annotations. 
+}%end item
+\item{{\bf See Also}
+  \begin{itemize}
+   \item{{\tt aterm.ATerm.getAnnotations} {\small 
+\refdefined{l21}}%end \small
+}%end item
+  \end{itemize}
+}%end item
+\end{itemize}
+}%end item
+\divideents{toString}
+\item{\vskip -1.9ex 
+\membername{toString}
+{\tt public String {\bf toString}(  )
+\label{l56}\label{l57}}%end signature
+\begin{itemize}
+\sld
+\item{
+\sld
+{\bf Usage}
+  \begin{itemize}\isep
+   \item{
+Gets a string representation of this term.
+}%end item
+  \end{itemize}
+}
+\item{{\bf Returns} - 
+a string representation of this term. 
+}%end item
+\end{itemize}
+}%end item
+\divideents{writeToSharedTextFile}
+\item{\vskip -1.9ex 
+\membername{writeToSharedTextFile}
+{\tt public void {\bf writeToSharedTextFile}( {\tt java.io.OutputStream } {\bf stream} )
+\label{l58}\label{l59}}%end signature
+\begin{itemize}
+\sld
+\item{
+\sld
+{\bf Usage}
+  \begin{itemize}\isep
+   \item{
+Write a term to a shared text file$/$stream.
+ An efficient shared ASCII representation of this term is written to
+ the stream.
+}%end item
+  \end{itemize}
+}
+\item{
+\sld
+{\bf Parameters}
+\sld\isep
+  \begin{itemize}
+\sld\isep
+   \item{
+\sld
+{\tt stream} - the stream to write this term to}
+  \end{itemize}
+}%end item
+\end{itemize}
+}%end item
+\divideents{writeToTextFile}
+\item{\vskip -1.9ex 
+\membername{writeToTextFile}
+{\tt public void {\bf writeToTextFile}( {\tt java.io.OutputStream } {\bf stream} )
+\label{l60}\label{l61}}%end signature
+\begin{itemize}
+\sld
+\item{
+\sld
+{\bf Usage}
+  \begin{itemize}\isep
+   \item{
+Write a term to a text file$/$stream.
+}%end item
+  \end{itemize}
+}
+\item{
+\sld
+{\bf Parameters}
+\sld\isep
+  \begin{itemize}
+\sld\isep
+   \item{
+\sld
+{\tt stream} - the stream to write to}
+  \end{itemize}
+}%end item
+\end{itemize}
+}%end item
+\end{itemize}
+}
+\hide{inherited}{
+}
+}
+\startsection{Interface}{ATermAppl}{l2}{%
+{\small An ATermAppl represents a function application.}
+\vskip .1in 
+\startsubsubsection{Declaration}{
+\fbox{\vbox{
+\hbox{\vbox{\small public interface 
+ATermAppl}}
+\noindent\hbox{\vbox{{\bf implements} 
+ATerm}}
+}}}
+\startsubsubsection{Methods}{
+\vskip -2em
+\begin{itemize}
+\item{\vskip -1.9ex 
+\membername{getAFun}
+{\tt public AFun {\bf getAFun}(  )
+\label{l62}\label{l63}}%end signature
+\begin{itemize}
+\sld
+\item{
+\sld
+{\bf Usage}
+  \begin{itemize}\isep
+   \item{
+Gets the AFun object that represents the function symbol of this application
+}%end item
+  \end{itemize}
+}
+\item{{\bf Returns} - 
+the function symbol of this application. 
+}%end item
+\end{itemize}
+}%end item
+\divideents{getArgument}
+\item{\vskip -1.9ex 
+\membername{getArgument}
+{\tt public ATerm {\bf getArgument}( {\tt int } {\bf i} )
+\label{l64}\label{l65}}%end signature
+\begin{itemize}
+\sld
+\item{
+\sld
+{\bf Usage}
+  \begin{itemize}\isep
+   \item{
+Gets a specific argument of this application.
+}%end item
+  \end{itemize}
+}
+\item{
+\sld
+{\bf Parameters}
+\sld\isep
+  \begin{itemize}
+\sld\isep
+   \item{
+\sld
+{\tt i} - the index of the argument to be retrieved.}
+  \end{itemize}
+}%end item
+\item{{\bf Returns} - 
+the ith argument of the application. 
+}%end item
+\end{itemize}
+}%end item
+\divideents{getArgumentArray}
+\item{\vskip -1.9ex 
+\membername{getArgumentArray}
+{\tt public ATerm {\bf getArgumentArray}(  )
+\label{l66}\label{l67}}%end signature
+\begin{itemize}
+\sld
+\item{
+\sld
+{\bf Usage}
+  \begin{itemize}\isep
+   \item{
+Gets the arguments of this application as an array of ATerm objects.
+}%end item
+  \end{itemize}
+}
+\item{{\bf Returns} - 
+an array containing all arguments of this application. 
+}%end item
+\end{itemize}
+}%end item
+\divideents{getArguments}
+\item{\vskip -1.9ex 
+\membername{getArguments}
+{\tt public ATermList {\bf getArguments}(  )
+\label{l68}\label{l69}}%end signature
+\begin{itemize}
+\sld
+\item{
+\sld
+{\bf Usage}
+  \begin{itemize}\isep
+   \item{
+Gets the arguments of this application.
+}%end item
+  \end{itemize}
+}
+\item{{\bf Returns} - 
+a list containing all arguments of this application. 
+}%end item
+\end{itemize}
+}%end item
+\divideents{getArity}
+\item{\vskip -1.9ex 
+\membername{getArity}
+{\tt public int {\bf getArity}(  )
+\label{l70}\label{l71}}%end signature
+\begin{itemize}
+\sld
+\item{
+\sld
+{\bf Usage}
+  \begin{itemize}\isep
+   \item{
+Gets the arity of this application. Arity is the number
+ of arguments of a function application.
+}%end item
+  \end{itemize}
+}
+\item{{\bf Returns} - 
+the number of arguments of this application. 
+}%end item
+\end{itemize}
+}%end item
+\divideents{getName}
+\item{\vskip -1.9ex 
+\membername{getName}
+{\tt public String {\bf getName}(  )
+\label{l72}\label{l73}}%end signature
+\begin{itemize}
+\sld
+\item{
+\sld
+{\bf Usage}
+  \begin{itemize}\isep
+   \item{
+Gets the function name of this application.
+}%end item
+  \end{itemize}
+}
+\item{{\bf Returns} - 
+the function name of this application. 
+}%end item
+\end{itemize}
+}%end item
+\divideents{isQuoted}
+\item{\vskip -1.9ex 
+\membername{isQuoted}
+{\tt public boolean {\bf isQuoted}(  )
+\label{l74}\label{l75}}%end signature
+\begin{itemize}
+\sld
+\item{
+\sld
+{\bf Usage}
+  \begin{itemize}\isep
+   \item{
+Checks if this application is quoted. A quoted application looks
+ like this: "foo", whereas an unquoted looks like this: foo.
+}%end item
+  \end{itemize}
+}
+\item{{\bf Returns} - 
+true if this application is quoted, false otherwise. 
+}%end item
+\end{itemize}
+}%end item
+\divideents{setArgument}
+\item{\vskip -1.9ex 
+\membername{setArgument}
+{\tt public ATermAppl {\bf setArgument}( {\tt aterm.ATerm } {\bf arg},
+{\tt int } {\bf i} )
+\label{l76}\label{l77}}%end signature
+\begin{itemize}
+\sld
+\item{
+\sld
+{\bf Usage}
+  \begin{itemize}\isep
+   \item{
+Sets a specific argument of this application.
+}%end item
+  \end{itemize}
+}
+\item{
+\sld
+{\bf Parameters}
+\sld\isep
+  \begin{itemize}
+\sld\isep
+   \item{
+\sld
+{\tt arg} - the new ith argument.}
+   \item{
+\sld
+{\tt i} - the index of the argument to be set.}
+  \end{itemize}
+}%end item
+\item{{\bf Returns} - 
+a copy of this application with argument i replaced by arg. 
+}%end item
+\end{itemize}
+}%end item
+\end{itemize}
+}
+\hide{inherited}{
+}
+}
+\startsection{Interface}{ATermBlob}{l3}{%
+{\small This interface describes the functionality of an ATermBlob
+ (Binary Large OBject).}
+\vskip .1in 
+\startsubsubsection{Declaration}{
+\fbox{\vbox{
+\hbox{\vbox{\small public interface 
+ATermBlob}}
+\noindent\hbox{\vbox{{\bf implements} 
+ATerm}}
+}}}
+\startsubsubsection{Methods}{
+\vskip -2em
+\begin{itemize}
+\item{\vskip -1.9ex 
+\membername{getBlobData}
+{\tt public byte {\bf getBlobData}(  )
+\label{l78}\label{l79}}%end signature
+\begin{itemize}
+\sld
+\item{
+\sld
+{\bf Usage}
+  \begin{itemize}\isep
+   \item{
+Gets the data in this blob.
+}%end item
+  \end{itemize}
+}
+\item{{\bf Returns} - 
+the data in this blob. 
+}%end item
+\end{itemize}
+}%end item
+\divideents{getBlobSize}
+\item{\vskip -1.9ex 
+\membername{getBlobSize}
+{\tt public int {\bf getBlobSize}(  )
+\label{l80}\label{l81}}%end signature
+\begin{itemize}
+\sld
+\item{
+\sld
+{\bf Usage}
+  \begin{itemize}\isep
+   \item{
+Gets the size (in bytes) of the data in this blob.
+}%end item
+  \end{itemize}
+}
+\item{{\bf Returns} - 
+the size of the data in this blob. 
+}%end item
+\end{itemize}
+}%end item
+\end{itemize}
+}
+\hide{inherited}{
+}
+}
+\startsection{Interface}{ATermFactory}{l4}{%
+{\small An ATermFactory is responsible for making new ATerms.
+ A factory can create a new ATerm by parsing a String, by making
+ it via one of the many "make" methods, or by reading it from an
+ InputStream.}
+\vskip .1in 
+\startsubsubsection{Declaration}{
+\fbox{\vbox{
+\hbox{\vbox{\small public interface 
+ATermFactory}}
+}}}
+\startsubsubsection{Fields}{
+\begin{itemize}
+\item{
+public static final byte START\_OF\_SHARED\_TEXT\_FILE\begin{itemize}\item{\vskip -.9ex }\end{itemize}
+}
+\end{itemize}
+}
+\startsubsubsection{Methods}{
+\vskip -2em
+\begin{itemize}
+\item{\vskip -1.9ex 
+\membername{importTerm}
+{\tt public ATerm {\bf importTerm}( {\tt aterm.ATerm } {\bf term} )
+\label{l82}\label{l83}}%end signature
+\begin{itemize}
+\sld
+\item{
+\sld
+{\bf Usage}
+  \begin{itemize}\isep
+   \item{
+Creates an ATerm by importing it from another ATermFactory.
+}%end item
+  \end{itemize}
+}
+\item{
+\sld
+{\bf Parameters}
+\sld\isep
+  \begin{itemize}
+\sld\isep
+   \item{
+\sld
+{\tt term} - the term (possibly from another ATermFactory) to rebuild in
+ this factory.}
+  \end{itemize}
+}%end item
+\item{{\bf Returns} - 
+the imported ATerm. 
+}%end item
+\end{itemize}
+}%end item
+\divideents{make}
+\item{\vskip -1.9ex 
+\membername{make}
+{\tt public ATerm {\bf make}( {\tt aterm.ATerm } {\bf pattern},
+{\tt java.util.List } {\bf args} )
+\label{l84}\label{l85}}%end signature
+\begin{itemize}
+\sld
+\item{
+\sld
+{\bf Usage}
+  \begin{itemize}\isep
+   \item{
+Creates a new ATerm given a pattern and a list of arguments.
+ The holes in the pattern are filled with arguments taken from
+ the supplied list of arguments.
+}%end item
+  \end{itemize}
+}
+\item{
+\sld
+{\bf Parameters}
+\sld\isep
+  \begin{itemize}
+\sld\isep
+   \item{
+\sld
+{\tt pattern} - the pattern containing a placeholder for each argument.}
+   \item{
+\sld
+{\tt args} - the list of arguments to be filled into the placeholders.}
+  \end{itemize}
+}%end item
+\item{{\bf Returns} - 
+the constructed term. 
+}%end item
+\end{itemize}
+}%end item
+\divideents{make}
+\item{\vskip -1.9ex 
+\membername{make}
+{\tt public ATerm {\bf make}( {\tt java.lang.String } {\bf pattern},
+{\tt java.util.List } {\bf args} )
+\label{l86}\label{l87}}%end signature
+\begin{itemize}
+\sld
+\item{
+\sld
+{\bf Usage}
+  \begin{itemize}\isep
+   \item{
+Creates a new ATerm given a string pattern and a list of arguments.
+ First the string pattern is parsed into an ATerm.
+ Then the holes in the pattern are filled with arguments taken from
+ the supplied list of arguments.
+}%end item
+  \end{itemize}
+}
+\item{
+\sld
+{\bf Parameters}
+\sld\isep
+  \begin{itemize}
+\sld\isep
+   \item{
+\sld
+{\tt pattern} - the string pattern containing a placeholder for each argument.}
+   \item{
+\sld
+{\tt args} - the list of arguments to be filled into the placeholders.}
+  \end{itemize}
+}%end item
+\item{{\bf Returns} - 
+the constructed term. 
+}%end item
+\end{itemize}
+}%end item
+\divideents{make}
+\item{\vskip -1.9ex 
+\membername{make}
+{\tt public ATerm {\bf make}( {\tt java.lang.String } {\bf pattern},
+{\tt java.lang.Object } {\bf arg1} )
+\label{l88}\label{l89}}%end signature
+\begin{itemize}
+\sld
+\item{
+\sld
+{\bf Usage}
+  \begin{itemize}\isep
+   \item{
+Creates a new ATerm given a pattern and a single argument.
+ This convenience method creates an ATerm from a pattern and one
+ argument.
+}%end item
+  \end{itemize}
+}
+\item{
+\sld
+{\bf Parameters}
+\sld\isep
+  \begin{itemize}
+\sld\isep
+   \item{
+\sld
+{\tt pattern} - the pattern containing a placeholder for the argument.}
+   \item{
+\sld
+{\tt arg1} - the argument to be filled into the hole.}
+  \end{itemize}
+}%end item
+\item{{\bf Returns} - 
+the constructed term. 
+}%end item
+\end{itemize}
+}%end item
+\divideents{make}
+\item{\vskip -1.9ex 
+\membername{make}
+{\tt public ATerm {\bf make}( {\tt java.lang.String } {\bf pattern},
+{\tt java.lang.Object } {\bf arg1},
+{\tt java.lang.Object } {\bf arg2} )
+\label{l90}\label{l91}}%end signature
+\begin{itemize}
+\sld
+\item{
+\sld
+{\bf Usage}
+  \begin{itemize}\isep
+   \item{
+Creates a new ATerm given a pattern and a fixed number of arguments.
+ This convenience method creates an ATerm from a pattern and two
+ arguments.
+}%end item
+  \end{itemize}
+}
+\item{
+\sld
+{\bf Parameters}
+\sld\isep
+  \begin{itemize}
+\sld\isep
+   \item{
+\sld
+{\tt pattern} - the pattern containing a placeholder for the arguments.}
+   \item{
+\sld
+{\tt arg1} - the argument to be filled into the first hole.}
+   \item{
+\sld
+{\tt arg2} - the argument to be filled into the second hole.}
+  \end{itemize}
+}%end item
+\item{{\bf Returns} - 
+the constructed term. 
+}%end item
+\end{itemize}
+}%end item
+\divideents{make}
+\item{\vskip -1.9ex 
+\membername{make}
+{\tt public ATerm {\bf make}( {\tt java.lang.String } {\bf pattern},
+{\tt java.lang.Object } {\bf arg1},
+{\tt java.lang.Object } {\bf arg2},
+{\tt java.lang.Object } {\bf arg3} )
+\label{l92}\label{l93}}%end signature
+\begin{itemize}
+\sld
+\item{
+\sld
+{\bf Usage}
+  \begin{itemize}\isep
+   \item{
+Creates a new ATerm given a pattern and a fixed number of arguments.
+ This convenience method creates an ATerm from a pattern and three
+ arguments.
+}%end item
+  \end{itemize}
+}
+\item{
+\sld
+{\bf Parameters}
+\sld\isep
+  \begin{itemize}
+\sld\isep
+   \item{
+\sld
+{\tt pattern} - the pattern containing a placeholder for the arguments.}
+   \item{
+\sld
+{\tt arg1} - the argument to be filled into the first hole.}
+   \item{
+\sld
+{\tt arg2} - the argument to be filled into the second hole.}
+   \item{
+\sld
+{\tt arg3} - the argument to be filled into the third hole.}
+  \end{itemize}
+}%end item
+\item{{\bf Returns} - 
+the constructed term. 
+}%end item
+\end{itemize}
+}%end item
+\divideents{make}
+\item{\vskip -1.9ex 
+\membername{make}
+{\tt public ATerm {\bf make}( {\tt java.lang.String } {\bf pattern},
+{\tt java.lang.Object } {\bf arg1},
+{\tt java.lang.Object } {\bf arg2},
+{\tt java.lang.Object } {\bf arg3},
+{\tt java.lang.Object } {\bf arg4} )
+\label{l94}\label{l95}}%end signature
+\begin{itemize}
+\sld
+\item{
+\sld
+{\bf Usage}
+  \begin{itemize}\isep
+   \item{
+Creates a new ATerm given a pattern and a fixed number of arguments.
+ This convenience method creates an ATerm from a pattern and four
+ arguments.
+}%end item
+  \end{itemize}
+}
+\item{
+\sld
+{\bf Parameters}
+\sld\isep
+  \begin{itemize}
+\sld\isep
+   \item{
+\sld
+{\tt pattern} - the pattern containing a placeholder for the arguments.}
+   \item{
+\sld
+{\tt arg1} - the argument to be filled into the first hole.}
+   \item{
+\sld
+{\tt arg2} - the argument to be filled into the second hole.}
+   \item{
+\sld
+{\tt arg3} - the argument to be filled into the third hole.}
+   \item{
+\sld
+{\tt arg4} - the argument to be filled into the fourth hole.}
+  \end{itemize}
+}%end item
+\item{{\bf Returns} - 
+the constructed term. 
+}%end item
+\end{itemize}
+}%end item
+\divideents{make}
+\item{\vskip -1.9ex 
+\membername{make}
+{\tt public ATerm {\bf make}( {\tt java.lang.String } {\bf pattern},
+{\tt java.lang.Object } {\bf arg1},
+{\tt java.lang.Object } {\bf arg2},
+{\tt java.lang.Object } {\bf arg3},
+{\tt java.lang.Object } {\bf arg4},
+{\tt java.lang.Object } {\bf arg5} )
+\label{l96}\label{l97}}%end signature
+\begin{itemize}
+\sld
+\item{
+\sld
+{\bf Usage}
+  \begin{itemize}\isep
+   \item{
+Creates a new ATerm given a pattern and a fixed number of arguments.
+ This convenience method creates an ATerm from a pattern and five
+ arguments.
+}%end item
+  \end{itemize}
+}
+\item{
+\sld
+{\bf Parameters}
+\sld\isep
+  \begin{itemize}
+\sld\isep
+   \item{
+\sld
+{\tt pattern} - the pattern containing a placeholder for the arguments.}
+   \item{
+\sld
+{\tt arg1} - the argument to be filled into the first hole.}
+   \item{
+\sld
+{\tt arg2} - the argument to be filled into the second hole.}
+   \item{
+\sld
+{\tt arg3} - the argument to be filled into the third hole.}
+   \item{
+\sld
+{\tt arg4} - the argument to be filled into the fourth hole.}
+   \item{
+\sld
+{\tt arg5} - the argument to be filled into the fifth hole.}
+  \end{itemize}
+}%end item
+\item{{\bf Returns} - 
+the constructed term. 
+}%end item
+\end{itemize}
+}%end item
+\divideents{make}
+\item{\vskip -1.9ex 
+\membername{make}
+{\tt public ATerm {\bf make}( {\tt java.lang.String } {\bf pattern},
+{\tt java.lang.Object } {\bf arg1},
+{\tt java.lang.Object } {\bf arg2},
+{\tt java.lang.Object } {\bf arg3},
+{\tt java.lang.Object } {\bf arg4},
+{\tt java.lang.Object } {\bf arg5},
+{\tt java.lang.Object } {\bf arg6} )
+\label{l98}\label{l99}}%end signature
+\begin{itemize}
+\sld
+\item{
+\sld
+{\bf Usage}
+  \begin{itemize}\isep
+   \item{
+Creates a new ATerm given a pattern and a fixed number of arguments.
+ This convenience method creates an ATerm from a pattern and six
+ arguments.
+}%end item
+  \end{itemize}
+}
+\item{
+\sld
+{\bf Parameters}
+\sld\isep
+  \begin{itemize}
+\sld\isep
+   \item{
+\sld
+{\tt pattern} - the pattern containing a placeholder for the arguments.}
+   \item{
+\sld
+{\tt arg1} - the argument to be filled into the first hole.}
+   \item{
+\sld
+{\tt arg2} - the argument to be filled into the second hole.}
+   \item{
+\sld
+{\tt arg3} - the argument to be filled into the third hole.}
+   \item{
+\sld
+{\tt arg4} - the argument to be filled into the fourth hole.}
+   \item{
+\sld
+{\tt arg5} - the argument to be filled into the fifth hole.}
+   \item{
+\sld
+{\tt arg6} - the argument to be filled into the sixth hole.}
+   \item{
+\sld
+{\tt arg7} - the argument to be filled into the seventh hole.}
+  \end{itemize}
+}%end item
+\item{{\bf Returns} - 
+the constructed term. 
+}%end item
+\end{itemize}
+}%end item
+\divideents{make}
+\item{\vskip -1.9ex 
+\membername{make}
+{\tt public ATerm {\bf make}( {\tt java.lang.String } {\bf pattern},
+{\tt java.lang.Object } {\bf arg1},
+{\tt java.lang.Object } {\bf arg2},
+{\tt java.lang.Object } {\bf arg3},
+{\tt java.lang.Object } {\bf arg4},
+{\tt java.lang.Object } {\bf arg5},
+{\tt java.lang.Object } {\bf arg6},
+{\tt java.lang.Object } {\bf arg7} )
+\label{l100}\label{l101}}%end signature
+\begin{itemize}
+\sld
+\item{
+\sld
+{\bf Usage}
+  \begin{itemize}\isep
+   \item{
+Creates a new ATerm given a pattern and a fixed number of arguments.
+ This convenience method creates an ATerm from a pattern and seven
+ arguments.
+}%end item
+  \end{itemize}
+}
+\item{
+\sld
+{\bf Parameters}
+\sld\isep
+  \begin{itemize}
+\sld\isep
+   \item{
+\sld
+{\tt pattern} - the pattern containing a placeholder for the arguments.}
+   \item{
+\sld
+{\tt arg1} - the argument to be filled into the first hole.}
+   \item{
+\sld
+{\tt arg2} - the argument to be filled into the second hole.}
+   \item{
+\sld
+{\tt arg3} - the argument to be filled into the third hole.}
+   \item{
+\sld
+{\tt arg4} - the argument to be filled into the fourth hole.}
+   \item{
+\sld
+{\tt arg5} - the argument to be filled into the fifth hole.}
+   \item{
+\sld
+{\tt arg6} - the argument to be filled into the sixth hole.}
+   \item{
+\sld
+{\tt arg7} - the argument to be filled into the seventh hole.}
+  \end{itemize}
+}%end item
+\item{{\bf Returns} - 
+the constructed term. 
+}%end item
+\end{itemize}
+}%end item
+\divideents{makeAFun}
+\item{\vskip -1.9ex 
+\membername{makeAFun}
+{\tt public AFun {\bf makeAFun}( {\tt java.lang.String } {\bf name},
+{\tt int } {\bf arity},
+{\tt boolean } {\bf isQuoted} )
+\label{l102}\label{l103}}%end signature
+\begin{itemize}
+\sld
+\item{
+\sld
+{\bf Usage}
+  \begin{itemize}\isep
+   \item{
+Creates an AFun object
+}%end item
+  \end{itemize}
+}
+\item{
+\sld
+{\bf Parameters}
+\sld\isep
+  \begin{itemize}
+\sld\isep
+   \item{
+\sld
+{\tt name} - the name of the function symbol.}
+   \item{
+\sld
+{\tt arity} - the arity of the function symbol.}
+   \item{
+\sld
+{\tt isQuoted} - whether the function symbol is quoted ("foo") or not (foo).}
+  \end{itemize}
+}%end item
+\item{{\bf Returns} - 
+the constructed AFun. 
+}%end item
+\end{itemize}
+}%end item
+\divideents{makeAppl}
+\item{\vskip -1.9ex 
+\membername{makeAppl}
+{\tt public ATermAppl {\bf makeAppl}( {\tt aterm.AFun } {\bf fun} )
+\label{l104}\label{l105}}%end signature
+\begin{itemize}
+\sld
+\item{
+\sld
+{\bf Usage}
+  \begin{itemize}\isep
+   \item{
+Creates a function application.
+}%end item
+  \end{itemize}
+}
+\item{
+\sld
+{\bf Parameters}
+\sld\isep
+  \begin{itemize}
+\sld\isep
+   \item{
+\sld
+{\tt fun} - the function symbol of the application.}
+  \end{itemize}
+}%end item
+\item{{\bf Returns} - 
+the constructed function application. 
+}%end item
+\end{itemize}
+}%end item
+\divideents{makeAppl}
+\item{\vskip -1.9ex 
+\membername{makeAppl}
+{\tt public ATermAppl {\bf makeAppl}( {\tt aterm.AFun } {\bf fun},
+{\tt aterm.ATerm } {\bf arg} )
+\label{l106}\label{l107}}%end signature
+\begin{itemize}
+\sld
+\item{
+\sld
+{\bf Usage}
+  \begin{itemize}\isep
+   \item{
+Creates a function application.
+}%end item
+  \end{itemize}
+}
+\item{
+\sld
+{\bf Parameters}
+\sld\isep
+  \begin{itemize}
+\sld\isep
+   \item{
+\sld
+{\tt fun} - the function symbol of the application.}
+   \item{
+\sld
+{\tt arg} - the argument of the application.}
+  \end{itemize}
+}%end item
+\item{{\bf Returns} - 
+the constructed function application. 
+}%end item
+\end{itemize}
+}%end item
+\divideents{makeAppl}
+\item{\vskip -1.9ex 
+\membername{makeAppl}
+{\tt public ATermAppl {\bf makeAppl}( {\tt aterm.AFun } {\bf fun},
+{\tt aterm.ATerm []} {\bf args} )
+\label{l108}\label{l109}}%end signature
+\begin{itemize}
+\sld
+\item{
+\sld
+{\bf Usage}
+  \begin{itemize}\isep
+   \item{
+Creates a function application.
+}%end item
+  \end{itemize}
+}
+\item{
+\sld
+{\bf Parameters}
+\sld\isep
+  \begin{itemize}
+\sld\isep
+   \item{
+\sld
+{\tt fun} - the function symbol of the application.}
+   \item{
+\sld
+{\tt args} - an array containing the arguments.}
+  \end{itemize}
+}%end item
+\item{{\bf Returns} - 
+the constructed function application. 
+}%end item
+\end{itemize}
+}%end item
+\divideents{makeAppl}
+\item{\vskip -1.9ex 
+\membername{makeAppl}
+{\tt public ATermAppl {\bf makeAppl}( {\tt aterm.AFun } {\bf fun},
+{\tt aterm.ATerm } {\bf arg1},
+{\tt aterm.ATerm } {\bf arg2} )
+\label{l110}\label{l111}}%end signature
+\begin{itemize}
+\sld
+\item{
+\sld
+{\bf Usage}
+  \begin{itemize}\isep
+   \item{
+Creates a function application.
+}%end item
+  \end{itemize}
+}
+\item{
+\sld
+{\bf Parameters}
+\sld\isep
+  \begin{itemize}
+\sld\isep
+   \item{
+\sld
+{\tt fun} - the function symbol of the application.}
+   \item{
+\sld
+{\tt arg1} - the first argument of the application.}
+   \item{
+\sld
+{\tt arg2} - the second argument of the application.}
+  \end{itemize}
+}%end item
+\item{{\bf Returns} - 
+the constructed function application. 
+}%end item
+\end{itemize}
+}%end item
+\divideents{makeAppl}
+\item{\vskip -1.9ex 
+\membername{makeAppl}
+{\tt public ATermAppl {\bf makeAppl}( {\tt aterm.AFun } {\bf fun},
+{\tt aterm.ATerm } {\bf arg1},
+{\tt aterm.ATerm } {\bf arg2},
+{\tt aterm.ATerm } {\bf arg3} )
+\label{l112}\label{l113}}%end signature
+\begin{itemize}
+\sld
+\item{
+\sld
+{\bf Usage}
+  \begin{itemize}\isep
+   \item{
+Creates a function application.
+}%end item
+  \end{itemize}
+}
+\item{
+\sld
+{\bf Parameters}
+\sld\isep
+  \begin{itemize}
+\sld\isep
+   \item{
+\sld
+{\tt fun} - the function symbol of the application.}
+   \item{
+\sld
+{\tt arg1} - the first argument of the application.}
+   \item{
+\sld
+{\tt arg2} - the second argument of the application.}
+   \item{
+\sld
+{\tt arg3} - the third argument of the application.}
+  \end{itemize}
+}%end item
+\item{{\bf Returns} - 
+the constructed function application. 
+}%end item
+\end{itemize}
+}%end item
+\divideents{makeAppl}
+\item{\vskip -1.9ex 
+\membername{makeAppl}
+{\tt public ATermAppl {\bf makeAppl}( {\tt aterm.AFun } {\bf fun},
+{\tt aterm.ATerm } {\bf arg1},
+{\tt aterm.ATerm } {\bf arg2},
+{\tt aterm.ATerm } {\bf arg3},
+{\tt aterm.ATerm } {\bf arg4} )
+\label{l114}\label{l115}}%end signature
+\begin{itemize}
+\sld
+\item{
+\sld
+{\bf Usage}
+  \begin{itemize}\isep
+   \item{
+Creates a function application.
+}%end item
+  \end{itemize}
+}
+\item{
+\sld
+{\bf Parameters}
+\sld\isep
+  \begin{itemize}
+\sld\isep
+   \item{
+\sld
+{\tt fun} - the function symbol of the application.}
+   \item{
+\sld
+{\tt arg1} - the first argument of the application.}
+   \item{
+\sld
+{\tt arg2} - the second argument of the application.}
+   \item{
+\sld
+{\tt arg3} - the third argument of the application.}
+   \item{
+\sld
+{\tt arg4} - the fourth argument of the application.}
+  \end{itemize}
+}%end item
+\item{{\bf Returns} - 
+the constructed function application. 
+}%end item
+\end{itemize}
+}%end item
+\divideents{makeAppl}
+\item{\vskip -1.9ex 
+\membername{makeAppl}
+{\tt public ATermAppl {\bf makeAppl}( {\tt aterm.AFun } {\bf fun},
+{\tt aterm.ATerm } {\bf arg1},
+{\tt aterm.ATerm } {\bf arg2},
+{\tt aterm.ATerm } {\bf arg3},
+{\tt aterm.ATerm } {\bf arg4},
+{\tt aterm.ATerm } {\bf arg5} )
+\label{l116}\label{l117}}%end signature
+\begin{itemize}
+\sld
+\item{
+\sld
+{\bf Usage}
+  \begin{itemize}\isep
+   \item{
+Creates a function application.
+}%end item
+  \end{itemize}
+}
+\item{
+\sld
+{\bf Parameters}
+\sld\isep
+  \begin{itemize}
+\sld\isep
+   \item{
+\sld
+{\tt fun} - the function symbol of the application.}
+   \item{
+\sld
+{\tt arg1} - the first argument of the application.}
+   \item{
+\sld
+{\tt arg2} - the second argument of the application.}
+   \item{
+\sld
+{\tt arg3} - the third argument of the application.}
+   \item{
+\sld
+{\tt arg4} - the fourth argument of the application.}
+   \item{
+\sld
+{\tt arg5} - the fifth argument of the application.}
+  \end{itemize}
+}%end item
+\item{{\bf Returns} - 
+the constructed function application. 
+}%end item
+\end{itemize}
+}%end item
+\divideents{makeAppl}
+\item{\vskip -1.9ex 
+\membername{makeAppl}
+{\tt public ATermAppl {\bf makeAppl}( {\tt aterm.AFun } {\bf fun},
+{\tt aterm.ATerm } {\bf arg1},
+{\tt aterm.ATerm } {\bf arg2},
+{\tt aterm.ATerm } {\bf arg3},
+{\tt aterm.ATerm } {\bf arg4},
+{\tt aterm.ATerm } {\bf arg5},
+{\tt aterm.ATerm } {\bf arg6} )
+\label{l118}\label{l119}}%end signature
+\begin{itemize}
+\sld
+\item{
+\sld
+{\bf Usage}
+  \begin{itemize}\isep
+   \item{
+Creates a function application.
+}%end item
+  \end{itemize}
+}
+\item{
+\sld
+{\bf Parameters}
+\sld\isep
+  \begin{itemize}
+\sld\isep
+   \item{
+\sld
+{\tt fun} - the function symbol of the application.}
+   \item{
+\sld
+{\tt arg1} - the first argument of the application.}
+   \item{
+\sld
+{\tt arg2} - the second argument of the application.}
+   \item{
+\sld
+{\tt arg3} - the third argument of the application.}
+   \item{
+\sld
+{\tt arg4} - the fourth argument of the application.}
+   \item{
+\sld
+{\tt arg5} - the fifth argument of the application.}
+   \item{
+\sld
+{\tt arg6} - the sixth argument of the application.}
+  \end{itemize}
+}%end item
+\item{{\bf Returns} - 
+the constructed function application. 
+}%end item
+\end{itemize}
+}%end item
+\divideents{makeAppl}
+\item{\vskip -1.9ex 
+\membername{makeAppl}
+{\tt public ATermAppl {\bf makeAppl}( {\tt aterm.AFun } {\bf fun},
+{\tt aterm.ATermList } {\bf args} )
+\label{l120}\label{l121}}%end signature
+\begin{itemize}
+\sld
+\item{
+\sld
+{\bf Usage}
+  \begin{itemize}\isep
+   \item{
+Creates a function application.
+}%end item
+  \end{itemize}
+}
+\item{
+\sld
+{\bf Parameters}
+\sld\isep
+  \begin{itemize}
+\sld\isep
+   \item{
+\sld
+{\tt fun} - the function symbol of the application.}
+   \item{
+\sld
+{\tt args} - an ATermList containing the arguments.}
+  \end{itemize}
+}%end item
+\item{{\bf Returns} - 
+the constructed function application. 
+}%end item
+\end{itemize}
+}%end item
+\divideents{makeBlob}
+\item{\vskip -1.9ex 
+\membername{makeBlob}
+{\tt public ATermBlob {\bf makeBlob}( {\tt byte []} {\bf data} )
+\label{l122}\label{l123}}%end signature
+\begin{itemize}
+\sld
+\item{
+\sld
+{\bf Usage}
+  \begin{itemize}\isep
+   \item{
+Creates an ATermBlob (Binary Large OBject).
+}%end item
+  \end{itemize}
+}
+\item{
+\sld
+{\bf Parameters}
+\sld\isep
+  \begin{itemize}
+\sld\isep
+   \item{
+\sld
+{\tt data} - the data to be stored in the blob.}
+  \end{itemize}
+}%end item
+\item{{\bf Returns} - 
+the constructed ATermBlob. 
+}%end item
+\end{itemize}
+}%end item
+\divideents{makeInt}
+\item{\vskip -1.9ex 
+\membername{makeInt}
+{\tt public ATermInt {\bf makeInt}( {\tt int } {\bf val} )
+\label{l124}\label{l125}}%end signature
+\begin{itemize}
+\sld
+\item{
+\sld
+{\bf Usage}
+  \begin{itemize}\isep
+   \item{
+Creates a new ATermInt object
+}%end item
+  \end{itemize}
+}
+\item{
+\sld
+{\bf Parameters}
+\sld\isep
+  \begin{itemize}
+\sld\isep
+   \item{
+\sld
+{\tt val} - the integer value to be stored.}
+  \end{itemize}
+}%end item
+\item{{\bf Returns} - 
+the constructed ATermInt object. 
+}%end item
+\end{itemize}
+}%end item
+\divideents{makeList}
+\item{\vskip -1.9ex 
+\membername{makeList}
+{\tt public ATermList {\bf makeList}(  )
+\label{l126}\label{l127}}%end signature
+\begin{itemize}
+\sld
+\item{
+\sld
+{\bf Usage}
+  \begin{itemize}\isep
+   \item{
+Creates an empty ATermList object
+}%end item
+  \end{itemize}
+}
+\item{{\bf Returns} - 
+the (empty) ATermList. 
+}%end item
+\end{itemize}
+}%end item
+\divideents{makeList}
+\item{\vskip -1.9ex 
+\membername{makeList}
+{\tt public ATermList {\bf makeList}( {\tt aterm.ATerm } {\bf single} )
+\label{l128}\label{l129}}%end signature
+\begin{itemize}
+\sld
+\item{
+\sld
+{\bf Usage}
+  \begin{itemize}\isep
+   \item{
+Creates a singleton ATermList object.
+}%end item
+  \end{itemize}
+}
+\item{
+\sld
+{\bf Parameters}
+\sld\isep
+  \begin{itemize}
+\sld\isep
+   \item{
+\sld
+{\tt single} - the element to be placed in the list.}
+  \end{itemize}
+}%end item
+\item{{\bf Returns} - 
+the singleton ATermList object. 
+}%end item
+\end{itemize}
+}%end item
+\divideents{makeList}
+\item{\vskip -1.9ex 
+\membername{makeList}
+{\tt public ATermList {\bf makeList}( {\tt aterm.ATerm } {\bf head},
+{\tt aterm.ATermList } {\bf tail} )
+\label{l130}\label{l131}}%end signature
+\begin{itemize}
+\sld
+\item{
+\sld
+{\bf Usage}
+  \begin{itemize}\isep
+   \item{
+Creates a head-tail style ATermList.
+}%end item
+  \end{itemize}
+}
+\item{
+\sld
+{\bf Parameters}
+\sld\isep
+  \begin{itemize}
+\sld\isep
+   \item{
+\sld
+{\tt head} - the head of the list.}
+   \item{
+\sld
+{\tt tail} - the tail of the list.}
+  \end{itemize}
+}%end item
+\item{{\bf Returns} - 
+the constructed ATermList. 
+}%end item
+\end{itemize}
+}%end item
+\divideents{makePlaceholder}
+\item{\vskip -1.9ex 
+\membername{makePlaceholder}
+{\tt public ATermPlaceholder {\bf makePlaceholder}( {\tt aterm.ATerm } {\bf type} )
+\label{l132}\label{l133}}%end signature
+\begin{itemize}
+\sld
+\item{
+\sld
+{\bf Usage}
+  \begin{itemize}\isep
+   \item{
+Creates an ATermPlaceholder object.
+}%end item
+  \end{itemize}
+}
+\item{
+\sld
+{\bf Parameters}
+\sld\isep
+  \begin{itemize}
+\sld\isep
+   \item{
+\sld
+{\tt type} - the type of the hole in the placeholder.}
+  \end{itemize}
+}%end item
+\item{{\bf Returns} - 
+the constructed ATermPlaceholder. 
+}%end item
+\end{itemize}
+}%end item
+\divideents{makeReal}
+\item{\vskip -1.9ex 
+\membername{makeReal}
+{\tt public ATermReal {\bf makeReal}( {\tt double } {\bf val} )
+\label{l134}\label{l135}}%end signature
+\begin{itemize}
+\sld
+\item{
+\sld
+{\bf Usage}
+  \begin{itemize}\isep
+   \item{
+Creates a new ATermReal object
+}%end item
+  \end{itemize}
+}
+\item{
+\sld
+{\bf Parameters}
+\sld\isep
+  \begin{itemize}
+\sld\isep
+   \item{
+\sld
+{\tt val} - the double value to be stored.}
+  \end{itemize}
+}%end item
+\item{{\bf Returns} - 
+the constructed ATermReal object. 
+}%end item
+\end{itemize}
+}%end item
+\divideents{parse}
+\item{\vskip -1.9ex 
+\membername{parse}
+{\tt public ATerm {\bf parse}( {\tt java.lang.String } {\bf trm} )
+\label{l136}\label{l137}}%end signature
+\begin{itemize}
+\sld
+\item{
+\sld
+{\bf Usage}
+  \begin{itemize}\isep
+   \item{
+Creates a new ATerm by parsing a string.
+}%end item
+  \end{itemize}
+}
+\item{
+\sld
+{\bf Parameters}
+\sld\isep
+  \begin{itemize}
+\sld\isep
+   \item{
+\sld
+{\tt trm} - the string representation of the term}
+  \end{itemize}
+}%end item
+\item{{\bf Returns} - 
+the parsed term. 
+}%end item
+\end{itemize}
+}%end item
+\divideents{readFromBinaryFile}
+\item{\vskip -1.9ex 
+\membername{readFromBinaryFile}
+{\tt public ATerm {\bf readFromBinaryFile}( {\tt java.io.InputStream } {\bf stream} )
+\label{l138}\label{l139}}%end signature
+\begin{itemize}
+\sld
+\item{
+\sld
+{\bf Usage}
+  \begin{itemize}\isep
+   \item{
+Creates an ATerm from a binary stream.
+}%end item
+  \end{itemize}
+}
+\item{
+\sld
+{\bf Parameters}
+\sld\isep
+  \begin{itemize}
+\sld\isep
+   \item{
+\sld
+{\tt stream} - the inputstream to read the ATerm from.}
+  \end{itemize}
+}%end item
+\item{{\bf Returns} - 
+the parsed ATerm. 
+}%end item
+\end{itemize}
+}%end item
+\divideents{readFromFile}
+\item{\vskip -1.9ex 
+\membername{readFromFile}
+{\tt public ATerm {\bf readFromFile}( {\tt java.io.InputStream } {\bf stream} )
+\label{l140}\label{l141}}%end signature
+\begin{itemize}
+\sld
+\item{
+\sld
+{\bf Usage}
+  \begin{itemize}\isep
+   \item{
+Creates an ATerm from a stream.
+ This function determines the type of stream (text, shared, binary)
+ and parses the ATerm accordingly.
+}%end item
+  \end{itemize}
+}
+\item{
+\sld
+{\bf Parameters}
+\sld\isep
+  \begin{itemize}
+\sld\isep
+   \item{
+\sld
+{\tt stream} - the inputstream to read the ATerm from.}
+  \end{itemize}
+}%end item
+\item{{\bf Returns} - 
+the parsed ATerm. 
+}%end item
+\end{itemize}
+}%end item
+\divideents{readFromFile}
+\item{\vskip -1.9ex 
+\membername{readFromFile}
+{\tt public ATerm {\bf readFromFile}( {\tt java.lang.String } {\bf file} )
+\label{l142}\label{l143}}%end signature
+\begin{itemize}
+\sld
+\item{
+\sld
+{\bf Usage}
+  \begin{itemize}\isep
+   \item{
+Creates an ATerm from a given filename.
+}%end item
+  \end{itemize}
+}
+\item{
+\sld
+{\bf Parameters}
+\sld\isep
+  \begin{itemize}
+\sld\isep
+   \item{
+\sld
+{\tt file} - the filename to read the ATerm from.}
+  \end{itemize}
+}%end item
+\item{{\bf Returns} - 
+the parsed ATerm. 
+}%end item
+\end{itemize}
+}%end item
+\divideents{readFromSharedTextFile}
+\item{\vskip -1.9ex 
+\membername{readFromSharedTextFile}
+{\tt public ATerm {\bf readFromSharedTextFile}( {\tt java.io.InputStream } {\bf stream} )
+\label{l144}\label{l145}}%end signature
+\begin{itemize}
+\sld
+\item{
+\sld
+{\bf Usage}
+  \begin{itemize}\isep
+   \item{
+Creates an ATerm from a shared text stream.
+}%end item
+  \end{itemize}
+}
+\item{
+\sld
+{\bf Parameters}
+\sld\isep
+  \begin{itemize}
+\sld\isep
+   \item{
+\sld
+{\tt stream} - the inputstream to read the ATerm from.}
+  \end{itemize}
+}%end item
+\item{{\bf Returns} - 
+the parsed ATerm. 
+}%end item
+\end{itemize}
+}%end item
+\divideents{readFromTextFile}
+\item{\vskip -1.9ex 
+\membername{readFromTextFile}
+{\tt public ATerm {\bf readFromTextFile}( {\tt java.io.InputStream } {\bf stream} )
+\label{l146}\label{l147}}%end signature
+\begin{itemize}
+\sld
+\item{
+\sld
+{\bf Usage}
+  \begin{itemize}\isep
+   \item{
+Creates an ATerm from a text stream.
+}%end item
+  \end{itemize}
+}
+\item{
+\sld
+{\bf Parameters}
+\sld\isep
+  \begin{itemize}
+\sld\isep
+   \item{
+\sld
+{\tt stream} - the inputstream to read the ATerm from.}
+  \end{itemize}
+}%end item
+\item{{\bf Returns} - 
+the parsed ATerm. 
+}%end item
+\end{itemize}
+}%end item
+\end{itemize}
+}
+\hide{inherited}{
+}
+}
+\startsection{Interface}{ATermInt}{l5}{%
+{\small This interface describes the functionality of an ATermInt}
+\vskip .1in 
+\startsubsubsection{Declaration}{
+\fbox{\vbox{
+\hbox{\vbox{\small public interface 
+ATermInt}}
+\noindent\hbox{\vbox{{\bf implements} 
+ATerm}}
+}}}
+\startsubsubsection{Methods}{
+\vskip -2em
+\begin{itemize}
+\item{\vskip -1.9ex 
+\membername{getInt}
+{\tt public int {\bf getInt}(  )
+\label{l148}\label{l149}}%end signature
+\begin{itemize}
+\sld
+\item{
+\sld
+{\bf Usage}
+  \begin{itemize}\isep
+   \item{
+Gets the integer value from this term.
+}%end item
+  \end{itemize}
+}
+\item{{\bf Returns} - 
+the integer value from this term. 
+}%end item
+\end{itemize}
+}%end item
+\end{itemize}
+}
+\hide{inherited}{
+}
+}
+\startsection{Interface}{ATermList}{l6}{%
+{\small This interface describes the functionality of an ATermList}
+\vskip .1in 
+\startsubsubsection{Declaration}{
+\fbox{\vbox{
+\hbox{\vbox{\small public interface 
+ATermList}}
+\noindent\hbox{\vbox{{\bf implements} 
+ATerm}}
+}}}
+\startsubsubsection{Methods}{
+\vskip -2em
+\begin{itemize}
+\item{\vskip -1.9ex 
+\membername{append}
+{\tt public ATermList {\bf append}( {\tt aterm.ATerm } {\bf el} )
+\label{l150}\label{l151}}%end signature
+\begin{itemize}
+\sld
+\item{
+\sld
+{\bf Usage}
+  \begin{itemize}\isep
+   \item{
+Appends an element to this list.
+}%end item
+  \end{itemize}
+}
+\item{
+\sld
+{\bf Parameters}
+\sld\isep
+  \begin{itemize}
+\sld\isep
+   \item{
+\sld
+{\tt el} - the element to append to this list.}
+  \end{itemize}
+}%end item
+\item{{\bf Returns} - 
+a list with el appended to it. 
+}%end item
+\end{itemize}
+}%end item
+\divideents{concat}
+\item{\vskip -1.9ex 
+\membername{concat}
+{\tt public ATermList {\bf concat}( {\tt aterm.ATermList } {\bf rhs} )
+\label{l152}\label{l153}}%end signature
+\begin{itemize}
+\sld
+\item{
+\sld
+{\bf Usage}
+  \begin{itemize}\isep
+   \item{
+Concatenates a list to this list.
+}%end item
+  \end{itemize}
+}
+\item{
+\sld
+{\bf Parameters}
+\sld\isep
+  \begin{itemize}
+\sld\isep
+   \item{
+\sld
+{\tt rhs} - the list to concatenate to this list.}
+  \end{itemize}
+}%end item
+\item{{\bf Returns} - 
+the concatenation of this list and rhs 
+}%end item
+\end{itemize}
+}%end item
+\divideents{dictGet}
+\item{\vskip -1.9ex 
+\membername{dictGet}
+{\tt public ATerm {\bf dictGet}( {\tt aterm.ATerm } {\bf key} )
+\label{l154}\label{l155}}%end signature
+\begin{itemize}
+\sld
+\item{
+\sld
+{\bf Usage}
+  \begin{itemize}\isep
+   \item{
+Retrieves an element from a dictionary list.
+ A dictionary list is a list of [key,value] pairs.
+}%end item
+  \end{itemize}
+}
+\item{
+\sld
+{\bf Parameters}
+\sld\isep
+  \begin{itemize}
+\sld\isep
+   \item{
+\sld
+{\tt key} - the key to look for}
+  \end{itemize}
+}%end item
+\item{{\bf Returns} - 
+the value associated with key, or null when key is not present. 
+}%end item
+\end{itemize}
+}%end item
+\divideents{dictPut}
+\item{\vskip -1.9ex 
+\membername{dictPut}
+{\tt public ATermList {\bf dictPut}( {\tt aterm.ATerm } {\bf key},
+{\tt aterm.ATerm } {\bf value} )
+\label{l156}\label{l157}}%end signature
+\begin{itemize}
+\sld
+\item{
+\sld
+{\bf Usage}
+  \begin{itemize}\isep
+   \item{
+Sets the value for an element in a dictionary list.
+ A dictionary list is a list of [key,value] pairs.
+}%end item
+  \end{itemize}
+}
+\item{
+\sld
+{\bf Parameters}
+\sld\isep
+  \begin{itemize}
+\sld\isep
+   \item{
+\sld
+{\tt key} - the key to set}
+   \item{
+\sld
+{\tt value} - the value to associate with key}
+  \end{itemize}
+}%end item
+\item{{\bf Returns} - 
+the new dictionary list 
+}%end item
+\end{itemize}
+}%end item
+\divideents{dictRemove}
+\item{\vskip -1.9ex 
+\membername{dictRemove}
+{\tt public ATermList {\bf dictRemove}( {\tt aterm.ATerm } {\bf key} )
+\label{l158}\label{l159}}%end signature
+\begin{itemize}
+\sld
+\item{
+\sld
+{\bf Usage}
+  \begin{itemize}\isep
+   \item{
+Removes an element from a dictionary list.
+ A dictionary list is a list of [key,value] pairs.
+}%end item
+  \end{itemize}
+}
+\item{
+\sld
+{\bf Parameters}
+\sld\isep
+  \begin{itemize}
+\sld\isep
+   \item{
+\sld
+{\tt key} - the key to remove}
+  \end{itemize}
+}%end item
+\item{{\bf Returns} - 
+the new dictionary list 
+}%end item
+\end{itemize}
+}%end item
+\divideents{elementAt}
+\item{\vskip -1.9ex 
+\membername{elementAt}
+{\tt public ATerm {\bf elementAt}( {\tt int } {\bf i} )
+\label{l160}\label{l161}}%end signature
+\begin{itemize}
+\sld
+\item{
+\sld
+{\bf Usage}
+  \begin{itemize}\isep
+   \item{
+Gets the element at a specific index of this list.
+}%end item
+  \end{itemize}
+}
+\item{
+\sld
+{\bf Parameters}
+\sld\isep
+  \begin{itemize}
+\sld\isep
+   \item{
+\sld
+{\tt i} - the index of the required element.}
+  \end{itemize}
+}%end item
+\item{{\bf Returns} - 
+the ith element of this list. 
+}%end item
+\item{{\bf Exceptions}
+  \begin{itemize}
+\sld
+   \item{\vskip -.6ex{\tt IndexOutOfBoundsException} - if i does not refer
+ to a position in this list.}
+  \end{itemize}
+}%end item
+\end{itemize}
+}%end item
+\divideents{getFirst}
+\item{\vskip -1.9ex 
+\membername{getFirst}
+{\tt public ATerm {\bf getFirst}(  )
+\label{l162}\label{l163}}%end signature
+\begin{itemize}
+\sld
+\item{
+\sld
+{\bf Usage}
+  \begin{itemize}\isep
+   \item{
+Gets the first element of this list.
+}%end item
+  \end{itemize}
+}
+\item{{\bf Returns} - 
+the first element of this list. 
+}%end item
+\end{itemize}
+}%end item
+\divideents{getLast}
+\item{\vskip -1.9ex 
+\membername{getLast}
+{\tt public ATerm {\bf getLast}(  )
+\label{l164}\label{l165}}%end signature
+\begin{itemize}
+\sld
+\item{
+\sld
+{\bf Usage}
+  \begin{itemize}\isep
+   \item{
+Gets the last element of this list.
+}%end item
+  \end{itemize}
+}
+\item{{\bf Returns} - 
+the last element of this list. 
+}%end item
+\end{itemize}
+}%end item
+\divideents{getLength}
+\item{\vskip -1.9ex 
+\membername{getLength}
+{\tt public int {\bf getLength}(  )
+\label{l166}\label{l167}}%end signature
+\begin{itemize}
+\sld
+\item{
+\sld
+{\bf Usage}
+  \begin{itemize}\isep
+   \item{
+Gets the length (number of elements) of this list.
+}%end item
+  \end{itemize}
+}
+\item{{\bf Returns} - 
+the length of this list. 
+}%end item
+\end{itemize}
+}%end item
+\divideents{getNext}
+\item{\vskip -1.9ex 
+\membername{getNext}
+{\tt public ATermList {\bf getNext}(  )
+\label{l168}\label{l169}}%end signature
+\begin{itemize}
+\sld
+\item{
+\sld
+{\bf Usage}
+  \begin{itemize}\isep
+   \item{
+Gets the tail (all but the first element) of this list.
+}%end item
+  \end{itemize}
+}
+\item{{\bf Returns} - 
+the tail of this list. 
+}%end item
+\end{itemize}
+}%end item
+\divideents{getPrefix}
+\item{\vskip -1.9ex 
+\membername{getPrefix}
+{\tt public ATermList {\bf getPrefix}(  )
+\label{l170}\label{l171}}%end signature
+\begin{itemize}
+\sld
+\item{
+\sld
+{\bf Usage}
+  \begin{itemize}\isep
+   \item{
+Gets the prefix (all but the last element) of this list.
+}%end item
+  \end{itemize}
+}
+\item{{\bf Returns} - 
+the prefix of this list. 
+}%end item
+\end{itemize}
+}%end item
+\divideents{getSlice}
+\item{\vskip -1.9ex 
+\membername{getSlice}
+{\tt public ATermList {\bf getSlice}( {\tt int } {\bf start},
+{\tt int } {\bf end} )
+\label{l172}\label{l173}}%end signature
+\begin{itemize}
+\sld
+\item{
+\sld
+{\bf Usage}
+  \begin{itemize}\isep
+   \item{
+Gets a portion (slice) of this list.
+}%end item
+  \end{itemize}
+}
+\item{
+\sld
+{\bf Parameters}
+\sld\isep
+  \begin{itemize}
+\sld\isep
+   \item{
+\sld
+{\tt start} - the start of the slice (included).}
+   \item{
+\sld
+{\tt end} - the end of the slice (excluded).}
+  \end{itemize}
+}%end item
+\item{{\bf Returns} - 
+the portion of this list between start and end. 
+}%end item
+\end{itemize}
+}%end item
+\divideents{indexOf}
+\item{\vskip -1.9ex 
+\membername{indexOf}
+{\tt public int {\bf indexOf}( {\tt aterm.ATerm } {\bf el},
+{\tt int } {\bf start} )
+\label{l174}\label{l175}}%end signature
+\begin{itemize}
+\sld
+\item{
+\sld
+{\bf Usage}
+  \begin{itemize}\isep
+   \item{
+Gets the index of the first occurance of a term in this list.
+ Lookup starts at a given index (0 being the first element).
+}%end item
+  \end{itemize}
+}
+\item{
+\sld
+{\bf Parameters}
+\sld\isep
+  \begin{itemize}
+\sld\isep
+   \item{
+\sld
+{\tt el} - the element to look for.}
+   \item{
+\sld
+{\tt start} - the starting position of the lookup. Negative start
+        implies searching backwards from the tail of the list.}
+  \end{itemize}
+}%end item
+\item{{\bf Returns} - 
+the index of the first occurance of el in this list,
+ or -1 if el does not occur. 
+}%end item
+\item{{\bf Exceptions}
+  \begin{itemize}
+\sld
+   \item{\vskip -.6ex{\tt java.lang.IllegalArgumentException} - when start \textgreater  length of list ||
+         start \textless  -length}
+  \end{itemize}
+}%end item
+\item{{\bf See Also}
+  \begin{itemize}
+   \item{{\tt aterm.ATermList.lastIndexOf} {\small 
+\refdefined{l176}}%end \small
+}%end item
+  \end{itemize}
+}%end item
+\end{itemize}
+}%end item
+\divideents{insert}
+\item{\vskip -1.9ex 
+\membername{insert}
+{\tt public ATermList {\bf insert}( {\tt aterm.ATerm } {\bf el} )
+\label{l177}\label{l178}}%end signature
+\begin{itemize}
+\sld
+\item{
+\sld
+{\bf Usage}
+  \begin{itemize}\isep
+   \item{
+Inserts a term in front of this list.
+}%end item
+  \end{itemize}
+}
+\item{
+\sld
+{\bf Parameters}
+\sld\isep
+  \begin{itemize}
+\sld\isep
+   \item{
+\sld
+{\tt el} - the element to be inserted.}
+  \end{itemize}
+}%end item
+\item{{\bf Returns} - 
+a list with el inserted. 
+}%end item
+\end{itemize}
+}%end item
+\divideents{insertAt}
+\item{\vskip -1.9ex 
+\membername{insertAt}
+{\tt public ATermList {\bf insertAt}( {\tt aterm.ATerm } {\bf el},
+{\tt int } {\bf i} )
+\label{l179}\label{l180}}%end signature
+\begin{itemize}
+\sld
+\item{
+\sld
+{\bf Usage}
+  \begin{itemize}\isep
+   \item{
+Inserts an element at a specific position in this list.
+}%end item
+  \end{itemize}
+}
+\item{
+\sld
+{\bf Parameters}
+\sld\isep
+  \begin{itemize}
+\sld\isep
+   \item{
+\sld
+{\tt el} - the element to be inserted.}
+   \item{
+\sld
+{\tt i} - the index at which to insert.}
+  \end{itemize}
+}%end item
+\item{{\bf Returns} - 
+a list with el inserted as ith element. 
+}%end item
+\end{itemize}
+}%end item
+\divideents{isEmpty}
+\item{\vskip -1.9ex 
+\membername{isEmpty}
+{\tt public boolean {\bf isEmpty}(  )
+\label{l181}\label{l182}}%end signature
+\begin{itemize}
+\sld
+\item{
+\sld
+{\bf Usage}
+  \begin{itemize}\isep
+   \item{
+Checks if this list is the empty list.
+}%end item
+  \end{itemize}
+}
+\item{{\bf Returns} - 
+true if this list is empty, false otherwise. 
+}%end item
+\end{itemize}
+}%end item
+\divideents{lastIndexOf}
+\item{\vskip -1.9ex 
+\membername{lastIndexOf}
+{\tt public int {\bf lastIndexOf}( {\tt aterm.ATerm } {\bf el},
+{\tt int } {\bf start} )
+\label{l183}\label{l184}}%end signature
+\begin{itemize}
+\sld
+\item{
+\sld
+{\bf Usage}
+  \begin{itemize}\isep
+   \item{
+Gets the last occurance of a term in this list.
+ Lookup starts at a given index (0 being the first element).
+}%end item
+  \end{itemize}
+}
+\item{
+\sld
+{\bf Parameters}
+\sld\isep
+  \begin{itemize}
+\sld\isep
+   \item{
+\sld
+{\tt el} - the element to look for.}
+   \item{
+\sld
+{\tt start} - the starting position of the lookup.}
+  \end{itemize}
+}%end item
+\item{{\bf Returns} - 
+the index of the last occurance of el in this list,
+ or -1 if el does not occur. 
+}%end item
+\item{{\bf See Also}
+  \begin{itemize}
+   \item{{\tt aterm.ATermList.indexOf} {\small 
+\refdefined{l185}}%end \small
+}%end item
+  \end{itemize}
+}%end item
+\end{itemize}
+}%end item
+\divideents{remove}
+\item{\vskip -1.9ex 
+\membername{remove}
+{\tt public ATermList {\bf remove}( {\tt aterm.ATerm } {\bf el} )
+\label{l186}\label{l187}}%end signature
+\begin{itemize}
+\sld
+\item{
+\sld
+{\bf Usage}
+  \begin{itemize}\isep
+   \item{
+Removes one occurance of an element from this list.
+}%end item
+  \end{itemize}
+}
+\item{
+\sld
+{\bf Parameters}
+\sld\isep
+  \begin{itemize}
+\sld\isep
+   \item{
+\sld
+{\tt el} - the element to be removed.}
+  \end{itemize}
+}%end item
+\item{{\bf Returns} - 
+this list with one occurance of el removed. 
+}%end item
+\end{itemize}
+}%end item
+\divideents{removeAll}
+\item{\vskip -1.9ex 
+\membername{removeAll}
+{\tt public ATermList {\bf removeAll}( {\tt aterm.ATerm } {\bf el} )
+\label{l188}\label{l189}}%end signature
+\begin{itemize}
+\sld
+\item{
+\sld
+{\bf Usage}
+  \begin{itemize}\isep
+   \item{
+Removes all occurances of an element in this list.
+}%end item
+  \end{itemize}
+}
+\item{
+\sld
+{\bf Parameters}
+\sld\isep
+  \begin{itemize}
+\sld\isep
+   \item{
+\sld
+{\tt el} - the element to be removed.}
+  \end{itemize}
+}%end item
+\item{{\bf Returns} - 
+this list with all occurances of el removed. 
+}%end item
+\end{itemize}
+}%end item
+\divideents{removeElementAt}
+\item{\vskip -1.9ex 
+\membername{removeElementAt}
+{\tt public ATermList {\bf removeElementAt}( {\tt int } {\bf i} )
+\label{l190}\label{l191}}%end signature
+\begin{itemize}
+\sld
+\item{
+\sld
+{\bf Usage}
+  \begin{itemize}\isep
+   \item{
+Removes the element at a specific index in this list.
+}%end item
+  \end{itemize}
+}
+\item{
+\sld
+{\bf Parameters}
+\sld\isep
+  \begin{itemize}
+\sld\isep
+   \item{
+\sld
+{\tt i} - the index of the element to be removed.}
+  \end{itemize}
+}%end item
+\item{{\bf Returns} - 
+a list with the ith element removed. 
+}%end item
+\item{{\bf Exceptions}
+  \begin{itemize}
+\sld
+   \item{\vskip -.6ex{\tt IndexOutOfBoundsException} - if i does not refer
+ to a position in this list.}
+  \end{itemize}
+}%end item
+\end{itemize}
+}%end item
+\divideents{replace}
+\item{\vskip -1.9ex 
+\membername{replace}
+{\tt public ATermList {\bf replace}( {\tt aterm.ATerm } {\bf el},
+{\tt int } {\bf i} )
+\label{l192}\label{l193}}%end signature
+\begin{itemize}
+\sld
+\item{
+\sld
+{\bf Usage}
+  \begin{itemize}\isep
+   \item{
+Replaces a specific term in this list with another.
+}%end item
+  \end{itemize}
+}
+\item{
+\sld
+{\bf Parameters}
+\sld\isep
+  \begin{itemize}
+\sld\isep
+   \item{
+\sld
+{\tt el} - the element to be put into this list.}
+   \item{
+\sld
+{\tt i} - the index of the element in this list to be replaced.}
+  \end{itemize}
+}%end item
+\item{{\bf Returns} - 
+this list with the ith element replaced by el. 
+}%end item
+\item{{\bf Exceptions}
+  \begin{itemize}
+\sld
+   \item{\vskip -.6ex{\tt IndexOutOfBoundsException} - if i does not refer
+ to a position in this list.}
+  \end{itemize}
+}%end item
+\end{itemize}
+}%end item
+\divideents{reverse}
+\item{\vskip -1.9ex 
+\membername{reverse}
+{\tt public ATermList {\bf reverse}(  )
+\label{l194}\label{l195}}%end signature
+\begin{itemize}
+\sld
+\item{
+\sld
+{\bf Usage}
+  \begin{itemize}\isep
+   \item{
+Reverses the elements of this list.
+}%end item
+  \end{itemize}
+}
+\item{{\bf Returns} - 
+a reverse order copy of this list. 
+}%end item
+\end{itemize}
+}%end item
+\end{itemize}
+}
+\hide{inherited}{
+}
+}
+\startsection{Interface}{ATermPlaceholder}{l7}{%
+{\small This interface describes the functionality of an ATermPlaceholder}
+\vskip .1in 
+\startsubsubsection{Declaration}{
+\fbox{\vbox{
+\hbox{\vbox{\small public interface 
+ATermPlaceholder}}
+\noindent\hbox{\vbox{{\bf implements} 
+ATerm}}
+}}}
+\startsubsubsection{Methods}{
+\vskip -2em
+\begin{itemize}
+\item{\vskip -1.9ex 
+\membername{getPlaceholder}
+{\tt public ATerm {\bf getPlaceholder}(  )
+\label{l196}\label{l197}}%end signature
+\begin{itemize}
+\sld
+\item{
+\sld
+{\bf Usage}
+  \begin{itemize}\isep
+   \item{
+Gets the type of this placeholder.
+}%end item
+  \end{itemize}
+}
+\item{{\bf Returns} - 
+the type of this placeholder. 
+}%end item
+\end{itemize}
+}%end item
+\end{itemize}
+}
+\hide{inherited}{
+}
+}
+\startsection{Interface}{ATermReal}{l8}{%
+{\small This interface describes the functionality of an ATermReal}
+\vskip .1in 
+\startsubsubsection{Declaration}{
+\fbox{\vbox{
+\hbox{\vbox{\small public interface 
+ATermReal}}
+\noindent\hbox{\vbox{{\bf implements} 
+ATerm}}
+}}}
+\startsubsubsection{Methods}{
+\vskip -2em
+\begin{itemize}
+\item{\vskip -1.9ex 
+\membername{getReal}
+{\tt public double {\bf getReal}(  )
+\label{l198}\label{l199}}%end signature
+\begin{itemize}
+\sld
+\item{
+\sld
+{\bf Usage}
+  \begin{itemize}\isep
+   \item{
+Gets the real value from this term as a double.
+}%end item
+  \end{itemize}
+}
+\item{{\bf Returns} - 
+the real value from this term. 
+}%end item
+\end{itemize}
+}%end item
+\end{itemize}
+}
+\hide{inherited}{
+}
+}
+}
+}
+\end{document}
