@@ -315,34 +315,6 @@ public class SharedObjectFactory {
     return foundObj;
   }
 
-  /* 
-   * Jurgen: removed because possibly never used
-   *
-   static public String encodeString(String value) {
-    int len = value.length();
-    char[] source = new char[len];
-    char[] dest = new char[3 * len];
-    // store the string in an array of chars
-    value.getChars(0, len, source, 0);
-    // copy and insert some escape chars
-    for (int i = 0, pos = 0; i < len; i++) {
-      if (source[i] == '"' || source[i] == '\\') {
-        dest[pos++] = '\\';
-        dest[pos++] = source[i];
-      } else if (source[i] == '\n') {
-        dest[pos++] = '\\';
-        dest[pos++] = 'n';
-      } else if (source[i] == '\t') {
-        dest[pos++] = '\\';
-        dest[pos++] = 't';
-      } else {
-        dest[pos++] = source[i];
-      }
-    }
-    return new String(dest);
-  }
-  */
-
   private static class Entry extends WeakReference {
     protected Entry next;
     protected int value = 0;
