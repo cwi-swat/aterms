@@ -9,6 +9,7 @@ import apigen.adt.ADTReader;
 import apigen.gen.tom.TomSignatureGenerator;
 
 public class Main {
+	
 	public static final void main(String[] arguments) {
 		JavaTomGenerationParameters params = buildDefaultParameters();
 		List args = new LinkedList(Arrays.asList(arguments));
@@ -24,6 +25,7 @@ public class Main {
 
 		try {
 			params.parseArguments(args);
+			params.check();
 		}
 		catch (IllegalArgumentException e) {
 			System.err.println(e.getMessage());
@@ -36,7 +38,6 @@ public class Main {
 		new TomSignatureGenerator(adt, signature, params).run();
 
 		if (params.isJavaGen()) { // generate Java Stuff
-			params.check();
 			apigen.gen.java.Main.generateAPI(adt, params);
 		}
 	}

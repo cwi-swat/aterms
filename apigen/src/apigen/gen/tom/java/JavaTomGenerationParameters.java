@@ -28,7 +28,7 @@ class JavaTomGenerationParameters extends JavaGenerationParameters  implements C
 	public String usage() {
 		StringBuffer buf = new StringBuffer(super.usage());
 		buf.append("\t--jtype\t\t\t\t<insert sensible explanation about --jtype here>");
-		buf.append("\n\t--javagen\t\t\tcall to adt-to-java");
+		buf.append("\n\t--javagen\t\t\tGenerate Java API thanks to adt-to-java");
 		return buf.toString();
 	}
 	

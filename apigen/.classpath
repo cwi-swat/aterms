@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry excluding="test/" kind="src" path=""/>
+	<classpathentry excluding="doc/|lib/|lib-1.0/|lib-2.0/|old-lib/|apigen/CVS/|apigen/adt/CVS/|apigen/adt/api/CVS/|apigen/c/CVS/|apigen/gen/CVS/|apigen/gen/c/CVS/|apigen/gen/java/CVS/|apigen/gen/tom/CVS/|apigen/gen/tom/c/CVS/|apigen/gen/tom/java/CVS/|apigen/java/CVS/|apigen/tom/CVS/|apigen/util/CVS/|casestudy/|scripts/|spec/|utils/|apigen/gen/jtom/CVS/|test/|CVS/" kind="src" path=""/>
 	<classpathentry kind="src" path="/JJTraveler"/>
 	<classpathentry kind="src" path="/aterm-java"/>
 	<classpathentry kind="src" path="/shared-objects"/>

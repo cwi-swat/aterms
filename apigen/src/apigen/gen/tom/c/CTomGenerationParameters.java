@@ -8,7 +8,7 @@ import apigen.gen.c.CGenerationParameters;
 
 class CTomGenerationParameters extends CGenerationParameters  implements Cloneable {
 	private boolean jtype;
-	private boolean javaGenStuff;
+	private boolean CGenStuff;
 	
 	public void parseArguments(List args) {
 		Iterator iter = args.iterator();
@@ -19,7 +19,7 @@ class CTomGenerationParameters extends CGenerationParameters  implements Cloneab
 				setJtype(true);
 			} else if ("--javagen".startsWith(arg)){
 				shift(iter);
-				setJavaGen(true);
+				setCGen(true);
 			}
 		}
 		super.parseArguments(args);
@@ -28,18 +28,19 @@ class CTomGenerationParameters extends CGenerationParameters  implements Cloneab
 	public String usage() {
 		StringBuffer buf = new StringBuffer(super.usage());
 		buf.append("\t--jtype\t\t\t\t<insert sensible explanation about --jtype here>");
-		buf.append("\n\t--javagen\t\t\tcall to adt-to-java");
+		buf.append("\n\t--cgen\t\t\tcall to adt-to-c");
 		return buf.toString();
 	}
 	
-	public boolean isJavaGen() {
-		return javaGenStuff;
+	public boolean isCGen() {
+		return CGenStuff;
 	}
 	
-  private void setJavaGen(boolean javaGen) {
-    this.javaGenStuff = javaGen;
+  private void setCGen(boolean cGen) {
+    this.CGenStuff = cGen;
   }
 
+  
 	public boolean isJtype() {
 		return jtype;
 	}

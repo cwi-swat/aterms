@@ -66,5 +66,12 @@ public class CGenerationParameters extends GenerationParameters {
 	public void setFolding(boolean folding) {
 		this.folding = folding;
 	}
+	
+	public void check() {
+		if (getVersion() == null) {
+			System.err.println("warning: no API version specified.");
+			setVersion("0.0.0");
+		}
+	}
 
 }

@@ -8,12 +8,14 @@ import apigen.gen.GenerationParameters;
 
 public class JavaGenerationParameters extends GenerationParameters {
 	private boolean visitable;
+	private boolean generateJar;
 	private String packageName;
 	private List imports;
 
 	public JavaGenerationParameters() {
 		super();
 		imports = new LinkedList();
+		setGenerateJar(true);
 	}
 
 	public void parseArguments(List args) {
@@ -23,14 +25,15 @@ public class JavaGenerationParameters extends GenerationParameters {
 			if ("--package".startsWith(arg) || "-p".startsWith(arg)) {
 				shift(iter);
 				setPackageName(shiftArgument(iter));
-			}
-			else if ("--import".startsWith(arg) || "-m".startsWith(arg)) {
+			}	else if ("--import".startsWith(arg) || "-m".startsWith(arg)) {
 				shift(iter);
 				addImport(shiftArgument(iter));
-			}
-			else if ("--visitable".startsWith(arg) || "-t".startsWith(arg)) {
+			} else if ("--visitable".startsWith(arg) || "-t".startsWith(arg)) {
 				shift(iter);
 				setVisitable(true);
+			} else if ("--nojar".startsWith(arg)) {
+				shift(iter);
+				setGenerateJar(false);
 			}
 		}
 		super.parseArguments(args);
@@ -41,6 +44,7 @@ public class JavaGenerationParameters extends GenerationParameters {
 		buf.append("\t-p | --package <package>       <optional>\n");
 		buf.append("\t-m | --import <package>        (can be repeated)\n");
 		buf.append("\t-t | --visitable               [off]\n");
+		buf.append("\t--nojar                        Do not generate Jar file [off]\n");
 		return buf.toString();
 	}
 
@@ -68,4 +72,19 @@ public class JavaGenerationParameters extends GenerationParameters {
 		this.packageName = packageName;
 	}
 
+	public boolean isGenerateJar() {
+		return generateJar;
+	}
+
+	public void setGenerateJar(boolean generateJar) {
+		this.generateJar = generateJar;
+	}
+	
+	public void check() {
+		super.check();
+		if (getVersion() == null && isGenerateJar()) {
+			System.err.println("warning: no API version specified.");
+			setVersion("0.0.0");
+		}
+	}
 }

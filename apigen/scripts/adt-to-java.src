@@ -5,12 +5,28 @@ set -e
 APIGEN=apigen.gen.java.Main
 CLASSPATH=__APIGEN_CLASSES__:__JAVA_ATERM__
 
-PARAMS=apigen.env
 java -classpath ${CLASSPATH} ${APIGEN} $*
-. ${PARAMS}
 
-CLASSES=`echo ${FILES} | sed -e 's/.java/.class/g'`
-JARFILE=${APINAME}-${VERSION}.jar
-javac -classpath ${DIRECTORY}:${CLASSPATH} ${FILES}
-jar cf ${JARFILE} ${CLASSES}
-rm -f ${PARAMS}
+while [ $# -gt 0 ]
+do
+  case $1 in
+    --noJar)
+      shift;
+      JAR=FALSE ;
+      break;;
+    *)
+      shift;
+  esac
+  shift
+done
+
+if [ "a${JARGEN}" != "a" ]; then
+	PARAMS=apigen.env
+	. ${PARAMS}
+
+	CLASSES=`echo ${FILES} | sed -e 's/.java/.class/g'`
+	JARFILE=${APINAME}-${VERSION}.jar
+	javac -classpath ${DIRECTORY}:${CLASSPATH} ${FILES}
+	jar cf ${JARFILE} ${CLASSES}
+	rm -f ${PARAMS}
+fi
