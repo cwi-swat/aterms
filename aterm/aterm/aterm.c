@@ -18,6 +18,7 @@
 #include "make.h"
 #include "gc.h"
 #include "util.h"
+#include "bafio.h"
 
 /*}}}  */
 /*{{{  defines */
@@ -150,6 +151,7 @@ ATinit(int argc, char *argv[], ATerm * bottomOfStack)
 	AT_initList(argc, argv);
 	AT_initMake(argc, argv);
 	AT_initGC(argc, argv, bottomOfStack);
+	AT_initBafIO(argc, argv);
 	
 	initialized = ATtrue;
 
@@ -534,42 +536,39 @@ writeToTextFile(ATerm t, FILE * f)
 	/*}}}  */
 	break;
     case AT_LIST:
-	/*{{{  Print list */
+			/*{{{  Print list */
 
-	list = (ATermList) t;
-	if (ATisEmpty(list))
-	    break;
+			list = (ATermList) t;
+			if(!ATisEmpty(list)) {
+				ATwriteToTextFile(ATgetFirst(list), f);
+				list = ATgetNext(list);
+			}
+			while(!ATisEmpty(list)) {
+				fputc(',', f);				
+				ATwriteToTextFile(ATgetFirst(list), f);
+				list = ATgetNext(list);
+			}
 
-	trm = ATgetFirst(list);
-	ATwriteToTextFile(trm, f);
-
-	list = ATgetNext(list);
-	if (!ATisEmpty(list))
-	{
-	    fputc(',', f);
-	    writeToTextFile((ATerm) list, f);
-	}
-
-	/*}}}  */
-	break;
-    case AT_PLACEHOLDER:
-	/*{{{  Print placeholder */
+			/*}}}  */
+			break;
+			case AT_PLACEHOLDER:
+				/*{{{  Print placeholder */
 
 	fputc('<', f);
 	ATwriteToTextFile(ATgetPlaceholder((ATermPlaceholder) t), f);
 	fputc('>', f);
 
 	/*}}}  */
-	break;
-    case AT_BLOB:
-	/*{{{  Print blob */
+				break;
+			case AT_BLOB:
+				/*{{{  Print blob */
 
 	blob = (ATermBlob) t;
 	fprintf(f, "%08d:", ATgetBlobSize(blob));
 	fwrite(ATgetBlobData(blob), ATgetBlobSize(blob), 1, f);
 
 	/*}}}  */
-	break;
+				break;
 
     case AT_FREE:
 			if(AT_inAnyFreeList(t))

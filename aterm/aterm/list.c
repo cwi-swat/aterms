@@ -658,6 +658,8 @@ void ATtablePut(ATermTable table, ATerm key, ATerm value)
 		table->entries = calloc(table->size, sizeof(ATermList));
 		if(!table->entries)
 			ATerror("ATtablePut: cannot re-alloc to %d entries.\n", table->size);
+		for(i=0; i<table->size; i++)
+			table->entries[i] = ATempty;
 		ATprotectArray((ATerm *)table->entries, table->size);
 		table->free_slots = table->size;
 

@@ -41,7 +41,7 @@ INSTALL		= @INSTALL@
 INSTALL_PRG	= @INSTALL_PRG@
 INSTALL_DAT	= @INSTALL_DAT@
 
-PROGS		= termsize baffle
+PROGS		= termsize baffle baf2trm trm2baf
 PROGSRCS	= termsize.c baffle.c
 ATERMSRCS	= aterm.c list.c make.c memory.c asymbol.c gc.c bafio.c
 ATERMLIBS	= libATerm-gcc.a libATerm-cc.a libATerm-dbg.a libATerm-prof.a
@@ -116,6 +116,7 @@ depend:
 	cat /tmp/.gendep | sed "s/.o:/-dbg.o:/"  >> .depend
 	$(CC_GCC) -MM $(DEFS_PROF) $(INCL_PROF) $(ATERMSRCS) > /tmp/.gendep
 	cat /tmp/.gendep | sed "s/.o:/-prof.o:/" >> .depend
+	$(CC_GCC) -MM $(DEFS_GCC) $(INCL_GCC) $(PROGSRCS) >> .depend
 	rm -f /tmp/.gendep
 
 include .depend

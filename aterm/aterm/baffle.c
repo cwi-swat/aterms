@@ -134,8 +134,10 @@ main(int argc, char *argv[])
 	{
 		if (binary_output)
 			result = ATwriteToBinaryFile(term, output);
-		else
+		else {
 			result = ATwriteToTextFile(term, output);
+			fprintf(output, "\n");
+		}
 
 		if (!result)
 			ATerror("%s: write failed!\n", argv[0]);

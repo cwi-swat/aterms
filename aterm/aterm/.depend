@@ -1,5 +1,5 @@
 aterm-cc.o: aterm.c _aterm.h aterm2.h aterm1.h encoding.h abool.h \
- asymbol.h memory.h list.h make.h gc.h util.h
+ asymbol.h memory.h list.h make.h gc.h util.h bafio.h
 list-cc.o: list.c list.h aterm2.h aterm1.h encoding.h abool.h asymbol.h
 make-cc.o: make.c aterm2.h aterm1.h encoding.h abool.h asymbol.h make.h \
  deprecated.h util.h
@@ -12,7 +12,7 @@ gc-cc.o: gc.c _aterm.h aterm2.h aterm1.h encoding.h abool.h asymbol.h \
 bafio-cc.o: bafio.c _aterm.h aterm2.h aterm1.h encoding.h abool.h \
  asymbol.h memory.h
 aterm-gcc.o: aterm.c _aterm.h aterm2.h aterm1.h encoding.h abool.h \
- asymbol.h memory.h list.h make.h gc.h util.h
+ asymbol.h memory.h list.h make.h gc.h util.h bafio.h
 list-gcc.o: list.c list.h aterm2.h aterm1.h encoding.h abool.h asymbol.h
 make-gcc.o: make.c aterm2.h aterm1.h encoding.h abool.h asymbol.h make.h \
  deprecated.h util.h
@@ -25,7 +25,7 @@ gc-gcc.o: gc.c _aterm.h aterm2.h aterm1.h encoding.h abool.h asymbol.h \
 bafio-gcc.o: bafio.c _aterm.h aterm2.h aterm1.h encoding.h abool.h \
  asymbol.h memory.h
 aterm-dbg.o: aterm.c _aterm.h aterm2.h aterm1.h encoding.h abool.h \
- asymbol.h memory.h list.h make.h gc.h util.h
+ asymbol.h memory.h list.h make.h gc.h util.h bafio.h
 list-dbg.o: list.c list.h aterm2.h aterm1.h encoding.h abool.h asymbol.h
 make-dbg.o: make.c aterm2.h aterm1.h encoding.h abool.h asymbol.h make.h \
  deprecated.h util.h
@@ -38,7 +38,7 @@ gc-dbg.o: gc.c _aterm.h aterm2.h aterm1.h encoding.h abool.h asymbol.h \
 bafio-dbg.o: bafio.c _aterm.h aterm2.h aterm1.h encoding.h abool.h \
  asymbol.h memory.h
 aterm-prof.o: aterm.c _aterm.h aterm2.h aterm1.h encoding.h abool.h \
- asymbol.h memory.h list.h make.h gc.h util.h
+ asymbol.h memory.h list.h make.h gc.h util.h bafio.h
 list-prof.o: list.c list.h aterm2.h aterm1.h encoding.h abool.h asymbol.h
 make-prof.o: make.c aterm2.h aterm1.h encoding.h abool.h asymbol.h make.h \
  deprecated.h util.h
@@ -50,3 +50,7 @@ gc-prof.o: gc.c _aterm.h aterm2.h aterm1.h encoding.h abool.h asymbol.h \
  memory.h util.h gc.h
 bafio-prof.o: bafio.c _aterm.h aterm2.h aterm1.h encoding.h abool.h \
  asymbol.h memory.h
+termsize.o: termsize.c _aterm.h aterm2.h aterm1.h encoding.h abool.h \
+ asymbol.h
+baffle.o: baffle.c bafio.h aterm1.h encoding.h abool.h util.h aterm2.h \
+ asymbol.h

@@ -3,6 +3,7 @@
 
 #include "aterm1.h"
 
+void   AT_initBafIO(int argc, char *argv[]);
 void   AT_getBafVersion(int *major, int *minor);
 ATbool AT_interpretBaf(FILE *input, FILE *output);
 

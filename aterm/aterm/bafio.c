@@ -2,6 +2,8 @@
  * bafio.c
  */
 
+/*{{{  includes */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
@@ -9,6 +11,9 @@
 #include "_aterm.h"
 #include "aterm2.h"
 #include "memory.h"
+
+/*}}}  */
+/*{{{  defines */
 
 #define	BAF_MAGIC	0xbaf
 #define BAF_VERSION	0x0100			/* version 1.0 */
@@ -27,14 +32,44 @@
 #define TRM_STACK_REL(idx)	(term_stack_depth - (idx) + 10) /* skip CMD's */
 #define SYM_STACK_REL(idx)	(sym_stack_depth - (idx))
 
+/*}}}  */
+
+/*{{{  global variables */
+
 static int			term_stack_depth;
 static ATermTable	term_stack;
 
 static int			sym_stack_depth;
 static ATermTable	sym_stack;
 
+static ATerm arg_stack[MAX_ARITY];
+static int   arg_stack_depth;
+
 static char *text_buffer = NULL;
 static int   text_buffer_size = 0;
+
+static ATerm empty_args[MAX_ARITY] = { NULL };
+
+/*}}}  */
+/*{{{  void AT_initBafIO(int argc, char *argv[]) */
+
+/**
+	* Initialize BafIO code.
+	*/
+
+void AT_initBafIO(int argc, char *argv[])
+{
+	int i;
+
+	for(i=0; i<MAX_ARITY; i++)
+		empty_args[i] = (ATerm)ATempty;
+
+	ATprotectArray(empty_args, MAX_ARITY);
+}
+
+/*}}}  */
+
+/*{{{  void AT_getBafVersion(int *major, int *minor) */
 
 void
 AT_getBafVersion(int *major, int *minor)
@@ -42,6 +77,9 @@ AT_getBafVersion(int *major, int *minor)
 	*major = BAF_VERSION >> 8;
 	*minor = BAF_VERSION & 0xff;
 }
+
+/*}}}  */
+/*{{{  static int writeIntToBuf(unsigned int val, unsigned char *buf) */
 
 static
 int
@@ -85,6 +123,9 @@ writeIntToBuf(unsigned int val, unsigned char *buf)
 	return 5;
 }
 
+/*}}}  */
+/*{{{  static int readIntFromBuf(unsigned int *val, unsigned char *buf) */
+
 static
 int
 readIntFromBuf(unsigned int *val, unsigned char *buf)
@@ -118,6 +159,9 @@ readIntFromBuf(unsigned int *val, unsigned char *buf)
 	return 5;
 }
 
+/*}}}  */
+/*{{{  static int writeIntToFile(unsigned int val, FILE *file) */
+
 static
 int
 writeIntToFile(unsigned int val, FILE *file)
@@ -126,8 +170,15 @@ writeIntToFile(unsigned int val, FILE *file)
 	unsigned char buf[8];
 
 	nr_items = writeIntToBuf(val, buf);
-	return fwrite(buf, 1, nr_items, file);
+	if(fwrite(buf, 1, nr_items, file) != nr_items)
+		return -1;
+
+	/* Ok */
+	return 0;
 }
+
+/*}}}  */
+/*{{{  static int readIntFromFile(unsigned int *val, FILE *file) */
 
 static
 int
@@ -189,6 +240,9 @@ readIntFromFile(unsigned int *val, FILE *file)
 	return 5;
 }
 
+/*}}}  */
+/*{{{  static int writeStringToFile(const char *str, int len, FILE *f) */
+
 static
 int
 writeStringToFile(const char *str, int len, FILE *f)
@@ -205,6 +259,9 @@ writeStringToFile(const char *str, int len, FILE *f)
 	return 0;
 }
 
+/*}}}  */
+/*{{{  static int writeSymToFile(Symbol sym, FILE *f) */
+
 static
 int
 writeSymToFile(Symbol sym, FILE *f)
@@ -213,20 +270,25 @@ writeSymToFile(Symbol sym, FILE *f)
 	ATerm     sym_appl;
 	ATermInt  index_sym;
 
-	sym_appl = (ATerm) ATmakeAppl0(sym);
+	sym_appl = (ATerm)ATmakeApplArray(sym, empty_args);
 	index_sym = (ATermInt) ATtableGet(sym_stack, sym_appl);
 	if (index_sym != NULL)
 		return ATgetInt(index_sym);
 
 	index_sym = ATmakeInt(sym_stack_depth);
 	ATtablePut(sym_stack, sym_appl, (ATerm) index_sym);
-	writeIntToFile(CMD_SYM, f);
-	writeIntToFile(ATgetArity(sym), f);
+	if(writeIntToFile(ATisQuoted(sym) ? CMD_QSYM : CMD_SYM, f) < 0)
+		return -1;
+	if(writeIntToFile(ATgetArity(sym), f) < 0)
+		return -1;
 	name = ATgetName(sym);
 	writeStringToFile(name, strlen(name)+1, f);
 
 	return sym_stack_depth++;
 }
+
+/*}}}  */
+/*{{{  static int writeListToFile(ATermList list, FILE *file) */
 
 /* Forward declaration */
 static int writeToBinaryFile(ATerm, FILE *);
@@ -240,7 +302,7 @@ writeListToFile(ATermList list, FILE *file)
 
 	int       cur_batch, cur_elem;
 	int       nr_elems, nr_batches;
-	int       base_index;
+	int       base_index, idx;
 	ATerm     elems[BATCH_SIZE];
 	ATermInt  index_term;
 	ATermList l;
@@ -251,14 +313,14 @@ writeListToFile(ATermList list, FILE *file)
 			return -1;
 
 	/* Calculate number of batches we need to do. */
-	nr_elems   = ATgetLength(l);
+	nr_elems   = ATgetLength(list);
 	nr_batches = nr_elems / BATCH_SIZE;
 
 	/* Handle the last (incomplete) batch */
 
 	/* Fast forward to start of batch */
 	base_index = nr_batches * BATCH_SIZE;
-	for (l = list; base_index; --base_index);
+	for (l = list, idx = base_index; idx; --idx)
 		l = ATgetNext(l);
 
 	/* Fill array of batch */
@@ -269,7 +331,7 @@ writeListToFile(ATermList list, FILE *file)
 	}
 
 	/* Write term_stack index to file (reverse order) */
-	for (--cur_elem; cur_elem >= 0; cur_elem--)
+	for (cur_elem = nr_elems-base_index-1; cur_elem >= 0; cur_elem--)
 	{
 		index_term = (ATermInt) ATtableGet(term_stack, elems[cur_elem]);
 		assert(index_term != NULL);
@@ -309,17 +371,20 @@ writeListToFile(ATermList list, FILE *file)
 	return 0;
 }
 
+/*}}}  */
+/*{{{  static int writeToBinaryFile(ATerm t, FILE *f) */
+
 static
 int
 writeToBinaryFile(ATerm t, FILE *f)
 {
-	static int arg_indices[MAX_ARITY];
+	int       arg_indices[MAX_ARITY];
 
-	int       lcv;
+	int       lcv, arity;
 	int       index;
-	char      buf[sizeof(double)*4]; /* Must be large enough to fit a double */
+	static    char buf[64]; /* Must be large enough to fit a double */
 	Symbol    sym;
-	ATerm     plac;
+	ATerm     plac, annos;
 	ATermInt  index_term;
 	ATermAppl appl;
 	ATermBlob blob;
@@ -337,47 +402,49 @@ writeToBinaryFile(ATerm t, FILE *f)
 			sym = ATgetSymbol(appl);
 
 			/* First write all the arguments of the appl */
-			for (lcv = ATgetArity(sym)-1; lcv >= 0; --lcv)
+			arity = ATgetArity(sym);
+			for(lcv=0; lcv<arity; lcv++)
 			{
 				ATerm arg = ATgetArgument(appl, lcv);
 				arg_indices[lcv] = writeToBinaryFile(arg, f);
 			}
 
 			/* Now issue push commands for each argument */
-			for (lcv = ATgetArity(sym)-1; lcv >= 0; --lcv)
+			for(lcv=0; lcv<arity; lcv++)
 			{
 				index = arg_indices[lcv];
 				if (index < 0)
 					return index;
-				if (writeIntToFile(TRM_STACK_REL(index), f) <= 0)
+				if (writeIntToFile(TRM_STACK_REL(index), f) < 0)
 					return -1;
 			}
 			index = writeSymToFile(sym, f);
 			if (index < 0)
 				return index;
-			if (writeIntToFile(CMD_APPL, f) <= 0)
+			if (writeIntToFile(CMD_APPL, f) < 0)
 				return -1;
-			if (writeIntToFile(SYM_STACK_REL(index), f) <= 0)
+			if (writeIntToFile(SYM_STACK_REL(index), f) < 0)
 				return -1;
 			break;
 
 		case AT_INT:
-			if (writeIntToFile(CMD_INT, f) <= 0)
+			if (writeIntToFile(CMD_INT, f) < 0)
 				return -1;
-			if (writeIntToFile(ATgetInt((ATermInt)t), f) <= 0)
+			if (writeIntToFile(ATgetInt((ATermInt)t), f) < 0)
 				return -1;
 			break;
 
 		case AT_REAL:
-			if (writeIntToFile(CMD_REAL, f) <= 0)
+			if (writeIntToFile(CMD_REAL, f) < 0)
 				return -1;
 			sprintf(buf, "%f", ATgetReal((ATermReal)t));
-			if (writeStringToFile(buf, strlen(buf)+1, f) <= 0)
+			if (writeStringToFile(buf, strlen(buf)+1, f) < 0)
 				return -1;
 			break;
 
 		case AT_LIST:
-			writeListToFile((ATermList)t, f);
+			if(writeListToFile((ATermList)t, f) < 0)
+				return -1;
 			break;
 
 		case AT_PLACEHOLDER:
@@ -385,18 +452,18 @@ writeToBinaryFile(ATerm t, FILE *f)
 			index = writeToBinaryFile(plac, f);
 			if (index < 0)
 				return index;
-			if (writeIntToFile(TRM_STACK_REL(index), f) <= 0)
+			if (writeIntToFile(TRM_STACK_REL(index), f) < 0)
 					return -1;
-			if (writeIntToFile(CMD_PLAC, f) <=0)
+			if (writeIntToFile(CMD_PLAC, f) <0)
 				return -1;
 			break;
 
 		case AT_BLOB:
-			if (writeIntToFile(CMD_BLOB, f) <= 0)
+			if (writeIntToFile(CMD_BLOB, f) < 0)
 				return -1;
 			blob = (ATermBlob)t;
 			if (writeStringToFile((const char *)ATgetBlobData(blob),
-								  ATgetBlobSize(blob), f) <= 0)
+								  ATgetBlobSize(blob), f) < 0)
 				return -1;
 			break;
 
@@ -404,10 +471,36 @@ writeToBinaryFile(ATerm t, FILE *f)
 			ATerror("ATwriteToBinaryFile: writing free term at %p\n", t);
 	}
 
+	annos = AT_getAnnotations(t);
+	if(annos) {
+		int idx_annos;
+		int idx_plain_t;
+
+		ATerm plain_t = AT_setAnnotations(t, NULL);
+		idx_plain_t   = term_stack_depth++;
+		index_term = ATmakeInt(idx_plain_t);
+		ATtablePut(term_stack, plain_t, (ATerm) index_term);
+
+		idx_annos = writeToBinaryFile(annos, f);
+		if(idx_annos < 0)
+			return -1;
+
+		/* Push index of annotation */
+		if(writeIntToFile(TRM_STACK_REL(idx_annos), f) < 0)
+			return -1;
+		/* Push index of term */
+		if(writeIntToFile(TRM_STACK_REL(idx_plain_t), f) < 0)
+			return -1;
+		if(writeIntToFile(CMD_ANNO, f) < 0)
+			return -1;
+	}
 	index_term = ATmakeInt(term_stack_depth);
 	ATtablePut(term_stack, t, (ATerm) index_term);
 	return term_stack_depth++;
 }
+
+/*}}}  */
+/*{{{  ATbool ATwriteToBinaryFile(ATerm t, FILE *file) */
 
 ATbool
 ATwriteToBinaryFile(ATerm t, FILE *file)
@@ -423,10 +516,10 @@ ATwriteToBinaryFile(ATerm t, FILE *file)
 	sym_stack = ATtableCreate(512, 75);
 
 	/* Write an INIT command */
-	result = result && writeIntToFile(CMD_RESET,   file);
-	result = result && writeIntToFile(BAF_MAGIC,   file);
-	result = result && writeIntToFile(BAF_VERSION, file);
-	result = result && writeIntToFile(nr_terms,    file);
+	result = result && (writeIntToFile(CMD_RESET,   file) >= 0);
+	result = result && (writeIntToFile(BAF_MAGIC,   file) >= 0);
+	result = result && (writeIntToFile(BAF_VERSION, file) >= 0);
+	result = result && (writeIntToFile(nr_terms,    file) >= 0);
 
 	result = result && writeToBinaryFile(t, file);
 
@@ -436,6 +529,9 @@ ATwriteToBinaryFile(ATerm t, FILE *file)
 
 	return result;
 }
+
+/*}}}  */
+/*{{{  static int readStringFromFile(FILE *f) */
 
 static
 int
@@ -465,21 +561,224 @@ readStringFromFile(FILE *f)
 	return len;
 }
 
+/*}}}  */
+/*{{{  static ATerm readFromBinaryFile(FILE *f) */
+
+/**
+	* Read a term from a BAF file.
+	*/
+
+static ATerm readFromBinaryFile(FILE *f)
+{
+	unsigned int cmd, len;
+	unsigned int value[4];
+	int i, major, minor;
+	double real;
+	ATerm t, annos, idx, sym_appl;
+	ATermList list;
+	Symbol sym;
+	void *data;
+
+	while(!feof(f)) {
+		t = NULL;
+		if (readIntFromFile(&cmd, f) < 0)
+			break;
+
+		switch(cmd)
+		{
+			case CMD_RESET:
+				/*{{{  Handle RESET command */
+
+				readIntFromFile(&value[0], f);
+				readIntFromFile(&value[1], f);
+				readIntFromFile(&value[2], f);
+				if(value[0] != BAF_MAGIC)
+					ATerror("illegal magic number %X, expecting %X\n", 
+									value[0], BAF_MAGIC);
+				major = BAF_VERSION >> 8;
+				minor = BAF_VERSION & 0xFF;
+				if(value[1] >> 8 != major)
+					ATerror("incompatible BAF version %d.xx (expecting %d.xx)\n", 
+									value[1] >> 8, major);
+				if((value[1] & 0xFF) > minor)
+					ATerror("BAF version %d.%d file newer than expected " \
+									"version %d.%d\n", value[1] >> 8, value[1] & 0xFF,
+									major, minor);
+
+				/*}}}  */
+				break;
+	
+			case CMD_APPL:
+				/*{{{  Handle APPL command */
+				
+				readIntFromFile(&value[0], f);
+				sym_appl = ATtableGet(sym_stack, 
+															(ATerm)ATmakeInt(SYM_STACK_REL(value[0])));
+				assert(sym_appl && ATgetType(sym_appl) == AT_APPL);
+				sym = ATgetSymbol((ATermAppl)sym_appl);
+				t = (ATerm)ATmakeApplArray(sym, 
+													&arg_stack[arg_stack_depth-ATgetArity(sym)]);
+				arg_stack_depth -= ATgetArity(sym);
+
+				/*}}}  */
+				break;
+
+			case CMD_INT:
+			  /*{{{  Handle INT command */
+
+				readIntFromFile(&value[0], f);
+				t = (ATerm)ATmakeInt(value[0]);
+
+				/*}}}  */
+				break;
+
+			case CMD_REAL:
+				/*{{{  Handle REAL command */
+
+				len = readStringFromFile(f);
+				if(sscanf(text_buffer, "%lf", &real) != 1)
+					ATerror("CMD_REAL: not a real: %s\n", text_buffer);
+				t = (ATerm)ATmakeReal(real);
+
+				/*}}}  */
+				break;
+
+			case CMD_LIST:
+				/*{{{  Handle LIST command */
+
+				readIntFromFile(&len, f);
+				list = ATempty;
+        i = len;
+
+        for(--i; i>=0; i--)
+					list = ATinsert(list, arg_stack[arg_stack_depth-i-1]);
+
+				t = (ATerm)list;
+				arg_stack_depth -= len;
+
+				/*}}}  */
+				break;
+
+			case CMD_PLAC:
+				/*{{{  Handle PLAC command */
+
+			  t = (ATerm)ATmakePlaceholder(arg_stack[--arg_stack_depth]);
+				arg_stack[arg_stack_depth] = NULL;
+
+				/*}}}  */
+				break;
+
+			case CMD_BLOB:
+			  /*{{{  Handle BLOB command */
+
+			  len = readStringFromFile(f);
+				data = (void *)malloc(len);
+				if(!data)
+				  ATerror("cannot allocate blob of size %d\n", len);
+				memcpy(data, text_buffer, len);
+				t = (ATerm)ATmakeBlob(len, data);
+
+				/*}}}  */
+				break;
+
+			case CMD_SYM:
+				/*{{{  Handle SYM command */
+
+			  readIntFromFile(&value[0], f);
+				len = readStringFromFile(f);
+				sym = ATmakeSymbol(text_buffer, value[0], ATfalse);
+				sym_appl  = (ATerm)ATmakeApplArray(sym, empty_args);
+				idx = (ATerm)ATmakeInt(sym_stack_depth++);
+				ATtablePut(sym_stack, idx, sym_appl);
+
+				/*}}}  */
+				break;
+
+			case CMD_QSYM:
+			  /*{{{  Handle QSYM command */
+
+			  readIntFromFile(&value[0], f);
+				len = readStringFromFile(f);
+				sym = ATmakeSymbol(text_buffer, value[0], ATtrue);
+				sym_appl  = (ATerm)ATmakeApplArray(sym, empty_args);
+				idx = (ATerm)ATmakeInt(sym_stack_depth++);
+				ATtablePut(sym_stack, idx, sym_appl);
+
+				/*}}}  */
+				break;
+
+			case CMD_ANNO:
+			  /*{{{  Handle ANNO command */
+
+			  t = arg_stack[--arg_stack_depth];
+				annos = arg_stack[--arg_stack_depth];
+				t = AT_setAnnotations(t, annos);
+
+				/*}}}  */
+				break;
+
+			default:
+				if (cmd < 10)
+					ATerror("readFromBinaryFile: illegal BAF!\n");
+				/*{{{  Handle PUSH command */
+
+				idx = (ATerm)ATmakeInt(term_stack_depth - (cmd - 10));
+				t = ATtableGet(term_stack, idx);
+				if(!t)
+				  ATerror("element %t not on stack.\n", idx);
+				arg_stack[arg_stack_depth++] = t;
+				t = NULL;
+
+				/*}}}  */
+				break;
+		}
+		if(t) {
+			idx = (ATerm)ATmakeInt(term_stack_depth++);
+			ATtablePut(term_stack, idx, t);
+		}
+	}
+	idx = (ATerm)ATmakeInt(term_stack_depth-1);
+	return ATtableGet(term_stack, idx);
+}
+
+/*}}}  */
+/*{{{  ATerm ATreadFromBinaryFile(FILE *f) */
+
 ATerm
 ATreadFromBinaryFile(FILE *f)
 {
-	return NULL;
+	ATerm t;
+
+	/* Initialize stacks */
+	term_stack_depth = 0;
+	term_stack = ATtableCreate( 1024, 75 );
+
+	sym_stack_depth = 0;
+	sym_stack = ATtableCreate(512, 75);
+
+	arg_stack_depth = 0;
+
+	t = readFromBinaryFile(f);
+
+	/* Destroy stacks */
+	ATtableDestroy(sym_stack);
+	ATtableDestroy(term_stack);
+
+	return t;
 }
+
+/*}}}  */
+/*{{{  ATbool AT_interpretBaf(FILE *in, FILE *out) */
 
 ATbool
 AT_interpretBaf(FILE *in, FILE *out)
 {
-	unsigned int value[16];
+	unsigned int value[4];
 	int len;
 	double real;
 
 	while (!feof(in))
-	{
+	{	
 		if (readIntFromFile(&value[0], in) < 0)
 			break;
 
@@ -506,7 +805,7 @@ AT_interpretBaf(FILE *in, FILE *out)
 			case CMD_REAL:
 				len = readStringFromFile(in);
 				if (sscanf(text_buffer, "%lf", &real) != 1)
-					ATerror("CMD_REAL: no real: %s!\n", text_buffer);
+					ATerror("CMD_REAL: not a real: %s!\n", text_buffer);
 				ATfprintf(out, "CMD_REAL : %f\n", real);
 			break;
 
@@ -530,6 +829,12 @@ AT_interpretBaf(FILE *in, FILE *out)
 				ATfprintf(out, "CMD_SYM  : %d %s\n", value[1], text_buffer);
 			break;
 
+			case CMD_QSYM:
+				readIntFromFile(&value[1], in);
+				len = readStringFromFile(in);
+				ATfprintf(out, "CMD_QSYM: %d \"%s\"\n", value[1], text_buffer);
+			break;
+
 			case CMD_ANNO:
 				ATfprintf(out, "CMD_ANNO\n");
 			break;
@@ -545,3 +850,5 @@ AT_interpretBaf(FILE *in, FILE *out)
 
 	return ATtrue;
 }
+
+/*}}}  */
