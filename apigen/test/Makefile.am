@@ -49,7 +49,7 @@ CLEANFILES		= ${check_PROGRAMS} ${check_LIBRARIES} \
 
 EXTRA_DIST = rolodex.adt list.adt list.pro peano.adt builtins.adt \
              PeanoTest.java ListTest.java  RoloTest.java rolodex.trm\
-	     Replace.java GenericTraversal.java
+	     Replace.java GenericTraversal.java BuiltinsTest.java
 
 # Below the generation of Java and C API's:
 rolodex.c rolodex.h: rolodex.adt
