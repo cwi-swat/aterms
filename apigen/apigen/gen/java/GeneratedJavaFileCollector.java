@@ -15,7 +15,7 @@ public class GeneratedJavaFileCollector implements GenerationObserver {
 
 	public void fileCreated(String directory, String fileName, String extension) {
 		if (extension.equals(".java")) {
-			generatedFiles.add(directory + File.separatorChar + extension);
+			generatedFiles.add(directory + File.separatorChar + fileName + extension);
 		}
 	}
 
