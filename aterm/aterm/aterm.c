@@ -242,8 +242,9 @@ ATunprotect(ATerm * term)
     {
 			if (at_protected[lcv] == term)
 				{
+					at_protected--;
 					at_protected[lcv] = at_protected[at_nrprotected];
-					at_protected[at_nrprotected--] = NULL;
+					at_protected[at_nrprotected] = NULL;
 					break;
 				}
     }
@@ -297,11 +298,12 @@ void ATunprotectArray(ATerm *start)
 	 */
 	for (lcv = 0; lcv < at_nrprotected_arrays; ++lcv) {
 		if (at_protected_arrays[lcv].start == start) {
+			at_nrprotected_arrays--;
 			at_protected_arrays[lcv].start = 
 				at_protected_arrays[at_nrprotected_arrays].start;
 			at_protected_arrays[lcv].size = 
 				at_protected_arrays[at_nrprotected_arrays].size;
-			at_protected_arrays[at_nrprotected_arrays--].start = NULL;
+			at_protected_arrays[at_nrprotected_arrays].start = NULL;
 			break;
 		}
 	}

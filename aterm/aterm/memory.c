@@ -989,13 +989,15 @@ ATermList ATmakeList(int n, ...)
   int i;
   va_list args;
   ATermList l;
-  static ATerm *elems;
-  static int maxelems;
+  static ATerm *elems = 0;
+  static int maxelems = 0;
 
   /* See if we have enough space to store the elements */
   if(n > maxelems) {
-    free(elems);
-    elems = (ATerm *)malloc(n*sizeof(ATerm));
+	if(!elems)
+	  elems = (ATerm *)malloc(n*sizeof(ATerm));
+	else
+      elems = (ATerm *)realloc(elems, n*sizeof(ATerm));
     if(!elems)
       ATerror("ATmakeListn: cannot allocate space for %d terms.\n", n);
     maxelems = n;

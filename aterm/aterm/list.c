@@ -598,16 +598,16 @@ ATermTable ATtableCreate(int initial_size, int maxload)
   assert(initial_size > 0 && maxload > 0);
   table = (ATermTable)calloc(1, sizeof(struct ATermTable));
   if(!table)
-	ATerror("ATtableCreate: cannot allocate new ATermTable\n");
+		ATerror("ATtableCreate: cannot allocate new ATermTable\n");
 
   table->size = initial_size;
   table->free_slots = initial_size;
   table->max_load   = maxload;
   table->entries = (ATermList *)malloc(table->size*sizeof(ATermList));
   if(!table->entries)
-	ATerror("ATtableCreate: cannot allocate %d entries.\n", table->size);
+		ATerror("ATtableCreate: cannot allocate %d entries.\n", table->size);
   for(i=0; i<table->size; i++)
-	table->entries[i] = ATempty;
+		table->entries[i] = ATempty;
 
   ATprotectArray((ATerm *)table->entries, table->size);
 
@@ -651,28 +651,28 @@ void ATtablePut(ATermTable table, ATerm key, ATerm value)
   cur_load = 100*(table->size-table->free_slots)/table->size;
   if(cur_load > table->max_load) {
     /* Resize hashtable */
-	int i, old_size = table->size;
-	ATermList *old_entries = table->entries;
+		int i, old_size = table->size;
+		ATermList *old_entries = table->entries;
 
     table->size *= 2;
-	table->entries = calloc(table->size, sizeof(ATermList));
-	if(!table->entries)
-	  ATerror("ATtablePut: cannot re-alloc to %d entries.\n", table->size);
-	ATprotectArray((ATerm *)table->entries, table->size);
-	table->free_slots = table->size;
+		table->entries = calloc(table->size, sizeof(ATermList));
+		if(!table->entries)
+			ATerror("ATtablePut: cannot re-alloc to %d entries.\n", table->size);
+		ATprotectArray((ATerm *)table->entries, table->size);
+		table->free_slots = table->size;
 
-	for(i=0; i<old_size; i++) {
-	  ATermList list = old_entries[i];
-	  while(!ATisEmpty(list)) {
-		ATermList pair = (ATermList)ATgetFirst(list);
-		ATerm key = ATgetFirst(pair);
-		ATerm val = ATgetFirst(ATgetNext(pair));
-		ATtablePut(table, key, val);
-		list = ATgetNext(list);
-	  }
-	}
-	ATunprotectArray((ATerm *)old_entries);
-	free(old_entries);
+		for(i=0; i<old_size; i++) {
+			ATermList list = old_entries[i];
+			while(!ATisEmpty(list)) {
+				ATermList pair = (ATermList)ATgetFirst(list);
+				ATerm key = ATgetFirst(pair);
+				ATerm val = ATgetFirst(ATgetNext(pair));
+				ATtablePut(table, key, val);
+				list = ATgetNext(list);
+			}
+		}
+		ATunprotectArray((ATerm *)old_entries);
+		free(old_entries);
   }
 }
 
