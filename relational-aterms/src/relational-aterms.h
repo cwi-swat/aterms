@@ -1,6 +1,6 @@
 
-#ifndef __ATERM_RELATIONS__H
-#define __ATERM_RELATIONS__H 1
+#ifndef __RELATIONAL_ATERMS__H
+#define __RELATIONAL_ATERMS__H 1
 
 #include <bbtree.h>
 #include <aterm2.h>
