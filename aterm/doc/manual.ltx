@@ -263,7 +263,7 @@ The following commandline options can be passed to the \ATlib:
  \hline
 \end{tabular}
 
-%----[ PROTECTING ATERMS]----
+%----[ PROTECTING ATERMS ]----
 \subsection{Protecting global \aterms\ and arrays of \aterms}\label{prot}
 During a garbage collect, the \ATlib\ searches the stack and registers for
 \aterms. Therefore it finds all \aterms\ which were created locally in a
@@ -322,6 +322,29 @@ Although the \ATlib\ does not put any constraints on the names of \aterm-files,
 users are encouraged to use the extension {\tt .baf} for {\sc baf} files.
 This will avoid confusion between textual representations and binary ones.
 Textual representations could use the extension {\tt .trm}.
+
+\subsection{Shared Textual \aterm\ Format ({\sc taf})}\label{taf}
+In addition to the binary aterm format there is also a textual aterm format
+which supports maximal sharing but uses a much less complex algorithm than the
+one used to encode and decode {\sc baf} files. This results in files that 
+are somewhat larger than their baf counterparts, but are often (if the terms
+contain redundancy) significantly smaller than their unparsed form.
+
+{\sc taf} files always start with a '!' character to distinguish them
+from aterm formats.
+The format uses abbreviations to refer to previously written terms.
+An abbreviation consists of a hash character ('\#') followed by a number
+in encoded using the Base64 Alphabet (see RFC2045).
+
+Each term whose unparsed representation would take up more bytes
+than the textual representation of the next available abbreviation
+is assigned such an abbreviation \emph{after} it has been written.
+Subsequent occurences of this term are then written by emitting the
+abbreviation instead of the term itself.
+
+For example the term {\tt f(test,test)} is represented as {\tt !f(test,\#A)}
+in {\sc taf}, whereas {\tt f(a,a)} is respresented as {\tt !f(a,a)} because
+{\tt test} is longer than its abbreviation {\tt \#A}, but {\tt a} is not.
 
 %}}}
 %{{{ Level One Interface
@@ -465,6 +488,18 @@ arguments}
 	A convenience macro {\tt ATparse} is included in {\tt aterm1.h}.
 }
 
+\Function{ATreadFromBinaryString}{\ATerm}{const char *string, int size}
+{Read a \aterm\ from a string in {\sc baf} format.}
+\Describe{
+	This function decodes a {\sc baf} character string into an \aterm.
+}
+
+\Function{ATreadFromSharedString}{\ATerm}{const char *string, int size}
+{Read a \aterm\ from a string in {\sc taf} format.}
+\Describe{
+	This function decodes a {\sc taf} character string into an \aterm.
+}
+
 \Function{ATreadFromTextFile}{\ATerm}{FILE *file}
 {Read an \aterm\ from text file}
 \Describe{
@@ -477,21 +512,25 @@ arguments}
 	This function reads a binary file and builds an \aterm.
 }
 
+\Function{ATreadFromSharedTextFile}{\ATerm}{FILE *file}
+{Read an \aterm\ from a shared text file ({\sc taf})}
+\Describe{
+        This function reads a shared text file and buils an \aterm. 
+}
+
 \Function{ATreadFromFile}{\ATerm}{FILE *file}
 {Read an \aterm\ from binary or text file}
 \Describe{
 	This function reads an \aterm\ from a file. A test is performed
-	to see if the file is in {\sc baf}. If so, the binary term will
-	be read, otherwise the textual representation will be parsed.
+	to see if the file is in {\sc baf}, {\sc taf}, or plain text. 
 }
 
 \Function{ATreadFromNamedFile}{\ATerm}{char *filename}
 {Read an \aterm\ from named binary or text file}
 \Describe{
         This function reads an \aterm\ file {\tt filename}. A test is
-        performed to see if the file is in {\sc baf}. If so, the binary
-        term will be read, otherwise the textual representation will be
-        parsed. "-" is standard input's filename.
+        performed to see if the file is in {\sc baf}, {\sc taf}, or plain text.
+        "-" is standard input's filename.
 }
 
 \Macro{ATparse}{\ATerm}{const char *str}
@@ -499,6 +538,8 @@ arguments}
 \Describe{
 	This macro is simply a shortcut to {\tt ATreadFromString(str)}.
 }
+
+
 
 \Macro{ATgetType}{int}{\ATerm\ term}
 {Return the type of {\tt term}}
@@ -522,6 +563,14 @@ are completely equal, inclusive any annotations they might have!}
 \Describe{
 	This function writes \aterm\ {\tt t} to the file {\tt f} in textual format.
 	This term can later be read again by {\tt ATreadFromTextFile}.
+}
+
+\Function{ATwriteToSharedTextFile}{long}{\aterm\ t, FILE *f}
+{Writes term {\tt t} to file {\tt f} in shared Textual ATerm Format ({\sc taf})}
+\Describe{
+	This function writes \aterm\ {\tt t} to the file {\tt f} in {\sc taf},
+	and returns the number of characters written.
+	This term can later be read again by {\tt ATreadFromSharedTextFile}.
 }
 
 \Function{ATwriteToBinaryFile}{ATbool}{\aterm\ t, FILE *F}
@@ -550,6 +599,24 @@ are completely equal, inclusive any annotations they might have!}
 \Describe{
 	Writes term {\tt t} to an internal string buffer. The start of this
 	buffer is returned. Note that the contents of this buffer are volatile
+	and may be overwritten by any call to the \ATlib.
+}
+
+\Function{ATwriteToSharedString}{char *}{\aterm\ t, int *len}
+{Writes term {\tt t} to a shared text string in {\sc taf}}
+\Describe{
+	Writes term {\tt t} to an internal string buffer in {\sc taf}. 
+        The start of this buffer is returned, and the length of the resulting string
+        is stored in len. Note that the contents of this buffer are volatile
+	and may be overwritten by any call to the \ATlib.
+}
+
+\Function{ATwriteToBinaryString}{char *}{\aterm\ t, int *len}
+{Writes term {\tt t} to a shared text string in {\sc baf}}
+\Describe{
+	Writes term {\tt t} to an internal string buffer in {\sc baf}. 
+        The start of this buffer is returned, and the length of the resulting string
+        is stored in len. Note that the contents of this buffer are volatile
 	and may be overwritten by any call to the \ATlib.
 }
 
@@ -1121,7 +1188,6 @@ found (if the element is present at all). For a more efficient
 	the (unmodified) dictionary itself is returned.
 }
 
-% Veranderingen vanaf hier. JFG
 \subsection{Tables}\label{tables} The dictionaries described in
 Section~\ref{dicts} are in essence nothing more than linked lists, which
 makes them less suitable for large \aterm-to-\aterm\ mappings. To this end,
@@ -1225,8 +1291,9 @@ strongly connected. The implementation is quite efficient both
 in time and space, only requiring 12 bytes for each entry in
 an indexed set, if the hash table, which forms it core, is half full. 
 
-\Function{ATindexedSetCreate}{ATermIndexedSet}{long initial\_size, 
-	int max\_load\_pct}
+\Function{ATindexedSetCreate}{ATermIndexedSet}
+{long initial\_size, int max\_load\_pct}
+{Create a new {\tt ATermIndexedSet}}
 \Describe{This function creates an {\tt ATermIndexedSet} with
 approximately the size {\tt initial\_size}, where it guarantees that
 the internal hash table, will be filled up to 
@@ -1235,64 +1302,68 @@ needed, the size of the hash table is dynamically extended to hold the
 entries inserted into it. If 
 extension of the hash table fails due to lack of memory. 
 it is attempted to fill the hash table up to 100\%. 
-All keys entered
+All elements entered
 into the indexed set are automatically protected. Note that for
 each {\tt ATindexedSetCreate} an {\tt ATindexedSetDestroy} must be 
-carried out to free memory, and to allow inserted keys to be released by
+carried out to free memory, and to allow inserted elements to be released by
 the automatic garbage system of the {\tt ATerm} library. Carrying out
 a {\tt ATindexedSetReset} does not free the memory, but allows inserted
-keys to be garbage collected.
+elements to be garbage collected.
 }
 
 \Function{ATindexedSetDestroy}{void}{ATermIndexedSet set}
-\Describe{This function releases all memory occupied by the 
+{This function releases all memory occupied by the 
 {\tt ATermIndexedSet}.
 }
 
 \Function{ATindexedSetReset}{void}{ATermIndexedSet set}
-\Describe{This function clears the hash table in the
-set, but does not release the memory. Using {\tt ATindexedSetReset}
-above {\tt ATindexedSetDestroy} is preferable when iteratively
+{Clear the hash table in the set.}
+\Describe{
+This function clears the hash table in the set, but does not release the memory.
+Using {\tt ATindexedSetReset}
+instead of {\tt ATindexedSetDestroy} is preferable when
 indexed sets of approximately the same size are being used.
 }
 
-\Function{ATindexedSetPut}{long}{ATermIndexedSet set, ATerm key, ATbool *new}
-\Describe{This function enters {\tt key} into the set. If {\tt key} was
-already in the set the previously assigned index of {\tt key}
-is returned, and {\tt new} is set to false. If {\tt key} did not
+\Function{ATindexedSetPut}{long}{ATermIndexedSet set, ATerm elem, ATbool *new}
+{Enter {\tt elem} into the set.}
+\Describe{This functions enters {\tt elem} into the set. If {\tt elem} was
+already in the set the previously assigned index of {\tt elem}
+is returned, and {\tt new} is set to false. If {\tt elem} did not
 yet occur in {\tt set} a new number is assigned, and {\tt new} is
 set to true. This number can either be the number of an element
 that has been removed, or, if such a number is not available, 
-the lowest non used number is assigned to {\tt key} and returned. 
+the lowest non used number is assigned to {\tt elem} and returned. 
 The lowest number that is used is $0$.
 }
 
-\Function{ATindexedSetGet}{long}{ATermIndexedSet set, ATerm key}
-\Describe{The index assigned to {\tt key} is returned, except
-when {\tt key} is not in the set, in which case the return value
+\Function{ATindexedSetGetIndex}{long}{ATermIndexedSet set, ATerm elem}
+{Find the index of {\tt elem} in {\tt set}}
+\Describe{The index assigned to {\tt elem} is returned, except
+when {\tt elem} is not in the set, in which case the return value
 is a negative number.
 }
 
-\Function{ATindexedSetRemove}{void}{ATermIndexedSet set, ATerm key}
-\Describe{The {\tt key} is removed from the indexed set, and if a number
-was assigned to {\tt key},
-it is freed to be reassigned to a key, that may be put into the set at
+\Function{ATindexedSetGetElem}{ATerm}{ATermIndexedSet set, long index}
+{Retrieve the element at {\tt index} in {\tt set}}
+\Describe{This function must be invoked with a valid index and
+it returns the {\tt elem} assigned to this index. If it is invoked
+with an invalid index, effects are not predictable.}
+
+\Function{ATindexedSetRemove}{void}{ATermIndexedSet set, ATerm elem}
+{Remove {\tt elem} from {\tt set}}
+\Describe{The {\tt elem} is removed from the indexed set, and if a number
+was assigned to {\tt elem},
+it is freed to be reassigned to an element, that may be put into the set at
 some later instance.
 }
 
-\Function{ATindexedSetKeys}{ATermList}{ATermIndexedSet set}
-\Describe{A list with all valid keys stored in the 
-indexed set is returned. The list is ordered from key 0 onwards.
+\Function{ATindexedSetElements}{ATermList}{ATermIndexedSet set}
+{Retrieve all elements in {\tt set}}
+\Describe{A list with all valid elements stored in the 
+indexed set is returned. The list is ordered from element with index 0 onwards.
 }
 
-\Function{ATgetKeyAtIndex}{ATerm}{ATermIndexedSet set, long index}
-\Describe{This function must be invoked with a valid index and
-it returns the {\tt key} assigned to this index. If it is invoked
-with an invalid index, effects are not predictable.
-
-}
-
-% Veranderingen tot hier JFG
 
 %}}}
 %{{{ Utilities
@@ -1303,38 +1374,31 @@ utilities are automatically built when the \ATlib\ is compiled and
 installed.
 
 \subsection{\ATerm-conversion: {\tt baffle}}\label{util-baffle}
-This utility can be used to convert {\sc baf} to text and vice versa.
-It also offers the option of interpreting a {\sc baf}-file. This will show
-the commands which are executed to (re-)build the \aterm. This option was
-created to aid debugging {\sc baf}-files and is probably of little use to
-the regular \ATlib\ user.
+This utility can be used to convert between the different \aterm\ formats:
+{\tt text}, {\tt baf}, and {\tt taf}.
+
 \smallskip\noindent
 \begin{small}
 \begin{verbatim}
-Usage: baffle [-i <input>] [-o <output> | -c] [-v] [-rb | -rt] [-wb | -wt]
+Usage: baffle [-i <input>] [-o <output> | -c] [-v] [-rb | -rt | -rs] [-wb | -wt | -rs]
 
     -i <input>    - Read input from file <input>        (Default: stdin)
     -o <output>   - Write output to file <output>       (Default: stdout)
     -c            - Check validity of input-term
     -v            - Print version information
     -h            - Display help
-    -ri           - Write interpretation of BAF-input
-    -rb, -rt      - Choose between BAF and TEXT input   (Default: -rb)
-    -wb, -wt      - Choose between BAF and TEXT output  (Default: -wb)
+    -rb, -rt, -rs - Choose between BAF, TEXT, and TAF input (Default: autodetect)
+    -wb, -wt      - Choose between BAF, TEXT and TAF output (Default: -wb)
 \end{verbatim}
 \end{small}
 
-\subsubsection{\tt trm2baf}
-A small script called {\tt trm2baf} is included which can be used to
-connect a process producing textual output and a process which expects {\sc
-baf} input. It just sets up {\tt baffle} with the appropriate switches and
-redirects {\tt stdin} and {\tt stdout} accordingly.
 
-\subsubsection{\tt baf2trm}
-A small script called {\tt baf2trm} is included which can be used to
-connect a process producing {\sc baf} output and a process which expects
-textual input. It just sets up {\tt baffle} with the appropriate switches
-and redirects {\tt stdin} and {\tt stdout} accordingly.
+Some small scripts are included which can be used to
+connect a process producing one \aterm\ format to a process which expects 
+another. These scripts just set up {\tt baffle} with the appropriate switches and
+redirect {\tt stdin} and {\tt stdout} accordingly. These scripts are appropriately
+called: {\tt trm2baf}, {\tt baf2trm}, {\tt trm2taf}, {\tt taf2trm}, {\tt baf2taf},
+and {\tt taf2baf}.
 
 \subsection{Calculating an \ATerm's size: {\tt termsize}}
 \label{util-termsize}
