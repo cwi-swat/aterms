@@ -2,8 +2,8 @@ package
 identification
   name=__PACKAGE__
   version=__VERSION__
-  location=http://www.cwi.nl/projects/MetaEnv/aterm-xml
-  info=http://www.cwi.nl/projects/MetaEnv/aterm-xml
+  location=http://www.cwi.nl/projects/MetaEnv/__PACKAGE__
+  info=http://www.cwi.nl/projects/MetaEnv/__PACKAGE__
   description='A package containing aterm2xml and xml2aterm'
   keywords=ATerm, XML, translation
 
