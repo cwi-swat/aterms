@@ -610,16 +610,16 @@ void generate_code(FILE *f, ATermList tifs, ATermList original,
 
 static void usage(char *prg)
 {
-	fprintf(stderr, "usage: %s -tool <toolname> [options] <file>.tifs\n", prg);
-	fprintf(stderr, "options:\n");
-	fprintf(stderr, "    -handler <handler>      "
-					"specify default handler name\n");
-	fprintf(stderr, "    -checker <checker>      "
-					"specify default signature checker name\n");
-	fprintf(stderr, "    -output <basename>      "
-					"specify which .h and .c files to generate\n");
-
-	exit(1);
+  fprintf(stderr, "usage: %s -tool <toolname> [options] <file>.tifs\n", prg);
+  fprintf(stderr, "options:\n");
+  fprintf(stderr, "    -handler <handler>      "
+	  "specify default handler name\n");
+  fprintf(stderr, "    -checker <checker>      "
+	  "specify default signature checker name\n");
+  fprintf(stderr, "    -output <basename>      "
+	  "specify which .h and .c files to generate\n");
+  
+  exit(0);
 }
 
 /*}}}  */
