@@ -1,5 +1,8 @@
 $Id$
 
+2001/03/26 ({markvdb,olivierp}@cwi.nl)
+ * Fixed a bug in lists with annotations.
+
 2001/03/26 ({jong,markvdb,olivierp}@cwi.nl)
  * Version 1.5.4
  * Fixed bug in ATisEmpty: the annotated empty list was not considered empty!
