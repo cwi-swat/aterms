@@ -58,9 +58,9 @@
   $Revision$
 }
 \author{M.G.J. van den Brand$^{^1}$\\
-        H.A. de Jong$^{^2}$\\
+        H.A. de Jong$^{^1}$\\
         P. Klint$^{1,2}$\\
-        P.A. Olivier$^{^2}$\\
+        P.A. Olivier$^{^1}$\\
         \vspace{.1cm}\\
         {\small\sl $^1$CWI,
         Department of Software Engineering\vspace{-.2cm}}\\
@@ -121,6 +121,12 @@ another solution is to use OMG's Interface Definition Language (part
 of the Common Object Broker Architecture~\cite{OMG-IDL}) to define data
 structures in a language-neutral way. Specific language-bindings provide
 the mapping from IDL data structures to language-specific data structures.
+Currently XML~\cite{XML1.0} is a very popular format to exchange information
+between applications. More and more tool vendors are switching to
+XML. One of the biggest drawbacks of XML is the restrict form of
+sharing and the fact that XML terms can only be exchanged in plain
+text format. The latter is quite often solved by using
+compression tools like {\tt (g)zip}.
 \end{sloppypar}
 
 All these solutions have their merits but do not really qualify
@@ -766,7 +772,8 @@ with type {\tt LIST}, which represents the list of annotations.
 
 %{{{ The Binary ATerm Format (BAF)
 
-\subsection*{\ATerm\ Exchange: the Binary \ATerm\ Format}
+\subsection*{\ATerm\ Exchange: the Binary \ATerm\ Format and
+Shared Textual \ATerm\ Format}
 
 The efficient exchange of \ATerms\ 
 between tools is very important. The simplest form of exchange 
@@ -782,6 +789,7 @@ concisely.  A raw memory dump cannot be used, because addresses in the
 address space of one process have no meaning in the address space of
 another process.
 
+\paragraph{Binary \ATerm\ Format}
 In order to address these problems, we have developed \baf, the
 {\bf B}inary {\bf A}Term {\bf F}ormat.
 Instead of writing addresses, we assign a unique number (index)
@@ -802,6 +810,24 @@ index of the argument is first written itself before continuing with
 the next argument.  In this way, every subterm is written exactly
 once. Every time a parent term wishes to refer to a subterm, it just
 uses the subterm's index.
+
+\paragraph{Shared Textual \ATerm\ Format}
+In addition to the binary aterm format there is also a textual aterm format
+which supports maximal sharing but uses a much less complex algorithm than the
+one used to encode and decode \baf\ files.
+This results in files that
+are somewhat larger than their baf counterparts, but are often (if the terms
+contain redundancy) significantly smaller than their unparsed form.
+
+The format uses abbreviations to refer to previously written terms.
+An abbreviation consists of a hash character ('\#') followed by a number
+in encoded using the Base64 Alphabet.
+
+Each term whose unparsed representation would take up more bytes
+than the textual representation of the next available abbreviation
+is assigned such an abbreviation \emph{after} it has been written.
+Subsequent occurences of this term are then written by emitting the
+abbreviation instead of the term itself. 
 
 %}}}
 % {{{  \section{Applications}
@@ -837,7 +863,11 @@ is necessary to share as many states as possible.
 \item The Stratego compiler \cite{VBT98}.
 
 \item CasFix~\cite{BS00}, an abstract syntax tree representation for 
-Casl specifications~\cite{casl1}.
+the algebraic specification language Casl~\cite{casl1}.
+
+\item Efix~\cite{BR01}, an abstract syntax tree representation for
+the specification language ELAN~\cite{BKKMR98}.
+
 \end{itemize}
 
 % }}}
@@ -868,7 +898,7 @@ access functions based on the\emph{ match-and-make} paradigm.
 \paragraph{Intermediate representations in compiler frameworks}
 There exist numerous frameworks for compilers and programming
 environments that provide facilities for representing intermediate
-data. Examples are Centaur's VTP~\cite{BCDIKLP89}, Eli~\cite{Eli92},
+data. Examples are Centaur's VTP~\cite{BCDILP89}, Eli~\cite{Eli92},
 Cocktail's Ast~\cite{Ast92}, SUIF~\cite{Suif94}, ASDL~\cite{Wan97}, and
 Montana~\cite{Karasick98}. These systems either provide an explicit
 intermediate format (Eli, Ast, SUIF) or they provide a programmable
@@ -907,6 +937,14 @@ records, but is does present a major obstacle in our case when we need
 to exchange huge terms between tools. We are currently considering
 whether some link between \ATerms\ and XML may be advantageous.
 
+Another main difference is the use of DTD (document type definition)
+in XML, which allows the definition of meta-structure of the 
+represented data.
+This can be compared with an (abstract) syntax definition when
+representing syntax trees. The content of the XML document
+can be validated using the corresponding DTD.
+The \aterm\ format does not provide an explicit DTD mechanism.
+This could be a useful extension in the future.
 
 \subsection*{Conclusions}
 
