@@ -30,6 +30,16 @@ public class JavaGen
   };
 
   //}}}
+  //{{{ private final static String[][] RESERVED_TYPES =
+
+  private final static String[][] RESERVED_TYPES =
+  { { "int",  "int"    },
+    { "real", "double" },
+    { "str",  "String" }
+  };
+
+  //}}}
+
   public static boolean verbose = false;
 
   private aterm.ATermFactory factory;
@@ -45,6 +55,8 @@ public class JavaGen
   private Map    specialChars;
   private char   last_special_char;
   private String last_special_char_word;
+
+  private Map    reservedTypes;
 
   //{{{ private static void usage()
 
@@ -123,10 +135,15 @@ public class JavaGen
     this.pkg	 = pkg;
     this.imports = imports;
     specialChars = new HashMap();
+    reservedTypes = new HashMap();
 
     for (int i=0; i<SPECIAL_CHAR_WORDS.length; i++) {
       String word = SPECIAL_CHAR_WORDS[i];
       specialChars.put(new Character(word.charAt(0)), word.substring(1));
+    }
+
+    for (int i=0; i<RESERVED_TYPES.length; i++) {
+      reservedTypes.put(RESERVED_TYPES[i][0], RESERVED_TYPES[i][1]);
     }
 
     factory = new PureFactory();
@@ -278,7 +295,7 @@ public class JavaGen
     while (iter.hasNext()) {
       Alternative alt = (Alternative)iter.next();
       println("      pat" + buildId(alt.getId()) + " = term.getFactory().parse(\""
-	      + escapeQuotes(alt.getPattern().toString()) + "\");");
+	      + escapeQuotes(alt.buildMatchPattern().toString()) + "\");");
     }
   }
 
@@ -293,8 +310,8 @@ public class JavaGen
     Iterator fields = type.altFieldIterator(alt.getId());
     while (fields.hasNext()) {
       Field field = (Field)fields.next();
-      String field_name = buildId(field.getId());
-      String field_type = buildId(field.getType());
+      String field_name = buildFieldId(field.getId());
+      String field_type = buildTypeId(field.getType());
       buf.append(field_type + " " + field_name);
       if (fields.hasNext()) {
 	buf.append(", ");
@@ -314,7 +331,7 @@ public class JavaGen
     Iterator fields = type.altFieldIterator(alt.getId());
     while (fields.hasNext()) {
       Field field = (Field)fields.next();
-      String field_name = buildId(field.getId());
+      String field_name = buildFieldId(field.getId());
       buf.append(field_name);
       if (fields.hasNext()) {
 	buf.append(", ");
@@ -373,10 +390,10 @@ public class JavaGen
 
   private void genToTerm()
   {
-    println("  abstract public aterm.ATerm toTerm(aterm.ATermFactory factory);");
-    println();
+    String decl = "abstract public aterm.ATerm toTerm(aterm.ATermFactory factory)";
+    println("  " + decl + ";");
 
-    String decl = "public aterm.ATerm toTerm()";
+    decl = "public aterm.ATerm toTerm()";
     printFoldOpen(decl);
     println("  " + decl);
     println("  {");
@@ -384,6 +401,17 @@ public class JavaGen
     println("  }");
     printFoldClose();
     println();
+
+    /*
+    decl = "aterm.ATerm getTerm()";
+    printFoldOpen(decl);
+    println("  " + decl);
+    println("  {");
+    println("    return term;");
+    println("  }");
+    printFoldClose();
+    println();
+    */
   }
 
   //}}}
@@ -415,7 +443,7 @@ public class JavaGen
     while (fields.hasNext()) {
       Field field = (Field)fields.next();
       String methodName = buildId("get-" + field.getId());
-      String methodType = buildId(field.getType());
+      String methodType = buildTypeId(field.getType());
       println("  abstract public " + methodType + " " + methodName + "();");
     }
     printFoldClose();
@@ -425,8 +453,8 @@ public class JavaGen
     while (fields.hasNext()) {
       Field field = (Field)fields.next();
       String methodName = buildId("set-" + field.getId());
-      String argName = buildId(field.getId());
-      String argType = buildId(field.getType());
+      String argName = buildFieldId(field.getId());
+      String argType = buildTypeId(field.getType());
       println("  abstract public " + class_name + " " + methodName
 	      + "(" + argType + " " + argName +");");
     }
@@ -465,8 +493,8 @@ public class JavaGen
     Iterator iter = type.altFieldIterator(alt.getId());
     while (iter.hasNext()) {
       Field field = (Field)iter.next();
-      String field_name = buildId(field.getId());
-      String field_type = buildId(field.getType());
+      String field_name = buildFieldId(field.getId());
+      String field_type = buildTypeId(field.getType());
 
       println("  private " + field_type + " " + field_name + ";");
     }
@@ -490,9 +518,9 @@ public class JavaGen
     Iterator fields = type.altFieldIterator(alt.getId());
     while (fields.hasNext()) {
       Field field = (Field)fields.next();
-      String field_name = buildId(field.getId());
-      String field_type = buildId(field.getType());
-      println("    " + field_name + " = (" + field_type + ")iter.next();");
+      String field_name = buildFieldId(field.getId());
+      String field_type = buildTypeId(field.getType());
+      println("    this." + field_name + " = (" + field_type + ")iter.next();");
     }
     println("    if (iter.hasNext()) {");
     println("      throw new RuntimeException(\"too many elements?\");");
@@ -512,7 +540,7 @@ public class JavaGen
     fields = type.altFieldIterator(alt.getId());
     while (fields.hasNext()) {
       Field field = (Field)fields.next();
-      String field_name = buildId(field.getId());
+      String field_name = buildFieldId(field.getId());
       println("    this." + field_name + " = " + field_name + ";");
     }
 
@@ -530,25 +558,25 @@ public class JavaGen
     printFoldOpen(decl);
     println("  " + decl);
     println("  {");
-    println("    if (term == null) {");
+    println("    if (super.term == null) {");
     println("      List args = new LinkedList();");
     Iterator iter = type.altFieldIterator(alt.getId());
     while (iter.hasNext()) {
       Field field = (Field)iter.next();
-      String field_name = buildId(field.getId());
-      println("      args.add(" + field_name + ");");
+      String field_name = buildFieldId(field.getId());
+      println("      args.add(this." + field_name + ");");
     }
     println();
     String alt_id = buildId(alt.getId());
-    println("      term = factory.make(pat" + alt_id + ", args);"); 
-    println("      return term;");
+    println("      super.term = factory.make(pat" + alt_id + ", args);"); 
+    println("      return super.term;");
     println("    }");
     println();
 
     println("    if (term.getFactory() == factory || factory == null) {");
-    println("      return term;");
+    println("      return super.term;");
     println("    } else {");
-    println("      return factory.importTerm(term);");
+    println("      return factory.importTerm(super.term);");
     println("    }");
     println("  }");
     printFoldClose();
@@ -564,8 +592,7 @@ public class JavaGen
     Iterator alts = type.alternativeIterator();
     while (alts.hasNext()) {
       Alternative curAlt = (Alternative)alts.next();
-      String altId = buildId(curAlt.getId());
-      String decl = "public boolean is" + altId + "()";
+      String decl = "public boolean " + buildId("is-" + curAlt.getId()) + "()";
       printFoldOpen(decl);
       println("  " + decl);
       println("  {");
@@ -622,9 +649,9 @@ public class JavaGen
     Iterator fields = type.fieldIterator();
     while (fields.hasNext()) {
       Field field = (Field)fields.next();
-      String fieldId = buildId(field.getId());
+      String fieldId = buildFieldId(field.getId());
       String methodName = buildId("get-" + field.getId());
-      String methodType = buildId(field.getType());
+      String methodType = buildTypeId(field.getType());
       String decl = "public " + methodType + " " + methodName + "()";
       printFoldOpen(decl);
       println("  " + decl);
@@ -655,8 +682,8 @@ public class JavaGen
     while (fields.hasNext()) {
       Field field = (Field)fields.next();
       String methodName = buildId("set-" + field.getId());
-      String argType = buildId(field.getType());
-      String argName = buildId(field.getId());
+      String argType = buildTypeId(field.getType());
+      String argName = buildFieldId(field.getId());
       String decl = "public " + class_name + " " + methodName
 	+ "(" + argType + " " + argName + ")";
       printFoldOpen(decl);
@@ -684,6 +711,14 @@ public class JavaGen
 
   private String buildClassName(Type type)
   {
+    String typeId = type.getId();
+
+    String nativeType = (String)reservedTypes.get(typeId);
+
+    if (nativeType != null) {
+      return nativeType;
+    }
+
     return buildId(type.getId());
   }
 
@@ -693,6 +728,28 @@ public class JavaGen
   private String buildAltClassName(Type type, Alternative alt)
   {
     return buildId(type.getId()) + "_" + buildId(alt.getId());
+  }
+
+  //}}}
+  //{{{ private String buildTypeId(String typeId)
+
+  private String buildTypeId(String typeId)
+  {
+    String nativeType = (String)reservedTypes.get(typeId);
+
+    if (nativeType != null) {
+      return nativeType;
+    }
+
+    return buildId(typeId);
+  }
+
+  //}}}
+  //{{{ private String buildTypeId(String typeId)
+
+  private String buildFieldId(String fieldId)
+  {
+    return "_" + buildId(fieldId);
   }
 
   //}}}
@@ -750,6 +807,15 @@ public class JavaGen
     last_special_char_word = (String)specialChars.get(new Character(c));
 
     return last_special_char_word;
+  }
+
+  //}}}
+
+  //{{{ private boolean isReservedType(ATerm t)
+
+  private boolean isReservedType(ATerm t)
+  {
+    return reservedTypes.containsKey(t.toString());
   }
 
   //}}}
