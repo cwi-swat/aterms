@@ -222,7 +222,9 @@ AT_vmakeTerm(ATerm pat, va_list *args)
 				}
 				else
 					list = ATmakeList1(AT_vmakeTerm(term, args));
-			}
+			} else
+				list = ATmakeList1(AT_vmakeTerm(term, args));
+
 			while (!ATisEmpty(arglist))
 			{
 				 list = ATinsert(list, ATgetFirst(arglist));
