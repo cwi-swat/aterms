@@ -10,7 +10,9 @@
 \newcommand{\ATlib}{ATerm Library}
 \newcommand{\ATerm}{ATerm}
 \newcommand{\ATerms}{ATerms}
-\newcommand{\Symbol}{Symbol}
+
+%% notion of Symbol was changed to AFun, which matches specification.
+\newcommand{\Symbol}{AFun}	
 
 \newcommand{\ATtrue}{\mbox{\tt ATtrue}}
 \newcommand{\ATfalse}{\mbox{\tt ATfalse}}
@@ -113,7 +115,7 @@ which cannot be detected in this way, it is the user's responsibility to
 protect these references from premature erasure. Section~\ref{prot}
 explains how to protect global \aterm\ variables and arrays of \aterms.
 
-The \ATlib\ is capabable of storing \aterms\ in a compact, binary notation.
+The \ATlib\ is capable of storing \aterms\ in a compact, binary notation.
 Section~\ref{baf} describes this binary \aterm\ format.
 
 %----[ INITIALISING ATERM LIBRARY ]----
@@ -136,8 +138,11 @@ The following commandline options can be passed to the \ATlib:
  {\tt -termtable <table\_class>}  & Start with termtable of
                                     $2^\textrm{table\_class}$ entries     \\
  {\tt -hashinfo} & write hashtable statistics to {\tt hashing.stats}      \\
+				 & after execution \\
  {\tt -print-gc-time} & print timing information about garbage collector  \\
+					  & to {\tt stderr} after execution \\
  {\tt -print-gc-info} & print verbose information about garbage collector \\
+					  & to {\tt stderr} after execution \\
  {\tt -silent} & Do not print status and version information
  \\
  \hline
@@ -151,25 +156,53 @@ function (\emph{automatic} variables). All \aterm\ variables which were
 \emph{not} created locally, must be protected by a call to \ATprotect. For
 entire arrays of \aterms, \ATprotectArray\ should be used. Note that not
 the \aterm\ variable itself, but its address is passed to \ATprotect. 
+Users of the level two interface who create a function application by
+building the function symbol (\Symbol) can also keep global references to
+them. These references should be protected through a call to {\tt
+ATprotect\Symbol}.
 
 The following code demonstrates the protection of a global \aterm\ and a
 global array of \aterms.
 
 \example{prot.c}
 
+\subsection{Unprotecting protected \aterms}\label{unprot}
+When the lifetime of an \aterm\ that was protected as described in
+Section~\ref{prot} has expired, it should be unprotected to free any
+internal resources it holds. Note that these resources are not released
+immediately. Instead, they are no longer marked as protected to the garbage
+collector and as such may be freed at the next garbage collection.  The
+following table shows which function should be used to unprotect the
+respective \aterms.
+
+\smallskip
+\begin{center}
+\begin{tabular}{|l|l|}
+\hline
+	{\tt ATprotect}			&	{\tt ATunprotect}
+								(p.~\pageref{at-unprot})	\\
+	{\tt ATprotectArray}	&	{\tt ATunprotectArray}
+								(p.~\pageref{at-unprot-arr})	\\
+	{\tt ATprotectSymbol}	&	{\tt ATunprotect\Symbol}
+								(p.~\pageref{at-unprot-sym})	\\
+\hline
+\end{tabular}
+\end{center}
+
 %----[ BINARY ATERM FORMAT ]----
 \subsection{Binary \aterm\ Format ({\sc baf})}\label{baf}
 In addition to being able to parse terms in textual format and write
 textual representations of \aterms, the \ATlib\ is also equipped to store
-and restore \ATerms\ in their binary representation. This representation is
-called {\sc baf} which stands for ``Binary \ATerm\ Format''.
+and restore \ATerms\ in a compact, portable binary representation. This
+representation is called {\sc baf} which stands for ``Binary \ATerm\
+Format''.
 
-This format can be used to write a compact, binary version of an \ATerm\ to
-file, which can later be restored in a much more efficient way than would
-be possible had the \ATerm's textual counterpart been used. This is due to
-the fact that textual representations have to be (re-)parsed each time they
-are read from file, whereas {\sc baf} directly describes how to rebuild the
-internal representation of an \ATerm, thus skipping the parsing phase. 
+This format can be used to write a binary version of an \ATerm\ to file,
+which can later be restored in a much more efficient way than would be
+possible had the \ATerm's textual counterpart been used. This is due to the
+fact that textual representations have to be (re-)parsed each time they are
+read from file, whereas {\sc baf} directly describes how to rebuild the
+internal representation of an \ATerm, thus skipping the parsing phase.
 Also, the internal sharing within an \ATerm\ is exploited when writing its
 {\sc baf}-representation, making it take up much less space than its
 textual representation would have needed.
@@ -468,6 +501,7 @@ arguments}
 }
 
 \Function{\tt ATunprotect}{\tt void}{\aterm\ *atp}{Unprotect an \aterm}
+\label{at-unprot}
 \Describe{
 	Releases protection of an \aterm\ which has previously been protected
 	through a call to {\tt ATprotect}.
@@ -475,6 +509,7 @@ arguments}
 
 \Function{\tt ATprotectArray}{void}{\aterm\ *start, int size)}
 {Protect an array of \ATerms}
+\label{at-unprot-arr}
 \Describe{
 	Protects an entire array of {\tt size} \aterms\ starting at {\tt start}.
 }
@@ -521,7 +556,7 @@ abides by the rules of the {\tt C}-type: {\tt int}.
 {Get the integer value from an \aterm Int.}
 
 \subsubsection{ATermReal}
-The type {\tt ATermReal} is the \ATerm\ representation of an real. It
+The type {\tt ATermReal} is the \ATerm\ representation of a real. It
 abides by the rules of the {\tt C}-type: {\tt double}.
 
 \Function{\tt ATmakeReal}{\tt ATermReal}{double value}
@@ -565,6 +600,7 @@ them.
 
 \Function{\tt ATprotect\Symbol}{void}{\Symbol\ sym}
 {Protect a function symbol}
+\label{at-unprot-sym}
 \Describe{Just as \aterms\ which are not on the stack or in registers must
 	be protected through a call to {\tt ATprotect}, so must \Symbol s be
 	protected by calling {\tt ATprotect\Symbol}.
@@ -822,7 +858,8 @@ them.
  the user should allocate this himself.
 
  Note: due to the internal representation of a blob, size cannot exceed
- $2^{24}$. This limits the size of the data area to 16 Mb.
+ $2^{24}$ in the current implementation. This limits the size of the data
+ area to 16 Mb.
 }
 
 \Macro{\tt ATgetBlobData}{\tt void *}{\tt ATermBlob blob}
@@ -836,9 +873,9 @@ them.
 {Register a blob-destructor function}
 \Describe{
  When a blob-destructor function has been registered, it will be called
- whenever the garbage collector deletes the corresponding ATermBlob. The
- destructor function can then handle the deletion of the data area of the
- blob. At most 16 blob destructor functions can be registered.
+ whenever the garbage collector deletes an ATermBlob. The destructor
+ function can then handle the deletion of the data area of the blob. At
+ most 16 blob destructor functions can be registered.
 }
 
 \Function{\tt ATunregisterBlobDestructor}{\tt void}
@@ -852,7 +889,7 @@ them.
 \subsection{Dictionaries}\label{dicts}
 Dictionaries are datastructures which allow looking up a certain \ATerm\
 given another \ATerm. The dictionary itself is also an \aterm\ and as such
-is subject to the normal \ATlib rules of garbage collection. Each
+is subject to the normal \ATlib\ rules of garbage collection. Each
 dictionary consists of its own list of \ATerms.  For each lookup in the
 dictionary, the list is traversed to see if the current element's key
 matches the one that is being looked up. For a more efficient
@@ -883,9 +920,9 @@ matches the one that is being looked up. For a more efficient
 
 \subsection{Tables}\label{tables} The dictionaries described in
 Section~\ref{dicts} are in essence nothing more than linked lists, which
-makes them less suitable for large \aterm\-to-\aterm\ mappings. To this
-end, \ATerm tables were created. These are hashtables of \aterms, with each
-hashbucket implemented as a dictionary.
+makes them less suitable for large \aterm-to-\aterm\ mappings. To this end,
+\ATerm\ tables were created. These are implemented as hashtables of
+\aterms, with each hashbucket implemented as a dictionary.
 
 \Function{\tt ATtableCreate}{ATermTable}{int initial\_size, int max\_load\_pct}
 {Create an ATermTable}
@@ -982,7 +1019,7 @@ and redirects {\tt stdin} and {\tt stdout} accordingly.
 \label{util-termsize}
 This utility can be used to calculate two things:
 \begin{itemize}
-  \item coresize: the amount of memory a given \aterm needs;
+  \item coresize: the amount of memory a given \aterm\ needs;
   \item textsize: the amount of memory needed to hold a textual
   representation of an \aterm. 
 \end{itemize}

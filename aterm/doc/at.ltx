@@ -333,7 +333,7 @@ the garbage collection strategy, and the representation of lists.
 \label{hashing}
 Probably the most important design decision is to base our implementation
 of the \ATerm\ datatype on \emph{maximal sharing}. In order to fully exploit
-the redundancy that is typically present in terms that are build,
+the redundancy that is typically present in terms that are built,
 we never create the same term twice. Before a new term is created,
 a lookup is done to see if that term already exists. If it exists, the old
 version is reused and no new term is created.
