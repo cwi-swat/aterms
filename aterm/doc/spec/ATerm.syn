@@ -18,7 +18,7 @@ exports
   lexical syntax
     [ \n\t]                             -> LAYOUT
 
-    [a-zA-Z][a-zA-Z0-9_\-]*             -> AFun
+    [a-zA-Z][a-zA-Z0-9_\-\*\+]*         -> AFun
     "\"" AFunChar* "\""                 -> AFun
 
     [0-9]+                              -> ATermInt

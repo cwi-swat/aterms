@@ -102,7 +102,7 @@
 }{\ULEX{LAYOUT}}
  \LINESEP
 \LEXFUN{\LEX{\SLEX{[}a-zA-Z\SLEX{]}}%
- \LEX{\SLEX{[}a-zA-Z0-9\_\SLEX{\backslash}\SLEX{-]}}%
+ \LEX{\SLEX{[}a-zA-Z0-9\_\SLEX{\backslash}\SLEX{*}\SLEX{\backslash}\SLEX{+}\SLEX{\backslash}\SLEX{-]}}%
 \LEX{\SLEX{*}}%
 }{\SORT{AFun}}
  \LEXFUN{\DQLEX{\LEX{\SLEX{\backslash}\SLEX{"}}%

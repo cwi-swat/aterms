@@ -1037,9 +1037,9 @@ in \aterm\ we refer to Section \ref{casfix}.
 
 \item[lcc Parse Forest:] a new back-end similar to the ASDL back-end
 \cite{Wan97} has been added to the lcc compiler \cite{Han99}.
-This back-end produces a mapping from the internal format used by
-the lcc compiler to the \aterm\ format.
-The internal format represents the equivalent information of an C program
+This back-end maps the internal format used by
+the lcc compiler to \aterms.
+The \ATerm\ format represents the equivalent information of an C program
 as the ASDL representation of that C program.
 
 Given this back-end the C sources of the lcc compiler itself are mapped
@@ -1054,7 +1054,10 @@ The emacs source consists of 169 source files, consisting of a total of
 216766 lines of source code.
 \end{description}
 
-\noindent Measurements were performed on an ULTRA SPARC-5 (270 MHz) with 256 Mb
+\noindent In the cases of the COBOL System, Casl Specifications, lcc Parse
+Forest, and emacs Parse Forest the set of \aterms\ are combined into and
+processed as {\em one} \aterm.
+Measurements were performed on an ULTRA SPARC-5 (270 MHz) with 256 Mb
 of memory. All times measured are the user CPU time for that particular job. 
 
 \subsection{Measurements}
@@ -1309,7 +1312,7 @@ Write node ($\mu$s)     &               & 2.47   & 2.38\\ \hline
 
 These measurements are summarized in Table~\ref{summary}.
 For in-memory storage, 2.9 byte is needed per node.
-In the case of \baf, only 0.2 byte (1.6 bit!) is needed to represent a node.
+In the case of \baf, only 0.54 byte (4.3 bit!) is needed to represent a node.
 Also observe that reading \baf\ is an order of magnitude faster than
 reading terms in textual form.
 
@@ -1826,7 +1829,7 @@ between distributed applications.
 depend on any specific hardware or software platform.  
 \ATerms\ \emph{are} simple: the level one interface consists of only 13
 functions.  \ATerms\ \emph{are} efficient and concise as shown by the
-measurements in Section~\ref{measurements}.  In encoded form, less than 2 bits
+measurements in Section~\ref{measurements}.  In encoded form, less than 5 bits
 are needed per node!  Last but not least, \ATerms\ are also
 \emph{useful} as shown on Section~\ref{applications}.
 
