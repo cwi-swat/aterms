@@ -102,8 +102,7 @@ ADT_Entry convertEntry(OLDADT_Entry old)
   ATerm pattern = OLDADT_getEntryTermPattern(old);
   ADT_Entry new = NULL;
 
-  if (!isEmptyListPattern(pattern)) {
-
+  if (!checkForListIdioms || !isEmptyListPattern(pattern)) {
     if (checkForListIdioms) {
       new = detectListIdiom(OLDADT_getEntrySort(old), pattern);
     }
