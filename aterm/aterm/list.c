@@ -425,6 +425,28 @@ ATermList ATreplace(ATermList list, ATerm el, int idx)
 }
 
 /*}}}  */
+/*{{{  ATermList ATreverse(ATermList list) */
+
+/**
+	* Reverse a list
+	*/
+
+ATermList ATreverse(ATermList list)
+{
+	int len = ATgetLength(list);
+	ATermList result = ATempty;
+
+	while(!ATisEmpty(list)) {
+		result = ATinsert(result, ATgetFirst(list));
+		list = ATgetNext(list);
+	}
+	
+	assert(len == ATgetLength(result));
+
+	return result;
+}
+
+/*}}}  */
 /*{{{  ATerm ATdictCreate() */
 
 /**

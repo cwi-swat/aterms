@@ -63,7 +63,7 @@ clean:
 dist: ${DISTFILES}
 	@cp ${DISTFILES} ${DISTDIR}	
 
-install: ${ATERMLIBS} ${PUBLIC_INCL}
+install: all ${PUBLIC_INCL}
 	@for file in ${ATERMLIBS}; do \
 		${INSTALL_DAT} $$file ${libdir}; \
 	done

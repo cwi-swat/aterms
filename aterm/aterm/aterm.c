@@ -1036,16 +1036,18 @@ fnext_skip_layout(int *c, FILE * f)
 ATermList
 fparse_terms(int *c, FILE * f)
 {
-    ATermList       tail = ATempty;
-    ATerm           el = fparse_term(c, f);
+	ATermList list;
+	ATerm el = fparse_term(c, f);
 
-    if (*c == ',')
-    {
-	fnext_skip_layout(c, f);
-	tail = fparse_terms(c, f);
-    }
+	list = ATinsert(ATempty, el);
 
-    return ATinsert(tail, el);
+	while(*c == ',') {
+		fnext_skip_layout(c, f);
+		el = fparse_term(c, f);
+		list = ATinsert(list, el);
+	}
+
+	return ATreverse(list);
 }
 
 /*}}}  */
@@ -1389,16 +1391,18 @@ ATreadFromTextFile(FILE * file)
 ATermList
 sparse_terms(int *c, char **s)
 {
-    ATermList       tail = ATempty;
-    ATerm           el = sparse_term(c, s);
+	ATermList list;
+	ATerm el = sparse_term(c, s);
 
-    if (*c == ',')
-    {
-	snext_skip_layout(c, s);
-	tail = sparse_terms(c, s);
-    }
+	list = ATinsert(ATempty, el);
 
-    return ATinsert(tail, el);
+	while(*c == ',') {
+		snext_skip_layout(c, s);
+		el = sparse_term(c, s);
+		list = ATinsert(list, el);
+	}
+
+	return ATreverse(list);
 }
 
 /*}}}  */

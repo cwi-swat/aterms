@@ -36,6 +36,8 @@
 
 /*{{{  global variables */
 
+char bafio_id[] = "$Id$";
+
 static int			term_stack_depth;
 static ATermTable	term_stack;
 
@@ -378,8 +380,6 @@ static
 int
 writeToBinaryFile(ATerm t, FILE *f)
 {
-	int       arg_indices[MAX_ARITY];
-
 	int       lcv, arity;
 	int       index;
 	static    char buf[64]; /* Must be large enough to fit a double */
@@ -406,13 +406,14 @@ writeToBinaryFile(ATerm t, FILE *f)
 			for(lcv=0; lcv<arity; lcv++)
 			{
 				ATerm arg = ATgetArgument(appl, lcv);
-				arg_indices[lcv] = writeToBinaryFile(arg, f);
+				writeToBinaryFile(arg, f);
 			}
 
 			/* Now issue push commands for each argument */
 			for(lcv=0; lcv<arity; lcv++)
 			{
-				index = arg_indices[lcv];
+				ATerm index_term = ATtableGet(term_stack, ATgetArgument(appl, lcv));
+				index = ATgetInt((ATermInt)index_term);
 				if (index < 0)
 					return index;
 				if (writeIntToFile(TRM_STACK_REL(index), f) < 0)
@@ -744,20 +745,48 @@ static ATerm readFromBinaryFile(FILE *f)
 /*}}}  */
 /*{{{  ATerm ATreadFromBinaryFile(FILE *f) */
 
+/**
+	* Read a term from a BAF file.
+	*/
+
 ATerm
 ATreadFromBinaryFile(FILE *f)
 {
 	ATerm t;
+	unsigned int command, magic;
+	unsigned int version, major, minor;
+	unsigned int nr_unique_subterms;
+	
+
+	readIntFromFile(&command, f);
+	if(command != CMD_RESET)
+		ATerror("not a BAF file (no CMD_RESET)\n");
+
+	readIntFromFile(&magic, f);
+	if(magic != BAF_MAGIC)
+		ATerror("illegal magic number %X, expecting %X\n", magic, BAF_MAGIC);
+
+	readIntFromFile(&version, f);
+	major = BAF_VERSION >> 8;
+	minor = BAF_VERSION & 0xFF;
+	if(version >> 8 != major)
+		ATerror("incompatible BAF version %d.xx (expecting %d.xx)\n", 
+						version >> 8, major);
+	if((version & 0xFF) > minor)
+		ATerror("BAF version %d.%d file newer than expected " \
+						"version %d.%d\n", version >> 8, version & 0xFF, major, minor);	
+
+	readIntFromFile(&nr_unique_subterms, f);
 
 	/* Initialize stacks */
 	term_stack_depth = 0;
-	term_stack = ATtableCreate( 1024, 75 );
+	term_stack = ATtableCreate( (nr_unique_subterms*3)/4+1, 75 );
 
 	sym_stack_depth = 0;
 	sym_stack = ATtableCreate(512, 75);
 
 	arg_stack_depth = 0;
-
+	
 	t = readFromBinaryFile(f);
 
 	/* Destroy stacks */

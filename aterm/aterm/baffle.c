@@ -23,6 +23,8 @@
 #include "util.h"
 #include "aterm2.h"
 
+char baffle_id[] = "$Id$";
+
 static
 void
 usage(char *prg)

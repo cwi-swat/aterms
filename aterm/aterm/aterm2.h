@@ -159,6 +159,7 @@ ATermList ATremoveElement(ATermList list, ATerm el);
 ATermList ATremoveElementAt(ATermList list, int idx);
 ATermList ATremoveAll(ATermList list, ATerm el);
 ATermList ATreplace(ATermList list, ATerm el, int idx);
+ATermList ATreverse(ATermList list);
 ATerm     ATdictCreate();
 ATerm     ATdictGet(ATerm dict, ATerm key);
 ATerm     ATdictPut(ATerm dict, ATerm key, ATerm value);
