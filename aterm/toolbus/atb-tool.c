@@ -566,7 +566,7 @@ static int connect_to_unix_socket(int port)
   struct sockaddr_un usin;
   int attempt = 0;
 
-	sprintf (name, "/usr/tmp/%d", port);
+  sprintf (name, "/var/tmp/%d", port);
   for(attempt=0; attempt<MAX_CONNECT_ATTEMPTS; attempt++) {
     if((sock = socket(AF_UNIX,SOCK_STREAM,0)) < 0)
 			ATerror("cannot open socket\n");

@@ -81,6 +81,7 @@ dist: ${DISTFILES}
 install: ${ATBLIBS} ${PUBLIC_INCL} ${PROGS}
 	@for file in ${ATBLIBS}; do \
 		${INSTALL_DAT} $$file ${libdir}; \
+		${RANLIB} ${libdir}/$$file; \
 	done
 	@for file in ${PUBLIC_INCL}; do \
 		${INSTALL_DAT} $$file ${includedir}; \
