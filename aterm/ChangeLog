@@ -1,5 +1,12 @@
 $Id$
 
+2003-09-24  Jurgen Vinju, Tijs van de Storm <{jurgenv,storm}@cwi.nl>
+ * ATcompare extended: ATblobs are compared using memcmp. Also, annotations
+   are now supported by the ordering. ATcompare is now a complete ordering on 
+   ATerms. 
+ * ATcompare refactored to use (static) small functions.
+ * Extended tests to test completeness and consistency of ATcompare
+
 Tue Sep  2 15:08:51 CEST 2003 <jong@cwi.nl>
  * configure.in: version bump to 2.0.4
  * aterm/*.h: insert 'extern "C" { ... }' for C++ compilers
