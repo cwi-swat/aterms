@@ -1,3 +1,8 @@
+2002/11/12 (vinju@loria.fr)
+ * adt-to-{c,java} throws runtime exceptions if:
+     - the name of an alternative occurs more than once for a certain type
+     - the name of a field occurs more than once within a certain alternative
+     
 2002/11/07 ({moreau,vinju}@loria.fr)
  * Reimplemented adt-to-java for the most part. It now generates specialized factories.
    The factory inherits from PureFactory, the types inherit from ATermApplImpl. The result
