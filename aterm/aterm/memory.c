@@ -309,7 +309,7 @@ void AT_cleanupMemory()
 		if(!f)
 			ATerror("cannot open hashing statisics file: \"hashing.stats\"\n");
 
-		while(hash_info_before_gc[max][IDX_MIN] == 0)
+		while(hash_info_before_gc[max][IDX_MAX] == 0)
 			max--;
 
 		if(gc_count > 0) {
@@ -333,7 +333,7 @@ void AT_cleanupMemory()
 		hash_info(info);
 		fprintf(f, "hash statistics at end of program:\n");
 		max = MAX_INFO_SIZES-1;
-		while(info[max][IDX_MIN] == 0)
+		while(info[max][IDX_MAX] == 0)
 			max--;
 	  for(i=0; i<=max; i++) {
 			for(i=0; i<=max; i++) {
