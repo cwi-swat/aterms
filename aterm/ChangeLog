@@ -1,5 +1,10 @@
 $Id$
 
+2003-06-27  Jurgen Vinju	<jurgenv@cwi.nl>
+ * aterm.pkg is no longer generated from configure.in ;(
+ * added aterm.pkg to repository
+ * aterm-@VERSION@.pkg is now generated from aterm.pkg
+
 2003-06-26  Jurgen Vinju	<jurgenv@cwi.nl>
  * Removed visitor-pkg configuration option.
 

@@ -1,0 +1,28 @@
+package
+identification
+  name=aterm
+  version=2.0.2
+  location=http://www.cwi.nl/projects/MetaEnv/aterm
+  info=http://www.cwi.nl/projects/MetaEnv/aterm
+  description='ATerm (short for Annotated Term) is an abstract data type
+designed for the exchange of tree-like data structures
+between distributed applications.'
+
+  keywords=meta-environment, library, baf, aterm, term, tree, sharing
+
+interface
+'	'{{{ Handle cflags option'
+cflags=CFLAGS	'standard options of C compiler'
+gcc	'create gcc version (libATerm-gcc.a)'
+cc	'create cc version (libATerm-cc.a)'
+dbg	'create debug version (libATerm-dbg.a)'
+prof	'create profiling version (libATerm-prof.a)'
+all	'convenience alias for --with-{gcc,cc,dbg,prof}'
+nosharing	'generate a library that does no term sharing'
+64bit	'create 64 bit cc version (libATerm-cc64.a)'
+
+requires
+
+configuration
+  dbg
+

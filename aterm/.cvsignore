@@ -9,4 +9,4 @@ config.log
 *.tar.gz
 diff.out
 update.out
-aterm.pkg
+*-*.pkg
