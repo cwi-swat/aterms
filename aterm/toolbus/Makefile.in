@@ -102,7 +102,7 @@ tifstoc: tifstoc.c atb-tool.h ../aterm/libATerm-dbg.a libATB-dbg.a
 			-L../aterm -lATerm-dbg -L. -lATB-dbg -lsocket -lnsl
 
 tag:
-	ctags -t *.[ch]
+	ctags *.[ch]
 
 depend:
 	$(CC_GCC) -MM $(DEFS_CC) $(INCL_CC) -I../aterm $(ATBSRCS) > /tmp/.gendep

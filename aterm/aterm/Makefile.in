@@ -102,7 +102,7 @@ termsize: termsize.c libATerm-cc.a
 	${CC_CC} ${CFLAGS_CC} -o termsize $< -L. -lATerm-cc
 
 tag:
-	ctags -t *.[ch]
+	ctags *.[ch]
 
 depend:
 	$(CC_GCC) -MM $(DEFS_CC) $(INCL_CC) $(ATERMSRCS) > /tmp/.gendep
