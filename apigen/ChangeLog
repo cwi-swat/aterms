@@ -1,3 +1,7 @@
+2001/11/22 (jong*cwi.nl)
+ * Copied warning in CGen to JavaGen.
+   (warns against defining '-' as a special symbol)
+
 2001/11/22 (vandenbr@loria.fr)
  * Added a few special symbols encountered in ELAN.
 

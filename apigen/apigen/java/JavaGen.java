@@ -16,6 +16,9 @@ public class JavaGen
 {
   //{{{ private final static String[] SPECIAL_CHAR_WORDS =
 
+  // Do *NOT* add an entry for '-' (Dash) here, the dash is used
+  // as a word-separator!
+
   private final static String[] SPECIAL_CHAR_WORDS =
   { "[BracketOpen", "]BracketClose",
     "{BraceOpen",   "}BraceClose",
