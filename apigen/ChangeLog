@@ -1,25 +1,28 @@
 # $Id$
 
 Mon Dec 15 11:53:59 CET 2003 <{jong,jurgenv}@cwi.nl>
- * Added new builtin field datatype <chars>. The API representation is char* for
-   C and String for Java. The ATerm representation is an ATermList containing the
-   ASCII values of the <chars> in the string. 
-   
+ * Implemented reverse, append, concat, elementAt, and fixed-numbered
+   make(...) methods for normal lists
+ * Added new builtin field datatype <chars>. The API representation is
+   char* for C and String for Java. The ATerm representation is an
+   ATermList containing the ASCII values of the <chars> in the string.
+
 Thu Dec  4 13:38:22 CET 2003 <{jong,jurgenv}@cwi.nl>
- * Separated lists with builtins fixed in Java. We are planning to 
+ * Separated lists with builtins fixed in Java. We are planning to
    reduce normal lists to separated lists with no separators in the near
    future (normal lists with builtins are now still broken).
- * Bottom types in C generator print a warning an generate an implementation
+ * Bottom types in C generator print a warning an generate an
+ implementation
    as follows: typedef ATerm <prefix><type>
-   
+
 Tue Dec  2 10:54:54 CET 2003 <{jong,jurgenv}@cwi.nl>
- * generated jar-file now also contains the java sources
- * gen/c/CGenerationParameters: also show super.usage()
- * Split of a scripts directory from the utils directory  to prevent
+ * generated jar-file now also contains the java sources *
+ gen/c/CGenerationParameters: also show super.usage() * Split of a
+ scripts directory from the utils directory  to prevent
    a circular dependency.
- * Bumped to version 2.0
- * Added support for lists of elements of builtin types (int, str, etc) in C
- * Separated lists in C are now fully functional
+ * Bumped to version 2.0 * Added support for lists of elements of
+ builtin types (int, str, etc) in C * Separated lists in C are now
+ fully functional
 
 Mon Dec  1 14:12:47 CET 2003 <{jong,jurgenv}@cwi.nl>
  * apigen/gen/c:
