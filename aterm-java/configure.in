@@ -7,7 +7,7 @@ AC_SET_MAKE
 
 AC_ARG_WITH(shared-objects,
    [  --with-shared-objects=JAR       /path/to/shared-objects-<version>.jar],
-   ,SHARED_OBJECTS=${datadir}/shared-objects.jar)
+   SHARED_OBJECTS=$withval,SHARED_OBJECTS=${datadir}/shared-objects.jar)
 AC_SUBST(SHARED_OBJECTS)
 
 AC_OUTPUT(
