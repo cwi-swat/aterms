@@ -286,6 +286,10 @@ extends Generator
     println("  static protected " + api_factory + " getStatic" + api_factory + "() {");
     println("    return (" + api_factory + ") getStaticFactory();");
     println("  }");
+    println();
+    println("  public aterm.ATermAppl setArgument(aterm.ATerm arg, int pos) {");
+    println("    throw new RuntimeException(\"Illegal use of a generic setter on a specific type\");");
+    println("  }");
     println("}");
   }
  
@@ -883,7 +887,7 @@ extends Generator
 
 	private void genAltClone(Type type, Alternative alt) {
     String altClassName = buildAltClassName(type,alt);
-    println("  public Object clone() {");
+    println("  public shared.SharedObject duplicate() {");
     println("    " + altClassName + " clone = new " + altClassName + "();");
     println("     clone.init(hashCode(), getAnnotations(), getAFun(), " +
             "getArgumentArray());");

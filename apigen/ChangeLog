@@ -1,3 +1,10 @@
+
+2002/12/09 (jurgenv@cwi.nl)
+ * Changed generation of java code according to some changes in SharedObject interface
+ * Added overriding of setArgument that immediately throws an exception. This prevents construction
+   illegal trees using the ATerm API directly.
+   
+=======
 2002/12/11 (jong@cwi.nl)
  * explicitly link libADT.a, rather than looking for it in install-dir
 

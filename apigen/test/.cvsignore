@@ -22,3 +22,4 @@ Module*.java
 ListCons*.java
 ListFac*.java
 classcheck.stamp
+list.h
