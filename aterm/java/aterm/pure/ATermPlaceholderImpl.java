@@ -82,6 +82,11 @@ class ATermPlaceholderImpl
 	  args.remove(0);
 
 	  return l;
+	} else if (name.equals("bool")) {
+	  Boolean b = (Boolean)args.get(0);
+	  args.remove(0);
+
+	  return factory.makeAppl(factory.makeAFun(b.toString(), 0, false));
 	} else if (name.equals("int")) {
 	  Integer i = (Integer)args.get(0);
 	  args.remove(0);
