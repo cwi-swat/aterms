@@ -1,3 +1,9 @@
+2004-07-28 Julien Guyom
+
+	* bootstrap new ADT with module
+  * still compatible with previous adt format
+  * new design code for Java
+
 2004-06-21  pem  <pem@polly.loria.fr>
 
   * apigen/gen/tom/TomSignatureGenerator.java: import aterm.tom 

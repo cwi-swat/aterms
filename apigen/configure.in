@@ -69,10 +69,16 @@ utils/Makefile
 scripts/Makefile
 lib-1.0/Makefile
 lib-2.0/Makefile
+lib-3.0/Makefile
 apigen/Makefile
 apigen/util/Makefile
 apigen/adt/Makefile
 apigen/adt/api/Makefile
+apigen/adt/api/types/Makefile
+apigen/adt/api/types/entry/Makefile
+apigen/adt/api/types/separator/Makefile
+apigen/adt/api/types/module/Makefile
+apigen/adt/api/types/modulename/Makefile
 apigen/gen/Makefile
 apigen/gen/c/Makefile
 apigen/gen/java/Makefile
