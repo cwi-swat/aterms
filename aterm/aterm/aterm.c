@@ -17,6 +17,7 @@
 #include "list.h"
 #include "make.h"
 #include "gc.h"
+#include "util.h"
 
 /*}}}  */
 /*{{{  defines */
@@ -24,6 +25,8 @@
 #define DEFAULT_BUFFER_SIZE 4096
 #define RESIZE_BUFFER(n) if(n > buffer_size) resize_buffer(n)
 #define ERROR_SIZE 32
+#define INITIAL_MARK_STACK_SIZE   16384
+#define MARK_STACK_MARGE          MAX_ARITY
 
 /* Initial number of terms that can be protected (grows as needed) */
 #define PROTECT_INITIAL_SIZE 64
@@ -50,6 +53,11 @@ static int  error_idx = 0;
 ATerm **at_protected = NULL;    /* Holds all protected terms             */
 int at_nrprotected = -1;        /* How many terms are actually protected */
 int at_maxprotected = -1;       /* How many terms fit in the array       */
+
+static ATerm *mark_stack = NULL;
+static int mark_stack_size = 0;
+int mark_stats[3] = { 0, MYMAXINT, 0 };
+int nr_marks = 0;
 
 /*}}}  */
 /*{{{  function declarations */
@@ -105,6 +113,12 @@ void ATinit(int argc, char *argv[], ATerm *bottomOfStack)
   if (!at_protected)
 	ATerror("ATinit: cannot allocate space for %d protected terms.\n",
 			at_maxprotected);
+
+	mark_stack = (ATerm *)malloc(sizeof(ATerm)*INITIAL_MARK_STACK_SIZE);
+	if(!mark_stack)
+		ATerror("could allocate marks stack of %d entries.\n", 
+						INITIAL_MARK_STACK_SIZE);
+	mark_stack_size = INITIAL_MARK_STACK_SIZE;
 
   AT_initMemory(argc, argv);
   AT_initSymbol(argc, argv);
@@ -1502,40 +1516,67 @@ void AT_markTerm(ATerm t)
 {
   int i, arity;
   Symbol sym;
+  ATerm *current = mark_stack+1;
+	ATerm *limit = mark_stack + mark_stack_size - MARK_STACK_MARGE;
+	ATerm *depth = mark_stack;
 
-	/*fprintf(stderr, "marking term: %p\n", t);*/
-  if(IS_MARKED(t->header))
-		return;
+	mark_stack[0] = NULL;
+	*current++ = t;
 
-  SET_MARK(t->header);
-  
-  switch(GET_TYPE(t->header)) {
-	case AT_INT:
-	case AT_REAL:
-	case AT_BLOB:
-	  break;
+	while(ATtrue) {
+		if(current > limit) {
+			/* We need to resize the mark stack */
+			mark_stack_size = mark_stack_size*2;
+			mark_stack = (ATerm *)realloc(mark_stack, sizeof(ATerm)*mark_stack_size);
+			if(!mark_stack)
+				ATerror("cannot realloc mark stack to %d entries.\n", mark_stack_size);
+			limit = mark_stack + mark_stack_size - MARK_STACK_MARGE;
+			fprintf(stderr, "resized mark stack to %d entries\n", mark_stack_size);
+		}
 
-	case AT_APPL:
-	  sym = ATgetSymbol((ATermAppl)t);
-	  AT_markSymbol(sym);
-	  arity = GET_ARITY(t->header);
-	  if(arity > MAX_INLINE_ARITY)
-			arity = ATgetArity(sym);
-	  for(i=0; i<arity; i++)
-			AT_markTerm(ATgetArgument((ATermAppl)t, i));
-	  break;
+		if(current > depth)
+			depth = current;
+		
+		t = *--current;
 
-	case AT_LIST:
-	  if(!ATisEmpty((ATermList)t)) {
-		AT_markTerm(ATgetFirst((ATermList)t));
-		AT_markTerm((ATerm)ATgetNext((ATermList)t));
-	  }
-	  break;
-	  
-	case AT_PLACEHOLDER:
-	  AT_markTerm(ATgetPlaceholder((ATermPlaceholder)t));
-	  break;
-  }
+		if(!t)
+			break;
+
+		if(IS_MARKED(t->header))
+			continue;
+		
+		SET_MARK(t->header);
+		
+		switch(GET_TYPE(t->header)) {
+			case AT_INT:
+			case AT_REAL:
+			case AT_BLOB:
+				break;
+				
+			case AT_APPL:
+				sym = ATgetSymbol((ATermAppl)t);
+				AT_markSymbol(sym);
+				arity = GET_ARITY(t->header);
+				if(arity > MAX_INLINE_ARITY)
+					arity = ATgetArity(sym);
+				for(i=0; i<arity; i++)
+					*current++ = ATgetArgument((ATermAppl)t, i);
+				break;
+				
+			case AT_LIST:
+				if(!ATisEmpty((ATermList)t)) {
+					*current++ = (ATerm)ATgetNext((ATermList)t);
+					*current++ = ATgetFirst((ATermList)t);
+				}
+				break;
+				
+			case AT_PLACEHOLDER:
+				*current++ = ATgetPlaceholder((ATermPlaceholder)t);
+				break;
+		}
+	}
+  STATS(mark_stats, depth-mark_stack);
+	nr_marks++;
 }
 
 /*}}}  */

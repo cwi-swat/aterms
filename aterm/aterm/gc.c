@@ -40,6 +40,8 @@ static int     stack_symbols[3]    = { 0, MYMAXINT, 0 };
 static int     register_terms[3]   = { 0, MYMAXINT, 0 };
 static int     register_symbols[3] = { 0, MYMAXINT, 0 };
 static int     reclaim_perc[3]     = { 0, MYMAXINT, 0 };
+extern int     mark_stats[3];
+extern int     nr_marks;
 
 /*}}}  */
 
@@ -212,6 +214,11 @@ void AT_cleanupGC()
 		fprintf(stderr, "%d garbage collects,\n", gc_count);
 		fprintf(stderr, "(all statistics are printed min/avg/max)\n");
 		if(gc_count > 0) {
+			if(nr_marks > 0) {
+				fprintf(stderr, "  mark stack needed: %d/%d/%d (%d marks)\n", 
+								mark_stats[IDX_MIN], mark_stats[IDX_TOTAL]/nr_marks, 
+								mark_stats[IDX_MAX], nr_marks);
+			}
 			fprintf(stderr, "  marking  took %.2f/%.2f/%.2f seconds, total: %.2f\n", 
 							((double)mark_time[IDX_MIN])/(double)CLK_TCK,
 							(((double)mark_time[IDX_TOTAL])/(double)gc_count)/(double)CLK_TCK,
