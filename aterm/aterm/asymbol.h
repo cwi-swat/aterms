@@ -33,5 +33,6 @@ ATbool AT_isValidSymbol(Symbol sym);
 #define AT_unmarkSymbol(s) (lookup_table[(s)]->header &= ~MASK_MARK)
 ATbool AT_isMarkedSymbol(Symbol sym);
 void  AT_freeSymbol(SymEntry sym);
+void AT_markProtectedSymbols();
 
 #endif

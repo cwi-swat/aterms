@@ -1,3 +1,5 @@
 Makefile
 baffle
 termsize
+test-tool
+vararg3

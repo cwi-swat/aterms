@@ -1625,8 +1625,8 @@ ATbool AT_isValidTerm(ATerm term)
   type = GET_TYPE(header);
 
 	/* The only possibility left for an invalid term is AT_FREE */
-	/*return (((type == AT_FREE) || (type == AT_SYMBOL)) ? ATfalse : ATtrue);*/
-	return ((type == AT_FREE) ? ATfalse : ATtrue);
+	return (((type == AT_FREE) || (type == AT_SYMBOL)) ? ATfalse : ATtrue);
+	/*return ((type == AT_FREE) ? ATfalse : ATtrue);*/
 }
 
 /*}}}  */

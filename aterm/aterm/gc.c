@@ -167,6 +167,9 @@ void mark_phase()
 				cur++;
 		}
 	}
+
+	/* Mark protected symbols */
+	AT_markProtectedSymbols();
 }
 
 

@@ -27,6 +27,9 @@
 #define SYM_SET_NEXT_FREE(next)   (1 | ((next) << SHIFT_INDEX))
 #define SYM_IS_FREE(sym)          (((sym) & 1) == 1)
 
+#define INITIAL_PROTECTED_SYMBOLS   1024
+#define SYM_PROTECT_EXPAND_SIZE     1024
+
 /*}}}  */
 /*{{{  globals */
 
@@ -36,6 +39,10 @@ static unsigned int table_size = 0;
 static SymEntry *hash_table = NULL;
 
 static Symbol first_free = -1;
+
+static Symbol *protected_symbols = NULL;
+static int nr_protected_symbols  = 0;
+static int max_protected_symbols  = 0;
 
 /* Efficiency hack: was static */
 SymEntry *lookup_table = NULL;
@@ -76,6 +83,11 @@ void AT_initSymbol(int argc, char *argv[])
 		lookup_table[i] = (SymEntry) SYM_SET_NEXT_FREE(i+1);
 
 	lookup_table[i-1] = (SymEntry) SYM_SET_NEXT_FREE(-1);		/* Sentinel */
+
+	protected_symbols = (Symbol *)calloc(INITIAL_PROTECTED_SYMBOLS, 
+																			 sizeof(Symbol));
+	if(!protected_symbols)
+		ATerror("AT_initSymbol: cannot allocate initial protection buffer.\n");
 }
 /*}}}  */
 
@@ -294,19 +306,51 @@ ATbool AT_isMarkedSymbol(Symbol s)
 
 void ATprotectSymbol(Symbol sym)
 {
-	ATprotect((ATerm *)&lookup_table[sym]);
+	if(nr_protected_symbols >= max_protected_symbols) {
+		max_protected_symbols += SYM_PROTECT_EXPAND_SIZE;
+		protected_symbols = (Symbol *)realloc(protected_symbols,
+													max_protected_symbols * sizeof(Symbol));
+		if(!protected_symbols)
+			ATerror("ATprotectSymbol: no space to hold %d protected symbols.\n",
+							max_protected_symbols);
+	}
+
+	protected_symbols[nr_protected_symbols++] = sym;
 }
 
 /*}}}  */
 /*{{{  void ATunprotectSymbol(Symbol sym) */
 
 /**
-	* Protect a symbol.
+	* Unprotect a symbol.
 	*/
 
 void ATunprotectSymbol(Symbol sym)
 {
-	ATunprotect((ATerm *)&lookup_table[sym]);
+	int lcv;
+
+	for(lcv = 0; lcv < nr_protected_symbols; ++lcv) {
+		if(protected_symbols[lcv] == sym) {
+			protected_symbols[lcv] = protected_symbols[--nr_protected_symbols];
+			protected_symbols[nr_protected_symbols] = -1;
+			break;
+		}
+	}
+}
+
+/*}}}  */
+/*{{{  void AT_markProtectedSymbols() */
+
+/**
+	* Mark all symbols that were protected previously using ATprotectSymbol.
+	*/
+
+void AT_markProtectedSymbols()
+{
+	int lcv;
+
+	for(lcv = 0; lcv < nr_protected_symbols; lcv++)
+		SET_MARK(((ATerm)lookup_table[lcv])->header);
 }
 
 /*}}}  */

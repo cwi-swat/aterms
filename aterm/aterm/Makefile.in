@@ -50,10 +50,12 @@ INSTALL_DAT	= @INSTALL_DAT@
 SCRIPTS		= baf2trm trm2baf
 PROGS		= termsize baffle ${SCRIPTS}
 PROGSRCS	= termsize.c baffle.c
-ATERMSRCS	= aterm.c list.c make.c memory.c asymbol.c gc.c bafio.c
+ATERMSRCS	= aterm.c list.c make.c memory.c asymbol.c gc.c bafio.c \
+		version.c
 ATERMLIBS	= libATerm-gcc.a libATerm-cc.a libATerm-dbg.a libATerm-prof.a
 PUBLIC_INCL	= abool.h aterm1.h aterm2.h deprecated.h encoding.h asymbol.h
-PRIVATE_INCL	= _aterm.h debug.h gc.h list.h make.h memory.h util.h bafio.h
+PRIVATE_INCL	= _aterm.h debug.h gc.h list.h make.h memory.h util.h bafio.h \
+		version.h
 ATERMINCL	= ${PUBLIC_INCL} ${PRIVATE_INCL}
 DISTFILES	= Makefile.in .depend ${PROGSRCS} ${ATERMSRCS} ${ATERMINCL} \
 			${SCRIPTS}
@@ -111,6 +113,11 @@ baffle: baffle.c libATerm-cc.a
 
 termsize: termsize.c libATerm-cc.a
 	${CC_CC} ${CFLAGS_CC} -o $@ $< -L. -lATerm-cc ${LIBS}
+
+version-cc.o: version.c ${ATERMINCL} ${ATERMSRCS}
+version-gcc.o: version.c ${ATERMINCL} ${ATERMSRCS}
+version-dbg.o: version.c ${ATERMINCL} ${ATERMSRCS}
+version-prof.o: version.c ${ATERMINCL} ${ATERMSRCS}
 
 tag:
 	ctags *.[ch]

@@ -19,6 +19,7 @@
 #include "gc.h"
 #include "util.h"
 #include "bafio.h"
+#include "version.h"
 
 /*}}}  */
 /*{{{  defines */
@@ -121,7 +122,7 @@ ATinit(int argc, char *argv[], ATerm * bottomOfStack)
 
 	if (!silent)
 		ATfprintf(stderr, "  ATerm Library, version %s, built: %s\n",
-							VERSION, CURDATE);
+							at_version, at_date);
 
 	if(help) {
 		fprintf(stderr, "usage: %s [options]\n", argv[0]);
@@ -1848,6 +1849,13 @@ AT_markTerm(ATerm t)
 		
 		SET_MARK(t->header);
 		
+		if(HAS_ANNO(t->header)) {
+			/*ATfprintf(stderr, "marking annotations at %p: %t\n", t, t);
+			ATfprintf(stderr, "marking annotations at %p: %t\n", 
+								AT_getAnnotations(t), AT_getAnnotations(t));*/
+			*current++ = AT_getAnnotations(t);
+		}
+
 		switch (GET_TYPE(t->header)) {
 			case AT_INT:
 			case AT_REAL:
@@ -1929,6 +1937,9 @@ AT_unmarkTerm(ATerm t)
 		
 		CLR_MARK(t->header);
 		
+		if(HAS_ANNO(t->header))
+			*current++ = AT_getAnnotations(t);
+
 		switch (GET_TYPE(t->header)) {
 			case AT_INT:
 			case AT_REAL:
@@ -1970,54 +1981,56 @@ AT_unmarkTerm(ATerm t)
 static int
 calcCoreSize(ATerm t)
 {
-    int             i, arity, size = 0;
-    Symbol          sym;
+	int             i, arity, size = 0;
+	Symbol          sym;
+	
+	if (IS_MARKED(t->header))
+		return size;
+		
+	SET_MARK(t->header);
 
-    if (IS_MARKED(t->header))
+	switch (ATgetType(t)) {
+		case AT_INT:
+			size = 12;
+			break;
+			
+		case AT_REAL:
+		case AT_BLOB:
+			size = 16;
+			break;
+			
+		case AT_APPL:
+			sym = ATgetSymbol((ATermAppl) t);
+			arity = ATgetArity(sym);
+			size = 8 + arity * 4;
+			if (!AT_isMarkedSymbol(sym)) {
+				size += strlen(ATgetName(sym)) + 1;
+				size += sizeof(struct SymEntry);
+				AT_markSymbol(sym);
+			}
+			for (i = 0; i < arity; i++)
+				size += calcCoreSize(ATgetArgument((ATermAppl) t, i));
+			break;
+			
+		case AT_LIST:
+			size = 16;
+			while (!ATisEmpty((ATermList) t)) {
+				size += 16;
+				size += calcCoreSize(ATgetFirst((ATermList) t));
+				t = (ATerm)ATgetNext((ATermList)t);
+			}
+			break;
+			
+		case AT_PLACEHOLDER:
+			size = 12;
+			size += calcCoreSize(ATgetPlaceholder((ATermPlaceholder) t));
+			break;
+	}
+
+	if(HAS_ANNO(t->header))
+		size += calcCoreSize(AT_getAnnotations(t));
+
 	return size;
-
-    SET_MARK(t->header);
-    switch (ATgetType(t))
-    {
-    case AT_INT:
-	size = 12;
-	break;
-
-    case AT_REAL:
-    case AT_BLOB:
-	size = 16;
-	break;
-
-    case AT_APPL:
-	sym = ATgetSymbol((ATermAppl) t);
-	arity = ATgetArity(sym);
-	size = 8 + arity * 4;
-	if (!AT_isMarkedSymbol(sym))
-	{
-	    size += strlen(ATgetName(sym)) + 1;
-	    size += sizeof(struct SymEntry);
-	    AT_markSymbol(sym);
-	}
-	for (i = 0; i < arity; i++)
-	    size += calcCoreSize(ATgetArgument((ATermAppl) t, i));
-	break;
-
-    case AT_LIST:
-	size = 16;
-	while (!ATisEmpty((ATermList) t))
-	{
-		size += 16;
-	    size += calcCoreSize(ATgetFirst((ATermList) t));
-		t = (ATerm)ATgetNext((ATermList)t);
-	}
-	break;
-
-    case AT_PLACEHOLDER:
-	size = 12;
-	size += calcCoreSize(ATgetPlaceholder((ATermPlaceholder) t));
-	break;
-    }
-    return size;
 }
 
 
@@ -2080,11 +2093,13 @@ calcUniqueSubterms(ATerm t)
 		  break;
 	}
 	
+	if(HAS_ANNO(t->header))
+		nr_unique += calcUniqueSubterms(AT_getAnnotations(t));
+
 	SET_MARK(t->header);
 
 	return nr_unique;
 }
-
 
 /*}}}  */
 /*{{{  int AT_calcUniqueSubterms(ATerm t) */
@@ -2132,6 +2147,9 @@ void AT_assertUnmarked(ATerm t)
 			AT_assertUnmarked(ATgetPlaceholder((ATermPlaceholder)t));
 			break;
 	}
+
+	if(HAS_ANNO(t->header))
+		AT_assertUnmarked(AT_getAnnotations(t));
 }
 
 /*}}}  */
@@ -2164,6 +2182,10 @@ void AT_assertMarked(ATerm t)
 			AT_assertMarked(ATgetPlaceholder((ATermPlaceholder)t));
 			break;
 	}
+
+	if(HAS_ANNO(t->header))
+		AT_assertMarked(AT_getAnnotations(t));
+
 }
 
 /*}}}  */
@@ -2176,18 +2198,20 @@ void AT_assertMarked(ATerm t)
 
 int AT_calcTermDepth(ATerm t)
 {
-	int arity, i, maxdepth, depth;
+	int arity, i, maxdepth = 0, depth = 0;
 	ATermAppl appl;
 	ATermList list;
 
+	if(HAS_ANNO(t->header))
+		maxdepth = AT_calcTermDepth(AT_getAnnotations(t));
+	
   switch(ATgetType(t)) {
 		case AT_INT:
 		case AT_REAL:
 		case AT_BLOB:
-			return 1;
+			return MAX(1, maxdepth);
 
 		case AT_APPL:
-			maxdepth = 0;
 			appl = (ATermAppl)t;
 			arity = ATgetArity(ATgetSymbol(appl));
 			for(i=0; i<arity; i++) {
@@ -2198,7 +2222,6 @@ int AT_calcTermDepth(ATerm t)
 			return maxdepth+1;
 
 		case AT_LIST:
-			maxdepth = 0;
 			list = (ATermList)t;
 			while(!ATisEmpty(list)) {
 				depth = AT_calcTermDepth(ATgetFirst(list));
@@ -2209,7 +2232,8 @@ int AT_calcTermDepth(ATerm t)
 			return maxdepth+1;
 
 		case AT_PLACEHOLDER:
-			return 1+AT_calcTermDepth(ATgetPlaceholder((ATermPlaceholder)t));
+			return 1+MAX(AT_calcTermDepth(ATgetPlaceholder((ATermPlaceholder)t)),
+									 maxdepth);
 
 		default:
 			ATerror("Trying to calculate the depth of a free term.\n");
