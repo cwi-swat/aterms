@@ -1,4 +1,4 @@
-2003-08-15  (jurgenv@cwi.nl)
+2003-08-14  (jurgenv@cwi.nl)
  * Generating reverse method is unnecessary again.
  * Renamed lib directory to lib-2.0 and old-lib directory to lib-1.0
  * Renamed convert-old-adt tool to upgrade-adt
