@@ -166,20 +166,41 @@ int ATvfprintf(FILE *stream, const char *format, va_list args)
 
 	switch (*p)
 	{
+	    case 'c':
 	    case 'd':
+	    case 'i':
+	    case 'o':
+	    case 'u':
+	    case 'x':
+	    case 'X':
 		fprintf(stream, fmt, va_arg(args, int));
 	    break;
+
+	    case 'e':
+	    case 'E':
 	    case 'f':
+	    case 'g':
+	    case 'G':
 		fprintf(stream, fmt, va_arg(args, double));
 	    break;
+
+	    case 'p':
+		fprintf(stream, fmt, va_arg(args, void *));
+	    break;
+
 	    case 's':
 		fprintf(stream, fmt, va_arg(args, char *));
 	    break;
-	    case 'y':
-		AT_printSymbol(va_arg(args, Symbol), stream);
-	    break;
+
+	    /* ATerm specifics start here:
+	     * "%t" to print an ATerm;
+	     * "%y" to print a Symbol.
+	     */
 	    case 't':
 		ATwriteToTextFile(va_arg(args, ATerm), stream);
+	    break;
+	    case 'y':
+		AT_printSymbol(va_arg(args, Symbol), stream);
 	    break;
 	}
     }
