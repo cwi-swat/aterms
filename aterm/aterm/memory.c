@@ -2465,6 +2465,12 @@ ATermBlob ATmakeBlob(int size, void *data)
   header_type header = BLOB_HEADER(0);
   HashNumber hnr;
 
+/*
+  if (low_memory) {
+    AT_collect();
+  }
+*/
+
   protoBlob = (ATermBlob) protoTerm;
   protoBlob->header = header;
   CHECK_HEADER(protoBlob->header);
