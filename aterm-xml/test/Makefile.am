@@ -4,11 +4,11 @@ ATERM2XML=${top_builddir}/aterm2xml/aterm2xml
 ATDIFF=${ATERM}/bin/atdiff
 
 # all test files should be in the distribution
-EXTRA_DIST=$(wildcard *.trm) $(wildcard *.xml)
+EXTRA_DIST=$(wildcard *.trm) $(wildcard *.xml) $(wildcard *.ref)
 
 # which files are tested
 #TEST_FILES=slashdot pi title eve aterm wap wml
-TEST_FILES=eve
+TEST_FILES=slashdot pi 
 
 # TESTS is a special automake variable. It enumarates the
 # scripts that it should call when 'gmake check' is done:
@@ -28,5 +28,5 @@ CLEANFILES = *.out *.sh
 %.a2x.sh: Makefile
 	@(echo 'set -e';\
           echo '${ATERM2XML} $*.trm $*.trm.out -e -t';\
-          echo 'diff $*.xml $*.trm.out';\
+          echo 'diff $*.trm.ref $*.trm.out';\
           echo 'rm $*.trm.out') > $@ && chmod +x $@
