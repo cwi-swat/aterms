@@ -4,16 +4,16 @@ CLEANFILES = ${PACKAGE}-${VERSION}.pkg
 
 DIST_SUBDIRS = aterm utils test doc
 
-EXTRA_DIST = make_rules LICENSE $(wildcard *.pkg) aterm.spec
+EXTRA_DIST = make_rules LICENSE package aterm.spec
 
 DISTFILE = ${distdir}.tar.gz
 WWWDIR = /hosts/www/projects/MetaEnv/aterm
 
 noinst_SCRIPTS = ${PACKAGE}-${VERSION}.pkg
 
-${PACKAGE}-${VERSION}.pkg: ${PACKAGE}.pkg Makefile
-	sed 's#__VERSION__#${VERSION}#g;\
-             s#__PACKAGE__#${PACKAGE}#g' < $< > $@
+${PACKAGE}-${VERSION}.pkg: package Makefile
+	cp $ < $@
+
 
 www-dist: distcheck
 	install --mode=0664 --group=sen ${DISTFILE} ${WWWDIR}
