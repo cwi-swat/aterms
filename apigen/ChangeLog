@@ -1,4 +1,8 @@
 
+2003/01/22 (jurgenv@cwi.nl)
+ * Release 1.4
+ * LGPL license
+
 2002/12/18 (jurgenv@cwi.nl)
  * Changed overriding of setArgument. It uses an instanceof to test if the argument is of 
    the correct type. If not, descriptive RuntimeExceptions are thrown. "super.setArgument" is
