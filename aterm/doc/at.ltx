@@ -1,0 +1,744 @@
+\documentclass{article}
+
+\usepackage{epsfig}
+\usepackage{ASF+SDF}
+
+\newcommand{\ATerm}{ATerm}
+\newcommand{\ATerms}{ATerms}
+\newcommand{\Symbol}{Symbol}
+\newcommand{\Symbols}{Symbols}
+\def\metaenv{Meta-En\-vir\-on\-ment}
+\def\asmetaenv{{\sc Asf+Sdf}\ Meta-En\-vir\-on\-ment}
+\def\aterms{\mbox{ATerms}}
+\def\aterm{\mbox{ATerm}}
+\def\asfix{\mbox{\sc AsFix}}
+\def\sdf{\mbox{\sc Sdf}}
+\def\asdf{\mbox{\sc Asf+Sdf}}
+
+\title{Efficient Annotated Terms}
+\author{\small P.A. Olivier, {\tt olivierp@wins.uva.nl} \\
+        \small H. de Jong, {\tt jong@wins.uva.nl}}
+
+\begin{document}
+\maketitle
+
+%{{{ Abstract
+
+\begin{abstract}
+In this paper, we will introduce the abstract datatype \emph{Annotated Term}
+(\emph{\ATerm}).
+We will discuss a number of applications of this datatype, and we will
+present a time and space efficient implementation of this datatype, 
+called a \emph{heap table}.
+\end{abstract}
+
+%}}}
+%{{{ Introduction
+
+\section{Introduction}
+We are working on a number of applications in the area of interactive
+programming environments, that use a common datatype called \emph{\ATerm} 
+to exchange data. Typical examples of these applications include
+parsers, compilers, typecheckers, and syntax directed editors.
+
+For a lot of these applications, the \ATerm\ datatype is very closely
+related to their problem domain. It is therefore very natural to 
+use this datatype for internal computations as well.
+Because of the size of the problems that these applications
+need to handle, we need a very efficient implementation of this
+datatype, both in time and space requirements.
+
+%}}}
+%{{{ The applications domain
+
+\section{Application domain}
+
+The \ATerm\ datatype is designed for applications that operate on
+trees where each node of a tree consists of a function symbol 
+and a number of arguments.
+%% In the leaves of these trees, two types of numeric datatypes are
+%%also allowed, namely \emph{reals} and \emph{integers}.
+%%Besides using function application, two other constructors are
+%%provided to build complex terms, the \emph{list} constructor to build
+%%lists of terms and \emph{placeholders} that represent typed `holes' in terms.
+%%Every term can have an optional \emph{annotation} that is used to hold
+Typical examples include parse trees and abstract syntax trees used
+in compilers, and terms used in functional languages and rewrite engines.
+
+%}}}
+%{{{ The ATerm datatype
+
+\subsection{The \ATerm\ datatype}
+\label{aterm}
+We introduce a single datatype called \emph{annotated term} (or \emph{ATerm}).
+This datatype can be defined as follows.
+\begin{itemize}
+\item An integer constant is an \ATerm.
+\item A real constant is an \ATerm.
+\item A list of zero or more \ATerms\ is an \ATerm.
+\item A list of terms between rectangular brackets is an \ATerm.
+\item A function application consisting of a function symbol and
+      a list of zero or more \ATerms\ (arguments) is an \ATerm.
+      The number of arguments of a function application is called
+      the \emph{arity} of the function.
+\item A placeholder term containing an \ATerm\ representing the
+      type of the placeholder is an \ATerm.
+\item A blob (Binary Large data OBject) containing a length indication
+      and a byte array of binary data (possibly of very large size)
+      is an \ATerm.
+\item Every \ATerm\ may be associated with a list of labeled \ATerms\ 
+      representing a list of annotations.
+\end{itemize}
+Each of these constructs except the last one can be seen as a subtype of
+the generic type {\tt ATerm}. The last construct is the \emph{annotation
+construct}, which makes it possible to annotate terms with transparent
+information\footnote{Transparent in the sense that the result of
+most operations is independent of the annotations. This makes it easy
+to completely ignore annotations. Typical examples of the use of annotations
+includes annotating parse trees with positional or typesetting information, 
+and annotating abstract syntax trees with the result of typechecking.}.
+
+\subsection{Concrete syntax}
+
+Besides the abstract syntax described above, we also defined a
+concrete syntax for \ATerms. The prime reason for having a concrete
+syntax is to be able to exchange \ATerms\ in an accessible, human 
+readable form. In Section \ref{implementation} we also discuss a compact 
+binary format for the exchange of \ATerms\ in a format that is only 
+suitable for processing by a machine.
+
+\vspace{0.4cm}
+\input{ATerms.mtx}
+Note that there is no concrete syntax defined for blobs, because 
+a humanly readable representation of blobs depends on the type
+of data stored in the blob.
+
+\subsection{Operations}
+\label{operations}
+ On this ATerm datatype, we have 12 operations. We also introduce
+7 constants that represent the different subtypes:
+\begin{itemize}
+\item {\tt INT}:  An integer term.
+\item {\tt REAL}: A real term.
+\item {\tt TERMS}: A list of terms consisting of a first element and a tail.
+\item {\tt LIST}: A list between rectangular brackets.
+\item {\tt APPL}: A function application.
+\item {\tt PLACEHOLDER}: A placeholder term between angled
+        brackets.
+\item {\tt BLOB}: A term containing binary data.
+\end{itemize}
+
+The operations are as follows:
+\begin{itemize}
+\item {\tt make(\emph{pattern}, \emph{args})}: This operation creates a new
+term by taking the string pattern, parsing it as a term and filling
+ the holes in the resulting term with arguments taken from {\tt args}.
+\item {\tt match(\emph{pattern})}: Analyze a term, and
+and return a list of objects that matched with holes in {\tt pattern}.
+This operation is the inverse of the {\tt make} operation.
+\item {\tt readFromString(\emph{string})}: Creates a new term by parsing
+\emph{string}.
+\item {\tt readFromFile(\emph{file})}: Creates a new term by reading a
+string from \emph{file} and parsing it.
+\item {\tt readFromBinaryFile(\emph{file})}: Creates a new term by reading a
+compact binary representation from \emph{file}.
+\item {\tt getType(\emph{term})}: Retrieve the type of a term. This
+operation returns one of the constants mentioned above.
+\item {\tt match(\emph{term},\emph{pattern})}: Match \emph{term} against
+\emph{pattern}, and return a list of subterms matching with placeholders
+in \emph{pattern}.
+\item {\tt writeToFile(\emph{term},\emph{file})}: Write the text
+representation of \emph{term} to \emph{file}.
+\item {\tt writeToBinaryFile(\emph{term},\emph{file})}: Write the compact
+binary representation of \emph{term} to \emph{file}.
+\item {\tt writeToString(\emph{term})}: Return the text representation
+of \emph{term} as a string.
+\item {\tt setAnnotation(\emph{term}, \emph{label}, \emph{annotation})}:
+Change the annotation labeled by \emph{label} of \emph{term} into
+\emph{annotation}.
+\item {\tt getAnnotation(\emph{term}, \emph{label})}:
+Retrieve the annotation labeled by \emph{label} of \emph{term}.
+\item {\tt removeAnnotation(\emph{term}, \emph{label})}: Remove
+the annotation labeled by \emph{label} from \emph{term}.
+\end{itemize}
+ Together these operations form a set of operations that is sufficiently
+powerful for most users, and yet is simple enough to learn in a relatively
+short period of time. We refer to this interface as the \emph{level one}
+interface of the \ATerm\ datatype.
+ 
+In order to accomodate \ATerm\ 'power users',
+we also provide a second level interface, which provides a more extensive
+set of datatypes and functions. These extensions are useful only
+when more control over the underlying implementation is needed
+and in situations where some operations that can be implemented using
+level one constructs can be expressed more consisely and implemented more
+efficiently using level two constructs.
+The second level interface is a strict superset of the level one
+interface. An description of the second level interface
+can be found in Appendix \ref{level2}.
+
+%}}}
+%{{{ Requirements
+
+\section{Requirements}
+\label{requirements}
+In this section we will introduce a number of constraints
+that play an important role in the design and implementation of the
+\ATerm\ datatype.
+
+The implementations we have in mind must be able to handle
+large amounts of terms. This observation makes it possible to
+formulate a number of efficiency requirements on the implementation of
+the \ATerm\ datatype:
+
+\begin{itemize}
+\item The memory required to operate on a large number of \ATerms\  
+should be as small as possible. 
+\item The operations defined on \ATerms\ must be implemented very
+efficiently, both in time and space.
+\item External storage of \ATerms\ should be very cheap.
+\item It should be possible to exchange \ATerms\ between processes
+      (possibly running on different processors or even different machines)
+      without having to transfer large amounts of data, and without 
+      needing excessive amounts of CPU time for (de)compression.
+\end{itemize}
+
+We also present a couple of requirements to ensure that the implementation
+of the \ATerm\ datatype is easy to use:
+\begin{itemize}
+\item Automatic garbage collection is very important so users of this
+      datatype do not need to deallocate \ATerms\ objects explicitly.
+\item The interface of the library should
+      be intuitive, and be as small as possible to avoid a steep
+      learning curve. This is realized by restricting the first level
+      interface to the 12 operations presented in Section \ref{operations}.
+\end{itemize}
+
+Besides these requirements there are a number of practical 
+issues to consider that have a great impact on the design,
+and that make this a fairly unique problem:
+\begin{enumerate}
+\item In typical applications less than 0.1 percent of all terms have
+      an arity that is higher than 5.
+\item The expected lifetime of terms in most applications is very short.
+      This means that garbage collection must be fast and should touch
+      as little memory locations as possible to improve caching and paging 
+      performance.
+\item The total memory requirements of a application cannot be estimated
+      in advance. It must be possible to allocate more memory incrementally.
+\item A lot of applications never use annotations occur seldom. It is therefore
+      important that annotations do not add significantly to the
+      overall memory requirements when they are not used.
+\item In order to have a portable yet efficient implementation, our
+      implementation language will be C. This poses some special 
+      requirements for the garbage collection strategy\footnote{We also
+      implemented the library in Java. In this case, a lot of the issues
+      we discuss in this paper are not relevant, either because we can use 
+      build-in features of Java (garbage collection), or
+      because we just cannot express these low level concerns in Java.}
+\end{enumerate}
+     
+%}}}
+%{{{ Design
+
+\section{Design}
+\label{design}
+In this section, we will discuss a number of design decisions we made,
+all of which are based on the requirements presented in the
+previous section. These decisions involve the mechanics behind optimal sharing,
+the garbage collection strategy, and the representation of lists.
+
+\subsection{Optimal sharing}
+\label{hashing}
+Probably the most important design decision is to base our implementation
+of the \ATerm\ datatype on \emph{optimal sharing}. In order to fully exploit
+the redundancy that is typically present in terms that are build,
+we never create the same term twice. Before a new term is created,
+a lookup is done to see if that term already exist. If it exists, the old
+version is reused and no new term is created.
+This results in optimally shared terms.
+
+This design decision has a number of important consequences:
+\begin{itemize}
+\item Because terms can be shared without the creator knowing about it,
+      terms cannot be modified without creating unwanted side effects.
+\item This means that terms effectively become \emph{immutable} after creation.
+      Destructive updates on terms are not allowed.
+\item Two terms are only equal when they are physically the same term.
+      This means that the equality check on terms can be done in constant
+      time, by means of comparing memory addresses.
+\end{itemize}
+
+The optimal sharing of terms can only be maintained when we check
+at term creation time if a particular term already exists. This term
+lookup must be executed \emph{extremely fast}, in order to implement term
+creation efficiently. We decided to use the fastest algorithm available
+in this situation, hashing. Using a hashfunction that depends on the
+\emph{addresses} of the function symbol and the arguments of a function
+application, we can quickly search for a function application before
+creating it.
+
+\subsubsection{Collisions}
+One of the issues when using hash techniques
+is how to handle collisions in the hashtable. The simplest
+technique is to lineary chain entries together that hash to the 
+same bucket. In this scenario, one pointer is needed in each
+object for hash chaining, which in our case would mean a memory
+overhead of about 25 percent. Other solutions for collision
+resolution will either increase the memory requirements (binary tree
+chaining for instance), or the CPU requirements for insertions
+or deletions (open addressing, see \cite{Knuth73}).
+
+\subsubsection{Direct or indirect hashing}
+Another issue is whether to store all terms directly in
+the hashtable, or store only references in the hashtable.
+The advantage of storing the objects directly in the hashtable is
+that we can save a memory access when retrieving a term.
+However, there a severe drawbacks to this approach:
+\begin{itemize}
+\item We need a separate hashtable for each term size in order to
+      decrease the internal fragmentation. 
+\item We cannot rehash the old terms because rehashing
+      means that we physical have to move the objects in memory.
+      This means that the hashtable cannot grow beyond its initial size.
+\item The internal fragmentation is increased, because empty slots
+      in the hashtable are as large as the object size instead of
+      only one machine word.
+\end{itemize}
+Because of these problems, we decided to store references in the
+hashtable instead.
+
+When the hashtable grows full, we can now allocate a new and
+bigger table, and rehash all the entries of the old table in
+the new one.
+
+%{{{ Garbage collection
+
+\subsection{Garbage collection}
+The most common strategies for automatic recycling of unused space
+are reference counting, mark-compact garbage collection, and 
+mark-sweep garbage collection. We will discuss these three strategies 
+in turn, and explain why we base our design on mark-sweep garbage collection.
+
+\subsubsection{Reference counting}
+Reference counting works by keeping track of the number of references
+to an object. If this number drops to zero, there are no more references
+to this object and it can be reclaimed.
+
+Reference counting has the advantage that unused terms can be reclaimed 
+immediately when they become unused, while in the other strategies 
+reclamation of space is more batch oriented. 
+In most of the target applications this is not a major
+issue but it might be an important in some cases, especially
+in real-time applications where the unpredictable pauses in execution
+caused by sweeping garbage collection are inacceptable.
+
+Unfortunately, in languages like C that do not offer any runtime support
+for dynamic memory management, the programmer needs to assist
+in updating reference counts, for instance at function exit.
+Maybe an even bigger disadvantage is that reference counts need to
+be updated everytime the number of references to an object changes.
+The overall work that has to be done for a pure reference counting
+approach is much higher than in the other strategies.
+
+Another disadvantage of reference counting is the space overhead needed 
+to store the reference count.
+As we shall see later on, it is possible to implement the \ATerm\ datatype
+using only a couple of machine words\footnote{we assume a word size
+of 4 bytes in this paper.} per object. Adding a whole word
+for keeping track of the reference count is therefore unacceptable.
+
+\subsubsection{Mark-compact garbage collection}
+
+Mark-compact garbage collection works by periodically copying all
+\emph{live} objects to a fresh empty memory space, and freeing the
+original space because it only contains unused objects. Although
+this strategy has merits, it is unusable in our situation. 
+Mark-compact garbage collection assumes that objects
+can be relocated to a different memory location, but when using C as
+implementation language, we cannot be sure to find all
+references to an object without relying on support from the programmer.
+
+\subsubsection{Mark-sweep garbage collection}
+
+Mark-sweep garbage collection works using three (sometimes two) phases.
+In the first phase, all the objects on the heap are marked as `dead'.
+In the second phase, all objects reachable from the known set of root
+objects are marked as `live'. In the third phase, all `dead' objects
+are swept into a list of free objects.
+
+Mark-sweep garbage collection is very attractive, because it
+can be implemented in C both efficiently, and without support from the 
+programmer or compiler \cite{BW88}. Mark-sweep collection is more efficient,
+both in time and space than reference counting \cite{JL96}.
+The typical space overhead for a mark-sweep garbage collection algorithm is
+only 1 bit per object.
+
+\subsubsection{Design of a mark-sweep algorithm}
+Given these facts, we opted for a variant of Mark-sweep garbage collection
+to reclaim unused terms because this gives us the highest possible performance,
+and because small pauses due to garbage collection are acceptable, as long
+as they are short enough to allow smooth user interaction.
+
+We have designed a variant of the basic
+mark-sweep algorithm that fits seamlessly with the hashing strategy that
+we discussed earlier. It turns out that the solution we adopted for using 
+hashtables efficiently, also benefits the garbage collection strategy.
+
+As we shall see later on, most objects consist of only a couple
+of machine words. This enables us to base the memory management 
+algorithms we use on a small number of block sizes.
+
+For each block size, we store all the mark bits in a single bitmap.
+In the first phase of the mark-sweep algorithm, we clear the mark
+bits by clearing all bits in every bitmap. During the rest of the
+mark phase, only objects that are alive need to be traversed.
+For every live object found, the corresponding bit in the bitmap is set.
+
+Instead of sweeping all the unused objects in a free list in the
+sweep phase, a more efficient approach is to use \emph{lazy sweeping} 
+(see \cite{Hu82}).
+This means that the heap is swept incrementally each time a free
+object is needed. This has the advantage that no free list manipulation
+is needed, and that the complete garbage collection phase can be
+completed \emph{without touching a single unused object}. Only live
+nodes are traversed. This can have a dramatic impact on both the
+caching and paging behaviour of the system, especially when most
+objects are recycled quickly. Typically, only a small portion of all 
+objects survives the garbage collection. Not having to touch
+the objects that do not survive the garbage collection is a huge 
+advantage.
+
+At allocation time, a free object can be found by searching for the
+first clear bit in the bitmap that corresponds with the size of
+object that is needed.
+
+%}}}
+
+%{{{ Representation of lists
+
+\subsection{Representation of lists}
+After function applications, lists are the second most used \ATerm\ 
+constructs. A (memory) efficient representation of lists is therefore
+very important. Due to the nature of the operations on \ATerm\ lists, 
+there are
+two obvious list representations: an array of term references or a linked
+list of term references. Experiments have shown that in typical applications
+quite varying list sizes are encountered. The array approach is inferior, 
+because adding and deleting elements of a list would become to expensive.
+So we have opted for the linked list approach.
+{\tt <PO> dit moet uitgebreider.}
+
+%}}}
+
+%}}}
+%{{{ Implementation
+
+\section{Implementation}
+\label{implementation}
+
+In this section, we will describe some of the more interesting
+implementation aspects of the C implementation of the \ATerm\
+datatype. We will first present the memory efficient encoding
+of \ATerms\ we have chosen. We will explain how term sharing,
+garbage collection can be implemented efficiently using this encoding.
+We will describe how the different
+operations on \ATerms\ described in Section \ref{aterm}
+can also be implemented efficiently.
+
+%}}}
+%{{{ Term encoding
+
+\subsection{Term encoding}
+
+After discussing the requirements of the library (Section \ref{requirements}),
+and the design (Section \ref{design}), we will now describe the implementation
+of the \ATerm\ datatype in C\cite{KR88}{\tt <PO> need a reference to ANSI-C!}.
+
+An important issue in the implementation is how to represent \ATerms\ 
+in such a way that all operations can be performed efficiently, without using
+more memory than is absolutely necessary. 
+We will first introduce the memory efficient encoding of \ATerm s we have 
+chosen. Then will discuss how 
+this encoding can be used to implement all operations efficiently,
+including term sharing and garbage collection.
+
+We assume that one machine word consists
+of 4 bytes, which is typical for modern architectures.
+Every \ATerm\ object is stored in one or more machine words.
+The first byte of the first word is called the \emph{header}
+of the object, and consists of three fields (see Figure \ref{header}):
+
+\begin{figure}[htb]
+  \centerline{\epsfig{file=header.ps,scale=0.6}}
+  \caption{\label{header}The header layout}
+\end{figure}
+ 
+\begin{itemize}
+\item A field consisting of 3 bits that indicate the type of the term.
+\item A field consisting of 4 bits representing the arity (number of
+      pointers to other terms) of this object. When this field
+      contains the maximum value of 15, the actual arity of this 
+      object is stored in the second word.
+\item A field consisting of 1 bit that indicates of this term has an
+      annotation or not.
+\end{itemize}
+
+The second word is used for hashing, and links together all terms in the same
+hashbucket.
+
+Figure \ref{encoding} shows the encoding of the different term types.
+
+\begin{figure}[!htb]
+  \centerline{\epsfig{file=encoding.ps,scale=0.6}}
+  \caption{\label{encoding}Encoding of the different term types}
+\end{figure}
+
+\paragraph{APPL encoding}
+The remaining 3 bytes in the first word are used to point
+to the function symbol. The words following the first word
+hold references to the function arguments.
+
+Function applications can be encoded in
+$2+n$ machine words, with $n$ the arity of the
+function application, with $n < 15$. If $n >= 15$, $15$ is used,
+and the actual arity is stored in the third word. In this case,
+the arguments start after the third word instead of after the second word.
+In this case the function application uses $3+n$ words.
+
+\paragraph{TERMS encoding}
+The binary list constructor can be seen as a special function
+application with no function symbol and an arity of 2. The
+third word points to the first element in the list, this is called
+the {\tt first} field, the fourth word
+points to the tail of the list, and is called the {\tt next} field. 
+The length of the list is
+stored in the three bytes after the header in the first word.
+The empty list\footnote{Due to the uniqueness of terms, only
+one instance of the empty list is present at any one time}
+is represented using a TERMS object with a {\tt NULL} pointer as both the
+first and next fields, and a length of 0.
+
+\paragraph{LIST encoding}
+This toplevel list constructor has an arity of 1, so the
+second word contains a reference to the actual TERMS object
+linking that connects the elements of this list. Again the
+three bytes after the header are used to store the length
+of the list.
+
+\paragraph{INT encoding}
+In an integer term, the third word contains the integer value.
+The arity of an integer term is 0.
+
+\paragraph{REAL encoding}
+In an real term, the third and fourth word contain the real value 
+represented represented by an 8 byte floating point number.
+The arity of a real term is 0.
+
+\paragraph{PLACEHOLDER encoding}
+The placeholder term has an arity of 1, where the third
+word contains a pointer to the placeholder type.
+
+\paragraph{BLOB encoding}
+The length of the data contained in a BLOB term is stored in
+the three bytes after the header. A pointer to the actual data
+is stored in the third word.
+
+\subsubsection{Annotations}
+
+The perceptive reader might have wondered why we only reserve a single
+bit for annotations. This bit only indicates that a term has an annotation
+or not,
+not what the annotation is. To find the annotation, a separate hashtable
+lookup has to be done using a table that contains $(term,annotation)$ pairs.
+This technique of using a hashtable to connect extra information with
+an object is called \emph{hash linking} \cite{Bo75}.
+Only a single bit of information is used in every term to represent
+annotations.
+
+This technique requires an extra hash-lookup when the annotation
+of a term is needed, but annotations are usually very rare\footnote{ 
+typically, only 1 in every 1000 terms is annotated}. 
+The absence of annotations can be detected by checking a single bit.
+
+%}}}
+
+\section{Conclusions}
+
+\section{Future work}
+
+\bibliographystyle{alpha}
+\bibliography{../thesis/thesis}
+
+\appendix
+
+%{{{ Level 2 interface
+
+\section{Level 2 interface}
+\label{level2}
+The operations described in Section \ref{aterm} are not sufficient for
+all applications. Some applications need more control over the underlying 
+implementation, or need operations that that can be implemented using
+level one constructs but can be expressed more consisely and implemented more
+efficiently using special constructs.
+
+We have therefore designed a level 2 interface is a strict superset of the 
+level 1 interface described in Section \ref{aterm}. Some new datatypes
+are introduced, as well as some new operations on \ATerms.
+
+The level 2 interface introduces 8 new datatypes. The first datatype
+represents function application symbols, and is called \Symbol.
+The other 7 datatypes are subtypes of the \ATerm\ datatype, and implement 
+the different term types. These subtypes allow us to introduce operations
+that are only valid for one specific term type, instead of the general
+\ATerm\ operations described earlier.
+
+%{{{ Symbol
+
+\paragraph{\Symbol:} A symbol consists of a string defining the function
+name, an arity, and an indication if the symbol name is quoted or not.
+The operations on symbols are:
+\begin{itemize}
+\item {\tt makeSymbol(\emph{name},\emph{arity},\emph{quoted})}: Construct
+a new symbol. If a symbol with the given name, arity, and quotation already 
+exists, the existing symbol is returned. Otherwise a new symbol is created
+and returned. \Symbols\ are also subject to garbage collection in order
+to avoid long running (interactive) programs from slowly running out symbols.
+\item {\tt getName(\emph{symbol})}: Retrieve the name of a symbol.
+\item {\tt getArity(\emph{symbol})}: Retrieve the arity of a symbol.
+\item {\tt isQuoted(\emph{symbol})}: Check if a symbol is quoted.
+\end{itemize}
+
+%}}}
+%{{{ ATermAppl
+
+\paragraph{ATermAppl:} This datatype represents function applications
+consisting of a function symbol and a number of arguments.
+The operations on this datatype are:
+\begin{itemize}
+\item {\tt ATermAppl makeAppl(Symbol \emph{symbol}, ATerm \emph{arg1},..., 
+		    ATerm \emph{argn})}:
+      Construct a new function application with the given symbol and arguments.
+\item {\tt Symbol applSymbol(ATermAppl \emph{appl})}: 
+      Retrieve the function symbol of a function application.
+\item {\tt ATerm applArgument(ATermAppl \emph{appl}, int \emph{n})}: 
+      Retrieve a specific argument.
+\end{itemize}
+
+%}}}
+%{{{ ATermList
+
+\paragraph{ATermList:} This datatype represents the top-level list
+constructor. The operations on this datatype are:
+\begin{itemize}
+\item {\tt ATermList makeList(ATerms \emph{terms})}: 
+      Build a list given a list of terms.
+\item {\tt ATerms listTerms(ATermList \emph{list})}: Retrieve the list
+      of elements of this list.
+\end{itemize}
+
+%}}}
+%{{{ ATerms
+
+\paragraph{ATerms:} This datatype represents the binary list constructor.
+The operations on this datatype are:
+\begin{itemize}
+\item {\tt ATerms makeTerms(ATerm \emph{head}, ATerm \emph{tail})}:
+      Build a list given its head and tail.
+\item {\tt ATerms makeTerms\emph{n}(ATerm \emph{el1},..., ATerm \emph{eln})}:
+      This is actuall a family of operations, one for each \emph{n} between
+      0 and 8. These operations are used to quickly construct small lists.
+\item {\tt int listLength(ATerms \emph{terms})}: Retrieve the length of a list.
+\item {\tt ATerm listFirst(ATerms \emph{terms})}: Retrieve the head of a list.
+\item {\tt ATerms listNext(ATerms \emph{terms})}: Retrieve the tail of a list.
+\item {\tt ATerms listPrefix(ATerms \emph{terms})}: Retrieve a list
+      consisting of all elements of \emph{terms}, except the last one.
+\item {\tt ATerm listLast(ATerms \emph{terms})}: Retrieve the last element of
+      a list.
+\item {\tt ATerms listSlice(ATerms \emph{terms}, int \emph{start}, 
+                           int \emph{end})}: Retrieve a slice of a list.
+\item {\tt boolean listEmpty(ATerms \emph{terms})}: Check if a list is empty.
+\item {\tt ATerms listAppend(ATerms \emph{terms}, ATerm \emph{el})}:
+      Append a single element to the end of a list.
+\item {\tt ATerms listConcat(Aterms \emph{terms1}, ATerms \emph{terms2})}:
+      Concatenate two lists.
+\item {\tt int listSearch(ATerms \emph{terms}, ATerm \emph{el}, int \emph{n})}:
+      Search for an element in a list, and return the index of the first
+      location where the element is present. Start searching at index \emph{n}.
+      If the element is not present after element \emph{n}, return -1.
+\item {\tt int listRSearch(ATerms \emph{terms}, ATerm \emph{el}, int \emph{n})}:
+      Search backwards for an element in a list, and return the index of the
+      last location where the element is present. Start searching at index
+      \emph{n}. If the element is not present before element \emph{n},
+      return -1.
+\item {\tt ATerm getElement(ATerms \emph{terms}, int \emph{index})}:
+      Retrieve one indexed element from a list.
+\end{itemize}
+
+%}}}
+%{{{ ATermInt
+
+\paragraph{ATermInt:} This datatype represents integer terms.
+The operations on ATermInt are:
+
+\begin{itemize}
+\item {\tt ATermInt makeInt(int \emph{value})}: Construct a new integer term.
+\item {\tt int intValue(ATermInt \emph{i})}: Retrieve the value of an 
+      integer term.
+\end{itemize}
+
+%}}}
+%{{{ ATermReal
+
+\paragraph{ATermReal:} This datatype represents real-number terms.
+The operations on ATermReal are:
+
+\begin{itemize}
+\item {\tt ATermReal makeReal(double \emph{value})}: Construct a new 
+      integer term.
+\item {\tt double realValue(ATermReal \emph{r})}: Retrieve the value of 
+      a real term.
+\end{itemize}
+
+%}}}
+%{{{ ATermPlaceholder
+
+\paragraph{ATermPlaceholder:} This datatype represents placeholder terms.
+The operations on ATermPlaceholder are:
+
+\begin{itemize}
+\item {\tt ATermPlaceholder makePlaceholder(ATerm \emph{type})}: 
+      Construct a new placeholder term.
+\item {\tt ATerm placeholderType(ATermPlaceholder \emph{placeholder})}: 
+      Retrieve the type of this placeholder.
+\end{itemize}
+
+%}}}
+%{{{ ATermBlob
+
+\paragraph{ATermBlob:} This datatype represents Binary Large OBject terms.
+The memory management of blobs must be done explicitly by the application
+programmer. Blobs are never allocated, freed, or even touched by the
+\ATerm\ library. Blob destructors can be registered using the
+{\tt registerBlobDestructor} function. All registered destructors are
+called before the space occupied by a `dead' ATermBlob is reused. 
+
+The operations on ATermBlob are:
+
+\begin{itemize}
+\item {\tt ATermBlob *makeBlob(int \emph{size}, void *\emph{data})}: 
+      Construct a new blob term.
+\item {\tt int blobSize(ATermBlob *\emph{blob})}: Retrieve the size of
+      a blob.
+\item {\tt void *blobData(ATermBlob *\emph{blob})}: Retrieve the data
+      pointer stored in a blob.
+\item {\tt void registerBlobDestructor(void (*\emph{destructor})(ATermBlob *))}:\newline
+      register a blob destructor, which can be used to free the
+      memory associated with the blob's data.
+\end{itemize}
+
+%}}}
+
+%}}}
+
+\end{document}

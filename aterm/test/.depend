@@ -1,0 +1,3 @@
+test-alloc.o: test-alloc.c ../aterm/memory.h ../aterm/aterm2.h \
+ ../aterm/aterm1.h ../aterm/encoding.h ../aterm/asymbol.h \
+ ../aterm/tbool.h
