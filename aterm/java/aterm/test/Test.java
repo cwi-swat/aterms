@@ -31,9 +31,9 @@ public class Test
 
   //}}}
 
-  //{{{ void assert(boolean condition)
+  //{{{ void test_assert(boolean condition)
 
-  void assert(boolean condition)
+  void test_assert(boolean condition)
   {
     if(!condition) {
       throw new RuntimeException("assertion failed.");
@@ -51,22 +51,22 @@ public class Test
     term[0] = factory.makeInt(3);
     term[1] = factory.makeInt(3);
 
-    assert(term[0].getType() == ATerm.INT);
-    assert(term[0].getInt() == 3);
-    assert(term[0] == term[1]);
+    test_assert(term[0].getType() == ATerm.INT);
+    test_assert(term[0].getInt() == 3);
+    test_assert(term[0] == term[1]);
 
     System.out.println("toString: " + term[0]);
-    assert(term[0].toString().equals("3"));
+    test_assert(term[0].toString().equals("3"));
 
     List result;
 
     result = term[0].match("3");
-    assert(result != null);
-    assert(result.size() == 0);
+    test_assert(result != null);
+    test_assert(result.size() == 0);
 
     result = term[0].match("<int>");
-    assert(result != null);
-    assert(result.size() == 1);
+    test_assert(result != null);
+    test_assert(result.size() == 1);
 
     System.out.println("pass: testMakeInt");
   }
@@ -81,16 +81,16 @@ public class Test
     term[0] = factory.makeReal(Math.PI);
     term[1] = factory.makeReal(Math.PI);
 
-    assert(term[0].getType() == ATerm.REAL);
-    assert(term[0].getReal() == Math.PI);
-    assert(term[0] == term[1]);
+    test_assert(term[0].getType() == ATerm.REAL);
+    test_assert(term[0].getReal() == Math.PI);
+    test_assert(term[0] == term[1]);
 
     List result;
 
     result = term[0].match("<real>");
-    assert(result != null);
-    assert(result.size() == 1);
-    assert(result.get(0).equals(new Double(Math.PI)));
+    test_assert(result != null);
+    test_assert(result.size() == 1);
+    test_assert(result.get(0).equals(new Double(Math.PI)));
 
     System.out.println("pass: testMakeReal");
   }
@@ -121,13 +121,13 @@ public class Test
     apples[5] = factory.makeAppl(symmies[3], args);
     apples[6] = apples[2].setArgument((ATerm)apples[0], 0);
 
-    assert(apples[6].equals(apples[1]));
-    assert(apples[1].equals(apples[3]));
-    assert(!apples[2].equals(apples[1]));
-    assert(!apples[2].equals(apples[6]));
-    assert(!apples[1].equals(apples[2]));
-    assert(!apples[2].equals(apples[3]));
-    assert(!apples[0].equals(apples[1]));
+    test_assert(apples[6].equals(apples[1]));
+    test_assert(apples[1].equals(apples[3]));
+    test_assert(!apples[2].equals(apples[1]));
+    test_assert(!apples[2].equals(apples[6]));
+    test_assert(!apples[1].equals(apples[2]));
+    test_assert(!apples[2].equals(apples[3]));
+    test_assert(!apples[0].equals(apples[1]));
 
     System.out.println("application tests ok.\n");
   }
@@ -148,7 +148,7 @@ public class Test
 
     key = factory.parse("key3");
     value = factory.parse("value3");
-    assert(dict.dictGet(key).equals(value));
+    test_assert(dict.dictGet(key).equals(value));
   }
 
   //}}}
@@ -168,9 +168,9 @@ public class Test
 
     key = factory.parse("key3");
     value = factory.parse("value3");
-    assert(t.getAnnotation(key).equals(value));
+    test_assert(t.getAnnotation(key).equals(value));
     t = t.removeAnnotation(key);
-    assert(t.getAnnotation(key) == null);
+    test_assert(t.getAnnotation(key) == null);
   }
 
   //}}}
@@ -199,15 +199,15 @@ public class Test
   {
     ATermList list = (ATermList)factory.parse("[1,2,3]");
     ATermList result = list.remove(factory.parse("2"));
-    assert(result.equals(factory.parse("[1,3]")));
+    test_assert(result.equals(factory.parse("[1,3]")));
     
     list = (ATermList)factory.parse("[1,2,3]");
     result = list.replace(factory.parse("99"), 1);
-    assert(result.equals(factory.parse("[1,99,3]")));
+    test_assert(result.equals(factory.parse("[1,99,3]")));
 
     list = factory.makeList();
     result = list.append(factory.parse("1"));
-    assert(result.equals(factory.parse("[1]")));
+    test_assert(result.equals(factory.parse("[1]")));
   }
 
   //}}}
@@ -232,7 +232,7 @@ public class Test
     stream.close();
     System.out.println("done writing test.taf2");
 
-    assert(t1.equals(t2));
+    test_assert(t1.equals(t2));
   }
 
   //}}}
