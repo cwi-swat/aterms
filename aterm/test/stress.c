@@ -34,7 +34,7 @@ char stress_id[] = "$Id$";
 void test_failed(char *category, int id)
 {
   fprintf(stderr, "%s test %d failed!\n", category, id);
-  exit(1);
+  abort();
 }
 
 /*}}}  */
@@ -471,7 +471,7 @@ void testMatch(void)
   int i;
   double r;
   ATerm type;
-  char *name[2];
+  char *name[3];
   int size;
   void *data;
   ATermList list;
@@ -498,9 +498,9 @@ void testMatch(void)
   test_assert("match", 18, ((char *)data)[1] == 'b');
 
 			  
-	test_assert("match", 19, ATmatch(t[0], "<appl(1,<real>,<term>,<id>,"
-								 "<appl(<list>)>,<term>)>",
-              &name[0], &r, &t[7], &name[1], &name[2], &list, &t[6]));
+  test_assert("match", 19, ATmatch(t[0],
+              "<appl(1,<real>,<term>,<id>,<appl(<list>)>,<term>)>",
+              &name[0], &r,   &t[7], &name[1], &name[2], &list, &t[6]));
   test_assert("match", 20, r == 3.14);
   test_assert("match", 21, streq(name[0], "f"));
   test_assert("match", 22, streq(name[2], "b"));
