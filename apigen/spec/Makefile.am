@@ -6,7 +6,7 @@
 
 SDF2TABLE	= ${PGENBIN}/sdf2table
 
-SUBDIRS		= gen-c-api sdf2-to-adt
+SUBDIRS		= sdf2-to-adt
 
 data_DATA	= Gen-C-API.trm.tbl Sdf2-to-ADT.trm.tbl
 CLEANFILES	= ${data_DATA}

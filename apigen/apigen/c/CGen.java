@@ -194,6 +194,7 @@ public class CGen
 
     /* Source stuff */
     source.println("#include <aterm2.h>");
+    source.println("#include <deprecated.h>");
     source.println("#include \"" + output + ".h\"");
     source.println();
   }
@@ -436,8 +437,8 @@ public class CGen
     printFoldOpen(source, decl);
     source.println(decl);
     source.println("{");
-    source.print("  return ATmatchTerm(arg, " + prefix + "pattern" + type_id
-		 + capitalize(buildId(alt.getId())));
+    source.print("  return ATmatchTerm((ATerm)arg, " + prefix + "pattern"
+                 + type_id + capitalize(buildId(alt.getId())));
     Iterator fields = type.altFieldIterator(alt.getId());
     while (fields.hasNext()) {
       fields.next();

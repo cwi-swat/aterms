@@ -1,3 +1,9 @@
+2001/01/15 ({jong,markvdb}@cwi.nl)
+  * sdf directory removed from top-level Makefile.am
+  * gen-c-api stuff removed, adt-to-c introduced
+  * several improvements in c-backend needed to get c-code compiled
+  * heuristic added in sdf2-to-adt spec. for productions with only 1 alt.
+
 2000/09/27 (jong@cwi.nl)
   * Version 0.6
   * Fixed capitalization bug in build-valid-c-afun's

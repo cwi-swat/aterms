@@ -57,14 +57,26 @@ equations
 
 [equ-production-to-adt]
   $Attributes = { $Attr*1, cons(at-literal(""" $Char* """)), $Attr*2 },
-  $AltId = afun($Char*),
-  $TypeId = sort-to-afun($Sort),
-  $AFProd = build-asfix-prod($ModName, $Symbol*, $Sort, $Attributes),
-  $AFArgs = build-asfix-appl-args($Symbol*),
-  $Entry  = [ $TypeId, $AltId, appl($AFProd, w(""), [$AFArgs]) ],
+  $AltId   = afun($Char*),
+  $TypeId  = sort-to-afun($Sort),
+  $AFProd  = build-asfix-prod($ModName, $Symbol*, $Sort, $Attributes),
+  $AFArgs  = build-asfix-appl-args($Symbol*),
+  $Entry   = [ $TypeId, $AltId, appl($AFProd, w(""), [$AFArgs]) ],
   $Entries = build-list-entries($Symbol*)
   ===>
   production-to-adt($ModName, $Symbol* -> $Sort $Attributes) = $Entry, $Entries
+
+[default-production-to-adt]
+  $AltId   = afun("D" "e" "f" "a" "u" "l" "t"),
+  $TypeId  = sort-to-afun($Sort),
+  $AFProd  = build-asfix-prod($ModName, $Symbol*, $Sort, $Attributes),
+  $AFArgs  = build-asfix-appl-args($Symbol*),
+  $Entry   = [ $TypeId, $AltId, appl($AFProd, w(""), [$AFArgs]) ],
+  $Entries = build-list-entries($Symbol*)
+  ===>
+  production-to-adt($ModName, $Symbol* -> $Sort $Attributes) = $Entry, $Entries
+ 
+
 
 [equ-sort-to-afun]
   sort-to-afun(sort($Char*)) = afun($Char*) 
