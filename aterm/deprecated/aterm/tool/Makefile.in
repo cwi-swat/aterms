@@ -17,7 +17,7 @@ INSTALL     = @INSTALL@
 INSTALL_DAT = @INSTALL_DAT@
 INSTALL_PRG = @INSTALL_PRG@
 
-SCRIPTS		= tifstojava java2-adapter
+SCRIPTS		= tifstojava java-adapter
 DISTFILES   = Makefile.in test.tb test.tifs ${SCRIPTS} ${SOURCE}
 
 SOURCE = Testing.java JavaTif.java ToolBusChannel.java TestTool.java \
