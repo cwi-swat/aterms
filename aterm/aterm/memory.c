@@ -251,7 +251,7 @@ void AT_initMemory(int argc, char *argv[])
   int i;
 	unsigned int hnr;
 
-	table_class = 16;
+	table_class = 17;
 
 	/*{{{  Analyze arguments */
 
@@ -264,7 +264,6 @@ void AT_initMemory(int argc, char *argv[])
 
 	/*}}}  */
 
-	table_class = 16;
 	table_size  = 1<<table_class;
 	table_mask  = table_size-1;
 
