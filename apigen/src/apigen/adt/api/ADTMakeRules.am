@@ -1,0 +1,13 @@
+
+
+ADTAPI0=\
+Entries.java EntriesImpl.java\
+Entries_EmptyImpl.java Entries_Empty.java\
+Entries_ListImpl.java Entries_List.java\
+Entry.java EntryImpl.java\
+Entry_ConstructorImpl.java Entry_Constructor.java\
+Entry_ListImpl.java Entry_List.java
+
+ADTAPI=\
+ADTFactory.java ADTConstructor.java\
+${ADTAPI0} 
