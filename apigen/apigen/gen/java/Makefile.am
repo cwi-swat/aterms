@@ -4,21 +4,20 @@
 
 CLASSPATH_ENV = CLASSPATH=${top_srcdir}:$(EXTERNAL_JARS)
 
-java_JAVA =\
+javadir = ${prefix}/classes/apigen/gen/java
+JAVAROOT = ${top_builddir}
+
+java_JAVA = \
 	AlternativeGenerator.java \
 	FactoryGenerator.java \
 	ForwardGenerator.java \
 	GenericConstructorGenerator.java \
 	JavaGenerator.java \
 	JavaTomSignatureImplementation.java \
-	JavaTomSignatureImplementation.java \
 	JavaTypeConversions.java \
 	ListTypeGenerator.java \
 	Main.java \
 	MakeRulesGenerator.java \
-	SeparatedListTypeImplGenerator.java\
+	SeparatedListTypeGenerator.java \
 	TypeGenerator.java \
 	VisitorGenerator.java
-
-javadir = ${prefix}/classes/apigen/gen/java
-JAVAROOT = ${top_builddir}
