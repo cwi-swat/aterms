@@ -31,6 +31,7 @@ extends Generator
 
   public static boolean folding = false;
   public static boolean visitable = false;
+  public static boolean jtom = false;
 
   private aterm.ATermFactory factory;
 
@@ -54,7 +55,8 @@ extends Generator
     System.err.println("\t-import <package>         (can be repeated)");
     System.err.println("\t-input <in>               [-]");
     System.err.println("\t-folding                  [off]");
-    System.err.println("\t-visitable                [off]");  
+    System.err.println("\t-visitable                [off]"); 
+    System.err.println("\t-jtom                     [off]"); 
     System.exit(1);
   }
 
@@ -92,6 +94,8 @@ extends Generator
         folding = true;
       } else if ("-visitable".startsWith(args[i])) {
         visitable = true;
+      } else if ("-jtom".startsWith(args[i])) {
+        jtom = true;
       } else {
         usage();
       }
@@ -125,7 +129,13 @@ extends Generator
     
     genFactoryClassFile(api);
     genTypeClassFiles(api);
+    
+    if (jtom) {
+      genTomSignatureFile(api);
+    }
   }
+
+	
 
   private void genFactoryClassFile(ADT api) throws IOException {
     class_name = capitalize(buildId(pkg)) + "Factory";
@@ -142,6 +152,10 @@ extends Generator
     
     stream.close();
   }
+
+	private void closeStream() {
+		stream.close();
+	}
   
   private void genFactoryClass(ADT api) throws IOException {  
     println("class " + class_name + " extends PureFactory");
@@ -237,10 +251,17 @@ extends Generator
   }
 
   private void createClassStream(String class_name) {
-    char sep = File.separatorChar;
-    createStream(basedir + sep + pkg.replace('.', sep) + sep + class_name + ".java");
+    createFileStream(class_name, ".java"); 
   }
   
+  private void createTomSignatureStream(String name) {
+    createFileStream(name, ".signature");
+  }
+  
+  private void createFileStream(String name, String ext) {
+    char sep = File.separatorChar;
+    createStream(basedir + sep + pkg.replace('.', sep) + sep + name + ext);
+  }
 	
 
 	private void genTypeClass(Type type) {
@@ -863,6 +884,102 @@ extends Generator
  
 
   //}}}
+
+  private void genTomSignatureFile(ADT api) {
+    String filename = capitalize(buildId(pkg));
+    createTomSignatureStream(filename);
+    
+    info("generating " + filename + ".signature");
+    
+    genTomBuiltinTypes();
+    genTomTypes(api);
+  }
+
+	private void genTomBuiltinTypes() {
+    println("%typeterm String {");
+    println("  implement { String }");
+    println("  get_fun_sym(t) { t }");
+    println("  cmp_fun_sym(s1,s2) { s1.equals(s2) }");
+    println("  get_subterm(t,n) { null }");
+    println("}");
+    println();
+    println("%typeterm Integer {");
+    println("  implement { Integer }");
+    println("  get_fun_sym(t) { t }");
+    println("  cmp_fun_sym(s1,s2) { s1.equals(s2) }");
+    println("  get_subterm(t,n) { null }");
+    println("}");
+    println();
+	}
+
+
+  private void genTomTypes(ADT api) {
+    Iterator types = api.typeIterator();
+    
+    while (types.hasNext()) {
+      Type type = (Type) types.next(); 
+      genTomType(type);
+    }
+  }
+
+  private void genTomType(Type type) {
+    String class_name = buildClassName(type);
+    println("%typeterm " + class_name + " {");
+    println("  implement { " + class_name + " }");
+    println("  get_fun_sym(t) { null }");
+    println("  cmp_fun_sym(s1,s2) { false }");
+    println("  get_subterm(t,n) { null }");
+    println("}");
+    println();
+    
+    genTomAltOperators(type);
+  }
+
+  private void genTomAltOperators(Type type) {
+    Iterator alts = type.alternativeIterator();
+    
+    while (alts.hasNext()) {
+      Alternative alt = (Alternative) alts.next();
+      genTomAltOperator(type, alt);
+    }
+  }
+
+  private void genTomAltOperator(Type type, Alternative alt) {
+    String class_name = buildClassName(type);
+    String operator_name = capitalize(buildId(alt.getId()));
+    String alt_class_name = buildAltClassName(type,alt);
+      
+    print  ("%op " + class_name + " " + operator_name);
+    
+    Iterator fields = type.altFieldIterator(alt.getId());
+    if (fields.hasNext()) {
+      print("(");
+      while (fields.hasNext()) {
+        Field field = (Field) fields.next();
+        String field_id = buildId(field.getId());
+        String field_class = buildClassName(field.getType());
+        String field_type = field_class;
+        print  (field_id + ":" + field_type);
+      
+        if (fields.hasNext()) {
+          print (", ");
+        }
+      }
+      print(")");
+    }
+    println(" {");
+    println("  fsym { }");
+    println("  is_fsym(t) { t.is" + operator_name + "() }");
+    fields = type.altFieldIterator(alt.getId());
+    while (fields.hasNext()) {
+      Field field = (Field) fields.next();
+      String field_id = buildId(field.getId());
+      println("  get_slot(" + field_id + ",t) { t.get" + capitalize(field_id) +
+              "() }");
+    }
+    println("}");
+    println();    
+  }
 
   //{{{ private String buildClassName(Type type)
 
