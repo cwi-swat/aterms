@@ -1022,13 +1022,13 @@ Risla library           &   708838 &     40073 &   94.35 &   960170 &  1.35   \\
 LPO                     &  8894391 &    225229 &   97.47 &  3701438 &  0.42   \\ \hline \hline
 Averages		&	   &	       &   94.82 &	    &  1.29   \\ \hline    
 \end{tabular}
-\caption{Memory usage of \ATerms\footnote{Since we consider
-Random-unique and Random as worst cases, we do not include them in the
-row \emph{Averages} in this and the following tables.}} \label{measurements-in-memory}
+\caption{Memory usage of \ATerms} \label{measurements-in-memory}
 \end{center}
 \end{table}
 
-In Table~\ref{measurements-in-memory}, we give results for the memory
+In Table~\ref{measurements-in-memory}\footnote{Since we consider
+Random-unique and Random as worst cases, we do not include them in the
+row \emph{Averages} in this and the following tables.}, we give results for the memory
 usage for our sample terms. The five columns give the total number of
 nodes in each term, the number of unique nodes in each term, the
 sharing percentage, the amount of memory (in bytes) used for the
@@ -1056,7 +1056,7 @@ in a separate paper.
 \begin{table}[tb]
 \begin{center}
 \begin{tabular}{|l||r|r|r|r|r|r|} \hline
-Term			& \multicolumn{1}{c|}{Ascii}
+Term			& \multicolumn{1}{c|}{\ascii}
 			& \multicolumn{1}{c|}{Bytes/}
 			& \multicolumn{1}{c|}{Read}
 			& \multicolumn{1}{c|}{Read/}
@@ -1086,12 +1086,13 @@ Risla library           &2955964 & 4.17 &  4.25 &  6.00 &  1.40 & 1.98  \\ \hlin
 LPO                     &41227481& 4.64 & 81.90 &  9.21 & 29.16 & 3.28  \\ \hline \hline
 Averages		&	 & 4.36 &       &  7.38 &       & 2.48  \\ \hline
 \end{tabular}
-\caption{Reading and writing \ATerms\ as Ascii text} \label{measurements-text}
+\caption{Reading and writing \ATerms\ as \ascii\ text} \label{measurements-text}
 \end{center}
 \end{table}
 
 In Table~\ref{measurements-text} we give results for reading and writing
-our sample terms as Ascii text files. The six columns give the size of the text
+our sample terms as \ascii\ text files. 
+The six columns give the size of the text
 representation of the test term in bytes, the average number of bytes per node,
 the time needed to read the text file, average time needed to read a node,
 the time needed to write the text file, and the average time needed to write a node.
@@ -1159,7 +1160,7 @@ the \ascii\ representation involves a straightforward term traversal.
 \begin{center}
 \begin{tabular}{|l||r|r|r|r|r|} \hline
 
-Term			& \multicolumn{1}{c|}{Ascii}		
+Term			& \multicolumn{1}{c|}{\ascii}		
 			& \multicolumn{1}{c|}{\baf}		
 			& \multicolumn{1}{c|}{Comp.}	
 			& \multicolumn{1}{c|}{{\tt gzip} }	
@@ -1188,10 +1189,10 @@ Averages		&		&		& 95.3		&               & 96.3  \\ \hline
 In Table~\ref{measurements-baf-gzip} we show how the compression in \baf\ files
 compares to the compression of the standard Unix utility {\tt gzip}.
 Considering the same set of examples, we give figures
-for a straightforward dump of each term as Ascii text (column 1),
+for a straightforward dump of each term as \ascii\ text (column 1),
 the size of the \baf\ version of the same term (column 2)
 and percentage of compression achieved (column 3).
-Next, we give the results of compressing the Ascii version of each term
+Next, we give the results of compressing the \ascii\ version of each term
 with {\tt gzip} (column 4), and compression achieved (column 5).
 The compression factors are near 96\% in both cases.
 The worst case compression of {\tt gzip} (66\%) is considerably
@@ -1202,7 +1203,7 @@ better than that of \baf\ (12\%).
 
 \begin{tabular}{|l||r|r|r|} \hline
 
-			& \multicolumn{1}{c|}{Memory}	& \multicolumn{1}{c|}{Ascii}	& \multicolumn{1}{c|}{\baf}\\ \hline \hline
+			& \multicolumn{1}{c|}{Memory}	& \multicolumn{1}{c|}{\ascii}	& \multicolumn{1}{c|}{\baf}\\ \hline \hline
 Size per node (bytes)	& 1.3		& 4.4	&  0.2  \\
 
 Read node ($\mu$s)	& 		& 7.4	& 0.3 \\
@@ -1256,7 +1257,7 @@ of the semantics in terms of equations, which are interpreted
 as rewrite rules.
 The development of \asdf\ specifications is supported by
 an integrated programming environment, 
-the \asdf\ Meta-Environment \cite{Kli93.meta}.
+the \asmetaenv\ \cite{Kli93.meta}.
 
 Each module or term is
 represented by its parse tree which contains both the syntax rules
