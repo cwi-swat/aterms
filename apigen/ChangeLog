@@ -1,3 +1,7 @@
+2001/11/14 (jong@cwi.nl)
+ * Removed '-m' invocations and now uses apply-function from
+   pt-support, rather than asc-support
+
 2001/11/05 ({jurgenv,markvdb}@cwi.nl)
  * Modulename id are no longer added to exported productions.
  * Adapted tests.

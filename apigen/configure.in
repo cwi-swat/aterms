@@ -42,7 +42,6 @@ ATERMBIN="${ATERM}/bin"
 AC_SUBST(ATERMBIN)
 
 dnl }}}
-
 dnl {{{ Handle --with-asc-support
 
 AC_PACKAGE_REQUIRE(asc-support, asc-support-config,
@@ -61,17 +60,16 @@ AC_PACKAGE_REQUIRE(pt-support, unparsePT,
 	[  --with-pt-support=DIR   ParseTree is in DIR])
 AC_SUBST(PT_SUPPORT)
 
-ASFIXINC=${PT_SUPPORT}/include
-AC_SUBST(ASFIXINC)
+dnl PTINC=${PT_SUPPORT}/include
+dnl AC_SUBST(PTINC)
+dnl 
+dnl PTLIB=${PT_SUPPORT}/lib
+dnl AC_SUBST(PTLIB)
 
-ASFIXLIB=${PT_SUPPORT}/lib
-AC_SUBST(ASFIXLIB)
-
-UNPARSEBIN=${PT_SUPPORT}/bin
-AC_SUBST(UNPARSEBIN)
+PTBIN=${PT_SUPPORT}/bin
+AC_SUBST(PTBIN)
 
 dnl }}}
-
 dnl {{{ Handle --with-pgen
 
 AC_PACKAGE_REQUIRE(pgen, sdf2table,
@@ -92,20 +90,17 @@ SGLRBIN=${SGLR}/bin
 AC_SUBST(SGLRBIN)
 
 dnl }}}
-
-dnl {{{  Handle --with-asfe
+dnl {{{ Handle --with-asfe
 
 AC_PACKAGE_REQUIRE(asfe, asfe,
 	[  --with-asfe=DIR         asf-evaluator is in DIR])
 AC_SUBST(ASFE)
 
-EVALBIN=${ASFE}/bin
-AC_SUBST(EVALBIN)
-
+ASFBIN=${ASFE}/bin
+AC_SUBST(ASFBIN)
 
 dnl }}}
-
-dnl {{{  Handle --with-cflags
+dnl {{{ Handle --with-cflags
 
 AC_ARG_WITH(cflags,
    [  --with-cflags=CFLAGS    standard options of c compiler],
@@ -118,7 +113,6 @@ AC_SUBST(CFLAGS)
 
 
 dnl }}}
-
 
 dnl {{{ Output files
 
