@@ -18,6 +18,7 @@ CLEANFILES	= *~ encoding.eps header.eps \
 CHAPS		= at.ltx
 AT_PICS		= header.eps encoding.eps hierarchy.eps
 SP_PICS		= appl-enc.eps
+XO_PICS		= header.eps
 
 FIG2DEV		= fig2dev
 EXAMPLEDIR	= examples
