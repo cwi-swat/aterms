@@ -5,12 +5,15 @@ import apigen.gen.TypeConverter;
 import apigen.gen.tom.TomSignatureImplementation;
 
 public class CTomSignatureImplementation implements TomSignatureImplementation {
+	private boolean jtype;
+
 	private static TypeConverter converter;
 
   private String prefix;
 
-  public CTomSignatureImplementation(String prefix) {
+  public CTomSignatureImplementation(String prefix, boolean jtype) {
     this.prefix= prefix;
+    this.jtype = jtype;
   }
 
 	static {
@@ -149,8 +152,14 @@ public class CTomSignatureImplementation implements TomSignatureImplementation {
                   + "(" + arg1 + "," + arg2 + ")";
 	}
 
-	public String OperatorName(String id) {
-		return StringConversions.makeIdentifier(id);
+	public String OperatorName(String type, String id) {
+        if (jtype) {
+            return StringConversions.makeIdentifier(type) + "_" +
+            StringConversions.makeIdentifier(id);
+        }
+        else {
+		  return StringConversions.makeIdentifier(id);
+        }
 	}
 
 	public String OperatorType(String type, String id) {

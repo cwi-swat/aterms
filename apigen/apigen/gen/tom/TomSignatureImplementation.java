@@ -36,7 +36,7 @@ public interface TomSignatureImplementation {
 	String TypeGetSubTerm(String term, String n);
 	String TypeEquals(String type, String arg1, String arg2);
 
-	String OperatorName(String id);
+	String OperatorName(String type, String id);
 	String OperatorType(String type, String id);
 	String OperatorGetSlot(String arg, String fieldType, String field_id);
 	String OperatorIsFSym(String string, String type, String alt);
