@@ -312,9 +312,11 @@ public class AlternativeGenerator extends JavaGenerator {
         } else if (fieldType.equals("term")) {
             println("   return getArgument(" + fieldIndex + ");");
         } else if (fieldType.equals("chars")) {
+            JavaGenerationParameters params = getJavaGenerationParameters();
+            String factoryClass = FactoryGenerator.qualifiedClassName(params);
             println(
                 "   return "
-                    + buildFactoryGetter()
+                    + factoryClass
                     + ".charsToString(getArgument("
                     + fieldIndex
                     + "));");

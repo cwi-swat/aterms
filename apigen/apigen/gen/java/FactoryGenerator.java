@@ -771,7 +771,7 @@ public class FactoryGenerator extends JavaGenerator {
 
     private void genPrivateMembers(ADT api) {
         JavaGenerationParameters params = getJavaGenerationParameters();
-
+        
         // TODO: maybe ATermFactory is enough instead of PureFactory
         println("  private aterm.pure.PureFactory factory;");
         println();
@@ -779,27 +779,46 @@ public class FactoryGenerator extends JavaGenerator {
         Iterator types = api.typeIterator();
         while (types.hasNext()) {
             Type type = (Type) types.next();
-            String typeClassName = TypeGenerator.qualifiedClassName(params, type);
-            Iterator alts = type.alternativeIterator();
+            genTypeMembers(type, params);
+            println();
+        }
+    }
 
-            if (type instanceof ListType) {
-                String protoVar = protoListVariable(type);
-                println("  private " + typeClassName + ' ' + protoVar + ';');
-                println("  private aterm.ATerm " + patternListVariable(type) + ';');
-                println();
-            } else {
-                while (alts.hasNext()) {
-                    Alternative alt = (Alternative) alts.next();
-                    String funVar = funVariable(type, alt);
-                    String protoVar = prototypeVariable(type, alt);
-                    String patternVar = patternVariable(type, alt);
+    private void genTypeMembers(Type type, JavaGenerationParameters params) {
+        if (type instanceof ListType) {
+            genListTypeMembers(type, params);
+        } else {
+            genConstructorTypeMembers(type, params);
+        }
+    }
 
-                    println("  private aterm.AFun " + funVar + ';');
-                    println("  private " + typeClassName + " " + protoVar + ';');
-                    println("  private aterm.ATerm " + patternVar + ';');
-                    println();
-                }
-            }
+    private void genConstructorTypeMembers(Type type, JavaGenerationParameters params) {
+        Iterator alts = type.alternativeIterator();
+
+        while (alts.hasNext()) {
+            Alternative alt = (Alternative) alts.next();
+            genAlternativeMembers(type, alt, params);
+        }
+    }
+
+    private void genAlternativeMembers(Type type, Alternative alt, JavaGenerationParameters params) {
+        String typeClassName = TypeGenerator.qualifiedClassName(params, type);            
+        String funVar = funVariable(type, alt);
+        String protoVar = prototypeVariable(type, alt);
+        String patternVar = patternVariable(type, alt);
+
+        println("  private aterm.AFun " + funVar + ';');
+        println("  private " + typeClassName + " " + protoVar + ';');
+        println("  private aterm.ATerm " + patternVar + ';');
+    }
+
+    private void genListTypeMembers(Type type, JavaGenerationParameters params) {
+        String typeClassName = TypeGenerator.qualifiedClassName(params, type);
+        String protoVar = protoListVariable(type);
+        println("  private " + typeClassName + ' ' + protoVar + ';');
+        
+        if (type instanceof SeparatedListType) {
+          println("  private aterm.ATerm " + patternListVariable(type) + ';');
         }
     }
 
