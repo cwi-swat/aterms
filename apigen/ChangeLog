@@ -1,55 +1,47 @@
+# $Id$
 
+Tue Sep 28 13:41:05 CEST 2004 <{jurgenv,jong}@cwi.nl>
+ * Printing of APINAME was commented out in the Main of the Java generator,
+   that's why the script adt-to-java was broken.
 
 Wed Sep 22 12:24:44 CEST 2004 <jurgenv@cwi.nl>
  * Fixed some distcheck problems in apigen/adt/api
  * Added cyclic.adt to EXTRA_DIST
 
 2004-09-16  pem  <pem@becky.local>
-
-  * apigen/gen/tom/TomSignatureGenerator.java: generate stamps for
-	concrete ADT
+ * apigen/gen/tom/TomSignatureGenerator.java: generate stamps for
+  concrete ADT
 
 2004-09-03  pem
-
-  * extended the generation of visitor/visitable
-	  - to visit types (in addition to constructors)
-		- support the replacementVisitor (in addtion to the voidVisitor)
+ * extended the generation of visitor/visitable
+   - to visit types (in addition to constructors)
+   - support the replacementVisitor (in addtion to the voidVisitor)
 
 2004-08-06  Antoine Reilles  <tonio@bonzai>
-
-	* try to fix --visitable with modules
-
-	* generates singletons for java factories
+ * try to fix --visitable with modules
+ * generates singletons for java factories
 
 2004-08-05 pem
-
-	* allows cyclic importations
+  * allows cyclic importations
 
 2004-07-28 Julien Guyom
-
-	* bootstrap new ADT with module
+  * bootstrap new ADT with module
   * still compatible with previous adt format
   * new design code for Java
 
 2004-06-21  pem  <pem@polly.loria.fr>
-
   * apigen/gen/tom/TomSignatureGenerator.java: import aterm.tom 
     and atermlist.tom instead of generating them
 
 2004-05-19  pem  <pem@polly.loria.fr>
-
   * apigen/gen/java/ListTypeGenerator.java: renamed factory into
-	    localFactory and atermFactory
-
+      localFactory and atermFactory
   * apigen/gen/java/AbstractTypeGenerator.java: renamed local
     factory into abstractTypeFactory to remove warnings reported by Jikes  
 
 2004-05-07  pem  <pem@polly.loria.fr>
-
- * apigen/gen/tom/TomSignatureGenerator.java: implementation of %typeterm and %typelist 
-   are now prefixed by the package and the apiname
-
-# $Id$
+ * apigen/gen/tom/TomSignatureGenerator.java: implementation of %typeterm 
+   and %typelist are now prefixed by the package and the apiname
 
 Thu Apr 29 07:48:23 CEST 2004 <jurgenv@cwi.nl>
  * Added JavaTomSignatureGenerator.java to Makefile.am. Where is the
@@ -331,7 +323,7 @@ Wed Aug 27 14:23:46 CEST 2003 <{jong,kooiker}@cwi.nl>
  * Added switch to conversion tool (-l) if you want to automatically detect list
    idioms and generate list entries in the new ADT
    
-2003-07-07 	(jurgenv@cwi.nl)
+2003-07-07   (jurgenv@cwi.nl)
  * Added generation of is<type> predicates. You can now ask any term that is build by a generated
     factory if he is of a specific type.
     
@@ -345,7 +337,7 @@ Wed Aug 27 14:23:46 CEST 2003 <{jong,kooiker}@cwi.nl>
 2003-05-30    <pem@bach>
  * apigen/gen/java/TypeImplGenerator.java: generate public 
    fromString and fromTextFile static functions
-	
+  
 2003-04-14    <pem@bach>
  * apigen/gen/java/AlternativeImplGenerator.java: fix a hashing
    problem. 'b' is now initialized by the AFun().hashCode() instead
@@ -378,7 +370,7 @@ Wed Aug 27 14:23:46 CEST 2003 <{jong,kooiker}@cwi.nl>
 
 2003-03-11  Pierre-Etienne Moreau  <pem@escher.loria.fr>
  * --jtype option added to generate tom constructors with prefix
- * jtom signature generated only if --jtom is active	  
+ * jtom signature generated only if --jtom is active    
  * fix several bugs related to prefix and type conversions
    (String has been replaced by Str, Integer by Int,...) 
       
@@ -756,7 +748,7 @@ Wed Aug 27 14:23:46 CEST 2003 <{jong,kooiker}@cwi.nl>
  * Added test-case for sdf2-to-adt
  * Added top module 'Sdf2-to-C-API'
  * Attributes are now supported in Sdf2 spec.
-	
+  
 2000/08/22 ({jong,olivierp}@cwi.nl)
  * Now ignoring generated baf files
  * Added Sdf2-to-ADT specification: we are now able to generate an API
