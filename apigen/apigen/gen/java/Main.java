@@ -123,7 +123,7 @@ public class Main {
 					else {
 						File apiFile = new File(input);
 						String apiFileName = apiFile.getName();
-						apiName = apiFileName.substring(0, apiFileName.lastIndexOf((int) '.'));
+						apiName = apiFileName.substring(0, apiFileName.lastIndexOf('.'));
 					}
 				}
 
@@ -154,7 +154,7 @@ public class Main {
 		}
 	}
 
-	static private void generateAPI(ADT adt) throws IOException {
+	static private void generateAPI(ADT adt) {
 		new FactoryGenerator(adt, basedir, apiName, pkg, imports, verbose).run();
 		new GenericConstructorGenerator(adt, basedir, apiName, pkg, verbose, visitable).run();
 		new MakeRulesGenerator(adt, basedir, apiName, verbose).run();
@@ -172,7 +172,7 @@ public class Main {
 		generateTypeClasses(adt);
 	}
 
-	static private void generateTypeClasses(ADT api) throws IOException {
+	static private void generateTypeClasses(ADT api) {
 		Iterator types = api.typeIterator();
 		while (types.hasNext()) {
 			Type type = (Type) types.next();
