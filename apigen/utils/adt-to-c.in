@@ -27,6 +27,7 @@ Parameters:
   -C | --compat-term      generate old term conv. macros   [off]
   -d | --dicttoc <FILE>   override default dicttoc         [see below]
   -t | --no-timestamp     do not output timestamps         [off]
+  -j | --jtom             generate jtom signature          [off]
   -v | --verbose          be verbose during generation     [off]
   -h | --help             display this information
 
@@ -75,6 +76,7 @@ require() {
    VERBOSE=0
 TIMESTAMPS=1
     COMPAT=0
+      JTOM=0
 
 # data needed
    CGEN=${prefix}/classes
@@ -119,6 +121,9 @@ do
     -v | --verbose)
       VERBOSE=1 ;;
 
+    -j | --jtom)
+      JTOM=1 ;;
+
     -h | --help)
       usage; exit 0 ;;
 
@@ -162,6 +167,12 @@ else
   OPTIONAL_COMPAT=""
 fi
 
+if [ $JTOM -gt 0 ]; then
+  OPTIONAL_JTOM="-jtom"
+else
+  OPTIONAL_JTOM=""
+fi
+
 # }}}
 
 # {{{  generate C code from ADT
@@ -171,7 +182,8 @@ java  -classpath ${CGEN}:${JAVA_ATERM}:${SHARED_OBJECTS} apigen.gen.c.CGen \
 	  -output ${OUTPUT}	\
 	  ${OPTIONAL_PROLOGUE}	\
 	  ${OPTIONAL_PREFIX}    \
-	  ${OPTIONAL_COMPAT}
+	  ${OPTIONAL_COMPAT}    \
+	  ${OPTIONAL_JTOM}
 
 if [ $TIMESTAMPS -gt 0 ]; then
   ${DICTTOC} -dict ${OUTPUT}.dict
