@@ -54,11 +54,38 @@ public class ListTypeImplGenerator extends TypeImplGenerator {
 		genFromString(typeName);
 		genFromTextFile(typeName);
 		genFromTerm();
+		genToTerm();
+		genToString();
 		genGetters();
 		genPredicates();
 		genGetStaticFactory();
 		genSharedObjectInterface();
+		genInsertMethod();
+		genReverseMethod();
 		println("}");
+	}
+	
+	private void genReverseMethod() {
+		String className = ListTypeGenerator.className(type);
+		
+	    println("  public aterm.ATermList reverse() {");
+		println("  	 " + typeName + " cur = this;");
+		println("  	 " + typeName + " reverse = ("+ typeName +") " + staticFactoryGetter() +".make" + className + "();");
+		println("  	 while(!cur.isEmpty()){");
+		println("  	   reverse = (" + typeName + ")reverse.insert((aterm.ATerm) cur.getHead());");
+		println("  	   cur = cur.getTail();");
+		println("  	 }");
+		println("  	 return reverse;");
+		println("  }");
+	}
+
+	private void genInsertMethod() {
+		String className = ListTypeGenerator.className(type);
+		
+		println("  public aterm.ATermList insert(aterm.ATerm head) {");
+		println("    return (aterm.ATermList)" + staticFactoryGetter() + ".make" + className + "((" + elementTypeName + ") head, (" + className + ") this);");
+		println("  }");
+		
 	}
 
 	private void genPredicates() {
@@ -148,6 +175,10 @@ public class ListTypeImplGenerator extends TypeImplGenerator {
 	}
 
 	private void genIsAlternativeMethods() {
+		String className = ListTypeGenerator.className(type);
+		println("  public boolean isEmpty() {");
+		println("    return this == " + FactoryGenerator.className(apiName) + ".empty" + className + ";");
+		println("  }");
 		println("  public boolean isMany() {");
 		println("    return !isEmpty();");
 		println("  }");
@@ -179,6 +210,28 @@ public class ListTypeImplGenerator extends TypeImplGenerator {
 		println("  }");
 		ATermFactory f;
 
+	}
+
+	private void genToTerm() {
+		String get_factory = staticFactoryGetter();
+		String className = ListTypeGenerator.className(type);
+
+		println("  public aterm.ATerm toTerm()");
+		println("  {");
+		println("    " + className + " reversed = ("+ className +")this.reverse();");
+		println("    aterm.ATermList tmp = " + get_factory + ".makeList();");
+		println("    for (; !reversed.isEmpty(); reversed = reversed.getTail()) {");
+		println("       aterm.ATerm elem = reversed.getHead().toTerm();");
+		println("       tmp = " + get_factory + ".makeList(elem, tmp);");
+		println("    }");
+		println("    return tmp;");
+		println("  }");
+	}
+
+	private void genToString() {
+		println("  public String toString() {");
+		println("    return toTerm().toString();");
+		println("  }");
 	}
 
 }

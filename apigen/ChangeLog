@@ -1,8 +1,9 @@
 2003-08-08  (jurgenv@cwi.nl)
  * Set dependency on aterm-java 1.4 because of visibility of ATermListImpl
  * Added implementation of lists for Java. Lists inherit from ATermListImpl.
- * Only basic support for lists works: fromTerm and make. Reverse, append and
-   so forth not yet tested!
+ * Only basic support for lists works: fromTerm and make. 
+ * Had to add generation of 'insert' and 'reverse' (copied from ATermLibrary) 
+   because of ClassCastExceptions concerning ATempty
    
 2003-08-06 (jurgenv@cwi.nl)
  * Refactored generation of list constructors to a simpler design. There

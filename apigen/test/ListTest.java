@@ -56,7 +56,7 @@ public class ListTest {
     
     mods[3] = factory.makeModules(m, mods[2]);
     strs[3] = mods[3].toString();
-    testAssert("modules([\"amodule\",\"amodule\",\"amodule\"])".equals(strs[3]),
+    testAssert("[\"amodule\",\"amodule\",\"amodule\"]".equals(strs[3]),
 	       "toStringTest3");
 
     l = factory.makeModuleList_Modules(mods[3]);
