@@ -44,7 +44,7 @@ dnl {{{ Handle --with-aterm-java
 
 AC_PACKAGE_REQUIRE(aterm-java, aterm-java-config,
 	[  --with-aterm-java=DIR  ATerm-Java-library is in DIR])
-JAVA_ATERM="${ATERM_JAVA}/share/aterm-2.0.jar"
+JAVA_ATERM="${ATERM_JAVA}/share/aterm-1.0.jar"
 AC_SUBST(JAVA_ATERM)
 dnl }}}
 dnl {{{ Handle --with-shared-objects
