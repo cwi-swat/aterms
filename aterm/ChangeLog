@@ -1,10 +1,9 @@
+$Id$
 
-0.6:
-- Term hashtable is now automatically resized.
-- Added CHANGES.txt (this file)
+2000/03/01 <mdejonge@cwi.nl>
+   * generation of shared libraries temporarily disabled because of
+     instability of libtool/automake.
 
-0.5:
-
-- Introduced Binary ATerm Format (BAF).
-- Symbols are now also freed by the garbage collector.
+2000/02/27 <mdejonge@cwi.nl>
+   * aterm library is now configured/build using automake/libtool
 
