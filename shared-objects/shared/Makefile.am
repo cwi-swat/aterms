@@ -4,4 +4,5 @@ JAVAROOT = ${top_builddir}
 
 java_JAVA = \
 	SharedObject.java \
-	SharedObjectFactory.java
+	SharedObjectFactory.java \
+        HashFunctions.java
