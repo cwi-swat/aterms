@@ -48,6 +48,7 @@ public class APIGenerator extends CGenerator {
     protected void generate() {
         genPrologue();
         genTypes(adt);
+        genBottomSorts();
         genInitFunction();
         genTermConversions(adt);
         genListsApi(adt);
@@ -56,6 +57,29 @@ public class APIGenerator extends CGenerator {
         genAccessors(adt);
         genSortVisitors(adt);
         genEpilogue();
+    }
+
+    private void genBottomSorts() {
+        Iterator types = adt.bottomTypeIterator();
+        TypeConverter conv = new TypeConverter(new CTypeConversions());
+
+        if (types.hasNext()) {
+            hprintFoldOpen("definition of bottom types");
+            while (types.hasNext()) {
+                String type = (String) types.next();
+
+                if (!conv.isReserved(type)) {
+                    System.err.println(
+                        "Warning: undefined (bottom) type "
+                            + type
+                            + " defaults to ATerm");
+                    hprintln("typedef ATerm " + buildTypeName(type) + ";");
+                }
+            }
+
+            hprintFoldClose();
+            hprintln();
+        }
     }
 
     private void genListsApi(ADT adt) {
