@@ -14,19 +14,19 @@ public class BuiltinsTest
 
   public void run() throws java.io.IOException {
   
-      T t = factory.makeT_Trm(factory.parse("one"));
+      D t = factory.makeD_Trm(factory.parse("one"));
       testAssert(t.toString().equals("term(one)"), "make term test");
       
       D d = factory.makeD_Double(new Double(1.0));
       testAssert(d.toString().equals("double(1.0)"),"make double test");
       
-      I i = factory.makeI_Integer(new Integer(1));
+      D i = factory.makeD_Integer(new Integer(1));
       testAssert(i.toString().equals("int(1)"),"make int test");
       
-      L l = factory.makeL_Lst((aterm.ATermList) factory.parse("[one]"));
+      D l = factory.makeD_Lst((aterm.ATermList) factory.parse("[one]"));
       testAssert(l.toString().equals("list([one])"), "make list test");
       
-      S s = factory.makeS_String("one");
+      D s = factory.makeD_String("one");
       testAssert(s.toString().equals("str(\"one\")"), "make str test");
   }
 

@@ -5,8 +5,11 @@
  * Added test ADT with all builtins in there to test support for int, double,
    term and lists. Added C and Java tests for this ADT.
  * Fixed a number of bugs concerning builtins in the Java backend
- * Added a error message when an ADT uses a builtin name as the name of an
+ * Added an error message when an ADT uses a builtin name as the name of an
    alternative. That is not allowed.
+ * Added an error message when within a type a field name is used more times but
+   for different types of fields. For the same type of field (for example the 'lhs'
+   of the Boolean and and or) it is still allowed.
    
 2003-08-08  (jurgenv@cwi.nl)
  * Set dependency on aterm-java 1.4 because of visibility of ATermListImpl

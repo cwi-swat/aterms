@@ -23,9 +23,9 @@ public class Type {
 	}
 
 	public void addAlternative(Alternative alt) {
-    alts.add(alt);
-    
-    extractFields(alt.getPattern(), new Location(alt.getId()));  
+		alts.add(alt);
+
+		extractFields(alt.getPattern(), new Location(alt.getId()));
 	}
 
 	private void extractFields(ATerm t, Location loc) {
@@ -75,15 +75,13 @@ public class Type {
 					String fieldType = appl.getAFun().getName();
 					loc.makeTail();
 					addField(fieldId, fieldType, loc);
-				}
-				else if (ph.getType() == ATerm.APPL) {
+				} else if (ph.getType() == ATerm.APPL) {
 					appl = (ATermAppl) ph;
 					String fieldId = appl.getAFun().getName();
 					appl = (ATermAppl) appl.getArgument(0);
 					String fieldType = appl.getAFun().getName();
 					addField(fieldId, fieldType, loc);
-				}
-				else {
+				} else {
 					throw new RuntimeException("illegal field spec: " + t);
 				}
 
@@ -94,37 +92,46 @@ public class Type {
 				break;
 		}
 	}
-      
-  public boolean hasAlternative(String id) 
-  {
-    Iterator alts = alternativeIterator();
-    
-    while (alts.hasNext()) {
-      Alternative alt = (Alternative) alts.next();
-      
-      if (alt.getId().equals(id)) {
-        return true;
-      }
-    }
-    
-    return false;
-  }
-  
+
+	public boolean hasAlternative(String id) {
+		Iterator alts = alternativeIterator();
+
+		while (alts.hasNext()) {
+			Alternative alt = (Alternative) alts.next();
+
+			if (alt.getId().equals(id)) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 	private void addField(String id, String type, Location location) {
 		Field field;
 
+		if (id.equals("term")
+			|| id.equals("int")
+			|| id.equals("str")
+			|| id.equals("real")
+			|| id.equals("list")) {
+			throw new RuntimeException("Illegal use of reserved name \"" + id + "\" as field name in type " + this.id);
+		}
+
 		field = (Field) fields.get(id);
+		
 		if (field == null) {
 			field = new Field(id, type);
 			fields.put(id, field);
 			field_list.add(field);
+		} else if (field.getLocation(location.getAltId()) != null) {
+			throw new RuntimeException(
+				"\"" + id + "\" occurs more than once in alternative \"" + location.getAltId() + "\"");
+		} else if (field.getType() != type) {
+			throw new RuntimeException(
+				"Illegal field name \"" + id + "\" is used for different types of fields in type:" + this.id);
 		} 
-    else if (field.getLocation(location.getAltId()) != null) {
-      throw new RuntimeException("\"" + id + "\" occurs more than once in alternative \"" +
-                                 location.getAltId() + "\"");
-    }
-    
-
+		
 		field.addLocation(location);
 	}
 
@@ -155,8 +162,7 @@ public class Type {
 
 				while (path1.hasNext()) {
 					if (!path2.hasNext()) {
-						throw new RuntimeException(
-							"incompatible paths: " + field1 + "," + field2);
+						throw new RuntimeException("incompatible paths: " + field1 + "," + field2);
 					}
 					Step step1 = (Step) path1.next();
 					Step step2 = (Step) path2.next();
@@ -172,8 +178,7 @@ public class Type {
 					}
 
 					if (type1 != type2) {
-						throw new RuntimeException(
-							"incompatible paths: " + field1 + "," + field2);
+						throw new RuntimeException("incompatible paths: " + field1 + "," + field2);
 					}
 
 					if (step1.getIndex() < step2.getIndex()) {
@@ -185,8 +190,7 @@ public class Type {
 					}
 				}
 				if (path2.hasNext()) {
-					throw new RuntimeException(
-						"incompatible paths: " + field1 + "," + field2);
+					throw new RuntimeException("incompatible paths: " + field1 + "," + field2);
 				}
 				if (o1 != o2) {
 					throw new RuntimeException("asjemenou?");
@@ -213,23 +217,17 @@ public class Type {
 	}
 
 	public String toString() {
-		return "type["
-			+ id
-			+ ", "
-			+ alts.toString()
-			+ ",\n"
-			+ fields.toString()
-			+ "]";
+		return "type[" + id + ", " + alts.toString() + ",\n" + fields.toString() + "]";
 	}
-	
+
 	public int getAltArity(Alternative alt) {
 		Iterator fields = altFieldIterator(alt.getId());
-	    int arity = 0;
-    
-	    for(arity = 0; fields.hasNext(); fields.next()) {
-	      arity++;
-	    }
-    
-	    return arity;
-    }
+		int arity = 0;
+
+		for (arity = 0; fields.hasNext(); fields.next()) {
+			arity++;
+		}
+
+		return arity;
+	}
 }

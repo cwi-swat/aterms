@@ -124,7 +124,7 @@ public class ADT {
 					altId.equals("term") ||
 					altId.equals("real") ||
 					altId.equals("list")) {
-					throw new RuntimeException("Can not used reserved type name (" + altId + ") as name of alternative in " + entry);
+					throw new RuntimeException("Illegal use of reserved name (" + altId + ") as name of alternative in " + entry);
 				}
 				else {
 				  addAlternative(typeId, type, altId, alt);
