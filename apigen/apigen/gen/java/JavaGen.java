@@ -10,6 +10,7 @@ import java.util.*;
 import apigen.*;
 import apigen.adt.*;
 import apigen.gen.Generator;
+import aterm.ParseError;
 import aterm.pure.PureFactory;
 
 //}}}
@@ -40,9 +41,12 @@ extends Generator
   private List	 imports;
   private String class_name;
   private String api_name;
+  private String api_factory;
+  private String api_constructor;
   
   private InputStream input;
 	private String path;
+
 
   //{{{ private static void usage()
 
@@ -121,7 +125,7 @@ extends Generator
         api_name = input.substring(0, input.lastIndexOf((int) '.'));
       }
     }
-    
+  
     JavaGen gen = new JavaGen(inputStream,api_name,basedir, pkg, imports);
   }
 
@@ -132,30 +136,43 @@ extends Generator
   public JavaGen(InputStream input, String api_name, String basedir, String pkg, List imports)
     throws IOException
   {
+    initializeConstants(RESERVED_TYPES);
+        
     this.api_name = api_name;
+    this.api_factory = capitalize(buildId(api_name)) + "Factory";
+    this.api_constructor = capitalize(buildId(api_name)) + "Constructor";
     this.input   = input;
     this.basedir = basedir;
     this.pkg	 = pkg;
     this.imports = imports;
     
-    initializeConstants(RESERVED_TYPES);
+
 
     factory = new PureFactory();
-    aterm.ATerm adt = factory.readFromFile(input);
-    ADT api = new ADT(adt);
+    try {
+      aterm.ATerm adt = factory.readFromFile(input);
+      ADT api = new ADT(adt);
     
-    genFactoryClassFile(api);
-    genTypeClassFiles(api);
+      genFactoryClassFile(api);
+      genGenericConstructorClassFile();
+      genTypeClassFiles(api);
     
-    if (jtom) {
-      genTomSignatureFile(api);
+      if (jtom) {
+        genTomSignatureFile(api);
+      }
+    }
+    catch (ParseError exc) {
+      System.err.println("A parse error occurred in the ADT file:");
+      System.err.println(exc);
     }
   }
 
 	
 
   private void genFactoryClassFile(ADT api) throws IOException {
-    class_name = capitalize(buildId(api_name)) + "Factory";
+    class_name = api_factory;
+    
+    info("generating " + class_name);
     
     createClassStream(class_name);
     
@@ -170,6 +187,58 @@ extends Generator
     stream.close();
   }
 
+  private void genGenericConstructorClassFile()
+  {
+    class_name = api_constructor;
+    
+    createClassStream(class_name);
+    info("generating " + class_name);
+    
+    genPackageDecl();
+    genGenericConstructorClass();
+    
+    stream.close();
+  }
+  
+  private void genGenericConstructorClass()
+  { 
+    println("abstract public class " + class_name);
+    println("extends aterm.pure.ATermApplImpl");
+    println("implements aterm.ATerm");
+    println("{");
+    println("  protected aterm.ATerm term = null;");
+    println();
+    println("  abstract protected aterm.ATerm getPattern();");
+    println();
+    println("  public aterm.ATerm toTerm() {");
+    println("    if(term == null) {");
+    println("      java.util.List args = new java.util.LinkedList();");
+    println("      for(int i = 0; i<getArity() ; i++) {");
+    println("        args.add(((" + class_name + ") getArgument(i)).toTerm());");
+    println("      }");
+    println("      setTerm(getFactory().make(getPattern(), args));");
+    println("    }");
+    println("    return term;");
+    println("  }");
+    println();
+    println("  public String toString() {");
+    println("    return toTerm().toString();");
+    println("  }");
+    println();
+    println("  protected void setTerm(aterm.ATerm term) {");
+    println("   this.term = term;");
+    println("  }");
+    println();
+    println("  protected " + api_factory + " get" + api_factory + "() {");
+    println("    return (" + api_factory + ") getFactory();");
+    println("  }");
+    println();
+    println("  static protected " + api_factory + " getStatic" + api_factory + "() {");
+    println("    return (" + api_factory + ") getStaticFactory();");
+    println("  }");
+    println("}");
+  }
+ 
 	private void closeStream() {
 		stream.close();
 	}
@@ -177,35 +246,106 @@ extends Generator
   private void genFactoryClass(ADT api) throws IOException {  
     println("public class " + class_name + " extends PureFactory");
     println("{");
+    genFactoryPrivateMembers(api); 
     println("  public " + class_name + "()");
     println("  {");
     println("     super();");
     println("     initialize();");
     println("  }");
     println("");
-    println("  private void initialize()");
+    println("  public " + class_name + "(int logSize)");
     println("  {");
-    
-    genInitializeCalls(api);
-    
+    println("     super(logSize);");
+    println("     initialize();");
     println("  }");
+    println("");
+    println("  private void initialize()");
+    println("  {");    
+    genFactoryInitialization(api);
+    println("  }");
+    println();
+    genFactoryMakeMethods(api);
     println("}");
   }
+
+	private void genFactoryPrivateMembers(ADT api) {
+    printFoldOpen("private members");
+    Iterator types = api.typeIterator();
+    while (types.hasNext()) {
+      Type type = (Type) types.next();
+      Iterator alts = type.alternativeIterator();
+      while (alts.hasNext()) {
+        Alternative alt = (Alternative) alts.next();
+        String altClassName = buildAltClassName(type,alt);
+        String typeClassName = buildClassName(type.getId());
+        String protoVar = "proto" + altClassName;
+        String funVar = "fun" + altClassName;
+        
+        println("  private aterm.AFun " + funVar + ";");
+        println("  private " + typeClassName + " " + protoVar + ";");
+      }
+    }
+    printFoldClose();
+	}
+
+
+	private void genFactoryMakeMethods(ADT api) {
+    Iterator types = api.typeIterator();
+    while (types.hasNext()) {
+      Type type = (Type) types.next();
+      Iterator alts = type.alternativeIterator();
+      while (alts.hasNext()) {
+        Alternative alt = (Alternative) alts.next();
+        String altClassName = buildAltClassName(type,alt);
+        String typeClassName = buildClassName(type.getId());
+        String protoVar = "proto" + altClassName;
+        String funVar = "fun" + altClassName;
+        
+        printFoldOpen("make " + altClassName);
+        println("  protected " + typeClassName + " make" + altClassName + 
+                "(aterm.AFun fun, aterm.ATerm[] args, aterm.ATermList annos) {");
+        println("    synchronized (" + protoVar + ") {");
+        println("      " + protoVar + ".initHashCode(annos,fun,args);");
+        println("      return (" + typeClassName + ") build(" + protoVar + ");");
+        println("    }");
+        println("  }");
+        println();
+        print  ("  public " + typeClassName + " make" + altClassName + "(");
+        makeFormalTypedAltArgumentList(type, alt);
+        println(") {");
+        print  ("    aterm.ATerm[] args = new aterm.ATerm[] {");
+        makeActualTypedArgumentList(type,alt);
+        println("};");
+        println("    return make" + altClassName + "( " + funVar + ", args, empty);"); 
+        println("  }");
+        println();
+      }
+    }
+	}
+
   
-  private void genInitializeCalls(ADT api)
+  private void genFactoryInitialization(ADT api)
   {
     Iterator types = api.typeIterator();
     while (types.hasNext()) {
       Type type = (Type)types.next();
       
-      println("      " + buildClassName(type) + ".initialize(this);");
+      println("    " + buildClassName(type) + ".initialize(this);");
       
       Iterator alts = type.alternativeIterator();
       while (alts.hasNext()) {
         Alternative alt = (Alternative)alts.next();
-        
-        println("      " + buildAltClassName( type, alt) + ".initialize(this);");
+        String altClassName = buildAltClassName(type,alt);
+        String protoVar = "proto" + altClassName;
+        String funVar = "fun" + altClassName;
+
+        println();        
+        println("    " + altClassName + ".initializePattern();");
+        println("    " + funVar + " = makeAFun(\"" + 
+                altClassName + "\", " + computeAltArity(type,alt) + ", false);");
+        println("    " + protoVar + " = new " + altClassName + "();");      
       }
+      println();
     }
     
     Iterator bottoms = api.bottomTypeIterator();
@@ -214,10 +354,24 @@ extends Generator
       String type = (String) bottoms.next();
       
       if (!isReservedType(type)) {
-        println("      " + buildId(type) + ".initialize(this);");
+        println("    " + capitalize(buildId(type)) + ".initialize(this);");
       }
     }
   }
+
+	private int computeAltArity(Type type, Alternative alt) {
+    // There must be a better way to do this, it can be computed when building
+    // the ADT datastructures
+		Iterator fields = type.altFieldIterator(alt.getId());
+    int arity = 0;
+    
+    for(arity = 0; fields.hasNext(); fields.next()) {
+      arity++;
+    }
+    
+    return arity;
+  }
+
   
 	private void genTypeClassFiles(ADT api) throws IOException {
 		Iterator types = api.typeIterator();
@@ -230,14 +384,16 @@ extends Generator
   private void genTypeClassFile(Type type)
     throws IOException
   {
+    List imports = new LinkedList();
     String class_name = buildClassName(type);    
     createClassStream(class_name);
-    PrintStream tmp;
     
     info("generating " + class_name);
 
     genPackageDecl();
-    genImports();    
+    imports.add("java.io.InputStream");
+    imports.add("java.io.IOException");
+    genImports(imports);
     println();
     
     genTypeClass(type); 
@@ -270,8 +426,6 @@ extends Generator
     info("generating " + class_name);
     
     genPackageDecl();
-    genImports();
-      
     genAlternativeClass(type, alt);
     
     stream.close();
@@ -294,29 +448,10 @@ extends Generator
 	private void genTypeClass(Type type) {
     String class_name = buildClassName(type);
     
-		println("abstract public class " + class_name);
+		println("abstract public class " + class_name + " extends " + api_constructor);
 		println("{");
 		println("  private static aterm.ATermFactory factory = null;");
-		println("  protected aterm.ATerm term = null;");    
     println();
-    printFoldOpen("initialize(aterm.ATermFactory f)");
-		println("  static public void initialize(aterm.ATermFactory f)");
-		println("  {");
-		println("    factory = f;");
-		println("  }");
-    printFoldClose();
-    printFoldOpen("toTerm()");
-		println("  public aterm.ATerm toTerm()");
-		println("  {");
-		println("    return this.term;");
-		println("  }");
-    printFoldClose();
-    printFoldOpen("toString()");
-		println("  public String toString()");
-		println("  {");
-		println("    return this.term.toString();");
-		println("  }");
-    printFoldClose();
     printFoldOpen("fromString()");
 		println("  static " + class_name + " fromString(String str)");
 		println("  {");
@@ -325,13 +460,14 @@ extends Generator
 		println("  }");
     printFoldClose();
     printFoldOpen("fromTextFile()");
-		println("  static " + class_name + " fromTextFile(InputStream stream) throws aterm.ParseError, IOException");
+		println("  static " + class_name + " fromTextFile(InputStream stream) " +
+            "throws aterm.ParseError, IOException");
 		println("  {");
 		println("    aterm.ATerm trm = factory.readFromTextFile(stream);");
 		println("    return fromTerm(trm);");
 		println("  }");
     printFoldClose();
-		printFoldOpen("equals(" + class_name + ")");
+		printFoldOpen("isEqual(" + class_name + ")");
 		println("  public boolean isEqual(" + class_name + " peer)");
 		println("  {");
 		println("    return term.isEqual(peer.toTerm());");
@@ -460,21 +596,10 @@ extends Generator
     }
   }
   
-  private void genImports() {
-    genImports(new LinkedList());
-  }
-  
-	private void genImports(List extra) {	
+	private void genImports(List imports) {	
     printFoldOpen("imports");
-    List all = new LinkedList(imports);
-    all.addAll(extra);
     
-		all.add("java.io.InputStream");
-		all.add("java.io.OutputStream");
-		all.add("java.io.IOException");
-    all.add("aterm.ATerm");
-		
-		Iterator iter = all.iterator();
+		Iterator iter = imports.iterator();
 		while (iter.hasNext()) {
 		  println("import " + (String)iter.next() + ";");
 		}
@@ -495,11 +620,16 @@ extends Generator
     println("{");
     println("  static private aterm.ATerm pattern = null;");
     println();
+    println("  protected aterm.ATerm getPattern() {");
+    println("    return pattern;");
+    println("  }");
     
-    genFieldMembers(type, alt);
-    genAltConstructors(type, alt);
+    genAltFieldIndexMembers(type,alt);
+    genAltClone(type, alt);
+    genAltMake(type, alt);
     genAltInitialize(type, alt);
     genAltFromTerm(type, alt);
+    genAltToTerm(type,alt);
     genOverrideProperties(type,alt);
     genAltGetAndSetMethods(type, alt);
     if (visitable) {
@@ -508,6 +638,65 @@ extends Generator
     
     println("}");
   }
+
+	private void genAltToTerm(Type type, Alternative alt) {
+    if (hasReservedTypeFields(type, alt)) {
+      println("  public aterm.ATerm toTerm() {");
+      println("    if(term == null) {");
+      println("      java.util.List args = new java.util.LinkedList();");
+      Iterator fields = type.altFieldIterator(alt.getId());
+      for (int i = 0; fields.hasNext(); i++) {
+        Field field = (Field) fields.next();
+        String field_type = field.getType();
+        
+        if (field_type.equals("str")) {
+          println("      args.add(((aterm.ATermAppl) getArgument(" + i + ")).getAFun().getName());");
+        }
+        else if (field_type.equals("int")) {
+          println("      args.add(new Integer(((aterm.ATermInt) getArgument(" + i + ")).getInt()));");
+        }
+        else if (field_type.equals("real")) {
+          println("      args.add(new Double (((aterm.ATermReal) getArgument(" + i + ")).getReal()));");
+        }
+        else {
+          println("      args.add(((" + api_constructor + ") getArgument(" + i + ")).toTerm());");
+        }
+      }
+      println("      setTerm(getFactory().make(getPattern(), args));");
+      println("    }");
+      println("    return term;");
+      println("  }");
+      println();
+    }
+	}
+
+	private boolean hasReservedTypeFields(Type type, Alternative alt) {
+		return computeAltArityNotReserved(type,alt) < computeAltArity(type,alt);
+	}
+
+
+	private void genAltMake(Type type, Alternative alt) {
+    String altClassName = buildAltClassName(type,alt);
+    
+    println("  protected aterm.ATermAppl make(aterm.AFun fun, aterm.ATerm[] i_args," +
+            " aterm.ATermList annos) {");
+    println("    return get" + api_factory + "().make" + altClassName +
+            "(fun, i_args, annos);");
+    println("  }");
+	}
+
+
+	private void genAltClone(Type type, Alternative alt) {
+    String altClassName = buildAltClassName(type,alt);
+    println("  public Object clone() {");
+    println("    " + altClassName + " clone = new " + altClassName + "();");
+    println("     clone.init(hashCode(), getAnnotations(), getAFun(), " +
+            "getArgumentArray());");
+    println("    return clone;");
+    println("  }");
+    println();
+	}
+
   
   // This is not well thought out yet!
 	private void genAltVisitableInterface(Type type, Alternative alt)
@@ -562,13 +751,13 @@ extends Generator
     println();
     println("  public int getChildCount()");
     println("  {");
-    println("    return " + countVisitableChildren(type, alt) + ";");
+    println("    return " + computeAltArityNotReserved(type, alt) + ";");
     println("  }");  
     
     printFoldClose(); 
   }
 
-	private int countVisitableChildren(Type type, Alternative alt) {
+	private int computeAltArityNotReserved(Type type, Alternative alt) {
 		Iterator fields = type.altFieldIterator(alt.getId());
     int count = 0;
     while (fields.hasNext()) {
@@ -583,10 +772,10 @@ extends Generator
   
 	private void genAltInitialize(Type type, Alternative alt) 
   {
-    printFoldOpen("initialize(aterm.ATermFactory f");
-    println("  static public void initialize(aterm.ATermFactory f)");
+    printFoldOpen("initializePattern()");
+    println("  static public void initializePattern()");
     println("  {");
-    println("    pattern = f.parse(\"" + escapeQuotes(alt.buildMatchPattern().toString()) + "\");");
+    println("    pattern = getStaticFactory().parse(\"" + escapeQuotes(alt.buildMatchPattern().toString()) + "\");");
     println("  }");
     println();
     printFoldClose();
@@ -609,37 +798,54 @@ extends Generator
     String alt_class_name = buildAltClassName(type, alt);
     String field_name = capitalize(buildId(field.getId()));
     String field_id = buildFieldId(field.getId());
-    String field_type_id = buildClassName(field.getType());
+    String field_type = field.getType();
+    String field_class = buildClassName(field_type);
+    String field_index = buildFieldIndex(field.getId());
 
     // getter    
-    println("  public " + field_type_id + " get" + field_name + "()");
+    println("  public " + field_class + " get" + field_name + "()");
     println("  {");
-    if (!isReservedType(field.getType())) {
-      println("    if ( this." + field_id + " == null) {");
-      println("      return " + field_type_id + ".fromTerm( term" + field_id + ");");
-      println("    }");
-      println("    else {");
-      println("      return this." + field_id + ";");
-      println("    }");
+    
+    if (field_type.equals("str")) {
+      println("   return ((aterm.ATermAppl) this.getArgument(" + field_index + ")).getAFun().getName();");
+    }
+    else if (field_type.equals("int")) {
+      println("   return new Integer(((aterm.ATermInt) this.getArgument(" + field_index + ")).getInt());");
+    }
+    else if (field_type.equals("double")) {
+      println("   return new Double(((aterm.ATermReal) this.getArgument(" + field_index + ")).getReal());");
+    }
+    else if (field_type.equals("term")) {
+      println("   return this.getArgument(" + field_index + ");");    
     }
     else {
-      println("    return this." + field_id + ";");
+      println("    return (" + field_class + ") this.getArgument(" + field_index + ") ;");
     }
-
+    
     println("  }");
     println();
-    
-    // setter
-    println("  public " + class_name + " set" + field_name + "(" + field_type_id + " " + field_id + ")");
+
+    // setter    
+    println("  public " + class_name + " set" + field_name + "(" +
+               field_class + " " + field_id + ")");
     println("  {");
-    if (!isReservedType(field.getType())) {
-      println("    aterm.ATerm term" + field_id + " = " + field_id + ".toTerm();");
-      print  ("    return new " + alt_class_name + "("); makeActualTermAltArgumentList(type,alt); println(");");
+    
+    print("    return (" + class_name + ") this.setArgument(");
+    
+    if (field_type.equals("str")) {
+      print("getFactory().makeAppl(getFactory().makeAFun(" + field_id + ", 0, true))");
+    }
+    else if (field_type.equals("int")) {
+      print("getFactory().makeInt(" + field_id + ".intValue())");
+    }
+    else if (field_type.equals("double")) {
+      print("getFactory().makeReal(" + field_id + ".doubleValue())");
     }
     else {
-      print  ("    return new " + alt_class_name + "("); makeActualTermAltArgumentList(type,alt); println(");");
-    } 
-     
+      print(field_id);  
+    }
+    
+    println(", " + field_index + ");");
     
     println("  }");
     println();
@@ -666,172 +872,51 @@ extends Generator
     println();
   }
 
-  private void genFieldMembers(Type type, Alternative alt)
+  private void genAltFieldIndexMembers(Type type, Alternative alt)
   {
-    printFoldOpen("private members");
+    printFoldOpen("field indexes");
     Iterator fields = type.altFieldIterator(alt.getId());
     int argnr = 0;
     
     while (fields.hasNext()) {
       Field field = (Field) fields.next();
       String field_class_name = buildClassName(field.getType());
-      String field_id = buildFieldId(field.getId());
+      String field_id = buildFieldIndex(field.getId());
       
-      println("  private " + field_class_name + " " + field_id + " = null;");
-      
-      if (!isReservedType(field.getType())) {
-        println("  private aterm.ATerm term" + field_id + " = null;");
-      }
-      
-      println();
-      
+      println("  private static int " + field_id + " = " + argnr + ";");
       argnr++;
     }
     printFoldClose();
+    
   }
-
-  private void genAltConstructors(Type type, Alternative alt)
-  {
-    printFoldOpen("constructors");
-    String alt_class = buildAltClassName(type, alt);
-    Iterator fields = type.altFieldIterator(alt.getId());
-    
-    if (!fields.hasNext()) { // a constructor without children
-      genConstantAltConstructor(type, alt);
-    }
-    else {
-      genApplicationAltConstructors(type, alt); 
-    }
-    printFoldClose(); 
-  }
-  
-  private void genConstantAltConstructor(Type type, Alternative alt)
-  {
-    println("  public " + buildAltClassName(type, alt) + "()");
-    println("  {");
-    println("    term = pattern;");
-    println("  }");
-    println();
-  }
-  
-  private void genApplicationAltConstructors(Type type, Alternative alt)
-  {
-    String alt_class_name = buildAltClassName(type, alt);
-    Iterator fields;
-    int argnr;
-    
-    print  ("  public " + alt_class_name + "("); makeFormalTypedAltArgumentList(type, alt); println(")");
-    println("  {");
-    print  ("    make" + alt_class_name + "("); makeActualTypedArgumentList(type, alt); println(");");
-    
-    fields = type.altFieldIterator(alt.getId());
-    while (fields.hasNext()) {
-      Field field = (Field) fields.next();
-      String field_id = buildFieldId(field.getId());
-      println("    this." + field_id + " = " + field_id + ";");
-    }
-    println("  }");
-    println();
-    
-    if (!allFieldsReservedTypes(type, alt)) {
-      print  ("  private " + alt_class_name + "("); makeFormalUntypedAltArgumentList(type, alt); println(")");
-      println("  {");
-      print  ("    make" + alt_class_name + "("); makeActualUntypedAltArgumentList(type, alt); println(");");
-      println("  }");  
-      println();
-    }
-    
-    print  ("  private void make" + alt_class_name + "("); makeFormalUntypedAltArgumentList(type, alt); println(")");
-    println("  {");
-    println("    java.util.List args = new java.util.LinkedList();");
-    println();
-    
-    fields = type.altFieldIterator(alt.getId());   
-    while (fields.hasNext()) {
-      Field field = (Field) fields.next();
-      String field_id = buildFieldId(field.getId());
-      if (!isReservedType(field.getType())) {
-        println("    this." + "term" + field_id + " = " + field_id + ";");
-      }
-      else {
-        println("    this." + field_id + " = " + field_id + ";");
-      }
-      println("    args.add( " + field_id + ");");
-    }
-    println();
-    
-    println("    term = pattern.getFactory().make(pattern, args);");
-    println("  }");
-    println();
-  }
-
-	
-	private boolean allFieldsReservedTypes(Type type, Alternative alt) {
-    Iterator fields = type.altFieldIterator(alt.getId());
-    while (fields.hasNext()) {
-      Field field = (Field) fields.next();
-      if (!isReservedType(field.getType())) {
-        return false;
-      }
-    }
-    
-		return true;
-	}
-
-  
+  	
 	private void makeActualTypedArgumentList(Type type, Alternative alt) {
 		Iterator fields = type.altFieldIterator(alt.getId());
 		int argnr = 0;
 		while (fields.hasNext()) {
 		  Field field = (Field) fields.next();
       String field_id = buildFieldId(field.getId());
-      if (!isReservedType(field.getType())) {
-        print(field_id + ".toTerm()");
+      String field_type = field.getType();
+      
+      if (field_type.equals("str")) {
+        print("makeAppl(makeAFun(" + field_id + ", 0, true))");
+      }
+      else if (field_type.equals("int")) {
+        print("makeInt(" + field_id + ".intValue())"); 
+      }
+      else if (field_type.equals("real")) {
+        print ("makeReal(" + field_id + ".doubleValue())");
       }
       else {
-        print(field_id);
+        print (field_id);
       }
-		  argnr++;
-		  
+      
 		  if (fields.hasNext()) {
 		    print(", ");
 		  }
 		}
-		
 	}
-
-  private void makeActualUntypedAltArgumentList(Type type, Alternative alt) {
-    Iterator fields = type.altFieldIterator(alt.getId());
-    while (fields.hasNext()) {
-      Field field = (Field) fields.next();
-      String field_id = buildFieldId(field.getId());
-      print(field_id);
-      
-      if (fields.hasNext()) {
-        print(", ");
-      }
-    }
-    
-  }
   
-  private void makeActualTermAltArgumentList(Type type, Alternative alt) {
-    Iterator fields = type.altFieldIterator(alt.getId());
-    while (fields.hasNext()) {
-      Field field = (Field) fields.next();
-      String field_id = buildFieldId(field.getId());
-      if (!isReservedType(field.getType())) {
-        print("term" + field_id);
-      }
-      else {
-        print(field_id);
-      }
-      
-      if (fields.hasNext()) {
-        print(", ");
-      }
-    }
-    
-  }
 	private void makeFormalTypedAltArgumentList(Type type, Alternative alt) {
 		Iterator fields = type.altFieldIterator(alt.getId());
 		while (fields.hasNext()) {
@@ -844,25 +929,6 @@ extends Generator
 		  }
 		}
 	}
-  
-  private void makeFormalUntypedAltArgumentList(Type type, Alternative alt) {
-    Iterator fields = type.altFieldIterator(alt.getId());
-    
-    while (fields.hasNext()) {
-      Field field = (Field) fields.next();
-      String field_id = buildFieldId(field.getId());
-      if (!isReservedType(field.getType())) {
-        print("aterm.ATerm " + field_id);
-      }
-      else {
-        print(buildClassName(field.getType()) + " " + field_id);
-      }
-     
-      if (fields.hasNext()) {
-        print(", ");
-      }
-    }
-  }
     
   //}}}
   //{{{ private void genAltToTerm(Type type, Alternative alt)
@@ -879,30 +945,38 @@ extends Generator
     println("  {");
     println("    java.util.List children = trm.match(pattern);");
     
-    println("    if (children != null) {");
-    
+    println("    if (children != null) {");    
+    print  ("      " + class_name + " tmp = getStatic" + api_factory + 
+            "().make" + alt_class_name + "(");
+
     fields = type.altFieldIterator(alt.getId());
-    argnr = 0;
+    argnr = 0;            
     while (fields.hasNext()) {
       Field field = (Field) fields.next();
-      String field_id = buildFieldId(field.getId());
-      if (!isReservedType(field.getType())) {
-        println("      aterm.ATerm " + field_id + "= (aterm.ATerm) children.get(" + argnr + ");");
+      String field_type = field.getType();
+      
+      if (field_type.equals("str")) {
+        print("((aterm.ATermAppl) children.get(" + argnr + ")).getAFun().getName()");
+      }
+      else if (field_type.equals("int")) {
+        print("new Integer (((aterm.ATermInt) children.get(" + argnr + ")).getInt())");
+      }
+      else if (field_type.equals("real")) {
+        print("new Double (((aterm.ATermReal) children.get(" + argnr + ")).getReal())");
       }
       else {
-        String field_class_name = buildClassName(field.getType());
-        
-        println("      " + field_class_name + " " + field_id + " = (" + 
-                field_class_name + ") children.get(" + argnr + ");");
+        print(field_type + ".fromTerm( (aterm.ATerm) children.get(" + argnr + "))");
+      }
+      
+      if (fields.hasNext()) {
+        print(", ");
       }
       argnr++;
     }
-    
-    print  ("      return (" + class_name + ")" + 
-    " new " + alt_class_name + "(");  makeActualUntypedAltArgumentList(type, alt) ; println(");");
-    
-    println("    }"); // endif
-      
+    println(");");
+    println("      tmp.setTerm(trm);");
+    println("      return tmp;");
+    println("    }"); // endif      
     println("    else {");
     println("      return null;");
     println("    }");
@@ -938,12 +1012,21 @@ extends Generator
     println("  get_subterm(t,n) { null }");
     println("}");
     println();
+    println("%typeterm Double {");
+    println("  implement { Double }");
+    println("  get_fun_sym(t) { t }");
+    println("  cmp_fun_sym(s1,s2) { s1.equals(s2) }");
+    println("  get_subterm(t,n) { null }");
+    println("}");
+    println();
     println("%typeterm ATerm {");
     println("  implement { ATerm }");
     println("  get_fun_sym(t) { t }");
     println("  cmp_fun_sym(s1,s2) { s1 == s2 }");
     println("  get_subterm(t,n) { null }");
     println("}");
+    println();
+   
     println();
 	}
 
@@ -1012,6 +1095,20 @@ extends Generator
       println("  get_slot(" + field_id + ",t) { t.get" + capitalize(field_id) +
               "() }");
     }
+ 
+
+    String arg = "(";
+    int arity = computeAltArity(type,alt);
+    for(int i = 0; i < arity; i++) {
+      arg += ("t" + i);
+      if (i < arity - 1) {
+        arg += ", ";
+      }
+    }
+    arg += ")";
+    println("  make" + arg + " { get" + api_factory + "().make" + alt_class_name + 
+            arg + "}");
+    
     println("}");
     println();    
   }
@@ -1063,6 +1160,11 @@ extends Generator
   private String buildFieldId(String fieldId)
   {
     return "_" + buildId(fieldId);
+  }
+  
+  private String buildFieldIndex(String fieldId)
+  {
+    return "index_" + buildId(fieldId);
   }
 
   //}}}
