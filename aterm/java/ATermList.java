@@ -121,7 +121,7 @@ public interface ATermList extends ATerm {
      * @throws IndexOutOfBoundsException if i does not refer
      * to a position in this list.
      */
-    public ATermList removeElementAt(int n);
+    public ATermList removeElementAt(int i);
 
     /**
      * Removes all occurances of an element in this list.
