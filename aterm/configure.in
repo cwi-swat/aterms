@@ -4,7 +4,7 @@ dnl
 dnl $Id$
 
 AC_INIT(Makefile.in)
-AM_INIT_AUTOMAKE(aterm, 1.6.6)
+AM_INIT_AUTOMAKE(aterm, 1.6.7)
 
 dnl {{{  Which compiler to use?
 
