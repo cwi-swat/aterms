@@ -14,6 +14,7 @@
 #include "symbol.h"
 #include "list.h"
 #include "make.h"
+#include "gc.h"
 
 #include <assert.h>
 
@@ -23,6 +24,10 @@
 #define DEFAULT_BUFFER_SIZE 4096
 #define RESIZE_BUFFER(n) if(n > buffer_size) resize_buffer(n)
 #define ERROR_SIZE 32
+
+/* Initial number of terms that can be protected (grows as needed) */
+#define PROTECT_INITIAL_SIZE 64
+#define PROTECT_EXPAND_SIZE  16
 
 /*}}}  */
 /*{{{  globals */
@@ -40,8 +45,12 @@ static int col  = 0;
 static char error_buf[ERROR_SIZE];
 static int  error_idx = 0;
 
+ATerm **at_protected = NULL;    /* Holds all protected terms             */
+int at_nrprotected = -1;        /* How many terms are actually protected */
+int at_maxprotected = -1;       /* How many terms fit in the array       */
+
 /*}}}  */
-/*{{{  function declarations*/
+/*{{{  function declarations */
 
 extern char *strdup(const char *s);
 static ATerm fparse_term(int *c, FILE *f);
@@ -56,7 +65,7 @@ static ATerm sparse_term(int *c, char **s);
   */
 
 void ATinit(int argc, char *argv[], 
-	   void (*error)(const char *format, va_list args), int *bottomOfStack)
+	   void (*error)(const char *format, va_list args), ATerm *bottomOfStack)
 {
   /* Check for reasonably sized ATerm (32 bits, 4 bytes)     */
   /* This check might break on perfectly valid architectures */
@@ -72,12 +81,19 @@ void ATinit(int argc, char *argv[],
     ATerror("ATinit: cannot allocate string buffer of size %d\n", 
 	    DEFAULT_BUFFER_SIZE);
 
+  /* Allocate memory for PROTECT_INITIAL_SIZE protected terms */
+  at_nrprotected = 0;
+  at_maxprotected = PROTECT_INITIAL_SIZE;
+  at_protected = (ATerm **) calloc(at_maxprotected, sizeof(ATerm *));
+  if (!at_protected)
+	ATerror("ATinit: cannot allocate space for %d protected terms.\n",
+			at_maxprotected);
+
   AT_initMemory(argc, argv);
   AT_initSymbol(argc, argv);
   AT_initList(argc, argv);
   AT_initMake(argc, argv);
-/*  ATinitGC(argc, argv, bottomOfStack);
-*/
+  AT_initGC(argc, argv, bottomOfStack);
 }
 
 /*}}}  */
@@ -101,6 +117,55 @@ void ATerror(const char *format, ...)
   }
 
   va_end(args);
+}
+
+/*}}}  */
+
+/*{{{  void ATprotect(ATerm *term) */
+
+/**
+  * Protect a given term.
+  */
+void ATprotect(ATerm *term)
+{
+  /* If at_nrprotected < at_maxprotected, then at_nrprotected holds the
+   * exact index of the first free slot.
+   * Otherwise, we need to increase the at_protected array.
+   */
+  if (at_nrprotected >= at_maxprotected) {
+	at_maxprotected += PROTECT_EXPAND_SIZE;
+	at_protected = (ATerm **) realloc(at_protected,
+									  at_maxprotected * sizeof(ATerm *));
+	if (!at_protected)
+	  ATerror("ATprotect: no space to hold %d protected terms.\n",
+			  at_maxprotected);
+  }
+
+  at_protected[at_nrprotected++] = term;
+}
+
+/*}}}  */
+/*{{{  void ATunprotect(ATerm *term) */
+
+/**
+ * Unprotect a given term.
+ */
+
+void ATunprotect(ATerm *term)
+{
+  int lcv;
+
+  /* Traverse array of protected terms. If equal, switch last protected
+   * term into this slot and clear last protected slot. Update number of
+   * protected terms.
+   */
+  for (lcv = 0; lcv < at_nrprotected; ++lcv) {
+	if (at_protected[lcv] == term) {
+	  at_protected[lcv] = at_protected[at_nrprotected];
+	  at_protected[at_nrprotected--] = NULL;
+	  break;
+	}
+  }
 }
 
 /*}}}  */
@@ -1295,5 +1360,4 @@ ATerm ATreadFromString(const char *string)
 }
 
 /*}}}  */
-
 

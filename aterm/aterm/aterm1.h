@@ -66,7 +66,7 @@ void ATunprotect(ATerm *atp);
 
 void ATinit(int argc, char *argv[],
             void (*error)(const char *format, va_list args),
-			int *bottomOfStack);
+			ATerm *bottomOfStack);
 void ATerror(const char *format, ...);
 int  ATprintf(const char *format, ...);
 int  ATfprintf(FILE *stream, const char *format, ...);

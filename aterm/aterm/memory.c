@@ -17,9 +17,12 @@
 /*}}}  */
 /*{{{  defines */
 
-#define MAX_SIZE 32
 #define BLOCK_SIZE (1<<16)
-#define GC_THRESHOLD BLOCK_SIZE/4
+
+/* when less than GC_THRESHOLD percent of the terms has been freed by
+   the previous garbage collect, a new block will be allocated.
+   Otherwise a new garbage collect is started. */
+#define GC_THRESHOLD 25 
 
 #define MAX_DESTRUCTORS     16
 #define MAX_BLOCKS_PER_SIZE 1024
@@ -34,10 +37,11 @@
 /*}}}  */
 /*{{{  globals */
 
-static ATerm blocks[MAX_SIZE][MAX_BLOCKS_PER_SIZE];
-static int nrblocks[MAX_SIZE];
-static ATerm freelist[MAX_SIZE];
+ATerm at_blocks[MAX_TERM_SIZE][MAX_BLOCKS_PER_SIZE];
+int at_nrblocks[MAX_TERM_SIZE];
+ATerm at_freelist[MAX_TERM_SIZE];
 
+static int alloc_since_gc[MAX_TERM_SIZE] = { 0 };
 static int table_size;
 static ATerm *hashtable;
 
@@ -68,9 +72,9 @@ void AT_initMemory(int argc, char *argv[])
 
   DBG_MEM(fprintf(stderr, "initial term table size = %d\n", table_size));
 
-  for(i=0; i<MAX_SIZE; i++) {
-    nrblocks[i] = 0;
-    freelist[i] = NULL;
+  for(i=0; i<MAX_TERM_SIZE; i++) {
+    at_nrblocks[i] = 0;
+    at_freelist[i] = NULL;
   }
 
   hashtable = (ATerm *)calloc(table_size, sizeof(ATerm ));
@@ -95,35 +99,20 @@ void AT_initMemory(int argc, char *argv[])
 static void allocate_block(int size)
 {
 	int idx, last;
-	int block_nr = nrblocks[size];
-	blocks[size][block_nr] = (ATerm ) malloc(BLOCK_SIZE * sizeof(header_type));
+	int block_nr = at_nrblocks[size];
+	at_blocks[size][block_nr] = (ATerm ) malloc(BLOCK_SIZE * sizeof(header_type));
 
-	if (blocks[size][block_nr] == NULL)
+	if (at_blocks[size][block_nr] == NULL)
 		ATerror("allocate_block: out of memory!\n");
 
 	last = BLOCK_SIZE - size * sizeof(header_type);
-	freelist[size] = blocks[size][block_nr];
+	at_freelist[size] = at_blocks[size][block_nr];
 	for (idx=0; idx < last; idx += size)
 	{
-		((ATerm )(((header_type *)blocks[size][block_nr])+idx))->next =
-			(ATerm )(((header_type *)blocks[size][block_nr])+idx+size);
+		((ATerm )(((header_type *)at_blocks[size][block_nr])+idx))->next =
+			(ATerm )(((header_type *)at_blocks[size][block_nr])+idx+size);
 	}
-	((ATerm )(((header_type *)blocks[size][block_nr])+idx))->next = NULL;
-}
-
-/*}}}  */
-/*{{{  void AT_collect() */
-
-/**
-  * Collect all garbage
-  */
-
-void AT_collect(int size)
-{
-  fprintf(stderr, "collection not implemented yet, "
-	                "allocating new block of size %d\n", size);
-
-	allocate_block(size);
+	((ATerm )(((header_type *)at_blocks[size][block_nr])+idx))->next = NULL;
 }
 
 /*}}}  */
@@ -135,13 +124,23 @@ void AT_collect(int size)
 
 ATerm AT_allocate(int size)
 {
+    int i;
 	ATerm at;
 
-	if (!freelist[size])
-		AT_collect(size);
+	while (!at_freelist[size]) {
+	    int total = at_nrblocks[size]*(BLOCK_SIZE/size);
+		if((100*alloc_since_gc[size]) <= GC_THRESHOLD*total) {
+	      allocate_block(size);
+		} else {
+		  AT_collect(size);
+		  for(i=2; i<MAX_TERM_SIZE; i++)
+			alloc_since_gc[size] = 0;
+		}
+	}
 
-	at = freelist[size];
-	freelist[size] = freelist[size]->next;
+	at = at_freelist[size];
+	++alloc_since_gc[size];
+	at_freelist[size] = at_freelist[size]->next;
 	return at;
 }
 
@@ -1197,16 +1196,4 @@ ATerm ATremoveAnnotation(ATerm t, ATerm label)
   return AT_setAnnotations(t, newannos);
 }
 
-/*}}}  */
-/*{{{  void ATprotect(ATerm *t) */
-void ATprotect(ATerm *t)
-{
-	
-}
-/*}}}  */
-/*{{{  void ATunprotect(ATerm *t) */
-void ATunprotect(ATerm *t)
-{
-	
-}
 /*}}}  */
