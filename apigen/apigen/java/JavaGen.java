@@ -189,7 +189,7 @@ public class JavaGen
 
     println("abstract public class " + class_name);
     println("{");
-    println("  private static boolean initialized = false;");
+    println("  static boolean initialized = false;");
     println();
     genPatternAttrs(type);
     println();
@@ -198,6 +198,7 @@ public class JavaGen
     println();
     genFactoryMethod(type);
     genToTerm();
+    genPatternInit(type);
     genAltFactoryMethods(type);
     genConstructor();
     genEquals();
@@ -239,8 +240,7 @@ public class JavaGen
     println();
     printFoldOpen(2, "initialize patterns");
     println("    if (!initialized) {");
-    println("      initialized = true;");
-    genPatternInit(type);
+    println("      initializePatterns(term.getFactory());");
     println("    }");
     printFoldClose(2);
     println();
@@ -291,12 +291,19 @@ public class JavaGen
 
   private void genPatternInit(Type type)
   {
+    String decl = "static void initializePatterns(ATermFactory factory)";
+    printFoldOpen("  " + decl);
+    println("  " + decl);
+    println("  {");
     Iterator iter = type.alternativeIterator();
     while (iter.hasNext()) {
       Alternative alt = (Alternative)iter.next();
-      println("      pat" + buildId(alt.getId()) + " = term.getFactory().parse(\""
+      println("    pat" + buildId(alt.getId()) + " = factory.parse(\""
 	      + escapeQuotes(alt.buildMatchPattern().toString()) + "\");");
     }
+    println("    initialized = true;");
+    println("  }");
+    printFoldClose();
   }
 
   //}}}
@@ -520,7 +527,15 @@ public class JavaGen
       Field field = (Field)fields.next();
       String field_name = buildFieldId(field.getId());
       String field_type = buildTypeId(field.getType());
-      println("    this." + field_name + " = (" + field_type + ")iter.next();");
+      if (field_type.equals("int")) {
+	println("    this." + field_name
+		+ " = ((Integer)iter.next()).intValue();");
+      } else if (field_type.equals("real")) {
+	println("    this." + field_name
+		+ " = ((Double)iter.next()).doubleValue();");
+      } else {
+	println("    this." + field_name + " = (" + field_type + ")iter.next();");
+      }
     }
     println("    if (iter.hasNext()) {");
     println("      throw new RuntimeException(\"too many elements?\");");
@@ -559,12 +574,22 @@ public class JavaGen
     println("  " + decl);
     println("  {");
     println("    if (super.term == null) {");
+    println("      if (!initialized) {");
+    println("        initializePatterns(factory);");
+    println("      }");
     println("      List args = new LinkedList();");
     Iterator iter = type.altFieldIterator(alt.getId());
     while (iter.hasNext()) {
       Field field = (Field)iter.next();
       String field_name = buildFieldId(field.getId());
-      println("      args.add(this." + field_name + ");");
+      String field_type = field.getType();
+      if (field_type.equals("int")) {
+	println("      args.add(new Integer(this." + field_name + "));");
+      } else if (field_type.equals("real")) {
+	println("      args.add(new Double(this." + field_name + "));");
+      } else {
+	println("      args.add(this." + field_name + ");");
+      }
     }
     println();
     String alt_id = buildId(alt.getId());
