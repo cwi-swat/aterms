@@ -944,7 +944,9 @@ is in most cases negligible compared to the actual term data.
 
 %{{{ Measurements
 
-\section{Measurements} \label{measurements}
+\section{Performance Measurements} \label{measurements}
+
+\subsection{Benchmarks}
 
 How concise is the ATerm representation and how fast can \baf\ files
 be read and written? Since results highly depend on the actual terms being used,
@@ -983,8 +985,13 @@ the amount of sharing is substantial.
 language, a domain specific language for describing financial products
 \cite{ADR95}.
 
-
 \end{description}
+
+\noindent Measurements were performed on an ULTRA SPARC-5 (270 MHz) with 512 Mb
+of memory.
+
+
+\subsection{Measurements}
 
 \begin{table}[tb]
 \begin{center}
@@ -1011,15 +1018,18 @@ Averages		&	   &	       &   93.93 &	    &  1.57   \\ \hline
 \end{center}
 \end{table}
 
-In Table~\ref{measurements-in-memory}, we give results for the memory usage
-for our sample terms. The five columns give the total number of nodes in each term,
-the number of unique nodes in each term, the sharing percentage,
-the amount of memory (in bytes) used for the storage of the term,
-and the average number of bytes needed per node. As can be seen from these figures,
-at least in our applications sharing \emph{does} make a difference. By fully exploiting
-the reduncies in the input terms, we can store a node using on the average 1.6 
-bytes, and still perform operations on them efficiently. 
-The worst case behaviour is 15 bytes per node.
+In Table~\ref{measurements-in-memory}, we give results for the memory
+usage for our sample terms. The five columns give the total number of
+nodes in each term, the number of unique nodes in each term, the
+sharing percentage, the amount of memory (in bytes) used for the
+storage of the term, and the average number of bytes needed per
+node. As can be seen from these figures, at least in our applications
+sharing \emph{does} make a difference. By fully exploiting the
+reduncies in the input terms, we can store a node using on the average
+1.6 bytes, and still perform operations on them efficiently.  The
+worst case behaviour is 15 bytes per node.\footnote{Since we consider
+Random-unique and Random as worst cases, we do not include them in the
+row \emph{Averages} in this and the following tables.}
 
 XXX Table for increasing COBOL and Risla to see how the sharing increases. XXX
 
@@ -1169,6 +1179,8 @@ Write node ($\mu$s)	& 		& 2.2 	& 1.2\\ \hline
 \caption{Summary of measurements} \label{summary}
 \end{center}
 \end{table}
+
+\subsection{Summary of Measurements}
 
 These measurements are summarized in Table~\ref{summary}.
 In the case of \baf, only 0.2 byte (1.6 bit!) is needed to store a node.
