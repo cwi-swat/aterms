@@ -1,6 +1,7 @@
 $Id$
 
 2003/08/01 <jurgenv@cwi.nl>
+ * Set dependency on version 1.4.2 of JJTraveler
  * Set version to 1.3.2
 
 2003/07/17 <jurgenv@cwi.nl>
