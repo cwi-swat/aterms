@@ -56,7 +56,7 @@ public class PureFactory extends SharedObjectFactory implements ATermFactory {
 	private ATermPlaceholderImpl protoPlaceholder;
 	private AFunImpl protoAFun;
 
-	public ATermList empty;
+	private ATermList empty;
 
 	static boolean isBase64(int c) {
 		return Character.isLetterOrDigit((char) c) || c == '+' || c == '/';
