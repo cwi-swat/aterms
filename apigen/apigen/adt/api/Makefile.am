@@ -4,7 +4,7 @@ include ADTMakeRules.am
 
 EXTRA_DIST = ADTMakeRules.am
 
-JAVAROOT = ${top_builddir}/apigen
+JAVAROOT = ${top_builddir}
 javadir = ${prefix}/classes/apigen/adt/api
 
 CLASSPATH_ENV=CLASSPATH=${JAVAROOT}:${EXTERNAL_JARS}
