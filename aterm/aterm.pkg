@@ -11,8 +11,7 @@ between distributed applications.'
   keywords=meta-environment, library, baf, aterm, term, tree, sharing
 
 interface
-'	'{{{ Handle cflags option'
-cflags=CFLAGS	'standard options of C compiler'
+
 gcc	'create gcc version (libATerm-gcc.a)'
 cc	'create cc version (libATerm-cc.a)'
 dbg	'create debug version (libATerm-dbg.a)'
