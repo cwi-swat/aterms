@@ -382,7 +382,6 @@ int ATvfprintf(FILE *stream, const char *format, va_list args)
 
 static void resize_buffer(int n)
 {
-  free(buffer);
   buffer_size = n;
   buffer = (char *) realloc(buffer, buffer_size);
   if(!buffer)
