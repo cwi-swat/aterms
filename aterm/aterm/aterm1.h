@@ -74,6 +74,7 @@ extern ATbool AT_isDeepEqual(ATerm t1, ATerm t2);
 #else
 #define ATisEqual(t1,t2) ((ATbool)((ATerm)(t1) == (ATerm)(t2)))
 #endif
+#define ATisEqualAFun(f1, f2) ((f1) == (f2))
 
 ATbool ATwriteToTextFile(ATerm t, FILE *file);
 long   ATwriteToSharedTextFile(ATerm t, FILE *f);

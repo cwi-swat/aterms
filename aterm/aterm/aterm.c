@@ -2994,6 +2994,14 @@ ATbool AT_isDeepEqual(ATerm t1, ATerm t2)
   int type;
   ATbool result = ATtrue;
 
+  if (t1 == NULL && t2 == NULL) {
+    return ATtrue;
+  }
+
+  if (t1 == NULL || t2 == NULL) {
+    return ATfalse;
+  }
+
   type = ATgetType(t1);
   if(type != ATgetType(t2))
     return ATfalse;
@@ -3082,6 +3090,10 @@ ATbool AT_isEqual(ATerm t1, ATerm t2)
 
   if(t1 == t2)
     return ATtrue;
+
+  if (t1 == NULL || t2 == NULL) {
+    return ATfalse;
+  }
 
   type = ATgetType(t1);
   if(type != ATgetType(t2))
