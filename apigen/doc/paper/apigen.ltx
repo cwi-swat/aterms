@@ -1512,16 +1512,55 @@ to \asfix, the parse tree format used by our tools in the \metaenv. Of
 particular interest is the dramatic size reduction (in terms of lines
 of code) of the various tools after refactoring them to use the new \api s.
 
-This \emph{apification} process consisted of weeding out any and all
-direct \aterm\ manipulations from the tools, replacing them by calls
-to their \api\ counterparts. The resulting code is much easier to read,
-understand and maintain by programmers, whereas before they could only
-be handled by \asfix\ guru's.  In accordance with these subjective
-\emph{feelings} that the code had improved, is the LOC (Lines of
-Code) metric. Comparing versions just before and immediately after
-\emph{apification}, we found out that we had been able to eliminate
-almost half of the (manually written) code. The LOC metrics have been
-summarized in Figure~\ref{fig:reduction}.
+This \emph{apification} process consisted of the following stages:
+
+\begin{itemize}
+
+\item Defining the actual interfaces (and the corresponding term
+representations) that were needed in the \metaenv. This resulted
+in three \adt{}'s:
+
+\begin{itemize}
+
+\item A handwritten \adt\ for our parse tree format \asfix, closely
+matching the structure of the parse trees as they were produced by
+our parser;
+
+\item An \adt\ for \sdf, generated from our \sdf\ definition
+of \sdf;
+
+\item An \adt\ for \asf, generated from a \sdf\ definition of \asf.
+
+\end{itemize}
+
+As a result, we ended up with a specification for the main three formats
+used in the \metaenv. The main purpose of these specifications is to
+provide an authoritative description of the formats used, and to generate
+a consistent \api\ as described in this paper.
+
+\item Replacing all direct, untyped \aterm-manipulations by typed calls
+to the generated \api. In practise, this often amounted to replacing
+large sections of code by concise snippets or even a single invocation
+of the \api, clearly demonstrating the transition to a higher level of
+abstraction. The fact that we now operate in a typed domain means that
+we are able to effectively track type-related problems using the \C\
+compiler. We were even able to locate and fix a number of severe bugs
+in the \emph{original} code that had not yet manifested themselves.
+
+\end{itemize}
+
+After the apification process was complete, we achieved a significantly
+higher level of maintainability of the code. We are now able to implement
+changes in the term representation, which was one of our major goals.
+Moreover the higher level of abstraction allows us to implement new
+functionality which would otherwise be much more time consuming and
+error prone.
+
+In accordance with these subjective observations that the code has
+improved, is the Lines of Code (LOC) metric. Comparing versions just
+before and immediately after \emph{apification}, we found out that
+we had been able to eliminate almost half of the (manually written)
+code. The LOC metrics have been summarized in Figure~\ref{fig:reduction}.
 
 \begin{figure}[htb]
 \begin{tabular}{|l|r|r|r|}
@@ -1539,30 +1578,14 @@ module-db     &		1809  &	      1244  &	31	\\
 \hline
 {\bf Total }  &  \textbf{25172} &	\textbf{13358}	    & \textbf{47} \\
 \hline
-
-%% in-output     &		 713  &	       812  &  -14	\\
-%% pgen	      &		5226  &	      5226  &	 0	\\
-%% sglr	      &	       10225  &	     10427  &	-2	\\
-%% utils	      &		1356  &	      1363  &	-1	\\
-%% \hline
-%% \hline
-%% \textbf{Total}	      &	       \textbf{42692}  & \textbf{31186}  & \textbf{27} \\ 
-%% \hline
-
 \end{tabular}
 \caption{\label{fig:reduction}Code Reduction}
 \end{figure}
 
-Understandably the biggest gain was achieved in {\tt libasfix}, because
-most of this library is now generated from the SDF definition of SDF itself.
-Only some high level functionality that could not be generated remains in
-this library.
-
-An other interesting aspect we noted was the fact that after apification,
-we where able to make significant changes to the \asfix\ format itself
-and implement these changes in all our tools in a matter of days. Similar
-changes that where implemented before apification took weeks of extensive
-coding and painstaking debugging sessions to find all affected locations.
+Understandably the biggest gain was achieved in \texttt{libasfix},
+because most of this library is now generated from the \sdf\ definition
+of \sdf\ itself. Only some high level functionality that could not be
+generated remains in this library.
 
 % }}}
 % {{{  Conclusions
