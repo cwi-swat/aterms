@@ -108,7 +108,7 @@ model checkers. Apart from its inevitable deployment in the tools of the
 amongst others in: the ELAN system~\cite{BR01}, The implementation of
 the Stratego Language~\cite{Vis01.rta}, The CoFI Algebraic Specification
 Language CASL~\cite{caslsum,CoFI}, and the $\mu$CRL ToolSet for Analysing
-Algebraic Specifications~\cite{mucrl-toolset}. \aterms include several
+Algebraic Specifications~\cite{mucrl-toolset}. \aterms\ include several
 nice features: they are easy to manipulate yet very efficient; they
 come with a built-in garbage collector (in the \C\ library), and they
 have persistency support in the form of a compact, sharing preserving
@@ -150,8 +150,8 @@ implementation of data structures represented by \aterms.
 While maintaining the advantages of the \atlib\ (in our case most notably
 its efficiency due to maximal subterm sharing), applications built with
 this generated \api\ benefit from improved simplicity and readability,
-are easier to maintain, and are more robust against changes in the
-underlying \asfix\ representation.
+they are easier to maintain, and they are more robust against changes
+in the underlying \asfix\ representation.
 
 This paper describes how an annotated grammar or syntax definition
 can be used to generate a library of functions that provide access to
@@ -176,10 +176,10 @@ at all. The issues are fundamental to all applications that use \aterms\
 as its data structure representation. Many of these issues are also valid
 in applications based on other generic data representation formalisms.
 
-We first relate our approach to other related work in
-Section~\ref{sec:related}, and continue with some introductory sections
-on the specification formalism \asdf\ (Section~\ref{sec:asdf-nutshell}),
-the syntax of \aterms\ (Section~\ref{sec:aterm-syntax}), and \asfix\
+We first relate our approach to other work in Section~\ref{sec:related},
+and continue with some introductory sections on the specification
+formalism \asdf\ (Section~\ref{sec:asdf-nutshell}), the syntax
+of \aterms\ (Section~\ref{sec:aterm-syntax}), and \asfix\
 (Section~\ref{sec:asfix-syntax}). Section~\ref{sec:aterm-access}
 subsequently explains how \aterm-based data types are typically
 accessed in tools and applications and we show how this approach causes
