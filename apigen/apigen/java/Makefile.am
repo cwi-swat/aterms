@@ -1,10 +1,6 @@
-#
-# vim:ts=8:sw=8:sts=0
-#
 # $Id$
-#
 
-CLASSPATH	:= $(ATERM)/classes:$(CLASSPATH)
+CLASSPATH_ENV	= CLASSPATH=${top_srcdir}:$(ATERM)/classes
 
 java_JAVA       = JavaGen.java
 
