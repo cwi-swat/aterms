@@ -1,0 +1,59 @@
+#!/bin/sh
+PRG=`basename $0`
+DATE=`date`
+
+# {{{ autoconf variables
+
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+bindir=@bindir@
+datadir=@datadir@
+
+# }}}
+# {{{ usage()
+
+usage() {
+cat << ENDCAT >&2
+Usage   : $PRG <module> <options>
+Example : $PRG Booleans -prefix SDF -prologue Booleans.pro
+Note    : <options> are passed to apigen.c.CGen.
+ENDCAT
+}
+
+# }}}
+
+# {{{ check argument count
+
+if test $# -lt 1
+then
+  usage
+  exit 1
+fi
+
+# }}}
+
+# {{{ Variable section
+
+MODULE=$1
+shift
+
+APIFILE="${MODULE}.adt"
+
+DICTTOC=${bindir}/dicttoc
+GENCAPI="java -classpath ${CLASSPATH}:${prefix}/classes apigen.c.CGen"
+
+# }}}
+
+# {{{ Sanity check
+
+if test ! -f ${MODULE}.adt
+then
+  echo "could not find adt-file: ${MODULE}.adt" >&2
+  exit 1
+fi
+
+# }}}
+
+${GENCAPI} -input ${MODULE}.adt -output ${MODULE} $@
+${DICTTOC} -dict ${MODULE}.dict
+
