@@ -2,6 +2,8 @@ javadir         = ${prefix}/test
 JAVAROOT        = ${top_builddir}/test
 CLASSPATH_ENV   = CLASSPATH=$(SHARED_OBJECTS):${top_builddir}:$(JAVAROOT):$(srcdir)/$(JAVAROOT):$$CLASSPATH
 
+EXTRA_DIST = test.trm test.taf
+
 java_JAVA       = Test1.java \
 		  Test2.java \
 		  TestFib.java \
