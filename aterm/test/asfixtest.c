@@ -1,6 +1,6 @@
-#include <expand2asfix.h>
-#include <init-patterns.h>
-#include <asfix.h>
+#include <AsFix-expand.h>
+#include <AsFix-init-patterns.h>
+#include <AsFix.h>
 
 int main(int argc, char **argv)
 {
