@@ -137,20 +137,7 @@ public class ADT {
 
                 Alternative alt = new Alternative(altId, pattern);
 
-                if (altId.equals("int")
-                    || altId.equals("str")
-                    || altId.equals("term")
-                    || altId.equals("real")
-                    || altId.equals("list")
-                    || altId.equals("chars")) {
-                    throw new RuntimeException(
-                        "Illegal use of reserved name ("
-                            + altId
-                            + ") as name of alternative in "
-                            + entry);
-                } else {
-                    addAlternative(typeId, type, altId, alt);
-                }
+		addAlternative(typeId, type, altId, alt);
             } else {
                 throw new RuntimeException("Unexpected alternative");
             }

@@ -121,12 +121,7 @@ public class Type {
     private void addField(String id, String type, Location location) {
         Field field;
 
-        if (id.equals("term")
-            || id.equals("int")
-            || id.equals("str")
-            || id.equals("real")
-            // || id.equals("list") is this really necessary (sometimes leads to unnatural field names)
-            || id.equals("chars")) {
+        if (id.equals("int")) {
             throw new RuntimeException(
                 "Illegal use of reserved name \""
                     + id
