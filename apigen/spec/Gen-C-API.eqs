@@ -468,7 +468,7 @@ equations
 
 [equ-build-valid-c-afun]
   build-valid-afun($FieldId) = $ValidId,
-  afun-concat($FieldPrefix capitalize($ValidId)) = $AFun
+  afun-concat($FieldPrefix $ValidId) = $AFun
   ===>
   build-valid-c-afun($FieldPrefix, $FieldId) = $AFun
 

@@ -1,3 +1,7 @@
+2000/09/20 (jong@cwi.nl)
+  * removed capitalization of FieldId's in build-valid-c-afun
+  * sorted variables in Gen-C-API.sdf alphabetically.
+
 2000/09/15 (jong@cwi.nl)
   * Bugfix in Sdf2-to-ADT.eqs, imports were handled improperly.
   * Removed double definition of %%-layout.

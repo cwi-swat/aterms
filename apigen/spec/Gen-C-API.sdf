@@ -88,19 +88,24 @@ module Gen-C-API
       replace-placeholder( ATerm )			-> ATerm
 
     variables
+      "$ActualArg*"		-> { C-EXPR "," }*
+      "$ActualArg"		-> C-ID
       "$ADT"			-> ATerm
       "$AFun"			-> AFun
+      "$AFun"			-> AFun
+      "$AFun+"			-> AFun+
       "$Alt"			-> API-Alt
-      "$Alt+"			-> API-Alt+
       "$Alt*"			-> API-Alt*
-      "$AltId"			-> AFun
+      "$Alt+"			-> API-Alt+
       "$AltField*"		-> API-Field*
+      "$AltId"			-> AFun
       "$API"			-> API
       "$ApiHeader"		-> C-INCLUDE-FILE
       "$Args"[0-9]*		-> { ATerm "," }+
       "$ATerm"[0-9]*		-> ATerm
       "$ATerms"[0-9]*		-> { ATerm "," }*
       "$CFieldId"		-> AFun
+      "$Char*"[0-9]* 		-> CHAR*
       "$Dict"[0-9]*		-> { ATerm "," }*
       "$DictHeader"		-> C-INCLUDE-FILE
       "$Elems"[0-9]*		-> { ATerm "," }*
@@ -109,6 +114,9 @@ module Gen-C-API
       "$FieldId"		-> AFun
       "$FieldPrefix"		-> AFun
       "$FieldType"		-> AFun
+      "$FormalArg"		-> C-VARIABLE-DECL
+      "$FormalArg*"		-> { C-VARIABLE-DECL "," }*
+      "$FunBody"		-> C-SERIES
       "$FunDecl"[0-9]*		-> C-FUNCTION-DECL
       "$FunDeclList"[0-9]*	-> C-CONSTRUCT*
       "$FunImplList"[0-9]*	-> C-CONSTRUCT*
@@ -117,11 +125,13 @@ module Gen-C-API
       "$HasImpl"		-> C-CONSTRUCT
       "$Header"			-> C-FILE
       "$Id"			-> C-ID
+      "$Index"			-> Nat
       "$InitImpl"		-> C-CONSTRUCT
-      "$Loc"			-> API-Location
       "$Loc*"[0-9]*		-> API-Location*
+      "$Loc"			-> API-Location
       "$Loc+"			-> API-Location+
       "$Macro"			-> C-ID
+      "$Nat"			-> Nat
       "$Parent"			-> { ATerm-Path-Node "->" }*
       "$Path"			-> { ATerm-Path-Node "->" }*
       "$Pattern"		-> ATerm
@@ -131,26 +141,13 @@ module Gen-C-API
       "$SetImpl"		-> C-CONSTRUCT
       "$SortedField*"		-> API-Field*
       "$Source"			-> C-FILE
+      "$Stat"			-> C-STAT
       "$Type"			-> API-Type
       "$Type*"			-> API-Type*
       "$Type+"			-> API-Type+
+      "$Typedef*"[0-9]*		-> C-CONSTRUCT*
+      "$Typedef"		-> C-CONSTRUCT
       "$TypeId"			-> AFun
       "$ValidId"		-> AFun
-
-      "$Typedef"		-> C-CONSTRUCT
-      "$Typedef*"[0-9]*		-> C-CONSTRUCT*
-      "$FunBody"		-> C-SERIES
       "$VarDef"			-> C-CONSTRUCT
       "$VarDef*"		-> C-CONSTRUCT*
-      "$FormalArg"		-> C-VARIABLE-DECL
-      "$FormalArg*"		-> { C-VARIABLE-DECL "," }*
-      "$ActualArg"		-> C-ID
-      "$ActualArg*"		-> { C-EXPR "," }*
-      "$Stat"			-> C-STAT
-
-      "$AFun"			-> AFun
-      "$AFun+"			-> AFun+
-      "$Index"			-> Nat
-      "$Nat"			-> Nat
-
-      "$Char*"[0-9]* 		-> CHAR*
