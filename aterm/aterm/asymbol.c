@@ -177,22 +177,34 @@ Symbol ATmakeSymbol(char *name, int arity, ATbool quoted)
 
 void AT_freeSymbol(SymEntry sym)
 {
+	unsigned int hash_val;
 	ATerm t = (ATerm)sym;
+	char *walk = sym->name;
 
-	/* assert that sym is valid 
-	int i;
-
-	for(i=0; i<65353; i++)
-		if(sym == lookup_table[i])
-			break;
-
-	assert(i!=65353);
-	*/
-		
+	/* Assert valid name-pointer */
 	assert(sym->name);
+
+	/* Calculate hashnumber */
+	for(hash_val = GET_LENGTH(sym->header)*3; *walk; walk++)
+		hash_val = 251 * hash_val + *walk;
+	hash_val %= table_size;
+  
+	/* Update hashtable */
+	if (hash_table[hash_val] == sym)
+		hash_table[hash_val] = NULL;
+	else
+	{
+		SymEntry cur, prev;
+		prev = hash_table[hash_val]; 
+		for (cur = prev->next; cur != sym; prev = cur, cur = cur->next)
+			assert(cur != NULL);
+		prev->next = cur->next;
+	}
+	
+	/* Free symbol name */
 	free(sym->name);
 	sym->name = NULL;
-	
+
 	lookup_table[sym->id] = (SymEntry)SYM_SET_NEXT_FREE(first_free);
 	first_free = sym->id;
 

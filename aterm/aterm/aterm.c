@@ -212,7 +212,7 @@ ATprotect(ATerm * term)
 	if (at_nrprotected >= at_maxprotected) {
 		at_maxprotected += PROTECT_EXPAND_SIZE;
 		at_protected = (ATerm **) realloc(at_protected,
-																			at_maxprotected * sizeof(ATerm *));
+										  at_maxprotected * sizeof(ATerm *));
 		if (!at_protected)
 	    ATerror("ATprotect: no space to hold %d protected terms.\n",
 							at_maxprotected);
@@ -231,7 +231,7 @@ ATprotect(ATerm * term)
 void
 ATunprotect(ATerm * term)
 {
-	int             lcv;
+	int lcv;
 	
 	/*
 	 * Traverse array of protected terms. If equal, switch last protected
@@ -239,14 +239,14 @@ ATunprotect(ATerm * term)
 	 * protected terms.
 	 */
 	for (lcv = 0; lcv < at_nrprotected; ++lcv)
-    {
-			if (at_protected[lcv] == term)
-				{
-					at_protected[lcv] = at_protected[--at_nrprotected];
-					at_protected[at_nrprotected] = NULL;
-					break;
-				}
-    }
+	{
+		if (at_protected[lcv] == term)
+		{
+			at_protected[lcv] = at_protected[--at_nrprotected];
+			at_protected[at_nrprotected] = NULL;
+			break;
+		}
+	}
 }
 
 /*}}}  */
@@ -2019,8 +2019,10 @@ calcUniqueSubterms(ATerm t)
 		case AT_LIST:
 			if (!ATisEmpty((ATermList) t))
 			{
+				ATermList tail = ATgetNext((ATermList)t);
 				nr_unique += calcUniqueSubterms(ATgetFirst((ATermList) t));
-				nr_unique += calcUniqueSubterms((ATerm)ATgetNext((ATermList)t));
+				if (!ATisEmpty(tail))
+					nr_unique += calcUniqueSubterms((ATerm)tail);
 			}
 			break;
     }

@@ -5,9 +5,9 @@ srcdir		= @srcdir@
 top_srcdir	= @top_srcdir@
 prefix		= @prefix@
 exec_prefix	= @exec_prefix@
-bindir      = $(exec_prefix)/bin
-libdir      = $(exec_prefix)/lib
-includedir  = $(prefix)/include
+bindir      	= $(exec_prefix)/bin
+libdir      	= $(exec_prefix)/lib
+includedir  	= $(prefix)/include
 
 CC_GCC		= @CC_GCC@
 CC_CC		= @CC_CC@
@@ -34,7 +34,7 @@ LFLAGS_GCC	= @LFLAGS_GCC@
 LFLAGS_DBG	= @LFLAGS_DBG@
 LFLAGS_PROF	= @LFLAGS_PROF@
 
-AR			= @AR@
+AR		= @AR@
 AR_FLAGS	= cr
 
 INSTALL		= @INSTALL@
@@ -43,7 +43,7 @@ INSTALL_DAT	= @INSTALL_DAT@
 
 PROGS		= termsize
 PROGSRCS	= termsize.c
-ATERMSRCS	= aterm.c list.c make.c memory.c asymbol.c gc.c
+ATERMSRCS	= aterm.c list.c make.c memory.c asymbol.c gc.c baffle.c
 ATERMLIBS	= libATerm-gcc.a libATerm-cc.a libATerm-dbg.a libATerm-prof.a
 PUBLIC_INCL	= abool.h aterm1.h aterm2.h deprecated.h encoding.h asymbol.h
 PRIVATE_INCL	= _aterm.h debug.h gc.h list.h make.h memory.h util.h
