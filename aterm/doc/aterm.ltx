@@ -991,7 +991,74 @@ It is clear that this way of representing parse trees contains a lot of
 redundant information. Therefor, both the maximal sharing and BAF are 
 essential to reduce the size of these terms.
 
+The annotations provided by \ATerm\ data type can be used to store
+auxilary information like position information derived by the parser
+or font and/or color information needed by the (structure) editors.
+This information is globally available but can be ignored by tools
+that are not interested in it.
+
+\subsubsection{CasFix}
+
+Casl is a new algebraic specification formalism \cite{casl1}
+developed within the CoFI group. The goal of this CoFI group is to
+develop a general algebraic specification formalism together with
+a set of tools to support the development of Casl specifications.
+The goal is to reuse existing tools as much as possible. In order
+to let the various tools, e.g.\ parsers, editors, rewriters, proof checkers,
+communicate with each other an intermediate format was needed.
+It was decided that Casl specifications should not be exchanged on a
+textual level but as abstract syntax trees. \ATerms\ are used to
+represent the abstract syntax trees of Casl, this resulted in CasFix
+\cite{BKO98.casl}.
+CasFix is obtained by defining an appropriate set of function symbol
+used in the abstract syntax representation and by defining a mapping
+form the concrete syntax to the abstract syntax.
+The abstract syntax of Casl is defined in \cite{casl1}, for each
+abstract syntax rule an equivalent CasFix construct is defined:
+
+Consider
+
+\begin{small}
+\begin{verbatim}
+ALTERNATIVE ::= "total-construct" OP-NAME COMPONENTS* 
+\end{verbatim}
+\end{small}
+$\Longrightarrow$
+\begin{small}
+\begin{verbatim}
+total-construct(<OP-NAME>,COMPONENTS*([<COMPONENTS>]))
+\end{verbatim}
+\end{small}
+in this example {\tt "total-construct"} and {\tt "COMPONENTS*"} are
+function symbols and {\tt <OP-NAME>} and {\tt <COMPONENTS>} represent
+the subtrees of the corresponding sort.
+
 \subsection{ASF+SDF Meta-Environment}
+
+The \asmetaenv\ \cite{Kli93.meta} is an interactive development environment
+for writing language specifications in \asdf. 
+A new generation of the
+environment is being developed based on separate components connected
+via the \TB\ \cite{BK98}, 
+a description of the new architecture can be found in \cite{BKMO97}.
+This new \metaenv\ provides tools for parsing,
+compilation, rewriting, debugging, and formatting.
+With respect to parsing there is a two level approach, first the
+specification is being parsed and based on the syntax defined in 
+this specification a parse table is generated in
+order to be able to parse terms over this syntax, this can be considered
+as a second level of parsing.
+
+\asfix plays an important role in this 
+new \metaenv. The \asdf\ modules of the specification after parsing
+are stored as \asfix\ terms. Information concerning the specification
+such as the rewrite rules that must be compiled or interpreted are
+exchanged as \asfix\ terms.
+
+The \aterm\ format is directly used by the parser generator and the
+parse table interpreter \cite{Vis97} because the parse table is
+represented as an \aterm. \aterms\ are also used with in the \asdf2C
+compiler, see the next section.
 
 \subsection{ASF+SDF to C compiler}
 
