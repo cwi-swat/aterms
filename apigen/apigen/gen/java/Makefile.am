@@ -6,7 +6,13 @@
 
 CLASSPATH_ENV	= CLASSPATH=${top_srcdir}:$(JAVA_ATERM):$(SHARED_OBJECTS)
 
-java_JAVA       = JavaGen.java JavaTomSignatureGenerator.java
+java_JAVA       = AlternativeGenerator.java JavaTypeConversions.java \
+AlternativeImplGenerator.java        Main.java \
+FactoryGenerator.java                MakeRulesGenerator.java \
+GenericConstructorGenerator.java     TypeGenerator.java \
+JavaGenerator.java                   TypeImplGenerator.java \
+JavaTomSignatureImplementation.java \
+Main.java JavaTomSignatureImplementation.java
 
 javadir         = ${prefix}/classes/apigen/gen/java
 JAVAROOT	= ${top_builddir}
