@@ -798,5 +798,30 @@ ATermList ATtableKeys(ATermTable table)
 }
 
 /*}}}  */
+/*{{{  ATermList ATtableValues(ATermTable table) */
+
+/**
+	* Retrieve a list of all values in an ATermTable.
+	*/
+
+ATermList ATtableValues(ATermTable table)
+{
+	int i;
+	ATermList values = ATempty;
+	ATermList list;
+
+	for(i=0; i<table->size; i++) {
+		list = table->entries[i];
+		while(!ATisEmpty(list)) {
+			ATermList pair = (ATermList)ATgetFirst(list);
+			ATerm val = ATgetFirst(ATgetNext(pair));
+			values = ATinsert(values, val);
+			list = ATgetNext(list);
+		}
+	}
+	return values;
+}
+
+/*}}}  */
 
 

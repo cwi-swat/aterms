@@ -173,6 +173,7 @@ void       ATtablePut(ATermTable table, ATerm key, ATerm value);
 ATerm	   ATtableGet(ATermTable table, ATerm key);
 void       ATtableRemove(ATermTable table, ATerm key);
 ATermList  ATtableKeys(ATermTable table);
+ATermList  ATtableValues(ATermTable table);
 
 /* Higher order functions */
 ATermList ATfilter(ATermList list, ATbool (*predicate)(ATerm));
