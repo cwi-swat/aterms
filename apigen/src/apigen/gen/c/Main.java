@@ -42,6 +42,7 @@ public class Main {
 		}
 
 		params.setOutputDirectory(".");
+		params.setPrefix("");
 		params.setVerbose(false);
 		params.setFolding(false);
 
