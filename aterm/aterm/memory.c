@@ -605,7 +605,7 @@ ATerm AT_allocate(int size)
     return at;
   }
 
-  /*}}}  */
+/*}}}  */
 
 #ifdef NO_SHARING
 

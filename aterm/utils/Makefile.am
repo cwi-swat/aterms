@@ -1,11 +1,7 @@
-#
 # $Id$
-#
-# vim:ts=8:sw=8
 
 include ../make_rules
 
-CFLAGS			= -Wall -g -O2
 EXTRA_DIST		= $(bin_SCRIPTS) $(noinst_SCRIPTS)
 
 INCLUDES		= -I$(top_srcdir)/aterm

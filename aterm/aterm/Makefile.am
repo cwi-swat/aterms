@@ -3,7 +3,6 @@
 include ../make_rules
 
 # The following libraries are compiled to static libraries.
-#
 lib_LIBRARIES		= libATerm.a @ATERM_LIB_GCC@ @ATERM_LIB_CC@ \
 			@ATERM_LIB_DBG@ @ATERM_LIB_PROF@ @ATERM_LIB_NS@
 
@@ -49,5 +48,3 @@ version-gcc.o:  version.c $(ALLINCLUDES) $(ALLSRCS)
 version-dbg.o:  version.c $(ALLINCLUDES) $(ALLSRCS)
 version-prof.o: version.c $(ALLINCLUDES) $(ALLSRCS)
 version-ns.o:   version.c $(ALLINCLUDES) $(ALLSRCS)
-
-# vim:ts=8:sw=8:sts=0

@@ -1,5 +1,9 @@
 $Id$
 
+2002/01/16 <jong@cwi.nl>
+* Removed all '-O' optimization flags due to gcc optimizer bugs
+* Added "Note on Compiler Optimizations" to README 
+
 2002/01/04 <jong@cwi.nl>
 * Added "--with-cflags=" support to configure.in
 * Removed explicit overwriting of CFLAGS in aterm/Makefile.am

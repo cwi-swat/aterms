@@ -15,7 +15,7 @@ dnl }}}
 
 dnl Default values
 CC_GCC=gcc
-CFLAGS_GCC="-Wall -O4"
+CFLAGS_GCC="-Wall" #" -O4" disabled due to gcc optimizer bugs
 LFLAGS_GCC=""
 DEFS_GCC="\$(DEFS) -DNDEBUG"
 INCL_GCC=""
@@ -44,7 +44,7 @@ LFLAGS_CC64="-64"
 INCL_CC64=""
 
 CC_NS=gcc
-CFLAGS_NS="-Wall -g -O2"
+CFLAGS_NS="-Wall -g" # " -O2" disabled due to gcc optimizer bugs
 LFLAGS_NS=""
 DEFS_NS="\$(DEFS) -DNO_SHARING"
 INCL_NS=""
@@ -67,7 +67,7 @@ AC_ARG_WITH(cflags,
    [  --with-cflags=CFLAGS     standard options of C compiler],
    CFLAGS=${withval},
    if test "a${GCC}" = "ayes"; then
-     CFLAGS="-Wall -g -O2"
+     CFLAGS="-Wall -g" # " -O2" disabled due to gcc optimizer bugs
    fi;
 )
 

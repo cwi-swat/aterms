@@ -279,20 +279,18 @@ ATsetAbortHandler(void (*handler) (const char *format, va_list args))
 /*}}}  */
 /*{{{  void ATwarning(const char *format, ...) */
 
-/**
- * A fatal error was detected.
- */
-
 void
 ATwarning(const char *format,...)
 {
-  va_list         args;
+  va_list args;
 
   va_start(args, format);
-  if (warning_handler)
+  if (warning_handler) {
     warning_handler(format, args);
-  else
+  }
+  else {
     ATvfprintf(stderr, format, args);
+  }
 
   va_end(args);
 }

@@ -365,8 +365,7 @@ Symbol ATmakeSymbol(char *name, int arity, ATbool quoted)
 
     cur->name = strdup(name);
     if (cur->name == NULL) {
-      ATerror("ATmakeSymbol: no room for name of length %d\n",
-	      strlen(name));
+      ATerror("ATmakeSymbol: no room for name of length %d\n", strlen(name));
     }
 
     cur->next = hash_table[hnr];
@@ -427,8 +426,8 @@ void AT_freeSymbol(SymEntry sym)
 /*{{{  ATbool AT_findSymbol(char *name, int arity, ATbool quoted) */
 
 /**
-	* Check for the existence of a symbol
-	*/
+ * Check for the existence of a symbol
+ */
 
 ATbool AT_findSymbol(char *name, int arity, ATbool quoted)
 {

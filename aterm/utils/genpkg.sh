@@ -33,7 +33,7 @@ iface=`grep -- '--' configure.in \
      | awk '{printf "%s\t#%s#\n", $1, substr($0, length($1)+2)}' \
      | tr '#' "'"`
 
-     # }}}
+# }}}
 
 # {{{  create package file
 
