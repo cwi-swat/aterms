@@ -1,5 +1,10 @@
 # $Id$
 
+Tue Nov 18 11:33:44 CET 2003 <jong@cwi.nl>
+ * add support for multiple input files
+ * generate each subsort in each own package
+ * no longer generate the user-extendable *Impl classes
+
 2003/11/09 <jurgenv@cwi.nl>
  * Bumped to 1.8
  * Changed Makefile generation to not generate every filename twice.
