@@ -1,6 +1,5 @@
 Both versions:
 * generate subpackage for each sort
-* do not generate empty class and impl-class, just the impl class
 * Extend adt formalism with support for aterm annotations like:
   annotation(posinfo, Area) which declares that the annotation with
   label posinfo has type Area. Normal adt entries can then be used to
@@ -14,4 +13,4 @@ C version:
 
 
 Java version:
-* make reverse and concat for normal lists
+* make reverse and concat for normal lists + check functionality wrt generated C api
