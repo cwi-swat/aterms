@@ -14,6 +14,7 @@
 #include "memory.h"
 #include "util.h"
 #include "gc.h"
+#include "debug.h"
 
 /*}}}  */
 /*{{{  globals */
@@ -162,17 +163,14 @@ void mark_phase()
 		ATerm *end = cur + at_protected_arrays[i].size;
 		while(cur < end) {
 			if(*cur)
-				AT_markTerm(*cur++);
-			else
-				cur++;
+				AT_markTerm(*cur);
+			cur++;
 		}
 	}
 
 	/* Mark protected symbols */
 	AT_markProtectedSymbols();
 }
-
-
 
 /*}}}  */
 /*{{{  void sweep_phase() */

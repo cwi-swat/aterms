@@ -62,11 +62,14 @@ void AT_initSymbol(int argc, char *argv[])
 
 	table_size = SYMBOL_HASH_SIZE;
 
-	for (i = 1; i < argc; i++)
+	for (i = 1; i < argc; i++) {
 		if (streq(argv[i], SYMBOL_HASH_OPT))
 			table_size = atoi(argv[++i]);
-
-	DBG_MEM(fprintf(stderr, "initial symbol table size = %d\n", table_size));
+		else if(strcmp(argv[i], "-help") == 0) {
+			fprintf(stderr, "    %-20s: initial symboltable size " 
+					"(default=%d)\n",	SYMBOL_HASH_OPT " <size>", table_size);
+		}
+	}
 
 	hash_table = (SymEntry *) calloc(table_size, sizeof(SymEntry));
 	if (hash_table == NULL)

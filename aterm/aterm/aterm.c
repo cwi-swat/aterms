@@ -1818,7 +1818,7 @@ AT_markTerm(ATerm t)
 	*current++ = t;
 	
 	while (ATtrue) {
-		if (current > limit) {
+		if (current >= limit) {
 			int current_index, depth_index;
 			
 			current_index = current - mark_stack;
@@ -1830,7 +1830,8 @@ AT_markTerm(ATerm t)
 			if (!mark_stack)
 				ATerror("cannot realloc mark stack to %d entries.\n", mark_stack_size);
 			limit = mark_stack + mark_stack_size - MARK_STACK_MARGE;
-			fprintf(stderr, "resized mark stack to %d entries\n", mark_stack_size);
+			fprintf(stderr, "resized mark stack to %d entries", mark_stack_size);
+			fflush(stderr);
 			
 			current = mark_stack + current_index;
 			depth   = mark_stack + depth_index;
@@ -1841,20 +1842,19 @@ AT_markTerm(ATerm t)
 			
 		t = *--current;
 			
-		if (!t)
+		if (!t) {
+			if(current != mark_stack)
+				ATerror("AT_markTerm: premature end of mark_stack.");
 			break;
+		}
 
 		if (IS_MARKED(t->header))
 			continue;
 		
 		SET_MARK(t->header);
 		
-		if(HAS_ANNO(t->header)) {
-			/*ATfprintf(stderr, "marking annotations at %p: %t\n", t, t);
-			ATfprintf(stderr, "marking annotations at %p: %t\n", 
-								AT_getAnnotations(t), AT_getAnnotations(t));*/
+		if(HAS_ANNO(t->header))
 			*current++ = AT_getAnnotations(t);
-		}
 
 		switch (GET_TYPE(t->header)) {
 			case AT_INT:

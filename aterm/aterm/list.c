@@ -10,6 +10,7 @@
 #include "memory.h"
 #include "list.h"
 #include "aterm2.h"
+#include "debug.h"
 
 #define DEFAULT_LIST_BUFFER 256
 #define RESIZE_BUFFER(n) if(n > buffer_size) resize_buffer(n)
@@ -478,7 +479,7 @@ ATerm ATdictPut(ATerm dict, ATerm key, ATerm value)
     pair = (ATermList)ATgetFirst(tmp);
     tmp = ATgetNext(tmp);
     if(ATisEqual(ATgetFirst(pair), key)) {
-      pair = ATmakeList2(key, value);
+			pair = ATmakeList2(key, value);
       tmp = ATinsert(tmp, (ATerm)pair);
       for(--i; i>=0; i--)
 				tmp = ATinsert(tmp, buffer[i]);
@@ -491,7 +492,8 @@ ATerm ATdictPut(ATerm dict, ATerm key, ATerm value)
   }
 
   /* The key is not in the dictionary */
-  return (ATerm)ATinsert((ATermList)dict, (ATerm)ATmakeList2(key, value));
+	pair = ATmakeList2(key, value);
+  return (ATerm)ATinsert((ATermList)dict, (ATerm)pair);
 }
 
 /*}}}  */
@@ -509,6 +511,7 @@ ATerm ATdictGet(ATerm dict, ATerm key)
   /* Search for the key */
   while(!ATisEmpty(tmp)) {
     pair = (ATermList)ATgetFirst(tmp);
+
     if(ATisEqual(ATgetFirst(pair), key))
       return ATgetFirst(ATgetNext(pair));
 
@@ -695,7 +698,8 @@ void ATtablePut(ATermTable table, ATerm key, ATerm value)
 				ATermList pair = (ATermList)ATgetFirst(list);
 				ATerm key, val;
 
-if(ATgetType(pair) != AT_LIST) ATerror("illegal entry in table: %t\n", pair);
+				assert(ATgetType(pair) == AT_LIST);
+
 				key = ATgetFirst(pair);
 				val = ATgetFirst(ATgetNext(pair));
 				ATtablePut(table, key, val);

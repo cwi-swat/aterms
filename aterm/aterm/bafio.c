@@ -492,7 +492,7 @@ writeToBinaryFile(ATerm t, FILE *f)
 		int idx_annos;
 		int idx_plain_t;
 
-		ATerm plain_t = AT_setAnnotations(t, NULL);
+		ATerm plain_t = AT_removeAnnotations(t);
 		idx_plain_t   = term_stack_depth++;
 		index_term = ATmakeInt(idx_plain_t);
 		ATtablePut(term_stack, plain_t, (ATerm) index_term);

@@ -300,8 +300,8 @@ void AT_initMemory(int argc, char *argv[])
 		else if(streq(argv[i], HASH_INFO_OPT))
 			infoflags |= INFO_HASHING;
 		else if(strcmp(argv[i], "-help") == 0) {
-			fprintf(stderr, "    %-20s: initial termtable size (2^size)\n",
-							TERM_HASH_OPT " <size>");
+			fprintf(stderr, "    %-20s: initial termtable size " 
+						"(2^size, default=%d)\n",	TERM_HASH_OPT " <size>", table_class);
 			fprintf(stderr, "    %-20s: write information to 'hashing.stats'\n",
 							HASH_INFO_OPT);
 		}
@@ -359,8 +359,6 @@ void AT_initMemory(int argc, char *argv[])
 	/*}}}  */
 
 	ATprotectArray(arg_buffer, MAX_ARITY);
-
-  DBG_MEM(fprintf(stderr, "initial term table size = %d\n", table_size));
 }
 
 /*}}}  */
@@ -494,6 +492,7 @@ ATerm AT_allocate(int size)
 		/*printf("alloc_since_gc[%d] = %d, total=%d\n", size,
 					 alloc_since_gc[size], total);*/
 		if((100*alloc_since_gc[size]) <= GC_THRESHOLD*total) {
+		/*if(1) {*/
 				allocate_block(size);
 				if(total_nodes*100 > table_size*maxload)
 					resize_hashtable();
@@ -1391,7 +1390,9 @@ ATerm AT_setAnnotations(ATerm t, ATerm annos)
   header_type header;
   ATbool found;
   ATerm cur;
-  
+
+  assert(annos != NULL);
+
 	header = t->header;
   if(HAS_ANNO(header))
     size--;
