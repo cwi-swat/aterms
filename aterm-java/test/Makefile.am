@@ -1,5 +1,5 @@
-javadir         = ${prefix}/test
-JAVAROOT        = ${top_builddir}/test
+javadir         = ${top_builddir}/test/classfiles
+JAVAROOT        = ${top_builddir}
 CLASSPATH_ENV   = CLASSPATH=$(SHARED_OBJECTS):${top_builddir}:$(JAVAROOT):$(srcdir)/$(JAVAROOT):$$CLASSPATH
 
 EXTRA_DIST = test.trm test.taf
