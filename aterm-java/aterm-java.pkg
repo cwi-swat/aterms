@@ -2,8 +2,8 @@ package
 identification
   name=__PACKAGE__
   version=__VERSION__
-  location=http://www.cwi.nl/projects/MetaEnv/daily-dist
-  info=http://www.cwi.nl/projects/MetaEnv/aterm-java
+  location=http://www.cwi.nl/projects/MetaEnv/__PACKAGE__
+  info=http://www.cwi.nl/projects/MetaEnv/__PACKAGE__
   description='ATerm (short for Annotated Term) is an abstract data type
 designed for the exchange of tree-like data structures
 between distributed applications.'
