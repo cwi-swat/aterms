@@ -24,11 +24,13 @@ manual.ps: manual.dvi
 	latex manual.ltx
 	dvips manual.dvi
 
+# You need fig2dev version 3.2 for this.
 header.ps: header.fig
-	/home/mdejonge/bin/fig2dev-3.2 -Lps header.fig header.ps
+	fig2dev -Lps header.fig header.ps
 
+# You need fig2dev version 3.2 for this.
 encoding.ps: encoding.fig
-	/home/mdejonge/bin/fig2dev-3.2 -Lps encoding.fig encoding.ps
+	fig2dev -Lps encoding.fig encoding.ps
 
 spell: at.ltx
 #	detex at.ltx | spell +words.txt
