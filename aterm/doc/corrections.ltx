@@ -1,15 +1,144 @@
-Adjustments by Mark:
+\documentclass{article}
+\title{Corrections to ``Efficient Annotated Terms''}
+\author{M.G.J. van den Brand\\
+        H.A. de Jong\\
+        P. Klint\\
+        P.A. Olivier}
 
-Point 2 of referee 3:
-The relationship between function symbols ... on page 14.
+\begin{document}
+
+\maketitle
+
+\section{Introduction}
+
+In this note we give a detailed response to the referee reports for
+the paper \emph{Efficient Annotated Terms} by M.G.J. van den Brand,
+H.A. de Jong, P. Klint and P.A. Olivier as submitted to SPE.
+
+
+\section{Comments on the issues raised by referees}
+
+\subsection{First Referee}
+
+\begin{itemize}
+
+\item[1.] Claim ``2 bits per node'' is misleading.
+
+\emph{We agree that this claim is only based on the examples
+described in the paper and that the phrasing we use is rather
+absolute. We also agree that this result is obtained for parse
+trees. The prhasing in the paper has been adjusted accordingly.
+However, the applications are not so similar as the referee thinks.
+Random-unique and Random are randomly generated terms without
+redundancy.  COBOL system and Risla library are indeed parse trees
+using AsFix and have a lot of redundancy. LPO is a datastructure
+representing the state space of a protocol.}
+
+\item[2.] Aterms do not handle complex data structures.
+
+\emph{ATerms can represent trees. The issue raised by the referee
+is that ATerms cannot represent complex data structures
+\emph{directly}, i.e., a direct representation of a cyclic graph is
+not possible.  However, in our experience they can very well be used
+to represent such data structures \emph{indirectly}, i.e., some form
+of encoding is used to represent the complex data structure as
+ATerm. In practice, we use them in this way frequently.  }
+
+\item[3.] In reality, Aterms can only handle tree-like data structures.
+
+\emph{See issue \#2.}
+
+\item[4.] Preserving sharing is confusing.
+
+\item[5.] Averages is misleading in Table 1.
+
+\item[6.] Figure 3 needs work.
+
+\item[7.] Measurements are only concerned with AsFix-style data.
+
+\item[8.] The claim ``2 bits per node'' is msileading.
+
+\item[9.] Precision of integers and reals is not specified.
+
+\item[10.] Mention S-expressioons, SGML and XML in section 6.1
+
+\item[11.] Spell ``data structures'' consistently.
+
+\item[12.] Period in numbers?
+
+\item[13.] Typo 25/6/8
+
+\item[14.] Typo 25/6/9
+
+\item[15.] Paragraph 4/-2 is vague.
+
+\item[16.] Section 3.3.1 could be shorter.
+
+\item[17.] Typo 16/5
+
+\item[18.] Typo 16/-1
+
+\item[19.] Typo 27/3/1
+
+\item[20.] Omit Appendix B or condense is.
+
+\end{itemize}
+
+\subsection{Second Referee}
+
+\begin{itemize}
+
+\item[21.] Comparison with related work is weak (section 6).
+
+\item[22.] Make clearer comparison with related work.
+
+\item[23.] Refer to ASDL.
+
+\item[24.] Give measurements that compare with other methods.
+
+\item[25.] Typo and question: binary encoding to/from strings.
+
+\item[26.] Typo. page 14.
+
+\item[27.] Example in 3.5.2 is not used consistently.
+
+\item[28.] Label axes in Figure 3.
+
+\item[29.] Which time do you measure?
+
+\item[30.] Why is reading binary files faster than reading them?
+
+\emph{An explanation added which is based on the observation that
+reading the Ascii representation involves more matching operations.}
+
+
+\item[31.] Typoe 4.2
+
+\item[32.] Tables 2 and 3 are confusing.
+
+\end{itemize}
+
+\subsection{Third Referee}
+
+\begin{itemize}
+\item [33.] Add pointer to related work (6.1) in introduction.
+
+\item[34.] What is the relationship between function symbols and function names?
+
+\emph{
 This point is tackled by adding the remark that these
-3 bytes represent an index in a table containing the function symbols.
+3 bytes represent an index in a table containing the function symbols.}
 
-Point 5 of referee 3:
-Within section 5 ... fully understand it.
-A number of sentences are added to explain briefly ASF+SDF.
+\item[35.] How are integers and reals encoded?
 
-Point 9 of referee 2:
-I find it curious ... in both cases.
-An explanation added which is based on the observation that
-reading the Ascii representation involves more matching operations.
+\item[36.] Typo on page 16.
+
+\item[37.] Give better intro to ASF+SDF.
+
+\emph{
+A number of sentences are added to explain briefly ASF+SDF.}
+
+\end{itemize}
+
+
+\end{document}
