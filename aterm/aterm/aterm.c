@@ -146,7 +146,6 @@ ATinit(int argc, char *argv[], ATerm * bottomOfStack)
 #endif
 
 	if(help) {
-		fprintf(stderr, "usage: %s [options]\n", argv[0]);
 		fprintf(stderr, "    %-20s: print this help info\n", "-at-help");
 		fprintf(stderr, "    %-20s: generate runtime gc information.\n",
 						"-at-verbose");
