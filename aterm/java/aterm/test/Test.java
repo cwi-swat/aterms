@@ -250,6 +250,14 @@ public class Test
 
   //}}}
   
+  public void testListMatch()
+  {
+    ATerm t = factory.parse("[1]");
+    List result = t.match("[<term>,<list>]");
+    test_assert(result != null);
+    System.out.println("pass: testListMatch");
+  }
+  
   //{{{ public void testAll()
 
   public void testAll()
@@ -264,6 +272,7 @@ public class Test
     testList();
     testFiles();
     testMatch();
+    testListMatch();
     /*testMakeList();
     testMakePlaceholder();
     testMakeBlob();
