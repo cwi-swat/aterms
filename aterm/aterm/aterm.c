@@ -102,8 +102,86 @@ void ATerror(const char *format, ...)
 
 /*}}}  */
 
-/*{{{  static void resize_buffer(int n) */
+/*{{{  int ATprintf(const char *format, ...) */
 
+/**
+ * Extension of printf() with ATerm-support.
+ */
+
+int ATprintf(const char *format, ...)
+{
+    int result = 0;
+    va_list args;
+
+    va_start(args, format);
+    result = ATvfprintf(stdout, format, args);
+    va_end(args);
+
+    return result;
+}
+
+/*}}}  */
+/*{{{  int ATfprintf(FILE *stream, const char *format, ...) */
+
+/**
+ * Extension of fprintf() with ATerm-support.
+ */
+
+int ATfprintf(FILE *stream, const char *format, ...)
+{
+    int result = 0;
+    va_list args;
+
+    va_start(args, format);
+    result = ATvfprintf(stream, format, args);
+    va_end(args);
+
+    return result;
+}
+/*}}}  */
+/*{{{  int ATvfprintf(FILE *stream, const char *format, va_list args) */
+int ATvfprintf(FILE *stream, const char *format, va_list args)
+{
+    const char *p;
+    char *s;
+    char buf[16];
+    int result = 0;
+
+    for (p = format; *p; p++)
+    {
+	if (*p != '%')
+	{
+	    fputc(*p, stream);
+	    continue;
+	}
+
+	s = buf;
+	while (!isalpha(*p))	/* parse formats %-20s, etc. */
+	    *s++ = *p++;
+	*s++ = *p;
+	*s = '\0';
+
+	switch (*p)
+	{
+	    case 'd':
+		fprintf(stream, buf, va_arg(args, int));
+	    break;
+	    case 'f':
+		fprintf(stream, buf, va_arg(args, double));
+	    break;
+	    case 's':
+		fprintf(stream, buf, va_arg(args, char *));
+	    break;
+	    case 't':
+		ATwriteToTextFile(va_arg(args, ATerm), stream);
+	    break;
+	}
+    }
+    return result;
+}
+/*}}}  */
+
+/*{{{  static void resize_buffer(int n) */
 /**
   * Resize the resident string buffer
   */
