@@ -1,5 +1,8 @@
 $Id$
 
+2003-01-22  Jurgen Vinju	<jurgenv@cwi.nl>
+ * Release 2.0
+
 2002-12-09  Pierre-Etienne Moreau  <pem@escher.loria.fr>
  * increase the small_allocation_rate_ratio by a factor 3
    this improves the efficiency without using much more memory
