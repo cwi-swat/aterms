@@ -1848,6 +1848,19 @@ input signature of the tool. The generated superclass takes actually
 reads the input terms received from the ToolBus and delegates the
 actual work to the corresponding interface methods.
 
+Besides the methods corresponding to elements from the tool
+input signature, two other methods are generated:
+\begin{verbatim}
+abstract void recTerminate(ATerm arg) throws ToolException;
+abstract void recAckEvent(ATerm event) throws ToolException;
+\end{verbatim}
+{\tt recTerminate} is called when the ToolBus terminates the
+connection with the tool.
+{\tt recAckEvent} is called when an event acknowledgement
+is received from the ToolBus. This method is only generated
+when the ToolBus script actually contains {\tt snd-ack-event}
+atoms for this tool.
+
 The {\tt tifstojava} program can be called as follows:
 \begin{verbatim}
 tifstojava -tool <tool> -tifs <tifs> [-class <classname> -package <package>]
