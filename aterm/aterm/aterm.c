@@ -94,6 +94,10 @@ void ATinit(int argc, char *argv[], ATerm *bottomOfStack)
 	if(initialized)
 		return;
 
+	/* Protect novice users that simply pass NULL as bottomOfStack */
+	if (bottomOfStack == NULL)
+		ATerror("ATinit: illegal bottomOfStack (arg 3) passed.\n");
+
   /* Check for reasonably sized ATerm (32 bits, 4 bytes)     */
   /* This check might break on perfectly valid architectures */
   /* that have char == 2 bytes, and sizeof(header_type) == 2 */
