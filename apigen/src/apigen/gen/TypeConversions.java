@@ -27,6 +27,11 @@ public interface TypeConversions {
     public String getListType();
 
     /**
+     * @return The target implementation type of the builtin Chars type
+     */
+    public String getCharsType();
+    
+    /**
      * Build a conversion from a Integer to ATerm
      * 
      * @param expr  The expression that is input to the conversion
@@ -64,6 +69,19 @@ public interface TypeConversions {
     public String makeListToATermConversion(String expression);
 
     /**
+     * Build a conversion from a Chars to an ATerm. A Chars is an
+     * ATermList of integers representing characters in a string.
+     * 
+     * @see makeATermToStringConversion 
+     * 
+     * @param expr The expression that is input to the conversion
+     * @return An implementation of a conversion from a Chars to ATerm
+     *
+     */
+    public String makeCharsToATermConversion(String expression);
+   
+    
+    /**
      * Build a conversion from a ATerm to Integer
      * 
      * @param expr  The expression that is input to the conversion
@@ -95,8 +113,21 @@ public interface TypeConversions {
       * ATerm datatype <list>)
       * 
       * @param expr The expression that is input to the conversion
-      * @return An implementation of a conversion from a List to ATerm
+      * @return An implementation of a conversion from a ATerm to a List
       *
       */
     public String makeATermToListConversion(String expression);
+
+    
+    /**
+     * Build a conversion from an ATerm to a Chars. A Chars is an
+     * ATermList of integers representing characters in a string.
+     * 
+     * @see makeATermToStringConversion 
+     * 
+     * @param expr The expression that is input to the conversion
+     * @return An implementation of a conversion from a ATerm  to a Chars
+     *
+     */
+    public String makeATermToCharsConversion(String expression);
 }

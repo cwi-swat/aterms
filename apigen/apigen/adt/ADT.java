@@ -140,7 +140,8 @@ public class ADT {
                     || altId.equals("str")
                     || altId.equals("term")
                     || altId.equals("real")
-                    || altId.equals("list")) {
+                    || altId.equals("list")
+                    || altId.equals("chars")) {
                     throw new RuntimeException(
                         "Illegal use of reserved name ("
                             + altId

@@ -8,6 +8,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import sun.io.ConversionBufferFullException;
+
 import apigen.adt.ADT;
 import apigen.adt.Alternative;
 import apigen.adt.AlternativeList;
@@ -46,6 +48,7 @@ public class APIGenerator extends CGenerator {
 
     protected void generate() {
         genPrologue();
+        genStaticConversions();
         genTypes(adt);
         genBottomSorts();
         genInitFunction();
@@ -58,9 +61,55 @@ public class APIGenerator extends CGenerator {
         genEpilogue();
     }
 
+    private void genStaticConversions() {
+        printFoldOpen("conversion functions");
+        genStaticStringToChars();
+        genStaticCharsToString();
+        printFoldClose();
+        println();
+    }
+
+    private void genStaticCharsToString() {
+        println("char *" + prefix + "charsToString(ATerm arg) {");
+        println("  ATermList list = (ATermList) arg;"); 
+        println("  int len = ATgetLength(list);");
+        println("  int i;");
+        println("  char *str;");
+        println();
+        println("  str = (char *) malloc(len+1);");
+        println("  if (str == NULL) {");
+        println("      return NULL;");
+        println("  }");
+        println();
+        println("  for (i = 0; !ATisEmpty(list); list = ATgetNext(list), i++) {");
+        println("    str[i] = (char) ATgetInt((ATermInt) ATgetFirst(list));");
+        println("  }");
+        println("  str[i] = '\\0';");
+        println();
+        println("  return str;");
+        println("}");
+        println();
+    }
+
+    private void genStaticStringToChars() {
+        println("ATerm " + prefix + "stringToChars(const char *str)");
+        println("{");
+        println("  int len = strlen(str);");
+        println("  int i;");
+        println("  ATermList result = ATempty;");
+        println();
+        println("  for (i = len - 1; i >= 0; i--) {");
+        println("    result = ATinsert(result, (ATerm) ATmakeInt(str[i]));");
+        println("  }");
+        println();
+        println("  return (ATerm) result;");
+        println("}");
+        println();
+    }
+
     private void genBottomSorts() {
         Iterator types = adt.bottomTypeIterator();
-        TypeConverter conv = new TypeConverter(new CTypeConversions());
+        TypeConverter conv = new TypeConverter(new CTypeConversions(prefix));
 
         if (types.hasNext()) {
             hprintFoldOpen("definition of bottom types");
@@ -307,9 +356,7 @@ public class APIGenerator extends CGenerator {
         String elementTypeName,
         String index) {
         // TODO: remove superfluous arguments
-        String[] conversion = genATermToBuiltin(type.getElementType());
-        String conversionPrefix = conversion[0];
-        String conversionPostfix = conversion[1];
+        String conversion = genATermToBuiltin(type.getElementType(), "ATelementAt((ATermList) arg," + index + ")");
         String decl =
             elementTypeName
                 + " "
@@ -326,11 +373,7 @@ public class APIGenerator extends CGenerator {
             " return ("
                 + elementTypeName
                 + ")"
-                + conversionPrefix
-                + " ATelementAt((ATermList) arg, "
-                + index
-                + ") "
-                + conversionPostfix
+                + conversion
                 + ";");
         println("}");
     }
@@ -450,7 +493,7 @@ public class APIGenerator extends CGenerator {
         println("  }");
         // First we 'fake' a new list insertion using the first element of arg0
         // as a dummy value
-        String[] conversion = genATermToBuiltin(type.getElementType());
+        String conversion = genATermToBuiltin(type.getElementType(), "ATgetFirst((ATermList) arg0)" );
 
         println(
             "  arg1 = "
@@ -460,9 +503,7 @@ public class APIGenerator extends CGenerator {
                 + "Many(("
                 + elementTypeName
                 + ")"
-                + conversion[0]
-                + "ATgetFirst((ATermList) arg0)"
-                + conversion[1]
+                + conversion
                 + ", "
                 + buildActualSeparatorArgsForMakeMany(type)
                 + " arg1);");
@@ -599,6 +640,8 @@ public class APIGenerator extends CGenerator {
     private void genHeaderIncludes() {
         hprintln();
         hprintFoldOpen("includes");
+        hprintln("#include <stdlib.h>");
+        hprintln("#include <string.h>");
         hprintln("#include <aterm1.h>");
         hprintln("#include \"" + apiName + "_dict.h\"");
         hprintFoldClose();
@@ -792,20 +835,12 @@ public class APIGenerator extends CGenerator {
     }
 
     private String buildPlaceholderSubstitution(ATerm pattern) {
-        String result;
         ATermAppl hole = (ATermAppl) ((ATermPlaceholder) pattern).getPlaceholder();
         String name = StringConversions.makeIdentifier(hole.getName());
         String type = hole.getArgument(0).toString();
-        if (type.equals("int")) {
-            result = "(ATerm)ATmakeInt(" + name + ")";
-        } else if (type.equals("real")) {
-            result = "(ATerm)ATmakeReal(" + name + ")";
-        } else if (type.equals("str")) {
-            result = "(ATerm)ATmakeAppl0(ATmakeAFun(" + name + ", 0, ATtrue))";
-        } else {
-            result = "(ATerm)" + name;
-        }
-        return result;
+        TypeConverter converter = new TypeConverter(new CTypeConversions(prefix));
+        
+        return converter.makeBuiltinToATermConversion(type, name);
     }
 
     private String buildApplConstructorImpl(ATerm pattern) {
@@ -1076,10 +1111,8 @@ public class APIGenerator extends CGenerator {
             }
             print("    return (" + field_type_name + ")");
             Iterator steps = loc.stepIterator();
-            String[] type_getter = genATermToBuiltin(field.getType());
-            print(type_getter[0]);
-            genGetterSteps(steps, "arg");
-            print(type_getter[1]);
+            String type_getter = genATermToBuiltin(field.getType(), "arg");
+            print(type_getter);
             println(";");
             if (locs.hasNext()) {
                 println("  }");
@@ -1474,37 +1507,16 @@ public class APIGenerator extends CGenerator {
         printFoldClose();
     }
 
-    private String[] genATermToBuiltin(String type) {
-        // TODO: maybe instead of creating a tuple, we can give the 
-        // argument as an argument to genATermToBuiltin
-        String pre = "";
-        String post = "";
-
-        if (type.equals("int")) {
-            pre = "ATgetInt((ATermInt)";
-            post = ")";
-        } else if (type.equals("real")) {
-            pre = "ATgetReal((ATermReal)";
-            post = ")";
-        } else if (type.equals("str")) {
-            pre = "ATgetName(ATgetAFun((ATermAppl)";
-            post = "))";
-        }
-
-        String[] result = { pre, post };
-        return result;
+    private String genATermToBuiltin(String type, String arg) {
+        TypeConverter converter = new TypeConverter(new CTypeConversions(prefix));
+        
+        return converter.makeATermToBuiltinConversion(type, arg);
     }
 
     private String genBuiltinToATerm(String type, String id) {
-        if (type.equals("int")) {
-            return "ATmakeInt(" + id + ")";
-        } else if (type.equals("real")) {
-            return "ATmakeReal(" + id + ")";
-        } else if (type.equals("str")) {
-            return "ATmakeAppl0(ATmakeAFun(" + id + ", 0, ATtrue))";
-        } else {
-            return id;
-        }
+        TypeConverter converter = new TypeConverter(new CTypeConversions(prefix));
+        
+        return converter.makeBuiltinToATermConversion(type,id);
     }
 
     private String getATermTypeName(int type) {
@@ -1549,7 +1561,7 @@ public class APIGenerator extends CGenerator {
     }
 
     private String buildTypeName(String typeId) {
-        TypeConverter conv = new TypeConverter(new CTypeConversions());
+        TypeConverter conv = new TypeConverter(new CTypeConversions(prefix));
 
         String name = conv.getType(typeId);
 

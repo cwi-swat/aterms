@@ -11,6 +11,7 @@
   separated-list(SepIntList, int,[<sep(str)>,","]),
   separated-list(SepDoubleList, real,[<sep(str)>,","]),
   separated-list(SepTermList, term,[<sep(str)>,","]),
-  separated-list(SepStringList, str,[<sep(str)>,","])
+  separated-list(SepStringList, str,[<sep(str)>,","]),
   
+  constructor(A, a, string(<string(chars)>))
 ]

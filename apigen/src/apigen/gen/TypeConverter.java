@@ -9,15 +9,16 @@ public class TypeConverter implements TypeConversions {
     public static final String STR_TYPE = "str";
     public static final String REAL_TYPE = "real";
     public static final String INT_TYPE = "int";
+    public static final String CHARS_TYPE = "chars";
     private Map reservedTypes;
     private TypeConversions converter;
 
     /**
-     * Create a new TypeConverter
-     * 
-     * @param conv
-     *            The mapping of builtin (ATerm) types to target language types
-     */
+	 * Create a new TypeConverter
+	 * 
+	 * @param conv
+	 *            The mapping of builtin (ATerm) types to target language types
+	 */
     public TypeConverter(TypeConversions conv) {
         reservedTypes = new HashMap();
 
@@ -26,23 +27,24 @@ public class TypeConverter implements TypeConversions {
         reservedTypes.put(STR_TYPE, conv.getStringType());
         reservedTypes.put(TERM_TYPE, conv.getTermType());
         reservedTypes.put(LIST_TYPE, conv.getListType());
+        reservedTypes.put(CHARS_TYPE, conv.getCharsType());
 
         this.converter = conv;
     }
 
     /**
-     * Tests whether a type-name is reserved
-     *  
-     */
+	 * Tests whether a type-name is reserved
+	 *  
+	 */
     public boolean isReserved(String t) {
         return reservedTypes.containsKey(t);
     }
 
     /**
-     * Transforms reserved type to their target implementation and leaves other
-     * types alone.
-     *  
-     */
+	 * Transforms reserved type to their target implementation and leaves other
+	 * types alone.
+	 *  
+	 */
     public String getType(String t) {
         if (isReserved(t)) {
             return (String) reservedTypes.get(t);
@@ -52,47 +54,53 @@ public class TypeConverter implements TypeConversions {
     }
 
     /**
-     * Returns the implementation type of: int
-     */
+	 * Returns the implementation type of: int
+	 */
     public String getIntegerType() {
         return (String) reservedTypes.get(INT_TYPE);
     }
 
     /**
-     * Returns the implementation type of: real
-     */
+	 * Returns the implementation type of: real
+	 */
     public String getRealType() {
         return (String) reservedTypes.get(REAL_TYPE);
     }
 
     /**
-     * Returns the implementation type of: str
-     */
+	 * Returns the implementation type of: str
+	 */
     public String getStringType() {
         return (String) reservedTypes.get(STR_TYPE);
     }
 
     /**
-     * Returns the implementation type of: term
-     */
+	 * Returns the implementation type of: term
+	 */
     public String getTermType() {
         return (String) reservedTypes.get(TERM_TYPE);
     }
 
     /**
-     * Returns the implementation type of: list
-     */
+	 * Returns the implementation type of: list
+	 */
     public String getListType() {
         return (String) reservedTypes.get(LIST_TYPE);
     }
 
+    public String getCharsType() {
+        return (String) reservedTypes.get(CHARS_TYPE);
+    }
+
     /**
-     * Builds conversion code from builtin types to ATerms
-     * 
-     * @param type the type of the expression to be converted
-     * @param expression the expression to be converted
-     * @return an implementation of a conversion
-     */
+	 * Builds conversion code from builtin types to ATerms
+	 * 
+	 * @param type
+	 *            the type of the expression to be converted
+	 * @param expression
+	 *            the expression to be converted
+	 * @return an implementation of a conversion
+	 */
     public String makeToATermConversion(String type, String expression) {
         if (INT_TYPE.equals(type)) {
             return makeIntegerToATermConversion(expression);
@@ -102,11 +110,17 @@ public class TypeConverter implements TypeConversions {
             return makeStringToATermConversion(expression);
         } else if (LIST_TYPE.equals(type)) {
             return makeListToATermConversion(expression);
+        } else if (CHARS_TYPE.equals(type)) {
+            return makeCharsToATermConversion(expression);
         } else if (TERM_TYPE.equals(type)) {
             return expression;
         } else {
             return expression;
         }
+    }
+
+    public String makeCharsToATermConversion(String expression) {
+        return converter.makeCharsToATermConversion(expression);
     }
 
     public String makeListToATermConversion(String expression) {
@@ -137,13 +151,23 @@ public class TypeConverter implements TypeConversions {
         return converter.makeATermToRealConversion(expression);
     }
 
+    public String makeATermToCharsConversion(String expression) {
+        return converter.makeATermToCharsConversion(expression);
+    }
+
+    public String makeATermToListConversion(String expression) {
+        return converter.makeATermToListConversion(expression);
+    }
+    
     /**
-     * Builds conversion code from ATerms to builtin types
-     * 
-     * @param type the type of the resulting expression
-     * @param expression the expression to be converted
-     * @return an implementation of a conversion
-     */
+	 * Builds conversion code from ATerms to builtin types
+	 * 
+	 * @param type
+	 *            the type of the resulting expression
+	 * @param expression
+	 *            the expression to be converted
+	 * @return an implementation of a conversion
+	 */
     public String makeATermToBuiltinConversion(String type, String expression) {
         if (INT_TYPE.equals(type)) {
             return makeATermToIntegerConversion(expression);
@@ -153,16 +177,16 @@ public class TypeConverter implements TypeConversions {
             return makeATermToStringConversion(expression);
         } else if (LIST_TYPE.equals(type)) {
             return makeATermToListConversion(expression);
-        } else if (TERM_TYPE.equals(type)){
+        } else if (CHARS_TYPE.equals(type)) {
+            return makeATermToCharsConversion(expression);
+        } else if (TERM_TYPE.equals(type)) {
             return expression;
         } else {
             return expression;
         }
     }
 
-    public String makeATermToListConversion(String expression) {
-        return converter.makeATermToListConversion(expression);
-    }
+    
 
     public String makeBuiltinToATermConversion(String type, String expression) {
         if (INT_TYPE.equals(type)) {
@@ -173,6 +197,8 @@ public class TypeConverter implements TypeConversions {
             return makeStringToATermConversion(expression);
         } else if (LIST_TYPE.equals(type)) {
             return makeListToATermConversion(expression);
+        } else if (CHARS_TYPE.equals(type)) {
+            return makeCharsToATermConversion(expression);
         } else if (TERM_TYPE.equals(type)) {
             return expression;
         } else {
@@ -180,5 +206,4 @@ public class TypeConverter implements TypeConversions {
         }
     }
 
-    
 }

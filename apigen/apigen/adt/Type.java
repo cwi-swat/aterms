@@ -125,7 +125,8 @@ public class Type {
             || id.equals("int")
             || id.equals("str")
             || id.equals("real")
-            || id.equals("list")) {
+            || id.equals("list")
+            || id.equals("chars")) {
             throw new RuntimeException(
                 "Illegal use of reserved name \""
                     + id
