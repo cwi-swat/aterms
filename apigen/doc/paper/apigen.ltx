@@ -82,7 +82,7 @@ the fact that \aterms\ are used for the implementation of the data type.
 
 This paper describes how an \api\ and its implementation can be generated
 from a syntax definition of the data type. In particular we describe
-how an annotated \sdf\ specification can be used to generate a library
+how a grammer (in \sdf) can be used to generate a library
 of access functions that manipulate the parse trees of terms over this
 syntax. Application of this technique in the \metaenv\ has resulted in
 a spectacular elimination of 47\% of the handwritten code, thus greatly
@@ -129,7 +129,7 @@ sprinkling of quoted strings containing backslash-escaped quotes,
 and as they begin to contain lists and annotations, the once so simple
 \emph{make-and-match} paradigm becomes a developer's nightmare.
 
-Motivated by the desire to change \asfix\ and to avoid the herculean
+Motivated by the need to change \asfix\ and to avoid the herculean
 maintenance task this operation would impose on our tools, we decided
 to remove as much ``\aterm-handicraft'' from the tools as possible
 by developing an \api-generator that creates both an interface and an
@@ -215,7 +215,7 @@ of the rewrite rule is normalized and this normalization fails {\em no}
 backtracking is performed to find a new match.
 
 The development of \asdf\ specifications is supported by an interactive
-programming environment, the \metaenv~\cite{Kli93}. In this environment
+programming environment, the \metaenv~\cite{Kli93,BKMO97}. In this environment
 specifications can be developed and tested. It provides syntax-directed
 editors, a parser generator, and a rewrite engine. Given this rewrite
 engine terms can be reduced by interpreting the equations as rewrite
@@ -342,7 +342,7 @@ looks like this:
 \begin{itemize}
 
 \item Line 1 declares this to be a grammar production (\texttt{prod}),
-containing al the elements of the lefthand side of the production. The
+containing all the elements of the lefthand side of the production. The
 \sdf-normalizer has inserted \texttt{cf(opt(layout))} subterms at every
 location where optional layout in the input term is allowed.
 
@@ -445,7 +445,7 @@ by other variables, including other \aterms\ as well as native types
 \end{verbatim}
 \end{footnotesize}
 
-Will result in term \texttt{t} being assigned the value:
+will result in term \texttt{t} being assigned the value:
 \begin{quote}
   \texttt{person(name("Anthony"),age(7))}
 \end{quote}
@@ -467,7 +467,7 @@ for example:
 \end{verbatim}
 \end{footnotesize}
 
-Will result in the variables \texttt{name} and \texttt{age} being
+will result in the variables \texttt{name} and \texttt{age} being
 assigned the values \texttt{Anthony}, and \texttt{7}, respectively.
 The output of this fragment would thus be:
 
@@ -1367,7 +1367,8 @@ Standard ML, and Haskell.
 
 \subsection{(D)COM/Corba IDL compiler}
 The two major commercial component architectures, Microsoft's (D)COM and
-OMG's CORBA, both provide IDL compilers that take an interface definition
+OMG's CORBA\cite{corba,syp98}, both provide IDL compilers that
+take an interface definition
 written in their respective \emph{interface definition languages} (IDLs), and
 generate communication scaffolding code. The generated code includes
 \emph{stubs} and {skeletons} to make it easy to write clients and
@@ -1382,9 +1383,6 @@ unmarshalling their return values,
 while in our approach we keep the data in the original 'marshalled'
 form until it is actually used. In this sense, you could characterize our
 approach as lazy and the DCOM/CORBA approach as eager.
-
-XXX: References needed!
-
 
 %%\begin{itemize}
 %%\item Only generate interfaces not implementations
@@ -1440,11 +1438,11 @@ to concrete \asfix\ representations.
 
 \subsection{JJForester}
 Another approach to generating code from an SDF definition is
-taken in JJForester\cite{jKV2000}. JJForester is a combined parser
+taken in JJForester\cite{KV2000}. JJForester is a combined parser
 generator, tree builder, and visitor generator for Java. The focus
 lies on the generation of tree manipulation and especially tree
 traversal support. Especially nice is the integration with 
-JJTraveler\cite{jVisser2001a}, providing generic visitor combinator support.
+JJTraveler\cite{Visser2001a}, providing generic visitor combinator support.
 
 % }}}
 
@@ -1489,6 +1487,7 @@ to generate more efficient matching and selection code than the current
 \texttt{ATmatch} call, which is rather inefficient.
 
 % }}}
+% {{{  Future work
 
 \section{Future work}
 \label{sec:future}
@@ -1515,6 +1514,8 @@ an environment where the threshold to create new generator modules
 is extremely low. In the ideal situation software developers could
 add new modules to the generator just as easy as to add new modules
 directly to the software system they are building.
+
+% }}}
 
 % {{{  Bibliography
 
