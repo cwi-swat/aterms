@@ -13,5 +13,5 @@ between distributed applications.'
 configuration interface
 
 requires
-  shared-objects 1.2
+  shared-objects 1.3beta
   JJTraveler     0.4
