@@ -582,14 +582,18 @@ private boolean moreSpecific(ATerm a, ATerm b)
   {
     for(int i=0; i<size(); i++) {
       ATermAppl appl = ((ATermAppl)elementAt(i));
-			out.println("result = term.match(P" + base + i + ");");
-			out.println("if(result != null) {");
+			out.println("    result = term.match(P" + base + i + ");");
+			out.println("    if(result != null) {");
       if(ret)
         out.print("      return " + base + "(");
       else
         out.print("      " + base + "(");
+
       genArgs(out, appl.getArguments());
-      out.print(");\n    } else ");
+      out.println(");");
+      if(!ret)
+				out.println("      return null;");
+      out.println("    }\n");
     }
   }
 

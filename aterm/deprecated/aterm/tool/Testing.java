@@ -1,6 +1,6 @@
 // Java tool interface class Testing
 // This file is generated automatically, please do not edit!
-// generation time: 24-Jun-98 5:20:10 PM
+// generation time: 20-Nov-98 4:45:48 PM
 
 package aterm.tool;
 import aterm.*;
@@ -72,25 +72,42 @@ abstract public class Testing extends Tool
 	throws ToolException
   {
     Vector result;
-    result = term.match(Ptestit0);
-if(result != null) {
+        result = term.match(Ptestit0);
+    if(result != null) {
       testit((String)result.elementAt(0));
-    } else result = term.match(Ptestit1);
-if(result != null) {
+      return null;
+    }
+
+    result = term.match(Ptestit1);
+    if(result != null) {
       testit((String)result.elementAt(0), ((Integer)result.elementAt(1)).intValue());
-    } else result = term.match(Ptestit2);
-if(result != null) {
+      return null;
+    }
+
+    result = term.match(Ptestit2);
+    if(result != null) {
       testit((String)result.elementAt(0), (ATermAppl)result.elementAt(1));
-    } else result = term.match(Pquestion0);
-if(result != null) {
+      return null;
+    }
+
+    result = term.match(Pquestion0);
+    if(result != null) {
       return question((ATermAppl)result.elementAt(0));
-    } else result = term.match(PrecTerminate0);
-if(result != null) {
+    }
+
+    result = term.match(PrecTerminate0);
+    if(result != null) {
       recTerminate((ATerm)result.elementAt(0));
-    } else result = term.match(PrecAckEvent0);
-if(result != null) {
+      return null;
+    }
+
+    result = term.match(PrecAckEvent0);
+    if(result != null) {
       recAckEvent((ATerm)result.elementAt(0));
-    } else 
+      return null;
+    }
+
+
       notInInputSignature(term);
     return null;
   }

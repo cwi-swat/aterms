@@ -1,6 +1,6 @@
 
-%%tool testing is { command="../../java-adapter -class toolbus.tool.Test" }
-tool testing is { command="../../java-adapter -TB_VERBOSE -class toolbus.tool.TestingTool" }
+%%tool testing is { command="./java-adapter -class toolbus.tool.Test" }
+tool testing is { command="./java-adapter -TB_VERBOSE -class aterm.tool.TestingTool" }
 
 process TEST is
 let

@@ -156,7 +156,7 @@ abstract public class Tool implements Runnable
 
     try {
       ATerm term = readTerm();
-			Vector matches = term.match("rec-do(signature(<list>,<list>))");
+			Vector matches = term.match("rec-do(signature([<list>],[<list>]))");
       if(matches != null) {
         if(verbose)
           System.err.println("checking input signature...");
