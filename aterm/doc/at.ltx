@@ -17,7 +17,7 @@
 
 \title{Efficient Annotated Terms}
 \author{\small P.A. Olivier, {\tt olivierp@wins.uva.nl} \\
-        \small H. de Jong, {\tt jong@wins.uva.nl}}
+        \small H.A. de Jong, {\tt jong@wins.uva.nl}}
 
 \begin{document}
 \maketitle
@@ -129,31 +129,28 @@ of data stored in the blob.
 
 The operations are as follows:
 \begin{itemize}
-\item {\tt make(\emph{pattern}, \emph{args})}: This operation creates a new
-term by taking the string pattern, parsing it as a term and filling
+\item {\tt make(\emph{pattern}, \emph{args})}: This operation returns a new
+term created by taking the string pattern, parsing it as a term and filling
  the holes in the resulting term with arguments taken from {\tt args}.
-\item {\tt match(\emph{pattern})}: Analyze a term, and
-and return a list of objects that matched with holes in {\tt pattern}.
-This operation is the inverse of the {\tt make} operation.
 \item {\tt readFromString(\emph{string})}: Creates a new term by parsing
 \emph{string}.
-\item {\tt readFromFile(\emph{file})}: Creates a new term by reading a
-string from \emph{file} and parsing it.
+\item {\tt readFromTextFile(\emph{file})}: Creates a new term by parsing the
+data from \emph{file}.
 \item {\tt readFromBinaryFile(\emph{file})}: Creates a new term by reading a
 compact binary representation from \emph{file}.
 \item {\tt getType(\emph{term})}: Retrieve the type of a term. This
 operation returns one of the constants mentioned above.
-\item {\tt match(\emph{term},\emph{pattern})}: Match \emph{term} against
+\item {\tt match(\emph{term}, \emph{pattern})}: Match \emph{term} against
 \emph{pattern}, and return a list of subterms matching with placeholders
 in \emph{pattern}.
-\item {\tt writeToFile(\emph{term},\emph{file})}: Write the text
+\item {\tt writeToTextFile(\emph{term}, \emph{file})}: Write the text
 representation of \emph{term} to \emph{file}.
-\item {\tt writeToBinaryFile(\emph{term},\emph{file})}: Write the compact
+\item {\tt writeToBinaryFile(\emph{term}, \emph{file})}: Write the compact
 binary representation of \emph{term} to \emph{file}.
 \item {\tt writeToString(\emph{term})}: Return the text representation
 of \emph{term} as a string.
 \item {\tt setAnnotation(\emph{term}, \emph{label}, \emph{annotation})}:
-Change the annotation labeled by \emph{label} of \emph{term} into
+Set the annotation labeled by \emph{label} of \emph{term} to
 \emph{annotation}.
 \item {\tt getAnnotation(\emph{term}, \emph{label})}:
 Retrieve the annotation labeled by \emph{label} of \emph{term}.
@@ -161,19 +158,19 @@ Retrieve the annotation labeled by \emph{label} of \emph{term}.
 the annotation labeled by \emph{label} from \emph{term}.
 \end{itemize}
  Together these operations form a set of operations that is sufficiently
-powerful for most users, and yet is simple enough to learn in a relatively
+powerful for most users, yet is simple enough to learn in a relatively
 short period of time. We refer to this interface as the \emph{level one}
 interface of the \ATerm\ datatype.
  
-In order to accomodate \ATerm\ 'power users',
-we also provide a second level interface, which provides a more extensive
+In order to accomodate \ATerm\ `power users',
+we also provide a \emph{level two} interface, which provides a more extensive
 set of datatypes and functions. These extensions are useful only
 when more control over the underlying implementation is needed
 and in situations where some operations that can be implemented using
 level one constructs but can be expressed more concisely and implemented more
 efficiently using level two constructs.
-The second level interface is a strict superset of the level one
-interface. An description of the second level interface
+The level two interface is a strict superset of the level one
+interface. A description of the level two interface
 can be found in Appendix \ref{level2}.
 
 %}}}
@@ -262,7 +259,7 @@ This design decision has a number of important consequences:
 \begin{itemize}
 \item Because terms can be shared without the creator knowing it,
       terms cannot be modified without creating unwanted side effects.
-\item This means that terms effectively become \emph{immutable} after creation.
+      This means that terms effectively become \emph{immutable} after creation.
       Destructive updates on terms are not allowed.
 \item Two terms are only equal when they are physically the same term.
       This means that the equality check on terms can be done in constant
@@ -281,7 +278,7 @@ creating it.
 \subsubsection{Collisions}
 One of the issues when using hash techniques
 is how to handle collisions in the hashtable. The simplest
-technique is to lineary chain entries together that hash to the 
+technique is to linearly chain entries together that hash to the 
 same bucket. In this scenario, one pointer is needed in each
 object for hash chaining, which in our case would mean a memory
 overhead of about 25 percent. Other solutions for collision
@@ -299,7 +296,7 @@ However, there a severe drawbacks to this approach:
 \item We need a separate hashtable for each term size in order to
       decrease the internal fragmentation. 
 \item We cannot rehash the old terms because rehashing
-      means that we physical have to move the objects in memory.
+      means that we have to physically move the objects in memory.
       This means that the hashtable cannot grow beyond its initial size.
 \item The internal fragmentation is increased, because empty slots
       in the hashtable are as large as the object size instead of
@@ -407,7 +404,7 @@ nodes are traversed. This can have a dramatic impact on both the
 caching and paging behaviour of the system, especially when most
 objects are recycled quickly. Typically, only a small portion of all 
 objects survives the garbage collection. Not having to touch
-the objects that do not survive the garbage collection is a huge 
+the objects that do not survive the garbage collection is a major 
 advantage.
 
 At allocation time, a free object can be found by searching for the
@@ -441,7 +438,7 @@ So we have opted for the linked list approach.
 In this section, we will describe some of the more interesting
 implementation aspects of the C implementation of the \ATerm\
 datatype. We will first present the memory efficient encoding
-of \ATerms\ we have chosen. We will explain how term sharing,
+of \ATerms\ we have chosen. We will explain how term sharing and
 garbage collection can be implemented efficiently using this encoding.
 We will describe how the different
 operations on \ATerms\ described in Section \ref{aterm}
@@ -459,10 +456,9 @@ of the \ATerm\ datatype in C\cite{KR88}{\tt <PO> need a reference to ANSI-C!}.
 An important issue in the implementation is how to represent \ATerms\ 
 in such a way that all operations can be performed efficiently, without using
 more memory than is absolutely necessary. 
-We will first introduce the memory efficient encoding of \ATerm s we have 
-chosen. Then will discuss how 
-this encoding can be used to implement all operations efficiently,
-including term sharing and garbage collection.
+We will first introduce the memory efficient encoding of \ATerms\ we have 
+chosen. Then will discuss how this encoding can be used to implement all
+operations efficiently, including term sharing and garbage collection.
 
 We assume that one machine word consists
 of 4 bytes, which is typical for modern architectures.
@@ -481,7 +477,7 @@ of the object, and consists of three fields (see Figure \ref{header}):
       pointers to other terms) of this object. When this field
       contains the maximum value of 15, the actual arity of this 
       object is stored in the second word.
-\item A field consisting of 1 bit that indicates of this term has an
+\item A field consisting of 1 bit that indicates whether this term has an
       annotation or not.
 \end{itemize}
 
@@ -548,7 +544,7 @@ is stored in the third word.
 \subsubsection{Annotations}
 
 The perceptive reader might have wondered why we only reserve a single
-bit for annotations. This bit only indicates that a term has an annotation
+bit for annotations. This bit only indicates whether a term has an annotation
 or not,
 not what the annotation is. To find the annotation, a separate hashtable
 lookup has to be done using a table that contains $(term,annotation)$ pairs.
@@ -569,7 +565,7 @@ The absence of annotations can be detected by checking a single bit.
 \section{Future work}
 
 \bibliographystyle{alpha}
-\bibliography{../thesis/thesis}
+\bibliography{thesis}
 
 \appendix
 
@@ -579,7 +575,7 @@ The absence of annotations can be detected by checking a single bit.
 \label{level2}
 The operations described in Section \ref{aterm} are not sufficient for
 all applications. Some applications need more control over the underlying 
-implementation, or need operations that that can be implemented using
+implementation, or need operations that can be implemented using
 level one constructs but can be expressed more concisely and implemented more
 efficiently using special constructs.
 
@@ -644,36 +640,46 @@ constructor. The operations on this datatype are:
 \paragraph{ATerms:} This datatype represents the binary list constructor.
 The operations on this datatype are:
 \begin{itemize}
-\item {\tt ATerms makeTerms(ATerm \emph{head}, ATerm \emph{tail})}:
-      Build a list given its head and tail.
 \item {\tt ATerms makeTerms\emph{n}(ATerm \emph{el1},..., ATerm \emph{eln})}:
-      This is actuall a family of operations, one for each \emph{n} between
-      0 and 8. These operations are used to quickly construct small lists.
-\item {\tt int listLength(ATerms \emph{terms})}: Retrieve the length of a list.
-\item {\tt ATerm listFirst(ATerms \emph{terms})}: Retrieve the head of a list.
-\item {\tt ATerms listNext(ATerms \emph{terms})}: Retrieve the tail of a list.
-\item {\tt ATerms listPrefix(ATerms \emph{terms})}: Retrieve a list
-      consisting of all elements of \emph{terms}, except the last one.
-\item {\tt ATerm listLast(ATerms \emph{terms})}: Retrieve the last element of
-      a list.
-\item {\tt ATerms listSlice(ATerms \emph{terms}, int \emph{start}, 
-                           int \emph{end})}: Retrieve a slice of a list.
-\item {\tt boolean listEmpty(ATerms \emph{terms})}: Check if a list is empty.
-\item {\tt ATerms listAppend(ATerms \emph{terms}, ATerm \emph{el})}:
-      Append a single element to the end of a list.
-\item {\tt ATerms listConcat(Aterms \emph{terms1}, ATerms \emph{terms2})}:
-      Concatenate two lists.
-\item {\tt int listSearch(ATerms \emph{terms}, ATerm \emph{el}, int \emph{n})}:
-      Search for an element in a list, and return the index of the first
-      location where the element is present. Start searching at index \emph{n}.
+      This is actually a family of operations, one for each \emph{n} between
+      0 and 7. These operations are used to quickly construct small
+	  sequences of \emph{terms}.
+\item {\tt Integer getLength(ATerms \emph{terms})}: Retrieve the length of
+		\emph{terms}.
+\item {\tt ATerm getFirst(ATerms \emph{terms})}: Retrieve the first element of
+	\emph{terms}.
+\item {\tt ATerms getNext(ATerms \emph{terms})}: Retrieve all but the first
+	element of \emph{terms}.
+\item {\tt ATerms getPrefix(ATerms \emph{terms})}: Retrieve all but the last
+	element of \emph{terms}.
+\item {\tt ATerm getLast(ATerms \emph{terms})}: Retrieve the last element from
+      \emph{terms}.
+\item {\tt ATerms getSlice(ATerms \emph{terms}, Integer \emph{start}, 
+                           Integer \emph{end})}: Retrieve the portion of
+	\emph{terms} between \emph{start} and \emph{end} (inclusive).
+\item {\tt boolean isEmpty(ATerms \emph{terms})}: Check if \emph{terms} has
+\item {\tt ATerms insert(ATerms \emph{terms}, ATerm \emph{el})}:
+      Insert a single element at the start of a list.
+\item {\tt ATerms insertAt(ATerms \emph{terms}, ATerm \emph{el},
+       Integer \emph{index})}:
+      Insert a single element at position index in \emph{terms} list.
+\item {\tt ATerms append(ATerms \emph{terms}, ATerm \emph{el})}:
+      Append a single element to the end of \emph{terms}.
+\item {\tt ATerms concat(Aterms \emph{terms1}, ATerms \emph{terms2})}:
+      Concatenate \emph{terms1} and \emph{terms2}.
+\item {\tt Integer indexOf(ATerms \emph{terms}, ATerm \emph{el},
+       Integer \emph{n})}:
+      Search for an element in \emph{terms} and return the index of the first
+      location where \emph{el} is present. Start searching at index \emph{n}.
       If the element is not present after element \emph{n}, return -1.
-\item {\tt int listRSearch(ATerms \emph{terms}, ATerm \emph{el}, int \emph{n})}:
-      Search backwards for an element in a list, and return the index of the
-      last location where the element is present. Start searching at index
+\item {\tt Integer lastIndexOf(ATerms \emph{terms}, ATerm \emph{el},
+       Integer \emph{n})}:
+      Search backwards for \emph{el} in \emph{terms}, and return the index of
+	  the last location where the element is present. Start searching at index
       \emph{n}. If the element is not present before element \emph{n},
       return -1.
-\item {\tt ATerm getElement(ATerms \emph{terms}, int \emph{index})}:
-      Retrieve one indexed element from a list.
+\item {\tt ATerm elementAt(ATerms \emph{terms}, Integer \emph{index})}:
+      Retrieve element at position \emph{index} from \emph{terms}.
 \end{itemize}
 
 %}}}
@@ -683,8 +689,9 @@ The operations on this datatype are:
 The operations on ATermInt are:
 
 \begin{itemize}
-\item {\tt ATermInt makeInt(int \emph{value})}: Construct a new integer term.
-\item {\tt int intValue(ATermInt \emph{i})}: Retrieve the value of an 
+\item {\tt ATermInt makeInt(Integer \emph{value})}: Construct a new integer
+term.
+\item {\tt Integer getInt(ATermInt \emph{i})}: Retrieve the value of an 
       integer term.
 \end{itemize}
 
@@ -695,9 +702,9 @@ The operations on ATermInt are:
 The operations on ATermReal are:
 
 \begin{itemize}
-\item {\tt ATermReal makeReal(double \emph{value})}: Construct a new 
-      integer term.
-\item {\tt double realValue(ATermReal \emph{r})}: Retrieve the value of 
+\item {\tt ATermReal makeReal(Real \emph{value})}: Construct a new 
+      real term.
+\item {\tt double getReal(ATermReal \emph{r})}: Retrieve the value of 
       a real term.
 \end{itemize}
 
@@ -710,7 +717,7 @@ The operations on ATermPlaceholder are:
 \begin{itemize}
 \item {\tt ATermPlaceholder makePlaceholder(ATerm \emph{type})}: 
       Construct a new placeholder term.
-\item {\tt ATerm placeholderType(ATermPlaceholder \emph{placeholder})}: 
+\item {\tt ATerm getPlaceholder(ATermPlaceholder \emph{placeholder})}: 
       Retrieve the type of this placeholder.
 \end{itemize}
 
@@ -727,15 +734,12 @@ called before the space occupied by a `dead' ATermBlob is reused.
 The operations on ATermBlob are:
 
 \begin{itemize}
-\item {\tt ATermBlob *makeBlob(int \emph{size}, void *\emph{data})}: 
+\item {\tt ATermBlob makeBlob(Integer \emph{size}, Data \emph{data})}: 
       Construct a new blob term.
-\item {\tt int blobSize(ATermBlob *\emph{blob})}: Retrieve the size of
+\item {\tt Integer getBlobSize(ATermBlob \emph{blob})}: Retrieve the size of
       a blob.
-\item {\tt void *blobData(ATermBlob *\emph{blob})}: Retrieve the data
+\item {\tt Data getBlobData(ATermBlob *\emph{blob})}: Retrieve the data
       pointer stored in a blob.
-\item {\tt void registerBlobDestructor(void (*\emph{destructor})(ATermBlob *))}:\newline
-      register a blob destructor, which can be used to free the
-      memory associated with the blob's data.
 \end{itemize}
 
 %}}}
