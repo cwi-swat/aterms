@@ -91,7 +91,7 @@ public class Main {
 			else if ("--jtom".startsWith(args[i]) || "-j".startsWith(args[i])) {
 				jtom = true;
 			}
-			else if ("--verbose".startsWith(args[i])) {
+			else if ("--verbose".startsWith(args[i]) || "-v".startsWith(args[i])) {
 				verbose = true;
 			}
 			else if ("--help".startsWith(args[i])) {
