@@ -1040,21 +1040,27 @@ of all exported \api\ functions. An abridged version of the header file
 \hline
 Component     & Before (LOC)  & After (LOC) & Reduction (\%) \\
 \hline
-asc-support   &		2207  &	      1752  &		\\
-libasfix      &	       10419  &	      2077  &		\\
-asfix-tools   &		 466  &	       603  &		\\
-asfix2c compiler &	1866  &	      1138  &		\\
-asf-tools     &		1303  &	       589  &		\\
-structure editor &	2861  &	      1946  &		\\
-evaluator     &		4241  &	      4009  &		\\
-in-output     &		 713  &	       812  &		\\
-module-db     &		1809  &	      1244  &		\\
-pgen	      &		5226  &	      5226  &		\\
-sglr	      &	       10225  &	     10427  &		\\
-utils	      &		1356  &	      1363  &		\\
+asc-support   &		2207  &	      1752  &	21	\\
+libasfix      &	       10419  &	      2077  &	80	\\
+asfix-tools   &		 466  &	       603  &  -29	\\
+asfix2c compiler &	1866  &	      1138  &	39	\\
+asf-tools     &		1303  &	       589  &	55	\\
+structure editor &	2861  &	      1946  &	32	\\
+evaluator     &		4241  &	      4009  &	 5	\\
+module-db     &		1809  &	      1244  &	31	\\
 \hline
-Total	      &	       42692  &	     31186  &	27.0	\\ 
+{\bf Total }  &  \textbf{25172} &	\textbf{13358}	    & \textbf{47} \\
 \hline
+
+%% in-output     &		 713  &	       812  &  -14	\\
+%% pgen	      &		5226  &	      5226  &	 0	\\
+%% sglr	      &	       10225  &	     10427  &	-2	\\
+%% utils	      &		1356  &	      1363  &	-1	\\
+%% \hline
+%% \hline
+%% \textbf{Total}	      &	       \textbf{42692}  & \textbf{31186}  & \textbf{27} \\ 
+%% \hline
+
 \end{tabular}
 \caption{\label{table.reduction}Code Reduction}
 \end{figure}
@@ -1070,17 +1076,27 @@ Total	      &	       42692  &	     31186  &	27.0	\\
 \item No garbage collection (in C/C++)
 \end{itemize}
 
-\subsection{Corba IDL compiler}
+\subsection{(D)COM/Corba IDL compiler}
 \begin{itemize}
-\item Only generates interfaces?
+\item Only generate interfaces not implementations
 \item Targeted at distributed environments
-\item Generates Corba specific functionality
 \item Well-defined mappings to specific target languages (whitepapers)
-\item Only getters/setters
 \item Interface centric instead of datatype centric
 \item No sharing
 \item No garbage collection (in languages without GC)
+\item (D)COM very windows specific
 \end{itemize}
+
+\subsection{XML access}
+Comparable approach: generate classes from schema/DTD representing XML entities.
+Typical example: jaxb (http://java.sun.com/xml/jaxb)
+\begin{itemize}
+\item Java specific
+\item XML oriented: classes implement RootElement, XML as exchange format
+\item No sharing
+\item Code generation can be steered (using a spec. in XML)
+\end{itemize}
+
 
 \texttt{TODO: beef up examples + more and better explanation} \\
 \texttt{TODO: practical work in meta-environment + statistics on code reduction} \\
