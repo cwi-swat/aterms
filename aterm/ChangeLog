@@ -19,6 +19,9 @@
 
 $Id$
 
+2000/02/28 (jong@cwi.nl)
+ * Version 1.5
+
 2000/02/27 (jong@cwi.nl)
  * Added switch "-no-date" to prevent outputting timestamp in utils/dicttoc.c
 
