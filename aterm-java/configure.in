@@ -3,10 +3,7 @@ dnl $Id$
 AC_INIT
 AC_CONFIG_SRCDIR([configure.in])
 AM_INIT_AUTOMAKE(aterm-java, 1.6)
-AC_PREREQ(2.53)
-
-dnl Let aclocal use macros in ./config directory
-ACLOCAL="${ACLOCAL} -I ./config"
+AC_PREREQ(2.59)
 
 AC_PROG_MAKE_SET([])
 

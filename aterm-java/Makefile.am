@@ -1,4 +1,8 @@
+# $Id$
+
 SUBDIRS = aterm test config .
+
+ACLOCAL_FLAGS = -I .
 
 EXTRA_DIST = $(wildcard *.pkg)
 
