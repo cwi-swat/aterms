@@ -12,9 +12,12 @@ AC_SET_MAKE
 AC_PACKAGE_REQUIRE(shared-objects, shared-objects-config,
    [ --with-shared-objects=DIR       installation directory of shared-objects])
 SHARED_OBJECTS=`${SHARED_OBJECTS}/bin/shared-objects-config`
-AC_SUBST(SHARED_OBJECTS)
 
-EXTERNAL_JARS=${SHARED_OBJECTS}:`pwd`/jjtraveler-1.3.jar
+AC_PACKAGE_REQUIRE(jjtraveler, jjtraveler-config,
+   [ --with-jjtraveler=DIR       installation directory of jjtraveler])
+JJTRAVELER=`${JJTRAVELER}/bin/jjtraveler-config`
+
+EXTERNAL_JARS=${SHARED_OBJECTS}:${JJTRAVELER}
 
 AC_SUBST(EXTERNAL_JARS)
 
