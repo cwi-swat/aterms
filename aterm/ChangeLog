@@ -5,6 +5,7 @@ $Id$
  * deprecated.h is now empty (and deprecated)
  * moved ATmatchTerm and friends to aterm1.h
  * added ATcalcUniqueSubterms/Symbols (alias for AT_calcUniqueXxx)
+ * Introduced buffered input/output streams in Java ToolBus support
 
 2000/03/05 (jong@cwi.nl)
  * Version 1.5.2beta

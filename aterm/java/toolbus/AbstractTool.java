@@ -80,8 +80,8 @@ abstract public class AbstractTool
     throws IOException
   {
     Socket socket = new Socket(address, port);
-    inputStream   = socket.getInputStream();
-    outputStream  = socket.getOutputStream();
+    inputStream   = new BufferedInputStream(socket.getInputStream());
+    outputStream  = new BufferedOutputStream(socket.getOutputStream());
 
     shakeHands();
     connected = true;
@@ -191,7 +191,7 @@ abstract public class AbstractTool
   void info(String msg)
   {
     if (verbose) {
-      System.err.println(msg);
+      System.err.println("[TOOL: " + toolname + "] " + msg);
     }
   }
 
@@ -246,6 +246,7 @@ abstract public class AbstractTool
       for (int i=LENSPEC+size; i<MIN_MSG_SIZE; i++) {
 	outputStream.write(0);
       }
+      outputStream.flush();
     }
 
   //}}}
@@ -293,7 +294,6 @@ abstract public class AbstractTool
 
   //}}}
 
-
   //{{{ public void run()
 
   public void run()
@@ -304,6 +304,7 @@ abstract public class AbstractTool
 	handleIncomingTerm();
       }
     } catch (IOException e) {
+      e.printStackTrace();
       throw new RuntimeException("IOException: " + e.getMessage());
     }
   }

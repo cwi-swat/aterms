@@ -8,26 +8,28 @@ public class Testing
   implements TestingTif
 {
   private ATermFactory factory;
+  private TestingBridge bridge;
 
   public static final void main(String[] args)
     throws IOException
   {
-    ATermFactory factory = new aterm.pure.PureFactory();
-    Testing testing = new Testing(factory);
-    TestingBridge bridge = new TestingBridge(factory, testing);
+    Testing testing = new Testing(args);
+  }
+
+  public Testing(String[] args)
+    throws IOException
+  {
+    factory = new aterm.pure.PureFactory();
+    bridge = new TestingBridge(factory, this);
     bridge.init(args);
     bridge.connect();
     bridge.run();
   }
 
-  public Testing(ATermFactory factory)
-  {
-    this.factory = factory;
-  }
-
   public void listtest(ATermList l0)
   {
     System.out.println("listtest: " + l0);
+    bridge.sendEvent(factory.parse("test-event(1{[key,val]})"));
   }
 
   public void testit(String s0)
@@ -50,6 +52,16 @@ public class Testing
     System.out.println("question: " + t0);
     //return factory.parse("snd-value(answer(f([4], 3.2){[label,val]}))");
     return factory.parse("snd-value(answer(f([4], 3.2)))");
+  }
+
+  public void activeDisconnect()
+  {
+    try {
+      bridge.sendTerm(factory.parse("snd-disconnect"));
+    } catch (IOException e) {
+      System.err.println("IOException received: " + e.getMessage());
+    }
+    System.exit(0);
   }
 
   public void recAckEvent(ATerm t0)
