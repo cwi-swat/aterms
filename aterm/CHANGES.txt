@@ -1,0 +1,10 @@
+
+0.6:
+- Term hashtable is now automatically resized.
+- Added CHANGES.txt (this file)
+
+0.5:
+
+- Introduced Binary ATerm Format (BAF).
+- Symbols are now also freed by the garbage collector.
+
