@@ -64,6 +64,7 @@ ATerm ATreadFromTextFile(FILE *file);
 ATerm ATreadFromBinaryFile(FILE *file);
 ATerm ATreadFromFile(FILE *file);
 ATerm ATreadFromNamedFile(const char *name);
+ATerm ATreadFromBinaryString(char *s, int size);
 
 /* Abbreviation for ATreadFromString */
 #define ATparse(s)	ATreadFromString((s))
@@ -88,6 +89,7 @@ ATbool ATwriteToBinaryFile(ATerm t, FILE *file);
 ATbool ATwriteToNamedTextFile(ATerm t, const char *name);
 ATbool ATwriteToNamedBinaryFile(ATerm t, const char *name);
 char  *ATwriteToString(ATerm t);
+char  *ATwriteToBinaryString(ATerm t, int *len);
 ATerm  ATsetAnnotation(ATerm t, ATerm label, ATerm anno);
 ATerm  ATgetAnnotation(ATerm t, ATerm label);
 ATerm  ATremoveAnnotation(ATerm t, ATerm label);
