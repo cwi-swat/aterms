@@ -10,7 +10,7 @@ equations
   gen-source($CPrefix, $API) = $Source,
   gen-dict($API) = $Dict
   ===>
-  gen-c-api($CPrefix, $Prologue, $API) =
+  gen-c-api($Prefix, $Prologue, $API) =
         build-header-tag($CPrefix) $Header $$
         build-source-tag($CPrefix) $Source $$
         build-dict-tag($CPrefix) [ afuns([]), terms([$Dict]) ] $$
