@@ -9,6 +9,10 @@
 #include "util.h"
 #include "debug.h"
 
+#ifdef DMALLOC
+#include <dmalloc.h>
+#endif
+
 /*}}}  */
 /*{{{  defines */
 

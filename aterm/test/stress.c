@@ -1122,8 +1122,10 @@ void testTaf()
   t[6] = ATmake("h(<term>,1,2,1,3.14,[<term>,<term>,<term>],<term>)", 
 		t[1], t[4],t[4], t[5], t[5]);
 
+#ifndef NO_SHARING
   test_assert("taf", 0, strcmp(ptr, expected) == 0);
   test_assert("taf", 1, len == strlen(expected));
+#endif
   test_assert("taf", 2, ATisEqual(t[0], t[2]));
   test_assert("taf", 3, ATisEqual(t[3], t[0]));
 
@@ -1234,12 +1236,16 @@ int main(int argc, char *argv[])
   testGC();
   testProtect();
   testMark();
+#ifndef NO_SHARING
   testTable();
   testIndexedSet();
+#endif
   testDictToC();
   testTBLegacy();
   testChecksum();
+#ifndef NO_SHARING
   testDiff();
+#endif
 
   return 0;
 }

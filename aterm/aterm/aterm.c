@@ -19,6 +19,10 @@
 #include "tafio.h"
 #include "md5.h"
 
+#ifdef DMALLOC
+#include <dmalloc.h>
+#endif
+
 /*}}}  */
 /*{{{  defines */
 

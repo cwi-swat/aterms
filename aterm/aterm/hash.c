@@ -24,6 +24,10 @@
 #include <string.h>
 #include <limits.h>
 
+#ifdef DMALLOC
+#include <dmalloc.h>
+#endif
+
 /*}}}  */
 /*{{{  defines */
 
@@ -233,13 +237,13 @@ static long hashPut(ATermTable s, ATerm key, long n)
 
   while (1) {
     v = s->hashtable[c];
-    if(v == EMPTY || v == DELETED) {
+    if (v == EMPTY || v == DELETED) {
       /* Found an empty spot, insert a new index belonging to key */
       s->hashtable[c] = n;
       return n;
     }
 
-    if(tableGet(s->keys, v) == key) {
+    if (ATisEqual(tableGet(s->keys, v), key)) {
       /* key is already in the set, return position of key */
       return v;
     }
@@ -465,7 +469,7 @@ long ATindexedSetGetIndex(ATermIndexedSet hashset, ATerm elem)
       return -1;
     }
 
-    if(v != DELETED && elem == tableGet(hashset->keys, v)) {
+    if(v != DELETED && ATisEqual(elem,tableGet(hashset->keys, v))) {
       return v;
     }
 
@@ -627,7 +631,7 @@ void ATtableRemove(ATermTable table, ATerm key)
     if(v == EMPTY) {
       return;
     }
-    if(v != DELETED && key == tableGet(table->keys, v)) {
+    if(v != DELETED && ATisEqual(key, tableGet(table->keys, v))) {
       break;
     }
 

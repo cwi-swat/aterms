@@ -5,9 +5,10 @@ include ../make_rules
 # The following libraries are compiled to static libraries.
 #
 lib_LIBRARIES		= libATerm.a @ATERM_LIB_GCC@ @ATERM_LIB_CC@ \
-			@ATERM_LIB_DBG@ @ATERM_LIB_PROF@
+			@ATERM_LIB_DBG@ @ATERM_LIB_PROF@ @ATERM_LIB_NS@
+
 EXTRA_LIBRARIES		= libATerm-gcc.a libATerm-cc.a libATerm-dbg.a \
-			libATerm-prof.a
+			libATerm-prof.a libATerm-ns.a
 
 ALLSRCS			= aterm.c list.c make.c memory.c afun.c gc.c \
 			hash.c bafio.c byteio.c tafio.c version.c md5c.c
@@ -19,6 +20,7 @@ PRIVATE_INCL		= _aterm.h _afun.h debug.h gc.h list.h make.h \
 			memory.h util.h bafio.h version.h tafio.h byteio.h \
 			md5.h
 
+#CFLAGS			= -Wall -g -O2 -DDMALLOC -I/ufs/olivierp/include
 CFLAGS			= -Wall -g -O2
 
 ALLINCLUDES		= ${PUBLIC_INCL} ${PRIVATE_INCL}
@@ -33,17 +35,22 @@ libATerm_cc_a_SOURCES	=
 libATerm_gcc_a_SOURCES	=
 libATerm_dbg_a_SOURCES	=
 libATerm_prof_a_SOURCES	=
+libATerm_ns_a_SOURCES	=
+
+libATerm_ns_a_CFLAGS	= -DNO_SHARING
 
 libATerm_a_LIBADD	= $(ALLSRCS:.c=.o)
 libATerm_cc_a_LIBADD	= $(ALLSRCS:.c=-cc.o)
 libATerm_gcc_a_LIBADD	= $(ALLSRCS:.c=-gcc.o)
 libATerm_dbg_a_LIBADD	= $(ALLSRCS:.c=-dbg.o)
 libATerm_prof_a_LIBADD	= $(ALLSRCS:.c=-prof.o)
+libATerm_ns_a_LIBADD	= $(ALLSRCS:.c=-ns.o)
 
 version.o:      version.c $(ALLINCLUDES) $(ALLSRCS)
 version-cc.o:   version.c $(ALLINCLUDES) $(ALLSRCS)
 version-gcc.o:  version.c $(ALLINCLUDES) $(ALLSRCS)
 version-dbg.o:  version.c $(ALLINCLUDES) $(ALLSRCS)
 version-prof.o: version.c $(ALLINCLUDES) $(ALLSRCS)
+version-ns.o:   version.c $(ALLINCLUDES) $(ALLSRCS)
 
 # vim:ts=8:sw=8:sts=0

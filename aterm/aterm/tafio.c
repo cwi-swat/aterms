@@ -12,6 +12,10 @@
 #include "_afun.h"
 #include "memory.h"
 
+#ifdef DMALLOC
+#include <dmalloc.h>
+#endif
+
 /*}}}  */
 /*{{{  defines */
 

@@ -9,6 +9,10 @@
 #include "aterm2.h"
 #include "debug.h"
 
+#ifdef DMALLOC
+#include <dmalloc.h>
+#endif
+
 /*}}}  */
 /*{{{  defines */
 

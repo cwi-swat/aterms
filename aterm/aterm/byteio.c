@@ -6,6 +6,10 @@
 #include "byteio.h"
 #include "util.h"
 
+#ifdef DMALLOC
+#include <dmalloc.h>
+#endif
+
 /*{{{  static void resize_buffer(byte_writer *writer, int delta) */
 
 static void resize_buffer(byte_writer *writer, int delta)

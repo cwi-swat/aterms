@@ -11,6 +11,10 @@
 #include "debug.h"
 #include "gc.h"
 
+#ifdef DMALLOC
+#include <dmalloc.h>
+#endif
+
 /*}}}  */
 /*{{{  defines */
 
@@ -47,6 +51,9 @@
 #define HASHNUMBER4(t)\
         FINISH(COMBINE(COMBINE(START(((MachineWord*)t)[0]), \
 	    ((MachineWord*)t)[2]),((MachineWord*)t)[3]))
+
+#define HASHINT(val) \
+	FINISH(COMBINE(START( (AT_INT<<SHIFT_TYPE) ), val))
 
 #ifdef AT_64BIT 
 #define FOLD(w)        ((HN(w)) ^ (HN(w) >> 32))
@@ -845,7 +852,7 @@ ATermAppl ATmakeApplList(Symbol sym, ATermList args)
   header_type header = APPL_HEADER(0, arity > MAX_INLINE_ARITY ?
 				   MAX_INLINE_ARITY+1 : arity, sym);
 
-  CHECK_TERM(args);
+  CHECK_TERM((ATerm)args);
   assert(arity == ATgetLength(args));
 
   cur = AT_allocate(ARG_OFFSET + arity);
@@ -955,7 +962,7 @@ ATermList ATinsert(ATermList tail, ATerm el)
   ATerm cur;
   header_type header = LIST_HEADER(0, (GET_LENGTH(tail->header)+1));
 
-  CHECK_TERM(tail);
+  CHECK_TERM((ATerm)tail);
   CHECK_TERM(el);
 
   cur = AT_allocate(TERM_SIZE_LIST);
@@ -1771,7 +1778,6 @@ ATermAppl ATmakeApplArray(Symbol sym, ATerm args[])
 
 ATermInt ATmakeInt(int val)
 {
-  ATermInt protoInt;
   ATerm cur;
   header_type header = INT_HEADER(0);
   HashNumber hnr;
@@ -1779,13 +1785,8 @@ ATermInt ATmakeInt(int val)
   MachineWord *words;
 #endif
 
-  protoTerm[2] = 0;   /* clear 1st (and only) data-word for int */
+  hnr = HASHINT(val);
 
-  protoInt = (ATermInt) protoTerm;
-  protoInt->header = header;
-  protoInt->value  = val;
-
-  hnr = HASHNUMBER3((ATerm)protoInt);
 
   cur = hashtable[hnr & table_mask];
   while (cur && (cur->header != header || ((ATermInt)cur)->value != val)) {

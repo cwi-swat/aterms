@@ -16,6 +16,10 @@
 #include "util.h"
 #include "byteio.h"
 
+#ifdef DMALLOC
+#include <dmalloc.h>
+#endif
+
 /*}}}  */
 /*{{{  defines */
 
