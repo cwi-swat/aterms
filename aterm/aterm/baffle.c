@@ -51,7 +51,7 @@ main(int argc, char *argv[])
 	ATbool binary_output = ATtrue;
 	ATbool interpret = ATfalse;
 	ATbool result = ATfalse;
-	ATerm term;
+	ATerm term = NULL;
 	FILE *input  = stdin;
 	FILE *output = stdout;
 
