@@ -324,10 +324,9 @@ it is returned unchanged.
 
 In Section~\ref{intro} we have already mentioned our main
 requirements: openness, simplicity, efficiency, conciseness,
-language-independence, and annotations.
-
-There are a number of other issues to consider that have a great
-impact on the implementation, and that make this a fairly unique problem:
+language-independence, and annotations.  There are a number of other
+issues to consider that have a great impact on the implementation, and
+that make this a fairly unique problem:
 
 \begin{itemize}
 
@@ -379,27 +378,40 @@ the Binary Term Format (Section~\ref{baf})
 
 \subsection{Maximal Sharing}
 \label{max-sharing}
-Probably the most important design decision is to base our implementation
-of the \ATerm\ data type on \emph{maximal sharing}. In order to fully exploit
-the redundancy that is typically present in terms that are built,
-we never create the same term twice. Before a new term is created,
-a lookup is done to see if that term already exists. If it exists, the old
-version is reused and no new term is created.
 
-This design decision is a typical example of a space/time trade-off,
-some time is invested at term creation time in order to use 
-significantly less space. In this case however, part of invested
-time can be reclaimed later on because the equality check on maximally
-shared terms is very cheap. To check the equality of 'unshared'
-terms, all nodes must be compared in the worst case. 
-In the maximally shared case however
-two terms are only equal when they are in fact the same term, so 
-comparing their memory addresses suffices to check for equality. The
-complexity of the equality check has effectively been reduced from
-$O(n)$ to $O(1)$. Depending on the application, this gain easily
-offset the time invested to build maximally shared terms.
+Our strategy to minimize memory usage is simple but effective: we only
+create terms that are \emph{new}, i.e., that do not exist already.  If
+a term to be constructed already exists, that term is reused thus
+ensuring maximal sharing.  This strategy fully exploits the redundancy
+that is typically present in the terms to be build and leads to the
+maximal sharing of subterms.  The library functions to construct terms
+take care of building shared terms whenever possible.  The sharing of
+terms is invisible.
 
-Another consequence of our approach is less fortunate:
+\subsubsection{The Effects of Maximal Sharing}
+
+Maximal sharing of terms can only be maintained when we check at every
+term creation whether a particular term already exists or not. This
+check implies a search through all existing terms but must nonetheless
+be executed {\em extremely fast} in order not to impose an
+unacceptable penalty on term creation.  Using a hash function that
+depends on the internal code of the function symbol and the addresses
+of its arguments, we can quickly search for a function application
+before creating it.  The terms are stored in a hash table.  The hash
+table does not contain the terms themselves, but pointers to the
+terms. This provides a flexible mechanism of resizing of the table and
+ensures that all entries in the table are of the same size.  The
+(modest but not negligible) costs at term creation time are hence one
+hash table lookup.
+
+Fortunately, we get two returns on this investment.  First, the
+considerably reduced memory usage also leads to reduced (real-time)
+execution time.  Second, we gain substantially since the equality
+check on terms ({\tt term\_equal}) becomes very cheap: it reduces from
+an operation that is linear in the number of subterms to be compared
+to a constant operation (pointer equality).
+
+Another consequence of our approach is less fortunate.
 Because terms can be shared without the creator knowing it,
 terms cannot be modified without creating unwanted side-effects.
 This means that terms effectively become \emph{immutable} after creation.
@@ -409,16 +421,17 @@ shared. Especially in list operations, this immutability can be
 expensive. It is often the responsibility of the user of the library
 to choose algorithms that minimize the effect of this shortcoming.
 
-The maximal sharing of terms can only be maintained when we check
-at term creation time whether a particular term already exists. The
-lookup must be \emph{extremely fast}, in order to ensure efficient term
-creation. We use the fastest technique available
-in this situation, namely hashing. Using a hash function that depends on the
+\subsubsection{Searching for shared subterms}
+
+The maximal sharing of terms can only be maintained when we check at
+term creation time whether a particular term already exists. The
+lookup must be \emph{extremely fast}, in order to ensure efficient
+term creation. Using a hash function that depends on the
 \emph{addresses} of the function symbol and the arguments of a function
 application, we can quickly search the term database to find a function 
 application before creating it.
 
-\subsubsection{Collisions}
+\paragraph{Collisions}
 One of the issues when using hash techniques
 is how to handle collisions in the hash table. The simplest
 technique is to linearly chain entries together that hash to the 
@@ -430,7 +443,7 @@ binary tree chaining), or the time needed for insertions
 or deletions (open addressing, see \cite{Knuth73}).
 We therefore use linear hash chaining in our implementation. 
 
-\subsubsection{Direct or Indirect Hashing}
+\paragraph{Direct or Indirect Hashing}
 Another issue is whether to store all terms directly in
 the hash table, or to only store references in it.
 Storing the objects directly in the hash table has the advantage
@@ -458,39 +471,7 @@ When the load of the hash table reaches a certain threshold,
 we allocate a larger table, rehash all the entries of the 
 old table in the new one, and free the old hash table.
 
-\subsubsection{Implementing Term Sharing}
-
-Our strategy to minimize memory usage is simple but
-effective: we only create terms that are \emph{new}, i.e., that do not
-exist already.  If a term to be constructed already exists, that term
-is reused thus ensuring maximal sharing.  This strategy fully exploits
-the redundancy that is typically present in the terms to be build.
-The library functions to construct terms 
-take care of building shared terms whenever possible.  The sharing of
-terms is invisible.
-
-Maximal sharing of terms can only be maintained when we check at every
-term creation whether a particular term already exists or not. This
-check implies a search through all existing terms but must nonetheless
-be executed {\em extremely fast} in order not to impose an
-unacceptable penalty on term creation.  Using a hash function that
-depends on the internal code of the function symbol and the addresses
-of its arguments, we
-can quickly search for a function application before creating it.  
-The terms are stored in a hash table.
-The (modest but not negligible) costs at term creation time are hence
-one hash table lookup.
-
-Fortunately, we get two returns on this investment.  First, the
-considerably reduced memory usage also leads to reduced (real-time)
-execution time.  Second, we gain substantially since the equality
-check on terms ({\tt term\_equal}) becomes very cheap: it reduces from
-an operation that is linear in the number of subterms to be compared
-to a constant operation (pointer equality).
-
-The hash table does not contain the terms themselves, but pointers to the
-terms. This provides a flexible mechanism of resizing of the table and
-ensures that all entries in the table are of the same size.
+\paragraph{Dynamic aspects}
 
 \begin{itemize}
 \item Resizing.
@@ -500,12 +481,14 @@ ensures that all entries in the table are of the same size.
 %{{{ Garbage collection
 
 \subsection{Garbage Collection} \label{garbage-collection}
+
+\subsubsection{Which technique?}
 The most common strategies for automatic recycling of unused space
 are reference counting, mark-compact collection, and 
 mark-sweep collection. We discuss these three strategies 
 in turn, and explain why we base our design on mark-sweep garbage collection.
 
-\subsubsection{Reference Counting}
+\paragraph{Reference Counting}
 Reference counting in its simplest form works by keeping track of the 
 number of references to an object. If this number drops to zero, 
 there are no more references to it and it can be reclaimed.
@@ -536,7 +519,7 @@ using only a couple of machine words\footnote{We assume a word size
 of 4 bytes in this paper.} per object. Adding a whole word
 for keeping track of the reference count is therefore unacceptable.
 
-\subsubsection{Mark-compact Garbage Collection}
+\paragraph{Mark-compact Garbage Collection}
 
 Mark-compact garbage collection works by periodically copying all
 \emph{live} objects to a fresh empty memory space, and freeing the
@@ -550,7 +533,7 @@ positively identify \emph{all} references to an object without complex
 support from the programmer. This problem can only be solved by
 using one more level of indirection but this solution is too expensive.
 
-\subsubsection{Mark-sweep Garbage Collection}
+\paragraph{Mark-sweep Garbage Collection}
 
 Mark-sweep garbage collection works using three (sometimes two) phases.
 In the first phase, all objects on the heap are marked as `dead'.
@@ -580,7 +563,11 @@ but we face a number of unusual circumstances that render existing
 garbage collectors impractical:
 
 \begin{itemize}
-\item The term database (hash table) always contains references to 
+\item The term database (hash table)\footnote{De op zich goede uitdrukking
+ ``term database'' komt hier voor het eerst voor.
+Globaal aanpassen door altijd te spreken over een ``term database'' die middels
+hashing geimplementeerd is.}
+always contains references to 
       all objects. It must be possible to instruct the garbage collector
       not to scan this area for roots.
 \item After an object becomes garbage, it must also be removed from the
@@ -611,35 +598,25 @@ These observations allow us to gain efficiency on several
 levels, using everything from low level system 'hacks' to high-level 
 optimizations.
 
-\subsubsection{The Mark-sweep Algorithm}
-Given these facts, we opted for a straightforward version of mark-sweep 
-garbage collection because this gives very good
-performance in combination with a high level of maintainability of the
-code that uses the library.
 
-As we shall see in Section \ref{implementation}, 
-most objects consist of only a couple of machine words. 
-By restricting the maximum arity of a function, we can also
-set an upper bound on the maximum size of objects.
-This enables us to base the memory management 
-algorithms we use on a small number of block sizes.
 
 %}}}
 
 \subsubsection{Implementing the Garbage Collector}
 
-We have opted for a version of the make-sweep garbage collector.
-Every object contains a single bit used by the mark-sweep algorithm
-to indicate 'live' (marked) objects. At the start of a garbage collection cycle,
-all objects are unmarked. The garbage collector tries to locate and mark all
-live objects by traversing all terms that are explicitly protected by the
-programmer (using the {\tt ATprotect} function), and by scanning the stack 
-looking for words that
-could be references to objects. When such a word is found, the object 
-(and the transitive closure of all of the objects it refers to) are marked 
-as 'live'. 
+Considering both performance and the maintainability of the code that
+uses the \ATerm\ library, we have opted for a version of the
+make-sweep garbage collector.  Every object contains a single bit used
+by the mark-sweep algorithm to indicate 'live' (marked) objects. At
+the start of a garbage collection cycle, all objects are unmarked. The
+garbage collector tries to locate and mark all live objects by
+traversing all terms that are explicitly protected by the programmer
+(using the {\tt ATprotect} function), and by scanning the C run-time stack
+looking for words that could be references to objects. When such a
+word is found, the object (and the transitive closure of all of the
+objects it refers to) are marked as 'live'.
 
-This scan of the stack causes all objects referenced from local
+This scan of the run-time stack causes all objects referenced from local
 variables to be protected from being garbage collected.
 Our garbage collector 
 is a  conservative collector in the sense that some of the words on the
@@ -649,10 +626,15 @@ When all live objects are marked, a single sweep through the heap
 is used to store all objects that are free in separate lists of free
 objects, one list for each object size.
 
-Allocation of objects is now simply a matter of taking the first element
-from the appropriate free-list, which is an extremely cheap operation.
-If garbage collection does not yield enough free objects, new memory blocks
-will be allocated to satisfy allocation requests.
+As we shall see in Section \ref{term-encoding}, most objects consist
+of only a couple of machine words.  By restricting the maximum arity
+of a function, we can also set an upper bound on the maximum size of
+objects.  This enables us to base the memory management algorithms we
+use on a small number of block sizes.  Allocation of objects is now
+simply a matter of taking the first element from the appropriate
+free-list, which is an extremely cheap operation.  If garbage
+collection does not yield enough free objects, new memory blocks will
+be allocated to satisfy allocation requests.
 
 REMARK on how the distinction, between ATerm addresses and integers
 which are in the same range, is discovered.
@@ -663,59 +645,61 @@ which are in the same range, is discovered.
 
 \subsection{Term Encoding} \label{term-encoding}
 
-After discussing the requirements of the library (Section \ref{requirements}),
-and the design (Section \ref{design}), we will now describe the implementation
-of the \ATerm\ data type in C \cite{KR88}
-
 {\tt <PO> need a reference to ANSI-C!}.
 
-An important issue in the implementation is how to represent \ATerms\ 
-in such a way that all operations can be performed efficiently, without using
-more memory than is absolutely necessary. 
-We will first introduce the memory efficient encoding of \ATerms\ we have 
-chosen. Then will discuss how this encoding can be used to implement all
-operations efficiently, including term sharing and garbage collection.
+An important issue in the implementation of \ATerms\ is how to
+represent them in such a way that all operations can be performed
+efficiently, without using more memory than is absolutely necessary.
 
-We assume that one machine word consists
-of 4 bytes, which is typical for modern architectures.
-Every \ATerm\ object is stored in two or more machine words.
-The first byte of the first word is called the \emph{header}
-of the object, and consists of three fields (see Figure \ref{header}):
+The very concise encoding of \ATerms\ we use is as follows.
+Assume that one machine word consists of four bytes, which is
+typical for modern architectures.  Every \ATerm\ object is stored in
+two or more machine words.  The first byte of the first word is called
+the \emph{header} of the object, and consists of three fields (see
+Figure \ref{header}):
 
-\begin{figure}[htb]
+\begin{figure}[tb]
   \centerline{\epsfig{file=header.ps,scale=0.6}}
   \caption{\label{header}The header layout}
 \end{figure}
  
 \begin{itemize}
-\item A field consisting of 1 bit used as a mark flag by the garbage
+\item A field consisting of one bit used as a mark flag by the garbage
       collector.
-\item A field consisting of 1 bit indicating whether or not this term
+\item A field consisting of one bit indicating whether or not this term
       has an annotation or not.
-\item A field consisting of 3 bits that indicate the type of the term.
-\item A field consisting of 3 bits representing the arity (number of
+\item A field consisting of three bits that indicate the type of the term.
+\item A field consisting of three bits representing the arity (number of
       pointers to other terms) of this object. When this field
       contains the maximum value of 7, the term must be a function application
-      and the actual arity can be found retrieving the arity of the
-      function symbol, which will be discussed later.
+      and the actual arity can be found by retrieving the arity of the
+      function symbol (see below).
 \end{itemize}
-The rest of this word contains either the function symbol, length, or
-nothing depending on the type of the node.
-This will be discussed in more detail below.
-The second word is always used for hashing, 
-and links together all terms in the same
-hash bucket.
 
-The type of the \ATerm\ determines the exact layout and contents of
-the node.
-Figure \ref{encoding} shows the encoding of the different term types.\
-In the following paragraphs the encodings for the term types 
-are described in more detail.
+Depending on the type of the node (as determined by the header byte in
+the first word) the remaining bytes in the first word contain either a
+function symbol, a length indication, or they are unused.
+
+The \emph{second} word is always used for hashing, and links together
+all terms in the same hash bucket.
+
+The type of the node determines its exact layout and contents.  Figure
+\ref{encoding} shows the encoding of the different term types which we
+will now describe in more detail.
 
 \begin{figure}[!htb]
   \centerline{\epsfig{file=encoding.ps,scale=0.6}}
   \caption{\label{encoding}Encoding of the different term types}
 \end{figure}
+
+\paragraph{INT encoding}
+In an integer term, the third word contains the integer value.
+The arity of an integer term is 0.
+
+\paragraph{REAL encoding}
+In an real term, the third and fourth word contain the real value 
+represented by an 8 byte floating point number.
+The arity of a real term is 0.
 
 \paragraph{APPL encoding}
 The remaining 3 bytes following the header in the first word are used to
@@ -737,29 +721,6 @@ one instance of the empty list is present at any time.}
 is represented using a LIST object with empty
 first and next fields, and a length of 0.
 
-\paragraph{INT encoding}
-In an integer term, the third word contains the integer value.
-The arity of an integer term is 0.
-
-\paragraph{REAL encoding}
-In an real term, the third and fourth word contain the real value 
-represented by an 8 byte floating point number.
-The arity of a real term is 0.
-
-\paragraph{PLACEHOLDER encoding}
-The placeholder term has an arity of 1, where the third
-word contains a pointer to the placeholder type.
-
-\paragraph{BLOB encoding}
-The length of the data contained in a BLOB term is stored in
-the three bytes after the header. A pointer to the actual data
-is stored in the third word.
-
-%}}}
-%{{{ Representing lists
-
-\subsection{Representing Lists} \label{lists}
-
 After the function application, the list construct is the second most 
 used \ATerm\ construct. A (memory) efficient representation of lists is 
 therefore very important. 
@@ -780,7 +741,20 @@ allow destructive updates. Adding an element to the tail of a list
 for instance, requires $n$ list creation operations, where $n$ is
 the number of elements in the newly created list.
 
+\paragraph{PLACEHOLDER encoding}
+The placeholder term has an arity of 1, where the third
+word contains a pointer to the placeholder type.
+
+\paragraph{BLOB encoding}
+The length of the data contained in a BLOB term is stored in
+the three bytes after the header. A pointer to the actual data
+is stored in the third word.
+
+\paragraph{Annotations}
+(*****)
+
 %}}}
+
 %{{{ The Binary ATerm Format (BAF)
 
 \subsection{The Binary \ATerm\ Format (BAF)} \label{baf}
