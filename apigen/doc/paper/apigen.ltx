@@ -597,6 +597,9 @@ will result in term \texttt{t} being assigned the value:
   \texttt{person(name("Anthony"),age(7))}
 \end{quote}
 
+Note how the placeholders \texttt{<str>} and \texttt{<int>} are
+substituted by the values \texttt{Anthony}, and \texttt{7} respectively.
+
 % }}}
 
 \noindent Elements from terms can be extracted using \texttt{ATmatch},
@@ -650,7 +653,11 @@ For example, consider the term from the previous section:
 
 We can get \texttt{Anthony}'s age by first extracting the \texttt{age}
 subterm from \texttt{t}, and subsequently getting the actual \texttt{7}
-from this \texttt{age} term:
+from this \texttt{age} term. Arguments in an \aterm\ function application
+are numbered, starting at zero. So, to get to the actual value of
+\texttt{7} which is embedded in the \texttt{age} function application, we
+need to extract argument number $1$ from the \texttt{person} application,
+and then extract argument number $0$ from this:
 
 \begin{quote}
   \texttt{int age = ATgetInt(ATgetArgument(ATgetArgument(t, 1), 0));}
