@@ -621,7 +621,7 @@ garbage collectors impractical:
       \end{itemize}
 \end{itemize}
 These observations allow us to gain efficiency on several
-levels, using everything from low level system 'hacks' to high-level 
+levels, using everything from low level system `hacks' to high-level 
 optimizations.
 
 
@@ -632,23 +632,23 @@ optimizations.
 
 Considering both performance and the maintainability of the code that
 uses the \ATerm\ library, we have opted for a version of the
-make-sweep garbage collector.  Every object contains a single bit used
-by the mark-sweep algorithm to indicate 'live' (marked) objects. At
+mark-sweep garbage collector.  Every object contains a single bit used
+by the mark-sweep algorithm to indicate `live' (marked) objects. At
 the start of a garbage collection cycle, all objects are unmarked. The
 garbage collector tries to locate and mark all live objects by
 traversing all terms that are explicitly protected by the programmer
 (using the {\tt ATprotect} function), and by scanning the C run-time stack
 looking for words that could be references to objects. When such a
 word is found, the object (and the transitive closure of all of the
-objects it refers to) are marked as 'live'.
+objects it refers to) are marked as `live'.
 
 This scan of the run-time stack causes all objects referenced from local
 variables to be protected from being garbage collected.
 Our garbage collector 
 is a  conservative collector in the sense that some of the words on the
 stack could accidentally have the same bit pattern as object references.
-Because there is no way to separate these 'fake' bit patterns from
-'real' object references, this can cause
+Because there is no way to separate these `fake' bit patterns from
+`real' object references, this can cause
 objects to be marked as `live' when these are actually garbage.
 Note that bit patterns on the stack that do not point to valid objects
 are not traversed at all. Only when a bit pattern represents an address
@@ -896,7 +896,7 @@ position & {\tt mult}               & {\tt s}    		& {\tt z} \\
 \vspace{0.5cm}
 
 We start by writing this symbol information to file. To do this,
-we have to write the following bytes\footnote{Wen the value of these numbers
+we have to write the following bytes\footnote{When the value of these numbers
 used exceeds 127, two or more bytes are used to encode them. Strings are
 written as strings to improve the readability.}:
 
@@ -909,7 +909,7 @@ written as strings to improve the readability.}:
                \>   \> top symbol and that is {\tt s} with index ({\tt 1}). \\
 1 {\tt "s"}    \> : \> The length ({\tt 1}) and ASCII representation of {\tt s}.\\
 1              \> : \> The arity ({\tt 1}) of {\tt s}.\\
-2 1 2          \> : \> The single argument of {\tt s} can either have two ({\tt 2}) different top \\
+2 1 2          \> : \> The single argument of {\tt s} can be either of two ({\tt 2}) different top \\
                \>   \> function symbols: {\tt s} with index ({\tt 1}) or {\tt z} with index ({\tt 2}). \\
 1 {\tt "z"}    \> : \> The length ({\tt 1}) and ASCII representation of {\tt z}.\\
 0              \> : \> The arity ({\tt 0}) of {\tt z}. \\
@@ -1095,7 +1095,7 @@ representation of the test term in bytes, the average number of bytes per node,
 the time needed to read the text file, average time needed to read a node,
 the time needed to write the text file, and the average time needed to write a node.
 On the average, a node requires 4.4 bytes and reading and writing requires
-7.4, respectively, 2.5 $\mu$s.
+7.4 $\mu$s and 2.5 $\mu$s, respectively.
 
 
 \begin{table}[tb]
