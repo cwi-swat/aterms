@@ -3,7 +3,7 @@ package aterm.test;
 import java.io.*;
 
 import aterm.*;
-import jjtraveler.*;
+import @VISITOR_PKG@.*;
 
 public class VisitorBenchmark
 {
