@@ -6,7 +6,7 @@ import java.util.List;
 import apigen.gen.java.JavaGenerationParameters;
 
 
-class JavaTomGenerationParameters extends JavaGenerationParameters  implements Cloneable {
+class JavaTomGenerationParameters extends JavaGenerationParameters {
 	private boolean jtype;
 	private boolean javaGenStuff;
 	
@@ -47,14 +47,5 @@ class JavaTomGenerationParameters extends JavaGenerationParameters  implements C
 	public void setJtype(boolean jtype) {
 		this.jtype = jtype;
 	}
-	
-	public Object clone() {
-		try {
-			return super.clone();
-		} catch (CloneNotSupportedException e) {
-			System.err.println(e.getMessage());
-		}
-		return null; 
- 	}
 	
 } 

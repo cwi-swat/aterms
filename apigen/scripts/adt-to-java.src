@@ -8,16 +8,12 @@ JAR=true
 
 java -classpath ${CLASSPATH} ${APIGEN} $*
 
-while [ $# -gt 0 ]
-do
+while [ $# -gt 0 ]; do
   case $1 in
     --nojar)
-      shift;
       JAR=false ;
-      break;;
-    *)
-      shift;
   esac
+  shift
 done
 
 if [ "a${JAR}" = "atrue" ]; then

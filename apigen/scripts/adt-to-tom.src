@@ -4,37 +4,35 @@ set -e
 
 TOMGEN=apigen.gen.tom.java.Main
 CLASSPATH=__APIGEN_CLASSES__:__JAVA_ATERM__
+
 JAR=true
 JAVAGEN=false
 
 java -classpath ${CLASSPATH} ${TOMGEN} $*
 
-while [ $# -gt 0 ]
-do
-  case $1 in
-    --javagen)
-      JAVAGEN=true ;;
-    --nojar)
-    	JAR=false ;;
-    *)
-      shift;
-  esac
-done
+if [ $? -eq 0 ]
+ 	then
 
-if [ "a${JAR}" = "atrue" ]; then	
-  PARAMS=apigen.env
-	if [ "a${JAVAGEN}" = "atrue" ]; then
-  	. ${PARAMS}
-  	javac -classpath ${DIRECTORY}:${CLASSPATH} ${FILES}
-  	JARFILE=${APINAME}-${VERSION}.jar
+	while [ $# -gt 0 ]; do
+	  case $1 in
+	    --javagen)
+	      JAVAGEN=true ;;
+	    --nojar)
+	    	JAR=false ;;
+	  esac
+	  shift
+	done
 	
-	  CLASSES=""
-	  for f in `echo ${FILES}`
-	  do
-	    CLASS=`echo $f | sed -e 's/.java/.class/g'`
-	    CLASSES="${CLASSES} ${CLASS}"
-	  done
-	  jar cf ${JARFILE} ${CLASSES}
+	if [ "a${JAR}" = "atrue" ]; then	
+	  PARAMS=apigen.env
+		if [ "a${JAVAGEN}" = "atrue" ]; then
+	  	. ${PARAMS}
+			CLASSES=`echo ${FILES} | sed -e 's/.java/.class/g'`
+	  	JARFILE=${APINAME}-${VERSION}.jar
+	  	javac -classpath ${DIRECTORY}:${CLASSPATH} ${FILES}
+		  jar cf ${JARFILE} ${CLASSES}
+		fi
+		rm -f ${PARAMS}
 	fi
-	rm -f ${PARAMS}
+
 fi

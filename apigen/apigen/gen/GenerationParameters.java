@@ -9,7 +9,6 @@ public class GenerationParameters {
 	private String apiName;
 	private String prefix;
 	private boolean verbose;
-	private String version;
 	private List inputFiles;
 
 	public GenerationParameters() {
@@ -32,10 +31,6 @@ public class GenerationParameters {
 				shift(iter);
 				setApiName(shiftArgument(iter));
 			}
-			else if ("--version".startsWith(arg) || "-V".startsWith(arg)) {
-				shift(iter);
-				setVersion(shiftArgument(iter));
-			}
 			else if ("--verbose".startsWith(arg) || "-v".startsWith(arg)) {
 				shift(iter);
 				setVerbose(true);
@@ -54,7 +49,6 @@ public class GenerationParameters {
 		buf.append("\t-i | --input <in>              <multiple allowed>\n");
 		buf.append("\t-o | --output <outputdir>      [\".\"]\n");
 		buf.append("\t-n | --name <api name>         <obligatory>\n");
-		buf.append("\t-V | --version <version>       <specify api-version>\n");
 		buf.append("\t-v | --verbose                 [off]\n");
 		return buf.toString();
 	}
@@ -107,14 +101,6 @@ public class GenerationParameters {
 
 	public void setVerbose(boolean verbose) {
 		this.verbose = verbose;
-	}
-	
-	public String getVersion() {
-		return version;
-	}
-
-	public void setVersion(String version) {
-		this.version = version;
 	}
 
 	public void check() {

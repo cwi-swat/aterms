@@ -62,7 +62,6 @@ public class Main {
 		try {
 			PrintStream out = new PrintStream(new FileOutputStream("apigen.env"));
 			out.println("APINAME=" + params.getApiName());
-			out.println("VERSION=" + params.getVersion());
 			out.println("DIRECTORY=" + params.getOutputDirectory());
 			out.close();
 		}

@@ -11,6 +11,7 @@ public class JavaGenerationParameters extends GenerationParameters {
 	private boolean generateJar;
 	private String packageName;
 	private List imports;
+	private String version;
 
 	public JavaGenerationParameters() {
 		super();
@@ -34,6 +35,9 @@ public class JavaGenerationParameters extends GenerationParameters {
 			} else if ("--nojar".startsWith(arg)) {
 				shift(iter);
 				setGenerateJar(false);
+			} else if ("--version".startsWith(arg) || "-V".startsWith(arg)) {
+				shift(iter);
+				setVersion(shiftArgument(iter));
 			}
 		}
 		super.parseArguments(args);
@@ -41,9 +45,10 @@ public class JavaGenerationParameters extends GenerationParameters {
 
 	public String usage() {
 		StringBuffer buf = new StringBuffer(super.usage());
-		buf.append("\t-p | --package <package>       <optional>\n");
-		buf.append("\t-m | --import <package>        (can be repeated)\n");
+		buf.append("\t-p | --package <package>       package name (optional)\n");
+		buf.append("\t-m | --import <package>        list of added import package(can be repeated)\n");
 		buf.append("\t-t | --visitable               [off]\n");
+		buf.append("\t-V | --version <version>       specify api-version used for generated jar file\n");
 		buf.append("\t--nojar                        Do not generate Jar file [off]\n");
 		return buf.toString();
 	}
@@ -80,6 +85,14 @@ public class JavaGenerationParameters extends GenerationParameters {
 		this.generateJar = generateJar;
 	}
 	
+	public String getVersion() {
+	  return version;
+	}
+
+	public void setVersion(String version) {
+		this.version = version;
+	}
+		
 	public void check() {
 		super.check();
 		if (getVersion() == null && isGenerateJar()) {
