@@ -1,11 +1,10 @@
-#
-# vim:ts=8:sw=8:sts=0
-#
-# $Id$
-#
+SUBDIRS		= spec apigen utils test doc
 
-include ${top_srcdir}/make_rules
+EXTRA_DIST	= make_rules
+DISTFILE	= ${distdir}.tar.gz
+WWWDIR		= /hosts/www/projects/MetaEnv/unreleased
 
-SUBDIRS     = spec apigen utils test doc
-
-EXTRA_DIST  = make_rules
+www-dist: ${DISTFILE}
+	cp ${DISTFILE} ${WWWDIR}
+	chgrp sen ${WWWDIR}/${DISTFILE}
+	chmod g+w ${WWWDIR}/${DISTFILE}
