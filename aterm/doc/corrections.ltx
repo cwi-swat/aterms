@@ -32,9 +32,11 @@ However, the applications are not so similar as the referee thinks.
 Random-unique and Random are randomly generated terms without
 redundancy.  COBOL system and Risla library are indeed parse trees
 using AsFix and have a lot of redundancy. LPO is a data structure
-representing the state space of a protocol.}
+representing the state space of a protocol.
+A few new examples are added where the ATerms are used to represent
+abstract syntax trees.}
 
-\item[2.] Aterms do not handle complex data structures.
+\item[2.] ATerms do not handle complex data structures.
 
 \emph{ATerms can represent trees. The issue raised by the referee
 is that ATerms cannot represent complex data structures
@@ -44,7 +46,7 @@ to represent such data structures \emph{indirectly}, i.e., some form
 of encoding is used to represent the complex data structure as
 ATerm. In practice, we use them in this way frequently.}
 
-\item[3.] In reality, Aterms can only handle tree-like data structures.
+\item[3.] In reality, ATerms can only handle tree-like data structures.
 
 \emph{See issue \#2.}
 
@@ -84,7 +86,9 @@ between size and sharing is.}
 \item[7.] Measurements are only concerned with AsFix-style data.
 
 \emph{This is not true. The cases Random-Unique, Random,
-COBOL Parser table and LPO do not use AsFix.}
+COBOL Parser table and LPO do not use AsFix.
+Furthermore, a few new examples are added where the ATerms are used to represent
+abstract syntax trees.}
 
 \item[8.] The claim ``2 bits per node'' is misleading.
 \emph{See issue \#1.}
