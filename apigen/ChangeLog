@@ -1,5 +1,9 @@
 # $Id$
 
+Mon Jan 26 09:42:14 CET 2004 <{jurgenv,jong}@cwi.nl>
+ * Generate protect functions instead of protect macros such that
+   we get early compile warnings
+   
 Wed Jan  7 14:04:02 CET 2004 <jurgenv@cwi.nl>
  * Introduced ADTException and GenerationException to deal with errors better
  
