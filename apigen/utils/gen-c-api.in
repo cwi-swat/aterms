@@ -175,15 +175,9 @@ APIFILE="${APILIB}.adt"
 APIDIR="${APILIB}"
 PROLOGUE="${APILIB}.pro"
 
-SGLR=sglr
-ASOURCE=asource
 DICTTOC=dicttoc
-INDENT=indent
-RM="rm -f"
 
-GENCAPI=${bindir}/Gen-C-API
-EXTRACT=extract-api-files
-TABLE=${datadir}/Gen-C-API.trm.tbl
+GENCAPI="java -cp ${prefix}/classes apigen.c.CGen"
 
 # }}}
 
@@ -226,12 +220,6 @@ genConfigure "configure.in"
 genMakefile "Makefile.am"
 genReconf "reconf"
 
-(echo "c-api: ${APILIB},`cat ../${PROLOGUE}`,"; cat ../${APIFILE}) | \
-${SGLR} -1 -p ${TABLE} | \
-${GENCAPI} | \
-${ASOURCE} | \
-${EXTRACT} -
-
+${GENCAPI} -input ../${APIFILE} -output ${APILIB}
 ${DICTTOC} -dict ${APILIB}.dict
-${INDENT} ${APILIB}.[ch]
-${RM} ${APILIB}.[ch]~
+
