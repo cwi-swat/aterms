@@ -1821,9 +1821,16 @@ between distributed applications.
 depend on any specific hardware or software platform.  
 \ATerms\ \emph{are} simple: the level one interface consists of only 13
 functions.  \ATerms\ \emph{are} efficient and concise as shown by the
-measurements in Section~\ref{measurements}.  In encoded form, less than 5 bits
-are needed per node!  Last but not least, \ATerms\ are also
+measurements in Section~\ref{measurements}.  
+%%In encoded form, less than 5 bits are needed per node!  
+Last but not least, \ATerms\ are also
 \emph{useful} as shown on Section~\ref{applications}.
+
+The \ATerm\ format is supported by a binary exchange format (BAF) which
+provides a mechanism to exchange \ATerms\ in a concise way. This
+BAF format maintains the in-memory sharing of terms and uses a
+minimal amount of bits to represent the nodes, in case of 
+\asfix\ terms only 2 bits are needed per node.
 
 The most innovative aspects of \ATerms\ are the simple procedural
 interface based on the \emph{make-and-match} paradigm, term
