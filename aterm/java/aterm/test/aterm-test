@@ -1,0 +1,4 @@
+#!/bin/sh
+CLASSPATH=../../../java:$CLASSPATH
+export CLASSPATH
+java aterm.test.Test
