@@ -201,7 +201,7 @@ public class ListTypeImplGenerator extends TypeImplGenerator {
 	protected void genIsEmpty(String className) {
 		String factoryName = FactoryGenerator.className(apiName);
 		println("  public boolean isEmpty() {");
-		println("    return this == " + "((" + factoryName + ") getFactory()).make" + className + "();");
+		println("    return this == " + "get" + factoryName + "().make" + className + "();");
 		println("  }");
 	}
 
