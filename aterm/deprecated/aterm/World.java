@@ -135,24 +135,25 @@ public class World
       // Lookup application in the world-global hashtable
       cur = table[idx];
       while(cur != null) {
-	ATerm term = (ATerm)cur.get();
-	if(term == null) {
-	  // Found a ghost reference, remove it to speed up lookups.
-	  if(prev == null)
-	    table[idx] = cur.next;
-	  else
-	    prev.next = cur.next;
-	} else {
-	  if(term.getType() == ATerm.APPL) {
-	    appl = (ATermAppl)term;
-	    if(appl.getName().equals(fun) && appl.getArguments().equals(args)) {
-	      ATermList annos2 = appl.getAnnotations();
-	      if(annos2 == annos)
-		return appl;
-	    }
-	  }
-	}
-	cur = cur.next;
+				ATerm term = (ATerm)cur.get();
+				if(term == null) {
+					// Found a ghost reference, remove it to speed up lookups.
+					if(prev == null)
+						table[idx] = cur.next;
+					else
+						prev.next = cur.next;
+				} else {
+					if(term.getType() == ATerm.APPL) {
+						appl = (ATermAppl)term;
+						if(appl.getName().equals(fun) && appl.getArguments().equals(args) &&
+							 appl.isQuoted() == iq) {
+							ATermList annos2 = appl.getAnnotations();
+							if(annos2 == annos)
+								return appl;
+						}
+					}
+				}
+				cur = cur.next;
       }
       // Application not found, create a new one
       appl = new ATermAppl(this, fun, args, annos, iq);
@@ -731,7 +732,7 @@ public class World
       if(list.getFirst().getType() == ATerm.PLACEHOLDER) {
 				ATerm type = ((ATermPlaceholder)list.getFirst()).getPlaceholderType();
 				if(type.getType() == ATerm.APPL) {
-					if(((ATermAppl)type).getName().equals("terms") &&
+					if(((ATermAppl)type).getName().equals("list") &&
 						 ((ATermAppl)type).getArguments().isEmpty()) {
 						ATermList els = (ATermList)e.nextElement();
 						while(!els.isEmpty()) {
@@ -773,15 +774,17 @@ public class World
 				Double D = (Double)e.nextElement();
 				return makeReal(D.doubleValue());
       }
-      if(fun.equals("appl") && args.isEmpty())
+/*      if(fun.equals("appl") && args.isEmpty())
 				return (ATermAppl)e.nextElement();
+*/
       if(fun.equals("term") && args.isEmpty())
 				return (ATerm)e.nextElement();
-      if(fun.equals("list") && args.isEmpty())
+/*      if(fun.equals("list") && args.isEmpty())
 				return (ATermList)e.nextElement();
+*/
       if(fun.equals("str") && args.isEmpty())
 				return makeAppl((String)e.nextElement(), empty, true);
-      if(fun.equals("fun")) {
+      if(fun.equals("appl")) {
 				if(args == null)
 					return makeAppl((String)e.nextElement());
 				else

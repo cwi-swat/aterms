@@ -257,17 +257,17 @@ public class ATest
     T[8] = world.parse("f(1,2,3)");
 
     test(ATerm.make("<int>", new Integer(1)).equals(T[0]), "make-1");
-    test(ATerm.make("<appl>", T[3]).equals(T[3]), "make-2");
-    test(ATerm.make("<fun>", "b").equals(T[4]), "make-3");
+    test(ATerm.make("<term>", T[3]).equals(T[3]), "make-2");
+    test(ATerm.make("<appl>", "b").equals(T[4]), "make-3");
     test(ATerm.make("<real>", new Double(3.14)).equals(world.makeReal(3.14)),
 				 "make-4");
     test(ATerm.make("<placeholder>", world.makeAppl("real", world.empty))
 				 .equals(world.parse("<real>")), "make-5");
-    test(ATerm.make("<list>", T[7]).equals(T[7]), "make-6");
-    test(ATerm.make("f(<appl>,<fun>,<terms>)", T[3], "b", 
+    test(ATerm.make("[<list>]", T[7]).equals(T[7]), "make-6");
+    test(ATerm.make("f(<term>,<appl>,<list>)", T[3], "b", 
 										world.makeList(T[5], world.empty)).equals(T[6]), "make-7");
 
-    test(ATerm.make("<fun(1,<int>,3)>", "f", new Integer(2)).equals(T[8]), "make-8");
+    test(ATerm.make("<appl(1,<int>,3)>", "f", new Integer(2)).equals(T[8]), "make-8");
   }
 
   //}

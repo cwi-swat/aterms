@@ -95,7 +95,7 @@ public class ATermAppl extends ATerm
     if(trm.getType() == ATerm.APPL) {
       ATermAppl ap = (ATermAppl)trm;
       if(ap.getName() == getName())
-	 return getArguments().match(ap.getArguments(), subterms);
+				return getArguments().match(ap.getArguments(), subterms);
     }
     return false;
   }
