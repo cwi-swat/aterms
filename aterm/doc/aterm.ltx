@@ -400,10 +400,10 @@ that make this a fairly unique problem:
 
 \item In order to have a portable yet efficient implementation, the
       implementation language will be C. This poses some special 
-      requirements for the garbage collection strategy\footnote{We have
+      requirements on the garbage collection strategy\footnote{We have
       implemented the library in Java as well. 
-      In this case, a lot of the issues
-      we discuss in this paper are not relevant, either because we can use 
+      In this case, many of the issues
+      we discuss in this paper are irrelevant, either because we can use 
       built-in features of Java (garbage collection), or
       because we just cannot express these low level concerns in Java.}.
 \end{itemize}
@@ -424,10 +424,10 @@ Our strategy to minimize memory usage is simple but effective: we only
 create terms that are \emph{new}, i.e., that do not exist already.  If
 a term to be constructed already exists, that term is reused thus
 ensuring maximal sharing.  This strategy fully exploits the redundancy
-that is typically present in the terms to be build and leads to the
-maximal sharing of subterms.  The library functions to construct terms
-take care of building shared terms whenever possible.  The sharing of
-terms is invisible.
+that is typically present in the terms to be built and leads to
+maximal sharing of subterms. The library functions that construct terms
+make sure that shared terms are returned whenever possible.  The sharing of
+terms is thus invisible to the library user.
 
 \subsubsection{The Effects of Maximal Sharing}
 
@@ -440,20 +440,20 @@ depends on the internal code of the function symbol and the addresses
 of its arguments, we can quickly search for a function application
 before creating it.  The terms are stored in a hash table.  The hash
 table does not contain the terms themselves, but pointers to the
-terms. This provides a flexible mechanism of resizing of the table and
-ensures that all entries in the table are of the same size.  The
-(modest but not negligible) costs at term creation time are hence one
+terms. This provides a flexible mechanism of resizing the table and
+ensures that all entries in the table are of equal size. Hence the
+(modest but not negligible) cost at term creation time is one
 hash table lookup.
 
 Fortunately, we get two returns on this investment.  First, the
 considerably reduced memory usage also leads to reduced (real-time)
-execution time.  Second, we gain substantially since the equality
+execution time.  Second, we gain substantially as the equality
 check on terms ({\tt ATisEqual}) becomes very cheap: it reduces from
 an operation that is linear in the number of subterms to be compared
 to a constant operation (pointer equality).
 
 Another consequence of our approach is less fortunate.  Because terms
-can be shared without the creator knowing it, terms cannot be modified
+can be shared without their creator knowing it, terms cannot be modified
 without creating unwanted side-effects.  This means that terms
 effectively become \emph{immutable} after creation.  Destructive
 updates on maximally shared terms are not allowed.  Especially in list
@@ -472,8 +472,8 @@ application, we can quickly search the hash table to find a function
 application before creating it.
 
 \paragraph{Collisions}
-One of the issues when using hash techniques
-is how to handle collisions in the hash table. The simplest
+One of the issues involved in using hash techniques is handling
+the collisions in the hash table.  The simplest
 technique is to linearly chain entries together that hash to the 
 same bucket. In this scenario, one pointer is needed in each
 object for hash chaining, which in our case means a memory
@@ -506,18 +506,18 @@ However, there are severe drawbacks to this approach:
 \end{itemize}
 
 Because of these problems, we decided to use linear hash chaining
-in combination with indirect hashing.
+combined with indirect hashing.
 When the load of the hash table reaches a certain threshold, 
 we allocate a larger table, rehash all the entries of the 
-old table in the new one, and free the old hash table.
+old table into the new one, and free the old hash table.
 
 It is possible for a user to increase the initial size of
-the hash table in order to save resizing and rehashing operations.
-The \ATerm\ library provides facilities for defining hash tables
+the hash table in order to save the number of resizing and rehashing
+operations. The \ATerm\ library provides facilities for defining hash tables
 as well. This allows the implementation of a fast lookup mechanism
 for \ATerms. The user-defined hash tables are used, for instance, 
-to implement
-memo-functions in the \asdf\ to C compiler, see Section \ref{asdf2c}.
+to implement memo-functions in the \asdf\ to C compiler, see
+Section~\ref{asdf2c}.
 
 %{{{ Garbage collection
 
@@ -843,8 +843,8 @@ once. Every time a parent term wishes to refer to a subterm, it just
 uses the subterm's index.
 
 \subsubsection{Exploiting \ATerm\ Regularities}
-When sending a large term containing a lot of subterms, the subterm
-indices can become quite large. Consequently a lot of bits are needed
+When sending a large term containing a many subterms, the subterm
+indices can become quite large. Consequently a many bits are needed
 to represent these indices. We can considerably reduce the size of
 these indices when we take into account some of the regularities in
 the structure of terms. Empirical study shows that the set of function
@@ -917,17 +917,17 @@ used exceeds 127, two or more bytes are used to encode them. Strings are
 written as strings to improve readability.}:
 
 \begin{tabbing}
-4 {\tt "mult"} \= : \= The length ({\tt 4}) and ASCII representation of {\tt mult}. \\
+4 {\tt "mult"} \= : \= The length ({\tt 4}) and \ascii\ representation of {\tt mult}. \\
 2              \> : \> The arity ({\tt 2}) of {\tt mult}. \\
 1 1            \> : \> There is only one symbol ({\tt 1}) that can occur at the first argument\\
                \>   \> position of {\tt mult}. This is symbol {\tt s} with index ({\tt 1})\\
 1 1            \> : \> At the second argument position, there is only ({\tt 1}) possible \\
                \>   \> top symbol and that is {\tt s} with index ({\tt 1}). \\
-1 {\tt "s"}    \> : \> The length ({\tt 1}) and ASCII representation of {\tt s}.\\
+1 {\tt "s"}    \> : \> The length ({\tt 1}) and \ascii\ representation of {\tt s}.\\
 1              \> : \> The arity ({\tt 1}) of {\tt s}.\\
 2 1 2          \> : \> The single argument of {\tt s} can be either of two ({\tt 2}) different top \\
                \>   \> function symbols: {\tt s} with index ({\tt 1}) or {\tt z} with index ({\tt 2}). \\
-1 {\tt "z"}    \> : \> The length ({\tt 1}) and ASCII representation of {\tt z}.\\
+1 {\tt "z"}    \> : \> The length ({\tt 1}) and \ascii\ representation of {\tt z}.\\
 0              \> : \> The arity ({\tt 0}) of {\tt z}. \\
 \end{tabbing}
 
@@ -1108,7 +1108,7 @@ store a node using on the average 2.9 bytes, and still perform operations
 on them efficiently.  The worst case behaviour is 15 bytes per node.
 The amount of sharing is clearly less high in case of abstract syntax
 trees than in case of parse trees represented as \asfix\ terms.
-The \asfix\ terms contain a lot of redundant information which can
+The \asfix\ terms contain much redundant information which can
 be optimally shared.
 The amount of sharing in the abstract syntax trees for CASL is
 even lower, but this is due to the fact that the set of
@@ -1176,7 +1176,7 @@ In Table~\ref{measurements-text} we give results for reading and writing
 our sample terms as \ascii\ text files. 
 The six columns give the size of the text
 representation of the test term in bytes, the average number of bytes per node,
-the time needed to read the text file, average time needed to read a node,
+the time needed to read the text file, the average time needed to read a node,
 the time needed to write the text file, and the average time needed to write a node.
 On the average, a node requires 5.3 bytes and reading and writing requires
 8.5 $\mu$s and 2.5 $\mu$s, respectively.
@@ -1238,14 +1238,14 @@ Typically, we can read a node in 1.3 $\mu$s and write it in 2.4 $\mu$s.
 Note that reading a \baf\ term is faster than writing the same term,
 whereas in case of \ascii\ the writing is faster than reading. This is
 caused by the fact that reading the \ascii\ representation of an \aterm\
-involves quite some matching operations, whereas reading the \baf\ 
+involves numerous matching operations, whereas reading the \baf\ 
 representation can be done with less matching.
 On the other hand, writing the \baf\ representation involves more
 calculations to encode the sharing of terms, whereas writing 
 the \ascii\ representation involves a straightforward term traversal.
 
 
-\begin{table}[tb]
+\begin{table}[!htb]
 \begin{center}
 \begin{tabular}{|l||r|r|r|r|r|} \hline
 
@@ -1291,9 +1291,9 @@ Next, we give the results of compressing the \ascii\ version of each term
 with {\tt gzip} (column 4), and compression achieved (column 5).
 The compression factors are near 96\% in both cases.
 The worst case compression of {\tt gzip} (66\%) is considerably
-better than that of \baf\ (12\%).
+better than the worst case compression using \baf\ (12\%).
 
-\begin{table}[tb]
+\begin{table}[!htb]
 \begin{center}
 
 \begin{tabular}{|l||r|r|r|} \hline
@@ -1311,8 +1311,8 @@ Write node ($\mu$s)     &               & 2.47   & 2.38\\ \hline
 \subsection{Summary of Measurements}
 
 These measurements are summarized in Table~\ref{summary}.
-For in-memory storage, 2.9 byte is needed per node.
-In the case of \baf, only 0.54 byte (4.3 bit!) is needed to represent a node.
+For in-memory storage, 2.9 bytes are needed per node.
+Using \baf, only 0.54 byte (4.3 bits!) is needed to represent a node.
 Also observe that reading \baf\ is an order of magnitude faster than
 reading terms in textual form.
 
@@ -1429,7 +1429,7 @@ this parse tree is an ordinary \ATerm, and can be manipulated by all
 
 Second, this parse tree is completely self-contained and does not
 depend on a separate grammar definition.  It is clear that this way of
-representing parse trees contains a lot of redundant
+representing parse trees contains much redundant
 information. Therefore, both maximal sharing and \baf\ are essential
 to reduce their size. In our measurements,
 \asfix\ only plays a role in the cases  COBOL System and Risla Library.
@@ -1524,7 +1524,7 @@ where memory usage is a critical success factor.  This \asdf\ compiler
 has, for instance, been applied successfully in projects such as the
 development of a domain-specific language for describing interest
 products (in the financial domain)~\cite{ADR95} and a renovation
-factory for restructuring of COBOL code \cite{BSV97b}.
+factory for restructuring COBOL code \cite{BSV97b}.
 
 The \asdf\ compiler is an \asdf\ specification and has been
 bootstrapped.  Table \ref{ASF2Ctable} gives some figures on the size
@@ -1692,7 +1692,7 @@ ASDL and \aterms\ can be compared at two different levels:
 Term                & \ascii  & BAF    & ASDL pickle \\ \hline
 COBOL Parse Table & 4,211,366 & 370,450   & 5,262,426 \\ \hline    
 \end{tabular}
-\caption{Sizes of the COBOL parse table} \label{asdlaterm1}
+\caption{Sizes of the COBOL parse table (in bytes)} \label{asdlaterm1}
 \end{center}
 \end{table}
   
@@ -1739,7 +1739,7 @@ Term                   & \ascii  &   BAF & ASDL pickle \\ \hline
 lcc Parse Forest           & 2,246,436 & 624,091 & 1,290,595   \\ \hline
 
 \end{tabular}
-\caption{Sizes of abstract syntax trees} \label{asdlaterm3}
+\caption{Sizes of abstract syntax trees (in bytes)} \label{asdlaterm3}
 \end{center}
 \end{table} 
 
@@ -1779,13 +1779,13 @@ rules for data encoding~\cite{ASN.1.PER}.
 \begin{sloppypar}
 In an earlier project in our group, the Graph Exchange Language 
 (GEL)~\cite{Kam94}
-has been developed.  It is similar in goals as \baf, but \baf\ can
-only represent acyclic directed graph, while GEL can represent
+has been developed.  It is similar in goals to \baf, but \baf\ can
+only represent acyclic directed graphs, whereas GEL can represent
 arbitrary (potentially cyclic) graphs.  The technical approaches are
 different as well.  GEL uses a binary-encoded postfix format to
 represent the nodes in the graph and introduces explicit labels to
 reuse previously constructed parts of the graph. \baf\ uses a prefix
-format augmented with generated symbol tables.
+format augmented by generated symbol tables.
 \end{sloppypar}
 
 A final difference is in the \emph{usage} of both approaches.  GEL was
@@ -1800,7 +1800,7 @@ programmers.
 
 Terms are so simple that most programmers prefer to write their own
 implementation rather than using (or even \emph{looking for}) an
-existing implementation. This is all-right, except when this happens in
+existing implementation. This is all right, except when this happens in
 a group of cooperating developers as in our case. 
 
 A very first version of the \ATerm\ library was developed as part of
@@ -1813,8 +1813,8 @@ In addition, incompatible term formats were in use in various of our
 compiler projects~\cite{FKW98}. Observing the similarities between all
 these incompatible term data types triggered the work on \ATerms\ as
 described here. The benefits are twofold. First, a common term data
-type is used in more applications and investments in it easily
-pay-off.  Second, the mere existence of a common data type leads to
+type is used in more applications and investments in it are well
+rewarded. Second, the mere existence of a common data type leads to
 new, unanticipated, applications. For instance, we now use \ATerms\ for
 representing parse tables as well.
 
@@ -1864,9 +1864,9 @@ of the library.
 We want to thank all current users of the \ATerm\ library.
 Special thanks to Jan-Friso Groote (for his input and sometimes
 severe requirements) and to Merijn de Jonge and Jeroen Scheerder
-(for detecting quite a lot of intricate bugs).
-Alexander van den Bergh who did the porting to Windows/NT as part
-of his Master thesis project.
+(for detecting a large number of intricate bugs).
+We thank Alexander van den Bergh for porting the \ATerm\ library
+to Windows/NT as part of his Master thesis project, and
 Joost Visser for providing us with useful information on ASDL and
 for writing a tool to pickle \aterms.
 Finally, we want to thank Pierre-Etienne Moreau for the fruitful
