@@ -67,7 +67,8 @@ booltest.af1: Booleans.trm.tbl booltest.trm
 		--input $< \
 		--output $@ \
 		--table ${top_srcdir}/spec/Sdf2-to-ADT.trm.tbl \
-		--label ${top_srcdir}/spec/add-labels/AddLabels.asf
+		--label ${top_srcdir}/spec/add-labels/AddLabels.asf \
+		--generator ${top_srcdir}/spec/sdf2-to-adt/Sdf2-to-ADT
 
 %.trm.tbl: %.sdf
 	${SDF2TABLE} -m `basename $< .sdf` -i $< -o $@

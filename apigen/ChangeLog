@@ -1,5 +1,8 @@
 2001/02/15 (jong@cwi.nl)
   * Version 0.7.1
+  * --verbose in sdf2-to-adt was called --VERBOSE (fixed)
+  * added -g, --generator option to sdf2-to-adt which overrides default
+    location of compiled apigen-specification
   * Added -l <FILE> option to sdf2-to-adt which overrides default location
     of labeling equations.
   * The -h option now shows the default locations of the APIGEN parsetable

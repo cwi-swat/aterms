@@ -24,19 +24,21 @@ Usage: $PRG -i <sdf2-specification> [options]
 
 Parameters:
   
-  -i | --input  <FILE>   specify input specification       [not specified]
-  -o | --output <FILE>   specify name of generated ADT     [default: <IN>.adt]
-  -t | --table  <FILE>   specify the APIGEN-table to use   [see below]
-  -l | --label  <FILE>   specify labeling equations        [see below]
-  -e | --expand-cons     propagate cons-annotations        [on]
-  -r | --remove-cons     remove cons-annotations           [off]
-  -v | --verbose         be verbose during generation      [off]
-  -s | --skip-cleanup    skip cleanup (debugging aid)      [off]
-  -h | --help            display this information
+  -i | --input  <FILE>    specify input specification       [not specified]
+  -o | --output <FILE>    specify name of generated ADT     [default: <IN>.adt]
+  -t | --table  <FILE>    specify the APIGEN-table to use   [see below]
+  -l | --label  <FILE>    specify labeling equations        [see below]
+  -g | --generator <FILE> specify compiled generator        [see below]
+  -e | --expand-cons      propagate cons-annotations        [on]
+  -r | --remove-cons      remove cons-annotations           [off]
+  -v | --verbose          be verbose during generation      [off]
+  -s | --skip-cleanup     skip cleanup (debugging aid)      [off]
+  -h | --help             display this information
 
 Default locations:
    APIGEN-parsetable = ${APITABLE}
   Labeling equations = ${ADDLABELS}
+  Labeling equations = ${SDF2TOADT}
 
 Example: ${PRG} --remove-cons -i Booleans.sdf -o Booleans.adt
 
@@ -140,7 +142,10 @@ do
     -l | --label)
       shift; ADDLABELS=$1 ;;
 
-    -v | --VERBOSE)
+    -g | --generator)
+      shift; SDF2TOADT=$1 ;;
+
+    -v | --verbose)
       VERBOSE=1 ;;
 
     -s | --skip-cleanup)
