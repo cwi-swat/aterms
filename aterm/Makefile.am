@@ -3,11 +3,15 @@ SUBDIRS		= aterm utils toolbus test $(JAVA_SUBDIR) doc
 DIST_SUBDIRS	= aterm utils toolbus test java doc
 EXTRA_DIST	= make_rules reconf
 DISTFILE	= ${distdir}.tar.gz
-WWWDIR		= /usr/local/www.cwi.nl/projects/MetaEnv/aterm
+WWWDIR		= /hosts/www/projects/MetaEnv/aterm
 
 www-dist: distcheck
 	cp ${DISTFILE} ${WWWDIR}
+	chmod g+w ${WWWDIR}/${DISTFILE}
 	gzip --best < doc/at.ps > ${WWWDIR}/doc/at.ps.gz
+	chmod g+w ${WWWDIR}/doc/at.ps.gz
 	gzip --best < doc/manual.ps > ${WWWDIR}/doc/manual.ps.gz
+	chmod g+w ${WWWDIR}/doc/manual.ps.gz
 	cp java/aterm-javadoc.tar.gz ${WWWDIR}/doc
+	chmod g+w ${WWWDIR}/doc/aterm-javadoc.tar.gz
 	cd ${WWWDIR}; make
