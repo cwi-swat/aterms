@@ -2,11 +2,9 @@
 
 # {{{ variables
 
-     prefix=@prefix@
-exec_prefix=@exec_prefix@
-     bindir=@bindir@
-    datadir=@datadir@
-        PRG=`basename $0`
+     PRG=`basename $0`
+  prefix=@prefix@
+ATERMBIN=@ATERMBIN@
 
 # }}}
 
@@ -73,7 +71,7 @@ PROLOGUE=""
 
 # data needed
    CGEN=${prefix}/classes
-DICTTOC=${bindir}/dicttoc
+DICTTOC=${ATERMBIN}/dicttoc
 
 # }}}
 

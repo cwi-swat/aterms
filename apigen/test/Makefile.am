@@ -4,31 +4,29 @@
 # $Id$
 #
 
+include ../make_rules
+
 SGLR			= ${SGLRBIN}/sglr
 SDF2TABLE		= ${PGENBIN}/sdf2table
-
-PROGS			= rolotest booltest listtest
-NOINST_PROGS		= ${PROGS}
+ADT_TO_C		= ${top_builddir}/utils/adt-to-c
+SDF2_TO_ADT		= ${top_builddir}/utils/sdf2-to-adt
+GENERATOR		= ${top_builddir}/spec/sdf2-to-adt/Sdf2-to-ADT
+PARSETABLE		= ${top_srcdir}/spec/Sdf2-to-ADT.trm.tbl 
+LABEL_EQS		= ${top_srcdir}/spec/add-labels/AddLabels.asf 
 
 TESTS			= rolotest booltest listtest
+noinst_PROGRAMS		= ${TESTS}
+noinst_LIBRARIES	= librolodex.a liblist.a libBooleans.a
 
-lib_LIBRARIES		= librolodex.a liblist.a libBooleans.a
-CLEANFILES		= ${PROGS} \
-			librolodex.a rolodex*.[ch] rolodex_dict.[ch] \
-			liblist.a list.[ch] list_dict.[ch] \
-			libBooleans.a Booleans.[ch] Booleans.dict \
+CLEANFILES		= ${noinst_PROGRAMS} ${noinst_LIBRARIES} \
+			rolodex*.[ch] rolodex_dict.[ch] \
+			list.[ch] list_dict.[ch] \
+			Booleans.[ch] Booleans.dict \
 			Booleans_dict.[ch] Booleans.trm.tbl Booleans.adt \
 			booltest.af1
 
-INCLUDES		= -I${ATERMINC}
-LDFLAGS			= -L${ATERMLIB}
-LDADD			= -lATerm
-CFLAGS			= -Wall -g -O2
-
 EXTRA_DIST		= rolodex.adt Booleans.sdf list.adt list.pro \
 			booltest.trm
-
-noinst_PROGRAMS		= ${PROGS}
 
 librolodex_a_SOURCES	= rolodex.c rolodex_dict.c
 liblist_a_SOURCES	= list.c list_dict.c
@@ -46,37 +44,33 @@ booltest_SOURCES	= booltest.c
 booltest_LDADD		= libBooleans.a ${LDADD}
 booltest_DEPENDENCIES	= booltest.af1 libBooleans.a
 
-# Contrary to some other .adt files in this directory, Booleans.adt is
-# generated and should be considered intermediate
-%INTERMEDIATE: Booleans.adt
-
 rolodex.c rolodex.h: rolodex.adt
-	${top_srcdir}/utils/adt-to-c	\
-		--input rolodex.adt	\
+	${ADT_TO_C} \
+		--input ${top_srcdir}/test/rolodex.adt \
 		--classpath ${top_srcdir}:${ATERM}/classes
 
 list.c list.h: list.adt list.pro
-	${top_srcdir}/utils/adt-to-c	\
-		--input list.adt	\
-		--prologue list.pro	\
+	${ADT_TO_C} \
+		--input ${top_srcdir}/test/list.adt \
+		--prologue ${top_srcdir}/test/list.pro \
 		--classpath ${top_srcdir}:${ATERM}/classes
 
 Booleans.c Booleans.h: Booleans.adt
-	${top_srcdir}/utils/adt-to-c	\
-		--input Booleans.adt	\
-		--prefix SDF		\
+	${ADT_TO_C} \
+		--input Booleans.adt \
+		--prefix SDF \
 		--classpath ${top_srcdir}:${ATERM}/classes
 
 booltest.af1: Booleans.trm.tbl booltest.trm
-	${SGLR} -1 -p Booleans.trm.tbl -i booltest.trm -o $@
+	${SGLR} -1 -p Booleans.trm.tbl -i ${top_srcdir}/test/booltest.trm -o $@
 
-%.adt: %.sdf
-	${top_srcdir}/utils/sdf2-to-adt \
+%.adt: %.sdf ${PARSETABLE} ${LABEL_EQS} ${GENERATOR}
+	${SDF2_TO_ADT} \
 		--input $< \
 		--output $@ \
-		--table ${top_srcdir}/spec/Sdf2-to-ADT.trm.tbl \
-		--label ${top_srcdir}/spec/add-labels/AddLabels.asf \
-		--generator ${top_srcdir}/spec/sdf2-to-adt/Sdf2-to-ADT
+		--table ${PARSETABLE} \
+		--label ${LABEL_EQS} \
+		--generator ${GENERATOR}
 
 %.trm.tbl: %.sdf
 	${SDF2TABLE} -m `basename $< .sdf` -i $< -o $@

@@ -26,6 +26,7 @@ public class CGen
     "=Equals",	    "#Hash",
     "/Slash",	    "\\Backslash",
   };
+
   private final static String[][] RESERVED_TYPES =
   { { "int",  "int"    },
     { "real", "double" },

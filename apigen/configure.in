@@ -6,7 +6,7 @@ dnl
 
 dnl Process this file with autoconf to produce a configure script.
 AC_INIT(configure.in)
-AM_INIT_AUTOMAKE(apigen, 0.7.3)
+AM_INIT_AUTOMAKE(apigen, 0.8)
 
 dnl Add current dir to searchpath
 ACLOCAL="${ACLOCAL} -I ."
@@ -70,6 +70,9 @@ AC_SUBST(ATERMINC)
 
 ATERMLIB="${ATERM}/lib"
 AC_SUBST(ATERMLIB)
+
+ATERMBIN="${ATERM}/bin"
+AC_SUBST(ATERMBIN)
 
 dnl }}}
 
