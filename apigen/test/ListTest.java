@@ -92,7 +92,7 @@ public class ListTest {
 
     Separated sep = factory.SeparatedFromTerm(factory.parse("[\"m2\",l(\"l2\"),\"sep\",l(\"l1\"),\"m1\",l(\"l2\"),\"sep\",l(\"l1\"),\"m2\",l(\"l2\"),\"sep\",l(\"l1\"),\"m1\"]"));
 
-    System.err.println("length: " +  sep.getLength());
+    testAssert(sep.getLength() == 4, "separated list length test");
   }
 
   public final static void main(String[] args) {

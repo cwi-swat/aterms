@@ -4,4 +4,4 @@
 # $Id$
 #
 
-SUBDIRS		= . adt gen
+SUBDIRS		= . util adt gen

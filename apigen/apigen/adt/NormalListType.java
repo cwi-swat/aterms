@@ -1,5 +1,7 @@
 package apigen.adt;
 
+import java.util.Iterator;
+
 import aterm.ATermFactory;
 
 public class NormalListType extends ListType {

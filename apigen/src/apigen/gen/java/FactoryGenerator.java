@@ -145,7 +145,7 @@ public class FactoryGenerator extends JavaGenerator {
                 genFactoryMakeSingletonList(className, elementClassName, empty);
                 genFactoryMakeManyList(className, elementClassName);
                 genFactoryMakeManyTermList(className);
-                
+
                 // TODO: generated correct code for separated lists here
             }
         }
