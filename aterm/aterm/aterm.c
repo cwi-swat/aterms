@@ -789,11 +789,17 @@ static ATermAppl fparse_quoted_appl(int *c, FILE *f)
             if( *c == EOF ) return NULL;
             switch( *c )
             {
-               case '\n':
-               case '\r':
-               case '\t':
+               case 'n':
+                  buffer[len++] = '\n';
+                  break;
+               case 'r':
+                  buffer[len++] = '\r';
+                  break;
+               case 't':
+                  buffer[len++] = '\t';
+                  break;
                case '\\':
-                  buffer[len++] = *c;
+                  buffer[len++] = '\\';
                   break;
                default:
                   buffer[len++] = '\\';
@@ -809,6 +815,7 @@ static ATermAppl fparse_quoted_appl(int *c, FILE *f)
    }
 
   buffer[len] = '\0';
+fprintf(stderr, "HOI: '%s'\n", buffer );
   name = strdup(buffer);
   if(!name)
     ATerror("fparse_quoted_appl: symbol to long.");
