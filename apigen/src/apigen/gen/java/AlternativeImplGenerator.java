@@ -45,7 +45,7 @@ public class AlternativeImplGenerator extends JavaGenerator {
 	}
 
 	public static String getAltClassImplName(String type, String alt) {
-			return AlternativeGenerator.getAltClassName(type, alt) + "Impl";
+			return AlternativeGenerator.className(type, alt) + "Impl";
 	}
 		
 	protected void generate() {
@@ -438,17 +438,16 @@ public class AlternativeImplGenerator extends JavaGenerator {
 
   
 	  // This is not well thought out yet!
-		private void genAltVisitableInterface(Type type, Alternative alt)
+	  private void genAltVisitableInterface(Type type, Alternative alt)
 	  {
 		String altClassName = AlternativeGenerator.getAltClassName( type,alt );
 
-		println("  public void accept(Visitor v)");
+		println("  public void accept(Visitor v) throws jjtraveler.visitFailure");
 		println("  {");
 		println("    v.visit" + altClassName + "(this);");
 		println("  }");
 		println();
-    
-	}
+	 }
 
 	private int computeAltArityNotReserved(Type type, Alternative alt) {
 		Iterator fields = type.altFieldIterator(alt.getId());

@@ -23,12 +23,12 @@ public class AlternativeGenerator extends JavaGenerator {
 		this.alt = alt;
 	}
 
-	public static String getAltClassName(String type, String alt) {
+	public static String className(String type, String alt) {
 		return StringConversions.makeCapitalizedIdentifier(type) + "_" + StringConversions.makeCapitalizedIdentifier(alt);
 	}
 
 	public static String getAltClassName(Type type, Alternative alt) {
-		return getAltClassName(type.getId(), alt.getId());
+		return className(type.getId(), alt.getId());
 	}
 
 	public void run() {

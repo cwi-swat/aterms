@@ -21,4 +21,5 @@ ADT.c ADT.h ADT.dict ADT_dict.c ADT_dict.h: ADT.adt ADT.pro
 		--input ADT.adt		\
 		--prologue ADT.pro	\
 		--prefix ADT		\
-		--classpath ${top_builddir}:${JAVA_ATERM}:${SHARED_OBJECTS}
+		--classpath ${top_builddir}:${JAVA_ATERM}:${SHARED_OBJECTS} \
+                --jtom
