@@ -815,7 +815,7 @@ static ATermAppl fparse_quoted_appl(int *c, FILE *f)
    }
 
   buffer[len] = '\0';
-fprintf(stderr, "HOI: '%s'\n", buffer );
+
   name = strdup(buffer);
   if(!name)
     ATerror("fparse_quoted_appl: symbol to long.");
