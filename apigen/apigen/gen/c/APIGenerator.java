@@ -26,11 +26,12 @@ public class APIGenerator extends CGenerator {
 	private Map afuns_by_name;
 	private Map afuns_by_afun;
 	
-	public APIGenerator(ADT adt, String apiName, String prefix, boolean verbose, boolean folding) {
+	public APIGenerator(ADT adt, String apiName, String prefix, String prologue, boolean verbose, boolean folding) {
 		super(".", apiName, verbose, folding);
 		this.adt = adt;
 		this.apiName = apiName;
 		this.prefix = prefix;
+		this.prologue = prologue;
 		
 		afuns_by_name = new HashMap();
 		afuns_by_afun = new HashMap();

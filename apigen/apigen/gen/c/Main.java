@@ -82,7 +82,7 @@ public class Main {
 			ATermFactory factory = new PureFactory();
 			
 			adt = new ADT(factory.readFromFile(input));
-			new APIGenerator(adt, output, prefix, verbose, true).run();
+			new APIGenerator(adt, output, prefix, prologue, verbose, true).run();
 			new TomSignatureGenerator(adt,new CTomSignatureImplementation(),".",output,verbose,true).run();
 			new CDictionaryGenerator(factory, adt, ".", output, prefix, verbose, true).run();
 
