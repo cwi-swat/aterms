@@ -961,9 +961,9 @@ We have used the parse tree for a XXX-line CASL specification.
 \begin{tabular}{|l||c|c|c|c|c|} \hline
 Term			& \# nodes & \# unique & Sharing &   Bytes  & Bytes/  \\
                         &          &   nodes   &   (\%)  &          & Node    \\ \hline \hline
-Random10		&  1000000 &	 92246 &   90.81 &  2997120 & 3.00    \\ \hline
-Random5			&  1000000 &    169014 &   83.11 &  3343670 & 3.34    \\ \hline
-COBOL Parse Table 	&   733237 &     81115 &   88.94 &  2174662 & 2.97    \\ \hline
+Random10		&  1000000 &	 92246 &   90.81 &  2997120 &  3.00   \\ \hline
+Random10-unique		&  1000000 &   1000000 &    0.00 & 15198694 & 15.20   \\ \hline
+COBOL Parse Table 	&   733237 &     81115 &   88.94 &  2174662 &  2.97   \\ \hline
 COBOL Program 		&	   &           &         &          &         \\ \hline
 CASL Specification	&	   &           &         &          &         \\ \hline
 \end{tabular}
@@ -988,7 +988,7 @@ Term			&Text	 & Bytes/& Read	& Read/ & Write	& Write/\\
 			& 	 &      & (s)   & ($\mu$s) 	& (s)	& ($\mu$s)\\ \hline \hline
 
 Random10		&6200251 & 6.20	& 15.90	& 15.90	& 3.67	& 3.67	\\ \hline
-Random5			&6400342 & 6.40	& 14.91	& 14.91	& 3.42	& 3.42	\\ \hline
+Random10-unique		&6888889 & 6.89	& 34.76	& 34.76	& 4.06	& 4.06	\\ \hline
 COBOL Parse Table	&3161908 & 4.31	&  5.83	&  7.95	& 1.89	& 2.58	\\ \hline
 COBOL Program		& x	 & x	& x	& x	& x	& x	\\ \hline
 CASL Specification	& x	 & x	& x	& x	& x	& x	\\ \hline
@@ -1010,9 +1010,9 @@ Term			&BAF	& Bytes/& Read	& Read/ & Write	& Write/\\
 			&Bytes  & Node	&       & Node 	& 	& Node	\\
 			& 	&       & (s)   & ($\mu$s) 	& (s)	& ($\mu$ s)	\\ \hline \hline
 
-Random10		&567419 & 0.57	& 2.06	& 2.06	& 2.76	& 2.76 \\ \hline
-Random5			&748015 & 0.75	& 1.34 	& 1.34	& 3.25	& 3.25 \\ \hline
-COBOL Parse Table	&303621 & 0.41	& 0.50	& 0.68	& 1.36	& 1.85 \\ \hline
+Random10		&567419 & 0.57	& 2.06	& 2.06	& 2.76	& 2.76  \\ \hline
+Random10-unique		&6073795& 6.07	& 8.85 	& 8.85	& 11.57	& 11.57 \\ \hline
+COBOL Parse Table	&303621 & 0.41	& 0.50	& 0.68	& 1.36	& 1.85  \\ \hline
 COBOL Program		& x	& x	& x	& x	& x	& x	\\ \hline
 CASL Specification	& x	& x	& x	& x	& x	& x	\\ \hline
 \end{tabular}
@@ -1037,7 +1037,7 @@ Term			& Ascii		& \baf		& Compression	& {\tt gzip} 	& Compression\\
 			& (bytes)  	& (bytes)	&	(\%)	& (bytes)	& (\%)\\ \hline \hline
 
 Random10		& 6199981	& 567419	& 90.9		& 439293	& 92.9	\\ \hline
-Random5			& 6400040	& 748015	& 88.3		& 548784	& 91.4	\\ \hline
+Random10-unique		& 6888889	& 6073795	& 11.8		& 2324804	& 66.3	\\ \hline
 COBOL Parse Table	& 3161908	& 303621	& 90.4		& 243990	& 92.3	\\ \hline
 COBOL Program		& x		& x		& x		& x		& x	\\ \hline
 CASL Specification	& x		& x		& x		& x		& x	\\ \hline
