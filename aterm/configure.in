@@ -197,6 +197,7 @@ AC_OUTPUT( \
 	test/Makefile \
 	toolbus/Makefile \
 	java/Makefile \
+	java/visitor/Makefile \
 	java/aterm/Makefile \
 	java/aterm/pure/Makefile \
 	java/aterm/test/Makefile \

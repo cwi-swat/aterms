@@ -1,6 +1,7 @@
 package aterm.pure;
 
 import aterm.*;
+import visitor.*;
 
 import java.util.List;
 import java.util.LinkedList;
@@ -189,6 +190,15 @@ public abstract class ATermImpl
       result.append("}");
       return result.toString();
     }
+  }
+
+  //}}}
+
+  //{{{ public boolean acceptChildren(Visitor v)
+
+  public boolean acceptChildren(Visitor v)
+  {
+    return true;
   }
 
   //}}}

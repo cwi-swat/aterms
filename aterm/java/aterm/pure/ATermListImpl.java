@@ -3,6 +3,7 @@ package aterm.pure;
 import aterm.*;
 import java.util.List;
 import java.util.Vector;
+import visitor.*;
 
 class ATermListImpl
   extends ATermImpl
@@ -556,6 +557,27 @@ class ATermListImpl
   public ATerm setAnnotations(ATermList annos)
   {
     return factory.makeList(first, next, annos);
+  }
+
+  //}}}
+
+  //{{{ public boolean accept(ATermVisitor v)
+
+  public boolean accept(ATermVisitor v)
+  {
+    return v.visitList(this);
+  }
+
+  //}}}
+  //{{{ public boolean acceptChildren(Visitor v)
+
+  public boolean acceptChildren(Visitor v)
+  {
+    if (first == null) {
+      return true;
+    }
+
+    return v.visit(first) && v.visit(next);
   }
 
   //}}}

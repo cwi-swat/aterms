@@ -103,4 +103,13 @@ class ATermBlobImpl
   }
 
   //}}}
+
+  //{{{ public boolean accept(ATermVisitor v)
+
+  public boolean accept(ATermVisitor v)
+  {
+    return v.visitBlob(this);
+  }
+
+  //}}}
 }

@@ -93,4 +93,13 @@ class ATermRealImpl
   }
 
   //}}}
+
+  //{{{ public boolean accept(ATermVisitor v)
+
+  public boolean accept(ATermVisitor v)
+  {
+    return v.visitReal(this);
+  }
+
+  //}}}
 }

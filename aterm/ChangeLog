@@ -1,5 +1,8 @@
 $Id$
 
+2001/03/28 ({jong,olivierp})
+ * Added traversal combinator support
+
 2001/03/26 ({markvdb,olivierp}@cwi.nl)
  * Fixed a bug in lists with annotations.
 

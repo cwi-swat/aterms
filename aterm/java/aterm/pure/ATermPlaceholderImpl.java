@@ -2,6 +2,7 @@ package aterm.pure;
 
 import aterm.*;
 import java.util.List;
+import visitor.*;
 
 class ATermPlaceholderImpl
   extends ATermImpl
@@ -147,6 +148,23 @@ class ATermPlaceholderImpl
   public ATerm setAnnotations(ATermList annos)
   {
     return factory.makePlaceholder(type, annos);
+  }
+
+  //}}}
+
+  //{{{ public boolean accept(ATermVisitor v)
+
+  public boolean accept(ATermVisitor v)
+  {
+    return v.visitPlaceholder(this);
+  }
+
+  //}}}
+  //{{{ public boolean acceptChildren(Visitor v)
+
+  public boolean acceptChildren(Visitor v)
+  {
+    return v.visit(type);
   }
 
   //}}}

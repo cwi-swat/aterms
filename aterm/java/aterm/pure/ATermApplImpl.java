@@ -2,6 +2,7 @@ package aterm.pure;
 
 import aterm.*;
 import java.util.List;
+import visitor.*;
 
 class ATermApplImpl
   extends ATermImpl
@@ -251,6 +252,29 @@ class ATermApplImpl
   public ATerm setAnnotations(ATermList annos)
   {
     return factory.makeAppl(fun, args, annos);
+  }
+
+  //}}}
+
+  //{{{ public boolean accept(ATermVisitor v)
+
+  public boolean accept(ATermVisitor v)
+  {
+    return v.visitAppl(this);
+  }
+
+  //}}}
+  //{{{ public boolean acceptChildren(Visitor v)
+
+  public boolean acceptChildren(Visitor v)
+  {
+    for (int i=0; i<args.length; i++) {
+      if (!v.visit(args[i])) {
+	return false;
+      }
+    }
+
+    return true;
   }
 
   //}}}

@@ -95,4 +95,13 @@ class ATermIntImpl
   }
 
   //}}}
+
+  //{{{ public boolean accept(ATermVisitor v)
+
+  public boolean accept(ATermVisitor v)
+  {
+    return v.visitInt(this);
+  }
+
+  //}}}
 }
