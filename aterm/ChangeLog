@@ -1,6 +1,7 @@
 $Id$
 
 2001/08/14 (jong@cwi.nl)
+ * Version 1.6.3 released
  * Added script utils/genpkg.sh which generates toplevel "aterm.pkg"
    for package-base from information in configure.in
 
