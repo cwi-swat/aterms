@@ -1,0 +1,56 @@
+
+PRODUCT		= @PRODUCT@
+VERSION		= @VERSION@
+CLEAN		= @CLEAN@
+@SET_MAKE@
+
+srcdir		= @srcdir@
+top_srcdir	= @top_srcdir@
+prefix		= @prefix@
+exec_prefix	= @exec_prefix@
+bindir		= @bindir@
+libdir		= @libdir@
+includedir	= $(prefix)/include
+classdir	= $(prefix)/classes
+
+INSTALL		= @INSTALL@
+INSTALL_DAT	= @INSTALL_DAT@
+INSTALL_PRG	= @INSTALL_PRG@
+
+SUBDIRS		= native pure
+DISTFILES	= Makefile.in ${SOURCE}
+
+SOURCE		= ATerm.java ATermAppl.java ATermBlob.java ATermInt.java \
+		  ATermList.java ATermPlaceholder.java ATermReal.java
+
+CLASSES		= $(patsubst %.java,%.class,$(SOURCE))
+
+all: ${CLASSES}
+	@for dir in ${SUBDIRS}; \
+	do \
+		echo "make all in $$dir"; \
+		cd $$dir; ${MAKE} -s all; \
+		cd ..; \
+	done
+
+%.class: %.java
+	javac -classpath ..:$$CLASSPATH $<
+
+clean:
+	@rm -f ${CLASSES} *~ core
+	@for dir in ${SUBDIRS}; \
+	do \
+		echo "make clean in $$dir"; \
+		cd $$dir; ${MAKE} -s clean; \
+		cd ..; \
+	done
+
+dist:
+	@cp ${DISTFILES} ${DISTDIR}
+	@for dir in ${SUBDIRS}; \
+	do \
+		echo "make dist in $$dir"; \
+		mkdir ${DISTDIR}/$$dir; \
+		cd $$dir; ${MAKE} -s DISTDIR=${DISTDIR}/$$dir dist; \
+		cd ..; \
+	done
