@@ -3008,9 +3008,10 @@ ATbool AT_isDeepEqual(ATerm t1, ATerm t2)
 	if(sym != ATgetAFun(appl2))
 	  return ATfalse;
 
-	for(i=0; i<arity; i++)
-	  if(!ATisEqual(ATgetArgument(appl1, i), ATgetArgument(appl2, i)))
+	for(i=0; i<arity; i++) {
+	  if(!AT_isDeepEqual(ATgetArgument(appl1, i), ATgetArgument(appl2, i)))
 	    return ATfalse;
+	}
       }
       break;
 
@@ -3021,7 +3022,7 @@ ATbool AT_isDeepEqual(ATerm t1, ATerm t2)
 	  return ATfalse;
 
 	while(!ATisEmpty(list1)) {
-	  if(!ATisEqual(ATgetFirst(list1), ATgetFirst(list2)))
+	  if(!AT_isDeepEqual(ATgetFirst(list1), ATgetFirst(list2)))
 	    return ATfalse;
 
 	  list1 = ATgetNext(list1);
@@ -3044,8 +3045,8 @@ ATbool AT_isDeepEqual(ATerm t1, ATerm t2)
       break;
 
     case AT_PLACEHOLDER:
-      result = ATisEqual(ATgetPlaceholder((ATermPlaceholder)t1), 
-			 ATgetPlaceholder((ATermPlaceholder)t1));
+      result = AT_isDeepEqual(ATgetPlaceholder((ATermPlaceholder)t1), 
+			      ATgetPlaceholder((ATermPlaceholder)t1));
       break;
 
     default:
@@ -3055,7 +3056,7 @@ ATbool AT_isDeepEqual(ATerm t1, ATerm t2)
   if(result) {
     if(HAS_ANNO(t1->header)) {
       if(HAS_ANNO(t2->header)) {
-	result = ATisEqual(AT_getAnnotations(t1), AT_getAnnotations(t2));
+	result = AT_isDeepEqual(AT_getAnnotations(t1), AT_getAnnotations(t2));
       } else {
 	result = ATfalse;
       }
@@ -3099,7 +3100,7 @@ ATbool AT_isEqual(ATerm t1, ATerm t2)
 	  return ATfalse;
 
 	for(i=0; i<arity; i++)
-	  if(!ATisEqual(ATgetArgument(appl1, i), ATgetArgument(appl2, i)))
+	  if(!AT_isEqual(ATgetArgument(appl1, i), ATgetArgument(appl2, i)))
 	    return ATfalse;
       }
       break;
@@ -3111,7 +3112,7 @@ ATbool AT_isEqual(ATerm t1, ATerm t2)
 	  return ATfalse;
 
 	while(!ATisEmpty(list1)) {
-	  if(!ATisEqual(ATgetFirst(list1), ATgetFirst(list2)))
+	  if(!AT_isEqual(ATgetFirst(list1), ATgetFirst(list2)))
 	    return ATfalse;
 
 	  list1 = ATgetNext(list1);
@@ -3134,7 +3135,7 @@ ATbool AT_isEqual(ATerm t1, ATerm t2)
       break;
 
     case AT_PLACEHOLDER:
-      result = ATisEqual(ATgetPlaceholder((ATermPlaceholder)t1), 
+      result = AT_isEqual(ATgetPlaceholder((ATermPlaceholder)t1), 
 			 ATgetPlaceholder((ATermPlaceholder)t1));
       break;
 
@@ -3145,7 +3146,7 @@ ATbool AT_isEqual(ATerm t1, ATerm t2)
   if(result) {
     if(HAS_ANNO(t1->header)) {
       if(HAS_ANNO(t2->header)) {
-	result = ATisEqual(AT_getAnnotations(t1), AT_getAnnotations(t2));
+	result = AT_isEqual(AT_getAnnotations(t1), AT_getAnnotations(t2));
       } else {
 	result = ATfalse;
       }
