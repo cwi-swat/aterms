@@ -1,5 +1,8 @@
 # $Id$
 
+Fri Nov  7 08:31:47 CET 2003 <jong@cwi.nl>
+ * fix distcheck issue
+
 2003/09/26 <jurgenv@cwi.nl>
  * Release 1.7 to accomodate release of jtom
 

@@ -1,1 +1,1 @@
-#SUBDIRS = pem
+DIST_SUBDIRS = paper pem
