@@ -15,10 +15,21 @@ public abstract class JavaGenerator extends Generator {
 	protected String pkg;
 	List imports;
 
+    /**
+     * Load the Java type conversions
+     */
     static {
     	converter = new TypeConverter(new JavaTypeConversions());
     }
-    
+
+    /**
+     * A java file generator
+     * @param directory The path of the new java file
+     * @param filename  The name of the new java class
+     * @param pkg       The package that it should go into
+     * @param standardImports The list of imports it should *at least* do
+     * @param verbose   Print information on stderr while generating
+     */    
 	protected JavaGenerator(
 		String directory,
 		String filename,
@@ -44,10 +55,9 @@ public abstract class JavaGenerator extends Generator {
 		}
 	}
 
-	public static String getTypeId(String typeId) {
-		return StringConversions.makeIdentifier(converter.getType(typeId));
-	}
-
+    /**
+     * Create a variable name from a field name
+     */
 	public static String getFieldId(String fieldId) {
 		return "_" + StringConversions.makeIdentifier(fieldId);
 	}
@@ -56,6 +66,11 @@ public abstract class JavaGenerator extends Generator {
 		return "index_" + StringConversions.makeIdentifier(fieldId);
 	}
 
+    /**
+     * Print an actual argument list for one specific constructor. The field names
+     * are used for the variable names of the argument positions. In case of a reserved
+     * type the appropriate conversion is generated from target type to ATerm representation.
+     */
 	protected void printActualTypedArgumentList(Type type, Alternative alt) {
 		Iterator fields = type.altFieldIterator(alt.getId());
 		
@@ -80,6 +95,10 @@ public abstract class JavaGenerator extends Generator {
 		}
 	}
 
+    /**
+     * Print a formal argument list for one specific constructor. The field types are
+     * derived from the ADT, the field names are used for the formal parameter names.
+     */
 	protected void printFormalTypedAltArgumentList(Type type, Alternative alt) {
 		Iterator fields = type.altFieldIterator(alt.getId());
 		while (fields.hasNext()) {

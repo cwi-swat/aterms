@@ -6,6 +6,10 @@ import java.util.Map;
 public class TypeConverter implements TypeConversions {
 	private Map reservedTypes;
 
+    /**
+     * Create a new TypeConverter
+     * @param conv The mappings of builtin ATerm types to for example C types
+     */
 	public TypeConverter(TypeConversions conv) {
 		reservedTypes = new HashMap();
 
