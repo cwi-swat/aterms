@@ -20,6 +20,7 @@
 $Id$
 
 2000/01/22 (jong@cwi.nl)
+ * Fixed bug in utils/dicttoc.c which caused 'make distcheck' to fail
  * Version 1.4.7b released for testing.
 
 2000/01/16 (jong@cwi.nl)

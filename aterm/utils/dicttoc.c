@@ -362,6 +362,9 @@ int main(int argc, char *argv[])
     if (!ptr) {
       ptr = dict_name;
     }
+    else {
+      ptr++; /* skip '/' itself */
+    }
 
     for(; *ptr; ptr++) {
       if (!isalnum((int)*ptr)) {
@@ -383,6 +386,9 @@ int main(int argc, char *argv[])
 
     if (!ptr) {
       ptr = dict_name;
+    }
+    else {
+      ptr++; /* skip '/' itself */
     }
 
     for(; *ptr; ptr++) {
