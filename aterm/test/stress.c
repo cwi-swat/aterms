@@ -646,12 +646,17 @@ void testMark()
 }
 
 /*}}}  */
+/*{{{  void testTable() */
+
+/**
+	* Test table routines.
+	*/
 
 void testTable()
 {
 	int i;
 	ATermTable table;
-
+	ATermList keys;
 	ATerm key[1000];
 	ATerm val[1000];
 
@@ -666,16 +671,22 @@ void testTable()
 	for(--i; i>=0; i--)
 		test_assert("table", 1+i, ATisEqual(ATtableGet(table, key[i]), val[i]));
 
-    for(i=0; i<1000; i++)
+  keys = ATtableKeys(table);
+	for(i=0; i<1000; i++)
+		test_assert("table", 1000+i, ATindexOf(keys, key[i], 0) >= 0);
+
+	for(i=0; i<1000; i++)
 		ATtableRemove(table, key[i]);
 
 	for(--i; i>=0; i--)
-		test_assert("table", 1000+i, ATtableGet(table, key[i]) == NULL);
+		test_assert("table", 2000+i, ATtableGet(table, key[i]) == NULL);
 
 	ATtableDestroy(table);
 
 	printf("table tests ok.\n");
 }
+
+/*}}}  */
 
 /*{{{  int main(int argc, char *argv[]) */
 
