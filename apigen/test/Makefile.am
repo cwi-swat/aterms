@@ -12,8 +12,8 @@ ADTC		= ${top_builddir}/utils/adt-to-c --verbose
 ADTJAVA         = ${top_builddir}/utils/adt-to-java --verbose 
 
 JAVATESTS = PeanoTest ListTest
-TESTS		= rolotest listtest \
-	          $(foreach j, ${JAVATESTS}, ${j}.java.sh)
+#TESTS		= $(foreach j, ${JAVATESTS}, ${j}.java.sh)
+TESTS		= rolotest listtest
 
 # Building the C programs that are to be run during testing:
 check_PROGRAMS	= rolotest listtest
@@ -30,10 +30,12 @@ listtest_SOURCES	= listtest.c
 listtest_LDADD		= -L. -llist -lATerm
 listtest_DEPENDENCIES	= liblist.a
 
+JJTRAVJAR=${top_srcdir}/test/jjtraveler-1.3.jar
+
 # Building the Java class files that are to be run during testing:
 javadir = ${top_builddir}/test/classfiles
 JAVAROOT = ${top_builddir}
-CLASSPATH_ENV = CLASSPATH=${top_builddir}:${SHARED_OBJECTS}:${JAVA_ATERM}:${srcdir}/$(JAVAROOT)::$$CLASSPATH
+CLASSPATH_ENV = CLASSPATH=${top_builddir}:${SHARED_OBJECTS}:${JAVA_ATERM}:${srcdir}/$(JAVAROOT):${JJTRAVJAR}::$$CLASSPATH
 
 check_JAVA = ${PeanoAPI} PeanoTest.java \
 	     ${ListAPI} ListTest.java

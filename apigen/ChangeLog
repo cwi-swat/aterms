@@ -1,5 +1,9 @@
-2003-03-11  Pierre-Etienne Moreau  <pem@escher.loria.fr>
 
+2003-03-15  (jurgenv@cwi.nl)
+ * Added generation of jjtraveler interface
+ * Fixed some bugs in C generation that were introduced in the last refactoring 
+
+2003-03-11  Pierre-Etienne Moreau  <pem@escher.loria.fr>
  * --jtype option added to generate tom constructors with prefix
  * jtom signature generated only if --jtom is active	  
  * fix several bugs related to prefix and type conversions

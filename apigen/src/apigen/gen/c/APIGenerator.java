@@ -12,8 +12,6 @@ public class APIGenerator extends CGenerator {
 	private ADT adt;
 	private String apiName;
 
-	/* Optimization disabled because of possible presence of annotations! */
-	private static final boolean OPTIMIZE_WITHOUT_ANNOS = false;
 	private boolean make_term_compatibility = false;
 
 	private String prefix;
@@ -143,12 +141,7 @@ public class APIGenerator extends CGenerator {
 	//	{{{ private void genInitFunction(API api)
 
 	private void genInitFunction() {
-		String decl =
-			"void "
-				+ prefix
-				+ "init"
-				+ StringConversions.makeCapitalizedIdentifier(apiName)
-				+ "Api(void)";
+		String decl = "void " + prefix + "init" + StringConversions.makeCapitalizedIdentifier(apiName) + "Api(void)";
 		hprintln(decl + ";");
 
 		printFoldOpen(decl);
@@ -200,15 +193,7 @@ public class APIGenerator extends CGenerator {
 
 		if (make_term_compatibility) {
 			String old_macro =
-				"#define "
-					+ prefix
-					+ "makeTermFrom"
-					+ type_id
-					+ "(t)"
-					+ " ("
-					+ prefix
-					+ type_id
-					+ "ToTerm(t))";
+				"#define " + prefix + "makeTermFrom" + type_id + "(t)" + " (" + prefix + type_id + "ToTerm(t))";
 			hprintln(old_macro);
 		}
 		decl = "ATerm " + prefix + type_id + "ToTerm(" + type_name + " arg)";
@@ -224,15 +209,7 @@ public class APIGenerator extends CGenerator {
 	private void genFromTerm(String type_id, String type_name) {
 		if (make_term_compatibility) {
 			String old_macro =
-				"#define "
-					+ prefix
-					+ "make"
-					+ type_id
-					+ "FromTerm(t)"
-					+ " ("
-					+ prefix
-					+ type_id
-					+ "FromTerm(t))";
+				"#define " + prefix + "make" + type_id + "FromTerm(t)" + " (" + prefix + type_id + "FromTerm(t))";
 			hprintln(old_macro);
 		}
 		String decl = type_name + " " + prefix + type_id + "FromTerm(ATerm t)";
@@ -257,16 +234,7 @@ public class APIGenerator extends CGenerator {
 			String type_id = StringConversions.makeIdentifier(type.getId());
 			String type_name = buildTypeName(type);
 
-			String decl =
-				"ATbool "
-					+ prefix
-					+ "isEqual"
-					+ type_id
-					+ "("
-					+ type_name
-					+ " arg0, "
-					+ type_name
-					+ " arg1)";
+			String decl = "ATbool " + prefix + "isEqual" + type_id + "(" + type_name + " arg0, " + type_name + " arg1)";
 
 			hprintln(decl + ";");
 
@@ -313,8 +281,7 @@ public class APIGenerator extends CGenerator {
 
 	private String buildPlaceholderSubstitution(ATerm pattern) {
 		String result;
-		ATermAppl hole =
-			(ATermAppl) ((ATermPlaceholder) pattern).getPlaceholder();
+		ATermAppl hole = (ATermAppl) ((ATermPlaceholder) pattern).getPlaceholder();
 		String name = StringConversions.makeIdentifier(hole.getName());
 		String type = hole.getArgument(0).toString();
 		if (type.equals("int")) {
@@ -339,15 +306,11 @@ public class APIGenerator extends CGenerator {
 				ATerm ph = ((ATermPlaceholder) last).getPlaceholder();
 				if (ph.getType() == ATerm.LIST) {
 					throw new RuntimeException(
-						"list placeholder not supported in"
-							+ " argument list of function application");
+						"list placeholder not supported in" + " argument list of function application");
 				}
 			}
 		}
-		result =
-			"(ATerm)ATmakeAppl"
-				+ (arity <= 6 ? String.valueOf(arity) : "")
-				+ "(";
+		result = "(ATerm)ATmakeAppl" + (arity <= 6 ? String.valueOf(arity) : "") + "(";
 		result += prefix + afunRegister.lookup(appl.getAFun());
 		for (int i = 0; i < arity; i++) {
 			ATerm arg = appl.getArgument(i);
@@ -358,7 +321,7 @@ public class APIGenerator extends CGenerator {
 	}
 
 	private String buildListConstructorImpl(ATerm pattern) {
-		String result = "";
+		String result = null;
 		ATermList list = (ATermList) pattern;
 		int length = list.getLength();
 		if (length == 0) {
@@ -369,9 +332,7 @@ public class APIGenerator extends CGenerator {
 				ATerm ph = ((ATermPlaceholder) last).getPlaceholder();
 				if (ph.getType() == ATerm.LIST) {
 					ATermAppl field = (ATermAppl) (((ATermList) ph).getFirst());
-					result =
-						"(ATermList)"
-							+ StringConversions.makeIdentifier(field.getName());
+					result = "(ATermList)" + StringConversions.makeIdentifier(field.getName());
 				}
 			}
 			if (result == null || result.length()==0) {
@@ -379,12 +340,7 @@ public class APIGenerator extends CGenerator {
 			}
 			for (int i = length - 2; i >= 0; i--) {
 				ATerm elem = list.elementAt(i);
-				result =
-					"ATinsert("
-						+ result
-						+ ", "
-						+ genConstructorImpl(elem)
-						+ ")";
+				result = "ATinsert(" + result + ", " + genConstructorImpl(elem) + ")";
 			}
 		}
 		result = "(ATerm)" + result;
@@ -420,14 +376,10 @@ public class APIGenerator extends CGenerator {
 				println(decl);
 				println("{");
 
-				println(
-					"  return ("
-						+ type_name
-						+ ")"
-						+ genConstructorImpl(alt.getPattern())
-						+ ";");
+				println("  return (" + type_name + ")" + genConstructorImpl(alt.getPattern()) + ";");
 
 				println("}");
+                printFoldClose();
 			}
 		}
 		bothPrintFoldClose();
@@ -522,9 +474,7 @@ public class APIGenerator extends CGenerator {
 
 	private String genAcceptor(Field field) {
 		String type = buildTypeName(field.getType());
-		String name =
-			"accept"
-				+ StringConversions.makeCapitalizedIdentifier(field.getId());
+		String name = "accept" + StringConversions.makeCapitalizedIdentifier(field.getId());
 
 		return type + " (*" + name + ")(" + type + ")";
 	}
@@ -552,25 +502,13 @@ public class APIGenerator extends CGenerator {
 					Field param = (Field) params.next();
 					if (!param.getType().equals(type.getId())) {
 						print(", ");
-						print(
-							"accept"
-								+ StringConversions.makeCapitalizedIdentifier(
-									param.getId()));
+						print("accept" + StringConversions.makeCapitalizedIdentifier(param.getId()));
 					}
 				}
 				print(")");
 			} else {
-				String acceptor_name =
-					"accept"
-						+ StringConversions.makeCapitalizedIdentifier(
-							field.getId());
-				print(
-					acceptor_name
-						+ " ? "
-						+ acceptor_name
-						+ "("
-						+ getter_name
-						+ "(arg))");
+				String acceptor_name = "accept" + StringConversions.makeCapitalizedIdentifier(field.getId());
+				print(acceptor_name + " ? " + acceptor_name + "(" + getter_name + "(arg))");
 				print(" : " + getter_name + "(arg)");
 			}
 			if (fields.hasNext()) {
@@ -588,13 +526,7 @@ public class APIGenerator extends CGenerator {
 	private void genGetField(Type type, Field field) {
 		String type_name = buildTypeName(type);
 		String field_type_name = buildTypeName(field.getType());
-		String decl =
-			field_type_name
-				+ " "
-				+ buildGetterName(type, field)
-				+ "("
-				+ type_name
-				+ " arg)";
+		String decl = field_type_name + " " + buildGetterName(type, field) + "(" + type_name + " arg)";
 
 		hprintln(decl + ";");
 
@@ -612,8 +544,7 @@ public class APIGenerator extends CGenerator {
 				print("else ");
 			}
 			if (locs.hasNext()) {
-				println(
-					"if (" + buildIsAltName(type, loc.getAltId()) + "(arg)) {");
+				println("if (" + buildIsAltName(type, loc.getAltId()) + "(arg)) {");
 			} else {
 				println("");
 			}
@@ -683,21 +614,13 @@ public class APIGenerator extends CGenerator {
 			println("if (" + buildIsAltName(type, loc.getAltId()) + "(arg)) {");
 			print("    return (" + type_name + ")");
 			Iterator steps = loc.stepIterator();
-			String arg =
-				genReservedTypeSetterArg(
-					field.getType(),
-					StringConversions.makeIdentifier(field.getId()));
+			String arg = genReservedTypeSetterArg(field.getType(), StringConversions.makeIdentifier(field.getId()));
 			genSetterSteps(steps, new LinkedList(), arg);
 			println(";");
 			println("  }");
 		}
 		println();
-		println(
-			"  ATabort(\""
-				+ type_id
-				+ " has no "
-				+ StringConversions.capitalize(field_id)
-				+ ": %t\\n\", arg);");
+		println("  ATabort(\"" + type_id + " has no " + StringConversions.capitalize(field_id) + ": %t\\n\", arg);");
 		println("  return (" + type_name + ")NULL;");
 
 		println("}");
@@ -745,44 +668,22 @@ public class APIGenerator extends CGenerator {
 			int index = step.getIndex();
 			switch (step.getType()) {
 				case Step.ARG :
-					genGetterSteps(
-						steps,
-						"ATgetArgument((ATermAppl)"
-							+ arg
-							+ ", "
-							+ step.getIndex()
-							+ ")");
+					genGetterSteps(steps, "ATgetArgument((ATermAppl)" + arg + ", " + step.getIndex() + ")");
 					break;
 				case Step.ELEM :
 					if (index == 0) {
-						genGetterSteps(
-							steps,
-							"ATgetFirst((ATermList)" + arg + ")");
+						genGetterSteps(steps, "ATgetFirst((ATermList)" + arg + ")");
 					} else {
-						genGetterSteps(
-							steps,
-							"ATelementAt((ATermList)"
-								+ arg
-								+ ", "
-								+ step.getIndex()
-								+ ")");
+						genGetterSteps(steps, "ATelementAt((ATermList)" + arg + ", " + step.getIndex() + ")");
 					}
 					break;
 				case Step.TAIL :
 					if (index == 0) {
 						genGetterSteps(steps, arg);
 					} else if (index == 1) {
-						genGetterSteps(
-							steps,
-							"ATgetNext((ATermList)" + arg + ")");
+						genGetterSteps(steps, "ATgetNext((ATermList)" + arg + ")");
 					} else {
-						genGetterSteps(
-							steps,
-							"ATgetTail((ATermList)"
-								+ arg
-								+ ", "
-								+ step.getIndex()
-								+ ")");
+						genGetterSteps(steps, "ATgetTail((ATermList)" + arg + ", " + step.getIndex() + ")");
 					}
 					break;
 			}
@@ -838,8 +739,7 @@ public class APIGenerator extends CGenerator {
 
 	private String buildConstructorName(Type type, Alternative alt) {
 		String type_id = StringConversions.makeIdentifier(type.getId());
-		String alt_id =
-			StringConversions.makeCapitalizedIdentifier(alt.getId());
+		String alt_id = StringConversions.makeCapitalizedIdentifier(alt.getId());
 		return prefix + "make" + type_id + alt_id;
 	}
 
@@ -860,10 +760,7 @@ public class APIGenerator extends CGenerator {
 			} else {
 				decl.append(", ");
 			}
-			decl.append(
-				buildTypeName(field.getType())
-					+ " "
-					+ StringConversions.makeIdentifier(field.getId()));
+			decl.append(buildTypeName(field.getType()) + " " + StringConversions.makeIdentifier(field.getId()));
 		}
 		decl.append(")");
 
@@ -877,14 +774,7 @@ public class APIGenerator extends CGenerator {
 	private void genTypeIsValid(Type type) {
 		String type_id = StringConversions.makeIdentifier(type.getId());
 		String type_name = buildTypeName(type);
-		String decl =
-			"ATbool "
-				+ prefix
-				+ "isValid"
-				+ type_id
-				+ "("
-				+ type_name
-				+ " arg)";
+		String decl = "ATbool " + prefix + "isValid" + type_id + "(" + type_name + " arg)";
 
 		printFoldOpen(decl);
 
@@ -917,42 +807,17 @@ public class APIGenerator extends CGenerator {
 	private void genIsAlt(Type type, Alternative alt) {
 		String type_id = StringConversions.makeIdentifier(type.getId());
 		String type_name = buildTypeName(type);
-		String decl =
-			"inline ATbool "
-				+ buildIsAltName(type, alt)
-				+ "("
-				+ type_name
-				+ " arg)";
+		String decl = "inline ATbool " + buildIsAltName(type, alt) + "(" + type_name + " arg)";
 		String pattern;
 		StringBuffer match_code = new StringBuffer();
 		boolean contains_placeholder = alt.containsPlaceholder();
 		int alt_count = type.getAlternativeCount();
 		boolean inverted = false;
 
-		//{{{ When OPTIMIZE_WITHOUT_ANNOS: check for patterns without holes
-
-		if (OPTIMIZE_WITHOUT_ANNOS && alt_count == 2 && contains_placeholder) {
-			Iterator iter = type.alternativeIterator();
-			while (iter.hasNext()) {
-				Alternative cur = (Alternative) iter.next();
-				if (cur != alt && !cur.containsPlaceholder()) {
-					inverted = true;
-					alt = cur;
-					contains_placeholder = false;
-				}
-			}
-		}
-
-		//}}}
-
 		//{{{ Create match_code
 
-		pattern =
-			prefix
-				+ "pattern"
-				+ type_id
-				+ StringConversions.makeCapitalizedIdentifier(alt.getId());
-		if (!OPTIMIZE_WITHOUT_ANNOS || contains_placeholder) {
+		pattern = prefix + "pattern" + StringConversions.makeIdentifier(type.getId()) + StringConversions.makeCapitalizedIdentifier(alt.getId());
+	
 			match_code.append("ATmatchTerm((ATerm)arg, " + pattern);
 			Iterator fields = type.altFieldIterator(alt.getId());
 			while (fields.hasNext()) {
@@ -960,10 +825,7 @@ public class APIGenerator extends CGenerator {
 				match_code.append(", NULL");
 			}
 			match_code.append(")");
-		} else {
-			match_code.append("ATisEqual((ATerm)arg, " + pattern + ")");
-		}
-
+		
 		//}}}
 
 		hprintln(decl + ";");
@@ -971,12 +833,9 @@ public class APIGenerator extends CGenerator {
 		printFoldOpen(decl);
 		println(decl);
 		println("{");
-		if (OPTIMIZE_WITHOUT_ANNOS && inverted) {
+		if (false && inverted) {
 			println("  return !(" + match_code + ");");
-		} else if (
-			OPTIMIZE_WITHOUT_ANNOS
-				&& alt_count != 1
-				&& !contains_placeholder) {
+		} else if (false && alt_count != 1 && !contains_placeholder) {
 			println("  return " + match_code + ";");
 		} else {
 			AlternativeList alts_left = type.getAlternatives();
@@ -988,10 +847,7 @@ public class APIGenerator extends CGenerator {
 			if (alts_left.size() != alt_count) {
 				//{{{ Check term types
 
-				println(
-					"  if (ATgetType((ATerm)arg) != "
-						+ getATermTypeName(pat_type)
-						+ ") {");
+				println("  if (ATgetType((ATerm)arg) != " + getATermTypeName(pat_type) + ") {");
 				println("    return ATfalse;");
 				println("  }");
 
@@ -1004,10 +860,7 @@ public class APIGenerator extends CGenerator {
 					alt_count = alts_left.size();
 					alts_left.keepByAFun(afun);
 					if (alts_left.size() < alt_count) {
-						println(
-							"  if (ATgetAFun((ATermAppl)arg) != ATgetAFun("
-								+ pattern
-								+ ")) {");
+						println("  if (ATgetAFun((ATermAppl)arg) != ATgetAFun(" + pattern + ")) {");
 						println("    return ATfalse;");
 						println("  }");
 					}
@@ -1023,9 +876,7 @@ public class APIGenerator extends CGenerator {
 					println("  if (!ATisEmpty((ATermList)arg)) {");
 					println("    return ATfalse;");
 					println("  }");
-				} else if (
-					!matchPattern.equals(
-						matchPattern.getFactory().parse("[<list>]"))) {
+				} else if (!matchPattern.equals(matchPattern.getFactory().parse("[<list>]"))) {
 					alts_left.removeEmptyList();
 					println("  if (ATisEmpty((ATermList)arg)) {");
 					println("    return ATfalse;");
@@ -1049,9 +900,7 @@ public class APIGenerator extends CGenerator {
 				println();
 				println("    assert(arg != NULL);");
 				println();
-				println(
-					"    if (last_gc != ATgetGCCount() || "
-						+ "(ATerm)arg != last_arg) {");
+				println("    if (last_gc != ATgetGCCount() || " + "(ATerm)arg != last_arg) {");
 				println("      last_arg = (ATerm)arg;");
 				println("      last_result = " + match_code + ";");
 				println("      last_gc = ATgetGCCount();");
@@ -1151,8 +1000,7 @@ public class APIGenerator extends CGenerator {
 
 	private String buildGetterName(Type type, Field field) {
 		String type_id = StringConversions.makeIdentifier(type.getId());
-		String fieldId =
-			StringConversions.makeCapitalizedIdentifier(field.getId());
+		String fieldId = StringConversions.makeCapitalizedIdentifier(field.getId());
 
 		return prefix + "get" + type_id + fieldId;
 	}
