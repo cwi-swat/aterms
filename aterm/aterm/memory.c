@@ -2259,7 +2259,7 @@ void AT_printAllAFunCounts(FILE *file)
 int AT_calcAllocatedSize()
 {
 	int i;
-	int total;
+	int total = 0;
 
 	for(i=0; i<MAX_TERM_SIZE; i++)
 		total += at_nrblocks[i]*sizeof(Block);
