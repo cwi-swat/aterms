@@ -7,7 +7,7 @@ CLASSPATH=__APIGEN_CLASSES__:__JAVA_ATERM__
 
 PARAMS=apigen.env
 java -classpath ${CLASSPATH} ${APIGEN} $*
-source ${PARAMS}
+. ${PARAMS}
 
 CLASSES=`echo ${FILES} | sed -e 's/.java/.class/g'`
 JARFILE=${APINAME}-${VERSION}.jar
