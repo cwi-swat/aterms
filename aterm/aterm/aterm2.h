@@ -99,24 +99,43 @@ ATermAppl ATmakeAppl6(Symbol sym, ATerm arg0, ATerm arg1, ATerm arg2,
 ATermList ATgetArguments(ATermAppl appl);
 
 /* The ATermList type */
-ATermList ATmakeList0();
+extern ATermList ATempty;
+
+ATermList ATmakeList(int n, ...);
+
+/* ATermList ATmakeList0(); */
+#define ATmakeList0() (ATempty)
+
 ATermList ATmakeList1(ATerm el0);
-ATermList ATmakeList2(ATerm el0, ATerm el1);
-ATermList ATmakeList3(ATerm el0, ATerm el1, ATerm el2);
-ATermList ATmakeList4(ATerm el0, ATerm el1, ATerm el2, ATerm el3);
-ATermList ATmakeList5(ATerm el0, ATerm el1, ATerm el2, ATerm el3, 
-		       ATerm el4);
-ATermList ATmakeList6(ATerm el0, ATerm el1, ATerm el2, ATerm el3, 
-		       ATerm el4, ATerm el5);
-ATermList ATmakeList7(ATerm el0, ATerm el1, ATerm el2, ATerm el3, 
-		       ATerm el4, ATerm el5, ATerm el6);
-int       ATgetLength(ATermList list);
-ATerm     ATgetFirst(ATermList list);
-ATermList ATgetNext(ATermList list);
+
+/* ATermList ATmakeList2(ATerm el0, ATerm el1); */
+#define ATmakeList2(el0, el1)           ATinsert(ATmakeList1(el1), el0)
+#define ATmakeList3(el0, el1, el2)      ATinsert(ATmakeList2(el1,el2), el0)
+#define ATmakeList4(el0, el1, el2, el3) ATinsert(ATmakeList3(el1,el2,el3), el0)
+#define ATmakeList5(el0, el1, el2, el3, el4) \
+                ATinsert(ATmakeList4(el1,el2,el3,el4), el0)
+#define ATmakeList6(el0, el1, el2, el3, el4, el5) \
+                ATinsert(ATmakeList5(el1,el2,el3,el4,el5), el0)
+
+/*
+int       ATgetLength(ATermList list);*/
+#define   ATgetLength(l) GET_LENGTH((l)->header)
+
+/*
+ATerm     ATgetFirst(ATermList list);*/
+#define   ATgetFirst(l) ((l)->head)
+
+/*
+ATermList ATgetNext(ATermList list);*/
+#define   ATgetNext(l)  ((l)->tail)
+
 ATermList ATgetPrefix(ATermList list);
 ATerm     ATgetLast(ATermList list);
 ATermList ATgetSlice(ATermList list, int start, int end);
-ATbool    ATisEmpty(ATermList list);
+
+/*ATbool    ATisEmpty(ATermList list);*/
+#define ATisEmpty(list) ((list) == ATempty)
+
 ATermList ATinsert(ATermList list, ATerm el);
 ATermList ATinsertAt(ATermList list, ATerm el, int index);
 ATermList ATappend(ATermList list, ATerm el);
@@ -127,14 +146,18 @@ ATerm     ATelementAt(ATermList list, int index);
 
 /* The ATermPlaceholder type */
 ATermPlaceholder ATmakePlaceholder(ATerm type);
-ATerm            ATgetPlaceholder(ATermPlaceholder ph);
+/*ATerm            ATgetPlaceholder(ATermPlaceholder ph);*/
+#define ATgetPlaceholder(ph) ((ph)->ph_type)
 
 /* The ATermBlob type */
-ATermBlob ATmakeBlob(void *data, int size, int flags);
-void   *ATgetBlobData(ATermBlob blob);
-int     ATgetBlobSize(ATermBlob blob);
-int     ATgetBlobFlags(ATermBlob blob);
-void    ATsetBlobDestructor(void (*destructor)(ATermBlob));
+ATermBlob ATmakeBlob(void *data, int size);
+/*void   *ATgetBlobData(ATermBlob blob);*/
+#define ATgetBlobData(blob) ((blob)->data)
+/*int     ATgetBlobSize(ATermBlob blob);*/
+#define ATgetBlobSize(blob) GET_LENGTH((blob)->header)
+
+void    ATregisterBlobDestructor(ATbool (*destructor)(ATermBlob));
+void    ATunregisterBlobDestructor(ATbool (*destructor)(ATermBlob));
 
 /* The Symbol type */
 Symbol  ATmakeSymbol(char *name, int arity, ATbool quoted);

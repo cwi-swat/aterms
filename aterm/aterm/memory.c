@@ -21,11 +21,15 @@
 #define BLOCK_SIZE (1<<16)
 #define GC_THRESHOLD BLOCK_SIZE/4
 
+#define MAX_DESTRUCTORS 16
 #define MAX_BLOCKS_PER_SIZE 1024
 
 #define TERM_HASH_OPT      "-termtable"
 
 #define CHECK_ARITY(ari1,ari2) DBG_ARITY(assert((ari1) == (ari2)))
+
+#define EMPTY_HASH_NR 12347
+
 
 /*}}}  */
 /*{{{  globals */
@@ -36,6 +40,11 @@ static ATerm freelist[MAX_SIZE];
 
 static int table_size;
 static ATerm *hashtable;
+
+ATermList ATempty;
+
+int destructor_count = 0;
+ATbool (*destructors[MAX_DESTRUCTORS])(ATermBlob) = { NULL };
 
 /*}}}  */
 
@@ -66,6 +75,11 @@ void AT_initMemory(int argc, char *argv[])
     ATerror("AT_initMemory: cannot allocate term table of size %d\n", 
 	    table_size);
   }
+
+  ATempty = (ATermList)AT_allocate(4);
+  ATempty->header = LIST_HEADER(0,0);
+  ATempty->next = NULL;
+  hashtable[EMPTY_HASH_NR % table_size] = (ATerm)ATempty;
 }
 
 /*}}}  */
@@ -473,7 +487,6 @@ ATermInt ATmakeInt(int val)
 }
 
 /*}}}  */
-
 /*{{{  ATermReal ATmakeReal(double val) */
 
 /**
@@ -501,6 +514,227 @@ ATermReal ATmakeReal(double val)
   }
 
   return (ATermReal)cur;  
+}
+
+/*}}}  */
+
+/*{{{  ATermList ATmakeList(int n, ...) */
+
+/**
+  * Create a list with n arguments.
+  */
+
+ATermList ATmakeList(int n, ...)
+{
+  int i;
+  va_list args;
+  ATermList l;
+  static ATerm *elems;
+  static int maxelems;
+
+  /* See if we have enough space to store the elements */
+  if(n > maxelems) {
+    free(elems);
+    elems = (ATerm *)malloc(n*sizeof(ATerm));
+    if(!elems)
+      ATerror("ATmakeListn: cannot allocate space for %d terms.\n", n);
+    maxelems = n;
+  }
+
+  va_start(args, n);
+
+  for(i=0; i<n; i++)
+    elems[i] = va_arg(args, ATerm);
+
+  l = ATempty;
+  for(i=n-1; i>=0; i--)
+    l = ATinsert(l, elems[i]);
+
+  va_end(args);
+  return l;
+}
+
+/*}}}  */
+/*{{{  ATermList ATmakeList1(ATerm el0) */
+
+/**
+  * Build a list with one element.
+  */
+
+ATermList ATmakeList1(ATerm el0)
+{
+  ATerm cur;
+  header_type header;
+
+  unsigned int hnr = (int)el0<<1;
+  hnr %= table_size;
+ 
+  header = LIST_HEADER(0, 1);
+  cur = hashtable[hnr];
+  while(cur && (cur->header != header || 
+		ATgetFirst((ATermList)cur) != el0 ||
+		ATgetNext((ATermList)cur) != ATempty))
+    cur = cur->next;
+
+  if(!cur) {
+    cur = AT_allocate(4);
+    cur->header = header;
+    ATgetFirst((ATermList)cur) = el0;
+    ATgetNext((ATermList)cur) = ATempty;
+    cur->next = hashtable[hnr];
+    hashtable[hnr] = cur;
+  }
+
+  return (ATermList) cur;
+}
+
+/*}}}  */
+/*{{{  ATermList ATinsert(ATermList tail, ATerm el) */
+
+/**
+  * Insert an element at the front of a list.
+  */
+
+ATermList ATinsert(ATermList tail, ATerm el)
+{
+  ATerm cur;
+  header_type header;
+
+  unsigned int hnr = (int)el<<1 ^ (int)tail<<2;
+  hnr %= table_size;
+ 
+  header = LIST_HEADER(0, (GET_LENGTH(tail->header)+1));
+  cur = hashtable[hnr];
+  while(cur && (cur->header != header || 
+		ATgetFirst((ATermList)cur) != el || 
+		ATgetNext((ATermList)cur) != tail))
+    cur = cur->next;
+
+  if(!cur) {
+    cur = AT_allocate(4);
+    cur->header = header;
+    ATgetFirst((ATermList)cur) = el;
+    ATgetNext((ATermList)cur) = tail;
+    cur->next = hashtable[hnr];
+    hashtable[hnr] = cur;
+  }
+
+  return (ATermList) cur;
+}
+
+/*}}}  */
+
+/*{{{  ATermPlaceholder ATmakePlaceholder(ATerm type) */
+
+/**
+  * Create a new placeholder.
+  */
+
+ATermPlaceholder ATmakePlaceholder(ATerm type)
+{
+  ATerm cur;
+  header_type header;
+
+  unsigned int hnr = (int)type<<2;
+  hnr %= table_size;
+ 
+  header = PLACEHOLDER_HEADER(0);
+  cur = hashtable[hnr];
+  while(cur && (cur->header != header || 
+		ATgetPlaceholder((ATermPlaceholder)cur) != type))
+    cur = cur->next;
+
+  if(!cur) {
+    cur = AT_allocate(3);
+    cur->header = header;
+    ((ATermPlaceholder)cur)->ph_type = type;
+    cur->next = hashtable[hnr];
+    hashtable[hnr] = cur;
+  }
+
+  return (ATermPlaceholder) cur;
+
+}
+
+/*}}}  */
+
+/*{{{  ATermBlob ATmakeBlob(void *data, int size) */
+
+/**
+  * Create a new BLOB (Binary Large OBject)
+  */
+
+ATermBlob ATmakeBlob(void *data, int size)
+{
+  ATerm cur;
+  header_type header;
+
+  unsigned int hnr = ((int)data ^ size);
+
+  hnr %= table_size;
+ 
+  header = BLOB_HEADER(0, size);
+  cur = hashtable[hnr];
+  while(cur && (cur->header != header || ((ATermBlob)cur)->data != data))
+    cur = cur->next;
+
+  if(!cur) {
+    cur = AT_allocate(3);
+    cur->header = header;
+    ((ATermBlob)cur)->data = data;
+    cur->next = hashtable[hnr];
+    hashtable[hnr] = cur;
+  }
+
+  return (ATermBlob)cur;
+}
+
+/*}}}  */
+
+/*{{{  void ATregisterBlobDestructor(ATbool (*destructor)(ATermBlob)) */
+
+/**
+  * Add a blob destructor.
+  */
+
+void ATregisterBlobDestructor(ATbool (*destructor)(ATermBlob))
+{
+  int i;
+
+  for(i=0; i<MAX_DESTRUCTORS; i++) {
+    if(destructors[i] == NULL) {
+      destructors[i] = destructor;
+      if(i>=destructor_count)
+	destructor_count = i+1;
+      return;
+    }
+  }
+}
+
+/*}}}  */
+/*{{{  void ATunregisterBlobDestructor(ATbool (*destructor)(ATermBlob)) */
+
+/**
+  * Add a blob destructor.
+  */
+
+void ATunregisterBlobDestructor(ATbool (*destructor)(ATermBlob))
+{
+  int i;
+
+  for(i=0; i<MAX_DESTRUCTORS; i++) {
+    if(destructors[i] == destructor) {
+      destructors[i] = NULL;
+      break;
+    }
+  }
+
+  for(i=MAX_DESTRUCTORS-1; i>=0; i--) {
+    if(destructors[i] != NULL) {
+      destructor_count = i+1;
+      return;
+    }
+  }
 }
 
 /*}}}  */

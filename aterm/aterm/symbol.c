@@ -65,14 +65,48 @@ void AT_initSymbol(int argc, char *argv[])
 }
 /*}}}  */
 
-/*{{{  void AT_printSymbol(Symbol sym, FILE *f); */
+/*{{{  void AT_printSymbol(Symbol sym, FILE *f) */
+
+/**
+  * Print a symbol.
+  */
+
 void AT_printSymbol(Symbol sym, FILE *f)
 {
   SymEntry entry = lookup_table[sym];
-  if (IS_QUOTED(entry->header))
-    fprintf(f, "\"%s\"", entry->name);
-  else
-    fprintf(f, "%s", entry->name);
+  char *id = entry->name;
+
+  if (IS_QUOTED(entry->header)) {
+    /* This symbol needs quotes */
+    fputc('"', f);
+    while(*id) {
+      /* We need to escape special characters */
+      switch(*id) {
+	case '\\':
+	case '"':
+	  fputc('\\', f);
+	  fputc(*id, f);
+	  break;
+	case '\n':
+	  fputc('\\', f);
+	  fputc('n', f);
+	  break;
+	case '\t':
+	  fputc('\\', f);
+	  fputc('t', f);
+	  break;
+	case '\r':
+	  fputc('\\', f);
+	  fputc('r', f);
+	  break;
+	default:
+	  fputc(*id, f);
+      }
+      id++;
+    }
+    fputc('"', f);
+  } else
+    fprintf(f, "%s", id);
 }
 /*}}}  */
 

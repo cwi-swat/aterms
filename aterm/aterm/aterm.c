@@ -12,12 +12,14 @@
   * Write a term in text format to file.
   */
 
-ATbool ATwriteToTextFile(ATerm t, FILE *f)
+ATbool writeToTextFile(ATerm t, FILE *f)
 {
   Symbol sym;
-  ATerm arg;
+  ATerm arg, trm;
   int i, arity;
   ATermAppl appl;
+  ATermList list;
+  ATermBlob blob;
 
   switch(ATgetType(t)) {
     case AT_INT:
@@ -28,27 +30,70 @@ ATbool ATwriteToTextFile(ATerm t, FILE *f)
       break;
     case AT_APPL:
       /*{{{  Print application */
+
       appl = (ATermAppl)t;
 
       sym = ATgetSymbol(appl);
       AT_printSymbol(sym, f);
       arity = ATgetArity(sym);
       if(arity > 0) {
-	fprintf(f, "(");
+	fputc('(', f);
 	for(i=0; i<arity; i++) {
 	  if(i != 0)
-	    fprintf(f, ",");
+	    fputc(',', f);
 	  arg = ATgetArgument(appl, i);
 	  if(ATgetType(arg) == AT_LIST) {
-	    fprintf(f, "[");
-	    ATwriteToTextFile(arg, f);
-	    fprintf(f, "]");
+	    fputc('[', f);
+	    writeToTextFile(arg, f);
+	    fputc(']', f);
 	  } else {
-	    ATwriteToTextFile(arg, f);
+	    writeToTextFile(arg, f);
 	  }
 	}
-	fprintf(f, ")");
+	fputc(')', f);
       }
+
+      /*}}}  */
+      break;
+    case AT_LIST:
+      /*{{{  Print list */
+
+      list = (ATermList)t;
+      if(ATisEmpty(list))
+	break;
+
+      trm = ATgetFirst(list);
+      if(ATgetType(trm) == AT_LIST) {
+	fputc('[', f);
+	writeToTextFile(trm, f);
+	fputc(']', f);
+      } else {
+	writeToTextFile(trm, f);
+      }
+
+      list = ATgetNext(list);
+      if(!ATisEmpty(list)) {
+	fputc(',', f);
+	writeToTextFile((ATerm)list, f);
+      }
+
+      /*}}}  */
+      break;
+    case AT_PLACEHOLDER:
+      /*{{{  Print placeholder */
+      
+      fputc('<', f);
+      writeToTextFile(ATgetPlaceholder((ATermPlaceholder)t), f);
+      fputc('>', f);
+
+      /*}}}  */
+      break;
+    case AT_BLOB:
+      /*{{{  Print blob */
+
+      blob = (ATermBlob)t;
+      fprintf(f, "%08d:", ATgetBlobSize(blob));
+      fwrite(ATgetBlobData(blob), ATgetBlobSize(blob), 1, f);
 
       /*}}}  */
       break;
@@ -58,6 +103,23 @@ ATbool ATwriteToTextFile(ATerm t, FILE *f)
       return ATfalse;  
   }
   return ATtrue;
+}
+
+ATbool ATwriteToTextFile(ATerm t, FILE *f)
+{
+  ATbool result;
+
+  if(ATgetType(t) == AT_LIST) {
+    fputc('[', f);
+
+    if(!ATisEmpty((ATermList)t))
+      result = writeToTextFile(t, f);
+
+    fputc(']', f);
+  } else {
+    result = writeToTextFile(t, f);
+  }
+  return result;
 }
 
 /*}}}  */

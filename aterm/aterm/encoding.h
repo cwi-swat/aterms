@@ -42,7 +42,11 @@
 				   ((header_type)(sym) << SHIFT_SYMBOL))
 #define INT_HEADER(anno)          ((anno) | AT_INT << SHIFT_TYPE)
 #define REAL_HEADER(anno)         ((anno) | AT_REAL << SHIFT_TYPE)
-
+#define LIST_HEADER(anno,len)     ((anno) | AT_LIST << SHIFT_TYPE | \
+				   len << SHIFT_LENGTH)
+#define PLACEHOLDER_HEADER(anno)  ((anno) | AT_PLACEHOLDER << SHIFT_TYPE)
+#define BLOB_HEADER(anno,len)     ((anno) | AT_BLOB << SHIFT_TYPE | \
+				   len << SHIFT_LENGTH)
 
 /* This assumes 32 bits int */
 typedef unsigned int header_type;
