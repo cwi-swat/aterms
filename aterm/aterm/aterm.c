@@ -437,7 +437,7 @@ ATbool writeToTextFile(ATerm t, FILE *f)
 
 ATbool ATwriteToTextFile(ATerm t, FILE *f)
 {
-  ATbool result;
+  ATbool result = ATtrue;
 
   if(ATgetType(t) == AT_LIST) {
     fputc('[', f);
@@ -591,7 +591,7 @@ static char *writeToString(ATerm t, char *buf)
       buf = writeSymbolToString(sym, buf);
       if(arity > 0) {
 	*buf++ = '(';
-	buf = topWriteToString(ATgetArgument(appl, i), buf);
+	buf = topWriteToString(ATgetArgument(appl, 0), buf);
 	for(i=1; i<arity; i++) {
 	  *buf++ = ',';
 	  buf = topWriteToString(ATgetArgument(appl, i), buf);
@@ -695,7 +695,7 @@ static int textSize(ATerm t)
 
     case AT_LIST:
       list = (ATermList)t;
-      size += ATgetLength(list)-1; /* Add space for the ',' characters */
+      size = ATgetLength(list)-1; /* Add space for the ',' characters */
       while(!ATisEmpty(list)) {
 	size += topTextSize(ATgetFirst(list));
 	list = ATgetNext(list);
@@ -710,6 +710,11 @@ static int textSize(ATerm t)
     case AT_BLOB:
       size = 9 + ATgetBlobSize((ATermBlob)t);
       break;
+
+    default:
+      ATerror("textSize: Illegal type %d\n", ATgetType(t));
+      return -1;
+    break;
   }
   return size;
 }
@@ -1002,7 +1007,6 @@ static ATerm fparse_num_or_blob(int *c, FILE *f, ATbool canbeblob)
 
     /*}}}  */
   }
-  return NULL;
 }
 
 /*}}}  */
@@ -1317,7 +1321,6 @@ static ATerm sparse_num_or_blob(int *c, char **s, ATbool canbeblob)
 
     /*}}}  */
   }
-  return NULL;
 }
 
 /*}}}  */

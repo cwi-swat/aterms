@@ -99,7 +99,7 @@ void sweep_phase()
   for(size=MIN_TERM_SIZE; size<MAX_TERM_SIZE; size++) {
 		Block *block = at_blocks[size];
 		int end = BLOCK_SIZE - (BLOCK_SIZE % size);
-		//int end = BLOCK_SIZE - size;
+		/*int end = BLOCK_SIZE - size;*/
 		while(block) {
 			assert(block->size == size);
 			for(idx=0; idx<end; idx+=size) {

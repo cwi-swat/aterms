@@ -249,11 +249,11 @@ int ATlastIndexOf(ATermList list, ATerm el, int start)
 {
   int i, len;
 
-  RESIZE_BUFFER(len);
-
   if(start < 0)
     start += ATgetLength(list)+1;
   len = start+1;
+
+  RESIZE_BUFFER(len);
 
   for(i=0; i<len; i++) {
     buffer[i] = ATgetFirst(list);
@@ -393,7 +393,7 @@ ATerm ATdictCreate()
 
 ATerm ATdictPut(ATerm dict, ATerm key, ATerm value)
 {
-  int i;
+  int i = 0;
   ATermList pair, tmp = (ATermList)dict;
   
   /* Search for the key */
