@@ -912,7 +912,7 @@ static ATermAppl fparse_quoted_appl(int *c, FILE *f)
                   buffer[len++] = '\t';
                   break;
                default:
-                  buffer[len++] = '\\';
+                  /*buffer[len++] = '\\';*/
                   buffer[len++] = *c;
                   break;
             }
@@ -1233,7 +1233,7 @@ static ATermAppl sparse_quoted_appl(int *c, char **s)
                   buffer[len++] = '\t';
                   break;
                default:
-                  buffer[len++] = '\\';
+                  /*buffer[len++] = '\\';*/
                   buffer[len++] = *c;
                   break;
             }
