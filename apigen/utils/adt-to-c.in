@@ -5,6 +5,8 @@
      PRG=`basename $0`
   prefix=@prefix@
   ATERM=@ATERM@
+  JAVA_ATERM=@JAVA_ATERM@
+  SHARED_OBJECTS=@SHARED_OBJECTS@
 ATERMBIN=@ATERMBIN@
 
 # }}}
