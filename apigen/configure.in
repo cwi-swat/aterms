@@ -93,12 +93,32 @@ AC_SUBST(SGLRBIN)
 
 dnl }}}
 
+dnl {{{  Handle --with-asfe
+
 AC_PACKAGE_REQUIRE(asfe, asfe,
 	[  --with-asfe=DIR         asf-evaluator is in DIR])
 AC_SUBST(ASFE)
 
 EVALBIN=${ASFE}/bin
 AC_SUBST(EVALBIN)
+
+
+dnl }}}
+
+dnl {{{  Handle --with-cflags
+
+AC_ARG_WITH(cflags,
+   [  --with-cflags=CFLAGS    standard options of c compiler],
+   CFLAGS=${withval},
+   if test "a${GCC}" = "ayes"; then
+     CFLAGS="-Wall -g -O2"
+   fi;
+)
+AC_SUBST(CFLAGS)
+
+
+dnl }}}
+
 
 dnl {{{ Output files
 
