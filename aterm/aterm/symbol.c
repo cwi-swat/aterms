@@ -43,6 +43,8 @@ typedef struct SymEntry
 /*}}}  */
 /*{{{  globals */
 
+char symbol_id[] = "$Id$";
+
 static unsigned int table_size = 0;
 static SymEntry *hash_table = NULL;
 

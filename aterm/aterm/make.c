@@ -35,6 +35,8 @@ typedef struct
 /*}}}  */
 /*{{{  globals */
 
+char make_id[] = "$Id$";
+
 static Symbol symbol_int;
 static Symbol symbol_str;
 static Symbol symbol_real;

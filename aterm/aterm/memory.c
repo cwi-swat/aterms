@@ -58,6 +58,8 @@ typedef struct block_bucket
 /*}}}  */
 /*{{{  globals */
 
+char memory_id[] = "$Id$";
+
 block *at_blocks[MAX_TERM_SIZE]  = { NULL };
 int at_nrblocks[MAX_TERM_SIZE]   = { 0 };
 ATerm at_freelist[MAX_TERM_SIZE] = { NULL };

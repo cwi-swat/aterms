@@ -11,6 +11,8 @@
 #define DEFAULT_LIST_BUFFER 256
 #define RESIZE_BUFFER(n) if(n > buffer_size) resize_buffer(n)
 
+char list_id[] = "$Id$";
+
 static int buffer_size = 0;
 static ATerm *buffer;
 
