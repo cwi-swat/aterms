@@ -1372,6 +1372,7 @@ static void free_read_space()
 	for(i=0; i<nr_unique_symbols; i++) {
 		sym_read_entry *entry = &read_symbols[i];
 
+		ATunprotectArray(entry->terms);
 		free(entry->terms);
 		free(entry->nr_topsyms);
 		free(entry->sym_width);
