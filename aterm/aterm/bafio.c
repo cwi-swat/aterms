@@ -1528,6 +1528,7 @@ static void free_read_space()
     if(entry->topsyms)
       free(entry->topsyms);
   }
+  free(read_symbols);
 }
 
 /*}}}  */

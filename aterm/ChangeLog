@@ -19,6 +19,9 @@
 
 $Id$
 
+2000/11/17 (markvdb@cwi.nl)
+  * Memory leak fixed in reading baf.
+
 2000/11/07 (jong@cwi.nl)
   * Version 1.4.5 (released)
 
