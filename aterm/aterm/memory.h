@@ -13,5 +13,6 @@
 void AT_initMemory(int argc, char *argv[]);
 ATerm AT_allocate(int size);
 void  AT_collect(int size);
+ATermList AT_getAnnotations(ATerm t);
 
 #endif

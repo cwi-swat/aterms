@@ -240,6 +240,23 @@ static unsigned int hash_number(unsigned int header, int n, ATerm w[])
 }
 
 /*}}}  */
+/*{{{  static unsigged hash_number_anno(unsigned int header, int n, w[], anno) */
+
+static unsigned int hash_number_anno(unsigned int header, int n, ATerm w[], ATerm anno)
+{
+  int i;
+  unsigned int hnr = header;
+
+  for(i=0; i<n; i++)
+    hnr += ((unsigned int)w[i]) << (i-2);
+  hnr += ((unsigned int)anno) << (i-2);
+
+  hnr %= table_size;
+
+  return hnr;
+}
+
+/*}}}  */
 
 /*{{{  ATermAppl ATmakeAppl(Symbol sym, ...) */
 
@@ -962,19 +979,19 @@ static int term_size(ATerm t)
 }
 
 /*}}}  */
-/*{{{  static ATermList get_annotations(ATerm t) */
+/*{{{  ATermList AT_getAnnotations(ATerm t) */
 
 /**
   * Retrieve the annotations of a term.
   */
 
-static ATermList get_annotations(ATerm t)
+ATermList AT_getAnnotations(ATerm t)
 {
   if(HAS_ANNO(t->header)) {
     int size = term_size(t);
     return ((ATermList *)t)[size-1];
   }
-  return ATempty;
+  return NULL;
 }
 
 /*}}}  */
@@ -983,18 +1000,70 @@ static ATermList get_annotations(ATerm t)
 
 ATerm ATsetAnnotation(ATerm t, ATerm label, ATerm anno)
 {
+  unsigned int hnr;
+  int i, size = term_size(t);
+  header_type header;
+  ATbool found;
+
   ATermList annos;
-  ATerm oldanno = ATgetAnnotation(t, label);
+  ATerm cur, oldanno = ATgetAnnotation(t, label);
+
+  ATprintf("size of %t = %d\n", t, size);
+
+  if(HAS_ANNO(t->header))
+    size--;
+
   if(oldanno && ATisEqual(oldanno, anno))
     return t;
 
   /* Build the desired set of annotations */
-  annos = get_annotations(t);
+  annos = AT_getAnnotations(t);
+  if(!annos)
+    annos = ATempty;
+  ATprintf("old annotations: %t\n", annos);
   annos = ATdictSet(annos, label, anno);
 
   /* See if the desired annotated version of the term already exists */
+  header = SET_ANNO(t->header);
+  hnr = hash_number_anno(t->header, size-2, ((ATerm *)t)+2, (ATerm)annos);
+  cur = hashtable[hnr];
+  found = ATfalse;
+  
+  /* Look through the hashtable for an identical term */
+  while(cur && !found) {
+    if(cur->header != header || !ATisEqual(((ATerm *)cur)[size],annos)) {
+      /* header or annos are different, must be another term */
+      cur = cur->next;
+    } else {
+      ATbool rest_equal = ATtrue;
 
-  return NULL;
+      /* check if other components are equal */
+      for(i=2; i<size; i++) {
+	if(((ATerm *)cur)[i] != ((ATerm *)t)[i]) {
+	  rest_equal = ATfalse;
+	  break;
+	}
+      }
+
+      if(rest_equal)
+	found = ATtrue;
+      else
+	cur = cur->next;
+    }
+  }
+
+  if(!found) {
+    /* We need to create a new term */
+    cur = AT_allocate(size+1);
+    cur->header = header;
+    cur->next   = hashtable[hnr];
+    hashtable[hnr] = cur;
+
+    for(i=2; i<size; i++)
+      ((ATerm *)cur)[i] = ((ATerm *)t)[i];
+    ((ATerm *)cur)[i] = (ATerm)annos;
+  }
+  return cur;
 }
 
 /*}}}  */
@@ -1006,7 +1075,10 @@ ATerm ATsetAnnotation(ATerm t, ATerm label, ATerm anno)
 
 ATerm ATgetAnnotation(ATerm t, ATerm label)
 {
-  ATermList annos = get_annotations(t);
+  ATermList annos = AT_getAnnotations(t);
+  if(!annos)
+    return NULL;
+
   return ATdictGet(annos, label);
 }
 

@@ -356,6 +356,7 @@ ATermList ATdictSet(ATermList dict, ATerm key, ATerm value)
       tmp = ATinsert(tmp, (ATerm)pair);
       for(--i; i>=0; i--)
 	tmp = ATinsert(tmp, buffer[i]);
+      return tmp;
     } else {
       if(i >= buffer_size)
 	resize_buffer(i*2);
@@ -364,7 +365,7 @@ ATermList ATdictSet(ATermList dict, ATerm key, ATerm value)
   }
 
   /* The key is not in the dictionary */
-  return dict;
+  return ATinsert(dict, (ATerm)ATmakeList2(key, value));
 }
 
 /*}}}  */

@@ -44,7 +44,7 @@ static int  error_idx = 0;
 
 extern char *strdup(const char *s);
 static ATerm fparse_term(int *c, FILE *f);
-static ATerm sparse_term(int *c, char *s);
+static ATerm sparse_term(int *c, char **s);
 
 /*}}}  */
 
@@ -280,6 +280,12 @@ ATbool writeToTextFile(ATerm t, FILE *f)
     default:
       ATerror("ATwriteToTextFile: type %d not implemented.", ATgetType(t));
       return ATfalse;  
+  }
+  trm = (ATerm)AT_getAnnotations(t);
+  if(trm) {
+    fputc('{', f);
+    writeToTextFile(trm, f);
+    fputc('}', f);
   }
   return ATtrue;
 }
@@ -709,7 +715,7 @@ static ATermAppl fparse_unquoted_appl(int *c, FILE *f)
   char *name;
 
   /* First parse the identifier */
-  while(isalpha(*c)) {
+  while(isalnum(*c) || *c == '-' || *c == '_') {
     buffer[len++] = *c;
     fnext_char(c, f);
   }
@@ -880,16 +886,16 @@ ATerm ATreadFromTextFile(FILE *file)
 
 /*}}}  */
 
-#define snext_char(c,s) ((*c) = *(s)++)
+#define snext_char(c,s) ((*c) = *(*s)++)
 #define sskip_layout(c,s) do { snext_char(c, s); } while(isspace(*c))
 
-/*{{{  static ATermList sparse_terms(int *c, char *s) */
+/*{{{  static ATermList sparse_terms(int *c, char **s) */
 
 /**
   * Parse a list of arguments.
   */
 
-ATermList sparse_terms(int *c, char *s)
+ATermList sparse_terms(int *c, char **s)
 {
   ATermList tail = ATempty;
   ATerm el = sparse_term(c, s);
@@ -901,13 +907,13 @@ ATermList sparse_terms(int *c, char *s)
 }
 
 /*}}}  */
-/*{{{  static ATermAppl sparse_quoted_appl(int *c, char *s) */
+/*{{{  static ATermAppl sparse_quoted_appl(int *c, char **s) */
 
 /**
   * Parse a quoted application.
   */
 
-static ATermAppl sparse_quoted_appl(int *c, char *s)
+static ATermAppl sparse_quoted_appl(int *c, char **s)
 {
   ATbool escaped = ATfalse;
   int len = 0;
@@ -950,13 +956,13 @@ static ATermAppl sparse_quoted_appl(int *c, char *s)
 }
 
 /*}}}  */
-/*{{{  static ATermAppl sparse_unquoted_appl(int *c, char *s) */
+/*{{{  static ATermAppl sparse_unquoted_appl(int *c, char **s) */
 
 /**
   * Parse a quoted application.
   */
 
-static ATermAppl sparse_unquoted_appl(int *c, char *s)
+static ATermAppl sparse_unquoted_appl(int *c, char **s)
 {
   int len = 0;
   Symbol sym;
@@ -964,7 +970,7 @@ static ATermAppl sparse_unquoted_appl(int *c, char *s)
   char *name;
 
   /* First parse the identifier */
-  while(isalpha(*c)) {
+  while(isalnum(*c) || *c == '-' || *c == '_') {
     buffer[len++] = *c;
     snext_char(c, s);
   }
@@ -991,13 +997,13 @@ static ATermAppl sparse_unquoted_appl(int *c, char *s)
 }
 
 /*}}}  */
-/*{{{  static void sparse_num_or_blob(int *c, char *s) */
+/*{{{  static void sparse_num_or_blob(int *c, char **s) */
 
 /**
   * Parse a number or blob.
   */
 
-static ATerm sparse_num_or_blob(int *c, char *s, ATbool canbeblob)
+static ATerm sparse_num_or_blob(int *c, char **s, ATbool canbeblob)
 {
   char num[32], *ptr = num;
 
@@ -1073,13 +1079,13 @@ static ATerm sparse_num_or_blob(int *c, char *s, ATbool canbeblob)
 
 /*}}}  */
 
-/*{{{  static ATerm sparse_term(int *c, char *s) */
+/*{{{  static ATerm sparse_term(int *c, char **s) */
 
 /**
   * Parse a term from file.
   */
 
-static ATerm sparse_term(int *c, char *s)
+static ATerm sparse_term(int *c, char **s)
 {
   ATerm t, result = NULL;
   sskip_layout(c, s);
@@ -1124,7 +1130,9 @@ static ATerm sparse_term(int *c, char *s)
 ATerm ATreadFromString(char *string)
 {
   int c;
-  return sparse_term(&c, string);
+  return sparse_term(&c, &string);
 }
 
 /*}}}  */
+
+
