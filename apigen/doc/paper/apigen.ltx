@@ -300,21 +300,20 @@ approach as eager.
 \noindent\textbf{XML data binding in Java}
 
 A comparable approach to provide an abstraction layer on top of a generic
-data exchange formalism is used in \texttt{jaxb}~\cite{jaxb}. This is a
-tool that generates a Java class hierarchy from an XML DTD. Besides accessor
-functions and constructors, (de)serialization functions to and from
-XML are generated.  The actual code generation can be steered using a
-specification in XML. This makes it possible to add e.g. interfaces and
-extra code to the generated classes.
+data exchange formalism is used in \texttt{jaxb}~\cite{jaxb}. This is
+a tool that generates a Java class hierarchy from an XML DTD. Besides
+accessor functions and constructors, (de)serialization functions to and
+from XML are generated. The actual code generation can be steered using
+a specification in XML. This makes it possible to add e.g. interfaces
+and extra code to the generated classes.
 
 In general this approach is called \emph{data binding}, and several
 other initiatives in this area are currently underway, including
-some open source initiatives~\cite{databinding.open-source} and
-the commercial initiative~\cite{breeze}. All these approaches offers 
-tool support for generating
-\java\ code from an XML Schema. The generated code can \emph{marshal}
-and \emph{unmarshal} XML terms to Java objects with accessors to retrieve
-type safe (sub)elements.
+some open source initiatives~\cite{databinding.open-source} and the
+commercial initiative~\cite{breeze}. All these approaches offer tool
+support for generating \java\ code from an XML Schema. The generated
+code can \emph{marshal} and \emph{unmarshal} XML terms to Java objects
+with accessors to retrieve type safe (sub)elements.
 
 % }}}
 % {{{  Generative Programming
@@ -341,10 +340,10 @@ mapping of such data types to concrete \asfix\ representations.
 \noindent\textbf{JJForester}
 
 Another approach to generating code from an SDF definition is taken in
-JJForester~\cite{KV2000}. JJForester is a combined parser generator, tree
+JJForester~\cite{jjforester}. JJForester is a combined parser generator, tree
 builder, and visitor generator for Java. The focus lies on the generation
 of tree manipulation and especially tree traversal support. Especially
-nice is the integration with JJTraveler~\cite{Visser2001a}, providing
+nice is the integration with JJTraveler~\cite{visitor.combinator}, providing
 generic visitor combinator support.
 
 % }}}
