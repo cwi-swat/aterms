@@ -19,6 +19,9 @@
 
 $Id$
 
+2000/4/18 (mdejonge@cwi.nl)
+   * make dist no longer depends on the existence of ./toolbus/tifstoc
+
 2000/4/13 (jong@cwi.nl)
    * Added support for 64bits architecture.
      Use --with-64bit configure option to create the 64bit library.
