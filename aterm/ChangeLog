@@ -1,5 +1,10 @@
 $Id$
 
+Tue Feb  8 10:48:21 CET 2005 <jong@cwi.nl>
+ * doc/manual.ltx:
+   - remove double definition of ATerror
+   - fix whitespace issue in macros \Function and \Macro.
+
 Wed Dec  1 13:15:07 CET 2004 <jong@cwi.nl>
  * Version bump to 2.3.1
 
