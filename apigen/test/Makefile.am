@@ -52,6 +52,20 @@ CLEANFILES = \
 	builtins.[ch] builtins_dict.[ch] \
 	*.java.sh *.class *.jar
 
+BUILT_SOURCES = \
+	rolodex.c \
+	rolodex.h \
+	rolodex_dict.c \
+	rolodex_dict.h \
+	list.c \
+	list.h \
+	list_dict.c \
+	list_dict.h \
+	builtins.c \
+	builtins.h \
+	builtins_dict.c \
+	builtins_dict.h 
+
 EXTRA_DIST = \
 	BuiltinsTest.java \
 	GenericTraversal.java \
