@@ -2160,3 +2160,20 @@ int AT_inAnyFreeList(ATerm t)
 }
 
 /*}}}  */
+
+/*{{{  void AT_printAllTerms(FILE *file) */
+
+void AT_printAllTerms(FILE *file)
+{
+	int i;
+
+	for(i=0; i<table_size; i++) {
+		ATerm cur = hashtable[i];
+		while(cur) {
+			ATfprintf(file, "%t\n", cur);
+			cur = cur->next;
+		}
+	}
+}
+
+/*}}}  */

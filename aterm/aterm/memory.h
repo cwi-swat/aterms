@@ -52,5 +52,6 @@ ATerm AT_removeAnnotations(ATerm t);
 ATbool AT_isValidTerm(ATerm term);
 void  AT_validateFreeList(int size);
 int AT_inAnyFreeList(ATerm t);
+void AT_printAllTerms(FILE *file);
 
 #endif

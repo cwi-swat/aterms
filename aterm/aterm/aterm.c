@@ -121,8 +121,13 @@ ATinit(int argc, char *argv[], ATerm * bottomOfStack)
 	}
 
 	if (!silent)
+#ifdef NO_SHARING
+		ATfprintf(stderr, "  ATerm Library (no maximal sharing), "
+							"version %s, built: %s\n", at_version, at_date);
+#else
 		ATfprintf(stderr, "  ATerm Library, version %s, built: %s\n",
 							at_version, at_date);
+#endif
 
 	if(help) {
 		fprintf(stderr, "usage: %s [options]\n", argv[0]);
@@ -349,6 +354,17 @@ void ATunprotectArray(ATerm *start)
 		}
 	}
 }
+
+/*}}}  */
+/*{{{  void AT_printAllProtectedTerms(FILE *file) */
+
+void AT_printAllProtectedTerms(FILE *file)
+{
+	fprintf(file, "protected terms:\n");
+	
+	fprintf(file, "protected arrays:\n");
+}
+
 
 /*}}}  */
 

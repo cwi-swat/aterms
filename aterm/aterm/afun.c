@@ -217,6 +217,10 @@ Symbol ATmakeSymbol(char *name, int arity, ATbool quoted)
     if (cur->name == NULL)
       ATerror("ATmakeSymbol: no room for name of length %d\n",
 	      strlen(name));
+
+		cur->count = 0;
+		cur->index = -1;
+
     hash_table[hash_val] = cur;
 
     free_entry = first_free;
