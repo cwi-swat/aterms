@@ -61,7 +61,6 @@ dnl {{{ Output files
 dnl Which files need updating?
 AC_OUTPUT(
 Makefile
-spec/Makefile
 utils/Makefile
 utils/adt-to-c
 utils/adt-to-java
@@ -74,7 +73,7 @@ test/Makefile
 doc/Makefile
 doc/paper/Makefile
 ,
-chmod +x utils/sdf2-to-adt utils/sdf2-to-adt utils/adt-to-c utils/adt-to-java
+chmod +x utils/adt-to-c utils/adt-to-java
 )
 
 dnl }}}

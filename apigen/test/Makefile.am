@@ -27,7 +27,7 @@ CLEANFILES		= ${noinst_PROGRAMS} ${noinst_LIBRARIES} \
 			rolodex*.[ch] rolodex_dict.[ch] \
 			list.[ch] list_dict.[ch] 
 
-EXTRA_DIST		= rolodex.adt ist.adt list.pro 
+EXTRA_DIST		= rolodex.adt list.adt list.pro 
 
 rolodex.c rolodex.h: rolodex.adt
 	${ADT_TO_C} \

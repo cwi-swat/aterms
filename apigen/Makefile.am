@@ -1,4 +1,4 @@
-SUBDIRS		= spec apigen utils test doc
+SUBDIRS		= apigen utils test doc
 
 EXTRA_DIST	= make_rules
 DISTFILE	= ${distdir}.tar.gz
