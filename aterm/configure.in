@@ -6,7 +6,8 @@ AM_INIT_AUTOMAKE(aterm, 0.22)
 dnl By default generate static libraries only
 AM_DISABLE_SHARED
 
-AM_PROG_LIBTOOL
+AC_PROG_CC
+AC_PROG_LIBTOOL
 
 CURDATE=`date`
 
@@ -14,7 +15,6 @@ AC_PROG_RANLIB
 AR=ar
 AC_SUBST(AR)
 
-AC_PROG_CC
 AC_AIX
 
 AC_SET_MAKE
