@@ -136,7 +136,7 @@ public class SharedObjectFactory {
       }
     }
     oldMap = null;
-    System.out.println("rehash: newCapacity = " + hashSize() + " (" + (nbRemoved - oldRemoved) + " removal)");
+    //System.out.println("rehash: newCapacity = " + hashSize() + " (" + (nbRemoved - oldRemoved) + " removal)");
     //System.out.println(this);
   }
 
@@ -162,7 +162,7 @@ public class SharedObjectFactory {
         }
       }
     }
-    System.out.println("cleanup: " + (nbRemoved - oldRemoved) + " removed references");
+    //System.out.println("cleanup: " + (nbRemoved - oldRemoved) + " removed references");
 
   }
   /*
@@ -230,7 +230,7 @@ public class SharedObjectFactory {
 
       if(false) {
         if (tableSize[idx] > 2 * loadFactor) {
-          System.out.println(idx + " --> " + tableSize[idx] + " elements (usedSlot = " + usedSlot + ")");
+          //System.out.println(idx + " --> " + tableSize[idx] + " elements (usedSlot = " + usedSlot + ")");
           
           for(Entry e = tab[idx] ; e != null ; e = e.next) {
             System.out.println("\t" + e.get());
@@ -305,7 +305,7 @@ public class SharedObjectFactory {
       // No similar SharedObject found, so build a new one
     int count = nbAdd - nbRemoved;
     if (false && count < minThreshold) {
-      System.out.println("count = " + count + " < tminThreshold = " + minThreshold);
+      //System.out.println("count = " + count + " < tminThreshold = " + minThreshold);
       decreaseCapacity();
       tab = table;
       index = hashKey(hash);
@@ -341,7 +341,7 @@ public class SharedObjectFactory {
       //System.out.println("CurrentId: "+currentId+" vs "+usedId[indexId]);
     if (currentId < usedId[indexId]) {
       if (currentId == -(1<<31))
-        System.out.println("First ID"+currentId);
+        //System.out.println("First ID"+currentId);
       return currentId++; 
     } else {
         // We try the next index in the usedId array
@@ -364,7 +364,7 @@ public class SharedObjectFactory {
   
   private void regenerate() {
     nbIdRegeneration++;
-    System.out.println("Regeneration of fresh unique IDs");
+    //System.out.println("Regeneration of fresh unique IDs");
     ArrayList list = new ArrayList();
       // Collect all used Ids
     for (int i=0 ;i<table.length; i++) {
@@ -377,7 +377,7 @@ public class SharedObjectFactory {
     list.add(new Integer(maxId));
     int newSize = list.size();
     if (newSize >= (maxId-minId)) {
-      System.out.println("No more unique identifier");
+      //System.out.println("No more unique identifier");
       System.exit(1);
     }
     usedId = new int[newSize];
@@ -386,7 +386,7 @@ public class SharedObjectFactory {
     }
       // Sort array and reinitialize every thing
     Arrays.sort(usedId);
-    System.out.println("New Array with size "+newSize+" from "+usedId[0]+" to "+usedId[newSize-2]);
+    //System.out.println("New Array with size "+newSize+" from "+usedId[0]+" to "+usedId[newSize-2]);
     indexId = 0;
     currentId=minId;
   }
