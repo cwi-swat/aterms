@@ -13,7 +13,7 @@
 /*}}}  */
 /*{{{  defines */
 
-#define test_assert(cat,id,cond) if(!cond) test_failed(cat, id)
+#define test_assert(cat,id,cond) if(!(cond)) test_failed(cat, id)
 
 /*}}}  */
 
@@ -219,8 +219,8 @@ void testList(void)
   for(i=0; i<6; i++) {
     test_term("list-creation", i+1, (ATerm)list[i], AT_LIST);
     assert(ATgetLength(list[i]) == i);
-    ATwriteToTextFile((ATerm)list[i], stdout);
-    fprintf(stdout, "\n");
+    /*ATwriteToTextFile((ATerm)list[i], stdout);
+    fprintf(stdout, "\n");*/
   }
 
   test_assert("list-ops", 1, ATisEqual(list[3], ATgetPrefix(list[4])));
@@ -246,15 +246,17 @@ void testList(void)
   test_assert("list-ops",15, ATisEqual(ATelementAt(list[4], 1),
 				       (ATerm)ATmakeInt(2)));
   test_assert("list-ops",16, ATindexOf(list[4], (ATerm)ATmakeInt(2),0) == 1);
-  test_assert("list-ops",17, ATlastIndexOf(list[4], (ATerm)ATmakeInt(2),0) == 1);
+  test_assert("list-ops",17, ATlastIndexOf(list[4], 
+					   (ATerm)ATmakeInt(2), -1) == 1);
   test_assert("list-ops",16, ATindexOf(list[4], (ATerm)ATmakeInt(2),2) == -1);
-  test_assert("list-ops",17, ATlastIndexOf(list[4], (ATerm)ATmakeInt(2),0) == 1);
+  test_assert("list-ops",17, ATlastIndexOf(list[4], 
+					   (ATerm)ATmakeInt(2),0) == -1);
 
   test_assert("list-ops",18, ATisEqual(ATgetArguments(ATmakeAppl(ATmakeSymbol("f",2,0),
 								 (ATerm)ATmakeInt(1),
 								 (ATerm)ATmakeInt(2))),
 				       list[2]));
-
+  printf("list tests ok.");
 }
 
 /*}}}  */
@@ -291,7 +293,55 @@ testRead(void)
   fprintf(stdout, "\nread from string: ");
   t = ATreadFromString("f(00000004:1234,xyz,[1,2,3])");
   ATwriteToTextFile(t, stdout);
+  fprintf(stdout, "\nread from string: ");
+  t = ATreadFromString("[]");
+  ATwriteToTextFile(t, stdout);
+  fprintf(stdout, "\nread from string: ");
+  t = ATreadFromString("f{[a,1],[b,ab{[1,2]}]}");
+  ATwriteToTextFile(t, stdout);
+  fprintf(stdout, "\nread from string: ");
+  t = ATreadFromString("<int>");
+  ATwriteToTextFile(t, stdout);
+
   fprintf(stdout, "\n");
+
+}
+
+/*}}}  */
+/*{{{  void testDict(void) */
+
+/**
+  * Testing dictionaries
+  */
+
+void testDict(void)
+{
+  ATerm key[4];
+  ATerm value[4];
+  ATerm dict[4];
+
+  key[0] = ATreadFromString("key-0");
+  key[1] = ATreadFromString("key-1");
+  key[2] = ATreadFromString("key-2");
+  key[3] = ATreadFromString("key-3");
+
+  value[0] = ATreadFromString("val-0");
+  value[1] = ATreadFromString("val-1");
+  value[2] = ATreadFromString("val-2");
+  value[3] = ATreadFromString("val-3");
+  value[0] = ATreadFromString("val-0");
+
+  dict[0] = ATdictPut(ATdictCreate(), key[0], value[0]);
+  dict[1] = ATdictPut(dict[0], key[1], value[1]);
+  dict[2] = ATdictPut(dict[1], key[2], value[2]);
+  dict[3] = ATdictPut(dict[2], key[3], value[3]);
+  
+  test_assert("dict", 1, ATdictGet(ATdictCreate(), key[0]) == NULL);
+  test_assert("dict", 2, ATisEqual(ATdictGet(dict[1], key[0]), value[0]));
+  test_assert("dict", 3, ATisEqual(ATdictGet(dict[2], key[1]), value[1]));
+  test_assert("dict", 4, ATisEqual(dict[2], ATdictRemove(dict[3], key[3])));
+
+  printf("dictionary tests ok.\n");
 }
 
 /*}}}  */
@@ -328,7 +378,6 @@ void testPrintf()
 
 void testAnno(void)
 {
-  int i;
   ATerm t[8];
   ATerm term, label, value, value2;
 
@@ -340,15 +389,19 @@ void testAnno(void)
   t[1]  = ATsetAnnotation(term, label, value);
   t[2]  = ATsetAnnotation(term, label, value2);
   t[3]  = ATgetAnnotation(t[1], label);
-  assert(ATisEqual(t[3], value));
+  test_assert("anno", 1, ATisEqual(t[3], value));
   t[4] = ATsetAnnotation(t[1], label, value2);
-  assert(ATisEqual(ATgetAnnotation(t[4], label), value2));
+  test_assert("anno", 2, ATisEqual(ATgetAnnotation(t[4], label), value2));
 
-  for(i=0; i<3; i++)
-    ATprintf("annotated result %d: %t\n", i, t[i]);
+  test_assert("anno", 3, ATisEqual(t[0], t[1]));
+  test_assert("anno", 4, !ATisEqual(t[0], t[2]));
 
-  assert(ATisEqual(t[0], t[1]));
-  assert(!ATisEqual(t[0], t[2]));
+  t[4] = ATremoveAnnotation(t[4], label);
+  test_assert("anno", 5, ATgetAnnotation(t[4], label) == NULL);
+
+  test_assert("anno", 6, ATisEqual(ATremoveAnnotation(t[0], label), term));
+
+  printf("annotation tests ok.\n");
 }
 
 /*}}}  */
@@ -371,6 +424,7 @@ int main(int argc, char *argv[])
   testList();
   testOther();
   testRead();
+  testDict();
   testPrintf();
   testAnno();
 

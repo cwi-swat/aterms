@@ -1,3 +1,4 @@
+[]!
 f(a)!
 "f x"(b)!
 [a,b,c]!
@@ -12,4 +13,7 @@ f(a,b,1,2)!
 1.23E-3!
 00000009:abcdefghi!
 00000000:!
+f{[a,1],[b,2],[c,3]}!
+"abc"{[<just-a-test>,"what a test!"]}!
+abc{}!
 "the end"
