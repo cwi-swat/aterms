@@ -113,7 +113,7 @@ static void resize_buffer(int size);
 static int mwrite(int fd, char *buf, int len);
 static int mread(int fd, char *buf, int len);
 static void handshake(Connection *connection);
-static ATerm ATBunpack(ATerm t);
+ATerm ATBunpack(ATerm t);
 
 /*}}}  */
 
@@ -172,6 +172,7 @@ ATBinit(int argc, char *argv[], ATerm *stack_bottom)
   ATprotectSymbol(symbol_ack_event);
 
   symbol_baf = ATmakeSymbol("_baf-encoded_", 1, ATtrue);
+  ATprotectSymbol(symbol_baf);
 
   /* Allocate initial buffer */
   buffer = (char *)malloc(INITIAL_BUFFER_SIZE);
@@ -806,22 +807,36 @@ static void handshake(Connection *conn)
 
 /*{{{  ATerm ATBpack(ATerm t) */
 
+#ifndef NO_BAF_PACKING
 ATerm ATBpack(ATerm t)
 {
   int len;
-  char *data;
+  char *ptr, *data;
   ATermBlob blob;
   
-  data = ATwriteToBinaryString(t, &len);
+  ptr = ATwriteToBinaryString(t, &len);
+  assert(ptr != NULL);
+  data = (char *)malloc(len);
+  if (!data) {
+    ATerror("out of memory in ATBpack\n");
+  }
+  memcpy(data, ptr, len);
   blob = ATmakeBlob(len, data);
   
   return (ATerm)ATmakeAppl(symbol_baf, blob); 
 }
+#else
+ATerm ATBpack(ATerm t)
+{
+  return t;
+}
+#endif
 
 /*}}}  */
-/*{{{  static ATerm ATBunpack(ATerm t) */
+/*{{{  ATerm ATBunpack(ATerm t) */
 
-static ATerm ATBunpack(ATerm t)
+#ifndef NO_BAF_PACKING
+ATerm ATBunpack(ATerm t)
 {
   int i;
   ATerm result, annos;
@@ -901,5 +916,11 @@ static ATerm ATBunpack(ATerm t)
 
   return result;
 }
+#else
+ATerm ATBunpack(ATerm t)
+{
+  return t;
+}
+#endif
 
 /*}}}  */
