@@ -6,7 +6,8 @@ java_JAVA       = Test1.java \
 		  Test2.java \
 		  TestFib.java \
 		  TestFibInterpreted.java \
-		  TestPrimes.java
+		  TestPrimes.java \
+		  VisitorBenchmark.java
 
 TESTS = $(foreach t, ${java_JAVA}, $t.test)
 
