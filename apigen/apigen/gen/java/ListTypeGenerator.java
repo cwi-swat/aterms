@@ -2,6 +2,7 @@ package apigen.gen.java;
 
 import apigen.adt.ListType;
 import apigen.adt.Type;
+import apigen.gen.StringConversions;
 
 public class ListTypeGenerator extends TypeGenerator {
 	private ListType type;
@@ -56,7 +57,17 @@ public class ListTypeGenerator extends TypeGenerator {
 		genReverseMethods();
 		genConcatMethods();
 		genAppendMethods();
+		genElementAtMethod();
 		println("}");
+	}
+
+	private void genElementAtMethod() {
+		String elementName = StringConversions.capitalize(elementType);
+		String converted = getConverter().makeATermToBuiltinConversion(elementType, "elementAt(index)");
+		println("  public " + elementTypeName + " get" + elementName + "At(int index) {");
+		println("    return (" + elementTypeName + ") " + converted + ";");
+		println("  }");
+		println();
 	}
 
 	private void genAppendMethods() {

@@ -67,6 +67,7 @@ public class SeparatedListTypeGenerator extends TypeGenerator {
 		println("  public " + elementTypeName + " get" + elementName + "At(int index) {");
 		println("    return (" + elementTypeName + ") " + converted + ";");
 		println("  }");
+		println();
 	}
 
 	private void genAppendMethods() {

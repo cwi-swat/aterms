@@ -143,14 +143,29 @@ public class ListTest {
 				(ATermList) p);
 		testAssert(factory.concat(sep, l1, l2, sep).toTerm().isEqual(pc), "concat test");
 
-		testElementAt();
 		testMakeLists();
 		testReverse();
 		testConcat();
 		testAppend();
+		testElementAt();
+
+		testSeparatedElementAt();
 		testSeparatedAppend();
 		testMakeSeparatedLists();
 		testNineSeps();
+	}
+
+	private void testElementAt() {
+		Modules list = factory.makeModules();
+		for (int i = 0; i < 10; i++) {
+			list = list.insert(factory.makeModule_Default("m" + i));
+		}
+
+		for (int i = 0; i < list.getLength(); i++) {
+			Module m = factory.makeModule_Default("m" + (list.getLength() - i - 1));
+			testAssert(list.elementAt(i).equals(m), "list element at " + i);
+			testAssert(list.getModuleAt(i).equals(m), "typed list element at " + i);
+		}
 	}
 
 	private void testAppend() {
@@ -159,7 +174,7 @@ public class ListTest {
 
 		list = list.append(m);
 		testAssert(list.equals(factory.makeModules(m)), "append to empty list");
-		
+
 		Module q = factory.makeModule_Default("q");
 		list = list.append(q);
 		testAssert(list.equals(factory.makeModules(m, q)), "append to singleton list");
@@ -182,11 +197,11 @@ public class ListTest {
 		for (int i = 0; i < m.length; i++) {
 			m[i] = factory.makeModule_Default("m" + i);
 		}
-		
+
 		Modules forward = factory.makeModules(m[0], m[1], m[2]);
 		Modules reverse = factory.makeModules(m[2], m[1], m[0]);
 		testAssert(forward.reverse().equals(reverse), "reverse list");
-		
+
 		Modules ml = reverse.reverseModules();
 		testAssert(forward.equals(ml), "typed reverse list");
 	}
@@ -236,7 +251,7 @@ public class ListTest {
 		}
 	}
 
-	private void testElementAt() {
+	private void testSeparatedElementAt() {
 		Separated triple =
 			factory.SeparatedFromString("[\"m0\",l(\" \"),\"sep\",l(\" \"),\"m1\",l(\" \"),\"sep\",l(\" \"),\"m2\"]");
 
