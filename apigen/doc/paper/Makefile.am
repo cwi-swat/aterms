@@ -5,14 +5,15 @@
 #
 
 SPECS = ATerms.sdf Symbol.sdf Tree.sdf Attributes.sdf
+FIGS = gen.eps
 EXAMPLES = bool.example set.example bool_and_dict
-SOURCES = apigen.ltx ${SPECS} ${EXAMPLES}
+SOURCES = apigen.ltx $(SPECS) $(EXAMPLES) $(FIGS)
 
 include ${top_srcdir}/make_rules
 
 doc: apigen.ps
 
-apigen.ps: apigen.dvi
+apigen.ps: apigen.dvi $(PICS)
 
 apigen.dvi: $(SOURCES)
 

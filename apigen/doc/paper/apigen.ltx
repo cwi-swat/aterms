@@ -9,6 +9,7 @@
 % {{{  packages
 
 \usepackage{verbatim}
+\usepackage{epsfig}
 
 % }}}
 % {{{  commands
@@ -767,11 +768,15 @@ Obviously, this list is not exhaustive, but it does form a nice starting
 point. Fortunately, all the necessary information can be extracted
 from an \sdf-definition of the grammar. In order to separate some
 concerns and simplify the generation framework, we split the process
-into two steps. First, we extract all the necessary information from the
-\sdf-definition, and store it in a convenient format. This step takes
-care of the parsing and analysis of the grammar. The second step takes
-the intermediate format and does the actual generation for a specific
-target language.
+into two steps (see Figure~\ref{fig:gen}). First, we extract all the
+necessary information from the \sdf-definition, and store it in a
+convenient format. This step takes care of the parsing and analysis of
+the grammar. The second step takes the intermediate format and does the
+actual generation for a specific target language.
+\begin{figure}[htb]
+\centerline{\epsfig{file=gen.eps,scale=1.3}}
+\caption{\label{fig:gen}Generation scheme: from \sdf\ to \adt\ to code}
+\end{figure}
 
 We call the intermediate format \emph{annotated data type}, or \adt\
 for short. It holds the minimal amount of information for each syntax
