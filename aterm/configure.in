@@ -205,6 +205,9 @@ if test ${GETHOSTNAME_FOUND} = no; then
    AC_CHECK_LIB(nsl,gethostname,[GETHOSTNAME_FOUND=yes;LIBS="$LIBS -lnsl"])
 fi
 
+dnl Find out if we have rand48 suite
+AC_CHECK_FUNCS(lrand48 srand48)
+
 AC_OUTPUT( \
 	Makefile \
 	aterm/Makefile \
