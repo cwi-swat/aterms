@@ -1,5 +1,7 @@
 2001/04/04 ({jong,olivierp}@cwi.nl)
  * Fixed some bugs in native type support of JavaGen
+ * Added $(ATERM)/classes to CLASSPATH in apigen/java
+ * moved "brainstorm" session (test/rolodex2.act) to new autocode project
 
 2001/03/30 ({jong,olivierp}@cwi.nl)
  * version 0.8.3
