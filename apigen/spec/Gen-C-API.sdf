@@ -3,25 +3,29 @@ module Gen-C-API
   imports C-Syntax Gen-API
 
   exports
-    sorts C-API C-FILETAG C-API-FILE
+    sorts C-API C-FILE-TAG C-API-FILE C-PREFIX C-FILE-NAME
 
     lexical syntax
-      [a-zA-Z0-9]+[\.][ch][\:]				-> C-FILETAG
+      [a-zA-Z0-9\_\.]+					-> C-FILE-NAME
+      C-FILE-NAME [\:]					-> C-FILE-TAG
 
     context-free syntax
-      "gen-c-api" "(" API ")"				-> C-API
-      C-FILETAG C-FILE "$$"				-> C-API-FILE
+      gen-c-api ( C-FILE-NAME, C-CONSTRUCT*, API )	-> C-API
+      C-FILE-TAG C-FILE "$$"				-> C-API-FILE
+      C-FILE-TAG ATerm "$$"				-> C-API-FILE
       C-API-FILE+					-> C-API
 
   hiddens
+    sorts ATerms
 
     context-free syntax
-      gen-header(API)					-> C-FILE
+      gen-header(C-FILE-NAME, C-CONSTRUCT*, API)	-> C-FILE
       gen-typedefs(API)					-> C-CONSTRUCTS
       gen-typedef(API-Type)				-> C-CONSTRUCT
       gen-fun-decls(API)				-> C-CONSTRUCTS
       gen-constructor-decl(AFun, AFun, API-Field*)	-> C-FUNCTION-DECL
       gen-constructor-decls(API-Type)			-> C-CONSTRUCTS
+      gen-check-decls(API-Type)				-> C-CONSTRUCTS
       gen-access-decls(API-Type)			-> C-CONSTRUCTS
       gen-access-impls(API-Type)			-> C-CONSTRUCTS
 
@@ -31,22 +35,39 @@ module Gen-C-API
       gen-pattern-defs(API)				-> C-CONSTRUCTS
       gen-pattern-def(API-Type)				-> C-CONSTRUCT
 
+      { ATerm "," }*					-> ATerms
+      gen-dict(API)					-> ATerms
+      gen-dict-alts(API-Type)				-> ATerms
+
       gen-fun-impls(API)				-> C-CONSTRUCTS
       gen-constructor-impl(AFun, AFun, API-Field*)	-> C-CONSTRUCT
       gen-constructor-impls(API-Type)			-> C-CONSTRUCTS
       gen-constructor-body(AFun, AFun, API-Field*)	-> C-SERIES
+      gen-check-impls(API-Type)				-> C-CONSTRUCTS
+      gen-check-impl(AFun, AFun, API-Field*)		-> C-CONSTRUCT
+      gen-check-body(AFun, AFun, API-Field*)		-> C-SERIES
       gen-getter-impl ( AFun, API-Field )		-> C-CONSTRUCT
       gen-getter-body ( AFun, AFun, API-Location* )	-> C-SERIES
+      gen-setter-impl ( AFun, API-Field )		-> C-CONSTRUCT
+      gen-setter-body ( AFun, AFun, AFun, API-Location* ) -> C-SERIES
 
-      build-select-expr ( ATerm-Path , C-EXPR )		-> C-EXPR
+      build-check-decl ( AFun, AFun )			-> C-FUNCTION-DECL
+      build-get-expr ( ATerm-Path , C-EXPR )		-> C-EXPR
       build-getter-decl ( AFun, AFun , AFun )		-> C-FUNCTION-DECL
+      build-set-expr ( AFun, ATerm-Path, ATerm-Path )	-> C-EXPR
       build-setter-decl ( AFun, AFun , AFun )		-> C-FUNCTION-DECL
       build-formal-args-list ( API-Field* )		-> C-VARIABLE-DECLS
       build-actual-args-list ( API-Field* )		-> C-ACTUALS
+      build-null-args-list ( API-Field* )		-> C-ACTUALS
       build-typedef ( AFun )				-> C-CONSTRUCT
       build-c-id-tail ( AFun+ )                        	-> C-ID
       build-c-id ( AFun+ )                        	-> C-ID
       build-c-int ( Nat )				-> C-NAT-CON
+      build-afun ( AFun+ )                        	-> AFun
+      build-header-tag ( C-FILE-NAME )			-> C-FILE-TAG
+      build-source-tag ( C-FILE-NAME )			-> C-FILE-TAG
+      build-dict-tag ( C-FILE-NAME )			-> C-FILE-TAG
+      build-macro ( C-FILE-NAME )			-> C-ID
 
     variables
       "$Alt"			-> API-Alt
@@ -54,23 +75,33 @@ module Gen-C-API
       "$AltId"			-> AFun
       "$AltField*"		-> API-Field*
       "$API"			-> API
+      "$Dict"[0-9]*		-> { ATerm "," }*
       "$Field"			-> API-Field
       "$Field*"			-> API-Field*
       "$FieldId"		-> AFun
       "$FieldType"		-> AFun
       "$FunDecl"[0-9]*		-> C-FUNCTION-DECL
       "$FunDeclList"[0-9]*	-> C-CONSTRUCT*
-      "$FunImpl"		-> C-CONSTRUCT
       "$FunImplList"[0-9]*	-> C-CONSTRUCT*
+      "$GetExpr"[0-9]*		-> C-EXPR
+      "$GetImpl"		-> C-CONSTRUCT
       "$Header"			-> C-FILE
       "$Loc"			-> API-Location
       "$Loc*"[0-9]*		-> API-Location*
       "$Loc+"			-> API-Location+
+      "$Macro"			-> C-ID
+      "$Parent"			-> { ATerm-Path-Node "->" }*
+      "$Path"			-> { ATerm-Path-Node "->" }*
       "$Pattern"		-> ATerm
+      "$Prefix"			-> C-FILE-NAME
+      "$Prologue"		-> C-CONSTRUCT*
+      "$SetExpr"[0-9]*		-> C-EXPR
+      "$SetImpl"		-> C-CONSTRUCT
       "$SortedField*"		-> API-Field*
       "$Source"			-> C-FILE
       "$Type"			-> API-Type
       "$Type*"			-> API-Type*
+      "$Type+"			-> API-Type+
       "$TypeId"			-> AFun
 
       "$Typedef"		-> C-CONSTRUCT
@@ -82,12 +113,10 @@ module Gen-C-API
       "$FormalArg*"		-> { C-VARIABLE-DECL "," }*
       "$ActualArg"		-> C-ID
       "$ActualArg*"		-> { C-EXPR "," }*
-      "$SelectExpr"[0-9]*	-> C-EXPR
       "$Stat"			-> C-STAT
 
       "$AFun"			-> AFun
       "$AFun+"			-> AFun+
-      "$Path"			-> { ATerm-Path-Node "->" }*
       "$Index"			-> Nat
       "$Nat"			-> Nat
 

@@ -1,18 +1,25 @@
 equations
 
 [equ-gen-c-api]
-  gen-header($API) = $Header,
-  gen-source($API) = $Source
+  gen-header($Prefix, $Prologue, $API) = $Header,
+  gen-source($API) = $Source,
+  gen-dict($API) = $Dict
   ===
-  gen-c-api($API) =
-	api.h: $Header $$
-	api.c: $Source $$
+  gen-c-api($Prefix, $Prologue, $API) =
+        build-header-tag($Prefix) $Header $$
+        build-source-tag($Prefix) $Source $$
+        build-dict-tag($Prefix) [ $Dict ] $$
 
 [equ-gen-header]
   gen-typedefs($API) = $Typedef*,
-  gen-fun-decls($API) = $FunDeclList
+  gen-fun-decls($API) = $FunDeclList,
+  build-macro($Prefix) = $Macro
   ===
-  gen-header($API) = $Typedef* $FunDeclList
+  gen-header($Prefix, $Prologue, $API) = 
+	#ifndef $Macro @
+	#define $Macro @
+	$Prologue $Typedef* $FunDeclList
+	#endif @
 
 [equ-gen-typedefs-empty]
   gen-typedefs(api [ ]) =
@@ -31,10 +38,12 @@ equations
 
 [equ-gen-fun-decls-divide]
   gen-constructor-decls($Type) = $FunDeclList1,
-  gen-access-decls($Type) = $FunDeclList2,
-  gen-fun-decls(api [ $Type* ]) = $FunDeclList3
+  gen-check-decls($Type) = $FunDeclList2,
+  gen-access-decls($Type) = $FunDeclList3,
+  gen-fun-decls(api [ $Type* ]) = $FunDeclList4
   ===
-  gen-fun-decls(api [ $Type $Type* ]) = $FunDeclList1 $FunDeclList2 $FunDeclList3
+  gen-fun-decls(api [ $Type $Type* ]) = 
+	$FunDeclList1 $FunDeclList2 $FunDeclList3 $FunDeclList4
 
 [equ-gen-constructor-decls-single]
   gen-constructor-decls(type [ $TypeId, alt [ $AltId, $Pattern ], $Field* ]) = 
@@ -53,6 +62,17 @@ equations
   ===
   gen-constructor-decl($TypeId, $AltId, $Field*) = 
 	build-c-id($TypeId) build-c-id(make $TypeId $AltId) ( $FormalArg* )
+
+[equ-gen-check-decls-single]
+  gen-check-decls(type [ $TypeId, alt [ $AltId, $Pattern ], $Field* ]) =
+	extern build-check-decl($TypeId, $AltId);
+
+[equ-gen-check-decls-divide]
+  gen-check-decls(type [ $TypeId, $Alt, $Field* ]) = $FunDeclList1,
+  gen-check-decls(type [ $TypeId, $Alt+, $Field* ]) = $FunDeclList2
+  ===
+  gen-check-decls(type [ $TypeId, $Alt $Alt+, $Field* ]) = $FunDeclList1 $FunDeclList2
+
 
 [equ-gen-access-decls-empty]
   gen-access-decls(type [ $TypeId, $Alt+, ]) =
@@ -104,10 +124,12 @@ equations
 
 [equ-gen-fun-impls-divide]
   gen-constructor-impls($Type) = $FunImplList1,
-  gen-access-impls($Type) = $FunImplList2,
-  gen-fun-impls(api [ $Type* ]) = $FunImplList3
+  gen-check-impls($Type) = $FunImplList2,
+  gen-access-impls($Type) = $FunImplList3,
+  gen-fun-impls(api [ $Type* ]) = $FunImplList4
   ===
-  gen-fun-impls(api [ $Type $Type* ]) = $FunImplList1 $FunImplList2 $FunImplList3
+  gen-fun-impls(api [ $Type $Type* ]) = 
+	$FunImplList1 $FunImplList2 $FunImplList3 $FunImplList4
 
 [equ-gen-constructor-impls-single]
   gen-constructor-impls(type [ $TypeId, alt [ $AltId, $Pattern ], $Field* ]) = 
@@ -132,16 +154,48 @@ equations
   build-actual-args-list($SortedField*) = $ActualArg*
   ===
   gen-constructor-body($TypeId, $AltId, $Field*) = 
-	return (build-c-id($TypeId))ATmakeTerm($ActualArg*);
+	return (build-c-id($TypeId))ATmakeTerm(build-c-id(pattern $TypeId $AltId), 
+                                               $ActualArg*);
+
+
+[equ-gen-check-impls-single]
+  gen-check-impls(type [ $TypeId, alt [ $AltId, $Pattern ], $Field* ]) = 
+	gen-check-impl($TypeId, $AltId, $Field*)
+
+[equ-gen-check-impls-divide]
+  gen-check-impls(type [ $TypeId, $Alt, $Field* ]) = $FunImplList1,
+  gen-check-impls(type [ $TypeId, $Alt+, $Field* ]) = $FunImplList2
+  ===
+  gen-check-impls(type [ $TypeId, $Alt $Alt+, $Field* ]) = $FunImplList1 $FunImplList2
+
+[equ-gen-check-impl]
+  build-check-decl($TypeId, $AltId) = $FunDecl,
+  gen-check-body($TypeId, $AltId, $Field*) = $FunBody
+  ===
+  gen-check-impl($TypeId, $AltId, $Field*) = $FunDecl { $FunBody }
+
+[equ-gen-check-body]
+  get-fields-for-alt($AltId, $Field*) = $AltField*,
+  build-null-args-list($AltField*) = $ActualArg*
+  ===
+  gen-check-body($TypeId, $AltId, $Field*) = 
+	return ATmatchTerm(build-c-id(arg),
+			   build-c-id(pattern $TypeId $AltId), 
+			   $ActualArg*);
 
 [equ-gen-access-impls-empty]
   gen-access-impls(type [ $TypeId, $Alt+, ]) =
 
 [equ-gen-access-impls-divide]
-  gen-getter-impl($TypeId, $Field) = $FunImpl,
+  gen-getter-impl($TypeId, $Field) = $GetImpl,
+  gen-setter-impl($TypeId, $Field) = $SetImpl,
   gen-access-impls(type [ $TypeId, $Alt+, $Field* ]) = $FunImplList
   ===
-  gen-access-impls(type [ $TypeId, $Alt+, $Field $Field* ]) = $FunImpl $FunImplList
+  gen-access-impls(type [ $TypeId, $Alt+, $Field $Field* ]) = $GetImpl $SetImpl $FunImplList
+
+[equ-build-check-decl]
+  build-check-decl($TypeId, $AltId) =
+    build-c-id(ATbool) build-c-id(is $TypeId $AltId) ( build-c-id($TypeId) arg )
 
 [equ-gen-getter-impl]
   build-getter-decl($TypeId, $FieldType, $FieldId) = $FunDecl,
@@ -158,40 +212,79 @@ equations
 
 [equ-gen-getter-body-divide]
   $Loc = loc [ $AltId, $Path ],
-  $SelectExpr = build-select-expr($Path, build-c-id(arg)),
+  $GetExpr = build-get-expr($Path, build-c-id(arg)),
   $Stat = gen-getter-body($TypeId, $FieldType, $Loc*)
   ===
   gen-getter-body($TypeId, $FieldType, $Loc $Loc*) = 
 	if (build-c-id(is $TypeId $AltId)(arg)) {
-	  return (build-c-id($FieldType))$SelectExpr; 
+	  return (build-c-id($FieldType))$GetExpr; 
         } else $Stat
 
+[equ-build-get-expr-empty]
+  build-get-expr( , $GetExpr) = $GetExpr
 
-
-[equ-build-select-expr-empty]
-  build-select-expr( , $SelectExpr) = $SelectExpr
-
-[equ-build-select-expr-elem]
-  $SelectExpr2 = ATelementAt((ATermList)$SelectExpr1, build-c-int($Index))
+[equ-build-get-expr-elem]
+  $GetExpr2 = ATelementAt((ATermList)$GetExpr1, build-c-int($Index))
   ===
-  build-select-expr(elem:$Index -> $Path, $SelectExpr1) = 
-	build-select-expr($Path, $SelectExpr2)
+  build-get-expr(elem:$Index -> $Path, $GetExpr1) = 
+	build-get-expr($Path, $GetExpr2)
 
-[equ-build-select-expr-arg]
-  $SelectExpr2 = ATgetArgument((ATermAppl)$SelectExpr1, build-c-int($Index))
+[equ-build-get-expr-arg]
+  $GetExpr2 = ATgetArgument((ATermAppl)$GetExpr1, build-c-int($Index))
   ===
-  build-select-expr(arg:$Index -> $Path, $SelectExpr1) = 
-	build-select-expr($Path, $SelectExpr2)
+  build-get-expr(arg:$Index -> $Path, $GetExpr1) = 
+	build-get-expr($Path, $GetExpr2)
 
 [equ-build-getter-decl]
   build-getter-decl($TypeId, $FieldType, $FieldId) =
-    build-c-id($FieldType) build-c-id(get $FieldId) ( build-c-id($TypeId) arg )
+    build-c-id($FieldType) build-c-id(get $TypeId $FieldId) ( build-c-id($TypeId) arg )
+
+[equ-gen-setter-impl]
+  build-setter-decl($TypeId, $FieldType, $FieldId) = $FunDecl,
+  gen-setter-body($TypeId, $FieldType, $FieldId, $Loc+) = $FunBody
+  ===
+  gen-setter-impl($TypeId, field [ $FieldId, $FieldType, $Loc+ ]) = $FunDecl { $FunBody }
+
+[equ-gen-setter-body-empty]
+  gen-setter-body($TypeId, $FieldType, $FieldId, ) = 
+	{ 
+	  ATabort("malformed term: %t\n", arg);
+	  return NULL;
+	}
+
+[equ-gen-setter-body-divide]
+  $Loc = loc [ $AltId, $Path ],
+  $SetExpr = build-set-expr($FieldId, , $Path),
+  $Stat = gen-setter-body($TypeId, $FieldType, $FieldId, $Loc*)
+  ===
+  gen-setter-body($TypeId, $FieldType, $FieldId, $Loc $Loc*) = 
+	if (build-c-id(is $TypeId $AltId)(arg)) {
+	  return (build-c-id($TypeId))$SetExpr; 
+        } else $Stat
+  
+
+[equ-build-set-expr-empty]
+  build-set-expr($FieldId, $Parent, ) = build-c-id($FieldId)
+
+[equ-build-set-expr-elem]
+  $GetExpr = build-get-expr($Parent, build-c-id(arg)),
+  $SetExpr1 = build-set-expr($FieldId, $Parent -> elem:$Index, $Path),
+  $SetExpr2 = ATreplace($GetExpr, $SetExpr1, build-c-int($Index))
+  ===
+  build-set-expr($FieldId, $Parent, elem:$Index -> $Path) = $SetExpr2
+
+[equ-build-set-expr-arg]
+  $GetExpr = build-get-expr($Parent, build-c-id(arg)),
+  $SetExpr1 = build-set-expr($FieldId, $Parent -> arg:$Index, $Path),
+  $SetExpr2 = ATsetArgument($GetExpr, $SetExpr1, build-c-int($Index))
+  ===
+  build-set-expr($FieldId, $Parent, arg:$Index -> $Path) = $SetExpr2
 
 [equ-build-setter-decl]
   build-setter-decl($TypeId, $FieldType, $FieldId) =
     build-c-id($TypeId) 
-    build-c-id(set $FieldId) ( build-c-id($TypeId) arg, 
-                               build-c-id($FieldType) build-c-id($FieldId) )
+    build-c-id(set $TypeId $FieldId) ( build-c-id($TypeId) arg, 
+                                       build-c-id($FieldType) build-c-id($FieldId) )
 
 [equ-build-formal-args-list-empty]
   build-formal-args-list( ) =
@@ -213,16 +306,25 @@ equations
   build-actual-args-list(field [ $FieldId, $FieldType, $Loc+ ] $Field*) = 
 	$ActualArg, $ActualArg*
 
+[equ-build-null-args-list-empty]
+  build-null-args-list( ) =
+
+[equ-build-null-args-list-divide]
+  build-null-args-list($Field*) = $ActualArg*
+  ===
+  build-null-args-list(field [ $FieldId, $FieldType, $Loc+ ] $Field*) = 
+	NULL, $ActualArg*
+
 [equ-build-typedef]
   build-typedef($TypeId) =
         typedef struct build-c-id(_ $TypeId) * build-c-id($TypeId);
 
-[equ-build-c-id-single]
+[equ-build-c-id-tail-single]
   capitalize($AFun) = afun($Char*)
   ===
   build-c-id-tail ( $AFun ) = c-id($Char*)
 
-[equ-build-c-id-divide]
+[equ-build-c-id-tail-divide]
   build-c-id-tail ( $AFun ) = c-id($Char*1),
   build-c-id-tail ( $AFun+) = c-id($Char*2)
   =================================================
@@ -242,3 +344,38 @@ equations
 [equ-build-c-int-succ]
   build-c-int(succ($Nat)) = succ(build-c-int($Nat))
 
+[equ-build-afun]
+  build-c-id($AFun+) = c-id($Char*)
+  ===
+  build-afun($AFun+) = afun($Char*)
+
+[equ-build-header-tag]
+  build-header-tag(c-file-name($Char*)) = c-file-tag($Char* "." "h" ":")
+
+[equ-build-source-tag]
+  build-source-tag(c-file-name($Char*)) = c-file-tag($Char* "." "c" ":")
+
+[equ-build-dict-tag]
+  build-dict-tag(c-file-name($Char*)) = c-file-tag($Char* "." "d" "i" "c" "t" ":")
+
+[equ-build-macro]
+  build-macro(c-file-name($Char*)) = c-id("_" "_" $Char* "_" "H")
+
+[equ-gen-dict-empty]
+  gen-dict(api [ $Type ]) = gen-dict-alts($Type)
+
+[equ-gen-dict-divide]
+  gen-dict-alts($Type) = $Dict1,
+  gen-dict(api [ $Type+ ]) = $Dict2
+  ===
+  gen-dict(api [ $Type $Type+ ]) = $Dict1, $Dict2
+
+[equ-gen-dict-alts-single]
+  gen-dict-alts(type [ $TypeId, alt [ $AltId, $Pattern ], $Field* ]) =
+	[ build-afun(pattern $TypeId $AltId), $Pattern ]
+
+[equ-gen-dicts-alts-divide]
+  gen-dict-alts(type [ $TypeId, $Alt, $Field* ]) = $Dict1,
+  gen-dict-alts(type [ $TypeId, $Alt+, $Field* ]) = $Dict2
+  ===
+  gen-dict-alts(type [ $TypeId, $Alt $Alt+, $Field* ]) = $Dict1, $Dict2
