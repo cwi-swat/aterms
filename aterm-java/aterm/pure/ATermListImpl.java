@@ -96,18 +96,8 @@ public class ATermListImpl extends ATermImpl implements ATermList {
       ATermList l = (ATermList) pattern;
 
 
-/*        
-      if (this == PureFactory.empty) {
-        return l == PureFactory.empty;
-      }
-
-      if (l == PureFactory.empty) {
-        return false;
-      }
-       */
-
-      if (l == PureFactory.empty) {
-        return this == PureFactory.empty;
+      if (l == PureFactory.getEmpty()) {
+        return this == PureFactory.getEmpty();
       }
       
       if (l.getFirst().getType() == PLACEHOLDER) {
@@ -115,9 +105,7 @@ public class ATermListImpl extends ATermImpl implements ATermList {
         if (ph_type.getType() == APPL) {
           ATermAppl appl = (ATermAppl) ph_type;
           if (appl.getName().equals("list") && appl.getArguments().isEmpty()) {
-              //if(this != PureFactory.empty) {
-              list.add(this);
-                //}
+            list.add(this);
             return true;
           }
         }
@@ -184,7 +172,7 @@ public class ATermListImpl extends ATermImpl implements ATermList {
 
   
   public boolean isEmpty() {
-    return this == PureFactory.empty;
+    return this == PureFactory.getEmpty();
   }
 
   public int getLength() {
@@ -203,7 +191,7 @@ public class ATermListImpl extends ATermImpl implements ATermList {
     ATermList cur;
 
     cur = this;
-    while (cur.getNext() != PureFactory.empty) {
+    while (cur.getNext() != PureFactory.getEmpty()) {
       cur = cur.getNext();
     }
 
@@ -227,12 +215,12 @@ public class ATermListImpl extends ATermImpl implements ATermList {
       cur = cur.getNext();
     }
 
-    while (cur != PureFactory.empty && cur.getFirst() != el) {
+    while (cur != PureFactory.getEmpty() && cur.getFirst() != el) {
       cur = cur.getNext();
       ++i;
     }
 
-    return cur == PureFactory.empty ? -1 : i;
+    return cur == PureFactory.getEmpty() ? -1 : i;
   }
 
   public int lastIndexOf(ATerm el, int start) {
@@ -265,7 +253,7 @@ public class ATermListImpl extends ATermImpl implements ATermList {
       return rhs;
     }
 
-    if (next == PureFactory.empty) {
+    if (next == PureFactory.getEmpty()) {
       return getPureFactory().makeList(first, rhs);
     }
 
@@ -273,7 +261,7 @@ public class ATermListImpl extends ATermImpl implements ATermList {
   }
 
   public ATermList append(ATerm el) {
-    return concat(getPureFactory().makeList(el, PureFactory.empty));
+    return concat(getPureFactory().makeList(el, PureFactory.getEmpty()));
   }
 
   public ATerm elementAt(int index) {
@@ -349,7 +337,7 @@ public class ATermListImpl extends ATermImpl implements ATermList {
     ATermList cur, next;
     List elems;
 
-    if (this == PureFactory.empty) {
+    if (this == PureFactory.getEmpty()) {
       return this;
     }
 
@@ -358,8 +346,8 @@ public class ATermListImpl extends ATermImpl implements ATermList {
 
     while (true) {
       next = cur.getNext();
-      if (next == PureFactory.empty) {
-        cur = PureFactory.empty;
+      if (next == PureFactory.getEmpty()) {
+        cur = PureFactory.getEmpty();
         for (int i = elems.size() - 1; i >= 0; i--) {
           cur = cur.insert((ATerm) elems.get(i));
         }
@@ -373,7 +361,7 @@ public class ATermListImpl extends ATermImpl implements ATermList {
 
   public ATermList getSlice(int start, int end) {
     int i, size = end - start;
-    ATermList result = PureFactory.empty;
+    ATermList result = PureFactory.getEmpty();
     ATermList list;
 
     List buffer = new Vector(size);

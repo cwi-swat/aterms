@@ -1,6 +1,11 @@
 $Id$
 
 2003/08/07 <jurgenv@cwi.nl>
+ * Removed old commented out code
+ * All classed use PureFactory.getEmpty() instead of PureFactory.empty now to
+   improve reusability of ATermListImpl
+   
+2003/08/07 <jurgenv@cwi.nl>
  * Made aterm.pure.ATermListImpl public such that it can be inherited from.
  * Changed visibitity of init functions of ATermListImpl in order to be able to
    use them in classes that extend ATermListImpl.

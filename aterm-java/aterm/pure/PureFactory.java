@@ -40,7 +40,7 @@ public class PureFactory extends SharedObjectFactory implements ATermFactory {
   private ATermPlaceholderImpl protoPlaceholder;
   private AFunImpl protoAFun;
 
-  static protected ATermList empty;
+  static private ATermList empty;
 
   static boolean isBase64(int c) {
     return Character.isLetterOrDigit((char) c) || c == '+' || c == '/';
@@ -240,7 +240,7 @@ public class PureFactory extends SharedObjectFactory implements ATermFactory {
     return makeAppl(fun, args);
   }
 
-  public ATermList getEmpty() {
+  public static ATermList getEmpty() {
     return empty;
   }
 

@@ -225,7 +225,6 @@ class AFunImpl extends ATermImpl implements AFun {
     b -= c; b -= a; b ^= (a<<10); 
     c -= a; c -= b; c ^= (b>>15);
 
-      //System.out.println(name + " --> " + c);
     return c;
   }
 

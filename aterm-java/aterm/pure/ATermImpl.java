@@ -111,7 +111,7 @@ public abstract class ATermImpl extends ATermVisitableImpl implements ATerm, Sha
   }
 
   public ATerm removeAnnotations() {
-    return setAnnotations(PureFactory.empty);
+    return setAnnotations(PureFactory.getEmpty());
   }
 
   public ATermList getAnnotations() {
@@ -190,10 +190,6 @@ public abstract class ATermImpl extends ATermVisitableImpl implements ATerm, Sha
   public void writeToTextFile(OutputStream stream) throws IOException {
     ATermWriter writer = new ATermWriter(new BufferedOutputStream(stream));
     writeToTextFile(writer);
-    /*
-    PrintStream ps = new PrintStream(stream);
-    ps.print(this.toString());
-    */
   }
 
   public String toString() {
@@ -227,7 +223,7 @@ public abstract class ATermImpl extends ATermVisitableImpl implements ATerm, Sha
     this.uniqueId = uniqueId;
   }
   
-} // class ATermImpl
+} 
 
 class ATermWriter extends Visitor {
 
@@ -430,4 +426,4 @@ class ATermWriter extends Visitor {
     table = new HashMap();
   }
   
-} //class ATermWriter
+} 
