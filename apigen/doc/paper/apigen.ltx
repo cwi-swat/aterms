@@ -6,9 +6,18 @@
 
 \documentclass{article}
 
-% {{{  LaTeX configuration
+% {{{  packages
 
-\newcommand{\atlib}{ATerm-library}
+\usepackage{verbatim}
+
+% }}}
+% {{{  commands
+
+\newcommand{\aterm}{\mbox{ATerm}}
+\newcommand{\aterms}{\mbox{ATerms}}
+
+\newcommand{\asfix}{\mbox{AsFix}}
+
 \newcommand{\apigen}{\mbox{\sc apigen}}
 \newcommand{\sdf}{\mbox{\sc Sdf}}
 \newcommand{\asf}{\mbox{\sc Asf}}
@@ -17,6 +26,7 @@
 \newcommand{\api}{\mbox{\sc api}}
 
 % }}}
+
 % {{{  Title page
 
 \title{Generation of Abstract Programming Interfaces from Syntax Definitions}
@@ -67,31 +77,95 @@ nature, which helps develop applications at the level of the (abstract)
 syntax. Specifications written in this way can be compiled to a target
 machine specific, executable program.
 
-The \asmetaenv{} is often used to develop a prototype just to see if an
-idea will work\footnote{As a matter of fact, the \apigen{} project itself
-was constructed this way.}. The execution speed or memory usage of the
-compiled specification however, is sometimes found to be inadequate for
-industrial strength applications. In these cases, the insights gained
-in the problem area through writing the specification are re-used in a
-``high-performance'' language, such as \texttt{C}. In \sdf{} related
-cases, such a tool relies on the \atlib{}~\cite{BJKO2000} for both
-efficient in-memory storage of terms, as well as high-speed access
-to terms.
+% }}}
 
-So, why bother to generate an \api? It turns out that writing tools based
-on a particular version of a syntax is subject to a particular maintenance
-problem: changes in the specification of the syntax.  Whenever the syntax
-changes, tools that expect certain information at a specific position
-in the parse tree are left crippled.
+% {{{  \subsection{\asdf\ in a nutshell}
 
-\texttt{TODO: vbtje van mini spec met hoe de boom veranderd?}
+\subsection{\asdf\ in a nutshell}
 
-For a tool to be less dependent on the syntax definition of the
-parsed terms it works on, it should refrain from accessing the tree
-representation directly. Rather, it should rely on an intermediate layer
-which encapsulates the tree representation.
+\texttt{TODO: intro asf + intro sdf}.
 
-\texttt{TODO: type-safeness, layer must be efficient}
+Figure~\ref{fig:boolean-syntax} shows a sample syntax for the booleans,
+using only the constructors \texttt{true} and \texttt{false}, a unary
+operator for negation (\texttt{not}), and binary operators for conjunction
+(\texttt{and}) and disjunction (\texttt{or}). We purposely leave the
+discussion about operator precedence unadressed as it is of little
+relevance considering our (\api\ generation) point of view.
+
+% {{{  fig:boolean-syntax
+
+\begin{figure}
+\hrulefill
+\begin{footnotesize}
+\verbatiminput{bool.sdf}
+\caption{
+  \label{fig:boolean-syntax}
+  Syntax for the booleans in \sdf.
+}
+\end{footnotesize}
+\hrulefill
+\end{figure}
+
+% }}}
+
+Examples of valid boolean terms accepted by our boolean syntax include:
+  \texttt{true}, \texttt{not false}, \texttt{true and not false}.
+
+% }}}
+% {{{  \subsection{Annotated Terms: the \aterm\ syntax}
+
+\subsection{Annotated Terms: the \aterm\ syntax}
+
+The definition of \aterms{} as well as its syntax in \sdf\ can be
+found in~\cite{BJKO2000}. A more concise version of the syntax is
+shown in figure~\ref{fig:aterm-syntax}. The definitions of the sorts
+\texttt{ATermInt} and \texttt{ATermReal} describing the lexical syntax
+of an integer and real valued number respectively, have been left out.
+Parts of the lexical definition of a function symbol \texttt{AFun} were
+likewise omitted\footnote{The official definition allows a much richer
+\emph{quoted} definition for function symbols as well.}.
+
+% {{{  fig:aterm-syntax
+
+\begin{figure}
+\hrulefill
+\begin{footnotesize}
+\verbatiminput{aterm.sdf}
+\caption{
+  \label{fig:aterm-syntax}
+  Abbreviated \aterm\ syntax in \sdf.
+}
+\end{footnotesize}
+\hrulefill
+\end{figure}
+
+% }}}
+
+Examples of valid \aterms{} thus include:
+  \texttt{42, 3.14, and(true, not(false)), rolodex(<name(String)>), [a,b,c]},
+and (with annotation):
+  \texttt{42\{answer\}, [a,b,c]\{chars\}, <string>\{sort\}}.
+
+% }}}
+% {{{  \subsection{\asdf\ Parse Trees: the \asfix\ syntax}
+
+\subsection{\asdf\ Parse Trees: the \asfix\ syntax}
+
+When a term such as \texttt{true and not false} is parsed using the
+\asmetaenv\ parser \texttt{sglr}, it yields a parse tree represented in
+a format called \asfix. Attributes such as associativity, constructor
+information and any layout in the input term is preserved.
+
+Parsing even a simple term such as \texttt{true} yields an
+impressive, hard to read \aterm:
+\begin{footnotesize}
+\begin{verbatim}
+parsetree(appl(prod([cf(opt(layout)),cf(sort("Bool")),cf(opt(layout))],sort("<STA
+RT>"),no-attrs),[appl(prod([],cf(opt(layout)),no-attrs),[]),appl(prod([lit("true"
+)],cf(sort("Bool")),no-attrs),[lit("true")]),appl(prod([cf(layout)],cf(opt(layout
+)),no-attrs),[10])]),0)
+\end{verbatim}
+\end{footnotesize}
 
 % }}}
 
