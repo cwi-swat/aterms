@@ -9,12 +9,12 @@ exports
 
 hiddens
   context-free syntax
-    "add-labels-to-symbols" "(" Definition ")" -> Definition {traverse}
-    "add-labels-to-symbols" "(" Module ")"     -> Module {traverse}
-    "add-labels-to-symbols" "(" Grammar ")"    -> Grammar {traverse}
-    "add-labels-to-symbols" "(" Production ")" -> Production {traverse}
-    "add-labels-to-symbols" "(" Symbols ")"    -> Symbols {traverse}
-    "add-labels-to-symbols" "(" Symbol ")"     -> Symbol {traverse}
+    "add-labels-to-symbols" "(" Definition ")" -> Definition {traversal(trafo,top-down)}
+    "add-labels-to-symbols" "(" Module ")"     -> Module {traversal(trafo,top-down)}
+    "add-labels-to-symbols" "(" Grammar ")"    -> Grammar {traversal(trafo,top-down)}
+    "add-labels-to-symbols" "(" Production ")" -> Production {traversal(trafo,top-down)}
+    "add-labels-to-symbols" "(" Symbols ")"    -> Symbols {traversal(trafo,top-down)}
+    "add-labels-to-symbols" "(" Symbol ")"     -> Symbol {traversal(trafo,top-down)}
 
     args-to-symbols( {Symbol ","}* ) -> Symbols
     "args-to-symbols" -> UQLiteral {reject}

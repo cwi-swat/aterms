@@ -1,3 +1,7 @@
+2001/10/01 (jurgenv@cwi.nl)
+ * Regenerated Sdf2-To-AsFix2ME and AddLabels to work with latest
+   pt-support.
+
 2001/09/27 (jurgenv@cwi.nl)
  * Made some changes in the Sdf grammar:
      - added:   ATerm                      -> Attribute 
