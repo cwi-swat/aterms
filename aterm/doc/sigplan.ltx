@@ -1,10 +1,11 @@
-\documentclass{article}
+\documentclass[a4paper]{article}
 
 %{{{ LaTeX configuration
 
 \usepackage[english]{babel}
 \usepackage{epsfig}
 \usepackage{latexsym}
+\usepackage{verbatim}
 
 \newcommand{\ATerm}{ATerm}
 \newcommand{\ATerms}{ATerms}
@@ -171,20 +172,29 @@ operating system, generated using version $2.95.2$ of the \gcc\ compiler.
 
 The sample code is a dressed down snippet from the \aterm{}-ToolBus
 library. The code iterates over the arguments of an \appl{} (variable
-\texttt{appl}) in \emph{reverse} order, building up an \atlist{} (variable
-\texttt{list}) by invoking some arbitrary function (\texttt{foo}) on
-each of these arguments and inserting the result in \texttt{list}. The
-variable \texttt{arity} holds the arity of \texttt{appl}.
+\texttt{appl}) in \emph{reverse} order, building up an \atlist{}
+(variable \texttt{list}) by invoking some an arbitrary function (in this
+case \texttt{ATBunpack}) on each of these arguments and inserting the
+result in \texttt{list}. The variable \texttt{arity} holds the arity
+of \texttt{appl}.
 
 \begin{verbatim}
-    ...
-    ATermList list = ATempty;
+  ATermList list = ATempty;
 
-    for (i = arity; i >= 0; i--) {
-      list = ATinsert(list, foo(ATgetArgument(appl , i)));
-    }
-    ...
+  for (i = arity; i >= 0; i--) {
+    list = ATinsert(list, ATBunpack(ATgetArgument(appl, i)));
+  }
 \end{verbatim}
+
+\begin{figure}[!htb]
+  \begin{footnotesize}
+    \verbatiminput{asm-diff.ltx}
+  \end{footnotesize}
+  \caption{
+    \label{fig:asm-diff}
+    Regular (L) vs. optimized (R) assembly in side-by-side \texttt{diff}.
+  }
+\end{figure}
 
 % }}}
 % {{{  \section{References}

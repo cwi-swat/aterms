@@ -24,7 +24,7 @@ all:
 
 doc: sigplan.ps at.ps manual.ps $(JAVA_API_PS)
 
-sigplan.dvi: sigplan.ltx
+sigplan.dvi: sigplan.ltx asm-diff.ltx
 
 at.ps: at.dvi $(PICS)
 at.dvi: at.ltx aterm.ltx spec/ATerm.mtx $(CHAPS) $(PICS)
