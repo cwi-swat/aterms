@@ -72,3 +72,10 @@ install: all
 		cd ..; \
 	done
 
+tag:
+	@for dir in ${DIRS}; \
+	do \
+		echo "make tag in $$dir"; \
+		cd $$dir; ${MAKE} -s tag; \
+		cd ..; \
+	done

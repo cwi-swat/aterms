@@ -14,11 +14,11 @@ make install
 If you have any questions, find any problems or are missing some
 features in this library, please let us know. You can contact us at:
 
-Pieter Olivier,								Hayco de Jong,
-Programming Research Group,					Programming Research Group,
-University of Amsterdam.					University of Amsterdam,
-email: olivierp@wins.uva.nl					email: jong@wins.uva.nl
-tel.:  030 20 5257590						tel.:  030 20 5257586
+Pieter Olivier,                             Hayco de Jong,
+Programming Research Group,                 Programming Research Group,
+University of Amsterdam.                    University of Amsterdam,
+email: olivierp@wins.uva.nl                 email: jong@wins.uva.nl
+tel.:  +31 20 5257590                       tel.:  +31 20 5257590
 
 
 
