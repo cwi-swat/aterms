@@ -57,7 +57,7 @@ list.c list.h: list.adt list.pro
 
 %.java.sh: Makefile
 	${ADTJAVA} --input ${top_srcdir}/test/$*.adt \
-	           --output ${top_builddir}/test/$* \
+	           --output ${top_srcdir}/test/$* \
 		   --package test.$* \
 		   --name $* \
 		   --classpath ${top_builddir}
