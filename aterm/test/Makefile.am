@@ -8,10 +8,10 @@ TESTS	          	= stress
 EXTRA_DIST 		= termstats.sh test.trms error.trm stress.dict \
 			  vararg1.c vararg2.c vararg3.c
 
-CLEANFILES		= stress_dict.c stress_dict.h
+MAINTAINERCLEANFILES	= stress_dict.c stress_dict.h
 
 INCLUDES		= -I$(top_srcdir)/aterm \
-                           -DSRCDIR="\"$(top_srcdir)/test/\""
+                          -DSRCDIR="\"$(top_srcdir)/test/\""
 
 LDFLAGS 		= -L$(top_builddir)/aterm/
 LDLIBS			= -lATerm
@@ -24,9 +24,9 @@ stress_LDADD		= $(LDLIBS)
 primes_SOURCES		= primes.c
 primes_LDADD		= $(LDLIBS)
 
-# To be used to find out which vararg-implementation
-# is used on a new platform. Do not remove, but uncomment
-# as needed.
+# To be used to find out which vararg-implementation is used on a new
+# platform. Do not remove, but uncomment as needed.
+
 #vararg1_SOURCES    	= vararg1.c
 #vararg1_LDADD      	= $(LDLIBS)
 #vararg2_SOURCES    	= vararg2.c

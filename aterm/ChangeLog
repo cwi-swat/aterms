@@ -1,5 +1,9 @@
 $Id$
 
+2001/11/28 (jong@cwi.nl)
+ * version 1.6.6beta started
+ * Generated files 'stress_dict.[ch]' moved to MAINTAINERCLEANFILES.
+
 2001/11/22 (jong@cwi.nl)
  * Version 1.6.5 released, containing C-support for tuple syntax.
 
@@ -26,7 +30,7 @@ $Id$
  * C-library warnings issued by gcc-3.0.1 fixed
 
 2001/08/17 (jong@cwi.nl)
- * Version 1.6.4beta initiated
+ * Version 1.6.4beta started
  * Started work on doc/xootic.ltx
 
 2001/08/14 (jong@cwi.nl)
