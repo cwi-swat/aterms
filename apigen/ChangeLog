@@ -1,4 +1,8 @@
-2001/02/15 (jong@cwi.nl)
+2001/02/16 ({jong,olivierp}@cwi.nl)
+  * Added prefix to the front of visitor names
+  * patched ChangeLog entry date
+
+2001/02/16 (jong@cwi.nl)
   * utils/adt-to-c rewritten, option handling is now the same as in
     sdf2-to-adt, so be sure to check "adt-to-c --help" before using
     it!

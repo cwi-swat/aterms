@@ -606,7 +606,7 @@ public class CGen
       String type_name = buildTypeName(type);
 
       StringBuffer decl_buf = new StringBuffer();
-      String visitor_name = "visit" + type_id;
+      String visitor_name = prefix + "visit" + type_id;
       decl_buf.append(type_name);
       decl_buf.append(" ");
       decl_buf.append(visitor_name);
@@ -677,7 +677,7 @@ public class CGen
       source.print("        ");
       String getter_name = buildGetterName(type, field);
       if (field.getType().equals(type.getId())) {
-	String visitor_name = "visit" + type_id;
+	String visitor_name = prefix + "visit" + type_id;
 	source.print(visitor_name + "(" + getter_name + "(arg)");
 	Iterator params = type.fieldIterator();
 	while (params.hasNext()) {
