@@ -1,5 +1,8 @@
 $Id$
 
+2002/10/18 <jong@cwi.nl>
+ * Fix bug in read_term (blob data was not copied) reported by Tijs vd Storm
+
 2002/10/17 <jong,olivierp@cwi.nl>
 * Fixed two alignment bugs that only manifested themselves on sun:
   - 'data' field in Block was not eight byte aligned, we now moved it

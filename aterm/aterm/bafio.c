@@ -1443,6 +1443,8 @@ ATerm read_term(sym_read_entry *sym, byte_reader *reader)
       if(!data)
 	ATerror("could not allocate space for blob of size %d\n", len);
 
+      memcpy(data,text_buffer,len);
+
       result = (ATerm)ATmakeBlob(len, data);
     }
 
