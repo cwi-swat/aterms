@@ -19,8 +19,7 @@ public class TypeGenerator extends JavaGenerator {
 		String pkg,
 		String apiName, 
 		List standardImports,
-		boolean verbose,
-		boolean folding) {
+		boolean verbose) {
 		super(directory, className(type), pkg, standardImports, verbose);
 		this.type = type;
 		this.apiName = apiName;

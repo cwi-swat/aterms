@@ -15,7 +15,6 @@ public class AlternativeImplGenerator extends JavaGenerator {
 	private String typeId;
 	private String altId;
 	private String className;
-	private String subClassName;
 	private String superClassName;
 
 	protected AlternativeImplGenerator(
@@ -26,7 +25,6 @@ public class AlternativeImplGenerator extends JavaGenerator {
 		String pkg,
 		List standardImports,
 		boolean verbose,
-		boolean folding,
 		boolean visitable) {
 		super(
 			directory,
@@ -42,7 +40,6 @@ public class AlternativeImplGenerator extends JavaGenerator {
 		this.typeId = type.getId();
 		this.altId = alt.getId();
 		this.className = className(typeId, altId);
-		this.subClassName = AlternativeGenerator.className(type, alt);
 		this.superClassName = TypeGenerator.className(type);
 		this.visitable = visitable;
 	}
@@ -70,12 +67,12 @@ public class AlternativeImplGenerator extends JavaGenerator {
 
         genInitMethod();
         genInitHashcodeMethod();
-		genAltConstructor(type, alt);
+		genAltConstructor();
 		genAltFieldIndexMembers(type, alt);
 		genAltDuplicateMethod(type, alt);
 		genAltEquivalentMethod(type, alt);
 		genAltMake(type, alt);
-		genAltToTerm(type, alt);
+		genAltToTerm();
 		genOverrideProperties(type, alt);
 		genAltGetAndSetMethods(type, alt);
 		genAltHashFunction(type, alt);
@@ -99,7 +96,7 @@ public class AlternativeImplGenerator extends JavaGenerator {
 		println("  }");
 	}
 
-	private void genAltConstructor(Type type, Alternative alt) {
+	private void genAltConstructor() {
 		println(
 			"  protected "
 				+ className
@@ -189,7 +186,7 @@ public class AlternativeImplGenerator extends JavaGenerator {
 		return "get" + factoryName + "()";
 	}
 
-	private void genAltToTerm(Type type, Alternative alt) {
+	private void genAltToTerm() {
 		String factoryName = FactoryGenerator.className(apiName);
 
 		println("  public aterm.ATerm toTerm() {");

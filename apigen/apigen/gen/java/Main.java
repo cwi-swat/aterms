@@ -148,13 +148,13 @@ public class Main {
 	}
 
 	static private void generateAPI(ADT adt) throws IOException {
-		new FactoryGenerator(adt, basedir, apiName, pkg, imports, verbose, folding).run();
-		new GenericConstructorGenerator(adt, basedir, apiName, pkg, verbose, visitable, 0).run();
+		new FactoryGenerator(adt, basedir, apiName, pkg, imports, verbose).run();
+		new GenericConstructorGenerator(adt, basedir, apiName, pkg, verbose, visitable).run();
 		new MakeRulesGenerator(adt, basedir, apiName, verbose).run();
 
 		if (visitable) {
-			new VisitorGenerator(adt, basedir, apiName, pkg, imports, verbose, folding).run();
-			new ForwardGenerator(adt, basedir, apiName, pkg, imports, verbose, folding).run();
+			new VisitorGenerator(adt, basedir, pkg, imports, verbose).run();
+			new ForwardGenerator(adt, basedir, apiName, pkg, imports, verbose).run();
 		}
 
 		if (jtom) {
@@ -172,17 +172,17 @@ public class Main {
 
 			if (type instanceof NormalListType) {
 				new ListTypeImplGenerator((NormalListType) type, basedir, pkg, apiName, imports, verbose).run();
-				new ListTypeGenerator(type, basedir, pkg, apiName, imports, verbose, folding).run();
+				new ListTypeGenerator(type, basedir, pkg, apiName, imports, verbose).run();
 			}
 			else if (type instanceof SeparatedListType) {
 				new SeparatedListTypeImplGenerator((SeparatedListType) type, basedir, pkg, apiName, imports, verbose)
 					.run();
-				new ListTypeGenerator(type, basedir, pkg, apiName, imports, verbose, folding).run();
+				new ListTypeGenerator(type, basedir, pkg, apiName, imports, verbose).run();
 
 			}
 			else if (!converter.isReserved(type.getId())) {
 				new TypeImplGenerator(type, basedir, pkg, apiName, imports, verbose).run();
-				new TypeGenerator(type, basedir, pkg, apiName, imports, verbose, folding).run();
+				new TypeGenerator(type, basedir, pkg, apiName, imports, verbose).run();
 				generateAlternativeClasses(type);
 			}
 		}
@@ -193,8 +193,8 @@ public class Main {
 		while (alt_iter.hasNext()) {
 			Alternative alt = (Alternative) alt_iter.next();
 
-			new AlternativeGenerator(type, alt, basedir, pkg, apiName, imports, verbose, false).run();
-			new AlternativeImplGenerator(type, alt, apiName, basedir, pkg, imports, verbose, false, visitable).run();
+			new AlternativeGenerator(type, alt, basedir, pkg, apiName, imports, verbose).run();
+			new AlternativeImplGenerator(type, alt, apiName, basedir, pkg, imports, verbose, visitable).run();
 		}
 	}
 }

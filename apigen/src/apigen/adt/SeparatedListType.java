@@ -57,7 +57,7 @@ public class SeparatedListType extends ListType {
         int count = 0;
         
         while (iter.hasNext()) {
-            Field element = (Field) iter.next();
+            iter.next();
             count++;
         }
         

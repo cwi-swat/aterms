@@ -16,7 +16,6 @@ import apigen.gen.StringConversions;
 public class FactoryGenerator extends JavaGenerator {
 	private String className;
 	private ADT adt;
-	private String apiName;
 
 	public FactoryGenerator(
 		ADT adt,
@@ -24,12 +23,10 @@ public class FactoryGenerator extends JavaGenerator {
 		String apiName,
 		String pkg,
 		List standardImports,
-		boolean verbose,
-		boolean folding) {
+		boolean verbose) {
 		super(directory, className(apiName), pkg, standardImports, verbose);
 		this.className = className(apiName);
 		this.adt = adt;
-		this.apiName = apiName;
 	}
 
 	public static String className(String apiName) {
@@ -50,8 +47,8 @@ public class FactoryGenerator extends JavaGenerator {
 		println("{");
 		genFactoryPrivateMembers(api);
 		genFactoryEmptyLists(api);
-		genFactoryConstructor(api);
-		genFactoryConstructorWithSize(api);
+		genFactoryConstructor();
+		genFactoryConstructorWithSize();
 		genFactoryInitialize(api);
 		genAlternativeMethods(api);
 		genFactoryMakeLists(api);
@@ -96,23 +93,23 @@ public class FactoryGenerator extends JavaGenerator {
 		println("  }");
 	}
 
-	private void genFactoryConstructorWithSize(ADT api) {
+	private void genFactoryConstructorWithSize() {
 		println("  public " + className + "(int logSize)");
 		println("  {");
 		println("     super(logSize);");
-		genFactoryConstructorBody(api);
+		genFactoryConstructorBody();
 		println("  }");
 	}
 
-	private void genFactoryConstructorBody(ADT api) {
+	private void genFactoryConstructorBody() {
 		println("     initialize();");
 	}
 
-	private void genFactoryConstructor(ADT api) {
+	private void genFactoryConstructor() {
 		println("  public " + className + "()");
 		println("  {");
 		println("     super();");
-		genFactoryConstructorBody(api);
+		genFactoryConstructorBody();
 		println("  }");
 	}
 
@@ -152,14 +149,14 @@ public class FactoryGenerator extends JavaGenerator {
 					genFactoryMakeSingletonSeparatedList(lType, className, elementClassName, empty);
 					genFactoryMakeManySeparatedList(lType, className, elementClassName);
 					genFactoryMakeManySeparatedTermList(lType, className);
-					genFactoryReverseSeparated(lType, className, elementClassName);
-					genFactoryConcatSeparated(lType, className, elementClassName);
+					genFactoryReverseSeparated(lType, className);
+					genFactoryConcatSeparated(lType, className);
 				}
 			}
 		}
 	}
 
-	private void genFactoryConcatSeparated(SeparatedListType type, String className, String elementClassName) {
+	private void genFactoryConcatSeparated(SeparatedListType type, String className) {
 		String sepArgs = buildOptionalSeparatorArguments(type);
 		String formalSepArgs = buildFormalTypedArgumentList(type.separatorFieldIterator());
 		if (formalSepArgs.length() > 0) {
@@ -193,8 +190,7 @@ public class FactoryGenerator extends JavaGenerator {
 		println("  }");
 	}
 
-	private void genFactoryReverseSeparated(SeparatedListType type, String className, String elementClassName) {
-		String classNameImpl = TypeImplGenerator.className(type);
+	private void genFactoryReverseSeparated(SeparatedListType type, String className) {
 		String makeClassName = "make" + className;
 
 		println("  public " + className + " reverse(" + className + " arg) {");
@@ -550,10 +546,10 @@ public class FactoryGenerator extends JavaGenerator {
 		String className = TypeGenerator.className(type);
 		genInitializedPrototype(className);
 		genInitializeEmptySeparatedList(type, listTypesCount, className);
-		genInitializeManyPattern(type, className);
+		genInitializeManyPattern(type);
 	}
 
-	private void genInitializeManyPattern(SeparatedListType type, String className2) {
+	private void genInitializeManyPattern(SeparatedListType type) {
 		Alternative alt = type.getManyAlternative();
 
 		println(
@@ -592,7 +588,7 @@ public class FactoryGenerator extends JavaGenerator {
 		String result = "";
 		Iterator fields = type.separatorFieldIterator();
 		while (fields.hasNext()) {
-			Field field = (Field) fields.next();
+			fields.next();
 			result += "null, ";
 		}
 		return result;
@@ -633,8 +629,6 @@ public class FactoryGenerator extends JavaGenerator {
 		argnr = 0;
 		while (fields.hasNext()) {
 			Field field = (Field) fields.next();
-			String fieldType;
-			String fieldClass;
 			print(buildFieldMatchResultRetriever(argnr, field));
 
 			if (fields.hasNext()) {
@@ -758,17 +752,6 @@ public class FactoryGenerator extends JavaGenerator {
 		println("  }");
 	}
 
-	private String buildGetNextElementCall(SeparatedListType type) {
-		Separators separators = type.getSeparators();
-		String result = "getNext()";
-
-		for (; !separators.isEmpty(); separators = separators.getTail()) {
-			result += ".getNext()";
-		}
-
-		return result;
-	}
-
 	private void genFactorySeparatedListTypeFromTermMethod(SeparatedListType type) {
 		String className = ListTypeGenerator.className(type);
 		String makeClassName = "make" + className;
@@ -878,14 +861,6 @@ public class FactoryGenerator extends JavaGenerator {
 		println();
 		println("    return result;");
 		println("  }");
-	}
-
-	private void genFromTermSeparatorHeadAssignment(SeparatedListType type) {
-		println("            head = " + buildFieldMatchResultRetriever(0, type.getManyField("head")) + ";");
-	}
-
-	private void genFromTermSeparatorTailAssignment(int tailIndex) {
-		println("              list = (aterm.ATermList) children.get(" + tailIndex + ");");
 	}
 
 	private int genFromTermSeparatorFieldAssigments(SeparatedListType type) {

@@ -10,25 +10,21 @@ import apigen.adt.Type;
 
 public class VisitorGenerator extends JavaGenerator {
 	private ADT adt;
-    private String apiName; 
     private String className;
 
 	public VisitorGenerator(
 		ADT adt,
 		String directory,
-		String apiName,
 		String pkg,
 		List standardImports,
-		boolean verbose,
-		boolean folding) {
-		super(directory, className(apiName), pkg, standardImports, verbose);
+		boolean verbose) {
+		super(directory, className(), pkg, standardImports, verbose);
 		this.adt = adt;
-        this.apiName = apiName;
-        className = className(apiName);
+        className = className();
         
 	}
 
-	public static String className(String apiName) {
+	public static String className() {
 		return  "Visitor";
 	}
 

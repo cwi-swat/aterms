@@ -19,8 +19,7 @@ public class GenericConstructorGenerator extends JavaGenerator {
 		String apiName,
 		String pkg,
 		boolean verbose,
-		boolean visitable,
-		int arg1) {
+		boolean visitable) {
 
 		super(directory, className(apiName), pkg, new LinkedList(), verbose);
 

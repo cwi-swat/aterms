@@ -13,9 +13,8 @@ public class ListTypeGenerator extends TypeGenerator {
 		String pkg,
 		String apiName,
 		List standardImports,
-		boolean verbose,
-		boolean folding) {
-		super(type, directory, pkg, apiName, standardImports, verbose, folding);
+		boolean verbose) {
+		super(type, directory, pkg, apiName, standardImports, verbose);
 	}
 	
 	protected String classModifier() {

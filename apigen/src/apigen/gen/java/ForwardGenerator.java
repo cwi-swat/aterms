@@ -20,14 +20,13 @@ public class ForwardGenerator extends JavaGenerator {
 		String apiName,
 		String pkg,
 		List standardImports,
-		boolean verbose,
-		boolean folding) {
-		super(directory, className(apiName), pkg, standardImports, verbose);
+		boolean verbose) {
+		super(directory, className(), pkg, standardImports, verbose);
 		this.adt = adt;
 		this.apiName = apiName;
 	}
 
-	public static String className(String apiName) {
+	public static String className() {
 		  return StringConversions.capitalize("Fwd");
 	}
 	 
