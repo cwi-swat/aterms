@@ -21,12 +21,12 @@ CLEANFILES = *.out *.sh
 # by gmake check:
 %.x2a.sh: Makefile
 	@(echo 'set -e';\
-          echo '${XML2ATERM} -i $*.xml -e -o $*.xml.out';\
-          echo '${ATDIFF} $*.trm $*.xml.out';\
+          echo '${XML2ATERM} -i ${srcdir}/$*.xml -e -o $*.xml.out';\
+          echo '${ATDIFF} ${srcdir}/$*.trm $*.xml.out';\
           echo 'rm $*.xml.out') > $@ && chmod +x $@
           
 %.a2x.sh: Makefile
 	@(echo 'set -e';\
-          echo '${ATERM2XML} -i $*.trm -o $*.trm.out -e -t';\
-          echo 'diff $*.trm.ref $*.trm.out';\
+          echo '${ATERM2XML} -i ${srcdir}/$*.trm -o $*.trm.out -e -t';\
+          echo 'diff ${srcdir}/$*.trm.ref $*.trm.out';\
           echo 'rm $*.trm.out') > $@ && chmod +x $@
