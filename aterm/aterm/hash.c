@@ -574,27 +574,27 @@ void ATtableDestroy(ATermTable table)
 
 void ATtableReset(ATermTable table)
 { 
-	long i;
-  
+  long i;
+
   table->nr_entries = 0;
   table->nr_deletions = 0;
 
   for(i=0; i<=table->sizeMinus1 ; i++) { 
-		table->hashtable[i] = EMPTY;
+    table->hashtable[i] = EMPTY;
   }
-  
+
   for(i=0; ((i<table->nr_tables) && 
-						(table->keys[i]!=NULL)); i++) { 
-		memset(table->keys[i],0,sizeof(ATerm)*ELEMENTS_PER_TABLE);
+	    (table->keys[i]!=NULL)); i++) { 
+    memset(table->keys[i], 0, sizeof(ATerm)*ELEMENTS_PER_TABLE);
     if (table->values!=NULL) {
-       memset(table->values[i], 0, sizeof(ATerm)*ELEMENTS_PER_TABLE);
-		}
+      memset(table->values[i], 0, sizeof(ATerm)*ELEMENTS_PER_TABLE);
+    }
   }
-	
+
   for(i=0; ((i<table->nr_free_tables) &&
-						(table->free_table[i]!=NULL)); i++) { 
-		memset(table->free_table,0,ELEMENTS_PER_TABLE);
-	}
+	    (table->free_table[i]!=NULL)); i++) { 
+    memset(table->free_table[i], 0, ELEMENTS_PER_TABLE);
+  }
   table->first_free_position = 0;
 }
 
