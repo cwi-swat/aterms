@@ -730,11 +730,9 @@ extends Generator
       println("    int a = " + goldenratio + ";");
       println("    int b = " + goldenratio + ";");
       
-      String[] bucket = {"a","a","a","a","b","b","b","b","c","c","c","c"};
-      
       for (int i = arity - 1; i >= 0; i--) {
         int shift = (i%4) * 8;
-        println("    " + bucket[i%12] + 
+        println("    " + "aaaabbbbcccc".toCharArray()[i%12] + 
                 " += (getArgument(" + i + ").hashCode() << " + 
                 shift + ");");
       }
