@@ -10,6 +10,7 @@ exec_prefix=@exec_prefix@
     EVALBIN=@EVALBIN@
    ATERMBIN=@ATERMBIN@
  ASOURCEBIN=@ASOURCEBIN@
+A2METOA1BIN=@A2METOA1BIN@
     PKGDATA=${datadir}/@PACKAGE@
         PRG=`basename $0`
 
@@ -76,14 +77,14 @@ require() {
 cleanup() {
   if [ ${CLEANUP} -gt 0 ]; then
     info "- Cleaning up intermediate files"
-    for n in 1 2 3 4; do
+    for n in 1 2 3 4 5; do
       filename=".api_${n}_$$"
       rm -f ${filename}
     done
   else
     info "- No cleanup, here are your intermediate files:"
     if [ ${VERBOSE} -gt 0 ]; then
-      ls -l .api_[0-4]_$$
+      ls -l .api_[0-5]_$$
     fi
   fi
 }
@@ -111,6 +112,7 @@ SDF2TOADT=${bindir}/Sdf2-to-ADT
 SDF2TOASFIX2MEADT=${bindir}/Sdf2-to-AsFix2ME-ADT
 EVALUATOR=${EVALBIN}/asfe
 APPLYFUNC=${EVALBIN}/apply-function
+ A2METOA1=${A2METOA1BIN}/a2metoa1
 
 # }}}
 
@@ -195,7 +197,7 @@ trap cleanup EXIT
 info "Generating ${OUTPUT} from ${INPUT}:"
 
 info " - Parsing ${INPUT} (${APITABLE})"
-${SGLR} -1 -p ${APITABLE} -s SDF -i ${INPUT} -o .api_1_$$ || err
+${SGLR} -m -p ${APITABLE} -s SDF -i ${INPUT} -o .api_1_$$ || err
 
 info " - Labeling ${INPUT} (parsed)"
 ${APPLYFUNC} -f add-labels -s SDF -m AddLabels -i .api_1_$$ -o .api_2_$$ || err
@@ -205,12 +207,14 @@ if [ $ASFIX2ME -gt 0 ]; then
   info " - Generating ADT (${SDF2TOASFIX2MEADT})"
   func="sdf-to-asfix2me-adt-${CONSOPT}"
   ${APPLYFUNC} -f ${func} -s ATerm -m Sdf2-to-AsFix2ME-ADT < .api_3_$$ > .api_4_$$ || err
-  ${SDF2TOASFIX2MEADT} < .api_4_$$ | ${ASOURCE} > ${OUTPUT} || err
+  ${A2METOA1} -i .api_4_$$ -o .api_5_$$ || err
+  ${SDF2TOASFIX2MEADT} < .api_5_$$ | ${ASOURCE} > ${OUTPUT} || err
 else
   info " - Generating ADT (${SDF2TOADT})"
   func="sdf-to-adt-${CONSOPT}"
   ${APPLYFUNC} -f ${func} -s ATerm -m Sdf2-to-ADT < .api_3_$$ > .api_4_$$ || err
-  ${SDF2TOADT} < .api_4_$$ | ${ASOURCE} > ${OUTPUT} || err
+  ${A2METOA1} -i .api_4_$$ -o .api_5_$$ || err
+  ${SDF2TOADT} < .api_5_$$ | ${ASOURCE} > ${OUTPUT} || err
 fi
 
 # }}}

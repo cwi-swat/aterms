@@ -1,3 +1,7 @@
+2001/06/18 ({jong,jurgenv}@cwi.nl)
+ * sdf2-to-adt now uses asfix2me
+ * Version 0.8.6
+
 2001/06/15 (jong@cwi.nl)
  * Removed heuristic for '-' as it is already used as a word-separator!
 
