@@ -3,6 +3,7 @@
     package easily in the meta package.
   * Configure.in automatically detects location of shared-objects.jar in
     order to get distcheck correct.
+  * Added test subdirectory to SUBDIRS
 
 2002-10-20    <pem@bach>
   * aterm/pure/ATermListImpl.java: 

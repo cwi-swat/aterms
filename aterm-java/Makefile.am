@@ -1,4 +1,4 @@
-SUBDIRS = aterm config .
+SUBDIRS = aterm test config .
 
 JARFILE = aterm-${VERSION}.jar
 JAVADOCDIR = aterm-javadoc
