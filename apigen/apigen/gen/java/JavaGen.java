@@ -658,6 +658,9 @@ extends Generator
         else if (field_type.equals("real")) {
           println("      args.add(new Double (((aterm.ATermReal) getArgument(" + i + ")).getReal()));");
         }
+        else if (field_type.equals("term")) {
+          println("      args.add((aterm.ATerm) getArgument(" + i + "));");
+        }
         else {
           println("      args.add(((" + api_constructor + ") getArgument(" + i + ")).toTerm());");
         }
