@@ -21,6 +21,7 @@ manual.dvi: manual.ltx $(EXAMPLES)
 manual.ps: manual.dvi
 	makeindex manual.idx
 	latex manual.ltx
+	dvips -o $@ $<
 
 # You need fig2dev version 3.2 for this.
 header.ps: header.fig

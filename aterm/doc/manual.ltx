@@ -21,9 +21,6 @@
 \newcommand{\ATprotect}{\mbox{\tt ATprotect}}
 \newcommand{\ATprotectArray}{\mbox{\tt ATprotectArray}}
 
-%\openout 15 functions.idx
-%\openout 14 macros.idx
-
 % \example{init.c} will input file "examples/init.c" in verbatim mode.
 \newcommand{\example}[1]{
 	\noindent\hrulefill
@@ -40,24 +37,24 @@
 \newcommand{\Function}[4]{
 	\vspace{0.3cm}
 	\noindent
-	\framebox[12.6cm][l]{{\bf function:} #1} \vspace{0.1cm}\newline
+	\framebox[12.6cm][l]{{\bf function:} {\tt #1}} \vspace{0.1cm}\newline
+	\label{#1}
 	{\bf Summary:\hspace{0.2cm}} #4\newline
 	{\bf Declaration:}
-		{\tt #2} {#1}({\tt #3});
-	\index{#1}
-%        \write 15 {\string\FuncEntry{#1}{#2}{#3}{#4}{\thepage}}
+		{\tt #2} {\tt #1}({\tt #3});
+	\index{#1@{\tt #1}}
 }
 
 % Macro definition
 \newcommand{\Macro}[4]{
 	\vspace{0.3cm}
 	\noindent
-	\framebox[12.6cm][l]{{\bf macro:} {#1}} \vspace{0.1cm}\newline
+	\framebox[12.6cm][l]{{\bf macro:} {\tt #1}} \vspace{0.1cm}\newline
+	\label{#1}
 	{\bf Summary:\hspace{0.2cm}} #4\newline
 	{\bf Declaration:}
-		{\tt #2} {#1}({\tt #3})
-	\index{#1}
-%	\write 14 {\string\MacroEntry{#1}{#2}{#3}{#4}{\thepage}}
+		{\tt #2} {\tt #1}({\tt #3})
+	\index{#1@{\tt #1}}
 }
 
 % Function/Macro description (optional)
@@ -148,7 +145,7 @@ The \ATlib\ uses garbage collection to find and delete unused \ATerms. This
 relieves users of the burden of explicitly allocating and freeing every
 \ATerm\ used in an application. Each time a new \ATerm\ is allocated the
 garbage collector decides whether time has come to free resources claimed
-by unsed \ATerms\ or whether there is still enough space to create the
+by unsed \ATerms\ or whether there still is enough space to create the
 requested term. Details on the design and implementation of this garbage
 collection can be found in~\cite{BJO98}.
 
@@ -299,8 +296,8 @@ listed. Although all macros could have been implemented as a function as
 well, the macros listed here were chosen to be macros instead of functions
 for efficiency reasons.
 
-\Function{\tt ATmake}{\ATerm}{\tt const char *pattern, ...}
-{Create an \ATerm from a string pattern and a variable number of arguments}
+\Function{ATmake}{\ATerm}{const char *pattern, ...}
+{Create an \ATerm\ from a string pattern and a variable number of arguments}
 \Describe{
 	Creates an \aterm\ given a pattern and corresponding values.
 	The following table shows which patterns can be used, and which type
@@ -340,20 +337,20 @@ for efficiency reasons.
 	\example{make.c}
 }
 
-\Function{\tt ATvmake}{\tt \ATerm}{\tt const char *pattern, va\_list args}
+\Function{ATvmake}{\ATerm}{const char *pattern, va\_list args}
 {Create an \ATerm\ from a string pattern and a list of arguments}
 \Describe{See {\tt ATmake}.}
 
-\Function{\tt ATmakeTerm}{\tt \ATerm}{\tt \ATerm\ pat, ...}
+\Function{ATmakeTerm}{\ATerm}{\ATerm\ pat, ...}
 {Create an \ATerm\ from an \ATerm\ pattern and a variable number of
 arguments}
 \Describe{See {\tt ATmake}.}
 
-\Function{\tt ATvmakeTerm}{\tt \ATerm}{\tt \ATerm\ pat, va\_list args}
+\Function{ATvmakeTerm}{\ATerm}{\ATerm\ pat, va\_list args}
 {Create an \ATerm\ from an \ATerm\ pattern and a list of arguments}
 \Describe{See {\tt ATmake}.}
 
-\Function{\tt ATmatch}{\tt ATbool}{\aterm\ t, const char *string}
+\Function{ATmatch}{ATbool}{\aterm\ t, const char *string}
 {Match an \aterm\ against a pattern}
 \Describe{
 	Matches an \aterm\ against a pattern, attempting to fill the `holes'.
@@ -373,26 +370,26 @@ arguments}
 	\example{match.c}
 }
 
-\Function{\tt ATreadFromString}{\ATerm}{const char *string}
+\Function{ATreadFromString}{\ATerm}{const char *string}
 {Read an \aterm\ from string}
 \Describe{
 	This function parses an character string into an \aterm.
 	A convenience macro {\tt ATparse} is included in {\tt aterm1.h}.
 }
 
-\Function{\tt ATreadFromTextFile}{\ATerm}{FILE *file}
+\Function{ATreadFromTextFile}{\ATerm}{FILE *file}
 {Read an \aterm\ from text file}
 \Describe{
 	This function reads a text file and parses the contents into an \aterm.
 }
 
-\Function{\tt ATreadFromBinaryFile}{\ATerm}{FILE *file}
+\Function{ATreadFromBinaryFile}{\ATerm}{FILE *file}
 {Read an \aterm\ from binary file ({\sc baf})}
 \Describe{
 	This function reads a binary file and builds an \aterm.
 }
 
-\Function{\tt ATreadFromFile}{\ATerm}{FILE *file}
+\Function{ATreadFromFile}{\ATerm}{FILE *file}
 {Read an \aterm\ from binary or textfile}
 \Describe{
 	This function reads an \aterm\ from a file. A magic number detection is
@@ -400,13 +397,13 @@ arguments}
 	be read, otherwise the textual term will be parsed.
 }
 
-\Macro{\tt ATparse}{\ATerm}{const char *str}
+\Macro{ATparse}{\ATerm}{const char *str}
 {A convenience macro for {\tt ATreadFromString}}
 \Describe{
 	This macro is simply a shortcut to {\tt ATreadFromString(str)}.
 }
 
-\Macro{\tt ATgetType}{int}{\ATerm\ term}
+\Macro{ATgetType}{int}{\ATerm\ term}
 {Return the type of {\tt term}}
 \Describe{
 	A macro that returns the type of an \aterm. Result is one of
@@ -414,28 +411,28 @@ arguments}
 	{\tt AT\_PLACEHOLDER}, or {\tt AT\_BLOB}.
 }
 
-\Macro{\tt ATisEqual}{int}{\ATerm\ t1, \ATerm\ t2}
+\Macro{ATisEqual}{int}{\ATerm\ t1, \ATerm\ t2}
 {A macro that tests equality of \aterms\ {\tt t1} and {\tt t2}}
 \Describe{
 	As \ATerms\ are shared, testing equality can be done by comparing the
 	addresses of {\tt t1} and {\tt t2}, which is exactly what this macro does.
 }
 
-\Function{\tt ATwriteToTextFile}{\tt ATbool}{\aterm\ t, FILE *f}
+\Function{ATwriteToTextFile}{ATbool}{\aterm\ t, FILE *f}
 {Writes term {\tt t} to file {\tt f} in textual format}
 \Describe{
 	This function writes \aterm\ {\tt t} to the file {\tt f} in textual format.
 	This term can later be read again by {\tt ATreadFromTextFile}.
 }
 
-\Function{\tt ATwriteToBinaryFile}{\tt ATbool}{\tt \aterm\ t, FILE *F}
+\Function{ATwriteToBinaryFile}{ATbool}{\aterm\ t, FILE *F}
 {Writes term {\tt t} to file {\tt f} in Binary ATerm Format ({\sc baf})}
 \Describe{
 	This function writes \aterm\ {\tt t} to the file {\tt f} in {\sc baf}.
 	This term can later be read again by {\tt ATreadFromBinaryFile}.
 }
 
-\Function{\tt ATwriteToString}{\tt char *}{\aterm\ t}
+\Function{ATwriteToString}{char *}{\aterm\ t}
 {Writes term {\tt t} to a string}
 \Describe{
 	Writes term {\tt t} to an internal string buffer. The beginning of this
@@ -443,14 +440,14 @@ arguments}
 	and may be overwritten by any call to the \ATlib.
 }
 
-\Function{\tt ATsetAnnotation}{\ATerm}{\aterm\ t, \aterm\ label, \aterm\ anno}
+\Function{ATsetAnnotation}{\ATerm}{\aterm\ t, \aterm\ label, \aterm\ anno}
 {Annotate a term with a labeled annotation}
 \Describe{
 	Creates a version of {\tt t} that is annotated with annotation {\tt anno}
 	which is labeled by {\tt label}.
 }
 
-\Function{\tt ATgetAnnotation}{\ATerm}{\aterm\ t, \aterm\ label}
+\Function{ATgetAnnotation}{\ATerm}{\aterm\ t, \aterm\ label}
 {Retrieves annotation of {\tt t} with label {\tt label}}
 \Describe{
 	This function can be used to retrieve a specific annotation of a term.
@@ -458,7 +455,7 @@ arguments}
 	exists, \NULL\ is returned. Otherwise the annotation is returned.
 }
 
-\Function{\tt ATremoveAnnotation}{\ATerm}{\aterm\ t, \aterm\ label}
+\Function{ATremoveAnnotation}{\ATerm}{\aterm\ t, \aterm\ label}
 {Remove a specific annotation from a term}
 \Describe{
 	This function returns a version of {\tt t} which has its annotation with
@@ -466,20 +463,19 @@ arguments}
 	labeled with {\tt label} exists, {\tt t} itself is returned.
 }
 
-\Function{\tt ATinit}{\tt void}
+\Function{ATinit}{void}
 {\tt int argc, char *argv[], \aterm\ *bottomOfStack}
 {Initialise the \ATlib. See Section~\ref{init}}
 
-\Function{\tt ATprintf}{\tt int}{\tt const char *format, ...}
+\Function{ATprintf}{int}{const char *format, ...}
 {\ATerm\ version of {\tt printf}}
 \Describe{See ATvfprintf}
 
-\Function{\tt ATfprintf}{\tt int}{\tt FILE *stream, const char *format, ...}
+\Function{ATfprintf}{int}{FILE *stream, const char *format, ...}
 {\ATerm\ version of {\tt fprintf}}
 \Describe{See ATvfprintf}
 
-\Function{\tt ATvfprintf}{\tt int}
-{\tt FILE *stream, const char *format, va\_list args}
+\Function{ATvfprintf}{int}{FILE *stream, const char *format, va\_list args}
 {\ATerm\ version of {\tt vfprintf}}
 \Describe{
 	The functions {\tt ATprintf}, {\tt ATfprintf} and {\tt ATvfprintf}
@@ -504,7 +500,7 @@ arguments}
 	\end{small}
 }
 		
-\Function{\tt ATsetErrorHandler}{\tt void}
+\Function{ATsetErrorHandler}{void}
 {\tt (void (*handler)(const char *, va\_list))}
 {Specify an errorhandler for the \ATlib.}
 \Describe{
@@ -514,7 +510,7 @@ arguments}
 	{\tt ATfprintf} and the \ATlib\ then calls {\tt abort()}. 
 }
 
-\Function{\tt ATerror}{\tt void}{\tt (const char *format, ...)}
+\Function{ATerror}{void}{(const char *format, ...)}
 {Dump an errormessage and abort the \ATlib}
 \Describe{
 	If an errorhandler has been installed through a call to
@@ -523,27 +519,27 @@ arguments}
 	{\tt ATvfprintf} (q.v.) followed by a call to {\tt abort}.
 }
 
-\Function{\tt ATprotect}{\tt void}{\aterm\ *atp}{Protect an \aterm}
+\Function{ATprotect}{void}{\aterm\ *atp}{Protect an \aterm}
 \Describe{
 	Protects an \aterm\ from being freed at garbage collection. See
 	Section~\ref{prot}.
 }
 
-\Function{\tt ATunprotect}{\tt void}{\aterm\ *atp}{Unprotect an \aterm}
+\Function{ATunprotect}{void}{\aterm\ *atp}{Unprotect an \aterm}
 \label{at-unprot}
 \Describe{
 	Releases protection of an \aterm\ which has previously been protected
 	through a call to {\tt ATprotect}.
 }
 
-\Function{\tt ATprotectArray}{void}{\aterm\ *start, int size)}
+\Function{ATprotectArray}{void}{\aterm\ *start, int size)}
 {Protect an array of \ATerms}
 \label{at-unprot-arr}
 \Describe{
 	Protects an entire array of {\tt size} \aterms\ starting at {\tt start}.
 }
 
-\Function{\tt ATunprotectArray}{void}{\aterm\ *start)}
+\Function{ATunprotectArray}{void}{\aterm\ *start)}
 {Unprotect an array of \ATerms}
 \Describe{
 	Releases protection of the array of \aterms\ which starts at {\tt
@@ -578,20 +574,20 @@ efficiency reasons.
 The type {\tt ATermInt} is the \ATerm\ representation of an integer. It
 abides by the rules of the {\tt C}-type: {\tt int}.
 
-\Function{\tt ATmakeInt}{\tt ATermInt}{\tt int value}
+\Function{ATmakeInt}{ATermInt}{int value}
 {Build an \aterm Int from an integer ({\tt int})}
 
-\Macro{\tt ATgetInt}{\tt int}{\ATerm\ t}
+\Macro{ATgetInt}{int}{\ATerm\ t}
 {Get the integer value from an \aterm Int.}
 
 \subsubsection{ATermReal}
 The type {\tt ATermReal} is the \ATerm\ representation of a real. It
 abides by the rules of the {\tt C}-type: {\tt double}.
 
-\Function{\tt ATmakeReal}{\tt ATermReal}{double value}
+\Function{ATmakeReal}{ATermReal}{double value}
 {Build an \aterm Real from a real ({\tt double}).}
 
-\Macro{\tt ATgetReal}{\tt double}{\tt \ATerm\ t}
+\Macro{ATgetReal}{double}{\ATerm\ t}
 {Macro to get the real value from an \aterm Real.}
 
 \subsubsection{ATermAppl}
@@ -618,7 +614,7 @@ them.
 \end{verbatim}
 \end{small}
 
-\Function{\tt ATmake\Symbol}{\tt \Symbol}
+\Function{ATmake\Symbol}{\Symbol}
 {\tt char *name, int arity, ATbool quoted}
 {Create a function symbol (\Symbol)}
 \Describe{
@@ -627,7 +623,7 @@ them.
 	{\tt quoted}.
 }
 
-\Function{\tt ATprotect\Symbol}{void}{\Symbol\ sym}
+\Function{ATprotect\Symbol}{void}{\Symbol\ sym}
 {Protect a function symbol}
 \label{at-unprot-sym}
 \Describe{Just as \aterms\ which are not on the stack or in registers must
@@ -635,19 +631,19 @@ them.
 	protected by calling {\tt ATprotect\Symbol}.
 }
 
-\Function{\tt ATunprotect\Symbol}{void}{\Symbol\ sym}
+\Function{ATunprotect\Symbol}{void}{\Symbol\ sym}
 {Release a \Symbol's protection.}
 
-\Macro{\tt ATgetName}{\tt char *}{\tt \Symbol\ sym}
+\Macro{ATgetName}{char *}{\Symbol\ sym}
 {Return the name of a \Symbol}
 
-\Macro{\tt ATgetArity}{\tt int}{\tt \Symbol sym}
-{Return the arity of a \Symbol}
+\Macro{ATgetArity}{int}{\Symbol sym}
+{Return the arity (number of arguments) of a function symbol (\Symbol)}
 
-\Macro{\tt ATisQuoted}{\tt ATbool}{\tt \Symbol\ sym}
-{Find out if a \Symbol\ is quoted or not}
+\Macro{ATisQuoted}{ATbool}{\Symbol\ sym}
+{Find out if a function symbol (\Symbol) is quoted or not}
 
-\Function{\tt ATmakeAppl}{ATermAppl}{\Symbol\ sym, ...}
+\Function{ATmakeAppl}{ATermAppl}{\Symbol\ sym, ...}
 {Build an application from a \Symbol\ and a variable number of arguments.}
 \Describe{
 	The arity is taken from the first argument {\tt sym}, so the other
@@ -656,49 +652,49 @@ them.
 	can be used instead for better efficiency.
 }
 
-\Function{\tt ATmakeAppl0}{\tt ATermAppl}{\Symbol\ s}
+\Function{ATmakeAppl0}{ATermAppl}{\Symbol\ s}
 {Make a function application with zero arguments}
 
-\Function{\tt ATmakeAppl1}{\tt ATermAppl}{\Symbol\ s, \ATerm\ a0}
+\Function{ATmakeAppl1}{ATermAppl}{\Symbol\ s, \ATerm\ a0}
 {Make a function application with one argument}
 
-\Function{\tt ATmakeAppl2}{\tt ATermAppl}{\Symbol\ s, \ATerm\ a0, a1}
+\Function{ATmakeAppl2}{ATermAppl}{\Symbol\ s, \ATerm\ a0, a1}
 {Make a function application with two arguments}
 
-\Function{\tt ATmakeAppl3}{\tt ATermAppl}{\Symbol\ s, \ATerm\ a0, a1, a2}
+\Function{ATmakeAppl3}{ATermAppl}{\Symbol\ s, \ATerm\ a0, a1, a2}
 {Make a function application with three arguments}
 
-\Function{\tt ATmakeAppl4}{\tt ATermAppl}{\Symbol\ s, \ATerm\ a0, a1, a2, a3}
+\Function{ATmakeAppl4}{ATermAppl}{\Symbol\ s, \ATerm\ a0, a1, a2, a3}
 {Make a function application with four arguments}
 
-\Function{\tt ATmakeAppl5}{\tt ATermAppl}{\Symbol\ s,
+\Function{ATmakeAppl5}{ATermAppl}{\Symbol\ s,
 	\ATerm\ a0, a1, a2, a3, a4}
 {Make a function application with five arguments}
 
-\Function{\tt ATmakeAppl6}{\tt ATermAppl}
+\Function{ATmakeAppl6}{ATermAppl}
 {\Symbol\ s, \ATerm\ a0, a1, a2, a3, a4, a5}
 {Make a function application with six arguments}
 \Describe{
-	These functions build an application of arity zero through 6, i.e.
+	These functions build an application of arity zero through six, i.e.
 	an application with $0\ldots 6$ arguments. Use these functions to
 	build {\tt ATermAppl}s with small arity in favour of the generic
 	{\tt ATmakeAppl} described above.
 }
 
-\Macro{\tt ATget\Symbol}{\Symbol}{\tt ATermAppl appl}
-{Get the symbol of an application}
+\Macro{ATget\Symbol}{\Symbol}{ATermAppl appl}
+{Get the function symbol (\Symbol) of an application}
 
-\Macro{\tt ATgetArgument}{\ATerm}{\tt ATermAppl appl, int nr}
+\Macro{ATgetArgument}{\ATerm}{ATermAppl appl, int nr}
 {Get the {\tt nr}-th argument of an application}
 
-\Function{\tt ATsetArgument}{ATermAppl}{ATermAppl appl, ATerm arg, int n}
+\Function{ATsetArgument}{ATermAppl}{ATermAppl appl, ATerm arg, int n}
 {Set the {\tt nr}-th argument of an application to {\tt arg}}
 \Describe{
 	This function return a copy of {\tt appl} with argument {\tt n}
 	replaced by {\tt arg}.
 }
 
-\Function{\tt ATgetArguments}{\tt ATermList}{ATermAppl appl}
+\Function{ATgetArguments}{ATermList}{ATermAppl appl}
 {Get a list of arguments of an application}
 \Describe{
 	Return the arguments of {\tt appl} in {\tt ATermList} format.
@@ -706,7 +702,7 @@ them.
 	efficiently using the {\tt ATgetArgument} macro.
 }
 
-\Function{\tt ATmakeApplList}{\tt ATermAppl}{\Symbol\ sym, ATermList args}
+\Function{ATmakeApplList}{ATermAppl}{\Symbol\ sym, ATermList args}
 {Build an application given a \Symbol\ and list of arguments}
 \Describe{
 	Build an application from {\tt sym} and the argumentlist {\tt args}.
@@ -714,36 +710,36 @@ them.
 	probably more efficient to use the appropriate {\tt ATmakeAppl<N>}.
 }
 
-\Function{\tt ATmakeApplArray}{\tt ATermAppl}{\Symbol\ sym, ATerm args[]}
+\Function{ATmakeApplArray}{ATermAppl}{\Symbol\ sym, ATerm args[]}
 {Build an application given a \Symbol\ and array of arguments}
 
 \subsubsection{ATermList}
-\Function{\tt ATmakeList}{\tt ATermList}{int n, ...}
+\Function{ATmakeList}{ATermList}{int n, ...}
 {Create an {\tt ATermList} of $n$ elements}
 \Describe{
 	This function can be used to build an {\tt ATermList} of $n$ elements.
 	The elements should be passed as arguments $1\ldots n$.
 }
 
-\Macro{\tt ATmakeList0}{\tt ATermList}{}
+\Macro{ATmakeList0}{ATermList}{}
 {Macro defined to point to the empty list {\tt []}}
 
-\Function{\tt ATmakeList1}{\tt ATermList}{\ATerm\ el0}
+\Function{ATmakeList1}{ATermList}{\ATerm\ el0}
 {Construct a list of one element}
 
-\Function{\tt ATmakeList2}{\tt ATermList}{\ATerm\ el0, el1}
+\Function{ATmakeList2}{ATermList}{\ATerm\ el0, el1}
 {Construct a list of two elements}
 
-\Function{\tt ATmakeList3}{\tt ATermList}{\ATerm\ el0, el1, el2}
+\Function{ATmakeList3}{ATermList}{\ATerm\ el0, el1, el2}
 {Construct a list of three elements}
 
-\Function{\tt ATmakeList4}{\tt ATermList}{\ATerm\ el0, el1, el2, el3}
+\Function{ATmakeList4}{ATermList}{\ATerm\ el0, el1, el2, el3}
 {Construct a list of four elements}
 
-\Function{\tt ATmakeList5}{\tt ATermList}{\ATerm\ el0, el1, el2, el3, el4}
+\Function{ATmakeList5}{ATermList}{\ATerm\ el0, el1, el2, el3, el4}
 {Construct a list of five elements}
 
-\Function{\tt ATmakeList6}{\tt ATermList}{\ATerm\ el0, el1, el2, el3, el4, el5}
+\Function{ATmakeList6}{ATermList}{\ATerm\ el0, el1, el2, el3, el4, el5}
 {Construct a list of six elements}
 \Describe{
 	These functions build an {\tt ATermList} of $1\ldots 6$ elements.
@@ -751,25 +747,25 @@ them.
 	function described above.
 }
 
-\Macro{\tt ATgetLength}{\tt int}{\tt ATermList l}
+\Macro{ATgetLength}{int}{ATermList l}
 {Macro to get the length of list {\tt l}}
 
-\Macro{\tt ATgetFirst}{\ATerm}{\tt ATermList l}
+\Macro{ATgetFirst}{\ATerm}{ATermList l}
 {Macro to get the first element of list {\tt l}}
 
-\Macro{\tt ATgetNext}{\tt ATermList}{\tt ATermList l}
+\Macro{ATgetNext}{ATermList}{ATermList l}
 {Macro to get the next part (the tail) of list {\tt l}}
 
-\Macro{\tt ATisEmpty}{\tt ATbool}{\tt ATermList l}
+\Macro{ATisEmpty}{ATbool}{ATermList l}
 {Macro to test if list {\tt l} is empty}
 
-\Function{\tt ATgetPrefix}{\tt ATermList}{\tt ATermList list}
+\Function{ATgetPrefix}{ATermList}{ATermList list}
 {Return all but the last element of {\tt list}}
 
-\Function{\tt ATgetLast}{\ATerm}{\tt ATermList list}
+\Function{ATgetLast}{\ATerm}{ATermList list}
 {Return the last element of {\tt list}}
 
-\Function{\tt ATgetSlice}{\tt ATermList}
+\Function{ATgetSlice}{ATermList}
 {ATermList list, int start, int end}
 {Get a portion (slice) of a list}
 \Describe{
@@ -777,18 +773,18 @@ them.
 	{\tt end}. Thus {\tt start} is included, {\tt end} is not.
 }
 
-\Function{\tt ATinsert}{\tt ATermlist}{\tt ATermList list, \ATerm\ el}
+\Function{ATinsert}{ATermlist}{ATermList list, \ATerm\ el}
 {Return {\tt list} with {\tt el} inserted.}
 \Describe{
   The complexity of {\tt ATinsert} is $O(1)$. That is, the behaviour of
   {\tt ATinsert} does not degrade as the length of {\tt list} increases.
 }
 
-\Function{\tt ATinsertAt}{\tt ATermList}
+\Function{ATinsertAt}{ATermList}
 {(ATermList list, \ATerm\ el, int index}
   {Return {\tt list} with {\tt el} inserted at position {\tt index}}
 
-\Function{\tt ATappend}{\tt ATermList}{\tt ATermList list, ATerm el}
+\Function{ATappend}{ATermList}{ATermList list, ATerm el}
 {Return {\tt list} with {\tt el} appended}
 \Describe{
   Note that {\tt ATappend} is implemented in terms of {\tt ATinsert} by
@@ -801,11 +797,10 @@ them.
   this behaviour, the inner loop could use {\tt ATinsert} instead of {\tt
   ATappend} to make the new list. This will result in the target list being
   in reverse order. A single {\tt ATreverse} must therefore be performed,
-  but this can be done once at the end of the loop bringing the behaviour
-  down from quadratic to linear complexity, but at the cost of two {\tt
-  ATinsert}s per element (one for each {\tt ATinsert} in the loop, and an
-  implicit one for each element through the use of {\tt ATreverse}). 
-  
+  but this can be done once, after the loop has terminated, bringing the
+  behaviour down from quadratic to linear complexity, but at the cost of
+  two {\tt ATinsert}s per element (one for each {\tt ATinsert} in the loop,
+  and an implicit one for each element through the use of {\tt ATreverse}).
   An even further optimisation could make use of a locally allocated
   buffer.  While traversing the list, all elements that would normally be
   {\tt ATappend}ed, are now placed in this buffer. Finally, the result is
@@ -816,10 +811,10 @@ them.
   elements.
 }
 
-\Function{\tt ATconcat}{\tt ATermList}{\tt ATermList list1, ATermList list2}
+\Function{ATconcat}{ATermList}{ATermList list1, ATermList list2}
 {Return the concatenation of {\tt list1} and {\tt list2}}
 
-\Function{\tt ATindexOf}{\tt int}{\tt ATermList list, ATerm el, int start)}
+\Function{ATindexOf}{int}{ATermList list, ATerm el, int start)}
 {Return the index of an \ATerm\ in a list}
 \Describe{
 	Return the index where {\tt el} can be found in {\tt list}. Start
@@ -827,7 +822,7 @@ them.
 	not in {\tt list}.
 }
 
-\Function{\tt ATlastIndexOf}{\tt int}
+\Function{ATlastIndexOf}{int}
 {\tt ATermList list, ATerm el, int start)}
 {Return the index of an \ATerm\ in a list (reverse)}
 \Describe{
@@ -837,30 +832,30 @@ them.
 	{\tt start}.
 }
 
-\Function{\tt ATelementAt}{\ATerm}{\tt ATermList list, int index)}
+\Function{ATelementAt}{\ATerm}{ATermList list, int index)}
 {Return a specific element of a list}
 \Describe{
 	Return the element at position {\tt index} in {\tt list}. Return
 	\NULL\ when {\tt index} is not in {\tt list}.
 }
 
-\Function{\tt ATremoveElement}{\tt ATermList}{\tt ATermList list, \ATerm\ el}
+\Function{ATremoveElement}{ATermList}{ATermList list, \ATerm\ el}
 {Return {\tt list} with one occurrence of {\tt el} removed}
 
-\Function{\tt ATremoveAll}{\tt ATermList}{\tt ATermList list, \ATerm\ el}
+\Function{ATremoveAll}{ATermList}{ATermList list, \ATerm\ el}
 {Return {\tt list} with all occurrences of {\tt el} removed}
 
-\Function{\tt ATremoveElementAt}{\tt ATermList}
+\Function{ATremoveElementAt}{ATermList}
 {\tt ATermList list, int index}
 {Return {\tt list} with the element at {\tt index} removed}
 
-\Function{\tt ATreplace}{\tt ATermList}{\tt ATermList list, \ATerm\ el, int idx}
+\Function{ATreplace}{ATermList}{ATermList list, \ATerm\ el, int idx}
 {Return {\tt list} with the element at {\tt index} replaced by {\tt el}}
 
-\Function{\tt ATreverse}{\tt ATermList}{\tt ATermList list)}
+\Function{ATreverse}{ATermList}{ATermList list)}
 {Return {\tt list} with its elements in reversed order}
 
-\Function{\tt ATfilter}{ATermList}
+\Function{ATfilter}{ATermList}
 {ATermList list, ATbool (*predicate)(ATerm)}
 {Filter entries from a list using a predicate}
 \Describe{
@@ -872,14 +867,14 @@ them.
 }
 
 \subsubsection{ATermPlaceholder}
-\Function{\tt ATmakePlaceholder}{\tt ATermPlaceholder}{\tt\ATerm\ type}
+\Function{ATmakePlaceholder}{ATermPlaceholder}{\ATerm\ type}
 {Build an \aterm Placeholder of {\tt type}}
 
-\Macro{\tt ATgetPlaceholder}{\ATerm}{\tt ATermPlaceholder ph}
+\Macro{ATgetPlaceholder}{\ATerm}{ATermPlaceholder ph}
 {Get the type of an \aterm Placeholder}
 
 \subsubsection{ATermBlob}
-\Function{\tt ATmakeBlob}{\tt ATermBlob}{\tt int size, void *data)}
+\Function{ATmakeBlob}{ATermBlob}{int size, void *data)}
 {Build a Binary Large OBject given {\tt size} (in bytes) and {\tt data}}
 \Describe{
  This function can be used to create an \aterm\ of type blob, holding
@@ -891,14 +886,14 @@ them.
  area to 16 Mb.
 }
 
-\Macro{\tt ATgetBlobData}{\tt void *}{\tt ATermBlob blob}
+\Macro{ATgetBlobData}{void *}{ATermBlob blob}
 {Get the data section of {\tt blob}}
 
-\Macro{\tt ATgetBloBSize}{\tt int}{\tt ATermBlob blob}
+\Macro{ATgetBloBSize}{int}{ATermBlob blob}
 {Get the size (in bytes) of {\tt blob}}
 
-\Function{\tt ATregisterBlobDestructor}{\tt void}
-{\tt ATbool (*destructor)(ATermBlob)}
+\Function{ATregisterBlobDestructor}{void}
+{ATbool (*destructor)(ATermBlob)}
 {Register a blob-destructor function}
 \Describe{
  When a blob-destructor function has been registered, it will be called
@@ -907,8 +902,8 @@ them.
  most 16 blob destructor functions can be registered.
 }
 
-\Function{\tt ATunregisterBlobDestructor}{\tt void}
-{\tt ATbool (*destructor)(ATermBlob)}
+\Function{ATunregisterBlobDestructor}{void}
+{ATbool (*destructor)(ATermBlob)}
 {Unregister a previously registered blob-destructor function}
 \Describe{
 	This removes the blob-destructor that has been previously installed
@@ -924,21 +919,21 @@ dictionary, the list is traversed to see if the current element's key
 matches the one that is being looked up. For a more efficient
 \ATerm-to-\ATerm\ mapping, see Tables in section~\ref{tables}.
 
-\Function{\tt ATdictCreate}{\tt \ATerm}{}{Create a new dictionary}
+\Function{ATdictCreate}{\ATerm}{}{Create a new dictionary}
 
-\Function{\tt ATdictGet}{\tt \ATerm}{\tt \ATerm\ dict, \ATerm\ key}
+\Function{ATdictGet}{\ATerm}{\ATerm\ dict, \ATerm\ key}
 {Get the value belonging to a given key in a dictionary.}
 
-\Function{\tt ATdictPut}{\tt \ATerm}
-{\tt \ATerm\ dict, \ATerm\ key, \ATerm value}
+\Function{ATdictPut}{\ATerm}
+{\ATerm\ dict, \ATerm\ key, \ATerm\ value}
 {Add / update a (key, value)-pair in a dictionary}
 \Describe{
  If {\tt key} does not already exist in the dictionary, this function adds
  the ({\tt key}, {\tt value})-pair to the dictionary. Otherwise, it updates
- the value to {\tt value}.
+ the value to {\tt value}. The modified dictionary is returned.
 }
 
-\Function{\tt ATdictRemove}{\tt \ATerm}{\tt \ATerm dict, \ATerm key}
+\Function{ATdictRemove}{\ATerm}{\ATerm\ dict, \ATerm\ key}
 {Remove the ({\tt key}, value)-pair from the dictionary}
 \Describe{
 	This function can be used to remove an entry from the dictionary.
@@ -953,7 +948,7 @@ makes them less suitable for large \aterm-to-\aterm\ mappings. To this end,
 \ATerm\ tables were created. These are implemented as hashtables of
 \aterms, with each hashbucket implemented as a dictionary.
 
-\Function{\tt ATtableCreate}{ATermTable}{int initial\_size, int max\_load\_pct}
+\Function{ATtableCreate}{ATermTable}{int initial\_size, int max\_load\_pct}
 {Create an ATermTable}
 \Describe{
  This function creates an ATermTable given an initial size and a maximum
@@ -969,7 +964,7 @@ makes them less suitable for large \aterm-to-\aterm\ mappings. To this end,
  increases efficiency.
 }
 
-\Function{\tt ATtableDestroy}{void}{ATermTable table}
+\Function{ATtableDestroy}{void}{ATermTable table}
 {Destroy an ATermTable}
 \Describe{
  Contrary to ATermDictionaries, ATermTables are themselves \emph{not}
@@ -981,7 +976,7 @@ makes them less suitable for large \aterm-to-\aterm\ mappings. To this end,
  garbage collector (if no other references to them exist of course).
 }
 
-\Function{\tt ATtablePut}{void}{ATermTable table, ATerm key, ATerm value}
+\Function{ATtablePut}{void}{ATermTable table, ATerm key, ATerm value}
 {Add / update a (key, value)-pair in a table}
 \Describe{
  If {\tt key} does not already exist in the table, this function adds the
@@ -989,14 +984,14 @@ makes them less suitable for large \aterm-to-\aterm\ mappings. To this end,
  value to {\tt value}.
 }
 
-\Function{\tt ATtableGet}{ATerm}{ATermTable table, ATerm key}
+\Function{ATtableGet}{ATerm}{ATermTable table, ATerm key}
 {Get the value belonging to a given key in a table}
 
 
-\Function{\tt ATtableRemove}{void}{ATermTable table, ATerm key}
+\Function{ATtableRemove}{void}{ATermTable table, ATerm key}
 {Remove the ({\tt key}, value)-pair from {\tt table}}
 
-\Function{\tt ATtableKeys}{ATermList}{ATermTable table}
+\Function{ATtableKeys}{ATermList}{ATermTable table}
 {Get an ATermList of all the keys in a table}
 \Describe{
  This function can be useful if you need to iterate over all elements in a
@@ -1034,27 +1029,28 @@ Usage: baffle [-i <input>] [-o <output> | -c] [-v] [-rb | -rt] [-wb | -wt]
 
 \subsubsection{\tt trm2baf}
 A small script called {\tt trm2baf} is included which can be used to
-connect a process producing textual output and a proces which expects {\sc
+connect a process producing textual output and a process which expects {\sc
 baf} input. It just sets up {\tt baffle} with the appropriate switches and
 redirects {\tt stdin} and {\tt stdout} accordingly.
 
 \subsubsection{\tt baf2trm}
 A small script called {\tt baf2trm} is included which can be used to
-connect a process producing {\sc baf} output and a proces which expects
+connect a process producing {\sc baf} output and a process which expects
 textual input. It just sets up {\tt baffle} with the appropriate switches
 and redirects {\tt stdin} and {\tt stdout} accordingly.
 
 \subsection{Calculating an \ATerm's size: {\tt termsize}}
 \label{util-termsize}
-This utility can be used to calculate two things:
+This utility can be used to calculate three things:
 \begin{itemize}
   \item coresize: the amount of memory a given \aterm\ needs;
   \item textsize: the amount of memory needed to hold a textual
-  representation of an \aterm. 
+  representation of an \aterm;
+  \item treedepth: the maximum depth of a term.
 \end{itemize}
 The results are written to {\tt stdout}. As {\tt termsize} uses {\tt
-ATreadFromFile}, it can calculate the size of both textual representations
-of \aterms\ as well as {\sc baf} representations.
+ATreadFromFile}, it can calculate the size of both textual and {\sc baf}
+representations of \aterms.
 
 \smallskip\noindent Usage: {\tt termsize < }\emph{inputfile}.
 
