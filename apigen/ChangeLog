@@ -7,6 +7,7 @@
  * fixed output of usage() in utils/adt-to-c (conforming to new behaviour)
  * silenced output of test/rolotest (new visit/acceptor code was verbose)
  * added ChangeLog entry for Jurgen's fix to his changes of 2001/01/16
+ * utils/ADT.adt and utils/ADT.pro added to EXTRA_DIST
 
 2001/02/19 (jurgenv@cwi.nl)
  * adapted test/booltest to conform to the new functions generated for
