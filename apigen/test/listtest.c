@@ -35,12 +35,14 @@ static void testList()
   sep[2] = concatSeparated(sep[0],l1,l2,sep[1]);
   sep[3] = appendSeparated(sep[0],l1,l2,m);
   assert(isEqualSeparated(sep[2],sep[3]));
+  assert(getSeparatedLength(sep[2]) == 1);
 
   sep[5] = makeSeparatedMany(m1,l1,l2,makeSeparatedSingle(m2));
   sep[5] = concatSeparated(sep[5],l1,l2,sep[5]);
   sep[6] = makeSeparatedMany(m2,l2,l1,makeSeparatedSingle(m1));
   sep[6] = concatSeparated(sep[6],l2,l1,sep[6]);
   assert(isEqualSeparated(reverseSeparated(sep[5]),sep[6])); 
+  assert(getSeparatedLength(sep[6]) == 4);
 }
 
 
