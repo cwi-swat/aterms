@@ -2,7 +2,7 @@ EXTRA_DIST = append.ltx at.ltx aterm.ltx corrections.ltx \
              corrections2.ltx gtld-at.ltx manual.ltx thesis.bib \
              encoding.fig header.fig hierarchy.fig sharing.eps \
              speauth.cls spedoc.tex \
-             general-make at.ps manual.ps java-api.ps
+             general-make at.ps manual.ps
 
 SUBDIRS=examples spec
 
