@@ -31,8 +31,8 @@ AC_CHECK_PROG(CC_CC,cc,cc,true)
 AC_CHECK_PROG(CC_DBG,gcc,gcc,true)
 AC_CHECK_PROG(CC_PROF,gcc,gcc,true)
 
-CFLAGS_GCC="-Wall -pedantic -O4"
-CFLAGS_CC="-O"
+CFLAGS_GCC="-Wall -pedantic -O4 -DNDEBUG"
+CFLAGS_CC="-O -DNDEBUG"
 
 DEFS='-DVERSION="\"$(VERSION)\""'
 if test ${CC_DBG} = gcc; then

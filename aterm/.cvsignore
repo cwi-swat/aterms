@@ -1,0 +1,7 @@
+Makefile
+configure
+config.status
+config.cache
+*.tar.gz
+diff.out
+update.out
