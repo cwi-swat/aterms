@@ -132,9 +132,10 @@ more self-contained.}
 
 \item[20.] Omit Appendix B or condense it.
 
-\emph{We prefer to keep this appendix, since it gives
-insight in the simplicity of the level 1 interface
-as well as of the details of the level 2 interface.
+\emph{We prefer to keep this appendix, as it gives
+insight in the details of the level~2 interface,
+thereby also emphasizing the simplicity of the level~1
+ interface.
 }
 
 \end{itemize}
@@ -152,7 +153,7 @@ as well as of the details of the level 2 interface.
 \item[23.] Refer to ASDL.
 
 \emph{A paragraph has been  added to Section 6, describing
-ASDL and giving some figures to compare the BAF format with
+ASDL and giving some figures comparing the BAF format with
 ASDL pickles.}
 
 \item[24.] Give measurements that compare with other methods.
@@ -196,10 +197,13 @@ a function to use binary encodings to/from strings.
 
 \emph{User CPU time is measured. We have added a note explaining this.}
 
-\item[30.] Why is reading binary files faster than reading them?
+\item[30.] Why is reading binary files faster than writing them and
+is it the other way around for Ascii files?
 
 \emph{An explanation added which is based on the observation that
-reading the Ascii representation involves more matching operations.}
+reading the Ascii representation involves more matching operations.
+When writing BAF, we need to do more calculations to encode the sharing
+of terms.}
 
 \item[31.] Typo 4.2. \emph{Fixed.}
 
@@ -230,7 +234,7 @@ A remark has been added that these
 \item[37.] Give better intro to ASF+SDF.
 
 \emph{
-A number of sentences are added to  briefly explain ASF+SDF.}
+A section has been added to briefly explain ASF+SDF.}
 
 \end{itemize}
 
