@@ -47,9 +47,9 @@ randgen_LDADD      	= $(LDLIBS)
 termstats_SOURCES  	= termstats.c
 termstats_LDADD    	= $(LDLIBS)
 
-tool2.tif-dbg.o : tool2.tif.c
+test-tool2.c : tool2.tif.h
 
-tool2.tif-dbg.o : tool2.tif.c tool2.tif.h
+tool2.tif.o : tool2.tif.c tool2.tif.h
 
 tool2.tif.c tool2.tif.h : test2.tifs
 	$(top_builddir)/toolbus/tifstoc -tool tool2 $<
