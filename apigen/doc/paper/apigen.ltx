@@ -53,20 +53,30 @@
 
 Using the \atlib\ to represent tree-like datastructures has become a
 popular activity, especially to developers of e.g. lexical scanners,
-parsers, rewrite engines and model checkers. Practical experience
-with the \atlib\ in the \metaenv\ has shown that the development and
-maintenance of tools that use handcrafted \aterm-patterns is quite
-involved and very error prone. These issues are fundamental to the use
-of handcrafted \aterm-patterns, and place a development challenge and
-maintenance burden on any tool that uses them.
+parsers, rewrite engines and model checkers. Practical experience with the
+\atlib\ in the \metaenv\ has shown that the development and maintenance
+of tools that access \aterms\ using handcrafted code is involved and
+very error prone. Both the \emph{make and match} paradigm and the
+\emph{direct manipulation} of \aterms\ suffer from the fact that the
+programmer uses knowledge about the underlying structure of the \aterm\
+that represents the data type being accessed. Hardwiring this knowledge
+in various tools makes it difficult to maintain the tools with respect
+to changes in the datastructure.
 
-This paper addresses these issues from the point of view of the \metaenv,
-specifically dealing with the parsetree format called \asfix\ that is
-used in most of its tools. We describe a way to generate an Abstract
-Programming Interface (\api) as well as various implementations, geared
-towards \emph{type-safety} or \emph{efficiency} as needed. Application
-of these techniques to the tools in the \metaenv\ has resulted in the
-spectacular elimination of 25\% of the handwritten code, thus greatly
+By lifting the data definition and its mapping to an \aterm\
+representation from the level of tool implementation, it becomes possible
+to generate a library of access functions on the data type, which can be
+used by all the tools that need access to it. The tools no longer directly
+manipulate the \aterm\ representation, but rather invoke methods described
+by the \api\ of the library, thus abstracting from the fact that \aterms\
+are used for the implementation of the data type.
+
+This paper describes how an \api\ and its implementation can be generated
+from a syntax definition of the data type. In particular we describe
+how an annotated \sdf\ specification can be used to generate a library
+of access functions that manipulate the parse trees of terms over this
+syntax. Application of this technique in the \metaenv\ has resulted in
+a spectacular elimination of 25\% of the handwritten code, thus greatly
 improving both maintainability of the tools and their flexibility with
 respect to changes in the parsetree format.
 
@@ -120,19 +130,19 @@ this generated \api\ benefit from improved simplicity and readability,
 are easier to maintain and are more robust against changes in the
 underlying \asfix\ representation.
 
-This paper describes how an annotated grammar or syntax definition can
-be used to generate a library of functions that provide access to the
-parse trees of terms over this grammar. In particular we describe how
-a \sdf-specification commonly found when using the \metaenv\ is used
-to collect the information necessary to build a mapping between grammar
-productions and their \aterm-pattern in the eventual \asfix\ parse tree,
-and how this mapping is subsequently used to generate \C\ functions that
-provide an \api\ to these parse trees.
+This paper describes how an annotated grammar or syntax definition
+can be used to generate a library of functions that provide access to
+the parse trees of terms over this grammar. In particular we describe
+how a \sdf-specification commonly found when using the \metaenv\ is
+used to collect the information necessary to build a mapping between
+grammar productions and their \aterm-pattern in the underlying \asfix\
+parse tree, and how this mapping is subsequently used to generate \C\
+functions that provide an \api\ to these parse trees.
 
 Before getting to the core of the generation scheme, we
 present introductory sections on the specification formalism
-\asdf\ (Section~\ref{sec:asdf-nutshell}), and the syntax
-of \aterms\ (Section~\ref{sec:aterm-syntax}), and \asfix\
+\asdf\ (Section~\ref{sec:asdf-nutshell}), the syntax of
+\aterms\ (Section~\ref{sec:aterm-syntax}), and \asfix\
 (Section~\ref{sec:asfix-syntax}).
 
 % {{{  subsection{\asdf\ in a nutshell}
@@ -256,73 +266,134 @@ by a subterm and a closing angular bracket. Examples are: \texttt{<int>},
 % }}}
 % {{{  \subsection{\asdf\ Parse Trees: the \asfix\ syntax}
 
-\subsection{\asdf\ Parse Trees: the \asfix\ syntax}
+\subsection{\asdf\ Parse Trees for Dummies: \asfix\ explained}
 \label{sec:asfix-syntax}
 
-For a given \sdf-specification, a parse table can be generated using the
+From a \sdf-specification, a parse table can be generated using the
 \texttt{pgen} tool from the \metaenv. This parse table can subsequently
 be used by \texttt{sglr}: the scannerless, generalized LR parser to
 parse input terms over the syntax described by the \sdf-specification.
-As a result of this parsing, a parse tree is yielded in \asfix: a parse
-tree format, built on \aterms, specifically designed to be the exchange
-format for tools in the \metaenv.
+The result of a succesful parse is a parse tree. The data structure used
+to represent parse trees is called \asfix, and is implemented using the
+\atlib\ to exploit the maximal subterm sharing that is commonly present
+in parse trees.
 
-Because \asfix\ is a parse tree format (and not an abstract syntax tree),
-information such as layout in the input term as well as syntax-derived
-facts such as associativity and constructor information is still
-available to any tool that has access to the \asfix\ representation of
-the input term.
+Because \asfix\ is a parse tree format (as opposed to an abstract syntax
+tree), layout in the input term is preserved, and other syntax-derived
+facts such as associativity and constructor information is made available
+to any tool that has access to the \asfix\ representation of the input
+term.
 
 The definition of the concrete syntax of \asfix\ is given in
 Appendix~\ref{app:asfix-syntax}, but to quickly familiarize the reader
-with \asfix, we will explain some of its idiosyncrasies by means of real
-life examples.
+with \asfix, we show some of its idiosyncrasies by means of real life
+examples.
 
-\texttt{todo: beef up examples and fully explain cf(opt(layout))}
+\hrulefill\nopagebreak
 
-\noindent The production
+\textbf{Example: grammar production \texttt{"true" -> Bool}}
+
+\nopagebreak
+The \asfix\ representation of the \sdf\ production
+\begin{quote}
+  \verb+"true" -> Bool+
+\end{quote}
+is:
+\begin{verbatim}
+  prod([lit("true")],cf(sort("Bool")),no-attrs)
+\end{verbatim}
+\medskip
+The literal \texttt{true} is the only element in the lefthand side 
+of the production. It is injected into the sort \texttt{Bool}.
+
+\hrulefill\nopagebreak
+
+\textbf{Example: grammar production \texttt{Bool "and" Bool -> Bool {left}}}
+
+\nopagebreak
+
+The \asfix\ representation of the grammar production
+
+\begin{quote}
 {\footnotesize\verb+Bool "and" Bool" -> Bool {left}+}
-from Figure~\ref{fig:bool-example} looks like
-this\footnote{The insertion of \texttt{cf(opt(layout))} at each
-location where the input term is allowed to contain whitespace is done
-automatically for each context-free syntax rule by the \sdf\ normalizer
-and is left undiscussed in this paper.}:
-% {{{  example "prod":  Bool "and" Bool -> Bool {left}
+\end{quote}
 
-\begin{footnotesize}
+looks like this:
+
+\begin{scriptsize}
 \begin{verbatim}
-  prod([cf(sort("Bool")),cf(opt(layout)),lit("and"),cf(opt(layout)),cf(sort("Bool"))],
-    cf(sort("Bool")),
-    attrs([assoc("left")]))
+ 1  prod([cf(sort("Bool")),cf(opt(layout)),lit("and"),cf(opt(layout)),cf(sort("Bool"))],
+ 2    cf(sort("Bool")),
+ 3    attrs([assoc("left")]))
 \end{verbatim}
-\end{footnotesize}
+\end{scriptsize}
 
-% }}}
+Line $1$ declares this to be a grammar production (\texttt{prod}),
+containing al the elements of the lefthand side of the production. The
+\sdf-normalizer has inserted \texttt{cf(opt(layout))} subterms at exactly
+those locations where optional layout in the input term is allowed.
 
-\noindent And the parse tree for {\footnotesize\texttt{true and false}}
-becomes:
-% {{{  example "appl":  true and false
+Line $2$ tells us that the result sort of this production is \texttt{Bool}.
 
-\begin{footnotesize}
+Line $3$ show the attributes associated with this production. In this case
+the only attribute is \texttt{left} for left-associativity.
+
+\hrulefill\nopagebreak
+
+\textbf{Example: parsed term \texttt{true and false}}
+
+\nopagebreak
+
+If the input term
+
+\begin{quote}
+  \texttt{true and false}
+\end{quote}
+
+is parsed, the resulting parse tree is the production from the
+previous example, applied to the actual arguments \texttt{true} and
+\texttt{false}. The layout in the input term consists of exactly one
+space immediately before and after the keyword \texttt{and}.
+
+\begin{scriptsize}
 \begin{verbatim}
-appl(
- prod([cf(sort("Bool")),cf(opt(layout)),lit("and"),cf(opt(layout)),cf(sort("Bool"))],
-       cf(sort("Bool")),attrs([assoc("left")])),
- [appl(prod([lit("true")],cf(sort("Bool")),no-attrs),[lit("true")]),
-  layout([" "]), lit("and"), layout([" "]),
-  appl(prod([lit("false")],cf(sort("Bool")),no-attrs),[lit("false")])])
+ 1 appl(
+ 2  prod([cf(sort("Bool")),cf(opt(layout)),lit("and"),cf(opt(layout)),cf(sort("Bool"))],
+ 3       cf(sort("Bool")),attrs([assoc("left")])),
+ 4 [appl(prod([lit("true")],cf(sort("Bool")),no-attrs),[lit("true")]),
+ 5  layout([" "]), lit("and"), layout([" "]),
+ 6  appl(prod([lit("false")],cf(sort("Bool")),no-attrs),[lit("false")])])
 \end{verbatim}
-\end{footnotesize}
+\end{scriptsize}
+
+Line $1$ states that this tree is the application of a grammar production
+to a specific term.
+
+Lines $2-3$ show the \texttt{Bool "and" Bool -> Bool {"left"}} from the previous
+example.
+
+Line 4 shows the application of the production \texttt{"true" -> Bool} to
+the literal \texttt{"true"}
+
+Line 5 are the instantiated notions of optional layout. In this case the
+input term contained exactly one space immediately before and just after
+the keyword \texttt{"and"}.
+
+Line 6 is similar to Line 4, except that it represents the literal
+\texttt{"false"}.
+
+\hrulefill
+
+The fact that many tools in the \metaenv\ need to operate on such
+parse trees, raises the question of how best to access this \aterm\
+representation of a data type.
 
 % }}}
 
-% }}}
+% {{{  Accessing \aterm\ Data Types
 
-% }}}
-% {{{  Parse Tree access: the artisan approach
-
-\section{Parse Tree access: the artisan approach}
-\label{sec:using-atlib}
+\section{Accessing \aterm\ Data Types}
+\label{sec:aterm-access}
 
 We briefly discuss the two layers of access provided by the \C\
 implementation of the \atlib, and show the steps needed to gain access
