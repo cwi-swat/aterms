@@ -18,7 +18,6 @@ do
     *)
       shift;
   esac
-  shift
 done
 
 if [ "a${JAR}" = "atrue" ]; then

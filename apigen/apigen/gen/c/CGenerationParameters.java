@@ -70,7 +70,8 @@ public class CGenerationParameters extends GenerationParameters {
 	public void check() {
 		super.check();
 		if (getVersion() == null) {
-			throw new IllegalArgumentException("No API version specified");
+			System.err.println("warning: no API version specified.");
+			setVersion("0.0.0");
 		}
 	}
 

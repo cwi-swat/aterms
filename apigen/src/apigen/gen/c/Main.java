@@ -27,7 +27,7 @@ public class Main {
 
 		try {
 			params.parseArguments(args);
-			params.check();//checkParameters(params);
+			params.check();
 		}
 		catch (IllegalArgumentException e) {
 			System.err.println(e.getMessage());
