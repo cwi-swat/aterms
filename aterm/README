@@ -18,12 +18,8 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 
 
-README with version 0.6 of the aterm library.
-=============================================
-
-This library implements the ATerm datatype as described in ...
-This distribution also contains a first draft of a paper describing
-the ATerm datatype and its implementation in this library.
+README with this version of the aterm library.
+==============================================
 
 The ATerm library needs GNU-make in order to compile correctly.
 You can retrieve the latest version of GNU-make from your closes
