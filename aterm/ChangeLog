@@ -1,5 +1,13 @@
 $Id$
 
+2002-12-05  Pierre-Etienne Moreau  <pem@escher.loria.fr>
+ * do not activate statistics
+ * improve the "freeze" mechanism: when a block contains many old objects
+   (>TO_OLD_RATIO) the block can be promoted to the second generation only
+   if does not contain any young object. To improve the efficiency of the
+   GC we "freeze" these blocks: not further allocation can be done in the
+   block. 
+	
 2002/10/31 <jong,olivierp@cwi.nl>
  * Blob size is now stored in a separate word instead of the header
  * Added test for writing blobs to binary string

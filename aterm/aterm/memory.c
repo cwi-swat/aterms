@@ -742,7 +742,8 @@ static void allocate_block(int size) {
   */
 
   newblock->end = (newblock->data) + (BLOCK_SIZE - (BLOCK_SIZE % size));
-  
+
+  CLEAR_FROZEN(newblock);
   newblock->size = size;
   newblock->next_by_size = at_blocks[size];
   at_blocks[size] = newblock;
@@ -779,6 +780,7 @@ static void allocate_block(int size)
   }
   at_nrblocks[size]++;
 
+  CLEAR_FROZEN(newblock);
   newblock->size = size;
   newblock->next_by_size = at_blocks[size];
   at_blocks[size] = newblock;
@@ -818,8 +820,8 @@ static void allocate_block(int size)
 
 /*  fprintf(stderr,"total_nodes = %d\n",total_nodes); */
 
-#define AT_STATISTICS AT_statistics()
-/*#define AT_STATISTICS */
+/*#define AT_STATISTICS AT_statistics()*/
+#define AT_STATISTICS 
 
 #ifndef NO_SHARING
 #define ALLOCATE_BLOCK_TEXT\
@@ -1531,7 +1533,7 @@ ATermPlaceholder ATmakePlaceholder(ATerm type)
 ATermBlob ATmakeBlob(int size, void *data)
 {
   ATerm cur;
-  header_type header = BLOB_HEADER(0, size);
+  header_type header = BLOB_HEADER(0);
 
   cur = AT_allocate(TERM_SIZE_BLOB);
   cur->header = header;

@@ -563,7 +563,7 @@ void AT_init_gc_parameters(ATbool low_memory) {
 }
 
 #ifndef NO_SHARING
-#define TO_OLD_RATIO   75
+#define TO_OLD_RATIO   65
 #define TO_YOUNG_RATIO 25
 #else
 #define TO_OLD_RATIO   60
@@ -945,7 +945,7 @@ void major_sweep_phase_young() {
         at_freelist[size] = old_freelist;
 	reclaim_empty_block(at_blocks, size, block, prev_block);
       } else if(end==block->end &&
-                young_in_block == 0 &&
+                  /*young_in_block == 0 &&*/
                 100*old_in_block/capacity >= TO_OLD_RATIO) {
 
           /*
@@ -957,19 +957,20 @@ void major_sweep_phase_young() {
         fprintf(stderr,"old   = %d\n",old_in_block);
           */
         
-        at_freelist[size] = old_freelist;
-        
         if(young_in_block == 0) {
 #ifdef GC_VERBOSE
           fprintf(stderr,"MAJOR YOUNG: promote block %p to old\n",block);
 #endif
+          at_freelist[size] = old_freelist;
           promote_block_to_old(size, block, prev_block);
           old_bytes_in_old_blocks_after_last_major += (old_in_block*SIZE_TO_BYTES(size));
         } else {
 #ifdef GC_VERBOSE
           fprintf(stderr,"MAJOR YOUNG: freeze block %p\n",block);
 #endif
+          SET_FROZEN(block);
           old_bytes_in_young_blocks_after_last_major += (old_in_block*SIZE_TO_BYTES(size));
+          at_freelist[size] = old_freelist;
           prev_block = block;
         }
       } else {
@@ -1113,6 +1114,11 @@ void minor_sweep_phase_young() {
         }
       }
 #endif
+
+        /* Do not reclaim frozen blocks */
+      if(IS_FROZEN(block)) {
+        at_freelist[size] = old_freelist;
+      }
       
         /* TODO: create freeList Old*/
       if(0 && empty) {

@@ -31,6 +31,9 @@
 #define ADDR_TO_BLOCK_IDX(a) \
 ((((HashNumber)(a))>>(BLOCK_SHIFT+PTR_ALIGN_SHIFT)) % BLOCK_TABLE_SIZE)
 
+#define SET_FROZEN(block) ((block)->frozen=1)
+#define IS_FROZEN(block) ((block)->frozen==1)
+#define CLEAR_FROZEN(block) ((block)->frozen=0)
 
 typedef struct Block
 {
@@ -38,6 +41,7 @@ typedef struct Block
   header_type data[BLOCK_SIZE];
 
   int size;
+  int frozen; /* this int is used as a boolean */
   struct Block *next_by_size;
 /*#ifndef PO*/
 /*  struct Block *next;*/
