@@ -38,3 +38,5 @@ builtins.dict
 builtins.h
 builtinstest
 builtins
+builtins_dict.c
+builtins_dict.h
