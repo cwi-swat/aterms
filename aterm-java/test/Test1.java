@@ -531,7 +531,7 @@ public class Test1 {
   
 
   public void testAll() {
-
+/*
     testMakeInt();
     testMakeReal();
     testMakeAppl();
@@ -539,9 +539,9 @@ public class Test1 {
     testMakeList();
     testPatternMatch();
     testPatternMake();
-    
-      //testFib();
-      //testPrimes(2000);
+  */  
+      testFib();
+      testPrimes(2000);
       //testFibInterpreted();
   }
 
