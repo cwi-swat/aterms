@@ -112,7 +112,7 @@ class ATermListImpl
       return true;
     }
 
-    return super.match(pattern, list);;
+    return super.match(pattern, list);
   }
 
   //}}}
