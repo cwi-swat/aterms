@@ -9,8 +9,9 @@
 
 static char myname[]    = "convert-old-adt";
 static char myversion[] = "1.0";
-static char myarguments[] = "hi:o:V";
+static char myarguments[] = "hi:lo:V";
 
+static ATbool checkForListIdioms = ATfalse;
 
 /*{{{  void usage(void) */
 
@@ -22,6 +23,7 @@ void usage(void)
         "Options:\n"
         "\t-h              display help information (usage)\n"
 	"\t-i              ADT file in old format (default stdin)\n"
+	"\t-l              Check for list idioms and convert them (default off)\n"
         "\t-o filename     ADT file in new format (default stdout)\n"
         "\t-V              reveal program version (i.e. %s)\n"
         "\n",
@@ -30,13 +32,90 @@ void usage(void)
 
 /*}}}  */
 
+/*{{{  ATbool isEmptyListPattern(ATerm pattern) */
+
+ATbool isEmptyListPattern(ATerm pattern)
+{
+  return ATisEqual(pattern, ATempty);
+}
+
+/*}}}  */
+/*{{{  ADT_Entry detectListIdiom(ATerm listType, ATerm pattern) */
+
+ADT_Entry detectListIdiom(ATerm listType, ATerm pattern)
+{
+  if (ATgetType(pattern) == AT_LIST) {
+    ATermList listPattern = (ATermList) pattern;
+
+    if (ATgetLength(pattern) == 2) {
+      ATerm head = ATgetFirst(listPattern);
+      ATerm tail = ATgetFirst(ATgetNext(listPattern));
+      ATerm sort = NULL;
+      ATerm elemSort = NULL;
+
+      if (ATgetType(head) == AT_PLACEHOLDER) {
+	ATermPlaceholder ph = (ATermPlaceholder) head;
+	ATerm type = ATgetPlaceholder(ph);
+
+	if (ATgetType(type) == AT_APPL) {
+	  ATermList args = ATgetArguments((ATermAppl) type);
+
+	  if (ATgetLength(args) == 1) {
+	    elemSort = ATgetFirst(args);
+	  }
+	}
+      }
+
+      if (elemSort != NULL 
+	  && ATgetType(tail) == AT_PLACEHOLDER) {
+	ATermPlaceholder ph = (ATermPlaceholder) tail;
+	ATerm type = ATgetPlaceholder(ph);
+
+	if (ATgetType(type) == AT_LIST) {
+	  ATermList list = (ATermList) type;
+	  if (ATgetLength(list) == 1) {
+	    ATerm tailType = ATgetFirst(list);
+
+	    if (ATgetType(tailType) == AT_APPL) {
+	      ATermList args = ATgetArguments((ATermAppl) tailType);
+	      if (ATgetLength(args) == 1) {
+		sort = ATgetFirst(args);
+		if (ATisEqual(sort, listType)) {
+		   return ADT_makeEntryList(listType, elemSort);
+		}
+	      }
+	    }
+	  }
+	}
+      }
+    }
+  }
+
+  return NULL;
+}
+
+/*}}}  */
 /*{{{  ADT_Entry convertEntry(OLDADT_Entry old) */
 
 ADT_Entry convertEntry(OLDADT_Entry old)
 {
-  return ADT_makeEntryConstructor(OLDADT_getEntrySort(old),
-				  OLDADT_getEntryAlternative(old),
-				  OLDADT_getEntryTermPattern(old));
+  ATerm pattern = OLDADT_getEntryTermPattern(old);
+  ADT_Entry new = NULL;
+
+  if (!isEmptyListPattern(pattern)) {
+
+    if (checkForListIdioms) {
+      new = detectListIdiom(OLDADT_getEntrySort(old), pattern);
+    }
+
+    if (new == NULL) {
+      return ADT_makeEntryConstructor(OLDADT_getEntrySort(old),
+				      OLDADT_getEntryAlternative(old),
+				      OLDADT_getEntryTermPattern(old));
+    }
+  }
+
+  return new;
 }
 
 /*}}}  */
@@ -48,8 +127,11 @@ ADT_Entries convertEntries(OLDADT_Entries old)
 
   for (; !OLDADT_isEntriesEmpty(old); old = OLDADT_getEntriesTail(old)) {
     OLDADT_Entry oldEntry = OLDADT_getEntriesHead(old);
+    ADT_Entry newEntry = convertEntry(oldEntry);
 
-    new = ADT_makeEntriesList(convertEntry(oldEntry), new);
+    if (newEntry != NULL) {
+      new = ADT_makeEntriesList(convertEntry(oldEntry), new);
+    }
   }
 
   return ADT_EntriesFromTerm((ATerm) ATreverse((ATermList) new));
@@ -79,6 +161,9 @@ int main (int argc, char **argv)
       exit(0);
     case 'i':
       input = strdup(optarg);
+      break;
+    case 'l':
+      checkForListIdioms = ATtrue;
       break;
     case 'o':  
       output = strdup(optarg);    

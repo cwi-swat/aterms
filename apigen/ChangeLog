@@ -10,6 +10,8 @@
     constructor(Sort,empty,[]) and
     constructor(Sort,many,[<head(ElementSort)>,<[tail(Sort)]>).
    No specialized code for lists is generated yet, but I will add some soon.
+ * Added switch to conversion tool (-l) if you want to automatically detect list
+   idioms and generate list entries in the new ADT
    
 2003-07-07 	(jurgenv@cwi.nl)
  * Added generation of is<type> predicates. You can now ask any term that is build by a generated
