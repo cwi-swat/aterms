@@ -35,7 +35,7 @@
 package shared;
 
 public interface SharedObject {
-  Object clone();
+  SharedObject duplicate();
   boolean equivalent(SharedObject o);
   int hashCode();
 }
