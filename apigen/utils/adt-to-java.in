@@ -3,6 +3,7 @@
 # {{{ variables
 
      PRG=`basename $0`
+   ATERM=@ATERM@
   prefix=@prefix@
 
 # }}}
@@ -70,7 +71,7 @@ require() {
    JTOM=0
 
 # data needed
-CLASSES=${prefix}/classes
+CLASSES=${prefix}/classes:${ATERM}/classes
 
 # }}}
 
