@@ -1126,7 +1126,7 @@ that particular alternative. Because matching is (very) expensive,
 the result of the most recent match is cached. This caching approach
 seems limited, but is useful when multiple subterms of the \emph{same
 argument} are accessed. In these cases, sequences of \texttt{getBoolX}
-and \texttt{setBoolY} (q.v.) all reuse the (cached) inspection result.
+and \texttt{setBoolY} (q.v.) all reuse (cached) inspection results.
 
 \begin{snippet}
 \begin{verbatim}
@@ -1216,13 +1216,13 @@ of the alternative productions).
 \end{verbatim}
 \end{snippet}
 
-An obvious optimization would be do detect if there are alternatives
-that have the requested field at the same location in the underlying
-\aterm\ representation. In this case, the \texttt{isBoolAnd} test can
-be eliminated, because both alternatives of \texttt{Bool} that have a
-\texttt{lhs}, have it at the exact same position. The condensed version
-would look much like the previous \texttt{getBoolArg} and would be much
-cheaper since it does not have to do any matching:
+An obvious optimization would be do detect if there are alternatives that
+have the requested field at the same location in the underlying \aterm\
+representation. In this case, the \texttt{isBoolAnd} test is redundant,
+because both alternatives of \texttt{Bool} that have a \texttt{lhs},
+have it at the exact same position. The condensed version would look
+much like the previous \texttt{getBoolArg} and would be much cheaper
+since it does not have to do any matching:
 
 \begin{snippet}
 \begin{verbatim}
@@ -1270,8 +1270,8 @@ the \aterm\ \emph{in situ}, but instead need to construct a \emph{new}
 As the construction of a new \aterm\ is very expensive to begin with,
 the gain of eliminating the test for one of the alternatives (as
 implemented in the \texttt{get}ters) is minimal, which is why that
-particular optimization is omitted here. If we have not found a match
-after exhaustively testing all the alternatives, the operation is aborted.
+particular optimization is omitted here. If no match was found after
+exhaustively testing all the alternatives, the operation is aborted.
 
 % }}}
 
@@ -1316,11 +1316,6 @@ module-db     &		1809  &	      1244  &	31	\\
 {\bf Total }  &  \textbf{25172} &	\textbf{13358}	    & \textbf{47} \\
 \hline
 
-Understandably the biggest gain was achieved in {\tt libasfix}, because
-most of this library is now generated from the SDF definition of SDF itself.
-Only some high level functionality that could not be generated remains in
-this library.
-
 %% in-output     &		 713  &	       812  &  -14	\\
 %% pgen	      &		5226  &	      5226  &	 0	\\
 %% sglr	      &	       10225  &	     10427  &	-2	\\
@@ -1333,6 +1328,11 @@ this library.
 \end{tabular}
 \caption{\label{fig:reduction}Code Reduction}
 \end{figure}
+
+Understandably the biggest gain was achieved in {\tt libasfix}, because
+most of this library is now generated from the SDF definition of SDF itself.
+Only some high level functionality that could not be generated remains in
+this library.
 
 
 % }}}
@@ -1425,6 +1425,36 @@ Typical example: jaxb (http://java.sun.com/xml/jaxb)
 
 \section{Conclusions and Future Work}
 \label{sec:conclusions}
+
+Generating access libraries from \sdf\ definitions offers a simple,
+consistent way of developing and maintaining type-safe, efficient
+data types.
+
+The application in the \metaenv\ of the techniques described in this
+paper resulted in the elimination of a significant portion of handcrafted
+code. The effect of this elimination is amplified by the inherent nature
+of the affected code portions: hard to read and write, difficult to
+maintain, and in general very error prone to handle at all.
+
+The result of our generational approach is a type-safe replacement for
+manually crafted libraries that provide access to compound data types
+implemented by \aterms. Even though several optimization opportunities
+have not yet been fully explored, the efficiency of the generated library
+is already comparable to its manually written predecessor.
+
+Obvious optimizations include \emph{inlining} (some of) the generated
+functions. By rewriting the functions as \C\ macros, the overhead of a
+function call is removed. As noted before, the cost of this efficiency
+gain is that some type-safety is lost. This is due to the fact that \C\
+macro expansion is performed by a pre-compiler, which does not have access
+to type information and thus performs no type checks on macro arguments.
+
+More interesting, however, are optimizations that take into account
+information about the structure of the underlying \aterm\ representation.
+During the generation phase information about common subterms and
+similarity between alternatives is assembled, which could be exploited
+to generate more efficient matching and selection code than the current
+\texttt{ATmatch} call, which is rather inefficient.
 
 % }}}
 
