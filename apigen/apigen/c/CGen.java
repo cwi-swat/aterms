@@ -14,6 +14,8 @@ import apigen.*;
 
 public class CGen
 {
+  //{{{ Constants
+
   private final static String[] SPECIAL_CHAR_WORDS =
   { "[BracketOpen", "]BracketClose",
     "{BraceOpen",   "}BraceClose",
@@ -32,6 +34,8 @@ public class CGen
     { "real", "double" },
     { "str",  "char *" }
   };
+
+  //}}}
 
   public static boolean verbose = false;
 
@@ -996,72 +1000,12 @@ public class CGen
 	ATerm entry = factory.make("[<appl>,<term>]",
 				   prefix + "pattern" + id
 				   + buildId(capitalize(alt.getId())),
-				   buildDictPattern(alt.getPattern()));
+				   alt.buildMatchPattern());
 	entries = factory.makeList(entry, entries);
       }
     }
 
     return factory.make("[afuns([]),terms(<term>)]", entries);
-  }
-
-  //}}}
-  //{{{ private ATerm buildDictPattern(ATerm t)
-
-  private ATerm buildDictPattern(ATerm t)
-  {
-    switch (t.getType()) {
-      case ATerm.APPL:
-	{
-	  ATermAppl appl = (ATermAppl)t;
-	  AFun fun = appl.getAFun();
-	  ATerm[] newargs = new ATerm[fun.getArity()];
-	  for (int i=0; i<fun.getArity(); i++) {
-	    newargs[i] = buildDictPattern(appl.getArgument(i));
-	  }
-	  return factory.makeAppl(fun, newargs);
-	}
-	
-      case ATerm.LIST:
-	{
-	  ATermList list = (ATermList)t;
-	  ATerm[] elems = new ATerm[list.getLength()];
-	  int i = 0;
-	  while (!list.isEmpty()) {
-	    elems[i++] = buildDictPattern(list.getFirst());
-	    list = list.getNext();
-	  }
-	  for (i=elems.length-1; i>=0; i--) {
-	    list = list.insert(elems[i]);
-	  }
-	  return list;
-	}
-
-      case ATerm.PLACEHOLDER:
-	{
-	  ATerm ph = ((ATermPlaceholder)t).getPlaceholder();
-	  if (ph.getType() == ATerm.LIST) {
-	    return factory.parse("<list>");
-	  } else { 
-	    ATerm type = ((ATermAppl)ph).getArgument(0);
-	    if (isReservedType(type)) {
-	      return factory.makePlaceholder(type);
-	    } else {
-	      return factory.parse("<term>");
-	    }
-	  }
-	}
-
-      default:
-	return t;
-    }
-  }
-
-  //}}}
-  //{{{ private boolean isReservedType(ATerm t)
-
-  private boolean isReservedType(ATerm t)
-  {
-    return reservedTypes.containsKey(t.toString());
   }
 
   //}}}
