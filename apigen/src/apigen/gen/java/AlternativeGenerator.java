@@ -28,7 +28,7 @@ public class AlternativeGenerator extends JavaGenerator {
         this.adt = adt;
         this.type = type;
         this.alt = alt;
-        this.className = buildClassName(alt.getId());
+        this.className = className(type.getId(),alt.getId());
         this.superClassName = new TypeGenerator(params, type).qualifiedClassName(params, type);
         this.traveler = params.getTravelerName();
     }
@@ -53,7 +53,7 @@ public class AlternativeGenerator extends JavaGenerator {
         buf.append('.');
         buf.append(packageName(type));
         buf.append('.');
-        buf.append(className(alt));
+        buf.append(className(type,alt));
         return buf.toString();
     }
 
@@ -62,20 +62,16 @@ public class AlternativeGenerator extends JavaGenerator {
             .toLowerCase();
     }
 
-    private static String buildClassName(String alt) {
-        if (getConverter().isReserved(alt)) {
+    public static String className(String type,String alt) {
+    	    if (getConverter().isReserved(type)) {
             return alt;
         } else {
             return StringConversions.makeCapitalizedIdentifier(alt);
         }
     }
 
-    public static String className(String alt) {
-        return buildClassName(alt);
-    }
-
-    public static String className(Alternative alt) {
-        return className(alt.getId());
+    public static String className(Type type, Alternative alt) {
+        return className(type.getId(),alt.getId());
     }
 
     protected void generate() {
@@ -395,7 +391,7 @@ public class AlternativeGenerator extends JavaGenerator {
 
     private void genOverrrideSetArgument(Type type, Alternative alt) {
         JavaGenerationParameters params = getJavaGenerationParameters();
-        String altClassName = className(alt);
+        String altClassName = className(type,alt);
 
         println("  public aterm.ATermAppl setArgument(aterm.ATerm arg, int i) {");
         if (type.getAltArity(alt) > 0) {
@@ -468,7 +464,7 @@ public class AlternativeGenerator extends JavaGenerator {
 
     private void genAltDuplicateMethod(Type type, Alternative alt) {
         GenerationParameters params = getGenerationParameters();
-        String altClassName = className(alt);
+        String altClassName = className(type,alt);
         println("  public shared.SharedObject duplicate() {");
         String getFactoryMethodName = AbstractTypeGenerator.getFactoryMethodName(params,type.getModuleName());
         println(
@@ -489,7 +485,7 @@ public class AlternativeGenerator extends JavaGenerator {
 
     private void genAltEquivalentMethod(Type type, Alternative alt) {
         println("  public boolean equivalent(shared.SharedObject peer) {");
-        println("    if (peer instanceof " + className(alt) + ") {");
+        println("    if (peer instanceof " + className(type,alt) + ") {");
         println("      return super.equivalent(peer);");
         println("    }");
         println("    return false;");

@@ -1750,7 +1750,7 @@ public class FactoryGenerator extends JavaGenerator {
     }
 
     public static String concatTypeAlt(Type type, Alternative alt) {
-        return TypeGenerator.className(type) + "_" + AlternativeGenerator.className(alt);
+        return TypeGenerator.className(type) + "_" + AlternativeGenerator.className(type,alt);
     }
 
     private static String alternativeVariable(String pre, Type type, Alternative alt) {

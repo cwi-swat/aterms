@@ -1,5 +1,8 @@
 # $Id$
 
+2005-01-20 pem
+  * fix a naming convention problem: only operator whose sort is reserved are not capitalized. In the previous version only operator whose name was reserved was not capitalized
+
 2004-12-17  pem
 
 	* improved isEmpty() implementation

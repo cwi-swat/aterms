@@ -100,7 +100,7 @@ public class MakeRulesGenerator extends Generator {
 	}
 
 	protected void printAlternativeClassFiles(Type type, Alternative alt) {
-		print("\\\n" + getClassFileName(AlternativeGenerator.className(alt)));
+		print("\\\n" + getClassFileName(AlternativeGenerator.className(type,alt)));
 	}
 
 	protected void printTypeClassFiles(Type type) {
