@@ -49,6 +49,7 @@ LIBS_NS         = @LIBS@
 
 AR		= @AR@
 AR_FLAGS	= cr
+RANLIB		= @RANLIB@
 
 INSTALL		= @INSTALL@
 INSTALL_PRG	= @INSTALL_PRG@
@@ -105,18 +106,23 @@ install: ${ATBLIBS} ${PUBLIC_INCL} ${PROGS}
 
 libATB-cc.a: ${OBJ_CC}
 	${AR} ${AR_FLAGS} $@ ${OBJ_CC}
+	${RANLIB} $@
 
 libATB-gcc.a:	${OBJ_GCC}
 	${AR} ${AR_FLAGS} $@ ${OBJ_GCC}
+	${RANLIB} $@
 
 libATB-dbg.a: ${OBJ_DBG}
 	${AR} ${AR_FLAGS} $@ ${OBJ_DBG}
+	${RANLIB} $@
 
 libATB-prof.a: ${OBJ_PROF}
 	${AR} ${AR_FLAGS} $@ ${OBJ_PROF}
+	${RANLIB} $@
 
 libATB-ns.a: ${OBJ_NS}
 	${AR} ${AR_FLAGS} $@ ${OBJ_NS}
+	${RANLIB} $@
 
 tifstoc: tifstoc.c atb-tool.h ../aterm/libATerm-dbg.a libATB-dbg.a
 	${CC_DBG} ${CFLAGS_DBG} -I../aterm -o tifstoc tifstoc.c \

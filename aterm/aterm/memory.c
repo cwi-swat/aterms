@@ -1059,7 +1059,7 @@ void AT_freeTerm(int size, ATerm t)
 				at_freelist[size] = t;
 				return;
 		}
-	} while(prev=cur, cur=cur->next);
+	} while(((prev=cur), (cur=cur->next)));
 }
 
 /*}}}  */

@@ -75,7 +75,8 @@ INSTALL_DAT	= @INSTALL_DAT@
 TOOLBUS		= @TOOLBUS@
 INCL		= -I../asfix -I../aterm -I../toolbus
 TESTPRGS	= stress-cc stress-gcc primes-cc primes-gcc asfixtest \
-		  stress-ns primes-ns test-tool test-tool2 randgen termstats
+		  stress-ns primes-ns randgen termstats
+TBTESTPRGS	= test-tool test-tool2
 TESTSRCS	= stress.c asfixtest.c primes.c test-tool.c test-tool2.c \
 		  randgen.c termstats.c
 TESTOBJS	= stress.o asfixtest.o primes.o test-tool.o test-tool2.o
@@ -83,6 +84,8 @@ DISTFILES	= test.tb test2.tb Test.asfix test.trms error.trm Makefile.in \
 		  test2.tifs ${TESTSRCS} .depend
 
 all: $(TESTPRGS) $(TESTS)
+
+toolbus: ${TBTESTPRGS}
 
 clean:
 	@CLEAN@ *.tif.c *.tif.h ${TESTPRGS}

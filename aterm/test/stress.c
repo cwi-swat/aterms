@@ -5,6 +5,12 @@
 
 /*{{{  includes */
 
+#ifdef WIN32
+  #include <stdlib.h>
+  #include <process.h>
+#else
+  #include <unistd.h>
+#endif
 #include <stdio.h>
 #include <assert.h>
 #include <unistd.h>

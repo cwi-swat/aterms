@@ -1326,9 +1326,9 @@ ATerm read_term(sym_read_entry *sym, FILE *file)
 				double real;
 
 				if(flushBitsFromFile(file) < 0)
-					return ATfalse;
+					return NULL;
 				if(readStringFromFile(file) < 0)
-					return ATfalse;
+					return NULL;
 				sscanf(text_buffer, "%lf", &real);
 				result = (ATerm)ATmakeReal(real);
 			}
@@ -1343,9 +1343,9 @@ ATerm read_term(sym_read_entry *sym, FILE *file)
 				char *data;
 
 				if(flushBitsFromFile(file) < 0)
-					return ATfalse;
+					return NULL;
 				if((len = readStringFromFile(file)) < 0)
-					return ATfalse;
+					return NULL;
 
 				data = malloc(len);
 				if(!data)

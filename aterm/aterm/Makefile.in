@@ -52,6 +52,7 @@ LIBS		= @LIBS@
 
 AR		= @AR@
 AR_FLAGS	= cr
+RANLIB		= @RANLIB@
 
 INSTALL		= @INSTALL@
 INSTALL_PRG	= @INSTALL_PRG@
@@ -118,21 +119,27 @@ install: all ${PUBLIC_INCL}
 
 libATerm-cc.a: ${OBJ_CC}
 	${AR} ${AR_FLAGS} $@ ${OBJ_CC}
+	${RANLIB} $@
 
 libATerm-cc64.a: ${OBJ_CC64}
 	${AR} ${AR_FLAGS} $@ ${OBJ_CC64}
+	${RANLIB} $@
 
 libATerm-gcc.a:	${OBJ_GCC}
 	${AR} ${AR_FLAGS} $@ ${OBJ_GCC}
+	${RANLIB} $@
 
 libATerm-dbg.a: ${OBJ_DBG}
 	${AR} ${AR_FLAGS} $@ ${OBJ_DBG}
+	${RANLIB} $@
 
 libATerm-prof.a: ${OBJ_PROF}
 	${AR} ${AR_FLAGS} $@ ${OBJ_PROF}
+	${RANLIB} $@
 
 libATerm-ns.a: ${OBJ_NS}
 	${AR} ${AR_FLAGS} $@ ${OBJ_NS}
+	${RANLIB} $@
 
 baffle: baffle.c libATerm-cc.a
 	${CC_CC} ${CFLAGS_CC} -o $@ $< -L. -lATerm-cc ${LIBS}
