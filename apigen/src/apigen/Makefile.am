@@ -4,7 +4,7 @@
 # $Id$
 #
 
-SUBDIRS		= c
+SUBDIRS		= c java
 
 CLASSPATH := $(ATERM)/classes:$(CLASSPATH)
 
