@@ -492,12 +492,13 @@ int ATBhandleOne(int fd)
 
   result = connections[fd]->handler(fd, (ATerm)appl);
 
-  if(result)
+  if (result) {
     return ATBwriteTerm(fd, result);
-  else if(ATgetSymbol(appl) == symbol_rec_do)
+  } else if (ATgetSymbol(appl) == symbol_rec_do) {
     return ATBwriteTerm(fd, term_snd_void);
-  else if(ATgetSymbol(appl) == symbol_ack_event)
+  } else if (ATgetSymbol(appl) == symbol_ack_event) {
     handle_ack_event(fd, ATgetAFun((ATermAppl)ATgetArgument(appl, 0)));
+  }
 
   return 0;
 }
