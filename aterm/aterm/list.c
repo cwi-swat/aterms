@@ -278,6 +278,147 @@ ATerm ATelementAt(ATermList list, int index)
 }
 
 /*}}}  */
+/*{{{  ATermList ATremove(ATermList list, ATerm el) */
+
+/**
+  * Remove one occurence of an element from a list.
+  */
+
+ATermList ATremove(ATermList list, ATerm t)
+{
+  int i = 0;
+  ATerm el = NULL;
+  ATermList l = list;
+
+  while(!ATisEmpty(l) && !ATisEqual(el, t)) {
+    el = ATgetFirst(l);
+    l = ATgetNext(l);
+    if(i >= buffer_size) 
+      resize_buffer(i*2);
+    buffer[i++] = el;
+  }
+
+  if(ATisEqual(el, t)) {
+    /* We found the element. Add all elements prior to this 
+       one to the tail of the list. */
+    for(i-=2; i>=0; i--) {
+      list = ATinsert(list, buffer[i]);
+    }
+  }
+
+  return list;
+}
+
+/*}}}  */
+/*{{{  ATermList ATremoveAt(ATermList list, int idx) */
+
+/**
+  * Remove an element from a specific position in a list.
+  */
+
+ATermList ATremoveAt(ATermList list, int idx)
+{
+  int i;
+
+  RESIZE_BUFFER(idx);
+  for(i=0; i<idx; i++) {
+    buffer[i] = ATgetFirst(list);
+    list = ATgetNext(list);
+  }
+
+  list = ATgetNext(list);
+  for(--i; i>=0; i--) {
+    list = ATinsert(list, buffer[i]);
+  }
+
+  return list;
+}
+
+/*}}}  */
+/*{{{  ATermList ATdictSet(ATermList dict, ATerm key, ATerm value) */
+
+/**
+  * Set an element of a 'dictionary list'. This is a list consisting
+  * of [key,value] pairs.
+  */
+
+ATermList ATdictSet(ATermList dict, ATerm key, ATerm value)
+{
+  int i;
+  ATermList pair, tmp = dict;
+  
+  /* Search for the key */
+  while(!ATisEmpty(tmp)) {
+    pair = (ATermList)ATgetFirst(tmp);
+    tmp = ATgetNext(tmp);
+    if(ATisEqual(ATgetFirst(pair), key)) {
+      pair = ATmakeList2(key, value);
+      tmp = ATinsert(tmp, (ATerm)pair);
+      for(--i; i>=0; i--)
+	tmp = ATinsert(tmp, buffer[i]);
+    } else {
+      if(i >= buffer_size)
+	resize_buffer(i*2);
+      buffer[i++] = (ATerm)pair;
+    }
+  }
+
+  /* The key is not in the dictionary */
+  return dict;
+}
+
+/*}}}  */
+/*{{{  ATerm ATdictGet(ATermList dict, ATerm key) */
+
+/**
+  * Retrieve a value from a dictionary list.
+  */
+
+ATerm ATdictGet(ATermList dict, ATerm key)
+{
+  ATermList pair;
+
+  /* Search for the key */
+  while(!ATisEmpty(dict)) {
+    pair = (ATermList)ATgetFirst(dict);
+    if(ATisEqual(ATgetFirst(pair), key))
+      return ATgetFirst(ATgetNext(pair));
+
+    dict = ATgetNext(dict);
+  }
+
+  /* The key is not in the dictionary */
+  return NULL;
+}
+
+/*}}}  */
+/*{{{  ATermList ATdictRemove(ATermList dict, ATerm key) */
+
+/**
+  * Remove a [key,value] pair from a dictionary list.
+  */
+
+ATermList ATdictRemove(ATermList dict, ATerm key)
+{
+  int idx = 0;
+  ATermList tmp = dict;
+  ATermList pair;
+
+  /* Search for the key */
+  while(!ATisEmpty(tmp)) {
+    pair = (ATermList)ATgetFirst(tmp);
+    if(ATisEqual(ATgetFirst(pair), key))
+      return ATremoveAt(dict, idx);
+
+    tmp = ATgetNext(tmp);
+    idx++;
+  }
+
+  /* The key is not in the dictionary */
+  return dict;
+}
+
+/*}}}  */
 
 /*{{{  ATermList ATgetArguments(ATermAppl appl) */
 
@@ -303,3 +444,6 @@ ATermList ATgetArguments(ATermAppl appl)
 }
 
 /*}}}  */
+
+
+

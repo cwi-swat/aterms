@@ -101,6 +101,7 @@ ATermAppl ATmakeAppl6(Symbol sym, ATerm arg0, ATerm arg1, ATerm arg2,
 /* Portability */
 ATermList ATgetArguments(ATermAppl appl);
 ATermAppl ATmakeApplList(Symbol sym, ATermList args);
+ATermAppl ATmakeApplArray(Symbol sym, ATerm args[]);
 
 /* The ATermList type */
 extern ATermList ATempty;
@@ -146,6 +147,11 @@ ATermList ATconcat(ATermList list1, ATermList list2);
 int       ATindexOf(ATermList list, ATerm el, int start);
 int       ATlastIndexOf(ATermList list, ATerm el, int start);
 ATerm     ATelementAt(ATermList list, int index);
+ATermList ATremove(ATermList list, ATerm el);
+ATermList ATremoveAt(ATermList list, int idx);
+ATermList ATdictSet(ATermList dict, ATerm key, ATerm value);
+ATerm     ATdictGet(ATermList dict, ATerm key);
+ATermList ATdictRemove(ATermList dict, ATerm key);
 
 /* The ATermPlaceholder type */
 ATermPlaceholder ATmakePlaceholder(ATerm type);

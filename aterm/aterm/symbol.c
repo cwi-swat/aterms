@@ -3,6 +3,8 @@
  * symbol.c
  */
 
+/*{{{  includes */
+
 #include <ctype.h>
 #include <stdlib.h>
 #include <assert.h>
@@ -12,10 +14,16 @@
 #include "util.h"
 #include "debug.h"
 
+/*}}}  */
+/*{{{  defines */
+
 #define SYMBOL_HASH_SIZE	16411	/* nextprime(16384) */
 #define SYMBOL_HASH_OPT		"-symboltable"
 
 #define SYM_ARITY	16
+
+/*}}}  */
+/*{{{  types */
 
 typedef struct SymEntry
 {
@@ -27,6 +35,8 @@ typedef struct SymEntry
   char   *name;
 } *SymEntry;
 
+/*}}}  */
+/*{{{  globals */
 
 static unsigned int table_size = 0;
 static SymEntry *hash_table = NULL;
@@ -34,7 +44,12 @@ static SymEntry *hash_table = NULL;
 static Symbol first_free = -1;
 static SymEntry *lookup_table = NULL;
 
+/*}}}  */
+/*{{{  function declarations */
+
 extern char *strdup(const char *s);
+
+/*}}}  */
 
 /*{{{  void AT_initSymbol(int argc, char *argv[]) */
 void AT_initSymbol(int argc, char *argv[])
@@ -123,7 +138,6 @@ Symbol ATmakeSymbol(char *name, int arity, ATbool quoted)
     hash_val = 251 * hash_val + *walk;
   hash_val %= table_size;
   
-
   /* Find symbol in table */
   cur = hash_table[hash_val];
   while (cur && (cur->arity != arity || !streq(cur->name, name) ||

@@ -48,9 +48,9 @@ ATerm ATreadFromBinaryFile(FILE *file);
 ATbool ATwriteToTextFile(ATerm t, FILE *file);
 ATbool ATwriteToBinaryFile(ATerm t, FILE *file);
 char  *ATwriteToString(ATerm t);
-void   ATsetAnnotation(ATerm t, ATerm label, ATerm anno);
+ATerm  ATsetAnnotation(ATerm t, ATerm label, ATerm anno);
 ATerm  ATgetAnnotation(ATerm t, ATerm label);
-void   ATremoveAnnotation(ATerm t, ATerm label);
+ATerm  ATremoveAnnotation(ATerm t, ATerm label);
 
 void ATprotect(ATerm *atp);
 void ATunprotect(ATerm *atp);

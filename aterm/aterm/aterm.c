@@ -7,6 +7,8 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <ctype.h>
+#include <string.h>
 #include "aterm2.h"
 #include "memory.h"
 #include "symbol.h"
@@ -19,6 +21,7 @@
 
 #define DEFAULT_BUFFER_SIZE 4096
 #define RESIZE_BUFFER(n) if(n > buffer_size) resize_buffer(n)
+#define ERROR_SIZE 32
 
 /*}}}  */
 /*{{{  globals */
@@ -26,9 +29,21 @@
 /* error_handler is called when a fatal error is detected */
 static void (*error_handler)(const char *format, va_list args) = NULL;
 
-/* We need a buffer for printing to strings */
+/* We need a buffer for printing and parsing */
 static int   buffer_size = 0;
 static char *buffer = NULL;
+
+/* Parse error description */
+static int line = 0;
+static int col  = 0;
+static char error_buf[ERROR_SIZE];
+static int  error_idx = 0;
+
+/*}}}  */
+/*{{{  function declarations*/
+
+extern char *strdup(const char *s);
+static ATerm fparse_term(int *c, FILE *f);
 
 /*}}}  */
 
@@ -139,13 +154,7 @@ ATbool writeToTextFile(ATerm t, FILE *f)
 	  if(i != 0)
 	    fputc(',', f);
 	  arg = ATgetArgument(appl, i);
-	  if(ATgetType(arg) == AT_LIST) {
-	    fputc('[', f);
-	    writeToTextFile(arg, f);
-	    fputc(']', f);
-	  } else {
-	    writeToTextFile(arg, f);
-	  }
+	  ATwriteToTextFile(arg, f);
 	}
 	fputc(')', f);
       }
@@ -160,13 +169,7 @@ ATbool writeToTextFile(ATerm t, FILE *f)
 	break;
 
       trm = ATgetFirst(list);
-      if(ATgetType(trm) == AT_LIST) {
-	fputc('[', f);
-	writeToTextFile(trm, f);
-	fputc(']', f);
-      } else {
-	writeToTextFile(trm, f);
-      }
+      ATwriteToTextFile(trm, f);
 
       list = ATgetNext(list);
       if(!ATisEmpty(list)) {
@@ -180,7 +183,7 @@ ATbool writeToTextFile(ATerm t, FILE *f)
       /*{{{  Print placeholder */
       
       fputc('<', f);
-      writeToTextFile(ATgetPlaceholder((ATermPlaceholder)t), f);
+      ATwriteToTextFile(ATgetPlaceholder((ATermPlaceholder)t), f);
       fputc('>', f);
 
       /*}}}  */
@@ -508,6 +511,292 @@ char *ATwriteToString(ATerm t)
   *end = '\0';
   
   return buffer;
+}
+
+/*}}}  */
+
+/*{{{  static void fnext_char(int *c, FILE *f) */
+
+/**
+  * Read the next character from file.
+  */
+
+static void fnext_char(int *c, FILE *f)
+{
+  *c = fgetc(f);
+  if(*c == '\n') {
+    line++;
+    col = 0;
+  } else {
+    col++;
+  }
+  error_buf[error_idx++] = *c;
+  error_idx %= ERROR_SIZE;
+}
+
+/*}}}  */
+/*{{{  static void fskip_layout(int *c, FILE *f) */
+
+/**
+  * Skip layout from file.
+  */
+
+static void fskip_layout(int *c, FILE *f)
+{
+  do {
+    fnext_char(c, f);
+  } while(isspace(*c));
+}
+
+/*}}}  */
+/*{{{  static ATermList fparse_terms(int *c, FILE *f) */
+
+/**
+  * Parse a list of arguments.
+  */
+
+ATermList fparse_terms(int *c, FILE *f)
+{
+  ATermList tail = ATempty;
+  ATerm el = fparse_term(c, f);
+
+  if(*c == ',')
+    tail = fparse_terms(c, f);
+
+  return ATinsert(tail, el);
+}
+
+/*}}}  */
+/*{{{  static ATermAppl fparse_quoted_appl(int *c, FILE *f) */
+
+/**
+  * Parse a quoted application.
+  */
+
+static ATermAppl fparse_quoted_appl(int *c, FILE *f)
+{
+  ATbool escaped = ATfalse;
+  int len = 0;
+  ATermList args = ATempty;
+  Symbol sym;
+  char *name;
+
+  /* First parse the identifier */
+  do {
+    fnext_char(c, f);
+    if(*c == EOF)
+      return NULL;
+    if(escaped) {
+      buffer[len++] = *c;
+      escaped = ATfalse;
+    } else if(*c == '\\')
+      escaped = ATtrue;
+    else if(*c != '"')
+      buffer[len++] = *c;
+  } while(*c != '"');
+  buffer[len] = '\0';
+  name = strdup(buffer);
+  if(!name)
+    ATerror("fparse_quoted_appl: symbol to long.");
+
+  fskip_layout(c, f);
+
+  /* Time to parse the arguments */
+  if(*c == '(') {
+    args = fparse_terms(c, f);
+    if(args == NULL || *c != ')')
+      return NULL;
+    fskip_layout(c, f);
+  }
+
+  /* Wrap up this function application */
+  sym = ATmakeSymbol(name, ATgetLength(args), ATtrue);
+  free(name);
+  return ATmakeApplList(sym, args);
+}
+
+/*}}}  */
+/*{{{  static ATermAppl fparse_unquoted_appl(int *c, FILE *f) */
+
+/**
+  * Parse a quoted application.
+  */
+
+static ATermAppl fparse_unquoted_appl(int *c, FILE *f)
+{
+  int len = 0;
+  Symbol sym;
+  ATermList args = ATempty;
+  char *name;
+
+  /* First parse the identifier */
+  while(isalpha(*c)) {
+    buffer[len++] = *c;
+    fnext_char(c, f);
+  }
+  buffer[len] = '\0';
+  name = strdup(buffer);
+  if(!name)
+    ATerror("fparse_unquoted_appl: symbol to long.");
+
+  if(isspace(*c))
+    fskip_layout(c, f);
+
+  /* Time to parse the arguments */
+  if(*c == '(') {
+    args = fparse_terms(c, f);
+    if(args == NULL || *c != ')')
+      return NULL;
+    fskip_layout(c, f);
+  }
+
+  /* Wrap up this function application */
+  sym = ATmakeSymbol(name, ATgetLength(args), ATfalse);
+  free(name);
+  return ATmakeApplList(sym, args);
+}
+
+/*}}}  */
+/*{{{  static void fparse_num_or_blob(int *c, FILE *f) */
+
+/**
+  * Parse a number or blob.
+  */
+
+static ATerm fparse_num_or_blob(int *c, FILE *f, ATbool canbeblob)
+{
+  char num[32], *ptr = num;
+
+  if(*c == '-') {
+    *ptr++ = *c;
+    fnext_char(c, f);
+  }
+    
+  while(isdigit(*c)) {
+    *ptr++ = *c;
+    fnext_char(c, f);
+  }
+  if(canbeblob && *c == ':') {
+    /*{{{  Must be a blob! */
+
+    int i,size;
+    char *data;
+
+    *ptr = 0;
+    size = atoi(num);
+    if(size == 0)
+      data = NULL;
+    else {
+      data = malloc(size);
+      if(!data)
+	ATerror("fparse_num_or_blob: no room for blob of size %d\n", size);
+    }
+    for(i=0; i<size; i++) {
+      fnext_char(c, f);
+      data[i] = *c;
+    }
+    fnext_char(c, f);
+    return (ATerm)ATmakeBlob(data, size);
+
+    /*}}}  */
+  } else if(*c == '.' || toupper(*c) == 'E') {
+    /*{{{  A real number */
+
+    if(*c == '.') {
+      *ptr++ = *c;
+      fnext_char(c, f);
+      while(isdigit(*c)) {
+	*ptr++ = *c;
+	fnext_char(c, f);
+      }
+    }
+    if(toupper(*c) == 'E') {
+      *ptr++ = *c;
+      fnext_char(c, f);
+      if(*c == '-') {
+	*ptr++ = *c;
+	fnext_char(c, f);
+      }
+      while(isdigit(*c)) {
+	*ptr++ = *c;
+	fnext_char(c, f);
+      }
+    }
+    *ptr = '\0';
+    return (ATerm)ATmakeReal(atof(num));
+
+    /*}}}  */
+  } else {
+    /*{{{  An integer */
+
+    *ptr = '\0';
+    return (ATerm)ATmakeInt(atoi(num));
+
+    /*}}}  */
+  }
+  return NULL;
+}
+
+/*}}}  */
+
+/*{{{  static ATerm fparse_term(int *c, FILE *f) */
+
+/**
+  * Parse a term from file.
+  */
+
+static ATerm fparse_term(int *c, FILE *f)
+{
+  ATerm t, result = NULL;
+  fskip_layout(c, f);
+
+  switch(*c) {
+    case '"':
+      result = (ATerm)fparse_quoted_appl(c, f);
+      break;
+    case '[':
+      result = (ATerm)fparse_terms(c, f);
+      if(result == NULL || *c != ']')
+	return NULL;
+      fskip_layout(c, f);
+      break;
+    case '<':
+      t = fparse_term(c, f);
+      if(t != NULL && *c == '>') {
+	result = (ATerm)ATmakePlaceholder(t);
+	fskip_layout(c, f);
+      }
+      break;
+    default:
+      if(isalpha(*c))
+	result = (ATerm)fparse_unquoted_appl(c, f);
+      else if(isdigit(*c))
+	result = fparse_num_or_blob(c, f, ATtrue);
+      else if(*c == '.' || *c == '-')
+	result = fparse_num_or_blob(c, f, ATfalse);
+      else
+	result = NULL;
+  }
+  return result;
+}
+
+/*}}}  */
+/*{{{  ATerm ATreadFromTextFile(FILE *file) */
+
+/**
+  * Read a term from a text file.
+  */
+
+ATerm ATreadFromTextFile(FILE *file)
+{
+  int c;
+  
+  line = 0;
+  col  = 0;
+  error_idx = 0;
+  memset(error_buf, 0, ERROR_SIZE);
+
+  return fparse_term(&c, file);
 }
 
 /*}}}  */
