@@ -71,14 +71,14 @@ dnl {{{ Output files
 dnl Which files need updating?
 AC_OUTPUT(
 Makefile
-lib/Makefile
-old-lib/Makefile
 utils/Makefile
 utils/adt-to-c
 utils/adt-to-java
+lib/Makefile
+old-lib/Makefile
 apigen/Makefile
 apigen/adt/Makefile
-apigen/adt/Makefile
+apigen/gen/Makefile
 apigen/adt/api/Makefile
 apigen/gen/tom/Makefile
 apigen/gen/c/Makefile
