@@ -57,7 +57,7 @@ extern ATbool AT_isEqual(ATerm t1, ATerm t2);
    to easily check the equality of other ATerm types like 
 	 ATermList, ATermAppl, etc. */
 #else
-#define ATisEqual(t1,t2) ((ATerm)(t1) == (ATerm)(t2))
+#define ATisEqual(t1,t2) ((ATbool)((ATerm)(t1) == (ATerm)(t2)))
 #endif
 
 

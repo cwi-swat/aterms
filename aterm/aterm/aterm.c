@@ -360,11 +360,27 @@ void ATunprotectArray(ATerm *start)
 
 void AT_printAllProtectedTerms(FILE *file)
 {
-	fprintf(file, "protected terms:\n");
-	
-	fprintf(file, "protected arrays:\n");
-}
+	int i, j;
 
+	fprintf(file, "protected terms:\n");
+	for(i=0; i<at_nrprotected; i++)
+		if(*at_protected[i]) {
+			ATfprintf(file, "%d: %t\n", i, *at_protected[i]);
+			fflush(file);
+		}
+
+	fprintf(file, "protected arrays:\n");
+	for(i=0; i<at_nrprotected_arrays; i++) {
+		ProtectedArray *ar = &at_protected_arrays[i];
+		fprintf(file, "  array %d at %p of size %d:\n", i, ar->start, ar->size);
+		for(j=0; j<ar->size; j++) {
+			if(ar->start[j]) {
+				ATfprintf(file, "    %d: %t\n", j, ar->start[j]);
+				fflush(file);
+			}
+		}
+	}
+}
 
 /*}}}  */
 
@@ -954,7 +970,6 @@ textSize(ATerm t)
     default:
 	ATerror("textSize: Illegal type %d\n", ATgetType(t));
 	return -1;
-	break;
     }
     return size;
 }
@@ -2408,16 +2423,16 @@ ATbool AT_isEqual(ATerm t1, ATerm t2)
 		break;
 
   	case AT_INT:
-			result = ATgetInt((ATermInt)t1) == ATgetInt((ATermInt)t2);
+			result = ((ATgetInt((ATermInt)t1) == ATgetInt((ATermInt)t2)) ? ATtrue : ATfalse);
 			break;
 
   	case AT_REAL:
-		  result = ATgetReal((ATermReal)t1) == ATgetReal((ATermReal)t2);
+		  result = ((ATgetReal((ATermReal)t1) == ATgetReal((ATermReal)t2)) ? ATtrue : ATfalse);
 			break;
 
 	  case AT_BLOB:
-			result = (ATgetBlobData((ATermBlob)t1) == ATgetBlobData((ATermBlob)t2)) &&
-				(ATgetBlobSize((ATermBlob)t1) == ATgetBlobSize((ATermBlob)t2));
+			result = ((ATgetBlobData((ATermBlob)t1) == ATgetBlobData((ATermBlob)t2)) &&
+				(ATgetBlobSize((ATermBlob)t1) == ATgetBlobSize((ATermBlob)t2))) ? ATtrue : ATfalse;
 			break;
 
 	  case AT_PLACEHOLDER:

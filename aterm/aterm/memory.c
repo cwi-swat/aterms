@@ -1115,13 +1115,14 @@ ATermAppl ATmakeAppl(Symbol sym, ...)
 		/* Delay masking until after AT_allocate */
 		hnr &= table_mask;
     cur->header = header;
-    for(i=0; i<arity; i++) {
+    for(i=0; i<arity; i++)
       ATgetArgument(cur, i) = arg_buffer[i];
-			arg_buffer[i] = NULL;
-		}
     cur->next = hashtable[hnr];
     hashtable[hnr] = cur;
   }
+
+	for(i=0; i<arity; i++)
+		arg_buffer[i] = NULL;
   
   return (ATermAppl)cur;
 }
@@ -1474,13 +1475,14 @@ ATermAppl ATmakeApplList(Symbol sym, ATermList args)
 		/* Delay masking until after AT_allocate */
 		hnr &= table_mask;
     cur->header = header;
-    for(i=0; i<arity; i++) {
+    for(i=0; i<arity; i++)
       ATgetArgument(cur, i) = arg_buffer[i];
-			arg_buffer[i] = NULL;
-		}
     cur->next = hashtable[hnr];
     hashtable[hnr] = cur;
   }
+
+	for(i=0; i<arity; i++)
+		arg_buffer[i] = NULL;
   
   return (ATermAppl)cur;
 }
@@ -1531,13 +1533,14 @@ ATermAppl ATmakeApplArray(Symbol sym, ATerm args[])
 		/* Delay masking until after AT_allocate */
 		hnr &= table_mask;
     cur->header = header;
-    for(i=0; i<arity; i++) {
+    for(i=0; i<arity; i++)
       ATgetArgument(cur, i) = arg_buffer[i];
-			arg_buffer[i] = NULL;
-		}
     cur->next = hashtable[hnr];
     hashtable[hnr] = cur;
   }
+
+	for(i=0; i<arity; i++)
+		arg_buffer[i] = NULL;
   
   return (ATermAppl)cur;
 }

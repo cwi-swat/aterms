@@ -145,7 +145,7 @@ ATermList ATgetNext(ATermList list);*/
 #define   ATgetNext(l)  ((l)->tail)
 
 /*ATbool    ATisEmpty(ATermList list);*/
-#define ATisEmpty(list) ((list) == ATempty)
+#define ATisEmpty(list) ((ATbool)((list) == ATempty))
 
 ATermList ATgetPrefix(ATermList list);
 ATerm     ATgetLast(ATermList list);

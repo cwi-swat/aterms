@@ -25,13 +25,13 @@
 #define TERM_SIZE_PLACEHOLDER 3
 #define TERM_SIZE_SYMBOL      (sizeof(struct SymEntry)/sizeof(header_type))
 
-#define IS_MARKED(h)    ((h) & MASK_MARK)
+#define IS_MARKED(h)    (((h) & MASK_MARK) ? ATtrue : ATfalse)
 #define GET_TYPE(h)     (((h) & MASK_TYPE) >> SHIFT_TYPE)
 #define HAS_ANNO(h)     ((h) & MASK_ANNO)
 #define GET_ARITY(h)	(((h) & MASK_ARITY) >> SHIFT_ARITY)
 #define GET_SYMBOL(h)	((h) >> SHIFT_SYMBOL)
 #define GET_LENGTH(h)	((h) >> SHIFT_LENGTH)
-#define IS_QUOTED(h)	((h) & MASK_QUOTED)
+#define IS_QUOTED(h)	(((h) & MASK_QUOTED) ? ATtrue : ATfalse)
 
 #define SET_MARK(h)			((h) |= MASK_MARK)
 #define SET_ANNO(h)			((h) |= MASK_ANNO)

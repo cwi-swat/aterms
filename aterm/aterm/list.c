@@ -84,8 +84,10 @@ ATermList ATgetPrefix(ATermList list)
     list = ATgetNext(list);
   }
 
-  for(--i; i>=0; i--)
+  for(--i; i>=0; i--) {
     result = ATinsert(result, buffer[i]);
+		buffer[i] = NULL;
+	}
 
   return result;
 }
@@ -133,8 +135,10 @@ ATermList ATgetSlice(ATermList list, int start, int end)
     list = ATgetNext(list);
   }
   
-  for(--i; i>=0; i--)
+  for(--i; i>=0; i--) {
     result = ATinsert(result, buffer[i]);
+		buffer[i] = NULL;
+	}
 
   return result;
 }
@@ -163,8 +167,10 @@ ATermList ATinsertAt(ATermList list, ATerm el, int index)
   result = ATinsert(list, el);
 
   /* Insert elements before 'index' */
-  for(--i; i>=0; i--)
+  for(--i; i>=0; i--) {
     result = ATinsert(result, buffer[i]);
+		buffer[i] = NULL;
+	}
 
   return result;
 }
@@ -191,8 +197,10 @@ ATermList ATappend(ATermList list, ATerm el)
   result = ATmakeList1(el);
 
   /* Insert elements at the front of the list */
-  for(--i; i>=0; i--)
+  for(--i; i>=0; i--) {
     result = ATinsert(result, buffer[i]);
+		buffer[i] = NULL;
+	}
 
   return result;
 }
@@ -223,8 +231,10 @@ ATermList ATconcat(ATermList list1, ATermList list2)
   }
 
   /* Insert elements at the front of the list */
-  for(--i; i>=0; i--)
+  for(--i; i>=0; i--) {
     result = ATinsert(result, buffer[i]);
+		buffer[i] = NULL;
+	}
 
   return result;
 }
@@ -281,8 +291,13 @@ int ATlastIndexOf(ATermList list, ATerm el, int start)
     list = ATgetNext(list);
   }
   for(--i; i>=0; i--) {
-    if(ATisEqual(buffer[i], el))
-      return i;
+    if(ATisEqual(buffer[i], el)) {
+			int result = i;
+			while(i>=0)
+				buffer[i--] = NULL;
+      return result;
+		}
+		buffer[i] = NULL;
   }
 
   return -1;
@@ -338,8 +353,10 @@ ATermList ATremoveElement(ATermList list, ATerm t)
 
 	/* We found the element. Add all elements prior to this 
 		 one to the tail of the list. */
-	for(i-=2; i>=0; i--)
+	for(i-=2; i>=0; i--) {
 		list = ATinsert(list, buffer[i]);
+		buffer[i] = NULL;
+	}
 
   return list;
 }
@@ -364,6 +381,7 @@ ATermList ATremoveElementAt(ATermList list, int idx)
   list = ATgetNext(list);
   for(--i; i>=0; i--) {
     list = ATinsert(list, buffer[i]);
+		buffer[i] = NULL;
   }
 
   return list;
@@ -399,8 +417,10 @@ ATermList ATremoveAll(ATermList list, ATerm t)
 
 	/* Add all elements prior to this one to the tail of the list. */
 	list = ATempty;
-	for(--i; i>=0; i--)
+	for(--i; i>=0; i--) {
 		list = ATinsert(list, buffer[i]);
+		buffer[i] = NULL;
+	}
 
   return list;	
 }
@@ -427,8 +447,10 @@ ATermList ATreplace(ATermList list, ATerm el, int idx)
   /* Add the new element */
   list = ATinsert(list, el);
   /* Add the prefix */
-  for(--i; i>=0; i--)
-	list = ATinsert(list, buffer[i]);
+  for(--i; i>=0; i--) {
+		list = ATinsert(list, buffer[i]);
+		buffer[i] = NULL;
+	}
 
   return list;
 }
@@ -484,8 +506,10 @@ ATerm ATdictPut(ATerm dict, ATerm key, ATerm value)
     if(ATisEqual(ATgetFirst(pair), key)) {
 			pair = ATmakeList2(key, value);
       tmp = ATinsert(tmp, (ATerm)pair);
-      for(--i; i>=0; i--)
+      for(--i; i>=0; i--) {
 				tmp = ATinsert(tmp, buffer[i]);
+				buffer[i] = NULL;
+			}
       return (ATerm)tmp;
     } else {
       if(i >= buffer_size)
@@ -582,8 +606,10 @@ ATermList ATfilter(ATermList list, ATbool (*predicate)(ATerm))
 
 	/* Add all elements prior to this one to the tail of the list. */
 	list = ATempty;
-	for(--i; i>=0; i--)
+	for(--i; i>=0; i--) {
 		list = ATinsert(list, buffer[i]);
+		buffer[i] = NULL;
+	}
 
   return list;		
 }
@@ -607,8 +633,10 @@ ATermList ATgetArguments(ATermAppl appl)
   for(i=0; i<len; i++)
     buffer[i] = ATgetArgument(appl, i);
 
-  for(--i; i>=0; i--)
+  for(--i; i>=0; i--) {
     result = ATinsert(result, buffer[i]);
+		buffer[i] = NULL;
+	}
 
   return result;
 }

@@ -205,13 +205,11 @@ AT_vmakeTerm(ATerm pat)
 		case AT_REAL:
 		case AT_BLOB:
 			return pat;
-		break;
 
 		case AT_APPL:
 			appl = (ATermAppl) pat;
 			sym = ATgetSymbol(appl);
 			return (ATerm) makeArguments(appl, sym);
-		break;
 
 		case AT_LIST:
 			/*{{{  Handle list */
@@ -252,16 +250,13 @@ AT_vmakeTerm(ATerm pat)
 			return (ATerm) list;
 
 			/*}}}  */
-		break;
 
 		case AT_PLACEHOLDER:
 			return makePlaceholder((ATermPlaceholder)pat);
-		break;
 
 		default:
 			ATerror("AT_vmakeTerm: illegal type %d.\n", ATgetType(pat));
 			return (ATerm) NULL;
-		break;
 	}
 }
 
@@ -472,7 +467,6 @@ ATbool AT_vmatchTerm(ATerm t, ATerm pat)
 		case AT_REAL:
 		case AT_BLOB:
 			return ATisEqual(t, pat);
-			break;
 
 		case AT_APPL:
 			sym = ATgetSymbol((ATermAppl)t);
@@ -481,7 +475,6 @@ ATbool AT_vmatchTerm(ATerm t, ATerm pat)
 				 ATisQuoted(sym) != ATisQuoted(psym))
 				return ATfalse;
 			return matchArguments((ATermAppl)t, (ATermAppl)pat);
-			break;
 			
 		case AT_LIST:
 			/*{{{  Match a list */
@@ -525,12 +518,10 @@ ATbool AT_vmatchTerm(ATerm t, ATerm pat)
 	  return AT_vmatchTerm(ATgetFirst(list), pat);
 
 	  /*}}}  */
-			break;
 
 		default:
 			ATerror("AT_vmatchTerm: illegal type %d\n", ATgetType(pat));
 			return ATfalse;
-			break;
   }
 }
 
