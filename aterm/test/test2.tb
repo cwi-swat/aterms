@@ -35,6 +35,9 @@ in
   S := "Hello World!" .
   execute(tool2, T?) .
 
+  rec-event(T, baf-term(T1?)) .
+  snd-ack-event(T, baf-term(T1)) .
+
   %% do tests
   snd-do(T, test-do-0) .
   snd-do(T, test-do-1(1)) .
@@ -59,6 +62,9 @@ in
   snd-ack-event(T, test-event-1(T1)) .
   rec-event(T, test-event-2(T1?, T2?)) .
   snd-ack-event(T, test-event-2(T1, T2)) .
+
+  rec-event(T, pack-test(T1?)) .
+  snd-ack-event(T, pack-test(T1)) .
   shutdown("TEST SUCCEEDED!\n")
 endlet
 
