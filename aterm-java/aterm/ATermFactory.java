@@ -168,7 +168,6 @@ public interface ATermFactory
    * @param arg4 the argument to be filled into the fourth hole.
    * @param arg5 the argument to be filled into the fifth hole.
    * @param arg6 the argument to be filled into the sixth hole.
-   * @param arg7 the argument to be filled into the seventh hole.
    *
    * @return the constructed term.
    */
