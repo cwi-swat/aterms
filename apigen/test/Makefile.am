@@ -41,7 +41,7 @@ CLEANFILES		= ${noinst_PROGRAMS} ${noinst_LIBRARIES} \
 			Booleans_dict.[ch] Booleans.trm.tbl Booleans.adt \
 			booltest.pt
 
-EXTRA_DIST		= rolodex.adt Booleans.sdf list.adt list.pro \
+EXTRA_DIST		= rolodex.adt Booleans.sdf Booleans.pro list.adt list.pro \
 			booltest.trm
 
 rolodex.c rolodex.h: rolodex.adt
