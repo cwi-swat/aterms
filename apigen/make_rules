@@ -4,7 +4,7 @@
 # $Id$
 #
 
-CFLAGS		= -Wall -g -O2
+CFLAGS		= -g -Wall -Werror -O2
 INCLUDES	= -I ${ATERMINC}
 LDFLAGS		= -L ${ATERMLIB}
 
