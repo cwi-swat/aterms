@@ -10,7 +10,7 @@ CC_GCC		= gcc
 CC_DBG		= ${CC_GCC}
 CC_PROF		= ${CC_GCC}
 
-CFLAGS_CC	= -g -O ${DEFS_CC} ${INCL_CC}
+CFLAGS_CC	= -O ${DEFS_CC} ${INCL_CC}
 #CFLAGS_CC      = -g ${DEFS_CC} ${INCL_CC}
 CFLAGS_GCC	= -Wall -pedantic -O4 ${DEFS_GCC} ${INCL_GCC}
 CFLAGS_DBG	= -Wall -pedantic -g ${DEFS_DBG} ${INCL_DBG}

@@ -47,7 +47,10 @@ static unsigned int table_size = 0;
 static SymEntry *hash_table = NULL;
 
 static Symbol first_free = -1;
-static SymEntry *lookup_table = NULL;
+
+/* Efficiency hack: was static */
+SymEntry *lookup_table = NULL;
+ATerm    *lookup_table_alias = NULL;
 
 /*}}}  */
 /*{{{  function declarations */
@@ -75,6 +78,7 @@ void AT_initSymbol(int argc, char *argv[])
 		        table_size);
 
 	lookup_table = (SymEntry *) calloc(table_size, sizeof(SymEntry));
+	lookup_table_alias = (ATerm *)lookup_table;
 	if (lookup_table == NULL)
 		ATerror("AT_initSymbol: cannot allocate %d lookup-entries.\n",
 		        table_size);
@@ -187,6 +191,9 @@ char *ATgetName(Symbol sym)
 }
 
 /*}}}  */
+
+#if 0
+Replaced by ATgetArity macro
 /*{{{  int ATgetArity(Symbol sym) */
 
 /**
@@ -199,6 +206,8 @@ int ATgetArity(Symbol sym)
 }
 
 /*}}}  */
+#endif
+
 /*{{{  ATbool ATisQuoted(Symbol sym) */
 
 /**

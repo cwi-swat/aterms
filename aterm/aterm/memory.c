@@ -35,6 +35,10 @@
 #define INFO_HASHING    1
 #define MAX_INFO_SIZES 256
 
+#define UI(i)   ((unsigned int)(i))
+#define HNUM1(h)                       UI((h) % table_size)
+#define HNUM2(h, w0)                   (UI((h) + (UI(w0)<<1)) % table_size)
+#define HNUM3(h, w0, w1)               (UI((h) + (UI(w0)<<1) + (UI(w1)<<2)) % table_size)
 
 /*}}}  */
 /*{{{  types */
@@ -69,7 +73,8 @@ static int hash_info_after_gc[MAX_INFO_SIZES][3];
 
 /*}}}  */
 
-
+#if 0
+Replaced by macros HNUMx
 /*{{{  static unsigned int hash_number1(header_type header) */
 
 static unsigned int hash_number1(header_type header)
@@ -97,6 +102,8 @@ static unsigned int hash_number3(header_type header, ATerm w0,
 }
 
 /*}}}  */
+#endif
+
 /*{{{  static unsigned int hash_number4(header_type header,w0,w1,w2) */
 
 static unsigned int hash_number4(header_type header, ATerm w0,
@@ -182,6 +189,37 @@ static unsigned int hash_number_anno(unsigned int header, int n, ATerm w[], ATer
 }
 
 /*}}}  */
+/*{{{  static void hash_info(int stats[3][]) */
+
+static void hash_info(int stats[MAX_INFO_SIZES][3]) 
+{
+	int i, len;
+	static int count[MAX_INFO_SIZES];
+
+	/* Initialize statistics */
+	for(i=0; i<MAX_INFO_SIZES; i++)
+		count[i] = 0;
+
+	/* Gather statistics on the current fill of the hashtable */
+	for(i=0; i<table_size; i++) {
+		ATerm cur = hashtable[i];
+		len = 0;
+		while(cur) {
+			len++;
+			cur = cur->next; 
+		}
+		if(len >= MAX_INFO_SIZES)
+			len = MAX_INFO_SIZES-1;
+		count[len]++;
+	}
+
+	/* Update global statistic information */
+	for(i=0; i<MAX_INFO_SIZES; i++) {
+		STATS(stats[i], count[i]);
+	}
+}
+
+/*}}}  */
 
 /*{{{  void AT_initMemory(int argc, char *argv[]) */
 
@@ -262,6 +300,8 @@ void AT_initMemory(int argc, char *argv[])
 
 void AT_cleanupMemory()
 {
+	int info[MAX_INFO_SIZES][3];
+
 	if(infoflags & INFO_HASHING) {
 		int i, max = MAX_INFO_SIZES-1;
 		FILE *f = fopen("hashing.stats", "w");
@@ -273,6 +313,7 @@ void AT_cleanupMemory()
 			max--;
 
 		if(gc_count > 0) {
+      fprintf(f, "hash statistics before and after garbage collection:\n");
 			for(i=0; i<=max; i++) {
 				fprintf(f, "%8d %8d %8d   %8d %8d %8d\n", 
 								hash_info_before_gc[i][IDX_MIN],
@@ -283,37 +324,22 @@ void AT_cleanupMemory()
 								hash_info_after_gc[i][IDX_MAX]);
 			}
 		}
-	}
-}
 
-/*}}}  */
-/*{{{  static void hash_info(int stats[3][]) */
-
-static void hash_info(int stats[MAX_INFO_SIZES][3]) 
-{
-	int i, len;
-	static int count[MAX_INFO_SIZES];
-
-	/* Initialize statistics */
-	for(i=0; i<MAX_INFO_SIZES; i++)
-		count[i] = 0;
-
-	/* Gather statistics on the current fill of the hashtable */
-	for(i=0; i<table_size; i++) {
-		ATerm cur = hashtable[i];
-		len = 0;
-		while(cur) {
-			len++;
-			cur = cur->next; 
+		for(i=0; i<MAX_INFO_SIZES; i++) {
+			info[i][IDX_MIN] = MYMAXINT;
+			info[i][IDX_TOTAL] = 0;
+			info[i][IDX_MAX] = 0;
 		}
-		if(len >= MAX_INFO_SIZES)
-			len = MAX_INFO_SIZES-1;
-		count[len]++;
-	}
-
-	/* Update global statistic information */
-	for(i=0; i<MAX_INFO_SIZES; i++) {
-		STATS(stats[i], count[i]);
+		hash_info(info);
+		fprintf(f, "hash statistics at end of program:\n");
+		max = MAX_INFO_SIZES-1;
+		while(info[max][IDX_MIN] == 0)
+			max--;
+	  for(i=0; i<=max; i++) {
+			for(i=0; i<=max; i++) {
+				fprintf(f, "%8d\n", info[i][IDX_TOTAL]);
+			}
+		}
 	}
 }
 
@@ -522,20 +548,21 @@ ATermAppl ATmakeAppl0(Symbol sym)
   ATerm cur;
   header_type header = APPL_HEADER(0, 0, sym);
 
-  unsigned int hnr = hash_number1(header);
+  unsigned int hnr = HNUM1(header);
   
   CHECK_ARITY(ATgetArity(sym), 0);
 
   cur = hashtable[hnr];
-  while(cur && cur->header != header)
+  while(cur) {
+		if(cur->header == header)
+			return (ATermAppl)cur;
     cur = cur->next;
+	}
 
-  if(!cur) {
-    cur = AT_allocate(ARG_OFFSET);
-    cur->header = header;
-    cur->next = hashtable[hnr];
-    hashtable[hnr] = cur;
-  }
+	cur = AT_allocate(ARG_OFFSET);
+	cur->header = header;
+	cur->next = hashtable[hnr];
+	hashtable[hnr] = cur;
 
   return (ATermAppl) cur;  
 }
@@ -551,21 +578,22 @@ ATermAppl ATmakeAppl1(Symbol sym, ATerm arg0)
 {
   ATerm cur;
   header_type header = APPL_HEADER(0, 1, sym);
-  unsigned int hnr = hash_number2(header, arg0);
+  unsigned int hnr = HNUM2(header, arg0);
  
   CHECK_ARITY(ATgetArity(sym), 1);
  
   cur = hashtable[hnr];
-  while(cur && (cur->header != header || ATgetArgument(cur, 0) != arg0))
+  while(cur) {
+    if(cur->header == header && ATgetArgument(cur, 0) == arg0)
+			return (ATermAppl)cur;
     cur = cur->next;
+	}
 
-  if(!cur) {
-    cur = AT_allocate(ARG_OFFSET+1);
-    cur->header = header;
-    ATgetArgument(cur, 0) = arg0;
-    cur->next = hashtable[hnr];
-    hashtable[hnr] = cur;
-  }
+	cur = AT_allocate(ARG_OFFSET+1);
+	cur->header = header;
+	ATgetArgument(cur, 0) = arg0;
+	cur->next = hashtable[hnr];
+	hashtable[hnr] = cur;
 
   return (ATermAppl) cur;  
 }
@@ -581,24 +609,24 @@ ATermAppl ATmakeAppl2(Symbol sym, ATerm arg0, ATerm arg1)
 {
   ATerm cur;
   header_type header = APPL_HEADER(0, 2, sym);
-  unsigned int hnr = hash_number3(header, arg0, arg1);
+  unsigned int hnr = HNUM3(header, arg0, arg1);
   
   CHECK_ARITY(ATgetArity(sym), 2);
 
   cur = hashtable[hnr];
-  while(cur && (cur->header != header || 
-		ATgetArgument(cur, 0) != arg0 ||
-		ATgetArgument(cur, 1) != arg1))
+  while(cur) {
+		if(cur->header == header &&	ATgetArgument(cur, 0) == arg0 &&
+			 ATgetArgument(cur, 1) == arg1)
+			return (ATermAppl)cur;
     cur = cur->next;
+	}
 
-  if(!cur) {
-    cur = AT_allocate(ARG_OFFSET+2);
-    cur->header = header;
-    ATgetArgument(cur, 0) = arg0;
-    ATgetArgument(cur, 1) = arg1;
-    cur->next = hashtable[hnr];
-    hashtable[hnr] = cur;
-  }
+	cur = AT_allocate(ARG_OFFSET+2);
+	cur->header = header;
+	ATgetArgument(cur, 0) = arg0;
+	ATgetArgument(cur, 1) = arg1;
+	cur->next = hashtable[hnr];
+	hashtable[hnr] = cur;
 
   return (ATermAppl)cur;  
 }
@@ -901,7 +929,7 @@ ATermInt ATmakeInt(int val)
 {
   ATerm cur;
   header_type header = INT_HEADER(0);
-  unsigned int hnr = hash_number2(header, (ATerm)val);
+  unsigned int hnr = HNUM2(header, (ATerm)val);
  
   cur = hashtable[hnr];
   while(cur && (cur->header != header || ((ATermInt)cur)->value != val))
@@ -929,8 +957,7 @@ ATermReal ATmakeReal(double val)
 {
   ATerm cur;
   header_type header = REAL_HEADER(0);
-  unsigned int hnr = hash_number3(header, 
-																	*((ATerm *)&val), *(((ATerm *)&val)+1));
+  unsigned int hnr = HNUM3(header, *((ATerm *)&val), *(((ATerm *)&val)+1));
 
   cur = hashtable[hnr];
   while(cur && (cur->header != header || ((ATermReal)cur)->value != val))
@@ -996,7 +1023,7 @@ ATermList ATmakeList1(ATerm el)
 {
   ATerm cur;
   header_type header = LIST_HEADER(0, 1);
-  unsigned int hnr = hash_number3(header, el, (ATerm)ATempty);
+  unsigned int hnr = HNUM3(header, el, (ATerm)ATempty);
 
   cur = hashtable[hnr];
   while(cur && (cur->header != header || 
@@ -1028,7 +1055,7 @@ ATermList ATinsert(ATermList tail, ATerm el)
   ATerm cur;
   header_type header = LIST_HEADER(0, (GET_LENGTH(tail->header)+1));
 
-  unsigned int hnr = hash_number3(header, el, (ATerm)tail);
+  unsigned int hnr = HNUM3(header, el, (ATerm)tail);
 
   cur = hashtable[hnr];
   while(cur && (cur->header != header || 
@@ -1061,7 +1088,7 @@ ATermPlaceholder ATmakePlaceholder(ATerm type)
   ATerm cur;
   header_type header = PLACEHOLDER_HEADER(0);
 
-  unsigned int hnr = hash_number2(header, type);
+  unsigned int hnr = HNUM2(header, type);
 
   cur = hashtable[hnr];
   while(cur && (cur->header != header || 
@@ -1093,7 +1120,7 @@ ATermBlob ATmakeBlob(int size, void *data)
   ATerm cur;
   header_type header = BLOB_HEADER(0, size);
 
-  unsigned int hnr = hash_number2(header, (ATerm)data);
+  unsigned int hnr = HNUM2(header, (ATerm)data);
 
   cur = hashtable[hnr];
   while(cur && (cur->header != header || ((ATermBlob)cur)->data != data))

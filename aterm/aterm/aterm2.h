@@ -149,6 +149,7 @@ int       ATlastIndexOf(ATermList list, ATerm el, int start);
 ATerm     ATelementAt(ATermList list, int index);
 ATermList ATremoveElement(ATermList list, ATerm el);
 ATermList ATremoveElementAt(ATermList list, int idx);
+ATermList ATremoveAll(ATermList list, ATerm el);
 ATermList ATreplace(ATermList list, ATerm el, int idx);
 ATerm     ATdictCreate();
 ATerm     ATdictGet(ATerm dict, ATerm key);
@@ -173,7 +174,11 @@ void    ATunregisterBlobDestructor(ATbool (*destructor)(ATermBlob));
 /* The Symbol type */
 Symbol  ATmakeSymbol(char *name, int arity, ATbool quoted);
 char   *ATgetName(Symbol sym);
-int     ATgetArity(Symbol sym);
+/*int     ATgetArity(Symbol sym);*/
+
+extern ATerm *lookup_table_alias;
+#define ATgetArity(sym) GET_LENGTH(lookup_table_alias[(sym)]->header)
+
 ATbool  ATisQuoted(Symbol sym);
 void    ATprotectSymbol(Symbol sym);
 void    ATunprotectSymbol(Symbol sym);

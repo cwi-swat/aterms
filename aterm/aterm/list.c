@@ -305,15 +305,17 @@ ATermList ATremoveElement(ATermList list, ATerm t)
     if(i >= buffer_size) 
       resize_buffer(i*2);
     buffer[i++] = el;
-  }
+ }
 
-  if(ATisEqual(el, t)) {
-    /* We found the element. Add all elements prior to this 
-       one to the tail of the list. */
-    for(i-=2; i>=0; i--) {
-      list = ATinsert(list, buffer[i]);
-    }
-  }
+	if(ATisEmpty(l))
+		return list;
+
+	list = l; /* Skip element to be removed */
+
+	/* We found the element. Add all elements prior to this 
+		 one to the tail of the list. */
+	for(i-=2; i>=0; i--)
+		list = ATinsert(list, buffer[i]);
 
   return list;
 }
@@ -341,6 +343,42 @@ ATermList ATremoveElementAt(ATermList list, int idx)
   }
 
   return list;
+}
+
+/*}}}  */
+/*{{{  ATermList ATremoveAll(ATermList list, ATerm t) */
+
+/**
+	* Remove all occurences of an element from a list
+	*/
+
+ATermList ATremoveAll(ATermList list, ATerm t)
+{
+  int i = 0;
+  ATerm el = NULL;
+  ATermList l = list;
+	ATbool found = ATfalse;
+
+  while(!ATisEmpty(l)) {
+    el = ATgetFirst(l);
+    l = ATgetNext(l);
+		if(!ATisEqual(el, t)) {
+			if(i >= buffer_size) 
+				resize_buffer(i*2);
+			buffer[i++] = el;
+		} else
+			found = ATtrue;
+  }
+
+	if(!found)
+		return list;
+
+	/* Add all elements prior to this one to the tail of the list. */
+	list = ATempty;
+	for(--i; i>=0; i--)
+		list = ATinsert(list, buffer[i]);
+
+  return list;	
 }
 
 /*}}}  */
