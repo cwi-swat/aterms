@@ -1,0 +1,12 @@
+Both versions:
+* Extend adt formalism with support for lists and implement specific
+  functionality for lists
+
+
+C version:
+
+Java version:
+
+* builtin integer arguments should appear as 'int' not 'Integer' in the
+  make functions 
+
