@@ -258,29 +258,26 @@ by a subterm and a closing angular bracket. Examples are: \texttt{<int>},
 \subsection{\asdf\ Parse Trees: the \asfix\ syntax}
 \label{sec:asfix-syntax}
 
-When a term such as \texttt{true and not false} is parsed using the
-\metaenv\ parser \texttt{sglr}, it yields a parse tree represented in a
-format called \asfix. These parse trees are actually \aterms, preserving
-lots of information about the input (such as the layout used in the input
-term), as well as adding syntax-derived facts such as associativity and
-constructor information to the nodes in the tree.
+For a given \sdf-specification, a parse table can be generated using the
+\texttt{pgen} tool from the \metaenv. This parse table can subsequently
+be used by \texttt{sglr}: the scannerless, generalized LR parser to
+parse input terms over the syntax described by the \sdf-specification.
+As a result of this parsing, a parse tree is yielded in \asfix: a parse
+tree format, built on \aterms, specifically designed to be the exchange
+format for tools in the \metaenv.
 
-Without describing all of the idiosyncrasies of \asfix, the two most
-important constructs used are: the grammar production (\texttt{prod}),
-and its application (\texttt{appl}). We will give their \sdf\ definition
-and an explanatory example:
+Because \asfix\ is a parse tree format (and not an abstract syntax tree),
+information such as layout in the input term as well as syntax-derived
+facts such as associativity and constructor information is still
+available to any tool that has access to the \asfix\ representation of
+the input term.
 
-% {{{  context-free syntax rules for "appl" and "prod"
+The definition of the concrete syntax of \asfix\ is given in
+Appendix~\ref{app:asfix-syntax}, but to quickly familiarize the reader
+with \asfix, we will explain some of its idiosyncrasies by means of real
+life examples.
 
-\begin{footnotesize}
-\begin{verbatim}
-context-free syntax
-  prod ( Symbols, Symbol, Attributes )  ->   Production
-  appl ( Production, Args )             ->   Tree
-\end{verbatim}
-\end{footnotesize}
-
-% }}}
+\texttt{todo: beef up examples and fully explain cf(opt(layout))}
 
 \noindent The production
 {\footnotesize\verb+Bool "and" Bool" -> Bool {left}+}
@@ -344,38 +341,38 @@ constructed using \texttt{ATmake}:
 
 \begin{footnotesize}
 \begin{verbatim}
-  ATermAppl appl = ATmake("phone(<int>)", 5554242);
+  ATerm phoneTerm = ATmake("phone(<int>)", 5554242);
 \end{verbatim}
 \end{footnotesize}
 
 % }}}
 
-\noindent and can be inspected using \texttt{ATmatch}:
+\noindent and elements can be extracted using \texttt{ATmatch}:
 
 % {{{  ATmatch example
 
 \begin{footnotesize}
 \begin{verbatim}
   int number;
-  ATmatch("phone(5554242)", "phone(<int>)", &number);
+  ATmatch(phoneTerm, "phone(<int>)", &number);
 \end{verbatim}
 \end{footnotesize}
 
 % }}}
 
-The \C\ code necessary to write down say, the pattern for the boolean
-\texttt{true} from our running example appears more intricate already,
-as we have to escape all the quotes (the \verb+"+ characters) from
-interpretation by the compiler.
+Suppose we want to write down the \C\ code necessary to construct
+the boolean term \texttt{true}. The \aterm-pattern required is quite
+complex already, as we have to escape all the double quotes (the \verb+"+
+characters) from interpretation by the compiler.
 
 % {{{  Parse Tree for "true"
 
-\begin{footnotesize}
+\begin{scriptsize}
 \begin{verbatim}
- ATermAppl true = ATparse(
+ ATerm true = ATparse(
    "appl(prod([lit(\"true\")],cf(sort(\"Bool\")),no-attrs),[lit(\"true\")])");
 \end{verbatim}
-\end{footnotesize}
+\end{scriptsize}
 
 % }}}
 
@@ -385,32 +382,59 @@ of the incoming term against the pattern for the syntax production
 for {\footnotesize\texttt{Bool "and" Bool -> Bool \{left\}} } with a
 \texttt{<term>} placeholder at the correct spot. Because the pattern
 is written as a \C\ string, we once again need to escape all quotes.
-Moreover, the string representation of the match-pattern is so long
-that it does not fit on one line, and we need to resort to ANSI \C\
-string concatenation\footnote{Strings can be split over multiple lines by
-ending lines with a \texttt{"} and starting the next line with another
-\texttt{"}.} to span the
-string over multiple lines.
+Moreover, the string representation of the match-pattern is so long that
+it does not legibly fit on one line anymore, and we need to resort to
+ANSI \C\ string concatenation\footnote{Strings can be split over multiple
+lines by ending one line with a \texttt{"} and starting the next line
+with another \texttt{"}.} to span the string over multiple lines.
 
-% {{{  Level One: Extracting lhs from "true and false"
+% {{{  Level One: Extracting lhs from "Bool and Bool -> Bool"
 
-\begin{footnotesize}
+\begin{scriptsize}
 \begin{verbatim}
   ATerm extract_bool_lhs(ATerm t) {
     ATerm lhs;
     char *bool_and_lhs_pattern = 
       "appl(prod([cf(sort(\"Bool\")),cf(opt(layout)),lit(\"and\"),cf(opt(layout)),"
-      "cf(sort(\"Bool\"))],cf(sort(\"Bool\")),attrs([assoc(\"left\")])),[<term>],"
-      "layout([\" \"]),lit(\"and\"),layout([\" \"]),appl(prod([lit(\"false\")],"
-      "cf(sort(\"Bool\")),no-attrs),[lit(\"false\")])])";
+      "cf(sort(\"Bool\"))],cf(sort(\"Bool\")),attrs([assoc(\"left\")])),"
+      "[<term>,<term>,lit("and"),<term>,<term>])";
   
-    ATmatch(t, bool_and_lhs_pattern, &lhs);
-    return lhs;
+    if (ATmatch(t, bool_and_lhs_pattern, &lhs, NULL, NULL, NULL)) {
+      return lhs;
+    }
+
+    return NULL;
   }
 \end{verbatim}
-\end{footnotesize}
+\end{scriptsize}
 
 % }}}
+
+Did you spot a missing quote? Are all the \verb+)+, \verb+]+, and \verb+}+
+characters where they should be? Did you expect \emph{four} \texttt{<term>}
+substitutions (to account for the lhs, the rhs, and the optional layout before
+and after the literal \texttt{"and"})?
+
+Keep in mind that:
+
+\begin{itemize}
+
+\item as long as it is a valid \C\ string, the \C\ compiler is not going to
+warn you if you make a mistake (e.g. you wrote \texttt{lit(and)} instead of
+\verb+lit(\"and\")+);
+
+\item as long as it is a valid \aterm-pattern, the \aterm-library is
+not going to warn you if you make a mistake (e.g. you forgot to add
+\texttt{<term>} placeholders for the optional layout);
+
+\item the only noticable effect is your application bailing out, because
+the extraction function failed to come up with the desired answer;
+
+\item your only hope to fix any problems lies in visually inspecting
+the incoming term versus the expected matching pattern and figuring
+out why they didn't match!
+
+\end{itemize}
 
 % }}}
 % {{{  Accessing Parse Trees using the Level Two interface
@@ -441,7 +465,7 @@ In particular, recalling that in \asfix\ we are dealing with
 second argument of the \texttt{appl}. If we look closely at the \asfix\
 pattern for our \texttt{and}-terms, we notice that the left-hand side
 is the first element from this list of \texttt{args}. The extraction
-function can now be simplified to the more efficient:
+function can thus be simplified to the more efficient:
 
 % {{{  Level Two: Extracting lhs from "true and false"
 
@@ -646,22 +670,21 @@ pattern that represents the syntax rule in actual parse trees.
 But what about the \emph{alternative} and the \emph{descriptive} names
 for the non-terminals that we need? Given our \sdf\ rule for the boolean
 \texttt{and}, can we derive a sensible name for each of the \texttt{Bool}
-non-terminals? The only information we have is in our syntax rule:
+non-terminals? The only information we have is our syntax rule:
 {\small\texttt{Bool "and" Bool -> Bool \{left\}} }
 
-
 If we use heuristics to call them e.g. \texttt{lhs} and \texttt{rhs},
-what do we do when we find another syntax rule that has three, four or
-even more arguments? In syntax rules with only one non-terminal, we could
-default to using the sort name of that non-terminal. But in general,
-it is hard to come up with any kind of descriptive naming scheme.
-Keep in mind that most toolbuilders will not really be happy if they
-are confronted with access functions that have arbitrary generated
-names, or numbered arguments. Instead of coming up with any heuristic,
-we use the \emph{labeling} mechanism present in \sdf, to label each
-non-terminal. This eliminates the need to invent a descriptive name
-altogether. Our syntax rule for \texttt{and} becomes:
-{\small \texttt{lhs:Bool "and" rhs:Bool -> Bool \{left\}} }
+what do we do when we find another syntax rule that has three, four
+or even more arguments? In syntax rules with only one non-terminal,
+we could default to using the sort name of that non-terminal. But in
+general, it is hard to come up with any kind of descriptive naming scheme.
+Keep in mind that most toolbuilders will not really be happy if they are
+confronted with access functions that have arbitrary generated names,
+or numbered arguments. Instead of coming up with any heuristic, we
+opted to use the \emph{labeling} mechanism present in \sdf, to label
+each non-terminal. This eliminates the need to invent a descriptive
+name altogether. Our syntax rule for \texttt{and} becomes: {\small
+\texttt{lhs:Bool "and" rhs:Bool -> Bool \{left\}} }
 
 Similarly, we need a solution for the \emph{alternative} name. In this
 case the literal \texttt{and} is exactly the name we want. But what
@@ -790,7 +813,24 @@ exported \api\ functions.
 \label{app:aterm-syntax}
 A formal definition of the concrete syntax for \aterms\ using \sdf\
 is presented here.
+
+\begin{scriptsize}
 \verbatiminput{ATerms.sdf}
+\end{scriptsize}
+
+% }}}
+% {{{  Concrete Syntax of AsFix
+
+\section{Concrete Syntax of \asfix}
+\label{app:asfix-syntax}
+A formal definition of the concrete syntax for \asfix\ using \sdf\
+is presented here.
+
+\begin{scriptsize}
+\verbatiminput{Symbol.sdf}
+\verbatiminput{Tree.sdf}
+\verbatiminput{Attributes.sdf}
+\end{scriptsize}
 
 % }}}
 

@@ -1,0 +1,15 @@
+module Tree
+imports Literals
+
+exports
+  sorts Tree Args Production
+
+  context-free syntax
+    appl ( Production, Args )            -> Tree
+    Integer                              -> Tree
+    lit ( Literal )                      -> Tree %% AsFix2ME specific
+    amb ( Args )                         -> Tree
+
+    "[" {Tree ","}* "]"                  -> Args
+    prod ( Symbols, Symbol, Attributes ) -> Production
+    list ( Symbol )                      -> Production %% AsFix2ME specific

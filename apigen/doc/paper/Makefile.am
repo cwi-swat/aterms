@@ -4,7 +4,9 @@
 # $Id$
 #
 
-SOURCES = apigen.ltx ATerms.sdf bool.example set.example
+SPECS = ATerms.sdf Symbol.sdf Tree.sdf Attributes.sdf
+EXAMPLES = bool.example set.example
+SOURCES = apigen.ltx ${SPECS} ${EXAMPLES}
 
 include ${top_srcdir}/make_rules
 

@@ -1,0 +1,8 @@
+module ParseTree
+imports Attributes Tree Symbol
+
+exports
+  sorts ParseTree
+
+  context-free syntax
+    "parsetree" "(" "appl" "(" "prod" "(" Symbols "," "sort" "(" "\"<START>\"" ")" "," "no-attrs" ")" "," "[" layout-before-Tree "," Tree "," layout-after-Tree "]" ")" "," amb-Integer ")" -> ParseTree {cons("tree")}
