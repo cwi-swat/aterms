@@ -11,6 +11,8 @@ import apigen.adt.Alternative;
 import apigen.adt.NormalListType;
 import apigen.adt.SeparatedListType;
 import apigen.adt.Type;
+import apigen.gen.GenerationObserver;
+import apigen.gen.Generator;
 import apigen.gen.TypeConverter;
 
 public class Main {
@@ -37,7 +39,7 @@ public class Main {
 			System.exit(1);
 		}
 
-		generateAPI(params, ADTReader.readADT(params));
+		generateAPI(ADTReader.readADT(params), params);
 	}
 
 	private static void checkParameters(JavaGenerationParameters params) {
@@ -60,44 +62,59 @@ public class Main {
 		System.err.print(params.usage());
 	}
 
-	private static void generateAPI(JavaGenerationParameters params, ADT adt) {
-		new FactoryGenerator(adt, params).run();
-		new GenericConstructorGenerator(adt, params).run();
-		//		new MakeRulesGenerator(adt, params).run();
+	private static void generateAPI(ADT adt, JavaGenerationParameters params) {
+		GeneratedJavaFileCollector l = new GeneratedJavaFileCollector();
+
+		run(new FactoryGenerator(adt, params), l);
+		run(new GenericConstructorGenerator(adt, params), l);
 
 		if (params.isVisitable()) {
-			new VisitorGenerator(adt, params).run();
-			new ForwardGenerator(adt, params).run();
+			run(new VisitorGenerator(adt, params), l);
+			run(new ForwardGenerator(adt, params), l);
 		}
 
-		generateTypeClasses(params, adt);
+		generateTypeClasses(adt, params, l);
+		showGeneratedFiles(l.getGeneratedFiles());
 	}
 
-	private static void generateTypeClasses(JavaGenerationParameters params, ADT api) {
+	private static void showGeneratedFiles(List generatedFiles) {
+		Iterator iter = generatedFiles.iterator();
+		while (iter.hasNext()) {
+			String fileName = (String) iter.next();
+			System.err.println("generated java file: " + fileName);
+		}
+	}
+
+	private static void run(Generator generator, GenerationObserver l) {
+		generator.addGenerationListener(l);
+		generator.run();
+	}
+
+	private static void generateTypeClasses(ADT adt, JavaGenerationParameters params, GenerationObserver l) {
 		TypeConverter typeConverter = new TypeConverter(new JavaTypeConversions());
-		Iterator typeIterator = api.typeIterator();
+		Iterator typeIterator = adt.typeIterator();
 		while (typeIterator.hasNext()) {
 			Type type = (Type) typeIterator.next();
 
 			if (type instanceof NormalListType) {
-				new ListTypeGenerator(params, (NormalListType) type).run();
+				run(new ListTypeGenerator(params, (NormalListType) type), l);
 			}
 			else if (type instanceof SeparatedListType) {
-				new SeparatedListTypeGenerator(params, (SeparatedListType) type).run();
+				run(new SeparatedListTypeGenerator(params, (SeparatedListType) type), l);
 
 			}
 			else if (!typeConverter.isReserved(type.getId())) {
-				new TypeGenerator(params, type).run();
-				generateAlternativeClasses(params, type);
+				run(new TypeGenerator(params, type), l);
+				generateAlternativeClasses(params, type, l);
 			}
 		}
 	}
 
-	private static void generateAlternativeClasses(JavaGenerationParameters params, Type type) {
+	private static void generateAlternativeClasses(JavaGenerationParameters params, Type type, GenerationObserver l) {
 		Iterator altIterator = type.alternativeIterator();
 		while (altIterator.hasNext()) {
 			Alternative alt = (Alternative) altIterator.next();
-			new AlternativeGenerator(params, type, alt).run();
+			run(new AlternativeGenerator(params, type, alt), l);
 		}
 	}
 }

@@ -4,10 +4,13 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 public abstract class Generator {
 	private GenerationParameters params;
-
+	private List listeners;
 	private String directory;
 	private String fileName;
 	private String extension;
@@ -21,81 +24,48 @@ public abstract class Generator {
 		return params;
 	}
 
-	/**
-	 * Create a new file and use the abstract generate() function to print its
-	 * contents.
-	 *  
-	 */
 	public void run() {
 		info("generating " + getFileName() + getExtension());
 		stream = createStream(getDirectory(), getFileName(), getExtension());
+		fireFileCreated(getDirectory(), getFileName(), getExtension());
 		generate();
 		closeStream(stream);
 	}
 
-	/**
-	 * Generates the contents of the file using the printing facilities offered
-	 * by this class
-	 *  
-	 */
 	abstract protected void generate();
 
-	/**
-	 * Print an empty line to the target file
-	 *  
-	 */
 	public void println() {
 		stream.println();
 	}
 
-	/**
-	 * Print a line to the target file
-	 */
 	public void println(String msg) {
 		stream.println(msg);
 	}
 
-	/**
-	 * Print a message to the target file
-	 */
 	public void print(String msg) {
 		stream.print(msg);
 	}
 
-	/**
-	 * Print a message on stderr if the verbose option is set to true
-	 */
 	public void info(String msg) {
 		if (params.isVerbose()) {
 			System.err.println(msg);
 		}
 	}
 
-	/**
-	 * Close a file stream
-	 */
 	protected void closeStream(PrintStream stream) {
 		stream.close();
 	}
 
-	/**
-	 * Create a file if possible
-	 * 
-	 * @param file
-	 *            A complete path to the file
-	 * @return PrintStream a handle to the new file
-	 */
-	private PrintStream createStream(String file) {
+	private PrintStream createStream(String fileName) {
 		try {
-			PrintStream stream = new PrintStream(new FileOutputStream(file));
-			return stream;
+			return new PrintStream(new FileOutputStream(fileName));
 		}
 		catch (FileNotFoundException exc) {
-			throw new RuntimeException("fatal error: Failed to open " + file + " for writing.");
+			throw new RuntimeException("fatal error: Failed to open " + fileName + " for writing.");
 		}
 	}
 
-	private String getPath(String directory, String fileName, String ext) {
+	private static String getPath(String directory, String fileName, String ext) {
 		return directory + File.separatorChar + fileName + ext;
 	}
 
@@ -146,4 +116,25 @@ public abstract class Generator {
 		this.fileName = fileName;
 	}
 
+	public void addGenerationListener(GenerationObserver aListener) {
+		if (listeners == null) {
+			listeners = new LinkedList();
+		}
+		listeners.add(aListener);
+	}
+
+	public void removeGenerationListener(GenerationObserver aListener) {
+		if (listeners != null) {
+			listeners.remove(aListener);
+		}
+	}
+
+	protected void fireFileCreated(String directory, String fileName, String extension) {
+		if (listeners != null) {
+			Iterator iter = listeners.iterator();
+			while (iter.hasNext()) {
+				((GenerationObserver) iter.next()).fileCreated(directory, fileName, extension);
+			}
+		}
+	}
 }
