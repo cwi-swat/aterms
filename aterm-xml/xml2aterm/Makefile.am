@@ -9,7 +9,7 @@ XMLTOATERM_SOURCES = xml2aterm.c
 XMLTOATERM_LDADD   = -L${ATERM}/lib -lATerm ${XMLLIB}
 INCLUDES          = -I${ATERM}/include -I${top_srcdir}/config ${XMLINCLUDE}
 
-CLEANFILES += ${bin_SCRIPTS} ${noinst_SCRIPTS}
+CLEANFILES = ${bin_SCRIPTS} ${noinst_SCRIPTS}
 
 % : %.sh.src Makefile
 	sed 's@__XMLLIBPATH__@${XML}/lib@g;\

@@ -1,9 +1,12 @@
+*-*.pkg
+*.tar.gz
+.deps
+Makefile
+Makefile.in
 aclocal.m4
+autom4*
 config.cache
 config.h.in
 config.log
 config.status
 configure
-.deps
-Makefile
-Makefile.in
