@@ -5,7 +5,6 @@ package apigen.java;
 import java.io.*;
 import java.util.*;
 
-import aterm.*;
 import aterm.pure.PureFactory;
 
 import apigen.*;
@@ -38,14 +37,17 @@ public class JavaGen
   //{{{ private final static String[][] RESERVED_TYPES =
 
   private final static String[][] RESERVED_TYPES =
-  { { "int",  "int"    },
-    { "real", "double" },
-    { "str",  "String" }
+  { { "int",  "Integer"    },
+    { "real", "Double" },
+    { "str",  "String" },
+    { "term", "aterm.ATerm" }
   };
 
   //}}}
 
   public static boolean verbose = false;
+  public static boolean folding = false;
+  public static boolean visitable = false;
 
   private aterm.ATermFactory factory;
 
@@ -53,7 +55,7 @@ public class JavaGen
   private String pkg;
   private List	 imports;
   private String class_name;
-
+  
   private InputStream input;
   private PrintStream stream;
 
@@ -62,6 +64,8 @@ public class JavaGen
   private String last_special_char_word;
 
   private Map    reservedTypes;
+
+	private String path;
 
   //{{{ private static void usage()
 
@@ -74,6 +78,8 @@ public class JavaGen
     System.err.println("\t-basedir <basedir>        [\".\"]");
     System.err.println("\t-import <package>         (can be repeated)");
     System.err.println("\t-input <in>               [-]");
+    System.err.println("\t-folding                  [off]");
+    System.err.println("\t-visitable                [off]");
     System.exit(1);
   }
 
@@ -104,19 +110,23 @@ public class JavaGen
 
     for (int i=0; i<args.length; i++) {
       if ("-help".startsWith(args[i])) {
-	usage();
+	      usage();
       } else if ("-verbose".startsWith(args[i])) {
-	verbose = true;
+        verbose = true;
       } else if ("-package".startsWith(args[i])) {
-	pkg = args[++i];
+        pkg = args[++i];
       } else if ("-basedir".startsWith(args[i])) {
-	basedir = args[++i];
+        basedir = args[++i];
       } else if ("-import".startsWith(args[i])) {
-	imports.add(args[++i]);
+        imports.add(args[++i]);
       } else if ("-input".startsWith(args[i])) {
-	input = args[++i];
+        input = args[++i];
+      } else if ("-folding".startsWith(args[i])) {
+        folding = true;
+      } else if ("-visitable".startsWith(args[i])) {
+        visitable = true;
       } else {
-	usage();
+        usage();
       }
     }
 
@@ -152,588 +162,755 @@ public class JavaGen
     }
 
     factory = new PureFactory();
-
     aterm.ATerm adt = factory.readFromFile(input);
-
     API api = new API(adt);
+    
+    genFactoryClassFile(api);
+    genTypeClassFiles(api);
+  }
 
+  private void genFactoryClassFile(API api) throws IOException {
+    class_name = capitalize(buildId(pkg)) + "Factory";
+    stream = createStream(class_name);
+    
+    genPackageDecl();
+    
+    List extra = new LinkedList();
+    extra.add("aterm.pure.PureFactory");
+    genImports(extra); 
+    
+    genFactoryClass(api);
+    
+    stream.close();
+  }
+  
+  private void genFactoryClass(API api) throws IOException {  
+    println("class " + class_name + " extends PureFactory");
+    println("{");
+    println("  public " + class_name + "()");
+    println("  {");
+    println("     super();");
+    println("     initialize();");
+    println("  }");
+    println("");
+    println("  private void initialize()");
+    println("  {");
+    
+    genInitializeCalls(api);
+    
+    println("  }");
+    println("}");
+  }
+  
+  private void genInitializeCalls(API api)
+  {
     Iterator types = api.typeIterator();
     while (types.hasNext()) {
       Type type = (Type)types.next();
-      genTypeClasses(type);
+      
+      println("      " + buildClassName(type) + ".initialize(this);");
+      
+      Iterator alts = type.alternativeIterator();
+      while (alts.hasNext()) {
+        Alternative alt = (Alternative)alts.next();
+        
+        println("      " + buildAltClassName( type, alt) + ".initialize(this);");
+      }
     }
   }
+  
+	private void genTypeClassFiles(API api) throws IOException {
+		Iterator types = api.typeIterator();
+		while (types.hasNext()) {
+		  Type type = (Type)types.next();
+		  genTypeClassFile(type);
+		}
+	}
 
-  //}}}
-
-  //{{{ private void genTypeClasses(Type type)
-
-  private void genTypeClasses(Type type)
+  private void genTypeClassFile(Type type)
     throws IOException
   {
-    class_name = buildClassName(type);
-    char sep = File.separatorChar;
-    String path = basedir + sep + pkg.replace('.', sep) + sep + class_name + ".java";
-    stream = new PrintStream(new FileOutputStream(path));
-
+    String class_name = buildClassName(type);    
+    stream = createStream(class_name);
+    PrintStream tmp;
+    
     info("generating " + path);
 
-    println("package " + pkg + ";");
+    genPackageDecl();
+    genImports();    
     println();
+    
+    genTypeClass(type);    
+    tmp = stream;
+    genAlternativesClassesFiles(type);
+    stream = tmp;
+    
+    stream.close();
+  }
+    
+	private void genPackageDecl() {
+		if (pkg.length() > 0) {
+		  println("package " + pkg + ";");
+		  println();
+		}
+	}
 
-    printFoldOpen(0, "imports");
-    println("import java.util.*;");
-    println("import aterm.*;");
-    println();
-    Iterator iter = imports.iterator();
-    while (iter.hasNext()) {
-      println("import " + (String)iter.next() + ";");
-    }
-    printFoldClose(0);
-    println();
-
-    println("abstract public class " + class_name);
-    println("{");
-    println("  static boolean initialized = false;");
-    println();
-    genPatternAttrs(type);
-    println();
-    println("  aterm.ATerm term;");
-
-    println();
-    genFactoryMethod(type);
-    genToTerm();
-    genPatternInit(type);
-    genAltFactoryMethods(type);
-    genConstructor();
-    genEquals();
-    genAccessors(type);
-    println("}");
-
-    Iterator alt_iter = type.alternativeIterator();
-    while (alt_iter.hasNext()) {
-      println();
-      Alternative alt = (Alternative)alt_iter.next();
-      genAltClass(type, alt);
-    }
+	private void genAlternativesClassesFiles(Type type) {
+		Iterator alt_iter = type.alternativeIterator();
+		while (alt_iter.hasNext()) {
+		  println();
+		  Alternative alt = (Alternative)alt_iter.next();
+		  genAlternativeClassFile(type, alt);
+		}
+	}
+  
+  private void genAlternativeClassFile(Type type, Alternative alt)
+  {
+    String class_name = buildAltClassName(type, alt);
+    stream = createStream(class_name);
+    
+    info("generating " + path);
+    
+    genPackageDecl();
+    genImports();
+      
+    genAlternativeClass(type, alt);
+    
+    stream.close();
   }
 
-  //}}}
-  //{{{ private void genPatternAttrs(Type type)
+	private PrintStream createStream(String class_name) {
+		char sep = File.separatorChar;
+		path = basedir + sep + pkg.replace('.', sep) + sep + class_name + ".java";
+    
+    try {
+  		return new PrintStream(new FileOutputStream(path));
+    }
+    catch (FileNotFoundException exc) {
+      System.err.println("fatal error: Failed to open " + path + " for writing.");
+      System.exit(1);
+      return null;
+    }
+	}
 
-  private void genPatternAttrs(Type type)
-  {
-    printFoldOpen("pattern attributes");
-    Iterator iter = type.alternativeIterator();
-    while (iter.hasNext()) {
-      Alternative alt = (Alternative)iter.next();
-      println("  static aterm.ATerm pat" + buildId(alt.getId()) + ";");
+	private void genTypeClass(Type type) {
+    String class_name = buildClassName(type);
+    
+		println("abstract public class " + class_name);
+		println("{");
+		println("  private static aterm.ATermFactory factory = null;");
+		println("  protected aterm.ATerm term = null;");    
+    println();
+    printFoldOpen("initialize(ATermFactory f)");
+		println("  static public void initialize(aterm.ATermFactory f)");
+		println("  {");
+		println("    factory = f;");
+		println("  }");
+    printFoldClose();
+    printFoldOpen("toTerm()");
+		println("  public aterm.ATerm toTerm()");
+		println("  {");
+		println("    return this.term;");
+		println("  }");
+    printFoldClose();
+    printFoldOpen("toString()");
+		println("  public String toString()");
+		println("  {");
+		println("    return this.term.toString();");
+		println("  }");
+    printFoldClose();
+    printFoldOpen("fromString()");
+		println("  static " + class_name + " fromString(String str)");
+		println("  {");
+		println("    aterm.ATerm trm = factory.parse(str);");
+		println("    return fromTerm(trm);");
+		println("  }");
+    printFoldClose();
+    printFoldOpen("fromTextFile()");
+		println("  static " + class_name + " fromTextFile(InputStream stream) throws aterm.ParseError, IOException");
+		println("  {");
+		println("    aterm.ATerm trm = factory.readFromTextFile(stream);");
+		println("    return fromTerm(trm);");
+		println("  }");
+    printFoldClose();
+		printFoldOpen("isEqual(" + class_name + ")");
+		println("  public boolean isEqual(" + class_name + " peer)");
+		println("  {");
+		println("    return term.isEqual(peer.toTerm());");
+		println("  }");
+    printFoldClose();
+    printFoldOpen("fromTerm(ATerm trm)");
+    println("  public static " + class_name + " fromTerm(aterm.ATerm trm)");
+    println("  {");
+    println("    " + class_name + " tmp;");
+    genFromTermCalls(type);
+    println();
+    println("    throw new RuntimeException(\"This is not a " + class_name + ": \" + trm);" );
+    println("  }");
+    printFoldClose();
+    println();
+    genTypeDefaultProperties(type);
+    genDefaultGetAndSetMethods(type);
+		println();
+    println("}");
+    println();
+		
+	}
+
+	private void genDefaultGetAndSetMethods(Type type) {
+    Iterator fields = type.fieldIterator();
+    
+    printFoldOpen("default getters and setters");
+    while (fields.hasNext()) {
+      Field field = (Field) fields.next();
+      genDefaultGetAndSetMethod(type, field);
     }
     printFoldClose();
-  }
+	}
 
-  //}}}
-  //{{{ private void genFactoryMethod(Type type)
 
-  private void genFactoryMethod(Type type)
+  private void genTypeDefaultProperties(Type type)
   {
-    String decl = "public static " + class_name + " fromTerm(aterm.ATerm term)";
-    printFoldOpen(decl);
-    println("  " + decl);
+    printFoldOpen("default isX and hasX properties");
+    genDefaultIsMethods(type);
+    genDefaultHasMethods(type);
+    printFoldClose();
+  }
+   
+  private void genOverrideProperties(Type type, Alternative alt)
+  {
+    printFoldOpen("isXXX and hasXXX properties");
+    genOverrideIsMethod(alt);
+    genOverrideHasMethods(type, alt);
+    printFoldClose();
+  }
+  
+  private void genDefaultIsMethods(Type type)
+  {
+    Iterator alts = type.alternativeIterator();
+    while (alts.hasNext()) {
+      Alternative alt = (Alternative) alts.next();    
+      genDefaultIsMethod(alt);
+    }
+  }
+    
+  private void genDefaultIsMethod(Alternative alt) {   
+      println("  public boolean is" + capitalize(buildId(alt.getId())) + "()");
+      println("  {");
+      println("    return false;");
+      println("  }");
+      println();
+  }
+  
+  private void genOverrideIsMethod(Alternative alt) {
+    println("  public boolean is" + capitalize(buildId(alt.getId())) + "()");
     println("  {");
-    println("    List args;");
+    println("    return true;");
+    println("  }");
     println();
-    printFoldOpen(2, "initialize patterns");
-    println("    if (!initialized) {");
-    println("      initializePatterns(term.getFactory());");
-    println("    }");
-    printFoldClose(2);
-    println();
-
-    Iterator iter = type.alternativeIterator();
-    while (iter.hasNext()) {
-      Alternative alt = (Alternative)iter.next();
-      String alt_id   = buildId(alt.getId());
-      String alt_class = buildAltClassName(type, alt);
-      println("    args = term.match(pat" + alt_id + ");");
-      println("    if (args != null) {");
-      println("      return new " + alt_class + "(term, args);");
+  }
+    
+  private void genDefaultHasMethods(Type type)
+  {
+    Iterator fields = type.fieldIterator() ;
+    
+    while (fields.hasNext()) {
+      Field field = (Field) fields.next();    
+      genDefaultHasMethod(field);
+    }
+  }
+  
+  private void genDefaultHasMethod(Field field)
+  {    
+      println("  public boolean has" + capitalize(buildId(field.getId())) + "()");
+      println("  {");
+      println("    return false;");
+      println("  }");
+      println();
+  }
+  
+  private void genOverrideHasMethods(Type type, Alternative alt)
+  {
+    Iterator fields = type.altFieldIterator(alt.getId());
+    
+    while (fields.hasNext()) {
+      Field field = (Field) fields.next();   
+      genOverrideHasMethod(field);
+    }
+  }
+  
+  private void genOverrideHasMethod(Field field)
+  {
+     println("  public boolean has" + capitalize(buildId(field.getId())) + "()");
+     println("  {");
+     println("    return true;");
+     println("  }");
+     println();
+  }
+  
+  private void genFromTermCalls(Type type)
+  {
+    String class_name = buildClassName(type);
+    Iterator alts = type.alternativeIterator();
+    while (alts.hasNext()) {
+      Alternative alt = (Alternative) alts.next();    
+      String alt_class_name = buildAltClassName(type, alt);
+      println("    if ((tmp = " + alt_class_name + ".fromTerm(trm)) != null) {");
+      println("      return tmp;");
       println("    }");
       println();
     }
-    println("    throw new RuntimeException(\"illegal " + type.getId() + "\");");
-    println("  }");
-    printFoldClose();
-    println();
   }
-
-  //}}}
-  //{{{ private void genAltFactoryMethods(Type type)
-
-  private void genAltFactoryMethods(Type type)
-  {
-    String type_id = buildId(type.getId());
-    Iterator alts = type.alternativeIterator();
-    while (alts.hasNext()) {
-      Alternative alt = (Alternative)alts.next();
-      String method = buildId("make-" + alt.getId());
-      String formals = buildAltFormals(type, alt);
-      String decl = "public static " + type_id + " "
-	+ method + "(" + formals + ")";
-      String actuals = buildAltActuals(type, alt);
-      String alt_class = buildAltClassName(type, alt);
-      printFoldOpen(decl);
-      println("  " + decl);
-      println("  {");
-      println("    return new " + alt_class + "(" + actuals + ");");
-      println("  }");
-      printFoldClose();
-    }
-  }
-
-  //}}}
-  //{{{ private void genPatternInit(Type type)
-
-  private void genPatternInit(Type type)
-  {
-    String decl = "static void initializePatterns(ATermFactory factory)";
-    printFoldOpen("  " + decl);
-    println("  " + decl);
-    println("  {");
-    Iterator iter = type.alternativeIterator();
-    while (iter.hasNext()) {
-      Alternative alt = (Alternative)iter.next();
-      println("    pat" + buildId(alt.getId()) + " = factory.parse(\""
-	      + escapeQuotes(alt.buildMatchPattern().toString()) + "\");");
-    }
-    println("    initialized = true;");
-    println("  }");
-    printFoldClose();
-  }
-
-  //}}}
-
-  //{{{ private String buildAltFormals(Type type, Alternative alt)
-
-  private String buildAltFormals(Type type, Alternative alt)
-  {
-    StringBuffer buf = new StringBuffer();
-    
-    Iterator fields = type.altFieldIterator(alt.getId());
-    while (fields.hasNext()) {
-      Field field = (Field)fields.next();
-      String field_name = buildFieldId(field.getId());
-      String field_type = buildTypeId(field.getType());
-      buf.append(field_type + " " + field_name);
-      if (fields.hasNext()) {
-	buf.append(", ");
-      }
-    }
-
-    return buf.toString();
-  }
-
-  //}}}
-  //{{{ private String buildAltActuals(Type type, Alternative alt)
-
-  private String buildAltActuals(Type type, Alternative alt)
-  {
-    StringBuffer buf = new StringBuffer();
-    
-    Iterator fields = type.altFieldIterator(alt.getId());
-    while (fields.hasNext()) {
-      Field field = (Field)fields.next();
-      String field_name = buildFieldId(field.getId());
-      buf.append(field_name);
-      if (fields.hasNext()) {
-	buf.append(", ");
-      }
-    }
-
-    return buf.toString();
-  }
-
-  //}}}
   
-  //{{{ private void genConstructor()
-
-  private void genConstructor()
-  {
-    String decl = class_name + "(aterm.ATerm term)";
-    printFoldOpen(decl);
-    println("  " + decl);
-    println("  {");
-    println("    this.term = term;");
-    println("  }");
-    printFoldClose();
-    println();
+  private void genImports() {
+    genImports(new LinkedList());
   }
-
-  //}}}
-  //{{{ private void genEquals()
-
-  private void genEquals()
-  {
-    String decl = "public boolean isEqual(" + class_name + " peer)";
-
-    printFoldOpen(decl);
-    println("  " + decl);
-    println("  {");
-    println("    return toTerm().equals(peer.toTerm());");
-    println("  }");
+  
+	private void genImports(List extra) {	
+    printFoldOpen("imports");
+    List all = new LinkedList(imports);
+    all.addAll(extra);
+    
+		all.add("java.io.InputStream");
+		all.add("java.io.OutputStream");
+		all.add("java.io.IOException");
+		
+		Iterator iter = all.iterator();
+		while (iter.hasNext()) {
+		  println("import " + (String)iter.next() + ";");
+		}
+    
     printFoldClose();
-
-    decl = "public boolean equals(Object peer)";
-    printFoldOpen(decl);
-    println("  " + decl);
-    println("  {");
-    println("    if (peer instanceof " + class_name + ") {");
-    println("      return isEqual((" + class_name + ")peer);");
-    println("    }");
-    println();
-    println("    return false;");
-    println("  }");
-    printFoldClose();
-  }
-
-  //}}}
-
-  //{{{ private void genToTerm()
-
-  private void genToTerm()
-  {
-    String decl = "abstract public aterm.ATerm toTerm(aterm.ATermFactory factory)";
-    println("  " + decl + ";");
-
-    decl = "public aterm.ATerm toTerm()";
-    printFoldOpen(decl);
-    println("  " + decl);
-    println("  {");
-    println("    return toTerm(null);");
-    println("  }");
-    printFoldClose();
-    println();
-
-    /*
-    decl = "aterm.ATerm getTerm()";
-    printFoldOpen(decl);
-    println("  " + decl);
-    println("  {");
-    println("    return term;");
-    println("  }");
-    printFoldClose();
-    println();
-    */
-  }
-
-  //}}}
-
-  //{{{ private void genAccessors(Type type)
-
-  private void genAccessors(Type type)
-  {
-    printFoldOpen("abstract public boolean isXXX() methods");
-    Iterator alts = type.alternativeIterator();
-    while (alts.hasNext()) {
-      Alternative alt = (Alternative)alts.next();
-      String methodName = buildId("is-" + alt.getId());
-      println("  abstract public boolean " + methodName + "();");
-    }
-    printFoldClose();
-
-    printFoldOpen("abstract public boolean hasXXX() methods");
-    Iterator fields = type.fieldIterator();
-    while (fields.hasNext()) {
-      Field field = (Field)fields.next();
-      String methodName = buildId("has-" + field.getId());
-      println("  abstract public boolean " + methodName + "();");
-    }
-    printFoldClose();
-
-    printFoldOpen("abstract public XXX getXXX() methods");
-    fields = type.fieldIterator();
-    while (fields.hasNext()) {
-      Field field = (Field)fields.next();
-      String methodName = buildId("get-" + field.getId());
-      String methodType = buildTypeId(field.getType());
-      println("  abstract public " + methodType + " " + methodName + "();");
-    }
-    printFoldClose();
-
-    printFoldOpen("abstract public " + class_name + " setXXX() methods");
-    fields = type.fieldIterator();
-    while (fields.hasNext()) {
-      Field field = (Field)fields.next();
-      String methodName = buildId("set-" + field.getId());
-      String argName = buildFieldId(field.getId());
-      String argType = buildTypeId(field.getType());
-      println("  abstract public " + class_name + " " + methodName
-	      + "(" + argType + " " + argName +");");
-    }
-    printFoldClose();
-  }
-
-  //}}}
-
-  //{{{ private void genAltClass(Type type, Alternative alt)
-
-  private void genAltClass(Type type, Alternative alt)
+	}
+  
+  private void genAlternativeClass(Type type, Alternative alt)
   {
     String type_id = buildId(type.getId());
     String alt_class = buildAltClassName(type, alt);
+    
     println("class " + alt_class);
-    println("  extends " + type_id);
+    println("extends " + type_id);
+    if (visitable) {
+      println("implements Visitable");
+    }
     println("{");
-    genAttributes(type, alt);
+    println("  static private aterm.ATerm pattern = null;");
     println();
-
+    
+    genFieldMembers(type, alt);
     genAltConstructors(type, alt);
-    genAltToTerm(type, alt);
-    genAltIsMethods(type, alt);
-    genAltHasMethods(type, alt);
-    genAltGetMethods(type, alt);
-    genAltSetMethods(type, alt);
-
+    genAltInitialize(type, alt);
+    genAltFromTerm(type, alt);
+    genOverrideProperties(type,alt);
+    genAltGetAndSetMethods(type, alt);
+    if (visitable) {
+      genAltVisitableInterface(type, alt);
+    }
+    
     println("}");
   }
 
-  //}}}
-  //{{{ private void genAttributes(Type type, Alternative alt)
-
-  private void genAttributes(Type type, Alternative alt)
+  // This is not well thought out yet!
+	private void genAltVisitableInterface(Type type, Alternative alt)
   {
-    Iterator iter = type.altFieldIterator(alt.getId());
-    while (iter.hasNext()) {
-      Field field = (Field)iter.next();
-      String field_name = buildFieldId(field.getId());
-      String field_type = buildTypeId(field.getType());
+    printFoldOpen("visitable interface");
 
-      println("  private " + field_type + " " + field_name + ";");
+    println("  public void accept(Visitor v)");
+    println("  {");
+    println("    v.visit(this);");
+    println("  }");
+    println();
+        
+    println("  public Visitable getChildAt(int argnr)");
+    println("  {");
+    println("    switch(argnr) {");
+    {
+      Iterator fields = type.altFieldIterator(alt.getId());
+      int argnr = 0;
+      while (fields.hasNext()) {
+        Field field = (Field) fields.next();
+        if (!isReservedType(field.getType())) {
+          println("      case " + argnr + ": return (Visitable) get" + capitalize(buildId(field.getId())) + "();");
+        }
+        argnr++;
+      }
+      println("      default: throw new RuntimeException(\"" + buildAltClassName(type, alt) + 
+              " does not have an argument at position \" + argnr);");
     }
+    println("    }");
+    println("  }");
+    println();
+    println("  public Visitable setChildAt(int argnr, Visitable child)");
+    println("  {");
+    println("    switch(argnr) {");
+    {
+      Iterator fields = type.altFieldIterator(alt.getId());
+      int argnr = 0;
+      while (fields.hasNext()) {
+        Field field = (Field) fields.next();
+        if (!isReservedType(field.getType())) {
+          println("      case " + argnr + ": return (Visitable) set" + capitalize(buildId(field.getId())) + 
+                  "((" + buildClassName(field.getType()) + ") child );");
+        }
+        argnr++;
+      }
+      println("      default: throw new RuntimeException(\"" + buildAltClassName(type, alt) + 
+              " does not have an argument at position \" + argnr);");
+    }
+    println("    }");
+    println("  }");
+
+    println();
+    println("  public int getChildCount()");
+    println("  {");
+    println("    return " + countVisitableChildren(type, alt) + ";");
+    println("  }");  
+    
+    printFoldClose(); 
   }
 
-  //}}}
-
-  //{{{ private void genAltConstructors(Type type, Alternative alt)
-
-  private void genAltConstructors(Type type, Alternative alt)
-  {
-    String alt_class = buildAltClassName(type, alt);
-    String decl = alt_class + "(aterm.ATerm term, List args)";
-    printFoldOpen(decl);
-    println("  " + decl);
-    println("  {");
-    println("    super(term);");
-    println();
-
-    println("    Iterator iter = args.iterator();");
-    Iterator fields = type.altFieldIterator(alt.getId());
+	private int countVisitableChildren(Type type, Alternative alt) {
+		Iterator fields = type.altFieldIterator(alt.getId());
+    int count = 0;
     while (fields.hasNext()) {
-      Field field = (Field)fields.next();
-      String field_name = buildFieldId(field.getId());
-      String field_type = buildTypeId(field.getType());
-      if (field_type.equals("int")) {
-	println("    this." + field_name
-		+ " = ((Integer)iter.next()).intValue();");
-      } else if (field_type.equals("real")) {
-	println("    this." + field_name
-		+ " = ((Double)iter.next()).doubleValue();");
-      } else {
-	println("    this." + field_name + " = (" + field_type + ")iter.next();");
+      Field field = (Field) fields.next();
+      if (!isReservedType(field.getType())) {
+        count++;
       }
     }
-    println("    if (iter.hasNext()) {");
-    println("      throw new RuntimeException(\"too many elements?\");");
-    println("    }");
+    return count;
+	}
 
-    println("  }");
-    printFoldClose();
-
-    decl = alt_class + "(" + buildAltFormals(type, alt) + ")";
-
-    printFoldOpen(decl);
-    println("  " + decl);
+  
+	private void genAltInitialize(Type type, Alternative alt) 
+  {
+    printFoldOpen("initialize(ATermFactory f");
+    println("  static public void initialize(aterm.ATermFactory f)");
     println("  {");
-    println("    super(null);");
+    println("    pattern = f.parse(\"" + escapeQuotes(alt.buildMatchPattern().toString()) + "\");");
+    println("  }");
     println();
+    printFoldClose();
+	}
 
-    fields = type.altFieldIterator(alt.getId());
+	private void genAltGetAndSetMethods(Type type, Alternative alt) {
+    printFoldOpen("getters and setters");
+    
+    Iterator fields = type.altFieldIterator( alt.getId());
     while (fields.hasNext()) {
-      Field field = (Field)fields.next();
-      String field_name = buildFieldId(field.getId());
-      println("    this." + field_name + " = " + field_name + ";");
-    }
-
-    println("  }");
-    printFoldClose();
-    println();
-  }
-
-  //}}}
-  //{{{ private void genAltToTerm(Type type, Alternative alt)
-
-  private void genAltToTerm(Type type, Alternative alt)
-  {
-    String decl = "public aterm.ATerm toTerm(aterm.ATermFactory factory)";
-    printFoldOpen(decl);
-    println("  " + decl);
-    println("  {");
-    println("    if (super.term == null) {");
-    println("      if (!initialized) {");
-    println("        initializePatterns(factory);");
-    println("      }");
-    println("      List args = new LinkedList();");
-    Iterator iter = type.altFieldIterator(alt.getId());
-    while (iter.hasNext()) {
-      Field field = (Field)iter.next();
-      String field_name = buildFieldId(field.getId());
-      String field_type = field.getType();
-      if (field_type.equals("int")) {
-	println("      args.add(new Integer(this." + field_name + "));");
-      } else if (field_type.equals("real")) {
-	println("      args.add(new Double(this." + field_name + "));");
-      } else {
-	println("      args.add(this." + field_name + ");");
-      }
-    }
-    println();
-    String alt_id = buildId(alt.getId());
-    println("      super.term = factory.make(pat" + alt_id + ", args);"); 
-    println("      return super.term;");
-    println("    }");
-    println();
-
-    println("    if (term.getFactory() == factory || factory == null) {");
-    println("      return super.term;");
-    println("    } else {");
-    println("      return factory.importTerm(super.term);");
-    println("    }");
-    println("  }");
-    printFoldClose();
-  }
-
-  //}}}
-  //{{{ private void genAltIsMethods(Type type, Alternative alt)
-
-  private void genAltIsMethods(Type type, Alternative alt)
-  {
-    printFoldOpen("public boolean isXXX() methods");
-
-    Iterator alts = type.alternativeIterator();
-    while (alts.hasNext()) {
-      Alternative curAlt = (Alternative)alts.next();
-      String decl = "public boolean " + buildId("is-" + curAlt.getId()) + "()";
-      printFoldOpen(decl);
-      println("  " + decl);
-      println("  {");
-      if (curAlt == alt) {
-	println("    return true;");
-      }
-      else {
-	println("    return false;");
-      }
-      println("  }");
-      printFoldClose();
+      Field field = (Field) fields.next();
+      genAltGetAndSetMethod(type, alt, field);
     }
     
     printFoldClose();
-  }
+	}
 
-  //}}}
-  //{{{ private void genAltHasMethods(Type type, Alternative alt)
+	private void genAltGetAndSetMethod(Type type, Alternative alt, Field field) {
+    String class_name = buildClassName(type);
+    String alt_class_name = buildAltClassName(type, alt);
+    String field_name = capitalize(buildId(field.getId()));
+    String field_id = buildFieldId(field.getId());
+    String field_type_id = buildClassName(field.getType());
 
-  private void genAltHasMethods(Type type, Alternative alt)
-  {
-    printFoldOpen("public boolean hasXXX() methods");
-
-    String altId = alt.getId();
-    Iterator fields = type.fieldIterator();
-    while (fields.hasNext()) {
-      Field field = (Field)fields.next();
-      String fieldId = buildId("has-" + field.getId());
-      String decl = "public boolean " + fieldId + "()";
-      printFoldOpen(decl);
-      println("  " + decl);
-      println("  {");
-      if (field.hasAltId(altId)) {
-	println("    return true;");
-      }
-      else {
-	println("    return false;");
-      }
-      println("  }");
-      printFoldClose();
+    // getter    
+    println("  public " + field_type_id + " get" + field_name + "()");
+    println("  {");
+    if (!isReservedType(field.getType())) {
+      println("    if ( this." + field_id + " == null) {");
+      println("      return " + field_type_id + ".fromTerm( term" + field_id + ");");
+      println("    }");
+      println("    else {");
+      println("      return this." + field_id + ";");
+      println("    }");
+    }
+    else {
+      println("    return this." + field_id + ";");
     }
 
+    println("  }");
+    println();
+    
+    // setter
+    println("  public " + class_name + " set" + field_name + "(" + field_type_id + " " + field_id + ")");
+    println("  {");
+    if (!isReservedType(field.getType())) {
+      println("    aterm.ATerm term" + field_id + " = " + field_id + ".toTerm();");
+      print  ("    return new " + alt_class_name + "("); makeActualTermAltArgumentList(type,alt); println(");");
+    }
+    else {
+      print  ("    return new " + alt_class_name + "("); makeActualTermAltArgumentList(type,alt); println(");");
+    } 
+     
+    
+    println("  }");
+    println();
+	}
+  
+  private void genDefaultGetAndSetMethod(Type type, Field field) {
+    String class_name = buildClassName(type);
+    String field_name = capitalize(buildId(field.getId()));
+    String field_id = buildFieldId(field.getId());
+    String field_type_id = buildClassName(field.getType());
+    
+    // getter    
+    println("  public " + field_type_id + " get" + field_name + "()");
+    println("  {");
+    println("     throw new RuntimeException(\"This " + class_name + " has no " + field_name + "\");"); 
+    println("  }");
+    println();
+    
+    // setter
+    println("  public " + class_name + " set" + field_name + "(" + field_type_id + " " + field_id + ")");
+    println("  {");
+    println("     throw new RuntimeException(\"This " + class_name + " has no " + field_name + "\");");  
+    println("  }");
+    println();
+  }
+
+  private void genFieldMembers(Type type, Alternative alt)
+  {
+    printFoldOpen("private members");
+    Iterator fields = type.altFieldIterator(alt.getId());
+    int argnr = 0;
+    
+    while (fields.hasNext()) {
+      Field field = (Field) fields.next();
+      String field_class_name = buildClassName(field.getType());
+      String field_id = buildFieldId(field.getId());
+      
+      println("  private " + field_class_name + " " + field_id + " = null;");
+      
+      if (!isReservedType(field.getType())) {
+        println("  private aterm.ATerm term" + field_id + " = null;");
+      }
+      
+      println();
+      
+      argnr++;
+    }
     printFoldClose();
   }
 
-  //}}}
-  //{{{ private void genAltGetMethods(Type type, Alternative alt)
-
-  private void genAltGetMethods(Type type, Alternative alt)
+  private void genAltConstructors(Type type, Alternative alt)
   {
-    printFoldOpen("public getXXX() methods");
-
-    String altId = alt.getId();
-    Iterator fields = type.fieldIterator();
+    printFoldOpen("constructors");
+    String alt_class = buildAltClassName(type, alt);
+    Iterator fields = type.altFieldIterator(alt.getId());
+    
+    if (!fields.hasNext()) { // a constructor without children
+      genConstantAltConstructor(type, alt);
+    }
+    else {
+      genApplicationAltConstructors(type, alt); 
+    }
+    printFoldClose(); 
+  }
+  
+  private void genConstantAltConstructor(Type type, Alternative alt)
+  {
+    println("  public " + buildAltClassName(type, alt) + "()");
+    println("  {");
+    println("    term = pattern;");
+    println("  }");
+    println();
+  }
+  
+  private void genApplicationAltConstructors(Type type, Alternative alt)
+  {
+    String alt_class_name = buildAltClassName(type, alt);
+    Iterator fields;
+    int argnr;
+    
+    print  ("  public " + alt_class_name + "("); makeFormalTypedAltArgumentList(type, alt); println(")");
+    println("  {");
+    print  ("    make" + alt_class_name + "("); makeActualTypedArgumentList(type, alt); println(");");
+    
+    fields = type.altFieldIterator(alt.getId());
     while (fields.hasNext()) {
-      Field field = (Field)fields.next();
-      String fieldId = buildFieldId(field.getId());
-      String methodName = buildId("get-" + field.getId());
-      String methodType = buildTypeId(field.getType());
-      String decl = "public " + methodType + " " + methodName + "()";
-      printFoldOpen(decl);
-      println("  " + decl);
+      Field field = (Field) fields.next();
+      String field_id = buildFieldId(field.getId());
+      println("    this." + field_id + " = " + field_id + ";");
+    }
+    println("  }");
+    println();
+    
+    if (!allFieldsReservedTypes(type, alt)) {
+      print  ("  private " + alt_class_name + "("); makeFormalUntypedAltArgumentList(type, alt); println(")");
       println("  {");
-      if (field.hasAltId(altId)) {
-	println("    return " + fieldId + ";");
+      print  ("    make" + alt_class_name + "("); makeActualUntypedAltArgumentList(type, alt); println(");");
+      println("  }");  
+      println();
+    }
+    
+    print  ("  private void make" + alt_class_name + "("); makeFormalUntypedAltArgumentList(type, alt); println(")");
+    println("  {");
+    println("    java.util.List args = new java.util.LinkedList();");
+    println();
+    
+    fields = type.altFieldIterator(alt.getId());   
+    while (fields.hasNext()) {
+      Field field = (Field) fields.next();
+      String field_id = buildFieldId(field.getId());
+      if (!isReservedType(field.getType())) {
+        println("    this." + "term" + field_id + " = " + field_id + ";");
       }
       else {
-	println("    throw new RuntimeException(\"" + altId + " has no "
-		+ fieldId + "\");");
+        println("    this." + field_id + " = " + field_id + ";");
       }
-      println("  }");
-      printFoldClose();
+      println("    args.add( " + field_id + ");");
     }
-
-    printFoldClose();
+    println();
+    
+    println("    term = pattern.getFactory().make(pattern, args);");
+    println("  }");
+    println();
   }
 
-  //}}}
-  //{{{ private void genAltSetMethods(Type type, Alternative alt)
-
-  private void genAltSetMethods(Type type, Alternative alt)
-  {
-    printFoldOpen("public setXXX() methods");
-
-    String altId = alt.getId();
-    Iterator fields = type.fieldIterator();
+	
+	private boolean allFieldsReservedTypes(Type type, Alternative alt) {
+    Iterator fields = type.altFieldIterator(alt.getId());
     while (fields.hasNext()) {
-      Field field = (Field)fields.next();
-      String methodName = buildId("set-" + field.getId());
-      String argType = buildTypeId(field.getType());
-      String argName = buildFieldId(field.getId());
-      String decl = "public " + class_name + " " + methodName
-	+ "(" + argType + " " + argName + ")";
-      printFoldOpen(decl);
-      println("  " + decl);
-      println("  {");
-      if (field.hasAltId(altId)) {
-	String alt_class = buildAltClassName(type, alt);
-	String actuals = buildAltActuals(type, alt);
-	println("    return new " + alt_class + "(" + actuals + ");");
+      Field field = (Field) fields.next();
+      if (!isReservedType(field.getType())) {
+        return false;
+      }
+    }
+    
+		return true;
+	}
+
+  
+	private void makeActualTypedArgumentList(Type type, Alternative alt) {
+		Iterator fields = type.altFieldIterator(alt.getId());
+		int argnr = 0;
+		while (fields.hasNext()) {
+		  Field field = (Field) fields.next();
+      String field_id = buildFieldId(field.getId());
+      if (!isReservedType(field.getType())) {
+        print(field_id + ".toTerm()");
       }
       else {
-	println("    throw new RuntimeException(\"" + altId + " has no "
-		+ argName + "\");");
+        print(field_id);
       }
-      println("  }");
-      printFoldClose();
-    }
+		  argnr++;
+		  
+		  if (fields.hasNext()) {
+		    print(", ");
+		  }
+		}
+		
+	}
 
+  private void makeActualUntypedAltArgumentList(Type type, Alternative alt) {
+    Iterator fields = type.altFieldIterator(alt.getId());
+    while (fields.hasNext()) {
+      Field field = (Field) fields.next();
+      String field_id = buildFieldId(field.getId());
+      print(field_id);
+      
+      if (fields.hasNext()) {
+        print(", ");
+      }
+    }
+    
+  }
+  
+  private void makeActualTermAltArgumentList(Type type, Alternative alt) {
+    Iterator fields = type.altFieldIterator(alt.getId());
+    while (fields.hasNext()) {
+      Field field = (Field) fields.next();
+      String field_id = buildFieldId(field.getId());
+      if (!isReservedType(field.getType())) {
+        print("term" + field_id);
+      }
+      else {
+        print(field_id);
+      }
+      
+      if (fields.hasNext()) {
+        print(", ");
+      }
+    }
+    
+  }
+	private void makeFormalTypedAltArgumentList(Type type, Alternative alt) {
+		Iterator fields = type.altFieldIterator(alt.getId());
+		while (fields.hasNext()) {
+		  Field field = (Field) fields.next();
+      String field_id = buildFieldId(field.getId());
+      print(buildClassName(buildClassName(field.getType())) + " " + field_id);
+      
+		  if (fields.hasNext()) {
+		    print(", ");
+		  }
+		}
+	}
+  
+  private void makeFormalUntypedAltArgumentList(Type type, Alternative alt) {
+    Iterator fields = type.altFieldIterator(alt.getId());
+    
+    while (fields.hasNext()) {
+      Field field = (Field) fields.next();
+      String field_id = buildFieldId(field.getId());
+      if (!isReservedType(field.getType())) {
+        print("aterm.ATerm " + field_id);
+      }
+      else {
+        print(buildClassName(field.getType()) + " " + field_id);
+      }
+     
+      if (fields.hasNext()) {
+        print(", ");
+      }
+    }
+  }
+    
+  //}}}
+  //{{{ private void genAltToTerm(Type type, Alternative alt)
+
+  private void genAltFromTerm(Type type, Alternative alt)
+  {
+    String class_name = buildClassName(type);
+    String alt_class_name = buildAltClassName(type, alt);
+    Iterator fields;
+    int argnr;
+   
+    printFoldOpen("fromTerm(ATerm trm)"); 
+    println("  static public " + class_name + " fromTerm(aterm.ATerm trm)");
+    println("  {");
+    println("    java.util.List children = trm.match(pattern);");
+    
+    println("    if (children != null) {");
+    
+    fields = type.altFieldIterator(alt.getId());
+    argnr = 0;
+    while (fields.hasNext()) {
+      Field field = (Field) fields.next();
+      String field_id = buildFieldId(field.getId());
+      if (!isReservedType(field.getType())) {
+        println("      aterm.ATerm " + field_id + "= (aterm.ATerm) children.get(" + argnr + ");");
+      }
+      else {
+        String field_class_name = buildClassName(field.getType());
+        
+        println("      " + field_class_name + " " + field_id + " = (" + 
+                field_class_name + ") children.get(" + argnr + ");");
+      }
+      argnr++;
+    }
+    
+    print  ("      return (" + class_name + ")" + 
+    " new " + alt_class_name + "(");  makeActualUntypedAltArgumentList(type, alt) ; println(");");
+    
+    println("    }"); // endif
+      
+    println("    else {");
+    println("      return null;");
+    println("    }");
+    println("  }");
     printFoldClose();
   }
+ 
 
   //}}}
 
@@ -743,21 +920,25 @@ public class JavaGen
   {
     String typeId = type.getId();
 
-    String nativeType = (String)reservedTypes.get(typeId);
-
-    if (nativeType != null) {
-      return nativeType;
-    }
-
-    return buildId(type.getId());
+    return buildClassName(typeId);
   }
+
+	private String buildClassName(String typeId) {
+		String nativeType = (String)reservedTypes.get(typeId);
+		
+		if (nativeType != null) {
+		  return nativeType;
+		}
+		
+		return buildId(typeId);
+	}
 
   //}}}
   //{{{ private String buildAltClassName(Type type, Alternative alt)
 
   private String buildAltClassName(Type type, Alternative alt)
   {
-    return buildId(type.getId()) + "_" + buildId(alt.getId());
+    return buildClassName(type.getId()) + "_" + capitalize(buildId(alt.getId()));
   }
 
   //}}}
@@ -790,26 +971,29 @@ public class JavaGen
     StringBuffer buf = new StringBuffer();
     boolean cap_next = false;
 
+    if (id.equals("aterm.ATerm")) {
+      return id;
+    }
+    
     for (int i=0; i<id.length(); i++) {
       char c = id.charAt(i);
       if (isSpecialChar(c)) {
-	buf.append(getSpecialCharWord(c));
-	cap_next = true;
+	      buf.append(getSpecialCharWord(c));
+	      cap_next = true;
       } else {
-	switch (c) {
-	  case '-':
-	    cap_next = true;
-	    break;
-
-	  default:
-	    if (cap_next) {
-	      buf.append(Character.toUpperCase(c));
-	      cap_next = false;
-	    } else {
-	      buf.append(c);
-	    }
-	    break;
-	}
+	      switch (c) {
+	      case '-':
+	        cap_next = true;
+	        break;
+	      default:
+	        if (cap_next) {
+	          buf.append(Character.toUpperCase(c));
+	          cap_next = false;
+	        } else {
+	          buf.append(c);
+	        }
+	        break;
+	      }
       }
     }
 
@@ -843,11 +1027,11 @@ public class JavaGen
 
   //{{{ private boolean isReservedType(ATerm t)
 
-  private boolean isReservedType(ATerm t)
+  private boolean isReservedType(String s)
   {
-    return reservedTypes.containsKey(t.toString());
+    return reservedTypes.containsKey(s);
   }
-
+   
   //}}}
 
   //{{{ private String escapeQuotes(String s)
@@ -870,13 +1054,14 @@ public class JavaGen
   //{{{ private void printFoldOpen(int fold_level, String comment)
 
   private void printFoldOpen(int fold_level, String comment)
-  {
-    for (int i=0; i<fold_level; i++) {
-      print("  ");
+  {    
+    if (folding) {
+      for (int i=0; i<fold_level; i++) {
+        print("  ");
+      }
+      println("//{{" + "{ " + comment);
+      println();
     }
-
-    println("//{{" + "{ " + comment);
-    println();
   }
 
   //}}}
@@ -884,13 +1069,15 @@ public class JavaGen
 
   private void printFoldClose(int fold_level)
   {
-    println();
-
-    for (int i=0; i<fold_level; i++) {
-      print("  ");
+    if (folding) {
+      for (int i=0; i<fold_level; i++) {
+        print("  ");
+      }
+      println("//}}" + "}");
     }
-
-    println("//}}" + "}");
+    else {
+      println();
+    }
   }
 
   //}}}
