@@ -50,10 +50,10 @@ parsers, compilers, typecheckers, and syntax directed editors.
 
 For a lot of these applications, the \ATerm\ datatype is very close to the
 datatypes in the problem domain itself. It is therefore very natural to 
-use \ATerms\ for internal computations as well.
+use \ATerms\ for internal computations as well as for the exchange of data.
 Because of the size of the problems that these applications
 need to handle, we need a very efficient implementation of this
-datatype, both in time and space requirements.
+datatype, both in time and space.
 
 %}}}
 %{{{ The applications domain
@@ -72,6 +72,16 @@ and a number of arguments.
 Typical examples include parse trees and abstract syntax trees used
 in compilers, and terms used in functional languages and rewrite engines.
 
+Besides function applications, a small number of other subtypes
+are allowed, to make the \ATerm\ datatype more generally applicable.
+These subtypes include integer constants, real number constants,
+Binary Large OBjects (blobs), lists of aterms, and the special
+placeholder subtype that is used to indicate typed holes in \ATerms.
+
+Every \ATerm\ can have a list of \emph{annotations} associated with
+it (hence the name \emph{Annotated} Terms). These annotations are used
+to label \ATerms\ with extra information.
+
 %}}}
 %{{{ The ATerm datatype
 
@@ -88,11 +98,11 @@ This datatype can be defined as follows.
       a list of zero or more \ATerms\ (arguments) is an \ATerm.
       The number of arguments of a function application is called
       the \emph{arity} of the function.
-\item A placeholder term containing an \ATerm\ representing the
-      type of the placeholder is an \ATerm.
 \item A blob (Binary Large data OBject) containing a length indication
       and a byte array of binary data (possibly of very large size)
       is an \ATerm.
+\item A placeholder term containing an \ATerm\ representing the
+      type of the placeholder is an \ATerm.
 \item Every \ATerm\ may be associated with a list of \ATerm\ pairs
       between curly braces, representing a list of $(label,annotation)$ 
       pairs.
@@ -117,6 +127,7 @@ suitable for processing by a machine.
 
 \vspace{0.4cm}
 \input{ATerms.mtx}
+\vspace{0.4cm}
 Note that there is no concrete syntax defined for blobs, because 
 a humanly readable representation of blobs depends on the type
 of data stored in the blob.
@@ -233,7 +244,7 @@ and that make this a fairly unique problem:
       an arity that is higher than 5.
 \item The expected lifetime of terms in most applications is very short.
       This means that garbage collection must be fast and should touch
-      as little memory locations as possible to improve caching and paging 
+      as few memory locations as possible to improve caching and paging 
       performance.
 \item The total memory requirements of an application cannot be estimated
       in advance. It must be possible to allocate more memory incrementally.
@@ -286,8 +297,8 @@ lookup must be executed \emph{extremely fast}, in order to implement term
 creation efficiently. We decided to use the fastest algorithm available
 in this situation, hashing. Using a hash function that depends on the
 \emph{addresses} of the function symbol and the arguments of a function
-application, we can quickly search for a function application before
-creating it.
+application, we can quickly search the term database to find a function 
+application before creating it.
 
 \subsubsection{Collisions}
 One of the issues when using hash techniques
@@ -303,31 +314,36 @@ or deletions (open addressing, see \cite{Knuth73}).
 \subsubsection{Direct or indirect hashing}
 Another issue is whether to store all terms directly in
 the hashtable, or store only references in the hashtable.
-The advantage of storing the objects directly in the hashtable is
+Storing the objects directly in the hashtable has the advantage
 that we can save a memory access when retrieving a term.
 However, there are severe drawbacks to this approach:
 \begin{itemize}
-\item We need a separate hashtable for each term size in order to
-      decrease the internal fragmentation. 
 \item We cannot rehash the old terms because rehashing
       means that we have to physically move the objects in memory.
-      This means that the hashtable cannot grow beyond its initial size.
+      In a setting where we use C as an implementation language, moving
+      objects in memory is not allowed because we can only determine
+      a conservative root set and therefore are not allowed to change
+      the pointers to roots.
+      This means that the hashtable cannot grow beyond its initial size,
+      clearly an undesirable feature.
 \item The internal fragmentation is increased, because empty slots
       in the hashtable are as large as the object size instead of
       only one machine word.
+\item We need a separate hashtable for each term size in order to
+      decrease the internal fragmentation. 
 \end{itemize}
 
 Because of these problems, we decided to use linear hash chaining
 in combination with indirect hashing.
-When the hashtable is nearly full, we can allocate a larger
+When the hashtable is nearly full, we just allocate a larger
 table, and rehash all the entries of the old table in the new one.
 
 %{{{ Garbage collection
 
 \subsection{Garbage collection}
 The most common strategies for automatic recycling of unused space
-are reference counting, mark-compact garbage collection, and 
-mark-sweep garbage collection. We will discuss these three strategies 
+are reference counting, mark-compact collection, and 
+mark-sweep collection. We will discuss these three strategies 
 in turn, and explain why we base our design on mark-sweep garbage collection.
 
 \subsubsection{Reference counting}
@@ -379,10 +395,49 @@ are swept into a list of free objects.
 
 Mark-sweep garbage collection is very attractive, because it
 can be implemented in C, both efficiently and without support from the 
-programmer or compiler \cite{BW88}. Mark-sweep collection is more efficient,
+programmer or compiler \cite{BW88,Bo93}. Mark-sweep collection is more efficient,
 both in time and space than reference counting \cite{JL96}.
 The typical space overhead for a mark-sweep garbage collection algorithm is
 only 1 bit per object.
+
+\subsubsection{Reusing an existing garbage collector}
+A number of excellent generic garbage collectors for C are 
+freely available, so a legitimate question is why not reuse an
+existing implementation instead of implementing our own collector?
+
+We have examined a number of alternatives, but none of these quite 
+fit our needs. The Boehm-Weiser garbage collector \cite{BW88} came close,
+we face a number of unusual circumstances that render existing
+garbage collectors impractible:
+
+\begin{itemize}
+\item The term database (hashtable) always contains references to 
+      all objects. It must be possible to instruct the garbage collector
+      not to scan this area for roots.
+\item After an object becomes garbage, it must also be removed from the
+      term database. This means that we need a very low level control
+      over the garbage collector.
+\item The \ATerm\ datatype has some special characteristics that can
+      be exploited to dramatically increase performance:
+      \begin{itemize}
+	\item Destructive updates are not allowed. In garbage collection
+              terminology, this means that there are no pointers from
+              old objects to young objects.
+        \item The overwhelming majority of objects consists of between 2
+	      and 5 machine words.
+	\item Practical experience has shown that not many root pointers
+              are kept in static variables or on the generic C heap. 
+              Performance can be increased
+              dramatically if we eliminate the expensive scan through the
+              heap and the static data area for root pointers. 
+              The only downside is that we require
+              the programmer to explicitly supply us with the set of roots
+              that is located on the heap or in static variables.
+      \end{itemize}
+\end{itemize}
+These observations allow us to gain efficiency on several
+levels, using everything from the low level system 'hacks' to high-level 
+algorithm optimizations.
 
 \subsubsection{Design of a mark-sweep algorithm}
 {\tt <HJ> Geen lazy-sweeping meer, moet anders.}
@@ -436,11 +491,18 @@ very important. Due to the nature of the operations on \ATerm\ lists,
 there are
 two obvious list representations: an array of term references or a linked
 list of term references. Experiments have shown that in typical applications
-quite varying list sizes are encountered. The array approach is inferior, 
-because adding and deleting elements of a list would become to expensive.
-So we have opted for the linked list approach.
+quite varying list sizes are encountered. This renders the array approach 
+inferior, because adding and deleting elements of a list would become to
+expensive. Consequently, we have opted for the linked list approach.
+Lists are constructed using binary list constructors, containing 
+a reference to the first element in the list and the tail of the list.
+This makes it very easy to perform the most commonly used operations
+on list, namely adding or removing the first element of a list.
 
-{\tt <PO> dit moet uitgebreider.}
+Other operations are more expensive, due to the fact that we cannot
+allow destructive updates. Adding an element to the tail of a list
+for instance, requires $n$ list creation operations, where $n$ is
+the number of elements in the newly created list.
 
 %}}}
 
