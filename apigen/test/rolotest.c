@@ -9,7 +9,6 @@ static void testRolodex()
   String  names[2];
   PhoneNumber phone[2];
   Rolodex rolo[2];
-  ATerm t;
 
   names[0] = ATparse("Pieter");
   names[1] = ATparse("CWI");
