@@ -1,0 +1,12 @@
+.deps
+ADT.c
+ADT.dict
+ADT.h
+ADT_dict.c
+ADT_dict.h
+Makefile
+Makefile.in
+adt-to-c
+adt-to-java
+sdf2-to-adt
+sdf2-to-imploded-adt
