@@ -123,7 +123,7 @@ implements TomSignatureImplementation {
 	}
 
 	public String TypeName(String type) {
-		return StringConversions.makeCapitalizedIdentifier(type);
+		return StringConversions.makeCapitalizedIdentifier(converter.getType(type));
 	}
 
 	public String TypeImpl(String type) {
