@@ -29,13 +29,15 @@ public class TomSignatureGenerator extends Generator {
 		this.impl = impl;
 		this.prefix = params.getPrefix();
 
+    this.packagePrefix = "";
     if(params instanceof JavaGenerationParameters) {
       JavaGenerationParameters javaParams = (JavaGenerationParameters) params;
-      this.packagePrefix = javaParams.getPackageName() + "." + javaParams.getApiName() + "." + TypeGenerator.packageName() + ".";
-    } else {
-      this.packagePrefix = "";
-    }
-
+      if(javaParams.getPackageName() != null) {
+        this.packagePrefix += javaParams.getPackageName() + ".";
+      }
+      this.packagePrefix += javaParams.getApiName().toLowerCase() + ".";
+      this.packagePrefix += TypeGenerator.packageName() + ".";
+    } 
 	}
 	
 	public void generate() {
