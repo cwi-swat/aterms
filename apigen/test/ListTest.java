@@ -59,7 +59,7 @@ public class ListTest {
     ListFactory f = mempty.getListFactory();
  
     l = factory.makeModuleList_Modules(mods[3]);
-    testAssert(l.isModuleList() == true, "is<type> test");
+    testAssert(l.isSortModuleList() == true, "is<type> test");
     testAssert(l.isModules() == true, "is<cons> test");
         
   }
