@@ -1,0 +1,17 @@
+package
+identification
+  name=aterm-java
+  version=1.2beta
+  location=http://www.cwi.nl/projects/MetaEnv/daily-dist
+  info=http://www.cwi.nl/projects/MetaEnv/aterm-java
+  description='ATerm (short for Annotated Term) is an abstract data type
+designed for the exchange of tree-like data structures
+between distributed applications.'
+
+  keywords=meta-environment, library, taf, term, tree, sharing
+
+configuration interface
+
+requires
+  shared-objects 1.2
+  JJTraveler     0.4
