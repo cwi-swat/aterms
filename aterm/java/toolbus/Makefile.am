@@ -2,6 +2,8 @@
 
 #javadir		= ${prefix}/classes/aterm
 
+EXTRA_DIST	= test.tifs
+
 java_JAVA	= Tool.java AbstractTool.java TestTool.java JavaTif.java \
 			TestTifs.java
 

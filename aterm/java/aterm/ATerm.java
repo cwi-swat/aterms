@@ -102,7 +102,7 @@ public interface ATerm {
      * 
      * @see #match(ATerm)
      */
-    public List match(String pattern) throws ParseError;
+    public List match(String pattern);
 
     /**
      * Matches this term against a term pattern. A list containing

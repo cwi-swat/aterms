@@ -191,7 +191,7 @@ public abstract class ATermImpl
     throws IOException
   {
     PrintStream ps = new PrintStream(stream);
-    ps.println(this.toString());
+    ps.print(this.toString());
   }
 
   //}}}

@@ -22,7 +22,7 @@ dnl
 dnl $Id$
 
 AC_INIT(Makefile.in)
-AM_INIT_AUTOMAKE(aterm, 1.4.7b)
+AM_INIT_AUTOMAKE(aterm, 1.4.8beta)
 
 dnl Default values
 CC_GCC=gcc
@@ -135,13 +135,6 @@ AC_ARG_WITH(java,
    [  --with-java              create Java "library" (jdk-1.2 and up).],
       JAVA_SUBDIRS="${JAVA_SUBDIRS} java",)
 
-dnl deprecated java-1.2 files removed
-dnl
-dnl AC_ARG_WITH(old-java,
-dnl    [  --with-old-java     with deprecated Java support. Note that 
-dnl                       only jdk-1.2 (Java-2) is supported!],
-dnl       JAVA_SUBDIRS="${JAVA_SUBDIRS} java1.2",)
-
 AC_SUBST(ATERM_LIB_GCC)
 AC_SUBST(ATERM_LIB_CC)
 AC_SUBST(ATERM_LIB_DBG)
@@ -212,13 +205,6 @@ if test ${GETHOSTNAME_FOUND} = no; then
    AC_CHECK_LIB(nsl,gethostname,[GETHOSTNAME_FOUND=yes;LIBS="$LIBS -lnsl"])
 fi
 
-dnl deprecated java-1.2 files removed
-dnl
-dnl 	java1.2/Makefile \
-dnl 	java1.2/aterm/Makefile \
-dnl 	java1.2/aterm/tool/Makefile \
-dnl 	java1.2/aterm/util/Makefile \
-
 AC_OUTPUT( \
 	Makefile \
 	aterm/Makefile \
@@ -229,6 +215,7 @@ AC_OUTPUT( \
 	java/aterm/Makefile \
 	java/aterm/pure/Makefile \
 	java/aterm/test/Makefile \
+        java/toolbus/Makefile \
 	doc/Makefile \
 	doc/examples/Makefile \
 	doc/spec/Makefile \
