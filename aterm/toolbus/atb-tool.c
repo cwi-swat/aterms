@@ -31,6 +31,9 @@
 #define MAX_CONNECT_ATTEMPTS 1024
 #define INITIAL_BUFFER_SIZE  1024
 
+#define MAX_NR_QUEUES	64
+#define MAX_QUEUE_LEN	128
+
 /*}}}  */
 /*{{{  types */
 
@@ -45,6 +48,15 @@ typedef struct
 	ATBhandler  handler;		/* Function that handles incoming terms      */
 	ATbool      verbose;		/* Should info be dumped on stderr           */
 } Connection;
+
+typedef struct
+{
+	AFun afun;					/* afun -1 => slot is empty            */
+	ATbool ack_pending;			/* ack of event is still pending       */
+	int first;					/* First element in the (cyclic) queue */
+	int last;					/* Last element in the (cyclic) queue  */
+	ATerm data[MAX_QUEUE_LEN];	/* Actual queue elements               */
+} EventQueue;
 
 /*}}}  */
 /*{{{  globals */
@@ -61,12 +73,17 @@ static int default_tid  = -1;
 
 static Connection *connections[FD_SETSIZE] = { NULL };
 
-static Symbol symbol_rec_do = (Symbol) NULL;
+static Symbol symbol_rec_do    = (Symbol) NULL;
+static Symbol symbol_ack_event = (Symbol) NULL;
 static ATerm term_snd_void = NULL;
 
 /* term buffer */
 static int buffer_size = 0;
 static char *buffer = NULL;
+
+/* Event Queues */
+static EventQueue event_queues[MAX_NR_QUEUES];
+static int nr_event_queues = 0;
 
 /* Static functions */
 static int connect_to_socket(const char *host, int port);
@@ -106,9 +123,11 @@ ATBinit(int argc, char *argv[], ATerm *stack_bottom)
 
 	/* Build some constants */
 	symbol_rec_do = ATmakeSymbol("rec-do", 1, ATfalse);
-	term_snd_void = ATparse("snd-void");
 	ATprotectSymbol(symbol_rec_do);
+	term_snd_void = ATparse("snd-void");
 	ATprotect(&term_snd_void);
+	symbol_ack_event = ATmakeSymbol("rec-ack-event", 1, ATfalse);
+	ATprotectSymbol(symbol_ack_event);
 
 	/* Allocate initial buffer */
 	buffer = (char *)malloc(INITIAL_BUFFER_SIZE);
@@ -116,6 +135,10 @@ ATBinit(int argc, char *argv[], ATerm *stack_bottom)
 		ATerror("cannot allocate initial term buffer of size %d\n", 
 						INITIAL_BUFFER_SIZE);
 	buffer_size = INITIAL_BUFFER_SIZE;
+	
+	/* Initialize event_queues. */
+	for (lcv=0; lcv<MAX_NR_QUEUES; lcv++)
+		event_queues[lcv].afun = -1;
 
 	/* Get hostname of machine that runs this particular tool */
 	return gethostname(this_host, MAXHOSTNAMELEN);
@@ -133,8 +156,9 @@ ATBconnect(char *tool, char *host, int port, ATBhandler h)
 {
 	Connection *connection = NULL;
 	int fd;
-	
-	port = port > 0 ? port : default_port;
+
+	int tid = port < 0 ? default_tid : -1;
+	port = port >= 0 ? port : default_port;
 
 	/* Make new connection */
 	fd = connect_to_socket(host, port);
@@ -166,7 +190,7 @@ ATBconnect(char *tool, char *host, int port, ATBhandler h)
 	connection->port     = port;
 	connection->handler  = h;
 	connection->verbose  = ATfalse;
-	connection->tid      = default_tid;
+	connection->tid      = tid;
 	connection->fd       = fd;
 	
 	/* Link connection in array */
@@ -210,6 +234,71 @@ ATBdisconnect(int fd)
 }
 
 /*}}}  */
+
+
+void ATBpostEvent(int fd, ATerm event)
+{
+	int free_index, i;
+	AFun afun;
+
+	if (ATgetType(event) != AT_APPL)
+		ATabort("Illegal eventtype (should be appl): %t\n", event);
+	
+	afun = ATgetAFun((ATermAppl)event);
+	
+	for(i=0, free_index=-1; i<MAX_NR_QUEUES; i++) {
+		if(event_queues[i].afun == afun)
+			break;
+		if(event_queues[i].afun == -1)
+			free_index = i;
+	}
+	
+	if (i >= MAX_NR_QUEUES) {
+		if (free_index == -1)
+			ATerror("Maximum number of eventqueues exceeded.\n");
+		i = free_index;		/* occupy free slot */
+		event_queues[i].afun  = afun;
+		event_queues[i].first = 0;
+		event_queues[i].last  = 0;
+		event_queues[i].ack_pending = ATfalse;
+		nr_event_queues++;
+	}
+	
+	if (event_queues[i].ack_pending == ATfalse) {
+		ATBwriteTerm(fd, ATmake("snd-event(<term>)", event));
+		event_queues[i].ack_pending = ATtrue;
+	} else {
+		if( (event_queues[i].last + 1) % MAX_QUEUE_LEN == event_queues[i].first)
+			ATerror("Maximum number of events in queue %y exceeded.\n", afun);
+
+		event_queues[i].data[event_queues[i].last] = event;
+		event_queues[i].last = (event_queues[i].last + 1) % MAX_QUEUE_LEN;
+	}
+}
+
+static void handle_ack_event(int fd, AFun afun)
+{
+	int i;
+	
+	for(i=MAX_NR_QUEUES-1; i>=0; i--) {
+		if(event_queues[i].afun == afun) {
+			ATfprintf(stderr, "found queue: %y\n", afun);
+			if (event_queues[i].first != event_queues[i].last) {
+				ATerm event = event_queues[i].data[event_queues[i].first];
+				ATfprintf(stderr, "reviving queued event: %t\n", event);
+				event_queues[i].first =
+					(event_queues[i].first + 1) % MAX_QUEUE_LEN;
+				ATBwriteTerm(fd, ATmake("snd-event(<term>)", event));
+				/* stil pending */
+			} else {
+				ATfprintf(stderr, "queue empty.\n");
+				event_queues[i].ack_pending = ATfalse;
+			}
+		}
+	}
+}
+
+
 /*{{{  int ATBeventloop(void) */
 
 /**
@@ -355,23 +444,26 @@ int ATBpeekAny(void)
 int ATBhandleOne(int fd)
 {
 	ATermAppl appl;
-  ATerm result;
-	ATbool recdo = ATfalse;
+	ATerm result;
 
 	appl = (ATermAppl)ATBreadTerm(fd);
 
 	if(appl == NULL)
 	  return -1;
-
-	if(ATgetSymbol(appl) == symbol_rec_do)
-	  recdo = ATtrue;
+	
+	ATfprintf(stderr, "Handling: %t\n", appl);
 
 	result = connections[fd]->handler(fd, (ATerm)appl);
 
+	if (result != NULL)
+		ATfprintf(stderr, "result: %t\n", result);
+
 	if(result)
 	  return ATBwriteTerm(fd, result);
-	else if(recdo)
+	else if(ATgetSymbol(appl) == symbol_rec_do)
 	  return ATBwriteTerm(fd, term_snd_void);
+	else if(ATgetSymbol(appl) == symbol_ack_event)
+		handle_ack_event(fd, ATgetAFun((ATermAppl)ATgetArgument(appl, 0)));
 
 	return 0;
 }

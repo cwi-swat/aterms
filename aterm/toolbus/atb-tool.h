@@ -16,8 +16,9 @@ int    ATBconnect(char *tool, char *host, int port, ATBhandler h);
 void   ATBdisconnect(int file_desc);
 int    ATBeventloop(void);
 
-int    ATBwriteTerm(int file_desc, ATerm term);
 ATerm  ATBreadTerm(int file_desc);
+int    ATBwriteTerm(int file_desc, ATerm term);
+void   ATBpostEvent(int file_desc, ATerm event);
 
 ATbool ATBpeekOne(int file_desc);
 int    ATBpeekAny(void);
