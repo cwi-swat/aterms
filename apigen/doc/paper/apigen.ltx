@@ -696,7 +696,9 @@ task indeed!
 Although this paper uses tools from the \metaenv\ as a running example,
 the maintenance issues addressed here are not specific to parse trees
 at all. The issues are fundamental to all applications that use \aterms\
-as its data structure representation.
+as its data structure representation. Many of these issues are also
+valid in applications based on other generic data representation formalisms.
+
 
 % }}}
 
@@ -789,7 +791,8 @@ and \emph{term-pattern}, which we can easily represent as an \aterm-list.
 An entire \adt\ is then nothing more than a list of such lists. Instead
 of using a list, each single entry could also have been represented as
 a function with three arguments, but we opted for as little syntactic
-sugar in the entries, to simplify development-time debugging. Remember
+sugar in the entries as possible, to simplify development-time debugging.
+Remember
 that an \adt\ entry contains an \aterm\ pattern and they are hard enough
 to read, without the introduction of an extra function-symbol around them.
 
@@ -1016,6 +1019,55 @@ exported \api\ functions.
 % }}}
 
 % }}}
+
+\section{Code reduction in the \metaenv}
+
+\begin{figure}
+\begin{tabular}{|l|r|r|r|}
+\hline
+Component     & Before (LOC)  & After (LOC) & Reduction (\%) \\
+\hline
+asc-support   &		2207  &	      1752  &		\\
+libasfix      &	       10419  &	      2077  &		\\
+asfix-tools   &		 466  &	       603  &		\\
+asfix2c compiler &	1866  &	      1138  &		\\
+asf-tools     &		1303  &	       589  &		\\
+structure editor &	2861  &	      1946  &		\\
+evaluator     &		4241  &	      4009  &		\\
+in-output     &		 713  &	       812  &		\\
+module-db     &		1809  &	      1244  &		\\
+pgen	      &		5226  &	      5226  &		\\
+sglr	      &	       10225  &	     10427  &		\\
+utils	      &		1356  &	      1363  &		\\
+\hline
+Total	      &	       42692  &	     31186  &	27.0	\\ 
+\hline
+\end{tabular}
+\caption{\label{table.reduction}Code Reduction}
+\end{figure}
+
+\section{Related Work}
+\subsection{Zephyr ASDL}
+\begin{itemize}
+\item Targeted at compiler building (much like ATerms)
+\item Generates data structure implementations in C, C++, Java, Standard ML and Haskell
+\item Generates accessors and serialization code (in a compact binary format)
+\item Offers a graphical browser and editor for data described in ASDL
+\item No sharing
+\item No garbage collection (in C/C++)
+\end{itemize}
+
+\subsection{Corba IDL compiler}
+\begin{itemize}
+\item Only generates interfaces?
+\item Targeted at distributed environments
+\item Generates Corba specific functionality
+\item Well-defined mappings to specific target languages (whitepapers)
+\item Only getters/setters
+\item Interface centric instead of datatype centric
+\item No sharing
+\item No garbage collection (in languages without GC)
+\end{itemize}
 
 \texttt{TODO: beef up examples + more and better explanation} \\
 \texttt{TODO: practical work in meta-environment + statistics on code reduction} \\
