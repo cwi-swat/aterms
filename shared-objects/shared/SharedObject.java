@@ -11,6 +11,8 @@ package shared;
 public interface SharedObject {
 
   /**
+   * This method should ONLY be used by a SharedObjectFactory
+   * 
    * Makes a clone of a prototype. Just like Object.clone(),
    * but it returns a SharedObject instead of an Object.
    * Use this method to duplicate a Prototype object (an object
@@ -23,6 +25,8 @@ public interface SharedObject {
   SharedObject duplicate();
   
   /**
+   * This method should ONLY be used by a SharedObjectFactory
+   * 
    * Checks whether an object is really equivalent. The types should be 
    * equal, the fields should be equivalent too. So this is complete
    * recursive equivalence.
@@ -33,6 +37,8 @@ public interface SharedObject {
   boolean equivalent(SharedObject o);
   
   /**
+   * This method is typically used by a SharedObjectFactory
+   * 
    * Returns the hash code of an object. It is a good idea to 
    * compute this code once, and store it locally in a field to let
    * this hashCode() method return it. Because a SharedObject should be 
