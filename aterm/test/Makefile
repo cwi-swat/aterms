@@ -12,9 +12,9 @@ AR		= ar
 
 EFENCE		= /home/olivierp/ElectricFence-2.0.5
 TESTS		= test-stress
-TESTPRGS	= stress asfixtest
-TESTSRCS	= stress.c asfixtest.c
-TESTOBJS	= stress.o asfixtest.o
+TESTPRGS	= stress asfixtest primes
+TESTSRCS	= stress.c asfixtest.c primes.c
+TESTOBJS	= stress.o asfixtest.o primes.o
 
 all: clean $(TESTPRGS) $(TESTS)
 
@@ -23,6 +23,9 @@ stress: stress.o
 
 asfixtest: asfixtest.o
 	$(CC) $(LFLAGS) -o asfixtest asfixtest.o $(LIBS)
+
+primes: primes.o
+	$(CC) $(LFLAGS) -o primes primes.o $(LIBS)
 
 include ../implicit-rules
 
