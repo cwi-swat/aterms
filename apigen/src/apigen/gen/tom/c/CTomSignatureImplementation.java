@@ -11,7 +11,7 @@ public class CTomSignatureImplementation implements TomSignatureImplementation {
 	private boolean jtype;
 	private String prefix;
 
-	public CTomSignatureImplementation(TomGenerationParameters params) {
+	public CTomSignatureImplementation(CTomGenerationParameters params) {
 		this.prefix = params.getPrefix();
 		this.jtype = params.isJtype();
 	}

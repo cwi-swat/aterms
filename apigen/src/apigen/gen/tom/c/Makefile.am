@@ -6,4 +6,5 @@ JAVAROOT = ${top_builddir}
 javadir = ${prefix}/classes/apigen/gen/tom/c
 java_JAVA = \
 	CTomSignatureImplementation.java \
+	CTomGenerationParameters.java \
 	Main.java
