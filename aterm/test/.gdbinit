@@ -6,13 +6,13 @@ define termtype
     printf "AT_FREE\n"
   else
     if $type == 1
-      printf "AT_INT\n"
+      printf "AT_APPL\n"
     else
       if $type == 2
-        printf "AT_REAL\n"
+        printf "AT_INT\n"
       else
         if $type == 3
-          printf "AT_APPL\n"
+          printf "AT_REAL\n"
         else
           if $type == 4
             printf "AT_LIST\n"
@@ -61,7 +61,7 @@ end
 define termsymbol
   set $type = ($arg0->header & ((1<<5) | (1<<6) | (1<<7))) >> 5
   print *lookup_table[$arg0->header >> 8]
-  if $type != 3
+  if $type != 1
     printf " (warning: not a AT_APPL)"
   end
 end

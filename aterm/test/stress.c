@@ -688,6 +688,12 @@ void testTable()
 
 /*}}}  */
 
+void testBaffle()
+{
+	test_assert("baffle", 1, AT_calcUniqueSubterms(ATparse("f(a,[1])")) == 4);
+	printf("baffle tests ok.\n");
+}
+
 /*{{{  int main(int argc, char *argv[]) */
 
 /**
@@ -711,6 +717,7 @@ int main(int argc, char *argv[])
   testAnno();
   testMake();
   testMatch();
+  testBaffle();
   testGC();
   testMark();
   testTable();
