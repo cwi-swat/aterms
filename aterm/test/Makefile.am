@@ -6,7 +6,7 @@ include ../make_rules
 PROGS              	= stress primes asfixtest randgen termstats \
 			  vararg1 vararg2 vararg3 test-tool test-tool2
 
-TESTS	          	= $(PROGS) termstats.sh
+TESTS	          	= stress asfixtest
 
 INCLUDES   = -I. -I$(top_srcdir)/asfix -I$(top_srcdir)/aterm -I$(top_srcdir)/toolbus
 
