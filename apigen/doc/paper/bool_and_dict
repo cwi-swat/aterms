@@ -38,6 +38,8 @@ static char _test_dict_baf[_test_dict_LEN] = {
 ...
 };
 
+
+
 void init_test_dict()
 {
   ATermList afuns, terms;

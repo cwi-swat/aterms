@@ -255,8 +255,9 @@ mapping of such data types to concrete \asfix\ representations.
 % }}}
 % {{{  JJForester
 
-\medskip
 \noindent\textbf{JJForester}
+
+\nopagebreak
 
 Another approach to generating code from an SDF definition is taken in
 JJForester~\cite{jjforester}. JJForester is a combined parser generator, tree
@@ -369,9 +370,11 @@ syntax-directed editors, a parser generator, and a rewrite engine. Given
 this rewrite engine terms can be reduced by interpreting the equations
 as rewrite rules. For instance, the term
 
-\begin{quote}
-  \texttt{true or false}
-\end{quote}
+\begin{snippet}
+\begin{verbatim}
+  true or false
+\end{verbatim}
+\end{snippet}
 
 reduces to {\tt true} when applying the equations of
 Figure~\ref{fig:bool-example}.
@@ -444,13 +447,17 @@ examples.
 
 \nopagebreak
 The \asfix\ representation of the \sdf\ production
-\begin{quote}
-  \verb+"true" -> Bool+
-\end{quote}
+\begin{snippet}
+\begin{verbatim}
+  "true" -> Bool
+\end{verbatim}
+\end{snippet}
 is:
+\begin{snippet}
 \begin{verbatim}
   prod([lit("true")],cf(sort("Bool")),no-attrs)
 \end{verbatim}
+\end{snippet}
 \medskip
 The \texttt{prod} symbol declares this to be a grammar production. It has
 three arguments: the first is a list of terminals and non-terminals that
@@ -473,31 +480,34 @@ attributes (\texttt{no-attrs}).
 
 The \asfix\ representation of the grammar production
 
-\begin{quote}
-{\footnotesize\verb+Bool "and" Bool" -> Bool {left}+}
-\end{quote}
+\begin{snippet}
+\begin{verbatim}
+  Bool "and" Bool" -> Bool {left}
+\end{verbatim}
+\end{snippet}
 
 looks like this:
 \begin{snippet}
 \begin{verbatim}
- 1  prod([cf(sort("Bool")),cf(opt(layout)),lit("and"),cf(opt(layout)),cf(sort("Bool"))],
- 2    cf(sort("Bool")),
- 3    attrs([assoc("left")]))
+ 1  prod([cf(sort("Bool")),cf(opt(layout)),lit("and"),
+ 2        cf(opt(layout)),cf(sort("Bool"))],
+ 3    cf(sort("Bool")),
+ 4    attrs([assoc("left")]))
 \end{verbatim}
 \end{snippet}
 
 \begin{itemize}
 
-\item Line 1 declares this to be a grammar production (\texttt{prod}),
+\item Lines 1 and 2 declare this to be a grammar production (\texttt{prod}),
 containing all the elements of the left-hand side of the production. The
 \sdf-normalizer has inserted the context-free sort \texttt{opt(layout)}
 subterms at every location where optional layout in the input term
 is allowed.
 
-\item Line 2 tells us that the result sort of this production is
+\item Line 3 tells us that the result sort of this production is
 \texttt{Bool}.
 
-\item Line 3 shows the attributes associated with this production. In
+\item Line 4 shows the attributes associated with this production. In
 this case the only attribute is \texttt{left} for left-associativity.
 
 \end{itemize}
@@ -510,9 +520,11 @@ this case the only attribute is \texttt{left} for left-associativity.
 
 If the input term
 
-\begin{quote}
-  \texttt{true and false}
-\end{quote}
+\begin{snippet}
+\begin{verbatim}
+  true and false
+\end{verbatim}
+\end{snippet}
 
 is parsed, the resulting parse tree is the production from the previous
 example, applied to the actual argument \texttt{true and false}. The
@@ -522,11 +534,12 @@ and after the keyword \texttt{and}.
 \begin{snippet}
 \begin{verbatim}
  1 appl(
- 2  prod([cf(sort("Bool")),cf(opt(layout)),lit("and"),cf(opt(layout)),cf(sort("Bool"))],
- 3       cf(sort("Bool")),attrs([assoc("left")])),
+ 2  prod([cf(sort("Bool")),cf(opt(layout)),lit("and"),cf(opt(layout)),
+ 3        cf(sort("Bool"))],cf(sort("Bool")),attrs([assoc("left")])),
  4 [appl(prod([lit("true")],cf(sort("Bool")),no-attrs),[lit("true")]),
  5  layout([" "]), lit("and"), layout([" "]),
- 6  appl(prod([lit("false")],cf(sort("Bool")),no-attrs),[lit("false")])])
+ 6  appl(prod([lit("false")],cf(sort("Bool")),no-attrs),
+ 7       [lit("false")])])
 \end{verbatim}
 \end{snippet}
 
@@ -545,7 +558,7 @@ Bool} to the literal \texttt{true}.
 case the input term contained exactly one space immediately before and
 just after the keyword \texttt{and}.
 
-\item Similar to line 4, line 6 represents the literal \texttt{"false"}.
+\item Similar to line 4, lines 6--7 represent the literal \texttt{"false"}.
 
 \end{itemize}
 
@@ -587,16 +600,18 @@ by other variables, including other \aterms\ as well as native types
 
 % {{{  ATmake example
 
-\begin{footnotesize}
+\begin{snippet}
 \begin{verbatim}
   ATerm t = ATmake("person(name(<str>),age(<int>))", "Anthony", 7);
 \end{verbatim}
-\end{footnotesize}
+\end{snippet}
 
 will result in term \texttt{t} being assigned the value:
-\begin{quote}
-  \texttt{person(name("Anthony"),age(7))}
-\end{quote}
+\begin{snippet}
+\begin{verbatim}
+  person(name("Anthony"),age(7))
+\end{verbatim}
+\end{snippet}
 
 Note how the placeholders \texttt{<str>} and \texttt{<int>} are
 substituted by the values \texttt{Anthony}, and \texttt{7} respectively.
@@ -608,7 +623,7 @@ for example:
 
 % {{{  ATmatch example
 
-\begin{footnotesize}
+\begin{snippet}
 \begin{verbatim}
   char *name;
   int age;
@@ -616,15 +631,17 @@ for example:
     printf("name = %s, age = %d\n", name, age);
   }
 \end{verbatim}
-\end{footnotesize}
+\end{snippet}
 
 will result in the variables \texttt{name} and \texttt{age} being
 assigned the values \texttt{Anthony}, and \texttt{7}, respectively.
 The output of this fragment would thus be:
 
-\begin{quote}
-  \texttt{name = Anthony, age = 7}
-\end{quote}
+\begin{snippet}
+\begin{verbatim}
+  name = Anthony, age = 7
+\end{verbatim}
+\end{snippet}
 
 In case we are only interested in extracting the \texttt{age} field
 and we do not care about the actual value of \texttt{name}, we can pass
@@ -648,9 +665,11 @@ interface, because there is no need to parse a string pattern to find
 out which part of the (sub-)term is needed.
 
 For example, consider the term from the previous section:
-\begin{quote}
-  \texttt{t = person(name("Anthony"),age(7))}
-\end{quote}
+\begin{snippet}
+\begin{verbatim}
+  t = person(name("Anthony"),age(7))
+\end{verbatim}
+\end{snippet}
 
 We can get \texttt{Anthony}'s age by first extracting the \texttt{age}
 subterm from \texttt{t}, and subsequently getting the actual \texttt{7}
@@ -660,9 +679,11 @@ are numbered, starting at zero. So, to get to the actual value of
 need to extract argument number $1$ from the \texttt{person} application,
 and then extract argument number $0$ from this:
 
-\begin{quote}
-  \texttt{int age = ATgetInt(ATgetArgument(ATgetArgument(t, 1), 0));}
-\end{quote}
+\begin{snippet}
+\begin{verbatim}
+  int age = ATgetInt(ATgetArgument(ATgetArgument(t, 1), 0));
+\end{verbatim}
+\end{snippet}
 
 Note that the exact \emph{location} of the \texttt{age} field in the
 \aterm\ representation of the \texttt{person} record is used. If the
@@ -698,15 +719,22 @@ First, we show the \C\ code necessary to construct the boolean term
 
 Even for such a simple input term, its \aterm\ representation written
 as a \C\ (or \java) string is already quite complex. This is because
-we have to escape all the double quotes (the \verb+"+ characters) from
-interpretation by the compiler:
+we have to escape all the double quotes (the \verb+"+ characters)
+from interpretation by the compiler. Also, because the string
+representation of the match-pattern is long enough that it does not
+legibly fit on a single line anymore, we have to resort to ANSI \C\
+string concatenation\footnote{Strings can be split over multiple lines
+by ending one line with a \texttt{"} and starting the next line with
+another \texttt{"}.} to span the string over multiple lines.
+
 
 % {{{  Parse Tree for "true"
 
 \begin{snippet}
 \begin{verbatim}
  ATerm true = ATparse(
-   "appl(prod([lit(\"true\")],cf(sort(\"Bool\")),no-attrs),[lit(\"true\")])");
+   "appl(prod([lit(\"true\")],cf(sort(\"Bool\")),no-attrs),"
+   "[lit(\"true\")])");
 \end{verbatim}
 \end{snippet}
 
@@ -716,19 +744,18 @@ As another example, consider a \C\ function that extracts the left-hand
 side from a boolean conjunction. It needs to match the parse tree
 of the incoming term against the pattern for the syntax production:
 
-\begin{quote}
-  \texttt{Bool "and" Bool -> Bool \{left\}}
-\end{quote}
+\begin{snippet}
+\begin{verbatim}
+  Bool "and" Bool -> Bool {left}
+\end{verbatim}
+\end{snippet}
 
 An implementation using the level one interface would need the pattern
 written as a string, with a \texttt{<term>} placeholder at the correct
 spot. Because the pattern is written inside a string, we once again
-need to escape all quotes.  Moreover, the string representation of the
-match-pattern is so long that it does not legibly fit on one line anymore,
-and we need to resort to ANSI \C\ string concatenation\footnote{Strings
-can be split over multiple lines by ending one line with a \texttt{"}
-and starting the next line with another \texttt{"}.} to span the string
-over multiple lines.
+need to escape all quotes.  
+
+\pagebreak
 
 % {{{  Level One: Extracting lhs from "Bool and Bool -> Bool"
 
@@ -737,8 +764,9 @@ over multiple lines.
   ATerm extract_bool_lhs(ATerm t) {
     ATerm lhs;
     char *bool_and_lhs_pattern = 
-      "appl(prod([cf(sort(\"Bool\")),cf(opt(layout)),lit(\"and\"),cf(opt(layout)),"
-      "cf(sort(\"Bool\"))],cf(sort(\"Bool\")),attrs([assoc(\"left\")])),"
+      "appl(prod([cf(sort(\"Bool\")),cf(opt(layout)),"
+      "lit(\"and\"),cf(opt(layout)),cf(sort(\"Bool\"))],"
+      "cf(sort(\"Bool\")),attrs([assoc(\"left\")])),"
       "[<term>,<term>,lit("and"),<term>,<term>])";
   
     if (ATmatch(t, bool_and_lhs_pattern, &lhs, NULL, NULL, NULL)) {
@@ -754,9 +782,9 @@ over multiple lines.
 
 Could there be a quote missing in the pattern? Are all the \verb+)+,
 \verb+]+, and \verb+}+ characters where they should be? Did you expect
-\emph{four} \texttt{<term>} placeholders in the pattern (to account for
-the lhs, the rhs, as well as the optional layout before and after the
-literal \texttt{and})?
+four \texttt{<term>} placeholders in the pattern (to account for the lhs,
+the rhs, as well as the optional layout before and after the literal
+\texttt{and})?
 
 Keep in mind that:
 
@@ -791,8 +819,11 @@ very type-unsafe and obfuscated:
 \begin{snippet}
 \begin{verbatim}
   ATerm extract_bool_lhs(ATerm t) {
-    ATermList args = ATgetArgument(t, 1);  // get arguments from AsFix "appl"
-    return ATgetFirst(args);               // lhs is the first of these args.
+    /* get arguments from AsFix "appl" */
+    ATermList args = ATgetArgument(t, 1);
+
+    /* lhs is the first of these args. */
+    return ATgetFirst(args);
   }
 \end{verbatim}
 \end{snippet}
@@ -832,16 +863,20 @@ work to be done when the application syntax changes.
 Suppose for example that we want to change the syntax of our boolean
 conjunction from infix notation:
 
-\begin{quote}
-  \texttt{Bool "and" Bool -> Bool}
-\end{quote}
+\begin{snippet}
+\begin{verbatim}
+  Bool "and" Bool -> Bool
+\end{verbatim}
+\end{snippet}
 
 \noindent
 into prefix notation:
 
-\begin{quote}
-  \texttt{"and" "(" Bool "," Bool ")" -> Bool}
-\end{quote}
+\begin{snippet}
+\begin{verbatim}
+  "and" "(" Bool "," Bool ")" -> Bool
+\end{verbatim}
+\end{snippet}
 
 \noindent Conceptually nothing has changed: we mean exactly the same
 arguments when we address them as \texttt{lhs}, \texttt{rhs}, and
@@ -988,18 +1023,26 @@ occur both after the non-terminal \texttt{lhs}, and after the literal
  1  [Bool,
  2   and,
  3   appl(prod(
- 4    [cf(sort("Bool")),cf(opt(layout)),lit("and"),cf(opt(layout)),cf(sort("Bool"))],
- 5     cf(sort("Bool")),attrs([assoc(left)])),
- 6    [<lhs(Bool)>,<ws-after-lhs(Layout)>,lit("and"),<ws-after-and(Layout)>,
- 7     <rhs(Bool)>])]
+ 4    [cf(sort("Bool")),cf(opt(layout)),lit("and"),cf(opt(layout)),
+ 5     cf(sort("Bool"))],cf(sort("Bool")),attrs([assoc(left)])),
+ 6    [<lhs(Bool)>,<ws-after-lhs(Layout)>,lit("and"),
+ 7     <ws-after-and(Layout)>,<rhs(Bool)>])]
 \end{verbatim}
 \end{snippet}
 
-Lines 1 and 2 contain the sortname and the alternative, respectively.
-Following, in lines 3--7 is the \aterm\ pattern of the actual parse
-tree. Lines 3--5 show the \texttt{prod} of the \asfix\ function
-application.  Lines 6--7 show the \texttt{args} part. Clearly visible
-are the typed placeholders for \texttt{lhs} and \texttt{rhs}.
+\begin{itemize}
+
+\item Line 1 contains the sortname: \texttt{Bool}
+
+\item Line 2 shows the alternative: \texttt{and}
+
+\item Lines 3--5 show the \texttt{prod} of the \asfix\ function
+application.
+
+\item Lines 6--7 show the \texttt{args} part. Clearly visible are the
+typed placeholders for \texttt{lhs} and \texttt{rhs}.
+
+\end{itemize}
 
 The two placeholders matching optional layout have the somewhat
 arbitrary names \texttt{ws-after-lhs}, and \texttt{ws-after-and}.
@@ -1047,9 +1090,11 @@ Given our \sdf\ rule for the boolean \texttt{and}, can we derive a
 sensible name for each of the \texttt{Bool} non-terminals? The only
 information we have is our syntax rule:
 
-\begin{quote}
-{\small\texttt{Bool "and" Bool -> Bool \{left\}} }
-\end{quote}
+\begin{snippet}
+\begin{verbatim}
+  Bool "and" Bool -> Bool {left}
+\end{verbatim}
+\end{snippet}
 
 If we use heuristics to call them e.g. \texttt{lhs} and \texttt{rhs},
 what do we do when we find another syntax rule that has three, four
@@ -1068,9 +1113,11 @@ items in a grammar rule and their generated access functions. Suppose
 we like the abbreviations \texttt{lhs}, and \texttt{rhs}, we could label
 the syntax rule for \texttt{and} to become:
 
-\begin{quote}
-{\small \texttt{lhs:Bool "and" rhs:Bool -> Bool \{left\}} }
-\end{quote}
+\begin{snippet}
+\begin{verbatim}
+  lhs:Bool "and" rhs:Bool -> Bool {left}
+\end{verbatim}
+\end{snippet}
 
 \noindent\textbf{Naming the alternatives}
 
@@ -1086,9 +1133,11 @@ annotate the name of the \emph{abstract syntax} node that corresponds to
 this particular syntax rule. Traditionally the \texttt{cons} annotation is
 used for this purpose.  So, finally our \texttt{and} syntax rule becomes:
 
-\begin{quote}
-{\small \texttt{lhs:Bool "and" rhs:Bool -> Bool \{left, cons("and")\}} }
-\end{quote}
+\begin{snippet}
+\begin{verbatim}
+  lhs:Bool "and" rhs:Bool -> Bool {left, cons("and")}
+\end{verbatim}
+\end{snippet}
 
 From which we can subsequently generate (e.g. \C) type and function
 names as shown in Figure~\ref{fig:names}.
@@ -1177,6 +1226,7 @@ type definition, and the declarations of the functions contained in the
 % {{{  Opaque type definition
 
 \heading{Opaque type definition}
+\nopagebreak
 
 Defining \verb+Bool+ to be a pointer to a non-existent type (in this case
 \texttt{struct \_Bool}, hides the underlying \aterm\ representation from
@@ -1194,6 +1244,7 @@ pointer results in a compile time error.
 % {{{  Term convertors
 
 \heading{Term convertors}
+\nopagebreak
 
 These functions perform no real operation, but take care of the
 type casting between the generic \aterm\ type and the more specific
@@ -1218,6 +1269,7 @@ of the macro.
 % {{{  Equality test
 
 \heading{Equality test}
+\nopagebreak
 
 Because \aterms\ are used as implementation, we get the trivial equality
 check based on memory address comparison for free. We only need to
@@ -1239,6 +1291,7 @@ for improved efficiency.
 % {{{  Validity test
 
 \heading{Validity test}
+\nopagebreak
 
 Whenever an \aterm\ is acquired from an external source (e.g. by
 reading it from file) and is converted to \texttt{Bool}, programmers
@@ -1280,6 +1333,7 @@ again at the cost of a considerable efficiency hit.
 % {{{  Inspector
 
 \heading{Inspector}
+\nopagebreak
 
 Inspecting a \texttt{Bool} to see if it is an instance of a specific
 alternative involves matching the argument against the pattern for that
@@ -1323,6 +1377,7 @@ the same count at the time the cached result was calculated.
 % {{{  Query accessor
 
 \heading{Query accessor}
+\nopagebreak
 
 The query accessor checks if a given argument has a specific field. It
 is implemented by checking if the argument is an instance of any of the
@@ -1342,6 +1397,7 @@ alternatives which has the required field.
 % {{{  Get accessor
 
 \heading{Get accessor}
+\nopagebreak
 
 The \texttt{get}ter is implemented much like the query accessor. It
 inspects the incoming argument to find out of which alternative it is
@@ -1354,7 +1410,8 @@ and the requested subterm can be returned immediately.
 \begin{snippet}
 \begin{verbatim}
   Bool getBoolArg(Bool arg) {
-    return (Bool)ATelementAt((ATermList)ATgetArgument((ATermAppl)arg, 1), 2);
+    return (Bool)
+      ATelementAt((ATermList)ATgetArgument((ATermAppl)arg, 1), 2);
   }
 \end{verbatim}
 \end{snippet}
@@ -1368,10 +1425,12 @@ of the alternative productions).
 \begin{verbatim}
   Bool getBoolLhs(Bool arg) {
     if (isBoolAnd(arg)) {
-      return (Bool)ATgetFirst((ATermList)ATgetArgument((ATermAppl)arg, 1));
+      return (Bool)
+        ATgetFirst((ATermList)ATgetArgument((ATermAppl)arg, 1));
     }
     else 
-      return (Bool)ATgetFirst((ATermList)ATgetArgument((ATermAppl)arg, 1));
+      return (Bool)
+        ATgetFirst((ATermList)ATgetArgument((ATermAppl)arg, 1));
   }
 \end{verbatim}
 \end{snippet}
@@ -1388,7 +1447,8 @@ since it does not have to do any matching:
 \begin{verbatim}
 Condensed code for alternatives: "and", "or"
   Bool getBoolLhs(Bool arg) {
-    return (Bool)ATgetFirst((ATermList)ATgetArgument((ATermAppl)arg, 1));
+    return (Bool)
+      ATgetFirst((ATermList)ATgetArgument((ATermAppl)arg, 1));
   }
 \end{verbatim}
 \end{snippet}
@@ -1397,6 +1457,7 @@ Condensed code for alternatives: "and", "or"
 % {{{  Set accessor
 
 \heading{Set accessor}
+\nopagebreak
 
 The implementation of the \texttt{set}ter is again along the same path
 as the \texttt{get}ter and the inspector. The main issue here stems from
@@ -1410,15 +1471,17 @@ the \aterm\ \emph{in situ}, but instead need to construct a \emph{new}
   Bool setBoolLhs(Bool arg, Bool lhs) {
     if (isBoolAnd(arg)) {
       return (Bool)
-        ATsetArgument((ATermAppl)arg,
-                      (ATerm)ATreplace((ATermList)ATgetArgument((ATermAppl)arg, 1),
-                                       (ATerm)lhs, 0), 1);
+        ATsetArgument((ATermAppl)arg, (ATerm)
+                      ATreplace((ATermList)
+                                ATgetArgument((ATermAppl)arg, 1),
+                                (ATerm)lhs, 0), 1);
     }
     else if (isBoolOr(arg)) {
       return (Bool)
-        ATsetArgument((ATermAppl)arg,
-                      (ATerm)ATreplace((ATermList)ATgetArgument((ATermAppl)arg, 1),
-                                       (ATerm)lhs, 0), 1);
+        ATsetArgument((ATermAppl)arg, (ATerm)
+                     ATreplace((ATermList)
+                               ATgetArgument((ATermAppl)arg, 1),
+                               (ATerm)lhs, 0), 1);
     }
   
     ATabort("Bool has no Lhs: %t\n", arg);
@@ -1638,9 +1701,9 @@ the software system they are building.
 A formal definition of the concrete syntax for \aterms\ using \sdf\
 is presented here.
 
-\begin{scriptsize}
+\begin{footnotesize}
 \verbatiminput{ATerms.sdf}
-\end{scriptsize}
+\end{footnotesize}
 
 % }}}
 % {{{  Concrete Syntax of AsFix
@@ -1650,11 +1713,11 @@ is presented here.
 A formal definition of the concrete syntax for \asfix\ using \sdf\
 is presented here.
 
-\begin{scriptsize}
+\begin{footnotesize}
 \verbatiminput{Symbol.sdf}
 \verbatiminput{Tree.sdf}
 \verbatiminput{Attributes.sdf}
-\end{scriptsize}
+\end{footnotesize}
 
 % }}}
 % {{{  Example generated dictionary file
@@ -1664,9 +1727,9 @@ is presented here.
 An abbreviated version of the generated dictionary file for the
 parse tree syntax (\asfix) of the boolean \texttt{and}. Multiple
 similar lines have been condensed (\texttt{...}).
-\begin{scriptsize}
+\begin{footnotesize}
 \verbatiminput{bool_and_dict}
-\end{scriptsize}
+\end{footnotesize}
 
 % }}}
 % }}}

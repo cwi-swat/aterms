@@ -7,9 +7,9 @@ exports
   context-free syntax
     appl ( Production, Args )            -> Tree
     Integer                              -> Tree
-    lit ( Literal )                      -> Tree %% AsFix2ME specific
+    lit ( Literal )                      -> Tree
     amb ( Args )                         -> Tree
 
     "[" {Tree ","}* "]"                  -> Args
     prod ( Symbols, Symbol, Attributes ) -> Production
-    list ( Symbol )                      -> Production %% AsFix2ME specific
+    list ( Symbol )                      -> Production
