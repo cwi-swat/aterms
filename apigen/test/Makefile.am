@@ -6,9 +6,10 @@
 
 include ${top_srcdir}/make_rules
 
-ADT_TO_C		= ${top_builddir}/utils/adt-to-c
+ADTC		= ${top_builddir}/utils/adt-to-c
+ADTJAVA         = ${top_builddir}/utils/adt-to-java
 
-TESTS			= rolotest listtest 
+TESTS			= rolotest listtest peanotest
 
 noinst_PROGRAMS		= ${TESTS}
 noinst_LIBRARIES	= librolodex.a liblist.a 
@@ -24,22 +25,40 @@ listtest_SOURCES	= listtest.c
 listtest_LDADD		= -L. -llist -lATerm
 listtest_DEPENDENCIES	= liblist.a
 
+javadir = ${top_builddir}/test/classfiles
+JAVAROOT = ${top_builddir}
+CLASSPATH_ENV = CLASSPATH=${top_builddir}:${SHARED_OBJECTS}:${JAVA_ATERM}:${srcdir}/$(JAVAROOT)::$$CLASSPATH
+
+java_JAVA = PeanoTest.java
+
 CLEANFILES		= ${noinst_PROGRAMS} ${noinst_LIBRARIES} \
 			rolodex*.[ch] rolodex_dict.[ch] \
-			list.[ch] list_dict.[ch] 
+			list.[ch] list_dict.[ch] \
+			PeanoFactory.java PeanoConstructor.java \
+			Nat*.java
 
-EXTRA_DIST		= rolodex.adt list.adt list.pro 
+EXTRA_DIST		= rolodex.adt list.adt list.pro peano.adt
 
 rolodex.c rolodex.h: rolodex.adt
-	${ADT_TO_C} \
+	${ADTC} \
 		--input ${top_srcdir}/test/rolodex.adt \
 		--compat-term \
 		--classpath ${top_builddir}:${JAVA_ATERM}:${SHARED_OBJECTS}
 
 list.c list.h: list.adt list.pro
-	${ADT_TO_C} \
+	${ADTC} \
 		--input ${top_srcdir}/test/list.adt \
 		--prologue ${top_srcdir}/test/list.pro \
 		--compat-term \
 		--classpath ${top_builddir}:${JAVA_ATERM}:${SHARED_OBJECTS}
+
+peanotest: PeanoTest.java peano.adt Makefile
+	${ADTJAVA} --input ${top_srcdir}/test/peano.adt \
+	           --output ${top_builddir}/test \
+		   --package test \
+		   --name peano
+	@(echo "#! /bin/sh";\
+	  echo "CLASSPATH=${top_builddir}:${JAVA_ATERM}:${SHARED_OBJECTS}";\
+	  echo "export CLASSPATH";\
+	  echo "java test.PeanoTest") > $@ && chmod +x $@
 
