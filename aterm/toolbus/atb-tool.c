@@ -104,44 +104,53 @@ static void handshake(Connection *connection);
 int
 ATBinit(int argc, char *argv[], ATerm *stack_bottom)
 {
-	int lcv;
+  int lcv;
+  
+  for (lcv = 1; lcv < argc; lcv++) {
+    if (streq(argv[lcv], "-at-help")) {
+      fprintf(stderr, "    %-20s: specify toolbus tool name\n", TB_TOOL_NAME);
+      fprintf(stderr, "    %-20s: specify toolbus host\n", TB_HOST);
+      fprintf(stderr, "    %-20s: specify toolbus port\n", TB_PORT);
+      fprintf(stderr, "    %-20s: specify toolbus tool id\n", TB_TOOL_ID);
+    }
+  }
 
-	ATinit(argc, argv, stack_bottom);
+  ATinit(argc, argv, stack_bottom);
+  
+  /* Parse commandline arguments, set up default values */
+  for (lcv = 1; lcv < argc; lcv++)
+    {
+      if (streq(argv[lcv], TB_TOOL_NAME))
+	default_toolname = argv[++lcv];
+      else if (streq(argv[lcv], TB_HOST))
+	default_host = argv[++lcv];
+      else if (streq(argv[lcv], TB_PORT))
+	default_port = atoi(argv[++lcv]);
+      else if (streq(argv[lcv], TB_TOOL_ID))
+	default_tid = atoi(argv[++lcv]);
+    }
 
-	/* Parse commandline arguments, set up default values */
-	for (lcv = 1; lcv < argc; lcv++)
-	{
-		if (streq(argv[lcv], TB_TOOL_NAME))
-			default_toolname = argv[++lcv];
-		else if (streq(argv[lcv], TB_HOST))
-			default_host = argv[++lcv];
-		else if (streq(argv[lcv], TB_PORT))
-			default_port = atoi(argv[++lcv]);
-		else if (streq(argv[lcv], TB_TOOL_ID))
-			default_tid = atoi(argv[++lcv]);
-	}
+  /* Build some constants */
+  symbol_rec_do = ATmakeSymbol("rec-do", 1, ATfalse);
+  ATprotectSymbol(symbol_rec_do);
+  term_snd_void = ATparse("snd-void");
+  ATprotect(&term_snd_void);
+  symbol_ack_event = ATmakeSymbol("rec-ack-event", 1, ATfalse);
+  ATprotectSymbol(symbol_ack_event);
 
-	/* Build some constants */
-	symbol_rec_do = ATmakeSymbol("rec-do", 1, ATfalse);
-	ATprotectSymbol(symbol_rec_do);
-	term_snd_void = ATparse("snd-void");
-	ATprotect(&term_snd_void);
-	symbol_ack_event = ATmakeSymbol("rec-ack-event", 1, ATfalse);
-	ATprotectSymbol(symbol_ack_event);
-
-	/* Allocate initial buffer */
-	buffer = (char *)malloc(INITIAL_BUFFER_SIZE);
-	if(!buffer)
-		ATerror("cannot allocate initial term buffer of size %d\n", 
-						INITIAL_BUFFER_SIZE);
-	buffer_size = INITIAL_BUFFER_SIZE;
-	
-	/* Initialize event_queues. */
-	for (lcv=0; lcv<MAX_NR_QUEUES; lcv++)
-		event_queues[lcv].afun = -1;
-
-	/* Get hostname of machine that runs this particular tool */
-	return gethostname(this_host, MAXHOSTNAMELEN);
+  /* Allocate initial buffer */
+  buffer = (char *)malloc(INITIAL_BUFFER_SIZE);
+  if(!buffer)
+    ATerror("cannot allocate initial term buffer of size %d\n", 
+	    INITIAL_BUFFER_SIZE);
+  buffer_size = INITIAL_BUFFER_SIZE;
+  
+  /* Initialize event_queues. */
+  for (lcv=0; lcv<MAX_NR_QUEUES; lcv++)
+    event_queues[lcv].afun = -1;
+  
+  /* Get hostname of machine that runs this particular tool */
+  return gethostname(this_host, MAXHOSTNAMELEN);
 }
 
 /*}}}  */
