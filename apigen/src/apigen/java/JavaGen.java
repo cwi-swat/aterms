@@ -254,10 +254,10 @@ public class JavaGen
     Iterator alts = type.alternativeIterator();
     while (alts.hasNext()) {
       Alternative alt = (Alternative)alts.next();
-      String alt_id = buildId(alt.getId());
+      String method = buildId("make-" + alt.getId());
       String formals = buildAltFormals(type, alt);
-      String decl = "public static " + type_id
-	+ " make" + alt_id + "(" + formals + ")";
+      String decl = "public static " + type_id + " "
+	+ method + "(" + formals + ")";
       String actuals = buildAltActuals(type, alt);
       String alt_class = buildAltClassName(type, alt);
       printFoldOpen(decl);
