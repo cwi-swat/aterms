@@ -2,5 +2,7 @@
     constructor(Module, Default, <string(str)>),
     list(Modules, Module),
     list(Modules2, Module),
-    constructor(ModuleList, Modules, list(<modules(Modules)>))
+    constructor(ModuleList, Modules, list(<modules(Modules)>)),
+    separated-list(Separated,Module,[<wsl(Layout)>,"sep",<wsr(Layout)>]),
+    constructor(Layout, Default, <string(str)>)
   ]
