@@ -1518,6 +1518,19 @@ is already comparable to its manually written predecessor.
 \section{Discussion}
 \label{sec:discussion}
 
+Although this paper shows how API generation was used in a very specific
+context (generating \aterm\ manipulation code from an \sdf\ specification),
+many of the issues encountered are not \aterm\ or \sdf\ specific at all.
+In fact any generic data exchange formalism potentially suffers from the
+problem that generic manipulation functions are inheritly type unsafe.
+For instance if we look at \xml, DOM based libraries for 
+manipulating \xml\ in a generic way suffer from many of the the same problems
+as the \aterm\ library. Recent techniques like \xml\ data binding 
+(discussed in Section~\cite{sec:related})
+take the same approach as we do in this paper by generating accessor
+and manipulation functions based on a signature description like
+\xml\ schemas or DTDs.
+
 In retrospect, one might ask why on earth we began developing code using
 direct \aterm\ manipulation in the first place. The answer lies partially
 in the power and attractiveness of working with \aterms. Because it is
