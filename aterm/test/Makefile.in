@@ -56,12 +56,12 @@ TESTPRGS	= stress-cc stress-gcc primes-cc primes-gcc asfixtest \
 TESTSRCS	= stress.c asfixtest.c primes.c test-tool.c test-tool2.c
 TESTOBJS	= stress.o asfixtest.o primes.o test-tool.o test-tool2.o
 DISTFILES	= test.tb test2.tb Test.asfix test.trms error.trm Makefile.in \
-		${TESTSRCS} .depend
+		test.tifs test2.tifs ${TESTSRCS} .depend
 
 all: $(TESTPRGS) $(TESTS)
 
 clean:
-	@CLEAN@ *.tif.c *.tif.h ${TESTPRGS} *.tifs
+	@CLEAN@ *.tif.c *.tif.h ${TESTPRGS}
 
 dist: ${DISTFILES}
 	@cp ${DISTFILES} ${DISTDIR}
