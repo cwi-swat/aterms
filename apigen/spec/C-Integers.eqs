@@ -13,13 +13,13 @@ equations
 
 [equ-succ-divide1]
   succ(c-nat-con($Char1)) = c-nat-con($Char2)
-  ===
+  ===>
   succ(c-nat-con($Char+1 $Char1)) = c-nat-con($Char+1 $Char2)
 
 [equ-succ-divide2]
   succ(c-nat-con($Char1)) = 10,
   0 = c-nat-con($Char2),
   succ(c-nat-con($Char+1)) = c-nat-con($Char+2)
-  ===
+  ===>
   succ(c-nat-con($Char+1 $Char1)) = c-nat-con($Char+2 $Char2)
 

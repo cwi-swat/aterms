@@ -22,7 +22,7 @@ equations
 [equ-grammar-to-adt-divide]
   grammar-to-adt($ModName, $Grammar1) = $Entries1,
   grammar-to-adt($ModName, $Grammar2) = $Entries2
-  ===
+  ===>
   grammar-to-adt($ModName, $Grammar1 $Grammar2) = $Entries1, $Entries2
 
 
@@ -36,7 +36,7 @@ equations
 [equ-productions-to-adt-divide]
   production-to-adt($ModName, $Production) = $Entries1,
   productions-to-adt($ModName, $Production*) = $Entries2
-  ===
+  ===>
   productions-to-adt($ModName, $Production $Production*) = $Entries1, $Entries2
 
 [equ-production-to-adt]
@@ -44,7 +44,7 @@ equations
   $TypeId = sort-to-afun($Sort),
   $AFProd = build-asfix-prod($ModName, $Symbol*, $Sort, $Attributes),
   $AFArgs = build-asfix-appl-args($Symbol*)
-  ===
+  ===>
   production-to-adt($ModName, $Symbol* -> $Sort $Attributes) = 
 	[ $TypeId, $AltId, appl($AFProd, w(""), [$AFArgs]) ]
 
@@ -56,7 +56,7 @@ equations
   $AFArgs    = build-asfix-prod-args($Symbol*),
   $AFSort    = sort-to-lit($Sort),
   $AFAttrs   = build-asfix-attrs($Attributes)
-  ===
+  ===>
   build-asfix-prod($ModName, $Symbol*, $Sort, $Attributes) =
     prod(id($AFModName),w(""),[$AFArgs],w(""),l("->"),w(""),sort($AFSort),w(""),$AFAttrs)
 
@@ -78,7 +78,7 @@ equations
 [equ-build-asfix-prod-args-divide]
   build-asfix-prod-arg($Symbol) = $AFArg,
   build-asfix-prod-args($Symbol+) = $AFArgs
-  ===
+  ===>
   build-asfix-prod-args($Symbol $Symbol+) = $AFArg, w(""), $AFArgs
 
 [equ-build-asfix-prod-arg-strip-label]
@@ -117,7 +117,7 @@ equations
   build-asfix-appl-args($Symbol+) = $AFArgs,
   afun-concat(wsAfter capitalize(sdflit-to-afun($Label))) = $FieldId,
   w(<$FieldId(SDFWhiteSpace)>) = $FieldWs
-  ===
+  ===>
   build-asfix-appl-args($Label:$Symbol $Symbol+) = $AFArg, $FieldWs, $AFArgs
 
 [default-build-asfix-appl-args-divide-implicit-label]
@@ -125,7 +125,7 @@ equations
   build-asfix-appl-args($Symbol+) = $AFArgs,
   afun-concat(wsAfter capitalize(sdflit-to-afun($Literal))) = $FieldId,
   w(<$FieldId(SDFWhiteSpace)>) = $FieldWs
-  ===
+  ===>
   build-asfix-appl-args($Literal $Symbol+) = $AFArg, $FieldWs, $AFArgs
 
 [equ-build-asfix-appl-arg-labeled-literal]
@@ -137,7 +137,7 @@ equations
 [equ-build-asfix-appl-arg-sort]
   $FieldId = sdflit-to-afun($Label),
   $FieldType = sort-to-afun($Sort)
-  ===
+  ===>
   build-asfix-appl-arg($Label:$Sort) = <$FieldId($FieldType)>
 
 [equ-build-asfix-attrs-empty]
@@ -148,7 +148,7 @@ equations
 
 [equ-build-asfix-attrs-not-empty]
   build-asfix-attr-list($Attr+) = $AFAttr+
-  ===
+  ===>
   build-asfix-attrs({$Attr+}) = attrs(l("{"),w(""),[$AFAttr+],w(""),l("}"))
 
 [equ-build-asfix-attr-list-single]
@@ -157,7 +157,7 @@ equations
 [equ-build-asfix-attr-list-divide]
   build-asfix-attr($Attr) = $AFAttr,
   build-asfix-attr-list($Attr+) = $AFAttr+
-  ===
+  ===>
   build-asfix-attr-list($Attr,$Attr+) = $AFAttr,w(""),sep(","),w(""),$AFAttr+
 
 [equ-build-asfix-attr-left]        build-asfix-attr(left)        = l("left")

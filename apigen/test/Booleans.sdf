@@ -10,4 +10,5 @@ exports
     lop:Bool or:"|" rop:Bool	-> Bool {cons(or),left}
 
    context-free priorities
-    Bool "&" Bool -> Bool > Bool "|" Bool -> Bool
+    Bool "&" Bool -> Bool
+  > Bool "|" Bool -> Bool

@@ -40,12 +40,12 @@ equations
 
   [equ-afun-concat-divide]
     afun-concat($AFun+) = afun($Char*2)
-    ===
+    ===>
     afun-concat(at-literal(""" $Char*1 """) $AFun+) = afun($Char*1 $Char*2)
 
   [default-afun-concat-divide]
     afun-concat($AFun+) = afun($Char*2)
-    ===
+    ===>
     afun-concat(afun($Char*1) $AFun+) = afun($Char*1 $Char*2)
 
   [equ-aterm-to-lit-afun]
@@ -59,30 +59,30 @@ equations
 
   [equ-aterm-to-lit-literal]
     escape(at-literal($Char*1)) = at-literal(""" $Char*2 """)
-    ===
+    ===>
     aterm-to-lit(at-literal($Char*1)) = 
 	at-literal(""" "\" """ $Char*2 "\" """ """)
 
   [equ-aterm-to-lit-appl]
     aterm-to-lit($AFun) = at-literal(""" $Char*1 """),
     aterms-to-lit($ATerm+) = at-literal(""" $Char*2 """)
-    ===
+    ===>
     aterm-to-lit($AFun($ATerm+)) = at-literal(""" $Char*1 "(" $Char*2 ")" """)
 
   [equ-aterm-to-lit-list]
     aterms-to-lit($ATerm*) = at-literal(""" $Char* """)
-    ===
+    ===>
     aterm-to-lit([$ATerm*]) = at-literal(""" "[" $Char* "]" """)
 
   [equ-aterm-to-lit-placeholder]
     aterm-to-lit($ATerm) = at-literal(""" $Char* """)
-    ===
+    ===>
     aterm-to-lit(<$ATerm>) = at-literal(""" "<" $Char* ">" """)
 
   [equ-aterm-to-lit-anno]
     aterm-to-lit($ATerm) = at-literal(""" $Char*1 """),
     aterms-to-lit($Anno+) = at-literal(""" $Char*2 """)
-    ===
+    ===>
     aterm-to-lit($ATerm { $Anno+ }) = 
 	at-literal(""" $Char*1 "{" $Char*2 "}" """) 
 
@@ -95,7 +95,7 @@ equations
   [equ-aterms-to-lit-divide]
     aterm-to-lit($ATerm) = at-literal(""" $Char*1 """),
     aterms-to-lit($ATerm+) = at-literal(""" $Char*2 """)
-    ===
+    ===>
     aterms-to-lit($ATerm,$ATerm+) = at-literal(""" $Char*1 "," $Char*2 """)
 
   [equ-concat] 
@@ -104,12 +104,12 @@ equations
 
   [equ-escape-quote]
     $L = at-literal(""" "\" """ """) ++ escape(at-literal(""" $Char* """))
-    ===
+    ===>
     escape(at-literal(""" """ $Char* """)) = $L
 
   [equ-escape-backslash]
     $L = at-literal(""" "\" "\" """) ++ escape(at-literal(""" $Char* """))
-    ===
+    ===>
     escape(at-literal(""" "\" $Char* """)) = $L
 
   [equ-escape-empty]
@@ -117,6 +117,6 @@ equations
 
   [default-escape]
     $L = at-literal(""" $Char """) ++ escape(at-literal(""" $Char* """))
-    ===
+    ===>
     escape(at-literal(""" $Char $Char* """)) = $L
 

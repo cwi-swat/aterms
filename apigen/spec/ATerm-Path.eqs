@@ -11,17 +11,17 @@ equations
 
 [equ-first-path-equal]
   $Path3 = first-path($Path1, $Path2)
-  ===
+  ===>
   first-path($Node -> $Path1, $Node -> $Path2) = $Node -> $Path3
 
 [default-first-path-unequal-first]
   first-node($Node1, $Node2) = $Node1
-  ===
+  ===>
   first-path($Node1 -> $Path1, $Node2 -> $Path2) = $Node1 -> $Path1
 
 [default-first-path-unequal-second]
   first-node($Node1, $Node2) != $Node1
-  ===
+  ===>
   first-path($Node1 -> $Path1, $Node2 -> $Path2) = $Node2 -> $Path2
 
 [equ-first-node-arg]
