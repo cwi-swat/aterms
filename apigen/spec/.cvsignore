@@ -5,4 +5,4 @@ Makefile
 *.baf
 reduct.out
 .deps
-Sdf2_to_ADT
+Sdf2-to-ADT

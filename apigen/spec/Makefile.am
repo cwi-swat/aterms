@@ -4,15 +4,23 @@
 # $Id$
 #
 
-SDF2TABLE	= ${PGENBIN}/sdf2table
-
 SUBDIRS		= add-labels
 
-pkgdata_DATA	= Sdf2-to-AsFix2ME-ADT.trm.tbl
+bin_PROGRAMS	= Sdf2-to-ADT
+
+CFLAGS		= -g -Wall -O2 -DMAIN_Sdf2_to_AsFix2ME_ADT
+
+INCLUDES	= -I$(ASCINC) \
+		-I$(PT_SUPPORT)/include \
+		-I$(ATERM)/include
+
+pkgdata_DATA	= Sdf2-to-ADT.trm.tbl
 CLEANFILES	= ${data_DATA}
 
-EXTRA_DIST	= ${SDF2_TO_ASFIX2ME_ADT_SDF} ${SDF2_SPEC_SDF} \
-                  ${UTILS_SPEC_SDF} Sdf2-to-AsFix2ME-ADT.trm.tbl
+EXTRA_DIST	= ${SDF2_TO_ADT_SDF} ${SDF2_SPEC_SDF} \
+                  ${UTILS_SPEC_SDF} Sdf2-to-ADT.trm.tbl
+
+SDF2TABLE	= ${PGENBIN}/sdf2table
 
 UTILS_SPEC_SDF  = $(patsubst %, ./utils/%, $(UTILS_SPEC:=.sdf)) 
 UTILS_SPEC	= Basic-Integers Booleans Integers
@@ -28,29 +36,20 @@ SDF2_SPEC	= Alias-Sdf-Syntax Basic-Sdf-Syntax \
 		Character-Class-Normalization Character-Arithmetic \
 		Character-Normalization IntCon
 
-SDF2_TO_ASFIX2ME_ADT_SDF	= $(SDF2_TO_ASFIX2ME_ADT:=.sdf)
-SDF2_TO_ASFIX2ME_ADT		= \
-	ATerm-Utils ATerm-Syntax Literal-Syntax \
-	Integer-Syntax Sdf2-to-AsFix2ME-ADT \
-	Build-General-AsFix2ME-ADT Build-AsFix2ME-ADT Cons-Options
+SDF2_TO_ADT_SDF	= $(SDF2_TO_ADT:=.sdf)
+SDF2_TO_ADT	= ATerm-Utils ATerm-Syntax Literal-Syntax \
+		Integer-Syntax Sdf2-to-AsFix2ME-ADT \
+		Build-General-AsFix2ME-ADT Build-AsFix2ME-ADT Cons-Options
 
-Sdf2-to-AsFix2ME-ADT.trm.tbl: $(SDF2_TO_ASFIX2ME_ADT_SDF) $(SDF2_SPEC_SDF) $(UTILS_SPEC_SDF) 
-	@echo Building parsetable: $@
-	(printf "definition\nmodule Main\nimports Sdf2-to-AsFix2ME-ADT\n"; \
-	 cat $(SDF2_TO_ASFIX2ME_ADT_SDF); \
-	 cat $(SDF2_SPEC_SDF); \
-	 cat $(UTILS_SPEC_SDF)) \
-	| ${SDF2TABLE} -o $@
-
-Sdf2_to_ADT_SOURCES = Sdf2-to-AsFix2ME-ADT.c
-Sdf2_to_ADT_LDADD   = -L$(ASCLIB) -lasc-support-me \
+Sdf2_to_ADT_SOURCES	= Sdf2-to-AsFix2ME-ADT.c
+Sdf2_to_ADT_LDADD	= -L$(ASCLIB) -lasc-support-me \
 			-L$(PT_SUPPORT)/lib -lmept \
 			-L$(ATERM)/lib -lATerm
 
-INCLUDES		= -I$(ASCINC) \
-			-I$(PT_SUPPORT)/include \
-			-I$(ATERM)/include
-
-CFLAGS			= -g -Wall -O2 -DMAIN_Sdf2_to_AsFix2ME_ADT
-
-bin_PROGRAMS = Sdf2_to_ADT
+Sdf2-to-ADT.trm.tbl: $(SDF2_TO_ADT_SDF) $(SDF2_SPEC_SDF) $(UTILS_SPEC_SDF) 
+	@echo Building parsetable: $@
+	@(printf "definition\nmodule Main\nimports Sdf2-to-AsFix2ME-ADT\n"; \
+	 cat $(SDF2_TO_ADT_SDF); \
+	 cat $(SDF2_SPEC_SDF); \
+	 cat $(UTILS_SPEC_SDF)) \
+	| ${SDF2TABLE} -o $@
