@@ -117,16 +117,16 @@ achieved?  One solution is Microsoft's Object Linking and Embedding
 primitives to construct Windows applications. Another, language-specific,
 solution is to use Java's serialization interface~\cite{Java}. This
 allows writing and reading Java objects as sequential byte streams. Yet
-another solution is to use OMG's Interface Definition Language (part
+another approach is to use OMG's Interface Definition Language (part
 of the Common Object Broker Architecture~\cite{OMG-IDL}) to define data
 structures in a language-neutral way. Specific language-bindings provide
 the mapping from IDL data structures to language-specific data structures.
 Currently XML~\cite{XML1.0} is a very popular format to exchange information
 between applications. More and more tool vendors are switching to
-XML. One of the biggest drawbacks of XML is the restrict form of
-sharing and the fact that XML terms can only be exchanged in plain
-text format. The latter is quite often solved by using
-compression tools like {\tt (g)zip}.
+XML. One of the biggest drawbacks of XML is that it only allows a
+restricted form of sharing, and the fact that XML terms can only be
+exchanged in a verbose plain text format. The latter is quite often
+solved by using compression tools like {\tt (g)zip}.
 \end{sloppypar}
 
 All these solutions have their merits but do not really qualify
@@ -212,11 +212,9 @@ the operations defined on it.
 The data type of \ATerms\ ({\tt ATerm}) is defined as follows:
 
 \begin{itemize}
-\item  {\tt INT}: An integer constant (32-bits integer) is an \ATerm.\footnote{
-There is a version of the \aterm\ library
-which supports 64-bit architectures as well.}
+\item  {\tt INT}: An integer constant is an \ATerm.
 
-\item {\tt REAL}: A real constant (64-bits real) is an \ATerm.
+\item {\tt REAL}: A real constant is an \ATerm.
 
 \item {\tt APPL}: A function application consisting of a function symbol and
       zero or more \ATerms\ (arguments) is an \ATerm.
@@ -237,21 +235,20 @@ which supports 64-bit architectures as well.}
 
 \end{itemize}
 
-Each of these constructs except the last one (i.e., {\tt INT}, {\tt
-REAL}, {\tt APPL}, {\tt LIST}, {\tt PLACEHOLDER}, and {\tt BLOB}) form
-subtypes of the data type {\tt ATerm}.
-These subtypes are needed when determining the type of an arbitrary
-\ATerm.  Depending on the actual implementation language they will be
-represented as a constant (C, Pascal) or a subclass (C++, Java).
+Each of these constructs except the last one (i.e., {\tt INT}, {\tt REAL},
+{\tt APPL}, {\tt LIST}, {\tt PLACEHOLDER}, and {\tt BLOB}) form subtypes
+of the data type {\tt ATerm}.  These subtypes are needed when determining
+the type of an arbitrary \ATerm.  Depending on the actual implementation
+language the type is represented as a constant (\texttt{C}) or a subclass
+(\texttt{Java}, \texttt{C\#}).
 
-The last construct is the \emph{annotation construct}, which makes it
-possible to annotate terms with transparent
+The last construct is the \emph{annotation construct},
+which makes it possible to annotate terms with transparent
 information\footnote{Transparent in the sense that the result of most
 operations is independent of the annotations. This makes it easy to
-completely ignore annotations. Examples of the use of
-annotations include annotating parse trees with positional or
-typesetting information, and annotating abstract syntax trees with the
-results of type checking.}.
+completely ignore annotations. Examples of the use of annotations include
+annotating parse trees with positional or typesetting information,
+and annotating abstract syntax trees with the results of type checking.}.
 
 We will now give a number of examples to
 show some of the features of the textual representation of \ATerms.
@@ -369,12 +366,12 @@ For reasons of efficiency and conciseness, reading and writing can
 take place in two forms: text and binary.  
 The text format uses the textual representation discussed
 earlier.  This format is human-readable,
-space-inefficient\footnote{ The unnecessary size explosion could be
-avoided by extending the textual representation with a mechanism for
-labeling and referring to terms.  Instead of \texttt{f(g(a),g(a))},
-one could then write \texttt{f(1:g(a), \#1)}. The first occurrence of
-\texttt{g(a)} is labeled with ``\texttt{1}'', and the second
-occurrence refers to this label (``\texttt{\#1}'').},
+space-inefficient\footnote{We also support a textual format in which 
+the unnecessary size explosion is using a mechanism for
+implicit labeling and referring to terms.  Instead of \texttt{f(g(a),g(a))},
+one could then write \texttt{f(g(a),\#A)}. The first occurrence of
+\texttt{g(a)} is implicitly labeled with ``\texttt{A}'', and the second
+occurrence refers to this label (``\texttt{\#A}'').},
 and any sharing of the in-memory representation of terms is lost.
 
 The binary format (Binary ATerm Format) is 
@@ -396,6 +393,9 @@ message being printed and an error value being returned.
 \item {\tt ATerm ATreadFromBinaryFile(File $f$)}: Creates a new term by reading a
 binary representation from file $f$. 
 
+\item {\tt String ATwriteToString(ATerm $t$)}: Return the text representation
+of term $t$ as a string.
+
 \item {\tt Boolean ATwriteToTextFile(ATerm $t$, File $f$)}: Write the text
 representation of term $t$ to file $f$. Returns {\tt true} for
 success and {\tt false} for failure.
@@ -403,9 +403,6 @@ success and {\tt false} for failure.
 \item {\tt Boolean ATwriteToBinaryFile(ATerm $t$, File $f$)}: Write a 
 binary representation of term $t$ to file $f$. Returns
 {\tt true} for success, and {\tt false} for failure.
-
-\item {\tt String ATwriteToString(ATerm $t$)}: Return the text representation
-of term $t$ as a string.
 
 \end{itemize}
 
@@ -524,7 +521,7 @@ be fast in order not to impose an
 unacceptable penalty on term creation.  Using a hash function that
 depends on the internal code of the function symbol and the addresses
 of its arguments, we can quickly search for a function application
-before creating it.  The terms are stored in a hash table.  The hash
+before creating it.  All terms are stored in a hash table.  The hash
 table does not contain the terms themselves, but pointers to the
 terms. This provides a flexible mechanism of resizing the table and
 ensures that all entries in the table are of equal size. Hence the
@@ -546,15 +543,6 @@ updates on maximally shared terms are not allowed.  Especially in list
 operations, the fact that \ATerms\ are immutable can be expensive. It
 is often the responsibility of the user of the library to choose
 algorithms that minimize the effect of this shortcoming.
-
-\subsubsection*{Searching for Shared Subterms}
-
-Maximal sharing of terms requires checking at term creation time whether
-this term already exists. This search must be fast in order to ensure 
-efficient term creation. A hash function based on the
-\emph{addresses} of the function symbol and the arguments of a function
-application allows for a quick lookup in the hash table to find a function 
-application before creating it.
 
 \paragraph{Collisions}
 One issue in hash techniques is handling collisions. The simplest
@@ -585,8 +573,6 @@ However, there are severe drawbacks to this approach:
 \item Internal fragmentation is increased, because empty slots
       in the hash table are as large as the object instead of
       only one machine word.
-\item We would need a separate hash table for each term size to
-      decrease the internal fragmentation. 
 \end{itemize}
 
 Because of these problems, we use linear hash chaining
@@ -596,9 +582,11 @@ we rehash into a larger table.
 
 The user can increase the initial size of
 the hash table to save on resizing and rehashing
-operations. The \ATerm\ library provides facilities for defining hash tables
-as well. This allows the implementation of a fast lookup mechanism
-for \ATerms.
+operations.
+
+The \ATerm\ library provides facilities for defining application
+specific hash tables as well. This allows the implementation of a
+fast lookup mechanism for \ATerms.
 
 %{{{ Garbage collection
 
@@ -656,7 +644,7 @@ is a  conservative collector in the sense that some of the words on the
 stack could accidentally have the same bit pattern as object references.
 Because there is no way to separate these `fake' bit patterns from
 `real' object references, this can cause
-objects to be marked as `live' when these are actually garbage.
+objects to be marked as `live' when they are actually garbage.
 Note that bit patterns on the stack that do not point to valid objects
 are not traversed at all. Only when a bit pattern represents an address
 that is a valid object address it is followed to mark the corresponding
@@ -748,7 +736,7 @@ The length of the list is
 stored in the three bytes after the header in the first word.
 The empty list
 is represented using a LIST object with empty
-first and next fields, and a length of 0.
+first and next fields, and a length of 0. The arity of the empty list is 0.
 
 \paragraph{PLACEHOLDER encoding}
 The placeholder term has an arity of 1, where the third
@@ -856,7 +844,7 @@ environment.
 \item A tool for protocol verification~\cite{GL99}. The \aterms\
 are used to represent the states in the state space of the
 protocol. Because of the huge amount of states ($\geq 1,000,000$) it
-is necessary to share as many states as possible.
+is necessary to share as much data as possible.
 
 \item A tool for the detection of code clones in legacy code.
 
