@@ -16,6 +16,7 @@ PROF_COMPILE   = $(CC_PROF)   $(CFLAGS_PROF)   $(DEFS_PROF)   $(STDDEFS)
 CC64_COMPILE   = $(CC_CC64)   $(CFLAGS_CC64)   $(DEFS_CC64)   $(STDDEFS)
 SHARED_COMPILE = $(CC_SHARED) $(CFLAGS_SHARED) $(DEFS_SHARED) $(STDDEFS)
 COMPILE        = $(CC)        $(CFLAGS)        $(DEFS)        $(STDDEFS)
+NS_COMPILE     = $(CC_NS)     $(CFLAGS_NS)     $(DEFS_NS)     $(STDDEFS)
 
 ## Rules for compiling C files to include in static libraries
 %-cc.o   : %.c $(ALLINCLUDES)
