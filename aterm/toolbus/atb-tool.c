@@ -244,12 +244,9 @@ int ATBwriteTerm(int fd, ATerm term)
   int len = AT_calcTextSize(term) + 8;    /* Add lenspec */
 	int wirelen = MAX(len, MIN_MSG_SIZE);
 
-	ATfprintf(stderr, "length of %t = %d\n", term, len);
-
 	resize_buffer(wirelen+1);               /* Add '\0' character */
 	sprintf(buffer, "%-.7d:", len);
 	AT_writeToStringBuffer(term, buffer+8);
-	fprintf(stderr, "sending to ToolBus: %s\n", buffer);
 	if(mwrite(fd, buffer, wirelen) < 0)
 		ATerror("ATBwriteTerm: connection with ToolBus lost.\n");
 	return 0;
@@ -399,7 +396,6 @@ int ATBhandleAny(void)
 	FD_ZERO(&set);
 	max = ATBgetDescriptors(&set) + 1;
 
-	fprintf(stderr, "before select\n");
 	count = select(max, &set, NULL, NULL, NULL);
 	assert(count > 0);
 
