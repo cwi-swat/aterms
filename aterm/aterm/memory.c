@@ -13,6 +13,7 @@
 #include "memory.h"
 #include "util.h"
 #include "debug.h"
+#include "crc_table.h"
 
 /*}}}  */
 /*{{{  defines */
@@ -35,10 +36,55 @@
 #define INFO_HASHING    1
 #define MAX_INFO_SIZES 256
 
-#define UI(i)   ((unsigned int)(i))
-#define HNUM1(h)                       UI((h) % table_size)
-#define HNUM2(h, w0)                   (UI((h) + (UI(w0)<<1)) % table_size)
-#define HNUM3(h, w0, w1)               (UI((h) + (UI(w0)<<1) + (UI(w1)<<2)) % table_size)
+#define UI(i)          ((unsigned int)(i))
+#define IDX(w)         UI(((w>>2) ^ (w>>10)) & 0xFF)
+#define SHIFT(w)       UI((w>>3) & 0xF)
+#define NOISE(w)       (CRC_TABLE[IDX(w)])
+#define CSTEP(crc,c)   ((((crc)>>8) & 0x00FFFFFFL) ^ \
+												CRC_TABLE[((int)crc^(c))&0xFF])
+
+/*#define CNOISE(w)      CSTEP(CSTEP(CSTEP(CSTEP(0xFFFFFFFFL, \
+												 (w)), (w)>>8), (w)>>16), (w)>>24)*/
+/*#define CNOISE(w)      CSTEP(CSTEP(0xFFFFFFFFL, \
+												 (((w)>>8) ^ (w))), (w)>>16)
+#define CNOISE(w)        CSTEP(0xFFFFFFFFL, ((w)>>24)^((w)>>16)^((w)>>8)^w) 
+*/
+#define CNOISE(w)        CSTEP(0xFFFFFFFFL, ((w)>>24)^((w)>>16)^((w)>>8)^w) 
+
+/* Best sofar with noise:
+#define S(w)           (UI(w))
+#define C(hnr,w)       ((UI(hnr)>>1) ^ (UI(w)))
+#define F(hnr)         ((UI(hnr) ^ (CNOISE(hnr))) & table_mask)
+*/
+
+/* Best sofar without noise */
+/*
+#define S(w)           (UI(w) ^ (UI(w)>>8))
+#define C(hnr,w)       ((UI(hnr)>>1) ^ (UI(w)))
+#define F(hnr)         (UI(hnr) & table_mask)
+*/
+
+#define S(w)           ((UI(w)>>8))
+#define C(hnr,w)       ((UI(hnr)>>1) ^ (UI(w)))
+#define F(hnr)         (UI(hnr) & table_mask)
+
+
+/*
+#define HNUM1(h)                   F(S(h))
+#define HNUM2(h,w0)                F(C(S(h),w0))
+#define HNUM3(h,w0,w1)             F(C(C(S(h),w0),w1))
+#define HNUM4(h,w0,w1,w2)          F(C(C(C(S(h),w0),w1),w2))
+#define HNUM5(h,w0,w1,w2,w3)       F(C(C(C(C(S(h),w0),w1),w2),w3))
+#define HNUM6(h,w0,w1,w2,w3,w4)    F(C(C(C(C(C(S(h),w0),w1),w2),w3),w4))
+#define HNUM7(h,w0,w1,w2,w3,w4,w5) F(C(C(C(C(C(C(S(h),w0),w1),w2),w3),w4),w5))
+*/
+#define HNUM1(h)                   F(S(h))
+#define HNUM2(h,w0)                F(C(w0,S(h)))
+#define HNUM3(h,w0,w1)             F(C(C(w1,w0),S(h)))
+#define HNUM4(h,w0,w1,w2)          F(C(C(C(w2,w1),w0),S(h)))
+#define HNUM5(h,w0,w1,w2,w3)       F(C(C(C(C(w3,w2),w1),w0),S(h)))
+#define HNUM6(h,w0,w1,w2,w3,w4)    F(C(C(C(C(C(w4,w3),w2),w1),w0),S(h)))
+#define HNUM7(h,w0,w1,w2,w3,w4,w5) F(C(C(C(C(C(C(w5,w4),w3),w2),w1),w0),S(h)))
 
 /*}}}  */
 /*{{{  types */
@@ -55,7 +101,9 @@ ATerm at_freelist[MAX_TERM_SIZE] = { NULL };
 BlockBucket block_table[BLOCK_TABLE_SIZE] = { { NULL, NULL } };
 
 static int alloc_since_gc[MAX_TERM_SIZE] = { 0 };
-static int table_size;
+static unsigned int table_class = 14;
+static unsigned int table_size;
+static unsigned int table_mask;
 static ATerm *hashtable;
 
 static int destructor_count = 0;
@@ -73,102 +121,27 @@ static int hash_info_after_gc[MAX_INFO_SIZES][3];
 
 /*}}}  */
 
-#if 0
-Replaced by macros HNUMx
-/*{{{  static unsigned int hash_number1(header_type header) */
-
-static unsigned int hash_number1(header_type header)
-{
-  return header % table_size;
-}
-
-/*}}}  */
-/*{{{  static unsigned int hash_number2(header_type header,w0) */
-
-static unsigned int hash_number2(header_type header, ATerm w0)
-{
-  unsigned int hnr = header + (((unsigned int)w0)<<1);
-  return hnr % table_size;
-}
-
-/*}}}  */
-/*{{{  static unsigned int hash_number3(header_type header,w0,w1) */
-
-static unsigned int hash_number3(header_type header, ATerm w0,
-				 ATerm w1)
-{
-  unsigned int hnr = header + (((unsigned int)w0)<<1) + (((unsigned int)w1)<<2);
-  return hnr % table_size;
-}
-
-/*}}}  */
-#endif
-
-/*{{{  static unsigned int hash_number4(header_type header,w0,w1,w2) */
-
-static unsigned int hash_number4(header_type header, ATerm w0,
-				 ATerm w1, ATerm w2)
-{
-  unsigned int hnr = header + (((unsigned int)w0)<<1) + 
-    (((unsigned int)w1)<<2) + (((unsigned int)w2)<<3);
-  return hnr % table_size;
-}
-
-/*}}}  */
-/*{{{  static unsigned int hash_number5(header_type header,w0,w1,w2,w3) */
-
-static unsigned int hash_number5(header_type header, ATerm w0,
-				 ATerm w1, ATerm w2, 
-				 ATerm w3)
-{
-  unsigned int hnr = header + (((unsigned int)w0)<<1) + 
-    (((unsigned int)w1)<<2) + (((unsigned int)w2)<<3) + 
-    (((unsigned int)w3)<<4);
-  return hnr % table_size;
-}
-
-/*}}}  */
-/*{{{  static unsigned int hash_number6(header_type header,w0,w1,w2,w3,w4) */
-
-static unsigned int hash_number6(header_type header, ATerm w0,
-				 ATerm w1, ATerm w2,
-				 ATerm w3, ATerm w4)
-{
-  unsigned int hnr = header + (((unsigned int)w0)<<1) +
-    (((unsigned int)w1)<<2) + (((unsigned int)w2)<<3) + 
-    (((unsigned int)w3)<<4) + (((unsigned int)w4)<<5);
-  return hnr % table_size;
-}
-
-/*}}}  */
-/*{{{  static unsigned int hash_number7(header_type header,w0,w1,w2,w3,w4,w5) */
-
-static unsigned int hash_number7(header_type header, ATerm w0,
-				 ATerm w1, ATerm w2,
-				 ATerm w3, ATerm w4,
-				 ATerm w5)
-{
-  unsigned int hnr = header + (((unsigned int)w0)<<1) + 
-    (((unsigned int)w1)<<2) + (((unsigned int)w2)<<3) + 
-    (((unsigned int)w3)<<4) + (((unsigned int)w4)<<5) + 
-    (((unsigned int)w5)<<6);
-  return hnr % table_size;
-}
-
-/*}}}  */
 /*{{{  static unsigned hash_number(unsigned int header, int n, ATerm w[]) */
 
 static unsigned int hash_number(unsigned int header, int n, ATerm w[])
 {
   int i;
-  unsigned int hnr = header;
+/*  unsigned int hnr = S(header);
 
   for(i=0; i<n; i++)
-    hnr += ((unsigned int)w[i]) << (i+1);
+		hnr = C(hnr, w[i]);
+*/
+	unsigned int hnr;
+	if(n>0) {
+		hnr = UI(w[n-1]);
+		for(i=n-2; i>=0; i--)
+			hnr = C(hnr, w[i]);
 
-  hnr %= table_size;
+		hnr = C(hnr, S(header));
+	} else
+		hnr = S(header);
 
-  return hnr;
+  return F(hnr);
 }
 
 /*}}}  */
@@ -176,16 +149,24 @@ static unsigned int hash_number(unsigned int header, int n, ATerm w[])
 
 static unsigned int hash_number_anno(unsigned int header, int n, ATerm w[], ATerm anno)
 {
-  int i;
-  unsigned int hnr = header;
+/*  int i;
+  unsigned int hnr = S(header);
 
   for(i=0; i<n; i++)
-    hnr += ((unsigned int)w[i]) << (i+1);
-  hnr += ((unsigned int)anno) << (i+1);
+    hnr = C(hnr, w[i]);
+  hnr = C(hnr, anno);
 
-  hnr %= table_size;
+  return F(hnr);
+*/
+	int i;
 
-  return hnr;
+	unsigned int hnr = UI(anno);
+	for(i=n-1; i>=0; i--)
+		hnr = C(hnr, w[i]);
+
+	hnr = C(hnr, S(header));
+
+  return F(hnr);
 }
 
 /*}}}  */
@@ -231,7 +212,9 @@ void AT_initMemory(int argc, char *argv[])
 {
   int i;
 
-  table_size = 16411;
+	table_class = 16;
+	table_size  = 1<<table_class;
+	table_mask  = table_size-1;
 
 	/*{{{  Analyze arguments */
 
@@ -300,10 +283,10 @@ void AT_initMemory(int argc, char *argv[])
 
 void AT_cleanupMemory()
 {
-	int info[MAX_INFO_SIZES][3];
+	int i, info[MAX_INFO_SIZES][3];
 
 	if(infoflags & INFO_HASHING) {
-		int i, max = MAX_INFO_SIZES-1;
+		int max = MAX_INFO_SIZES-1;
 		FILE *f = fopen("hashing.stats", "w");
 
 		if(!f)
@@ -336,8 +319,21 @@ void AT_cleanupMemory()
 		while(info[max][IDX_MAX] == 0)
 			max--;
 	  for(i=0; i<=max; i++) {
-			for(i=0; i<=max; i++) {
-				fprintf(f, "%8d\n", info[i][IDX_TOTAL]);
+			fprintf(f, "%8d\n", info[i][IDX_TOTAL]);
+		}
+
+		for(i=0; i<table_size; i++) {
+			int size = 0;
+			ATerm cur = hashtable[i];
+			for(size=0; cur; size++)
+				cur = cur->next;
+			if(size > 20) {
+				fprintf(f, "bucket %d has length %d\n", i, size);
+				cur = hashtable[i];
+				while(cur) {
+					ATfprintf(f, "%t\n", cur);
+					cur = cur->next;
+				}
 			}
 		}
 	}
@@ -638,7 +634,7 @@ ATermAppl ATmakeAppl3(Symbol sym, ATerm arg0, ATerm arg1, ATerm arg2)
 {
   ATerm cur;
   header_type header = APPL_HEADER(0, 3, sym);
-  unsigned int hnr = hash_number4(header, arg0, arg1, arg2);
+  unsigned int hnr = HNUM4(header, arg0, arg1, arg2);
   
   CHECK_ARITY(ATgetArity(sym), 3);
 
@@ -673,7 +669,7 @@ ATermAppl ATmakeAppl4(Symbol sym, ATerm arg0, ATerm arg1, ATerm arg2, ATerm arg3
 {
   ATerm cur;
   header_type header = APPL_HEADER(0, 4, sym);
-  unsigned int hnr = hash_number5(header, arg0, arg1, arg2, arg3);
+  unsigned int hnr = HNUM5(header, arg0, arg1, arg2, arg3);
   
   CHECK_ARITY(ATgetArity(sym), 4);
 
@@ -711,7 +707,7 @@ ATermAppl ATmakeAppl5(Symbol sym, ATerm arg0, ATerm arg1, ATerm arg2,
 {
   ATerm cur;
   header_type header = APPL_HEADER(0, 5, sym);
-  unsigned int hnr = hash_number6(header, arg0, arg1, arg2, arg3, arg4);
+  unsigned int hnr = HNUM6(header, arg0, arg1, arg2, arg3, arg4);
   
   CHECK_ARITY(ATgetArity(sym), 5);
 
@@ -751,7 +747,7 @@ ATermAppl ATmakeAppl6(Symbol sym, ATerm arg0, ATerm arg1, ATerm arg2,
 {
   ATerm cur;
   header_type header = APPL_HEADER(0, 6, sym);
-  unsigned int hnr = hash_number7(header, arg0, arg1, arg2, arg3, arg4, arg5);
+  unsigned int hnr = HNUM7(header, arg0, arg1, arg2, arg3, arg4, arg5);
   
   CHECK_ARITY(ATgetArity(sym), 6);
 
@@ -925,7 +921,7 @@ ATermInt ATmakeInt(int val)
 {
   ATerm cur;
   header_type header = INT_HEADER(0);
-  unsigned int hnr = HNUM2(header, (ATerm)val);
+  unsigned int hnr = HNUM2(header, val);
  
   cur = hashtable[hnr];
   while(cur && (cur->header != header || ((ATermInt)cur)->value != val))
@@ -1019,7 +1015,7 @@ ATermList ATmakeList1(ATerm el)
 {
   ATerm cur;
   header_type header = LIST_HEADER(0, 1);
-  unsigned int hnr = HNUM3(header, el, (ATerm)ATempty);
+  unsigned int hnr = HNUM3(header, el, ATempty);
 
   cur = hashtable[hnr];
   while(cur && (cur->header != header || 
@@ -1051,7 +1047,7 @@ ATermList ATinsert(ATermList tail, ATerm el)
   ATerm cur;
   header_type header = LIST_HEADER(0, (GET_LENGTH(tail->header)+1));
 
-  unsigned int hnr = HNUM3(header, el, (ATerm)tail);
+  unsigned int hnr = HNUM3(header, el, tail);
 
   cur = hashtable[hnr];
   while(cur && (cur->header != header || 
@@ -1116,7 +1112,7 @@ ATermBlob ATmakeBlob(int size, void *data)
   ATerm cur;
   header_type header = BLOB_HEADER(0, size);
 
-  unsigned int hnr = HNUM2(header, (ATerm)data);
+  unsigned int hnr = HNUM2(header, data);
 
   cur = hashtable[hnr];
   while(cur && (cur->header != header || ((ATermBlob)cur)->data != data))

@@ -17,7 +17,7 @@
 /*}}}  */
 /*{{{  defines */
 
-#define SYMBOL_HASH_SIZE	16411	/* nextprime(16384) */
+#define SYMBOL_HASH_SIZE	65353	/* nextprime(16384) */
 #define SYMBOL_HASH_OPT		"-symboltable"
 
 #define SYM_ARITY	16
@@ -96,26 +96,25 @@ void AT_printSymbol(Symbol sym, FILE *f)
     while(*id) {
       /* We need to escape special characters */
       switch(*id) {
-	case '\\':
-	   id++;
-	case '"':
-	  fputc('\\', f);
-	  fputc(*id, f);
-	  break;
-	case '\n':
-	  fputc('\\', f);
-	  fputc('n', f);
-	  break;
-	case '\t':
-	  fputc('\\', f);
-	  fputc('t', f);
-	  break;
-	case '\r':
-	  fputc('\\', f);
-	  fputc('r', f);
-	  break;
-	default:
-	  fputc(*id, f);
+				case '\\':
+				case '"':
+					fputc('\\', f);
+					fputc(*id, f);
+					break;
+				case '\n':
+					fputc('\\', f);
+					fputc('n', f);
+					break;
+				case '\t':
+					fputc('\\', f);
+					fputc('t', f);
+					break;
+				case '\r':
+					fputc('\\', f);
+					fputc('r', f);
+					break;
+				default:
+					fputc(*id, f);
       }
       id++;
     }

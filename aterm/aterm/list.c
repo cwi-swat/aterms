@@ -193,6 +193,11 @@ ATermList ATconcat(ATermList list1, ATermList list2)
   int i, len = ATgetLength(list1);
   ATermList result = list2;
 
+	if(len == 0)
+		return list2;
+	if(ATisEqual(list2, ATempty))
+		return list1;
+
   RESIZE_BUFFER(len);
 
   /* Collect the elments of list1 in buffer */
