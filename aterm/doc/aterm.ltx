@@ -1063,11 +1063,15 @@ Random                  &  1000000 &     92246 &   90.81 &  2997120 &  3.00   \\
 
 \multicolumn{6}{|c|}{Real Cases}\\ \hline
 
-COBOL Parse Table       &   733237 &     81115 &   88.94 &  2174662 &  2.97   \\ \hline
+COBOL Parse Table       &   961070 &     97516 &   89.85 &  2836529 &  2.95   \\ \hline
 COBOL System            & 31332871 &    470872 &   98.50 & 12896609 &  0.41   \\ \hline
 Risla Library           &   708838 &     40073 &   94.35 &   960170 &  1.35   \\ \hline
-LPO                     &  8894391 &    225229 &   97.47 &  3701438 &  0.42   \\ \hline \hline
-Real Case Averages      &          &           &   94.82 &          &  1.29   \\ \hline    
+LPO                     &  8894391 &    225229 &   97.47 &  3701438 &  0.42   \\ \hline
+Casl                    &    34526 &     11699 &   66.12 &   235655 &  6.83   \\ \hline
+lcc Parse Forest        &   342549 &     50254 &   85.33 &  2132245 &  3.55   \\ \hline
+\hline
+Real Case Averages      &          &           &   94.82 &          &  1.29   \\ \hline
+with Casl               &          &           &   89.23 &          &  2.40   \\ \hline
 \end{tabular}
 \caption{Memory usage of \ATerms} \label{measurements-in-memory}
 \end{center}
@@ -1128,11 +1132,15 @@ Random-unique           &6888889 & 6.89 & 34.76 & 34.76 &  4.06 & 4.06  \\ \hlin
 Random                  &6200251 & 6.20 & 15.90 & 15.90 &  3.67 & 3.67  \\ \hline \hline
 
 \multicolumn{7}{|c|}{Real Cases}\\ \hline
-COBOL Parse Table       &3161908 & 4.31 &  5.83 &  7.95 &  1.89 & 2.58  \\ \hline
+COBOL Parse Table       &4211366 & 4.38 &  6.33 &  6.95 &  2.30 & 2.29  \\ \hline
 COBOL System          &135350005 & 4.32 &199.43 &  6.36 & 65.02 & 2.08  \\ \hline
 Risla Library           &2955964 & 4.17 &  4.25 &  6.00 &  1.40 & 1.98  \\ \hline
-LPO                     &41227481& 4.64 & 81.90 &  9.21 & 29.16 & 3.28  \\ \hline \hline
+LPO                     &41227481& 4.64 & 81.90 &  9.21 & 29.16 & 3.28  \\ \hline 
+Casl                    & 217958 & 6.31 &  0.36 & 10.43 &  0.08 & 2.32  \\ \hline
+lcc Parse Forest	&2132245 & 6.22 &  3.13 &  9.14 &  0.86 & 2.51  \\ \hline
+\hline
 Real Case Averages      &        & 4.36 &       &  7.38 &       & 2.48  \\ \hline
+with Casl 		&	 & 4.75 &       &  7.99 &       & 2.45  \\ \hline
 \end{tabular}
 \caption{Reading and writing \ATerms\ as \ascii\ text} \label{measurements-text}
 \end{center}
@@ -1177,11 +1185,15 @@ Random-unique           &6073795& 6.07  & 8.85  & 8.85  & 11.57 & 11.57 \\ \hlin
 Random                  &567419 & 0.57  & 2.06  & 2.06  & 2.76  & 2.76  \\ \hline \hline
 
 \multicolumn{7}{|c|}{Real Cases}\\ \hline
-COBOL Parse Table       &303621 & 0.41  & 0.50  & 0.68  & 1.36  & 1.85  \\ \hline
+COBOL Parse Table       &370450 & 0.39  & 0.63  & 0.66  & 1.75  & 1.82  \\ \hline
 COBOL System            &2279066& 0.07  & 4.88  & 0.16  &20.76  & 0.66  \\ \hline
 Risla Library           & 141946& 0.20  & 0.22  & 0.31  & 0.75  & 1.06  \\ \hline
-LPO                     &1106661& 0.12  & 1.86  & 0.21  & 9.40  & 1.06  \\ \hline \hline
+LPO                     &1106661& 0.12  & 1.86  & 0.21  & 9.40  & 1.06  \\ \hline
+Casl			& 32083 & 0.93  & 0.05  & 1.45  & 0.15  & 4.34  \\ \hline
+lcc Parse Forest	&172810 & 0.50  & 0.31  & 0.90  & 0.91  & 2.66  \\ \hline
+\hline
 Real Case Averages      &       & 0.20  &       & 0.34  &       & 1.16  \\ \hline
+with Casl		&	& 0.35  &       & 0.56  &       & 1.80  \\ \hline
 \end{tabular}
 \caption{Reading and writing \ATerms\ as \baf} \label{measurements-baf}
 \end{center}
@@ -1228,11 +1240,15 @@ Random-unique           & 6888889       & 6073795       & 11.8          & 232480
 Random                  & 6199981       & 567419        & 90.9          & 439293        & 92.9  \\ \hline \hline
 
 \multicolumn{6}{|c|}{Real Cases}\\ \hline
-COBOL Parse Table       & 3161908       & 303621        & 90.4          & 243990        & 92.3  \\ \hline
+COBOL Parse Table       & 4211366       &  370450       & 91.2          & 230297        & 94.5  \\ \hline
 COBOL System            &135350005      & 2279066       & 98.3          & 3072774       & 97.7  \\ \hline
-Risla Library           & 2955964       & 141946        & 95.2          &  80009        & 97.3  \\ \hline
-LPO                     &41227481       & 1106661       & 97.3          & 804521        & 98.0  \\ \hline \hline
+Risla Library           & 2955964       &  141946       & 95.2          &  80009        & 97.3  \\ \hline
+LPO                     &41227481       & 1106661       & 97.3          & 804521        & 98.0  \\ \hline
+Casl                    &  217958	&   32083 	& 85.3          &  20767        & 90.5  \\ \hline
+lcc Parse Forest        & 2132245       &  172810       & 91.9          &  97898        & 95.4  \\ \hline
+\hline
 Real Case Averages      &               &               & 95.3          &               & 96.3  \\ \hline
+with Casl               &               &               & 93.3          &               & 95.1  \\ \hline
 \end{tabular}
 \caption{\baf\ \emph{versus} {\tt gzip}} \label{measurements-baf-gzip}
 \end{center}
