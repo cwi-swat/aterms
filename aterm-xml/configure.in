@@ -2,7 +2,7 @@ dnl $Id$
 
 dnl Process this file with autoconf to produce a configure script.
 AC_INIT(configure.in)
-AM_INIT_AUTOMAKE(aterm-xml, 0.2beta)
+AM_INIT_AUTOMAKE(aterm-xml, 0.2)
 
 ACLOCAL="${ACLOCAL} -I ."
 
