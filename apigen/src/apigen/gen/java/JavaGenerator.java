@@ -87,11 +87,11 @@ public abstract class JavaGenerator extends Generator {
             String field_type = field.getType();
 
             if (field_type.equals("str")) {
-                result += "makeAppl(makeAFun(" + field_id + ", 0, true))";
+                result += "factory.makeAppl(factory.makeAFun(" + field_id + ", 0, true))";
             } else if (field_type.equals("int")) {
-                result += "makeInt(" + field_id + ")";
+                result += "factory.makeInt(" + field_id + ")";
             } else if (field_type.equals("real")) {
-                result += "makeReal(" + field_id + ")";
+                result += "factory.makeReal(" + field_id + ")";
             } else {
                 result += field_id;
             }

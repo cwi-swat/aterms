@@ -1,5 +1,9 @@
 # $Id$
 
+2003/08/29 <kooiker@cwi.nl>
+ * generated api factories no longer extend aterm.pure.PureFactory, but
+   contain a delegate instance factory instead.
+
 Fri Aug 29 10:13:03 CEST 2003 <jong@cwi.nl>
  * remove make_rules and update Makefile.ams accordingly
 

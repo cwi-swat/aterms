@@ -43,12 +43,12 @@ public class FactoryGenerator extends JavaGenerator {
 	}
 
 	private void genFactoryClass(ADT api) {
-		println("public class " + className + " extends PureFactory");
+		println("public class " + className);
 		println("{");
 		genFactoryPrivateMembers(api);
 		genFactoryEmptyLists(api);
 		genFactoryConstructor();
-		genFactoryConstructorWithSize();
+		genFactoryPureFactoryGetter();
 		genFactoryInitialize(api);
 		genAlternativeMethods(api);
 		genFactoryMakeLists(api);
@@ -56,6 +56,13 @@ public class FactoryGenerator extends JavaGenerator {
 		genTypeFromMethods(api);
 		println("}");
 	}
+
+	private void genFactoryPureFactoryGetter() {
+		println("  public PureFactory getPureFactory()");
+		println("  {");
+		println("    return factory;");
+		println("  }");
+  	}
 
 	private void genTypeFromTermMethods(ADT api) {
 		Iterator types = api.typeIterator();
@@ -93,22 +100,14 @@ public class FactoryGenerator extends JavaGenerator {
 		println("  }");
 	}
 
-	private void genFactoryConstructorWithSize() {
-		println("  public " + className + "(int logSize)");
-		println("  {");
-		println("     super(logSize);");
-		genFactoryConstructorBody();
-		println("  }");
-	}
-
 	private void genFactoryConstructorBody() {
+		println("     this.factory = factory;");
 		println("     initialize();");
 	}
 
 	private void genFactoryConstructor() {
-		println("  public " + className + "()");
+		println("  public " + className + "(PureFactory factory)");
 		println("  {");
-		println("     super();");
 		genFactoryConstructorBody();
 		println("  }");
 	}
@@ -345,7 +344,9 @@ public class FactoryGenerator extends JavaGenerator {
 	}
 
 	private void genFactoryPrivateMembers(ADT api) {
-
+		// TODO: maybe ATermFactory is enough in stead of PureFactory
+		println("  private PureFactory factory;");
+		
 		Iterator types = api.typeIterator();
 		while (types.hasNext()) {
 			Type type = (Type) types.next();
@@ -407,7 +408,7 @@ public class FactoryGenerator extends JavaGenerator {
 		print("    aterm.ATerm[] args = new aterm.ATerm[] {");
 		printActualTypedArgumentList(type, alt);
 		println("};");
-		println("    return make" + altClassName + "(" + funVar + ", args, getEmpty());");
+		println("    return make" + altClassName + "(" + funVar + ", args, factory.getEmpty());");
 		println("  }");
 		println();
 	}
@@ -424,7 +425,7 @@ public class FactoryGenerator extends JavaGenerator {
 				+ "(aterm.AFun fun, aterm.ATerm[] args, aterm.ATermList annos) {");
 		println("    synchronized (" + protoVar + ") {");
 		println("      " + protoVar + ".initHashCode(annos,fun,args);");
-		println("      return (" + altClassName + ") build(" + protoVar + ");");
+		println("      return (" + altClassName + ") factory.build(" + protoVar + ");");
 		println("    }");
 		println("  }");
 		println();
@@ -443,7 +444,7 @@ public class FactoryGenerator extends JavaGenerator {
 
 		Iterator fields = type.altFieldIterator(alt.getId());
 		print(buildAddFieldsToListCalls(fields));
-		println("    return make(" + patternVariable(className) + ", args);");
+		println("    return factory.make(" + patternVariable(className) + ", args);");
 		println("  }");
 		println();
 	}
@@ -507,13 +508,13 @@ public class FactoryGenerator extends JavaGenerator {
 					println(
 						"    "
 							+ patternVariable(altClassName)
-							+ " = parse(\""
+							+ " = factory.parse(\""
 							+ StringConversions.escapeQuotes(alt.buildMatchPattern().toString())
 							+ "\");");
 					println(
 						"    "
 							+ funVar
-							+ " = makeAFun(\""
+							+ " = factory.makeAFun(\""
 							+ "_"
 							+ afunName
 							+ "\", "
@@ -702,7 +703,7 @@ public class FactoryGenerator extends JavaGenerator {
 
 		println("  public " + className + " " + className + "FromString(String str)");
 		println("  {");
-		println("    aterm.ATerm trm = parse(str);");
+		println("    aterm.ATerm trm = factory.parse(str);");
 		println("    return " + className + "FromTerm(trm);");
 		println("  }");
 	}
@@ -716,7 +717,7 @@ public class FactoryGenerator extends JavaGenerator {
 				+ " "
 				+ className
 				+ "FromFile(java.io.InputStream stream) throws java.io.IOException {");
-		println("    return " + className + "FromTerm(readFromFile(stream));");
+		println("    return " + className + "FromTerm(factory.readFromFile(stream));");
 		println("  }");
 	}
 

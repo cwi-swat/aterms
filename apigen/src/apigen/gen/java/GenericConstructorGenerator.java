@@ -49,7 +49,7 @@ public class GenericConstructorGenerator extends JavaGenerator {
 		println("  " + factoryName + " factory = null;");
 		println();
 		println("  public " + className + "(" + factoryName + " factory) {");
-		println("    super(factory);");
+		println("    super(factory.getPureFactory());");
 		println("    this.factory = factory;");
 		println("  }");
 		println();
