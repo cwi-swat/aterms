@@ -4,6 +4,7 @@
     it!
   * test/Makefile.am now uses the appropriate switches in both sdf2-to-adt
     and adt-to-c calls to avoid {classpath,binary,script}-location confusion.
+  * utils/Makefile.am uses the appropriate switches in adt-to-adt
 
 2001/02/15 ({jong,olivierp}@cwi.nl)
   * Added support for basic types: int (int), real (double), str (char *)

@@ -18,4 +18,8 @@ CLEANFILES		= libADT.a ADT.[ch] ADT.dict ADT_dict.[ch]
 %INTERMEDIATE: ADT.c ADT_dict.c ADT.dict
 
 ADT.c ADT.h ADT.dict ADT_dict.c ADT_dict.h: ADT.adt ADT.pro
-	${top_srcdir}/utils/adt-to-c ADT -prologue ADT.pro -prefix ADT
+	${top_srcdir}/utils/adt-to-c	\
+		--input ADT.adt		\
+		--prologue ADT.pro	\
+		--prefix ADT		\
+		--classpath ${top_srcdir}:${ATERM}/classes
