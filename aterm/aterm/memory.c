@@ -190,13 +190,11 @@ static ATerm *hashtable;
 static int destructor_count = 0;
 static ATbool (*destructors[MAX_DESTRUCTORS])(ATermBlob) = { NULL };
 
-#ifndef PO
-static MachineWord protoTerm[MAX_TERM_SIZE];
-static ATerm *arg_buffer = (ATerm *) (protoTerm + 2);
-#else
+/* Do not optimize protoTerm to use static array.
+ * Static arrays are not guaranteed to be sizeof(double)-aligned.
+ */
 static MachineWord *protoTerm = NULL;
 static ATerm *arg_buffer = NULL;
-#endif
 
 static ATerm protected_buffer[MAX_ARITY] = { NULL };
 
@@ -530,10 +528,8 @@ void AT_initMemory(int argc, char *argv[])
 #ifndef NO_SHARING
   HashNumber hnr;
 #endif
-#ifdef PO
   protoTerm  = (MachineWord *) calloc(MAX_TERM_SIZE, sizeof(MachineWord));
   arg_buffer = (ATerm *) (protoTerm + 2);
-#endif
 
   /*{{{  Analyze arguments */
 

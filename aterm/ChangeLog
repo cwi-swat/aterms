@@ -1,5 +1,10 @@
 $Id$
 
+Tue Jul 29 14:34:19 CEST 2003 <{jong,jurgenv}@cwi.nl>
+ * aterm/memory.c: use calloc instead of static array for protoTerm.
+   Using a static array is not guaranteed to be sizeof(double) aligned,
+   causing (in this case) bus errors on a Solaris platform
+
 2003-07-21  Jurgen Vinju <jurgenv@cwi.nl>
  * Set AC_PREREQ to 2.52 because in that version AC_COMPILE_IFELSE
    is present.
