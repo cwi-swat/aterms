@@ -1,5 +1,9 @@
 $Id$
 
+Mon Feb  9 14:56:11 CET 2004 <jong@cwi.nl>
+ * aterm/gc.c: remove verbose print: check_unmarked_block
+ * aterm/afun.c: add some debug prints
+
 Mon Feb  9 11:36:34 CET 2004 <jurgenv@cwi.nl>
  * Used autoupdated to upgrade configure.in, and as a consequence:
    - removed double AC_PROG_CC calls

@@ -384,6 +384,8 @@ Symbol ATmakeSymbol(const char *name, int arity, ATbool quoted)
   header_type header = SYMBOL_HEADER(arity, quoted);
   ShortHashNumber hnr = AT_hashSymbol(name, arity) & table_mask;
   SymEntry cur;
+
+  /*ATwarning("ATmakeSymbol: [%s], %d, %d\n", name, arity, quoted);*/
   
   if(arity >= MAX_ARITY) {
     ATabort("cannot handle symbols with arity %d (max=%d)\n",
@@ -400,14 +402,14 @@ Symbol ATmakeSymbol(const char *name, int arity, ATbool quoted)
     Symbol free_entry;
 
     free_entry = first_free;
-    if(free_entry == -1) {
+    if (free_entry == -1) {
       resize_table();
 
       /* Hashtable size changed, so recalculate hashnumber */
       hnr = AT_hashSymbol(name, arity) & table_mask;
      
       free_entry = first_free;
-      if(free_entry == -1) {
+      if (free_entry == -1) {
 	ATerror("AT_initSymbol: out of symbol slots!\n");
       }
     }
@@ -431,7 +433,7 @@ Symbol ATmakeSymbol(const char *name, int arity, ATbool quoted)
     hash_table[hnr] = cur;
   }
 
-    /*fprintf(stderr,"AT_makeAFun(%d)\tid = %d\n",cur,cur->id);*/
+  /*ATwarning("AT_makeAFun(%p)\tid = %d\n", cur, cur->id);*/
   
   return cur->id;
 }
@@ -450,6 +452,8 @@ void AT_freeSymbol(SymEntry sym)
   nb_reclaimed_cells_during_last_gc[TERM_SIZE_SYMBOL]++;
   
   assert(sym->name);
+
+  /*ATwarning("AT_freeSymbol: name: [%s], addr: %p, id: %d\n", sym->name, sym, sym->id);*/
   
   /* Calculate hashnumber */
   hnr = AT_hashSymbol(sym->name, GET_LENGTH(sym->header));

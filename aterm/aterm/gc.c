@@ -648,7 +648,6 @@ static void promote_block_to_young(int size, Block *block, Block *prev_block)
 void check_unmarked_block(Block **blocks) 
 {
   int size;
-  fprintf(stderr,"check_unmarked_block\n");
   
   for(size=MIN_TERM_SIZE; size<MAX_TERM_SIZE; size++) {
     Block *block = blocks[size];
