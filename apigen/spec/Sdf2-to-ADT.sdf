@@ -24,16 +24,24 @@ hiddens
     build-asfix-appl-args ( Symbol* )			-> ATerms
     build-asfix-appl-arg ( Symbol )			-> ATerm
 
-    build-asfix-prod-arg 				-> ModuleId { reject }
+    build-asfix-attrs ( Attributes )			-> ATerm
+    build-asfix-attr-list ( { Attribute "," }+ )	-> ATerms
+    build-asfix-attr ( Attribute )			-> ATerm
 
   variables
     "$AFArg"		-> ATerm
     "$AFArgs"		-> { ATerm "," }*
+    "$AFAttr"		-> ATerm
+    "$AFAttr+"		-> { ATerm "," }+
+    "$AFAttrs"		-> ATerm
     "$AFModName"	-> AT-Literal
     "$AFProd"		-> ATerm
     "$AFSort"		-> AT-Literal
     "$AltId"		-> AFun
+    "$ATerm"		-> ATerm
+    "$Attr"		-> Attribute
     "$Attr*"[0-9]*	-> { Attribute "," }*
+    "$Attr+"		-> { Attribute "," }+
     "$Attributes"	-> Attributes
     "$Char*"		-> CHAR*
     "$Entries"[0-9]*	-> { ATerm "," }*

@@ -1,6 +1,6 @@
 module ATerm-Path
 
-imports ATerm Naturals
+imports ATerm-Syntax Naturals
 exports
   sorts ATerm-Path ATerm-Path-Node
  

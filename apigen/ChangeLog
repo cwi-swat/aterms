@@ -1,7 +1,15 @@
 2000/08/22 ({jong,olivierp}@cwi.nl)
+  * Version is now 0.2
+  * Renamed apigen script to gen-c-api
+  * Added sdf2-to-adt script
+  * Added test-case for sdf2-to-adt
+  * Added top module 'Sdf2-to-C-API'
+  * Attributes are now supported in Sdf2 spec.
+	
+2000/08/22 ({jong,olivierp}@cwi.nl)
   * Now ignoring generated baf files
   * Added Sdf2-to-ADT specification: we are now able to generate an API
-    for a basic SDF spec (no specials like lists, lexicals, optionals, etc. yet)
+    for a basic SDF spec (no specials like lists, lexicals, optionals... yet)
 
 2000/08/07 (jong@cwi.nl)
   * repository: removed apigen, added apigen.in

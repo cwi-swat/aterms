@@ -4,41 +4,50 @@
 # $Id$
 #
 
-PROGS	= rolotest booltest
+SGLR			= ${SGLRBIN}/sglr
+SDF2TABLE		= ${PGENBIN}/sdf2table
 
-TESTS	= rolotest booltest
+PROGS			= rolotest booltest
 
-CLEANFILES		= librolodex.a libbooleans.a ${PROGS}
+TESTS			= rolotest booltest
 
-INCLUDES		= -I${ATERM}/include -Irolodex -Ibooleans
-LDFLAGS			= -L${ATERM}/lib
+CLEANFILES		= librolodex.a libBooleans.a booltest.af1 Booleans.trm.tbl \
+			 Booleans.adt ${PROGS}
 
-EXTRA_DIST		= rolodex.adt rolodex.pro booleans.adt booleans.pro
+INCLUDES		= -I${ATERMINC} -Irolodex -IBooleans
+LDFLAGS			= -L${ATERMLIB}
+LDADD			= -lATerm
+
+EXTRA_DIST		= rolodex.adt rolodex.pro Booleans.sdf Booleans.pro
 
 noinst_PROGRAMS		= ${PROGS}
 rolotest_SOURCES	= rolotest.c
-rolotest_LDADD		= librolodex.a -lATerm
+rolotest_LDADD		= librolodex.a ${LDADD}
 
 booltest_SOURCES	= booltest.c
-booltest_LDADD		= libbooleans.a -lATerm
-
-rolotest.o: rolodex/rolodex.h
-
-booltest.o: booleans/booleans.h
+booltest_LDADD		= libBooleans.a ${LDADD}
+booltest_DEPENDENCIES	= booltest.af1 libBooleans.a
 
 librolodex.a rolodex/rolodex.h: rolodex.adt rolodex.pro
 	${top_srcdir}/utils/apigen rolodex 1.0
 	@cd rolodex; \
 	./reconf; \
-	./configure --with-aterm=${ATERM}; \
+	./configure --with-aterm-inc=${ATERMINC}; \
 	${MAKE}
 	@cp rolodex/librolodex.a .
 	
-libbooleans.a booleans/booleans.h: booleans.adt booleans.pro
-	${top_srcdir}/utils/apigen booleans 1.0
-	@cd booleans; \
+libBooleans.a Booleans/Booleans.h: Booleans.sdf Booleans.pro
+	${top_srcdir}/utils/sdf2-to-adt Booleans 1.0
+	@cd Booleans; \
 	./reconf; \
-	./configure --with-aterm=${ATERM}; \
+	./configure --with-aterm-inc=${ATERMINC}; \
 	${MAKE}
-	@cp booleans/libbooleans.a .
+	@cp Booleans/libBooleans.a .
+
+Booleans.trm.tbl: Booleans.sdf.unlabeled
+	${SDF2TABLE} -i $< -o $@
+
+booltest.af1: Booleans.trm.tbl booltest.trm
+	${SGLR} -1 -p Booleans.trm.tbl -i booltest.trm -o $@
+
 

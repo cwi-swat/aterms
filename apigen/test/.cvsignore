@@ -3,3 +3,8 @@ Makefile.in
 .deps
 rolodex
 rolotest
+booltest
+Booleans
+booltest.af1
+Booleans.trm.tbl
+Booleans.adt

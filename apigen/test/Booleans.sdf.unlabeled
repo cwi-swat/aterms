@@ -1,0 +1,19 @@
+definition
+
+module Main
+imports Booleans
+
+module Booleans
+
+exports
+  sorts Bool
+
+  context-free syntax
+    true			-> Bool {cons(true)}
+    false			-> Bool {cons(false)}
+    Bool "&" Bool		-> Bool {cons(and),left}
+    Bool "|" Bool		-> Bool {cons(or),left}
+
+   context-free priorities
+    Bool "&" Bool -> Bool > Bool "|" Bool -> Bool
+

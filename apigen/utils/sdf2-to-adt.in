@@ -1,0 +1,75 @@
+#!/bin/sh
+
+PRG=`basename $0`
+DATE=`date`
+# {{{ autoconf variables
+
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+bindir=@bindir@
+datadir=@datadir@
+
+# }}}
+
+# {{{ usage()
+
+usage() {
+cat << ENDCAT >&2
+Usage: $PRG <module-name> <version>
+Example: $PRG Rolodex 1.0
+ENDCAT
+}
+
+# }}}
+
+# {{{ check argument count
+
+if test $# != 2
+then
+  usage
+  exit 1
+fi
+
+# }}}
+
+# {{{ Variable section
+
+MODULE=$1
+VERSION=$2
+SDFFILE="${MODULE}.sdf"
+PROLOGUE="${MODULE}.pro"
+ADTFILE="${MODULE}.adt"
+
+SGLR=sglr
+ASOURCE=asource
+
+SDF2TOADT="${bindir}/Sdf2-to-ADT"
+TABLE="${datadir}/Sdf2-to-ADT.trm.tbl"
+
+GENCAPI="${bindir}/gen-c-api"
+
+# }}}
+
+# {{{ Sanity checks
+
+if test ! -f ${SDFFILE}
+then
+  echo "could not open sdf-file: ${SDFFILE}" >&2
+  exit 1
+fi
+
+#if test ! -f ${PROLOGUE}
+#then
+#  echo "could not open prologue-file: ${PROLOGUE}" >&2
+#  exit 1
+#fi
+
+# }}}
+
+echo "sdf-module-to-adt(`cat ${SDFFILE}`)" | \
+${SGLR} -1 -p ${TABLE} | \
+${SDF2TOADT} | \
+${ASOURCE} > ${ADTFILE}
+
+${GENCAPI} ${MODULE} ${VERSION}
+

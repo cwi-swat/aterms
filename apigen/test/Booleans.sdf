@@ -1,0 +1,13 @@
+module Booleans
+
+exports
+  sorts Bool
+
+  context-free syntax
+    true			-> Bool {cons(true)}
+    false			-> Bool {cons(false)}
+    lop:Bool and:"&" rop:Bool	-> Bool {cons(and),left}
+    lop:Bool or:"|" rop:Bool	-> Bool {cons(or),left}
+
+   context-free priorities
+    Bool "&" Bool -> Bool > Bool "|" Bool -> Bool

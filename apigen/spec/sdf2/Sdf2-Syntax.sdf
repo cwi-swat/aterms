@@ -1,0 +1,25 @@
+module Sdf2-Syntax
+imports Kernel-Sdf-Syntax
+        Basic-Sdf-Syntax
+        Modular-Sdf-Syntax
+        Regular-Sdf-Syntax
+        Priority-Sdf-Syntax
+        CC-Sdf-Syntax
+        Sorts-Sdf-Syntax
+        Literals-Sdf-Syntax
+        Label-Sdf-Syntax
+        Restrictions-Sdf-Syntax
+        Alias-Sdf-Syntax
+exports
+  sorts SDF
+  context-free syntax
+    "<START>"                                   -> Symbol
+    "<Start>"                                   -> Symbol
+    "lexical"      "priorities" Priorities      -> Grammar
+    "context-free" "priorities" Priorities      -> Grammar
+    "lexical"      "restrictions" Restrictions  -> Grammar
+    "context-free" "restrictions" Restrictions  -> Grammar
+    "definition" Definition                     -> SDF  
+  context-free priorities
+    Symbol "|" Symbol  -> Symbol >
+    Literal ":" Symbol -> Symbol                  

@@ -1,6 +1,7 @@
 .deps
 Makefile
 Makefile.in
-apigen
 extract-api-files
 extract-api-files.o
+gen-c-api
+sdf2-to-adt

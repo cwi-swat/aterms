@@ -54,10 +54,11 @@ equations
 [equ-build-asfix-prod]
   $AFModName = modname-to-lit($ModName),
   $AFArgs    = build-asfix-prod-args($Symbol*),
-  $AFSort    = sort-to-lit($Sort)
+  $AFSort    = sort-to-lit($Sort),
+  $AFAttrs   = build-asfix-attrs($Attributes)
   ===
   build-asfix-prod($ModName, $Symbol*, $Sort, $Attributes) =
-    prod(id($AFModName),w(""),[$AFArgs],w(""),l("->"),w(""),sort($AFSort),w(""),no-attrs)
+    prod(id($AFModName),w(""),[$AFArgs],w(""),l("->"),w(""),sort($AFSort),w(""),$AFAttrs)
 
 [equ-modname-to-lit]
   modname-to-lit(moduleid($Char*)) = at-literal(""" $Char* """)
@@ -138,3 +139,33 @@ equations
   $FieldType = sort-to-afun($Sort)
   ===
   build-asfix-appl-arg($Label:$Sort) = <$FieldId($FieldType)>
+
+[equ-build-asfix-attrs-empty]
+  build-asfix-attrs() = no-attrs
+
+[equ-build-asfix-attrs-empty]
+  build-asfix-attrs({}) = no-attrs
+
+[equ-build-asfix-attrs-not-empty]
+  build-asfix-attr-list($Attr+) = $AFAttr+
+  ===
+  build-asfix-attrs({$Attr+}) = attrs(l("{"),w(""),[$AFAttr+],w(""),l("}"))
+
+[equ-build-asfix-attr-list-single]
+  build-asfix-attr-list($Attr) = build-asfix-attr($Attr)
+
+[equ-build-asfix-attr-list-divide]
+  build-asfix-attr($Attr) = $AFAttr,
+  build-asfix-attr-list($Attr+) = $AFAttr+
+  ===
+  build-asfix-attr-list($Attr,$Attr+) = $AFAttr,w(""),sep(","),w(""),$AFAttr+
+
+[equ-build-asfix-attr-left]        build-asfix-attr(left)        = l("left")
+[equ-build-asfix-attr-right]       build-asfix-attr(right)       = l("right")
+[equ-build-asfix-attr-assoc]       build-asfix-attr(assoc)       = l("assoc")
+[equ-build-asfix-attr-constructor] build-asfix-attr(constructor) = l("constructor")
+[equ-build-asfix-attr-memo]        build-asfix-attr(memo)        = l("memo")
+[equ-build-asfix-attr-traverse]    build-asfix-attr(traverse)    = l("traverse")
+
+[equ-build-asfix-attr-cons]
+  build-asfix-attr(cons($ATerm)) = ql(aterm-to-lit(cons($ATerm)))

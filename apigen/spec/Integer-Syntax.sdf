@@ -29,7 +29,6 @@ exports
 
    context-free syntax
       NatCon     -> IntCon {constructor}
-      "+" NatCon -> IntCon
       "-" NatCon -> IntCon
 
       IntCon     -> Int {constructor}

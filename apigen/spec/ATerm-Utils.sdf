@@ -1,5 +1,5 @@
 module ATerm-Utils
-  imports ATerm
+  imports ATerm-Syntax
 
   exports
     sorts ATermType
@@ -15,12 +15,23 @@ module ATerm-Utils
 
       capitalize					-> AFun {reject}
 
+      aterm-to-lit ( ATerm )				-> AT-Literal
+
   hiddens
+    context-free syntax
+      aterms-to-lit ( ATerms )				-> AT-Literal
+      escape ( AT-Literal )				-> AT-Literal
+      AT-Literal "++" AT-Literal  			-> AT-Literal {right}
+
     variables
-      "$Char*"[0-9]*	-> CHAR*
       "$AFun"		-> AFun
       "$AFun+"		-> AFun+
-      "$Int"		-> IntCon
+      "$Anno+"		-> { ATerm "," }+
       "$ATerm"		-> ATerm
       "$ATerm*"		-> { ATerm "," }*
+      "$ATerm+"		-> { ATerm "," }+
+      "$Char"		-> CHAR
+      "$Char*"[0-9]*	-> CHAR*
+      "$Int"		-> IntCon
+      "$L"		-> AT-Literal
 
