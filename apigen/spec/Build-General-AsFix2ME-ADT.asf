@@ -4,21 +4,33 @@ equations
   sort-to-lit(sort($Char*)) = at-literal(""" $Char* """)
 
 [equ-build-asfix-attrs-empty]
-  build-asfix-attrs(, $ConsOption) = no-attrs
+  $AFModName = modname-to-lit($ModName)
+  ===>
+  build-asfix-attrs($ModName, , $ConsOption) = 
+    attrs([id($AFModName)])
 
 [equ-build-asfix-attrs-empty]
-  build-asfix-attrs({}, $ConsOption) = no-attrs
+  $AFModName = modname-to-lit($ModName)
+  ===>
+  build-asfix-attrs($ModName, {}, $ConsOption) = 
+    attrs([id($AFModName)])
 
 [equ-build-asfix-attrs-not-empty-no-attrs]
+  $AFModName = modname-to-lit($ModName),
   build-asfix-attr-list($Attr+, $ConsOption) = 
   ===>
-  build-asfix-attrs({$Attr+}, $ConsOption) = no-attrs
+  build-asfix-attrs($ModName, {$Attr+}, $ConsOption) = 
+    attrs([id($AFModName)])
 
 [equ-build-asfix-attrs-not-empty]
+  $AFModName = modname-to-lit($ModName),
   build-asfix-attr-list($Attr+, $ConsOption) = $AFAttr+
   ===>
-  build-asfix-attrs({$Attr+}, $ConsOption) = 
-    attrs([$AFAttr+])
+  build-asfix-attrs($ModName, {$Attr+}, $ConsOption) = 
+    attrs([$AFAttr+,id($AFModName)])
+
+[equ-modname-to-lit]
+  modname-to-lit(moduleid($Char*)) = at-literal(""" $Char* """)
 
 [equ-build-asfix-attr-list-single]
   build-asfix-attr-list($Attr, $ConsOption) = 
@@ -59,8 +71,7 @@ equations
                                      atr("prefer")
 
 [equ-build-asfix-attr-cons-remove]
-  build-asfix-attr(cons(at-literal(""" $Char* """)), cons-remove) =
+  build-asfix-attr(cons($ATerm), cons-remove) =
 
 [equ-build-asfix-attr-cons-expand]
-  build-asfix-attr(cons(at-literal(""" $Char* """)), cons-expand) =
-    ql(at-literal(""" "c" "o" "n" "s" "(" $Char* ")" """))
+  build-asfix-attr(cons($ATerm), cons-expand) = cons($ATerm)

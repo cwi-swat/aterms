@@ -13,12 +13,12 @@ exports
 
 hiddens
   context-free syntax
-    section-to-adt ( Section, ConsOption )		-> ATerms
-    grammar-to-adt ( Grammar, ConsOption )		-> ATerms
-    productions-to-adt ( Production*, ConsOption )	-> ATerms
-    production-to-adt ( Production, ConsOption )	-> ATerms
-    lexicals-to-adt ( Production*, ConsOption  )	-> ATerms
-    lexical-to-adt ( Production, ConsOption  )		-> ATerms
+    section-to-adt ( ModuleName, Section, ConsOption )		-> ATerms
+    grammar-to-adt ( ModuleName, Grammar, ConsOption )		-> ATerms
+    productions-to-adt ( ModuleName, Production*, ConsOption )	-> ATerms
+    production-to-adt ( ModuleName, Production, ConsOption )	-> ATerms
+    lexicals-to-adt ( ModuleName, Production*, ConsOption )	-> ATerms
+    lexical-to-adt ( ModuleName, Production, ConsOption )	-> ATerms
 
     build-list-entries ( Symbol* )			-> ATerms
 

@@ -354,7 +354,7 @@ equations
 [equ-build-asfix-attr-prefer]      build-asfix-attr(prefer, $ConsOption)      = l("prefer")
 
 [equ-build-asfix-attr-cons-remove]
-  build-asfix-attr(cons(at-literal(""" $Char* """)), cons-remove) =
+  build-asfix-attr(cons($ATerm), cons-remove) =
 
 [equ-build-asfix-attr-cons-expand]
   build-asfix-attr(cons($ATerm), cons-expand) = cons($ATerm)

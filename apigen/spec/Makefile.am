@@ -6,7 +6,7 @@
 
 SDF2TABLE	= ${PGENBIN}/sdf2table
 
-SUBDIRS		= sdf2-to-adt add-labels
+SUBDIRS		= sdf2-to-adt sdf2-to-asfix2me-adt add-labels
 
 pkgdata_DATA	= Sdf2-to-ADT.trm.tbl
 CLEANFILES	= ${data_DATA}

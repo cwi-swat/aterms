@@ -6,6 +6,6 @@
 
 include ${top_srcdir}/make_rules
 
-SUBDIRS     = spec apigen utils test doc
+SUBDIRS     = spec apigen utils doc
 
 EXTRA_DIST  = make_rules

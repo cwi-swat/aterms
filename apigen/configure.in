@@ -153,6 +153,7 @@ test/Makefile
 doc/Makefile
 doc/paper/Makefile
 spec/sdf2-to-adt/Makefile
+spec/sdf2-to-asfix2me-adt/Makefile
 spec/add-labels/Makefile
 ,
 chmod +x utils/sdf2-to-adt utils/adt-to-c utils/adt-to-java

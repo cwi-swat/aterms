@@ -11,9 +11,9 @@ static void testBooleans(SDFBoolList l)
   char* ws;
   SDFBool true;
 
-  /*ATfprintf(stderr, "l=%t\n", l);*/
-
   true = SDFmakeBoolTrue("true");
+
+  /*ATfprintf(stderr, "l=%t\n", l);*/
 
   assert(SDFisValidBoolList(l));
   assert(SDFhasBoolListElems(l));

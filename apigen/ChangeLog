@@ -1,3 +1,6 @@
+2001/04/23 (markvdb@cwi.nl)
+ * ADT generation based on AsFix2ME.
+
 2001/04/04 ({jong,olivierp}@cwi.nl)
  * Fixed some bugs in native type support of JavaGen
  * Added $(ATERM)/classes to CLASSPATH in apigen/java

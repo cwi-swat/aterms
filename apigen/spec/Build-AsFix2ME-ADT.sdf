@@ -4,9 +4,9 @@ imports Build-General-AsFix2ME-ADT
 
 exports
   context-free syntax
-    build-asfix-prod ( AFun, Symbol* , Symbol ,
-                       Attributes, ConsOption)	-> ATerm
-    build-asfix-prod-args ( AFun, Symbol* )		-> ATerms
+    build-asfix-prod ( AFun, ModuleName, Symbol* , Symbol ,
+                       Attributes, ConsOption)			-> ATerm
+    build-asfix-prod-args ( AFun, Symbol* )			-> ATerms
     build-asfix-prod-arg ( AFun, Symbol )			-> ATerm
 
     sdflit-to-lit ( Literal )				-> AT-Literal

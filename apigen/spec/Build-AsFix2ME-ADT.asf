@@ -3,9 +3,10 @@ equations
   [equ-build-asfix-prod]
   $AFArgs    = build-asfix-prod-args($SymbolType, $Symbol*),
   $AFSort    = sort-to-lit($Sort),
-  $AFAttrs   = build-asfix-attrs($Attributes, $ConsOption)
+  $AFAttrs   = build-asfix-attrs($ModName, $Attributes, $ConsOption)
   ===>
-  build-asfix-prod($SymbolType, $Symbol*, $Sort, $Attributes, $ConsOption) =
+  build-asfix-prod($SymbolType, $ModName, $Symbol*, $Sort, $Attributes, 
+                   $ConsOption) =
     prod([$AFArgs],$SymbolType(sort($AFSort)),$AFAttrs)
 
 [equ-sort-to-afun]
@@ -145,7 +146,7 @@ equations
   $FieldType = afun-concat(sort-to-afun($Sort) $FieldId)
   ===>
   build-asfix-appl-arg($Label:$Sort *) = 
-    <$FieldId($FieldType)>
+    list(build-asfix-iter-star(cf, $Sort),<$FieldId($FieldType)>)
 
 % Plus-list transformed into star-list because AsFix1 demands this! %
 [equ-build-asfix-appl-arg-iter-plus]
@@ -153,14 +154,15 @@ equations
   $FieldType = afun-concat(sort-to-afun($Sort) $FieldId)
   ===>
   build-asfix-appl-arg($Label:$Sort +) = 
-    <$FieldId($FieldType)>
+    list(build-asfix-iter-plus(cf, $Sort),<$FieldId($FieldType)>)
 
 [equ-build-asfix-appl-arg-iter-sep-star]
   $FieldId = sdflit-to-afun($Label),
   $FieldType = afun-concat(sort-to-afun($Sort) $FieldId)
   ===>
   build-asfix-appl-arg($Label:{ $Sort $Sep }*) =
-    <$FieldId($FieldType)>
+    list(build-asfix-iter-star-sep($Sort,$Sep),
+         <$FieldId($FieldType)>)
 
 % Plus-list transformed into star-list because AsFix1 demands this! %
 [equ-build-asfix-appl-arg-iter-sep-plus]
@@ -168,7 +170,8 @@ equations
   $FieldType = afun-concat(sort-to-afun($Sort) $FieldId)
   ===>
   build-asfix-appl-arg($Label:{ $Sort $Sep }+) = 
-    <$FieldId($FieldType)>
+    list(build-asfix-iter-plus-sep($Sort,$Sep),
+         <$FieldId($FieldType)>)
 
 [equ-build-asfix-iter-star]
   $ElemSortName = sort-to-lit($Sort)

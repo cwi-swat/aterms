@@ -23,6 +23,7 @@ Usage: $PRG -i <sdf2-specification> [options]
 
 Parameters:
   
+  -2 | --asfix2me         generate an AsFix2ME based ADT   [off]
   -i | --input  <FILE>    specify input specification      [not specified]
   -o | --output <FILE>    specify name of generated ADT    [default: <IN>.adt]
   -e | --expand-cons      propagate cons-annotations       [on]
@@ -38,6 +39,7 @@ Default locations:
    APIGEN-parsetable = ${APITABLE}
   Labeling equations = ${ADDLABELS}
   Compiled generator = ${SDF2TOADT}
+  Compiled AsFix2ME generator = ${SDF2TOASFIX2MEADT}
 
 Example: ${PRG} --remove-cons -i Booleans.sdf -o Booleans.adt
 
@@ -96,6 +98,7 @@ OUTPUT=""
 VERBOSE=0
 CLEANUP=1
 CONSOPT='cons-expand'
+ASFIX2ME=0
 
 # data needed
  APITABLE=${PKGDATA}/Sdf2-to-ADT.trm.tbl
@@ -105,6 +108,7 @@ ADDLABELS=${PKGDATA}/AddLabels.asf
      SGLR=${SGLRBIN}/sglr
   ASOURCE=${ASOURCEBIN}/asource
 SDF2TOADT=${bindir}/Sdf2-to-ADT
+SDF2TOASFIX2MEADT=${bindir}/Sdf2-to-AsFix2ME-ADT
 EVALUATOR=${EVALBIN}/asfe
 APPLYFUNC=${EVALBIN}/apply-function
 
@@ -120,6 +124,9 @@ fi
 while [ $# -gt 0 ]
 do
   case $1 in
+    -2 | --asfix2me)
+      ASFIX2ME=1 ;;
+
     -e | --expand-cons)
       CONSOPT='cons-expand' ;;
 
@@ -194,9 +201,16 @@ info " - Labeling ${INPUT} (parsed)"
 ${APPLYFUNC} -f add-labels -s SDF -m AddLabels -i .api_1_$$ -o .api_2_$$ || err
 ${EVALUATOR} -w on -e ${ADDLABELS} -i .api_2_$$ -o .api_3_$$ || err
 
-info " - Generating ADT (${SDF2TOADT})"
-func="sdf-to-adt-${CONSOPT}"
-${APPLYFUNC} -f ${func} -s ATerm -m Sdf2-to-ADT < .api_3_$$ > .api_4_$$ || err
-${SDF2TOADT} < .api_4_$$ | ${ASOURCE} > ${OUTPUT} || err
+if [ $ASFIX2ME -gt 0 ]; then
+  info " - Generating ADT (${SDF2TOASFIX2MEADT})"
+  func="sdf-to-asfix2me-adt-${CONSOPT}"
+  ${APPLYFUNC} -f ${func} -s ATerm -m Sdf2-to-AsFix2ME-ADT < .api_3_$$ > .api_4_$$ || err
+  ${SDF2TOASFIX2MEADT} < .api_4_$$ | ${ASOURCE} > ${OUTPUT} || err
+else
+  info " - Generating ADT (${SDF2TOADT})"
+  func="sdf-to-adt-${CONSOPT}"
+  ${APPLYFUNC} -f ${func} -s ATerm -m Sdf2-to-ADT < .api_3_$$ > .api_4_$$ || err
+  ${SDF2TOADT} < .api_4_$$ | ${ASOURCE} > ${OUTPUT} || err
+fi
 
 # }}}
