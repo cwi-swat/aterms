@@ -27,6 +27,8 @@ public class CGen
     ":Colon",	    ";SemiColon",
     "=Equals",	    "#Hash",
     "/Slash",	    "\\Backslash",
+    "*Star",	    "_Underscore",
+    "-Minus",	    
   };
 
   private final static String[][] RESERVED_TYPES =

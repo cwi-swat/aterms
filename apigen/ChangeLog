@@ -1,3 +1,6 @@
+2001/06/14 ({jong, jurgenv}@cwi.nl)
+ * Added some more heuristics for literals in CGEN
+
 2001/06/01 ({jong,olivierp}@cwi.nl)
  * Version 0.8.5
  * Renamed makeTermFromXXX/makeXXXFromTerm into
