@@ -4,14 +4,14 @@ CLASSPATH_ENV   = CLASSPATH=$(SHARED_OBJECTS):${top_builddir}:$(JAVAROOT):$(srcd
 
 EXTRA_DIST = test.trm test.taf
 
-java_JAVA       = Test1.java \
+check_JAVA       = Test1.java \
 		  Test2.java \
 		  TestFib.java \
 		  TestFibInterpreted.java \
 		  TestPrimes.java \
 		  VisitorBenchmark.java
 
-TESTS = $(foreach t, ${java_JAVA}, $t.test)
+TESTS = $(foreach t, ${check_JAVA}, $t.test)
 
 %.java.test : %.java Makefile
 	@(echo '#! /bin/sh';\
