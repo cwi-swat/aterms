@@ -878,7 +878,7 @@ static ATerm ATBunpack(ATerm t)
 	list = ATgetNext(list);
       }
       
-      return (ATerm)ATreverse(list);
+      return (ATerm)ATreverse(unpacked_list);
     }
 
   default:
