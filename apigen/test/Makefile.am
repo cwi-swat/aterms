@@ -50,7 +50,7 @@ librolodex.a rolodex/rolodex.h: rolodex.adt rolodex.pro
 	@cp rolodex/librolodex.a .
 	
 libBooleans.a Booleans/Booleans.h: Booleans.sdf Booleans.pro
-	${top_srcdir}/utils/sdf2-to-adt Booleans 1.0
+	${top_srcdir}/utils/sdf2-to-adt Booleans.sdf 1.0
 	@cd Booleans; \
 	./reconf; \
 	./configure --with-aterm-inc=${ATERMINC}; \

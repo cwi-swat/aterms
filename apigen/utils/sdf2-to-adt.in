@@ -34,9 +34,10 @@ fi
 
 # {{{ Variable section
 
-MODULE=$1
+MODULE=`basename $1 .sdf`
+MODULE=`basename $MODULE .sdf2`
 VERSION=$2
-SDFFILE="${MODULE}.sdf"
+SDFFILE="$1"
 PROLOGUE="${MODULE}.pro"
 ADTFILE="${MODULE}.adt"
 
@@ -66,7 +67,7 @@ fi
 
 # }}}
 
-echo "sdf-module-to-adt(`cat ${SDFFILE}`)" | \
+echo "sdf-to-adt(`cat ${SDFFILE}`)" | \
 ${SGLR} -1 -p ${TABLE} | \
 ${SDF2TOADT} | \
 ${ASOURCE} > ${ADTFILE}
