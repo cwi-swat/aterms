@@ -17,8 +17,6 @@ public class ForwardGenerator extends JavaGenerator {
 
 	public ForwardGenerator(ADT adt, GenerationParameters params) {
 		super(params);
-		setDirectory(params.getOutputDirectory());
-		setFileName(getClassName());
 		this.adt = adt;
 		this.constructor = GenericConstructorGenerator.qualifiedClassName(params);
 	}
@@ -43,24 +41,28 @@ public class ForwardGenerator extends JavaGenerator {
 			else {
 				while (alts.hasNext()) {
 					Alternative alt = (Alternative) alts.next();
-					genVisit(alt);
+					genVisit(type, alt);
 				}
 			}
 		}
 	}
 
 	private void genListVisit(Type type) {
-		genVisitMethod(ListTypeGenerator.className(type));
+		genVisitMethod(ListTypeGenerator.className(type), "");
 	}
 
-	private void genVisitMethod(String className) {
-		println("public void visit_" + className + "(" + className + " arg) throws jjtraveler.VisitFailure {");
-		println("  any.visit(arg);");
-		println("}");
+	private void genVisitMethod(String methodName, String paramType) {
+		println("  public void " + methodName + "(" + paramType + " arg) throws jjtraveler.VisitFailure {");
+		println("    any.visit(arg);");
+		println("  }");
+		println();
 	}
 
-	private void genVisit(Alternative alt) {
-		genVisitMethod(AlternativeGenerator.className(alt));
+	private void genVisit(Type type, Alternative alt) {
+		String methodName = "visit_" + FactoryGenerator.concatTypeAlt(type, alt);
+		String paramType = AlternativeGenerator.qualifiedClassName(getGenerationParameters(), type, alt);
+
+		genVisitMethod(methodName, paramType);
 	}
 
 	protected void generate() {
@@ -75,9 +77,11 @@ public class ForwardGenerator extends JavaGenerator {
 
 	private void genConstructor() {
 		println("  private jjtraveler.Visitor any;");
-		println("  public Fwd (jjtraveler.Visitor v) {");
+		println();
+		println("  public Fwd(jjtraveler.Visitor v) {");
 		println("    this.any = v;");
 		println("  }");
+		println();
 	}
 
 	private void genVoidVisit() {
@@ -88,6 +92,7 @@ public class ForwardGenerator extends JavaGenerator {
 		println("      any.visit(v);");
 		println("    }");
 		println("  }");
+		println();
 	}
 
 	public String getPackageName() {
