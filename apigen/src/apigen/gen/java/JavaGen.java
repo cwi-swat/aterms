@@ -125,7 +125,7 @@ extends Generator
         api_name = input.substring(0, input.lastIndexOf((int) '.'));
       }
     }
-  
+
     JavaGen gen = new JavaGen(inputStream,api_name,basedir, pkg, imports);
   }
 
@@ -180,6 +180,7 @@ extends Generator
     
     List extra = new LinkedList();
     extra.add("aterm.pure.PureFactory");
+    extra.addAll(imports);
     genImports(extra); 
     
     genFactoryClass(api);
@@ -382,16 +383,17 @@ extends Generator
   private void genTypeClassFile(Type type)
     throws IOException
   {
-    List imports = new LinkedList();
+    List extra = new LinkedList();
     String class_name = buildClassName(type);    
     createClassStream(class_name);
     
     info("generating " + class_name);
 
     genPackageDecl();
-    imports.add("java.io.InputStream");
-    imports.add("java.io.IOException");
-    genImports(imports);
+    extra.add("java.io.InputStream");
+    extra.add("java.io.IOException");
+    extra.addAll(imports);
+    genImports(extra);
     println();
     
     genTypeClass(type); 
@@ -424,6 +426,7 @@ extends Generator
     info("generating " + class_name);
     
     genPackageDecl();
+    genImports(imports);
     genAlternativeClass(type, alt);
     
     stream.close();
@@ -594,16 +597,14 @@ extends Generator
     }
   }
   
-	private void genImports(List imports) {	
+  private void genImports(List imports) {	
     printFoldOpen("imports");
-    
-		Iterator iter = imports.iterator();
-		while (iter.hasNext()) {
-		  println("import " + (String)iter.next() + ";");
-		}
-    
+    Iterator iter = imports.iterator();
+    while (iter.hasNext()) {
+      println("import " + (String)iter.next() + ";");
+    }
     printFoldClose();
-	}
+  }
   
   private void genAlternativeClass(Type type, Alternative alt)
   {
@@ -1025,9 +1026,9 @@ extends Generator
     println();
     println("%typeterm ATerm {");
     println("  implement { ATerm }");
-    println("  get_fun_sym(t) { t }");
+    println("  get_fun_sym(t) { ((t instanceof ATermAppl)?((ATermAppl)t).getAFun():null) }");
     println("  cmp_fun_sym(s1,s2) { s1 == s2 }");
-    println("  get_subterm(t,n) { null }");
+    println("  get_subterm(t,n) { (((ATermAppl)t).getArgument(n)) }");
     println("}");
     println();
    
