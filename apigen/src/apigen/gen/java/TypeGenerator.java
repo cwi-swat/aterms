@@ -24,13 +24,17 @@ public class TypeGenerator extends JavaGenerator {
 		className = className(type);
 	}
 
-    public static String className(String type) {
-    	return StringConversions.makeIdentifier(converter.getType(type));
+  public static String className(String type) {
+    String res = StringConversions.makeIdentifier(converter.getType(type));
+    if(res.equals("ATerm")) {
+      res = "aterm." + res;
     }
+    return res;
+  }
     
-	public static String className(Type type) {
-		return className(type.getId());
-	}
+  public static String className(Type type) {
+    return className(type.getId());
+  }
 		
     public void run() {
     	if (!new File(getPath(directory,className,".java")).exists()) {
