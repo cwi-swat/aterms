@@ -168,10 +168,11 @@ extends Generator
     }
   }
 
-	private void genMakeIncludeFile(ADT api) {
+  private void genMakeIncludeFile(ADT api) {
     char sep = File.separatorChar;
     String cap_api_name = capitalize(buildId(api_name));
-    createFileStream(basedir + sep + cap_api_name + "MakeRules","");
+      //createFileStream(basedir + sep + cap_api_name + "MakeRules","");
+    createFileStream(cap_api_name + "MakeRules","");
     String prefix = cap_api_name + "API";
     
     info("generating " + cap_api_name + "MakeRules");
@@ -459,7 +460,7 @@ extends Generator
     throws IOException
   {
     List imports = new LinkedList();
-    String class_name = buildClassName(type); 
+    String class_name = buildClassName(type);
     String file = basedir + File.separatorChar + class_name + ".java";
     
     if (!new File(file).exists()) {   

@@ -184,7 +184,7 @@ public abstract class Generator {
 	//}}}
   
   protected void createStream(String file) 
-  {  
+  {
     try {
       stream = new PrintStream(new FileOutputStream(file));
     }
