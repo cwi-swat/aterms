@@ -817,6 +817,7 @@ public class FactoryGenerator extends JavaGenerator {
                 + "FromTerm(list.getFirst()));");
         println("     }");
         println("     else {");
+        println("       list = list.reverse();");
         println("       " + className + " result;");
         println("       " + elementTypeName + " head;");
         Iterator seps = type.separatorFieldIterator();

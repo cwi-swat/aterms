@@ -77,6 +77,7 @@ public class SeparatedListTypeImplGenerator extends ListTypeImplGenerator {
                 + buildFormalSeparatorArguments(listType)
                 + "aterm.ATermList next) {");
         println("    super.initHashCode(annos, first, next);");
+        genSeparatorInitAssigmnents(listType);
         println("  }");
     }
 

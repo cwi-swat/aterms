@@ -1,5 +1,6 @@
 package test;
 
+import test.list.Layout;
 import test.list.ListFactory;
 import test.list.Module;
 import test.list.ModuleList;
@@ -90,8 +91,25 @@ public class ListTest {
     termExample = factory.parse(example);
     Module amodule = (Module) factory.makeModule_Default(example);
 
-    Separated sep = factory.SeparatedFromTerm(factory.parse("[\"m2\",l(\"l2\"),\"sep\",l(\"l1\"),\"m1\",l(\"l2\"),\"sep\",l(\"l1\"),\"m2\",l(\"l2\"),\"sep\",l(\"l1\"),\"m1\"]"));
+    // From these tests you can see that a lot is still wrong with dealing
+    // with separators. For example, the l1 and l2 and the l3 and l4 are flipped
+    // after the fromTerm method has been called!
+    Separated sep = factory.SeparatedFromTerm(factory.parse("[\"m1\",l(\"l1\"),\"sep\",l(\"l2\"),\"m2\",l(\"l3\"),\"sep\",l(\"l4\"),\"m3\",l(\"l4\"),\"sep\",l(\"l5\"),\"m4\"]"));
+    Module head = sep.getHead();
+    testAssert(head.isEqual(factory.makeModule_Default("m1")), "separator from term test, head");
+    Layout l1 = sep.getWsl();
+    testAssert(l1.isEqual(factory.makeLayout_Default("l2")), "getSeparator test l1");
+    Layout l2 = sep.getWsr();
+    testAssert(l2.isEqual(factory.makeLayout_Default("l1")), "getSeparator test l2");
+    Module second = sep.getTail().getHead();
+    testAssert(second.isEqual(factory.makeModule_Default("m2")), "separator from term test, second element");
+    Layout l3 = sep.getTail().getWsl();
 
+    testAssert(l3.isEqual(factory.makeLayout_Default("l4")), "getSeparator test l3");
+    Layout l4 = sep.getTail().getWsr();
+    testAssert(l4.isEqual(factory.makeLayout_Default("l3")), "getSeparator test l4");
+    
+    System.err.println(head + "#" + l1 + "#" + l2 + "#" + second + "#" + l3 + "#" + l4);
     testAssert(sep.getLength() == 4, "separated list length test");
   }
 
