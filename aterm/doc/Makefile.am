@@ -8,6 +8,13 @@ EXTRA_DIST	= append.ltx at.ltx aterm.ltx corrections.ltx \
 		speauth.cls spedoc.tex general-make at.ps manual.ps \
 		appl-enc.fig $(JAVA_API_PS)
 
+CLEANFILES	= *~ encoding.eps header.eps \
+		at.{aux,bbl,blg,dvi,log,ps} \
+		java-api.{aux,dvi,log,ps,toc} \
+		manual.{aux,bbl,blg,ilg,ind,log,toc} \
+		sigplan.{aux,bbl,blg,log,dvi,ps} \
+		xootic.{aux,bbl,blg,log,dvi,ps}
+
 CHAPS		= at.ltx
 AT_PICS		= header.eps encoding.eps hierarchy.eps
 SP_PICS		= appl-enc.eps
@@ -23,7 +30,10 @@ JAVA_FILES	= $(patsubst %,${top_srcdir}/java/aterm/%.java,$(JAVA_CLASSES))
 
 all:
 
-doc: sigplan.ps at.ps manual.ps $(JAVA_API_PS)
+doc: xootic.ps sigplan.ps at.ps manual.ps $(JAVA_API_PS)
+
+xootic.ps: xootic.dvi $(XO_PICS)
+xootic.dvi: xootic.ltx $(XO_PICS)
 
 sigplan.ps: sigplan.dvi $(SP_PICS)
 sigplan.dvi: sigplan.ltx asm-diff.ltx $(SP_PICS)
@@ -33,9 +43,10 @@ at.dvi: at.ltx aterm.ltx spec/ATerm.mtx $(CHAPS) $(AT_PICS)
 
 manual.dvi: manual.ltx $(EXAMPLES)
 
-# when manual.dvi is up-to-date, it will have created manual.idx
-# we need to run makeindex on this file, then re-latex and convert
-# the dvi to postscript
+# when manual.dvi is up-to-date, the file manual.idx will have been
+# generated, and we need to run makeindex on this file, then re-latex and
+# convert the dvi to postscript
+
 manual.ps: manual.dvi
 	TEXINPUTS=$$TEXINPUTS:${srcdir};\
 	makeindex manual.idx ;\
@@ -54,12 +65,6 @@ java-api.ltx: $(JAVA_FILES)
 java-api.dvi: java-api.ltx
 java-api.ps: java-api.dvi
 	dvips -o $@ $<
-
-clean:
-	rm -f *~ at.aux at.bbl at.blg at.dvi at.log at.ps \
-		manual.idx \
-		manual.dvi manual.ps \
-		encoding.ps header.ps 
 
 dist: at.ps manual.ps
 	cp at.ps manual.ps ${DISTDIR}
