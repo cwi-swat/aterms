@@ -34,6 +34,8 @@ CLEANFILES = test2.tifs
 
 INCLUDES   = -I. -I$(top_srcdir)/aterm -I$(top_srcdir)/toolbus
 
+CFLAGS                  = -Wall -g
+
 LDFLAGS 		= -L$(top_builddir)/aterm/ \
 			  -L$(top_builddir)/toolbus/
 

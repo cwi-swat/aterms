@@ -164,7 +164,7 @@ testSymbol(void)
 
 void testBlob()
 {
-  char *ptr, buf[BUFSIZ];
+  char *ptr;
   ATermBlob b[10];
   FILE *file;
 

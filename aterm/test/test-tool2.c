@@ -112,9 +112,6 @@ int main(int argc, char *argv[])
   ATBinit(argc, argv, &bottomOfStack);
   conn = ATBconnect(NULL, NULL, -1, tool2_handler);
 
-  ATBwriteTerm(conn, ATmake("snd-event(baf-term(<term>))", 
-			    ATmakeBlob(4, "abc")));
-
   ATBeventloop();
 
   return 0;
