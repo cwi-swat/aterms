@@ -25,18 +25,12 @@ public class TypeGenerator extends JavaGenerator {
 	}
 
   public static String className(String type) {
-    String res = StringConversions.makeIdentifier(converter.getType(type));
-    /* TODO:
-     * This code does not belong here, it should be solved in 
-     * JavaTypeConversions. I've commented it out and put it into that class
-     * to see what happens.  
-     * if(res.equals("ATerm")) {
-      res = "aterm." + res;
-    } else if(res.equals("ATermList")) {
-      res = "aterm." + res;
-    }
-    */
-    return res;
+  	if (converter.isReserved(type)) {
+  		return converter.getType(type);
+  	}
+  	else {
+  		return StringConversions.makeIdentifier(converter.getType(type));
+  	}
   }
     
   public static String className(Type type) {

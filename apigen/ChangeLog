@@ -3,8 +3,11 @@
    constructors) If they were constructed by calling fromTerm(), the toTerm()
    will be cheap. Also consecutive calls to toTerm are cheap now.
  * Added test ADT with all builtins in there to test support for int, double,
-   term and lists
-     
+   term and lists. Added C and Java tests for this ADT.
+ * Fixed a number of bugs concerning builtins in the Java backend
+ * Added a error message when an ADT uses a builtin name as the name of an
+   alternative. That is not allowed.
+   
 2003-08-08  (jurgenv@cwi.nl)
  * Set dependency on aterm-java 1.4 because of visibility of ATermListImpl
  * Added implementation of lists for Java. Lists inherit from ATermListImpl.

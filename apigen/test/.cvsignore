@@ -32,3 +32,9 @@ rolodex_dict.c
 rolodex_dict.h
 rolodex.c
 rolodex.h
+builtins.adt
+builtins.c
+builtins.dict
+builtins.h
+builtinstest
+builtins

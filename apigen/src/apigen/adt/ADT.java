@@ -88,7 +88,7 @@ public class ADT {
 
 	private void processAlternatives(String typeId, List alts) {
 		Entry first = (Entry) alts.get(0);
-
+        
 		if (first.isList()) {
 			if (alts.size() > 1) {
 				throw new RuntimeException("Multiple definitions of same list: " + alts);
@@ -118,8 +118,17 @@ public class ADT {
 				ATerm pattern = entry.getTermPattern();
 
 				Alternative alt = new Alternative(altId, pattern);
-
-				addAlternative(typeId, type, altId, alt);
+				
+				if (altId.equals("int") || 
+					altId.equals("str") ||
+					altId.equals("term") ||
+					altId.equals("real") ||
+					altId.equals("list")) {
+					throw new RuntimeException("Can not used reserved type name (" + altId + ") as name of alternative in " + entry);
+				}
+				else {
+				  addAlternative(typeId, type, altId, alt);
+				}
 			} else {
 				throw new RuntimeException("Unexpected alternative");
 			}

@@ -9,21 +9,24 @@ include ${top_srcdir}/make_rules
 ADTC		= ${top_builddir}/utils/adt-to-c --verbose
 ADTJAVA         = ${top_builddir}/utils/adt-to-java --verbose --visitable
 
-JAVATESTS = peano list rolodex
-TESTS	  = listtest rolotest $(foreach j, ${JAVATESTS}, ${j}.java.sh)
+JAVATESTS = peano list rolodex builtins
+TESTS	  = listtest rolotest builtinstest \
+            $(foreach j, ${JAVATESTS}, ${j}.java.sh)
 
 JAVAC=javac
 
 peano_Main = PeanoTest
 list_Main  = ListTest
 rolodex_Main = RoloTest
+builtins_Main = BuiltinsTest
 
 # Building the C programs that are to be run during testing:
-check_PROGRAMS	= rolotest listtest
-check_LIBRARIES	= librolodex.a liblist.a 
+check_PROGRAMS	= rolotest listtest builtinstest
+check_LIBRARIES	= librolodex.a liblist.a libbuiltins.a
 
 librolodex_a_SOURCES	= rolodex.c rolodex_dict.c
 liblist_a_SOURCES	= list.c list_dict.c
+libbuiltins_a_SOURCES	= builtins.c builtins_dict.c
 
 rolotest_SOURCES	= rolotest.c
 rolotest_LDADD		= -L. -lrolodex -lATerm
@@ -33,12 +36,18 @@ listtest_SOURCES	= listtest.c
 listtest_LDADD		= -L. -llist -lATerm
 listtest_DEPENDENCIES	= liblist.a
 
+builtinstest_SOURCES = builtinstest.c
+builtinstest_LDADD	= -L. -lbuiltins -lATerm
+builtinstest_DEPENDENCIES= libbuiltins.a
+
 CLEANFILES		= ${check_PROGRAMS} ${check_LIBRARIES} \
 			rolodex.[ch] rolodex_dict.[ch] \
 			list.[ch] list_dict.[ch] \
-			*.java.sh peano/* list/* rolodex/* *.class
+			builtins.[ch] builtins_dict.[ch] \
+			*.java.sh \
+			peano/* list/* rolodex/* builtins/* *.class
 
-EXTRA_DIST = rolodex.adt list.adt list.pro peano.adt \
+EXTRA_DIST = rolodex.adt list.adt list.pro peano.adt builtins.adt \
              PeanoTest.java ListTest.java  RoloTest.java rolodex.trm
 
 # Below the generation of Java and C API's:
@@ -53,6 +62,11 @@ list.c list.h: list.adt list.pro
 		--input ${top_srcdir}/test/list.adt \
 		--prologue ${top_srcdir}/test/list.pro \
 		--compat-term \
+		--classpath ${top_builddir}:${JAVA_ATERM}:${SHARED_OBJECTS}
+
+builtins.c builtins.h: builtins.adt 
+	${ADTC} \
+		--input ${top_srcdir}/test/builtins.adt \
 		--classpath ${top_builddir}:${JAVA_ATERM}:${SHARED_OBJECTS}
 
 %.java.sh: Makefile

@@ -53,7 +53,6 @@ public class AlternativeImplGenerator extends JavaGenerator {
 	}
 		
 	protected void generate() {
-		
 		printPackageDecl();
 		genAlternativeClassImpl(type, alt);
 	}
@@ -291,7 +290,7 @@ public class AlternativeImplGenerator extends JavaGenerator {
 		else if (fieldType.equals("int")) {
 		  println("   return new Integer(((aterm.ATermInt) this.getArgument(" + fieldIndex + ")).getInt());");
 		}
-		else if (fieldType.equals("double")) {
+		else if (fieldType.equals("real")) {
 		  println("   return new Double(((aterm.ATermReal) this.getArgument(" + fieldIndex + ")).getReal());");
 		}
 		else if (fieldType.equals("term")) {
@@ -317,7 +316,7 @@ public class AlternativeImplGenerator extends JavaGenerator {
 		else if (fieldType.equals("int")) {
 		  print("getFactory().makeInt(" + fieldId + ".intValue())");
 		}
-		else if (fieldType.equals("double")) {
+		else if (fieldType.equals("real")) {
 		  print("getFactory().makeReal(" + fieldId + ".doubleValue())");
 		}
 		else {
@@ -399,7 +398,7 @@ public class AlternativeImplGenerator extends JavaGenerator {
 				  else if (field_type.equals("int")) {
 					  instance_of = "aterm.ATermInt";
 				  }
-				  else if (field_type.equals("double")) {
+				  else if (field_type.equals("real")) {
 					  instance_of = "aterm.ATermReal";
 				  }
 				  else if (field_type.equals("term")) {

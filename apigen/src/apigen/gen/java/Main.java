@@ -14,6 +14,7 @@ import apigen.adt.ListType;
 import apigen.adt.Type;
 import apigen.adt.api.ADTFactory;
 import apigen.adt.api.Entries;
+import apigen.gen.TypeConverter;
 import apigen.gen.tom.TomSignatureGenerator;
 import aterm.ATerm;
 import aterm.ParseError;
@@ -24,13 +25,22 @@ public class Main {
 	private static boolean jtype = false;
 	private static boolean folding = false;
 	private static boolean verbose = false;
-
+    
+    private static TypeConverter converter = null;
+    
 	private static String basedir = ".";
 	private static String pkg = "";
 	private static List imports = null;
 	private static String apiName = "";
 	private static String prefix = "";
 
+	/**
+     * Load the Java type conversions
+	 */
+	static {
+		converter = new TypeConverter(new JavaTypeConversions());
+	}
+		
 	private static void usage() {
 		System.err.println("usage: JavaGen [options]");
 		System.err.println("options:");
@@ -148,7 +158,7 @@ public class Main {
 			if (type instanceof ListType) {
 				new ListTypeImplGenerator((ListType) type, basedir, pkg, apiName, imports, verbose).run();
 				new ListTypeGenerator(type, basedir, pkg, imports, verbose, folding).run();
-			} else {
+			} else if (!converter.isReserved(type.getId())) {
 				new TypeImplGenerator(type, basedir, pkg, apiName, imports, verbose).run();
 				new TypeGenerator(type, basedir, pkg, imports, verbose, folding).run();
 				generateAlternativeClasses(type);
@@ -160,6 +170,7 @@ public class Main {
 		Iterator alt_iter = type.alternativeIterator();
 		while (alt_iter.hasNext()) {
 			Alternative alt = (Alternative) alt_iter.next();
+			
 			new AlternativeGenerator(type, alt, basedir, pkg, imports, verbose, false).run();
 			new AlternativeImplGenerator(type, alt, apiName, basedir, pkg, imports, verbose, false, visitable).run();
 		}

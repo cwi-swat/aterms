@@ -3,7 +3,8 @@ package apigen.gen.java;
 import java.io.File;
 import java.util.List;
 
-import apigen.adt.*;
+import apigen.adt.Alternative;
+import apigen.adt.Type;
 import apigen.gen.StringConversions;
 
 public class AlternativeGenerator extends JavaGenerator {
@@ -28,8 +29,13 @@ public class AlternativeGenerator extends JavaGenerator {
     }
     
 	public static String className(String type, String alt) {
-		return StringConversions.makeCapitalizedIdentifier(type) + "_" + 
-		          StringConversions.makeCapitalizedIdentifier(alt);
+		if (converter.isReserved(alt)) {
+			return alt;
+		}
+		else {
+		  return StringConversions.makeCapitalizedIdentifier(type) + "_" + 
+		            StringConversions.makeCapitalizedIdentifier(alt);
+		}
 	}
 
 	public void run() {
@@ -42,8 +48,8 @@ public class AlternativeGenerator extends JavaGenerator {
 	}
 
 	protected void generate() {
-		printPackageDecl();
-		genAlternativeClass(type, alt);
+		  printPackageDecl();
+		  genAlternativeClass(type, alt);
 	}
 
 	private void genAlternativeClass(Type type, Alternative alt) {
