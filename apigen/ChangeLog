@@ -2,7 +2,11 @@
 2003/02/06 (jurgenv@cwi.nl)
  * Bumped to 1.6beta
  * Make functions of factory now return type of alternative not of the abstract
-   type
+   type.
+ * Removed generation of implementations of Visitor interface because it
+   is already implemented by ATermApplImpl.
+ * Added overriding of accept method to choose type specific behaviour
+   when traversing a generated Java hierarchy.
 
 2003/01/29 (jong@cwi.nl)
  * Remove generated binary libraries in test/ from CVS

@@ -896,59 +896,16 @@ extends Generator
   // This is not well thought out yet!
 	private void genAltVisitableInterface(Type type, Alternative alt)
   {
+  	String altClassName = buildAltClassName( type,alt );
+  	
     printFoldOpen("visitable interface");
 
     println("  public void accept(Visitor v)");
     println("  {");
-    println("    v.visit(this);");
+    println("    v.visit" + altClassName + "(this);");
     println("  }");
     println();
         
-    println("  public Visitable getChildAt(int argnr)");
-    println("  {");
-    println("    switch(argnr) {");
-    {
-      Iterator fields = type.altFieldIterator(alt.getId());
-      int argnr = 0;
-      while (fields.hasNext()) {
-        Field field = (Field) fields.next();
-        if (!isReservedType(field.getType())) {
-          println("      case " + argnr + ": return (Visitable) get" + capitalize(buildId(field.getId())) + "();");
-        }
-        argnr++;
-      }
-      println("      default: throw new RuntimeException(\"" + buildAltClassName(type, alt) + 
-              " does not have an argument at position \" + argnr);");
-    }
-    println("    }");
-    println("  }");
-    println();
-    println("  public Visitable setChildAt(int argnr, Visitable child)");
-    println("  {");
-    println("    switch(argnr) {");
-    {
-      Iterator fields = type.altFieldIterator(alt.getId());
-      int argnr = 0;
-      while (fields.hasNext()) {
-        Field field = (Field) fields.next();
-        if (!isReservedType(field.getType())) {
-          println("      case " + argnr + ": return (Visitable) set" + capitalize(buildId(field.getId())) + 
-                  "((" + buildClassName(field.getType()) + ") child );");
-        }
-        argnr++;
-      }
-      println("      default: throw new RuntimeException(\"" + buildAltClassName(type, alt) + 
-              " does not have an argument at position \" + argnr);");
-    }
-    println("    }");
-    println("  }");
-
-    println();
-    println("  public int getChildCount()");
-    println("  {");
-    println("    return " + computeAltArityNotReserved(type, alt) + ";");
-    println("  }");  
-    
     printFoldClose(); 
   }
 
@@ -1168,8 +1125,8 @@ extends Generator
 		Iterator fields = type.altFieldIterator(alt.getId());
 		while (fields.hasNext()) {
 		  Field field = (Field) fields.next();
-      String field_id = buildFieldId(field.getId());
-      print(buildClassName(buildClassName(field.getType())) + " " + field_id);
+          String field_id = buildFieldId(field.getId());
+          print(buildClassName(buildClassName(field.getType())) + " " + field_id);
       
 		  if (fields.hasNext()) {
 		    print(", ");
