@@ -1,5 +1,8 @@
 $Id$
 
+2001/07/02 (olivierp@cwi.nl)
+ * Fixed CLASSPATH problem with tifstojava
+
 2001/06/25 ({jong,olivierp}@cwi.nl)
  * Version is now 1.6.1
  * Fixed bug in Java in removing of 'empty' weak references,
