@@ -19,6 +19,11 @@
 
 $Id$
 
+2000/8/17 ({jong,olivierp}@cwi.nl)
+  * Added and documented ATchecksum function and atsum utility
+  * Added %a format (%y is now deprecated, but still supported)
+  * Added %h format to print checksum of a term
+
 2000/8/16 ({jong,olivierp}@cwi.nl)
   * Version is now 1.4.2
   * Introduced some macro's to hide table size calculations

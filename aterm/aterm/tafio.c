@@ -361,10 +361,10 @@ long ATwriteToSharedTextFile(ATerm t, FILE *file)
   long size;
   ATermIndexedSet abbrevs;
   
-  fputc(START_OF_SHARED_TEXT_FILE, file);
-
   writer.type = FILE_WRITER;
   writer.u.file_data = file;
+
+  write_byte(START_OF_SHARED_TEXT_FILE, &writer);
 
   next_abbrev = 0;
   abbrevs = ATindexedSetCreate(1024, 75);
@@ -398,10 +398,14 @@ char *ATwriteToSharedString(ATerm t, int *len)
   }
   writer.u.string_data.cur_size = 0;
 
+  write_byte(START_OF_SHARED_TEXT_FILE, &writer);
+
   length = topWriteToSharedTextFile(t, &writer, abbrevs);
   if (length < 0) {
     return NULL;
   }
+
+  length++; /* START_OF_SHARED_TEXT_FILE */
 
   assert(length == writer.u.string_data.cur_size);
 
@@ -979,6 +983,12 @@ ATerm ATreadFromSharedString(char *s, int size)
   col = 0;
 
   init_string_reader(&reader, s, size);
+
+  c = read_byte(&reader);
+  if (c != START_OF_SHARED_TEXT_FILE) {
+    ATwarning("not in shared text format: %s\n");
+    return NULL;
+  }
 
   abbrevs = ATindexedSetCreate(1024, 75);
   next_abbrev = 0;

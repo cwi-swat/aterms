@@ -1024,12 +1024,12 @@ void testTaf()
   
   char *input = "f(\"Lang functiesymbool\",\"Lang functiesymbool2\","
     "\"Lang functiesymbool2\",\"Lang functiesymbool\")";
-  char *expected = "f(\"Lang functiesymbool\",\"Lang functiesymbool2\",#B,#A)";
+  char *expected = "!f(\"Lang functiesymbool\",\"Lang functiesymbool2\",#B,#A)";
 
   t[0] = ATparse(input);
   t[1] = ATmake("g(<term>,x,<term>)", t[0], t[0]);
 
-  t[2] = ATreadFromSharedString(input, strlen(input));
+  t[2] = ATreadFromString(input);
 
   ptr = ATwriteToSharedString(t[0], &len);
   t[3] = ATreadFromSharedString(ptr, len);

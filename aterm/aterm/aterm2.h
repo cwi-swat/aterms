@@ -243,4 +243,9 @@ ATerm AT_setAnnotations(ATerm t, ATerm annos);
 ATerm AT_removeAnnotations(ATerm t);
 ATerm ATremoveAllAnnotations(ATerm t);
 
+/* Calculate checksum using the
+   "RSA Data Security, Inc. MD5 Message-Digest Algorithm" (see RFC1321)
+*/
+unsigned char *ATchecksum(ATerm t);
+
 #endif

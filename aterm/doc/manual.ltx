@@ -663,7 +663,7 @@ are completely equal, inclusive any annotations they might have!}
 	are used for formatted output to file. The conversion specifiers
 	{\tt c, d, i, o, u, x, X, e, E, f, g, G, p, s} behave as can be
 	expected from {\tt (f)printf}. In addition the conversion specifiers
-	{\tt l, n, t} and {\tt y} are supported:
+	{\tt a, h, l, n} and {\tt t} are supported:
 
 	\begin{small}
 	\begin{center}
@@ -671,10 +671,11 @@ are completely equal, inclusive any annotations they might have!}
 	\hline
 	Conversion specifier & Action \\
 	\hline
+	{\tt a} & print the symbol of an \aterm-application \\
+	{\tt h} & print the MD5 checksum of an \aterm \\
 	{\tt l} & print an \aterm-list \\
 	{\tt n} & print information about an \aterm\ node \\
 	{\tt t} & print an \aterm \\
-	{\tt y} & print the symbol of an \aterm-application \\
 	\hline
 	\end{tabular}
 	\end{center}
@@ -1414,6 +1415,14 @@ ATreadFromFile}, it can calculate the size of both textual and {\sc baf}
 representations of \aterms.
 
 \smallskip\noindent Usage: {\tt termsize < }\emph{inputfile}.
+
+\subsection{Calculating MD5 checksum of an \ATerm: {\tt atsum}}
+\label{util-atsum}
+This utility can be used to print the MD5 checksum of the
+{\sc taf} representation of an \ATerm. The algorithm used is
+the RSA Data Security, Inc. MD5 Message-Digest Algorithm (see RFC1321).
+
+\smallskip\noindent Usage: {\tt atsum [\emph{inputfile}]}.
 
 %}}}
 %{{{ Index

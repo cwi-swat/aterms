@@ -29,7 +29,7 @@ LDFLAGS			= -L$(top_builddir)/aterm/
 
 LDLIBS			= -lATerm
 
-bin_PROGRAMS		= termsize baffle dicttoc
+bin_PROGRAMS		= termsize baffle dicttoc atsum
 
 termsize_SOURCES	= termsize.c
 termsize_LDADD		= $(LDLIBS)
@@ -40,6 +40,9 @@ baffle_LDADD		= $(LDLIBS)
 dicttoc_SOURCES		= dicttoc.c
 dicttoc_LDADD		= $(LDLIBS)
 
+atsum_SOURCES		= atsum.c
+atsum_LDADD		= $(LDLIBS)
+
 bin_SCRIPTS		= baf2trm baf2taf trm2baf trm2taf taf2trm taf2baf \
 			  trmcat
 
@@ -47,5 +50,3 @@ CFLAGS			= -Wall -g -O2
 
 
 EXTRA_DIST		= $(bin_SCRIPTS)
-
-

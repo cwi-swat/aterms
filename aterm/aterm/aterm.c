@@ -43,6 +43,7 @@
 #include "version.h"
 #include "atypes.h"
 #include "tafio.h"
+#include "md5.h"
 
 /*}}}  */
 /*{{{  defines */
@@ -604,6 +605,7 @@ ATvfprintf(FILE * stream, const char *format, va_list args)
 		fputs(fmt + 1, stream);
 	    }
 	  break;
+	case 'a':
 	case 'y':
 	  AT_printSymbol(va_arg(args, Symbol), stream);
 	  break;
@@ -646,6 +648,17 @@ ATvfprintf(FILE * stream, const char *format, va_list args)
 	      break;
 	    }
 	  break;
+
+	case 'h':
+	  {
+	    unsigned char *digest = ATchecksum(va_arg(args, ATerm));
+	    int i;
+	    for (i=0; i<16; i++) {
+	      fprintf(stream, "%02x", digest[i]);
+	    }
+	  }
+	  break;
+
 
 	default:
 	  fputc(*p, stream);
@@ -2779,6 +2792,31 @@ int AT_calcTermDepth(ATerm t)
 }
 
 /*}}}  */
+
+/*{{{  char *ATchecksum(ATerm t) */
+
+/* Calculate checksum using the
+   "RSA Data Security, Inc. MD5 Message-Digest Algorithm" (see RFC1321)
+*/
+
+unsigned char *ATchecksum(ATerm t)
+{
+  MD5_CTX context;
+  static unsigned char digest[16];
+  char *buf;
+  int len;
+
+  MD5Init(&context);
+  buf = ATwriteToSharedString(t, &len);
+  ATfprintf(stderr, "calculating sum over %s\n", buf);
+  MD5Update(&context, buf, len);
+  MD5Final(digest, &context);
+
+  return digest;
+}
+
+/*}}}  */
+
 
 #ifdef NO_SHARING
 /*{{{  ATbool AT_isEqual(ATerm t1, ATerm t2) */
