@@ -11,6 +11,14 @@ public class TestFib {
   private ATermAppl tzero;
 
 
+  public final static void main(String[] args) {
+    TestFib t = new TestFib(new PureFactory());
+
+    t.test1();
+    t.test2();
+    t.test3(5);
+  }
+
   public TestFib(ATermFactory factory) {
     this.factory = factory;
 
@@ -22,18 +30,18 @@ public class TestFib {
   }
   
   public void test1() {
-    System.out.println("test 1");
+    // System.out.println("test 1");
 
     ATermAppl res = normalizePlus(
       factory.makeAppl(plus,
       factory.makeAppl(suc,factory.makeAppl(suc,tzero)),
       factory.makeAppl(suc,factory.makeAppl(suc,tzero))));
     
-    System.out.println("res = 2+2 = " + res);
+    // System.out.println("res = 2+2 = " + res);
   }
 
   public void test2() {
-    System.out.println("test 2");
+    // System.out.println("test 2");
     ATermAppl res = normalizeFib(
       factory.makeAppl(fib,
       factory.makeAppl(suc,
@@ -41,11 +49,11 @@ public class TestFib {
       factory.makeAppl(suc,
       factory.makeAppl(suc,tzero))))));
 
-    System.out.println("res = fib(4) = " + res);
+    // System.out.println("res = fib(4) = " + res);
   }
 
   public void test3(int n) {
-    System.out.println("test 3");
+    // System.out.println("test 3");
         
     ATermAppl N = tzero;
     for(int i=0 ; i<n ; i++) {
@@ -57,7 +65,7 @@ public class TestFib {
     ATermAppl res = normalizeFib(factory.makeAppl(fib,N));
     long end   = System.currentTimeMillis();
       //System.out.println("fib(" + n + ") = " + res);
-    System.out.println("fib(" + n + ") in " + (end-start) + " ms");
+   //  System.out.println("fib(" + n + ") in " + (end-start) + " ms");
 
       //System.out.println(factory);
   }
@@ -147,6 +155,4 @@ public class TestFib {
     }
     return res;
   }
-    
-  
 }
