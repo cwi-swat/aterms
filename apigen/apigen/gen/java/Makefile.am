@@ -19,6 +19,7 @@ java_JAVA =\
 	TypeImplGenerator.java \
 	ListTypeGenerator.java\
 	ListTypeImplGenerator.java\
+	SeparatedListTypeImplGenerator.java\
 	JavaTomSignatureImplementation.java \
 	JavaTomSignatureImplementation.java\
 	VisitorGenerator.java\
