@@ -37,4 +37,12 @@ implements aterm.ATerm
     return false;
   }
 
+  public boolean isSortSeparators() {
+    return false;
+  }
+
+  public boolean isSortSeparator() {
+    return false;
+  }
+
 }

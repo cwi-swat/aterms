@@ -33,6 +33,11 @@ abstract public class EntryImpl extends ADTConstructor
     return false;
   }
 
+  public boolean isSeparatedList()
+  {
+    return false;
+  }
+
   public boolean hasSort()
   {
     return false;
@@ -49,6 +54,11 @@ abstract public class EntryImpl extends ADTConstructor
   }
 
   public boolean hasElemSort()
+  {
+    return false;
+  }
+
+  public boolean hasSeparators()
   {
     return false;
   }
@@ -91,6 +101,16 @@ abstract public class EntryImpl extends ADTConstructor
   public Entry setElemSort(aterm.ATerm _elemSort)
   {
      throw new RuntimeException("This Entry has no ElemSort");
+  }
+
+  public Separators getSeparators()
+  {
+     throw new RuntimeException("This Entry has no Separators");
+  }
+
+  public Entry setSeparators(Separators _separators)
+  {
+     throw new RuntimeException("This Entry has no Separators");
   }
 
 }

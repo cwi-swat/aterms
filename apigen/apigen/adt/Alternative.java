@@ -1,5 +1,7 @@
 package apigen.adt;
 
+import apigen.adt.api.Separator;
+import apigen.adt.api.Separators;
 import aterm.AFun;
 import aterm.ATerm;
 import aterm.ATermAppl;
@@ -151,6 +153,35 @@ public class Alternative {
 
 		return many;
 	}
+	
+	public static Alternative makeSingletonListConstructor(ATermFactory factory, String elementType) {
+		Alternative single =
+				new Alternative(
+					"single",
+					factory.parse("[<head(" + elementType + ")>]"));
+
+			return single;	
+		}
+			
+	protected static Alternative makeManySeparatedListConstructor(ATermFactory factory, String ListType, String ElementType, Separators separators) {
+		String pattern = "[";
+		
+		pattern += "<head(" + ElementType + ")>";
+		pattern += ",";
+		
+		for (; !separators.isEmpty(); separators = separators.getTail()) {
+			Separator sep = separators.getHead();
+			
+			pattern += sep.toString();
+			pattern += ",";
+		}
+		
+		pattern += "<[tail(" + ListType + ")]>";
+		pattern += "]";
+		
+		return new Alternative("many", factory.parse(pattern));
+		
+	}
 
 	public boolean isEmpty() {
 		List subst = getPattern().match("[]");
@@ -205,4 +236,7 @@ public class Alternative {
 	public String toString() {
 		return "alt[" + id + ", " + pattern + "]";
 	}
+
+	
+	
 }

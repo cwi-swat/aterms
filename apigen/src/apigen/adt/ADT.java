@@ -7,6 +7,7 @@ import java.util.ListIterator;
 
 import apigen.adt.api.Entries;
 import apigen.adt.api.Entry;
+import apigen.adt.api.Separators;
 import aterm.ATerm;
 import aterm.ATermAppl;
 import aterm.ATermFactory;
@@ -89,15 +90,28 @@ public class ADT {
 	private void processAlternatives(String typeId, List alts) {
 		Entry first = (Entry) alts.get(0);
         
-		if (first.isList()) {
+		if (first.isList() || first.isSeparatedList()) {
 			if (alts.size() > 1) {
 				throw new RuntimeException("Multiple definitions of same list: " + alts);
 			}
 
-			processList(typeId, first);
-		} else {
+            if (first.isSeparatedList()) {
+              processSeparatedList(typeId, first);	
+            }
+            else {
+			  processList(typeId, first);
+            }
+		} 
+		else {
 			processConstructors(typeId, alts);
 		}
+	}
+
+	private void processSeparatedList(String typeId, Entry first) {
+	   String elementType = ((ATermAppl) first.getElemSort()).getAFun().getName();
+	   Separators separators = first.getSeparators();
+	   Type type = new SeparatedListType(factory, typeId, elementType, separators);
+	   types.add(type);
 	}
 
 	private void processList(String typeId, Entry first) {

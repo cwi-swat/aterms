@@ -4,7 +4,11 @@ ADTAPI0=\
 Entries.java EntriesImpl.java\
 Entry.java EntryImpl.java\
 Entry_ConstructorImpl.java Entry_Constructor.java\
-Entry_ListImpl.java Entry_List.java
+Entry_ListImpl.java Entry_List.java\
+Entry_SeparatedListImpl.java Entry_SeparatedList.java\
+Separators.java SeparatorsImpl.java\
+Separator.java SeparatorImpl.java\
+Separator_DefaultImpl.java Separator_Default.java
 
 ADTAPI=\
 ADTFactory.java ADTConstructor.java\
