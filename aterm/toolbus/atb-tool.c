@@ -46,7 +46,6 @@ typedef struct
 	char       *toolname;		/* Tool name (uniquely identifies interface) */
 	char       *host;			/* ToolBus host                              */
 	ATBhandler  handler;		/* Function that handles incoming terms      */
-	ATBchecker  checker;		/* Function that checks the signature        */
 	ATbool      verbose;		/* Should info be dumped on stderr           */
 } Connection;
 
@@ -128,14 +127,14 @@ ATBinit(int argc, char *argv[], ATerm *stack_bottom)
 }
 
 /*}}}  */
-/*{{{  int ATBconnect(char *tool, char *host, int port, handler, checker) */
+/*{{{  int ATBconnect(char *tool, char *host, int port, handler) */
 
 /**
 	* Create a new ToolBus connection.
 	*/
 
 int
-ATBconnect(char *tool, char *host, int port, ATBhandler h, ATBchecker c)
+ATBconnect(char *tool, char *host, int port, ATBhandler h)
 {
 	Connection *connection = NULL;
 	int fd;
@@ -171,7 +170,6 @@ ATBconnect(char *tool, char *host, int port, ATBhandler h, ATBchecker c)
 
 	connection->port     = port;
 	connection->handler  = h;
-	connection->checker  = c;
 	connection->verbose  = ATfalse;
 	connection->tid      = default_tid;
 	connection->fd       = fd;
@@ -243,12 +241,15 @@ int ATBeventloop(void)
 
 int ATBwriteTerm(int fd, ATerm term)
 {
-  int len = AT_calcTextSize(term) + 8 /* Add lenspec */;
+  int len = AT_calcTextSize(term) + 8;    /* Add lenspec */
 	int wirelen = MAX(len, MIN_MSG_SIZE);
+
+	ATfprintf(stderr, "length of %t = %d\n", term, len);
 
 	resize_buffer(wirelen+1);               /* Add '\0' character */
 	sprintf(buffer, "%-.7d:", len);
 	AT_writeToStringBuffer(term, buffer+8);
+	fprintf(stderr, "sending to ToolBus: %s\n", buffer);
 	if(mwrite(fd, buffer, wirelen) < 0)
 		ATerror("ATBwriteTerm: connection with ToolBus lost.\n");
 	return 0;
@@ -372,10 +373,11 @@ int ATBhandleOne(int fd)
 	  recdo = ATtrue;
 
 	result = connections[fd]->handler(fd, (ATerm)appl);
-	
-	if(result)
+
+	if(result) {
+		ATfprintf(stderr, "result = %t\n", result);
 	  return ATBwriteTerm(fd, result);
-	else if(recdo)
+	} else if(recdo)
 	  return ATBwriteTerm(fd, term_snd_void);
 
 	return 0;
@@ -396,7 +398,8 @@ int ATBhandleAny(void)
 	
 	FD_ZERO(&set);
 	max = ATBgetDescriptors(&set) + 1;
-	
+
+	fprintf(stderr, "before select\n");
 	count = select(max, &set, NULL, NULL, NULL);
 	assert(count > 0);
 
@@ -440,7 +443,7 @@ int ATBgetDescriptors(fd_set *set)
 
 /*}}}  */
 
-/*{{{  ATerm ATBcheckSignature(ATerm signature, char *sigs[], int nrsigs) */
+/*{{{  ATermList ATBcheckSignature(ATerm signature, char *sigs[], int nrsigs) */
 
 /**
 	* Check a signature.
@@ -449,31 +452,23 @@ int ATBgetDescriptors(fd_set *set)
 ATerm ATBcheckSignature(ATerm signature, char *sigs[], int nrsigs)
 {
 	ATermList list = (ATermList)signature;
+	ATermList errors = ATempty;
 	int i;
 
-	ATprintf("checking signature: %t\n", signature);
-	ATprintf("signature spec consists of %d elements:\n", nrsigs);
-	for(i=0; i<nrsigs; i++) {
-		ATprintf("  %s\n", sigs[i]);
-	}
-
 	while(!ATisEmpty(list)) {
-		ATbool found = ATfalse;
 		ATerm entry = ATgetFirst(list);
 		list = ATgetNext(list);
 
-		for(i=0; i<nrsigs && !found; i++) {
+		for(i=0; i<nrsigs; i++) {
 			if(ATisEqual(ATparse(sigs[i]), entry))
-				found = ATtrue;
+				break;
 		}
 
-		if(!found) {
-			ATprintf("entry %t not in signature!\n", entry);
-			return entry;
-		}
+		if(i == nrsigs)
+			errors = ATinsert(errors, entry);				
 	}
 
-	return NULL;
+	return (ATerm)errors;
 }
 
 /*}}}  */

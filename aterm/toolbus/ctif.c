@@ -1,5 +1,6 @@
 /*{{{  includes */
 
+#include <ctype.h>
 #include <string.h>
 #include <fcntl.h>
 #include <unistd.h>
@@ -44,6 +45,25 @@ char *ident_to_C(char *ident)
 }
 
 /*}}}  */
+/*{{{  char *uppercase(char *ident) */
+
+/**
+	* Convert a string to uppercase
+	*/
+
+char *uppercase(char *ident)
+{
+	int i;
+	static char buf[BUFSIZ];
+
+	for(i=0; ident[i] && i < BUFSIZ; i++)
+		buf[i] = toupper(ident[i]);
+	buf[i] = '\0';
+
+	return buf;
+}
+
+/*}}}  */
 
 /*{{{  ATermList read_tifs(int fd, const char *tool) */
 
@@ -56,12 +76,13 @@ ATermList read_tifs(int fd, const char *tool)
 	ATerm tif;
 	ATermList tifs = ATempty;
 	ATermPlaceholder ph;
-	char *name;
+	char *primitive, *name;
 	
 	do {
 		tif = ATBreadTerm(fd);
-		if(ATmatch(tif, "<appl(<placeholder>,<list>)>", NULL, &ph, NULL)) {
-			if(ATmatch((ATerm)ph, "<appl>", &name) && streq(name, tool))
+		if(ATmatch(tif, "<appl(<placeholder>,<list>)>", &primitive, &ph, NULL)) {
+			if(strprefix(primitive, "rec-") &&
+				 ATmatch((ATerm)ph, "<appl>", &name) && streq(name, tool))
 				tifs = ATinsert(tifs, tif);
 		}
 	} while(!ATmatch(tif, "end-of-tifs"));
@@ -70,6 +91,144 @@ ATermList read_tifs(int fd, const char *tool)
 }
 
 /*}}}  */
+/*{{{  ATermList generalize_tifs(ATermList tifs) */
+
+/**
+	* Generalize incoming tifs.
+	*/
+
+ATermList generalize_tifs(ATermList tifs)
+{
+	ATermList result = ATempty;
+
+	while(!ATisEmpty(tifs)) {
+		int i;
+		char *name;
+		ATermList newargs = ATempty;
+		ATerm tif = ATgetFirst(tifs), newtif, tool;
+		ATermAppl appl;
+		
+		if(ATmatch(tif, "rec-terminate(<term>,<term>)", NULL, NULL) ||
+			 ATmatch(tif, "rec-ack-event(<term>,<term>)", NULL, NULL)) {
+			result = ATinsert(result, tif);
+		} else if(ATmatch(tif, "<appl(<term>,<term>)>", &name, &tool, &appl)) {
+			Symbol sym = ATgetSymbol(appl);
+			for(i=ATgetArity(sym)-1; i>=0; --i) {
+				ATerm arg = ATgetArgument(appl, i);
+				if(ATisEqual(arg, ATparse("<int>")) ||
+					 ATisEqual(arg, ATparse("<str>")))
+					newargs = ATinsert(newargs, arg);
+				else
+					newargs = ATinsert(newargs, ATparse("<term>"));
+			}
+
+			newtif = ATmake("<appl(<term>,<appl(<list>)>)>", 
+											name, tool, ATgetName(sym), newargs);
+			result = ATinsert(result, newtif);
+		}
+
+		tifs = ATgetNext(tifs);
+	}
+	return result;
+}
+
+/*}}}  */
+/*{{{  ATermList unify_arguments(ATermList args1, ATermList args2) */
+
+/**
+	* Unify two lists of arguments.
+	*/
+
+ATermList unify_arguments(ATermList args1, ATermList args2)
+{
+	int i = ATgetLength(args1);
+	ATermList result = ATempty;
+
+	
+	if(ATgetLength(args2) != i)
+		return NULL;
+
+	for(--i; i>=0; i--) {
+		ATerm arg1 = ATelementAt(args1, i);
+		ATerm arg2 = ATelementAt(args2, i);
+
+		/* When arg1 and arg2 are both <str> or <int>, leave them alone,
+			 otherwise use <term> */
+		if((ATisEqual(arg1, ATparse("<str>")) || 
+				ATisEqual(arg1, ATparse("<int>"))) && ATisEqual(arg1, arg2)) {
+			result = ATinsert(result, arg1);
+		} else {
+			result = ATinsert(result, ATparse("<term>"));
+		}
+	}
+	return result;
+} 
+
+/*}}}  */
+/*{{{  ATermList unify_tifs(ATermList tifs) */
+
+/**
+	* Unify a list of tifs.
+	*/
+
+ATermList unify_tifs(ATermList tifs)
+{
+	char *primitive;
+	ATermList result = ATempty;
+	ATerm tool;
+
+	while(!ATisEmpty(tifs)) {
+		ATermList rest;
+		char *mgu_name, *cur_name;
+		ATermList mgu_args, cur_args;
+		ATerm mgu, tif = ATgetFirst(tifs);
+
+		if(ATmatch(tif, "rec-terminate(<term>,<term>)", NULL, NULL) ||
+			 ATmatch(tif, "rec-ack-event(<term>,<term>)", NULL, NULL)) {
+			result = ATinsert(result, tif);
+			tifs = ATgetNext(tifs);
+			continue;
+		}
+
+		/* Now built-in primitive, must be primitive rec-do or rec-eval */
+		if(!ATmatch(tif, "<appl(<term>,<appl(<list>)>)>",
+								&primitive, &tool, &mgu_name, &mgu_args))
+			ATerror("illegal tif: %t\n", tif);
+
+		rest = ATgetNext(tifs);
+		tifs = ATempty;
+		for( ; !ATisEmpty(rest); rest=ATgetNext(rest)) {
+			char *cur_prim;
+			ATerm cur_tool, cur = ATgetFirst(rest);
+
+			if(!ATmatch(cur, "<appl(<term>,<appl(<list>)>)>", 
+									&cur_prim, &cur_tool, &cur_name, &cur_args) ||
+				 !streq(cur_name, mgu_name)) {
+				tifs = ATinsert(tifs, cur);
+				continue;
+			}
+
+			assert(ATisEqual(cur_tool, tool));
+			if(!streq(cur_prim, primitive))
+				ATerror("primitives collide: %t vs. %t\n", tif, cur);
+
+			fprintf(stderr, "cur_name=%s, mgu_name=%s\n", cur_name, mgu_name);
+			mgu_args = unify_arguments(mgu_args, cur_args);
+			if(!mgu_args)
+				ATerror("arity mismatch: %t vs. %t\n", tif, cur);
+			ATprintf("unified arguments: %t\n", mgu_args);
+		}
+			
+		mgu = ATmake("<appl(<list>)>", mgu_name, mgu_args);
+		result = ATinsert(result, ATmake("<appl(<term>,<term>)>", 
+																		 primitive, tool, mgu));
+	}
+
+	return result;
+}
+
+/*}}}  */
+
 /*{{{  void generate_prologue(FILE *f, char *tool, char *msg) */
 
 /**
@@ -96,8 +255,6 @@ void generate_prologue(FILE *f, char *tool, char *msg)
 
 void generate_argument_list(FILE *f, ATermList args)
 {
-	ATfprintf(stderr, "generating argument list: %t\n", args);
-
 	fprintf(f, "int conn");
 	while(!ATisEmpty(args)) {
 		ATerm arg = ATgetFirst(args);
@@ -165,13 +322,16 @@ void generate_declarations(FILE *f, ATermList tifs)
 
 void generate_header(FILE *f, ATermList tifs, char *tool)
 {
-	char *protect_def = ident_to_C(tool);
+	char *protect_def = uppercase(ident_to_C(tool));
 
 	generate_prologue(f, tool, "Headerfile");
 	fprintf(f, "#ifndef _%s_H\n", protect_def);
 	fprintf(f, "#define _%s_H\n\n", protect_def);
-	fprintf(f, "#include <aterm1.h>\n\n");
+	fprintf(f, "#include <atb-tool.h>\n\n");
 	generate_declarations(f, tifs);
+
+	fprintf(f, "extern ATerm %s_handler(int conn, ATerm term);\n", tool);
+	fprintf(f, "extern ATerm %s_checker(int conn, ATerm sigs);\n", tool);
 	fprintf(f, "\n#endif\n");
 }
 
@@ -183,7 +343,9 @@ int generate_signature(FILE *f, ATermList tifs)
 {
 	int count = ATgetLength(tifs);
 
-	fprintf(f, "static char *signature[] = {\n");
+	fprintf(f, "#define NR_SIG_ENTRIES\t%d\n\n", count);
+
+	fprintf(f, "static char *signature[NR_SIG_ENTRIES] = {\n");
 	
 	while(!ATisEmpty(tifs)) {
 		ATerm tif = ATgetFirst(tifs);
@@ -197,18 +359,19 @@ int generate_signature(FILE *f, ATermList tifs)
 }
 
 /*}}}  */
-/*{{{  void generate_sig_checker(FILE *f, char *tool) */
+/*{{{  void generate_checker(FILE *f, char *tool) */
 
 /**
 	* Generate the signature checker.
 	*/
 
-void generate_sig_checker(FILE *f, char *tool, int nrsigs)
+void generate_checker(FILE *f, char *tool, int nrsigs)
 {
 	fprintf(f, "/* Check the signature of the tool '%s' */\n", tool);
-	fprintf(f, "ATerm %s_sig_checker(int conn, ATerm siglist)\n", tool);
+	fprintf(f, "ATerm %s_checker(int conn, ATerm siglist)\n", tool);
 	fprintf(f, "{\n");
-	fprintf(f, "  return ATBcheckSignature(siglist, signature, %d);\n", nrsigs);
+	fprintf(f, "  return ATBcheckSignature(siglist, signature, "
+					"NR_SIG_ENTRIES);\n");
 	fprintf(f, "}\n\n");
 }
 
@@ -261,30 +424,30 @@ void generate_variables(FILE *f, ATermList tifs)
 						nrterms++;
 				}
 			}
-			nrints    = MAX(nrints, max_ints);
-			nrstrings = MAX(nrstrings, max_strings);
-			nrterms   = MAX(nrterms, max_terms);
+			max_ints    = MAX(nrints, max_ints);
+			max_strings = MAX(nrstrings, max_strings);
+			max_terms   = MAX(nrterms, max_terms);
 		}
 		/* Ignoring other patterns */		
 	}
 
 	/* Generate variable declarations */
 	fprintf(f, "  /* We need some temporary variables during matching */\n");
-	if(nrints > 0) {
+	if(max_ints > 0) {
 		fprintf(f, "  int i0");
-		for(i=1; i<nrints; i++)
+		for(i=1; i<max_ints; i++)
 			fprintf(f, ", i%d", i);
 		fprintf(f, ";\n");
 	}
-	if(nrstrings > 0) {
+	if(max_strings > 0) {
 		fprintf(f, "  char *s0");
-		for(i=1; i<nrstrings; i++)
+		for(i=1; i<max_strings; i++)
 			fprintf(f, ", *s%d", i);
 		fprintf(f, ";\n");
 	}
-	if(nrterms > 0) {
+	if(max_terms > 0) {
 		fprintf(f, "  ATerm t0");
-		for(i=1; i<nrstrings; i++)
+		for(i=1; i<max_terms; i++)
 			fprintf(f, ", t%d", i);
 		fprintf(f, ";\n");
 	}
@@ -377,6 +540,7 @@ void generate_handler(FILE *f, ATermList tifs, char *tool)
 	fprintf(f, "/* Event handler for tool '%s' */\n", tool);
 	fprintf(f, "ATerm %s_handler(int conn, ATerm term)\n", toolname);
 	fprintf(f, "{\n");
+	fprintf(f, "  ATerm in, out;\n");
 
 	generate_variables(f, tifs);
 
@@ -403,7 +567,16 @@ void generate_handler(FILE *f, ATermList tifs, char *tool)
 		}
 	}
 
+	fprintf(f, "  if(ATmatch(term, \"rec-do(signature(<term>,<term>))\", "
+					"&in, &out)) {\n");
+	fprintf(f, "    ATerm result = %s_checker(conn, in);\n", tool);
+	fprintf(f, "    if(!ATmatch(result, \"[]\"))\n");
+	fprintf(f, "      ATfprintf(stderr, \"warning: not in input signature:"
+					"\\n\\t%%\\n\\tl\\n\", result);\n");
+	fprintf(f, "    return NULL;\n");
+	fprintf(f, "  }\n\n");
 	fprintf(f, "  ATerror(\"tool %s cannot handle term %%t\", term);\n", tool);
+	fprintf(f, "  return NULL; /* Silence the compiler */\n");
 
 	fprintf(f, "}\n\n");
 }
@@ -423,7 +596,7 @@ void generate_code(FILE *f, ATermList tifs, char *tool, char *header)
 	fprintf(f, "#include \"%s\"\n\n", header);
 	count = generate_signature(f, tifs);
 	generate_handler(f, tifs, tool);
-	generate_sig_checker(f, tool, count);
+	generate_checker(f, tool, count);
 }
 
 /*}}}  */
@@ -509,7 +682,11 @@ int main(int argc, char *argv[])
 
 	tifs = read_tifs(fd, tool);
 	close(fd);
-	/*ATprintf("tifs read: %t\n", tifs);*/
+	ATprintf("tifs read: %t\n", tifs);
+	tifs = generalize_tifs(tifs);
+	ATprintf("tifs generalized: %t\n", tifs);
+	tifs = unify_tifs(tifs);
+	ATprintf("tifs unified: %t\n", tifs);
 
 	file = fopen(headername, "w"); 
 	if(!file)
