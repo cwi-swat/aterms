@@ -4,6 +4,8 @@ Wed Aug 27 14:20:42 CEST 2003 <{jong,kooiker}@cwi.nl>
  * version bump to 1.5beta
  * make empty list notion private to PureFactory
  * remove any static references to 'empty'
+ * throw away aterm-java-*.pkg in CLEAN_FILES, not *.pkg, as this includes
+   the repository-managed source file for generating .pkg files!
 
 2003/08/14 <jurgenv@cwi.nl>
  * Made all constructors of ATerm implementations protected.

@@ -1,13 +1,13 @@
 SUBDIRS = aterm test config .
 
-EXTRA_DIST=$(wildcard *.pkg)
+EXTRA_DIST = $(wildcard *.pkg)
 
 noinst_DATA = ${JAVADOCDIR}.tar.gz
 data_DATA = ${JARFILE} 
 
 JARFILE = aterm-${VERSION}.jar
 JAVADOCDIR = aterm-javadoc
-CLEANFILES = ${JARFILE} ${JAVADOCDIR}.tar.gz $(wildcard *.pkg)
+CLEANFILES = ${JARFILE} ${JAVADOCDIR}.tar.gz $(wildcard aterm-java-*.pkg)
 
 JAVA_CLASSES = \
 	AFun \
