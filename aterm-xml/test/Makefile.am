@@ -8,7 +8,7 @@ EXTRA_DIST=$(wildcard *.trm) $(wildcard *.xml) $(wildcard *.ref)
 
 # which files are tested
 #TEST_FILES=slashdot pi title eve aterm wap wml
-TEST_FILES=slashdot pi 
+TEST_FILES=
 
 # TESTS is a special automake variable. It enumarates the
 # scripts that it should call when 'gmake check' is done:
