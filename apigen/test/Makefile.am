@@ -66,7 +66,6 @@ EXTRA_DIST = \
 	rolodex.adt \
 	rolodex.trm
 
-# Below the generation of Java and C API's:
 rolodex.c rolodex.h: rolodex.adt
 	${ADTC} \
 		--input ${top_srcdir}/test/rolodex.adt \

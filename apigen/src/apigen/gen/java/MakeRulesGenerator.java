@@ -1,5 +1,6 @@
 package apigen.gen.java;
 
+import java.io.File;
 import java.util.Iterator;
 
 import apigen.adt.ADT;
@@ -13,6 +14,7 @@ import apigen.gen.StringConversions;
 public class MakeRulesGenerator extends Generator {
 	private static final int MAX_FILES_IN_MAKEFILE_VARIABLE = 50;
 
+	private GenerationParameters params;
 	private ADT adt;
 	private String name;
 	private int bucket;
@@ -20,14 +22,23 @@ public class MakeRulesGenerator extends Generator {
 
 	public MakeRulesGenerator(ADT adt, GenerationParameters params) {
 		super(params);
+		this.params = params;
 		this.adt = adt;
 		this.name = StringConversions.makeCapitalizedIdentifier(params.getApiName());
 		this.prefix = name + "API";
-		setDirectory(params.getOutputDirectory());
+		setDirectory(buildOutputDirectory());
 		setFileName(name + "MakeRules");
 		setExtension("");
 	}
-	
+
+	private String buildOutputDirectory() {
+		StringBuffer buf = new StringBuffer();
+		buf.append(params.getOutputDirectory());
+		buf.append(File.separatorChar);
+		buf.append(params.getPackageName().replace('.', File.separatorChar));
+		return buf.toString();
+	}
+
 	private static String getClassFileName(String className) {
 		return className + ".java";
 	}

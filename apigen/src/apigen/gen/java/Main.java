@@ -132,7 +132,7 @@ public class Main {
 	static private void generateAPI(ADT adt) {
 		new FactoryGenerator(adt, params).run();
 		new GenericConstructorGenerator(adt, params).run();
-		new MakeRulesGenerator(adt, params).run();
+		//		new MakeRulesGenerator(adt, params).run();
 
 		if (params.isVisitable()) {
 			new VisitorGenerator(adt, params).run();
