@@ -58,6 +58,7 @@ void mark_phase()
 	setjmp(env);
 	start = (ATerm *)env;
 	stop  = ((ATerm *)(((char *)env) + sizeof(jmp_buf)));
+
 	for(cur=start; cur<stop; cur++) {
 		if (AT_isValidTerm(*cur))
 			AT_markTerm(*cur);
@@ -78,6 +79,7 @@ void mark_phase()
   for(cur=start; cur<stop; cur++) {
 		if (AT_isValidTerm(*cur))
 			AT_markTerm(*cur);
+		else
 		if (AT_isValidSymbol((Symbol)*cur))
 			AT_markSymbol((Symbol)*cur);
   }
@@ -96,16 +98,16 @@ void sweep_phase()
 
   for(size=MIN_TERM_SIZE; size<MAX_TERM_SIZE; size++) {
 		Block *block = at_blocks[size];
-		int end = BLOCK_SIZE-size;
+		int end = BLOCK_SIZE - (BLOCK_SIZE % size);
+		//int end = BLOCK_SIZE - size;
 		while(block) {
 			assert(block->size == size);
 			for(idx=0; idx<end; idx+=size) {
-				ATerm t = (ATerm)&block->data[idx];
-				if(IS_MARKED(t->header)) {
+				ATerm t = (ATerm)&(block->data[idx]);
+				if(IS_MARKED(t->header))
 					CLR_MARK(t->header);
-				} else if(ATgetType(t) != AT_FREE) {
+				else if(ATgetType(t) != AT_FREE)
 					AT_free(size, t);
-				}
 			}
 			block = block->next_by_size;
 		}

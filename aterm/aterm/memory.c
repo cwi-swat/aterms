@@ -246,7 +246,7 @@ static void allocate_block(int size)
 	((ATerm)(((header_type *)data)+idx))->next = NULL;
 
 	/* Place the new block in the block_table */
-	idx = (((unsigned int)newblock) >> BLOCK_SHIFT) % BLOCK_TABLE_SIZE;
+	idx = (((unsigned int)newblock) >> (BLOCK_SHIFT+2)) % BLOCK_TABLE_SIZE;
 	newblock->next_after = block_table[idx].first_after;
 	block_table[idx].first_after = newblock;
 	idx = (idx+1) % BLOCK_TABLE_SIZE;
@@ -270,16 +270,16 @@ ATerm AT_allocate(int size)
 	{
 #ifdef GC_ON
 		int total = at_nrblocks[size]*(BLOCK_SIZE/size);
-		printf("alloc_since_gc[%d] = %d, total=%d\n", size,
-					 alloc_since_gc[size], total);
+		/*printf("alloc_since_gc[%d] = %d, total=%d\n", size,
+					 alloc_since_gc[size], total);*/
 		if((100*alloc_since_gc[size]) <= GC_THRESHOLD*total) {
 #else
 			if(1) {
 #endif
-				printf("allocating new block of size %d\n", size);
+				/*printf("allocating new block of size %d\n", size);*/
 				allocate_block(size);
 		} else {
-			printf("collecting for size %d\n", size);
+			/*printf("collecting for size %d\n", size);*/
 			AT_collect(size);
 			for(i=MIN_TERM_SIZE; i<MAX_TERM_SIZE; i++)
 				alloc_since_gc[size] = 0;
@@ -1292,7 +1292,7 @@ ATerm ATremoveAnnotation(ATerm t, ATerm label)
 ATbool AT_isValidTerm(ATerm term)
 {
   Block *cur;
-  int idx = (((unsigned int)term)>>BLOCK_SHIFT) % BLOCK_TABLE_SIZE;
+  int idx = (((unsigned int)term)>>(BLOCK_SHIFT+2)) % BLOCK_TABLE_SIZE;
   header_type header;
   int         type;
 	ATbool inblock = ATfalse;
