@@ -5,6 +5,8 @@
  * Added fromTerm for separated lists. This is a rather complicated algorithm ;-(
  * Extended the list types of the ADT formalism with some convenience iterators
    over fields and separator fields
+ * NOTE: the current implementation of separated lists in both C and Java is
+   very incomplete!
 
 2003-08-19  (jurgenv@cwi.nl)
  * Committed basic setup for generating separated lists in Java
