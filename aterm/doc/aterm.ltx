@@ -719,19 +719,18 @@ ensures that all entries in the table are of the same size.
 \item Relation with ``user-defined'' hash tables.
 \end{itemize}
 
-\subsection{Implementation of Garbage Collector}
-
-*** OPMERKING: Minder puntsgewijs formuleren!!! ***
+\subsection{Implementation of the Garbage Collector}
 
 We have opted for a version of the make-sweep garbage collector.
-
 Every object contains a single bit used by the mark-sweep algorithm
-to indicate 'live' (marked) objects. At the start of a garbage collection,
+to indicate 'live' (marked) objects. At the start of a garbage collection cycle,
 all objects are unmarked. The garbage collector tries to locate and mark all
-live objects. The garbage collector starts by scanning the stack for
-and looking for words could be references to objects. When such a
-word is found, the object (and the transitive closure of all of the 
-objects it refers to) are marked as 'live'. 
+live objects by traversing all terms that are explicitly protected by the
+programmer (using the {\tt ATprotect} function), and by scanning the stack 
+looking for words that
+could be references to objects. When such a word is found, the object 
+(and the transitive closure of all of the objects it refers to) are marked 
+as 'live'. 
 
 This scan of the stack causes all objects referenced from local
 variables to be protected from being garbage collected.
@@ -739,21 +738,14 @@ Our garbage collector
 is a  conservative collector in the sense that some of the words on the
 stack could accidentally look like object references, resulting in objects 
 marked as 'live' that are actually garbage.
-
-After this scan of the stack, all objects that are explicitly protected
-by the programmer are marked as well.
-A programmer can protect and unprotect terms by means of the
-following operations: {\tt ATprotect} and {\tt ATunprotect}, respectively.
-
 When all live objects are marked, a single sweep through the heap
 is used to store all objects that are free in separate lists of free
 objects, one list for each object size.
 
 Allocation of objects is now simply a matter of taking the first element
 from the appropriate free-list, which is an extremely cheap operation.
-
-If garbage collection does not yield enough free blocks, new blocks
-will be allocated.
+If garbage collection does not yield enough free objects, new memory blocks
+will be allocated to satisfy allocation requests. 
 
 
 %}}}
@@ -1028,10 +1020,10 @@ using the \ATerm\ library is less then 10 percent.
 and computational applications, e.g., the {\sc Asf+Sdf} compiler \cite{BOHK98}
 is entirely based on this library and the application developed by
 JanFriso Groote.
-\item The current implementation is running on SGI, Solaris, and UNIX.
+\item The current implementation is running on SGI, Solaris, and Linux.
 \item The \ATerm\ library gave rise to an unexpected application,
 a tool for detecting code clones in COBOL programs.
-\item The using BAF reduces the term size by a factor XXX and reduces the
+\item The using BAF reduces the term size by a factor  and reduces the
 processing time by a factor XXX.
 \end{itemize}
 
