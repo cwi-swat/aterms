@@ -1,5 +1,8 @@
 # $Id$
 
+2003/09/26 <jurgenv@cwi.nl>
+ * Release 1.7 to accomodate release of jtom
+
 2003/09/01 <kooiker@cwi.nl>
  * remove all warnings found by Eclipse in the non-generated code
 
