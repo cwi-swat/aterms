@@ -72,4 +72,5 @@ utils/Makefile
 utils/apigen
 test/Makefile
 ,
+chmod +x utils/apigen
 )
