@@ -39,7 +39,7 @@ public class JavaGenerationParameters extends GenerationParameters {
 	public String usage() {
 		StringBuffer buf = new StringBuffer(super.usage());
 		buf.append("\t-p | --package <package>       <optional>\n");
-		buf.append("\t-i | --import <package>        (can be repeated)\n");
+		buf.append("\t-m | --import <package>        (can be repeated)\n");
 		buf.append("\t-t | --visitable               [off]\n");
 		return buf.toString();
 	}

@@ -56,9 +56,8 @@ public class Main {
 	}
 
 	private static void usage(JavaGenerationParameters params) {
-		System.err.println("Usage: apigen.gen.java.Main [options]\n");
-		System.err.println("options:");
-		System.err.println();
+		System.err.println("Usage: apigen.gen.java.Main [parameters]");
+		System.err.println("Parameters:");
 		System.err.print(params.usage());
 	}
 
