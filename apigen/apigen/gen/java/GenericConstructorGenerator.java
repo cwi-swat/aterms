@@ -7,13 +7,15 @@ import apigen.gen.StringConversions;
 
 
 public class GenericConstructorGenerator extends JavaGenerator {
-    private String className;
+    private boolean visitable;
+	private String className;
     private String factoryName;
     
-	public GenericConstructorGenerator(String directory, String apiName, String pkg, boolean verbose, boolean folding) {
+	public GenericConstructorGenerator(String directory, String apiName, String pkg, boolean verbose, boolean visitable) {
 		
 		super(directory,getConstructorClassName(apiName),pkg,new LinkedList(),verbose); 
 		
+        this.visitable = visitable;
 		className = getConstructorClassName(apiName);
 		factoryName = FactoryGenerator.className(apiName);
 	}
