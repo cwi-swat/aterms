@@ -7,11 +7,18 @@
 
 #include "rolodex.h"
 
+static Rolodex acceptRolodex(Rolodex rolo)
+{
+  ATfprintf(stderr, "acceptRolodex: %t\n", rolo);
+  return rolo;
+}
+
 static void testRolodex()
 {
   char * names[2];
   PhoneNumber phone[2];
   Rolodex rolo[2];
+  RoloList list;
 
   names[0] = "Pieter";
   names[1] = "CWI";
@@ -21,6 +28,12 @@ static void testRolodex()
 
   rolo[0] = makeRolodexHome(names[0], phone[0]);
   rolo[1] = makeRolodexWork(names[1], phone[1]);
+
+  list = makeRoloListEmpty();
+  list = makeRoloListMulti(rolo[1], list);
+  list = makeRoloListMulti(rolo[0], list);
+
+  list = visitRoloList(list, acceptRolodex);
 
   assert(ATisEqual(makeRolodexFromTerm(makeTermFromRolodex(rolo[0])), 
 		   rolo[0]));

@@ -9,6 +9,7 @@ public class Type
   String id;
   List   alts;
   Map    fields;
+  List   field_list;
 
   //{{{ public Type(String id)
 
@@ -18,6 +19,7 @@ public class Type
 
     alts   = new LinkedList();
     fields = new HashMap();
+    field_list = new Vector();
   }
 
   //}}}
@@ -118,6 +120,7 @@ public class Type
     if (field == null) {
       field = new Field(id, type);
       fields.put(id, field);
+      field_list.add(field);
     }
 
     field.addLocation(location);
@@ -137,7 +140,7 @@ public class Type
 
   public Iterator fieldIterator()
   {
-    return fields.values().iterator();
+    return field_list.iterator();
   }
 
   //}}}

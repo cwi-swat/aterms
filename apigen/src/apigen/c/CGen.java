@@ -165,6 +165,7 @@ public class CGen
     genConstructors(api);
     genIsEquals(api);
     genAccessors(api);
+    genSortVisitors(api);
     genEpilogue(api);
 
     ATerm dict = buildDictionary(api);
@@ -291,6 +292,8 @@ public class CGen
   private void genTermConversions(API api)
   {
     Iterator types = api.typeIterator();
+    printFoldOpen(header, "term conversion functions");
+    printFoldOpen(source, "term conversion functions");
     while (types.hasNext()) {
       Type type = (Type)types.next();
       String type_id = buildId(type.getId());
@@ -323,8 +326,8 @@ public class CGen
 
       //}}}
     }
-    source.println();
-    header.println();
+    printFoldClose(source);
+    printFoldClose(header);
   }
 
   //}}}
@@ -365,6 +368,8 @@ public class CGen
   private void genConstructors(API api)
   {
     Iterator types = api.typeIterator();
+    printFoldOpen(header, "constructors");
+    printFoldOpen(source, "constructors");
     while (types.hasNext()) {
       Type type = (Type)types.next();
       String type_id = buildId(type.getId());
@@ -373,42 +378,8 @@ public class CGen
       Iterator alts = type.alternativeIterator();
       while (alts.hasNext()) {
 	Alternative alt = (Alternative)alts.next();
-	//{{{ Find fields in this alternative
-
-	List alt_fields = new LinkedList();
-        Iterator fields = type.altFieldIterator(alt.getId());
-	while (fields.hasNext()) {
-	  Field field = (Field)fields.next();
-	  alt_fields.add(field);
-	}
-
-	//}}}
-	//{{{ Build declaration
-
-	StringBuffer decl = new StringBuffer();
-	decl.append(type_name + " " + prefix + "make" + type_id
-		    + capitalize(buildId(alt.getId())) + "(");
-	fields = alt_fields.iterator();
-	boolean first = true;
-	while (fields.hasNext()) {
-	  Field field = (Field)fields.next();
-	  if (first) {
-	    first = false;
-	  } else {
-	    decl.append(", ");
-	  }
-	  decl.append(buildTypeName(field.getType()) + " "
-		      + buildId(field.getId()));
-	}
-	decl.append(")");
-
-
-	//}}}
-	//{{{ Generate declaration
-	
+	String decl = buildConstructorDecl(type, alt);
 	header.println(decl + ";");
-
-	//}}}
 	//{{{ Generate implementation
 
 	printFoldOpen(source, decl.toString());
@@ -417,7 +388,7 @@ public class CGen
 	source.print("  return (" + type_name + ")ATmakeTerm("
 		     + prefix + "pattern" + type_id
 		     + capitalize(buildId(alt.getId())));
-	fields = alt_fields.iterator();
+	Iterator fields = type.altFieldIterator(alt.getId());
 	while (fields.hasNext()) {
 	  Field field = (Field)fields.next();
 	  source.print(", " + buildId(field.getId()));
@@ -429,11 +400,50 @@ public class CGen
 	//}}}
       }
     }
-    source.println();
-    header.println();
+    printFoldClose(source);
+    printFoldClose(header);
   }
 
   //}}}
+  //{{{ private String buildConstructorName(Type type, Alternative alt)
+
+  private String buildConstructorName(Type type, Alternative alt)
+  {
+    String type_id   = buildId(type.getId());
+    String alt_id    = buildId(alt.getId());
+    return prefix + "make" + type_id + capitalize(alt_id);
+  }
+
+  //}}}
+  //{{{ private String buildConstructorDecl(Type type, Alternative alt)
+
+  private String buildConstructorDecl(Type type, Alternative alt)
+  {
+    String type_id   = buildId(type.getId());
+    String type_name = buildTypeName(type);
+    String alt_id    = buildId(alt.getId());
+
+    StringBuffer decl = new StringBuffer();
+    decl.append(type_name + " " + buildConstructorName(type, alt) + "(");
+    Iterator fields = type.altFieldIterator(alt.getId());
+    boolean first = true;
+    while (fields.hasNext()) {
+      Field field = (Field)fields.next();
+      if (first) {
+	first = false;
+      } else {
+	decl.append(", ");
+      }
+      decl.append(buildTypeName(field.getType()) + " "
+		  + buildId(field.getId()));
+    }
+    decl.append(")");
+
+    return decl.toString();
+  }
+
+  //}}}
+
   //{{{ private void genAccessors(API api)
 
   private void genAccessors(API api)
@@ -442,8 +452,8 @@ public class CGen
     while (types.hasNext()) {
       Type type = (Type)types.next();
       String type_name = buildTypeName(type);
-      printFoldOpen(header, type_name + " accessor prototypes");
-      printFoldOpen(source, type_name + " accessor implementations");
+      printFoldOpen(header, type_name + " accessors");
+      printFoldOpen(source, type_name + " accessors");
 
       genTypeIsValid(type);
 
@@ -491,8 +501,7 @@ public class CGen
       } else {
 	source.print("else ");
       }
-      source.println("if (" + prefix + "is" + type_id 
-		     + capitalize(buildId(alt.getId())) + "(arg)) {");
+      source.println("if (" + buildIsAltName(type, alt) + "(arg)) {");
       source.println("    return ATtrue;");
       source.println("  }");
     }
@@ -509,8 +518,7 @@ public class CGen
   {
     String type_id = buildId(type.getId());
     String type_name = buildTypeName(type);
-    String decl = "ATbool " + prefix + "is" + type_id
-      + capitalize(buildId(alt.getId())) + "(" + type_name + " arg)";
+    String decl = "ATbool " + buildIsAltName(type, alt) + "(" + type_name + " arg)";
 
     header.println(decl + ";");
 
@@ -531,6 +539,23 @@ public class CGen
   }
 
   //}}}
+  //{{{ private String buildIsAltName(Type type, Alternative alt)
+
+  private String buildIsAltName(Type type, Alternative alt)
+  {
+    return buildIsAltName(type, alt.getId());
+  }
+
+  //}}}
+  //{{{ private String buildIsAltName(Type type, String altId)
+
+  private String buildIsAltName(Type type, String altId)
+  {
+    return prefix + "is" + buildId(type.getId()) + capitalize(buildId(altId));
+  }
+
+  //}}}
+
   //{{{ private void genHasField(Type type, Field field)
 
   private void genHasField(Type type, Field field)
@@ -556,14 +581,125 @@ public class CGen
       else {
 	source.print("else ");
       }
-      source.println("if (" + prefix + "is" + type_id
-		     + capitalize(buildId(loc.getAltId())) + "(arg)) {");
+      source.println("if (" + buildIsAltName(type, loc.getAltId()) + "(arg)) {");
       source.println("    return ATtrue;");
       source.println("  }");
     }
     source.println("  return ATfalse;");
     source.println("}");
     printFoldClose(source);
+  }
+
+  //}}}
+
+  //{{{ private void genSortVisitors(API api)
+
+  private void genSortVisitors(API api)
+  {
+    Iterator types = api.typeIterator();
+    printFoldOpen(header, "sort visitors");
+    printFoldOpen(source, "sort visitors");
+
+    while (types.hasNext()) {
+      Type type = (Type)types.next();
+      String type_id   = buildId(type.getId());
+      String type_name = buildTypeName(type);
+
+      StringBuffer decl_buf = new StringBuffer();
+      String visitor_name = "visit" + type_id;
+      decl_buf.append(type_name);
+      decl_buf.append(" ");
+      decl_buf.append(visitor_name);
+      decl_buf.append("(");
+      decl_buf.append(type_name);
+      decl_buf.append(" arg");
+      Iterator fields = type.fieldIterator();
+      while (fields.hasNext()) {
+	Field field = (Field)fields.next();
+	if (!field.getType().equals(type.getId())) {
+	  decl_buf.append(", ");
+	  decl_buf.append(genAcceptor(field));
+	}
+      }
+      decl_buf.append(")");
+      String decl = decl_buf.toString();
+
+      header.println(decl + ";");
+
+      printFoldOpen(source, decl);
+      source.println(decl);
+      source.println("{");
+
+      Iterator alts = type.alternativeIterator();
+      while (alts.hasNext()) {
+	Alternative alt = (Alternative)alts.next();
+	genSortVisitorAltImpl(type, alt);
+      }
+
+      source.println("  ATabort(\"not a " + type_id + ": %t\\n\", arg);");
+      source.println("  return (" + type_name + ")NULL;");
+
+      source.println("}");
+      printFoldClose(source);
+    }
+
+    printFoldClose(source);
+    printFoldClose(header);
+  }
+
+  //}}}
+  //{{{ private String genAcceptor(Field field)
+
+  private String genAcceptor(Field field)
+  {
+    String type = buildTypeName(field.getType());
+    String name = "accept" + capitalize(buildId(field.getId()));
+
+    return type + " (*" + name + ")(" + type + ")";
+  }
+
+  //}}}
+  //{{{ private void genSortVisitorAltImpl(String type, Alternative alt)
+
+  private void genSortVisitorAltImpl(Type type, Alternative alt)
+  {
+    String type_id   = buildId(type.getId());
+    String alt_id    = buildId(alt.getId());
+    String type_name = buildTypeName(type);
+    String cons_name = buildConstructorName(type, alt);
+
+    source.println("  if (" + buildIsAltName(type, alt) + "(arg)) {");
+    source.print("    return " + cons_name + "(");
+    Iterator fields = type.altFieldIterator(alt.getId());
+    while (fields.hasNext()) {
+      Field field = (Field)fields.next();
+      source.println("");
+      source.print("        ");
+      String getter_name = buildGetterName(type, field);
+      if (field.getType().equals(type.getId())) {
+	String visitor_name = "visit" + type_id;
+	source.print(visitor_name + "(" + getter_name + "(arg)");
+	Iterator params = type.fieldIterator();
+	while (params.hasNext()) {
+	  Field param = (Field)params.next();
+	  if (!param.getType().equals(type.getId())) {
+	    source.print(", ");
+	    source.print("accept" + capitalize(buildId(param.getId())));
+	  }
+	}
+	source.print(")");
+      } else {
+	String acceptor_name = "accept" + capitalize(buildId(field.getId()));
+	source.print(acceptor_name
+		     + " ? " + acceptor_name + "(" + getter_name + "(arg))");
+	source.print(" : " + getter_name + "(arg)");
+      }
+      if (fields.hasNext()) {
+	source.print(",");
+      }
+    }
+    source.println(");");
+    source.println("  }");
   }
 
   //}}}
@@ -576,8 +712,8 @@ public class CGen
     String type_name = buildTypeName(type);
     String field_type_name = buildTypeName(field.getType());
     String fieldId = capitalize(buildId(field.getId()));
-    String decl = field_type_name + " " + prefix + "get" + type_id
-      + fieldId + "(" + type_name + " arg)";
+    String decl = field_type_name + " " + buildGetterName(type, field)
+      + "(" + type_name + " arg)";
 
     header.println(decl + ";");
 
@@ -595,8 +731,7 @@ public class CGen
       else {
 	source.print("else ");
       }
-      source.println("if (" + prefix + "is" + type_id
-		     + capitalize(buildId(loc.getAltId())) + "(arg)) {");
+      source.println("if (" + buildIsAltName(type, loc.getAltId()) + "(arg)) {");
       source.print("    return (" + field_type_name + ")");
       Iterator steps = loc.stepIterator();
       String[] type_getter = genReservedTypeGetter(field.getType());
@@ -616,6 +751,18 @@ public class CGen
   }
 
   //}}}
+  //{{{ private String buildGetterName(Type type, Field field)
+
+  private String buildGetterName(Type type, Field field)
+  {
+    String type_id = buildId(type.getId());
+    String fieldId = capitalize(buildId(field.getId()));
+
+    return prefix + "get" + type_id + fieldId;
+  }
+
+  //}}}
+
   //{{{ private void genGetterSteps(Iterator steps, String arg)
 
   private void genGetterSteps(Iterator steps, String arg)
@@ -682,8 +829,7 @@ public class CGen
       else {
 	source.print("else ");
       }
-      source.println("if (" + prefix + "is" + type_id
-		     + capitalize(buildId(loc.getAltId())) + "(arg)) {");
+      source.println("if (" + buildIsAltName(type, loc.getAltId()) + "(arg)) {");
       source.print("    return (" + type_name + ")");
       Iterator steps = loc.stepIterator();
       String arg = genReservedTypeSetterArg(field.getType(),
