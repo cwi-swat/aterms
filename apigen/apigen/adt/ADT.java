@@ -63,6 +63,7 @@ public class ADT {
         bottomTypes = new LinkedList();
         Iterator types = typeIterator();
 
+        // TODO: do not include builtin types as bottomTypes
         while (types.hasNext()) {
             Type type = (Type) types.next();
             Iterator fields = type.fieldIterator();

@@ -125,7 +125,7 @@ public class Type {
             || id.equals("int")
             || id.equals("str")
             || id.equals("real")
-            || id.equals("list")
+            // || id.equals("list") is this really necessary (sometimes leads to unnatural field names)
             || id.equals("chars")) {
             throw new RuntimeException(
                 "Illegal use of reserved name \""
