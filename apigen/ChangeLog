@@ -7,6 +7,7 @@
  * Reimplemented adt-to-java for the most part. It now generates specialized factories.
    The factory inherits from PureFactory, the types inherit from ATermApplImpl. The result
    is a maximally shared typed term representation.
+ * Bumped to 1.5beta
 
 2002/11/04 (vinju@loria.fr)
  * ADT class computes bottom sorts
