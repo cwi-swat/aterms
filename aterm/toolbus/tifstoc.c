@@ -368,7 +368,8 @@ int generate_signature(FILE *f, ATermList tifs)
 void generate_checker(FILE *f, char *tool, int nrsigs)
 {
 	fprintf(f, "/* Check the signature of the tool '%s' */\n", tool);
-	fprintf(f, "ATerm %s_checker(int conn, ATerm siglist)\n", tool);
+	fprintf(f, "ATerm %s_checker(int conn, ATerm siglist)\n", 
+			ident_to_C(tool));
 	fprintf(f, "{\n");
 	fprintf(f, "  return ATBcheckSignature(siglist, signature, "
 					"NR_SIG_ENTRIES);\n");
@@ -569,7 +570,8 @@ void generate_handler(FILE *f, ATermList tifs, char *tool)
 
 	fprintf(f, "  if(ATmatch(term, \"rec-do(signature(<term>,<term>))\", "
 					"&in, &out)) {\n");
-	fprintf(f, "    ATerm result = %s_checker(conn, in);\n", tool);
+	fprintf(f, "    ATerm result = %s_checker(conn, in);\n", 
+			ident_to_C(tool));
 	fprintf(f, "    if(!ATmatch(result, \"[]\"))\n");
 	fprintf(f, "      ATfprintf(stderr, \"warning: not in input signature:"
 					"\\n\\t%%\\n\\tl\\n\", result);\n");
