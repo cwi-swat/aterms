@@ -2,7 +2,7 @@
 
 __BUILDDIR__/utils/baffle -rt -ws -silent < test.trm > test.taf
 
-java -classpath __BUILDDIR__/java aterm.test.Test || exit 1
+java -classpath __BUILDDIR__/java:$CLASSPATH aterm.test.Test || exit 1
 
 cmp test.trm test.trm2 || exit 1
 cmp test.taf test.taf2 || exit 1

@@ -168,6 +168,7 @@ AC_OUTPUT(
   java/aterm/pure/ATermVisitableImpl.java
   java/aterm/visitor/Makefile
   java/aterm/test/Makefile
+  java/aterm/test/VisitorBenchmark.java
   doc/Makefile
   doc/examples/Makefile
   doc/spec/Makefile

@@ -1,5 +1,10 @@
 $Id$
 
+2001/10/08 (Joost.Visser@cwi.nl)
+ * Added declaration of method setChildAt to the aterm.visitor.Visitable
+   class and corresponding implementations to aterm.pure.*, in order to 
+   conform to the JJTraveler framework (version 0.1).
+
 2001/08/28 (jong@cwi.nl)
  * C-library warnings issued by gcc-3.0.1 fixed
 

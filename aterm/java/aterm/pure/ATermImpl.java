@@ -251,6 +251,14 @@ public abstract class ATermImpl
   }
 
   //}}}
+  //{{{ public ATerm setSubTerm(int index, ATerm t)
+
+  public ATerm setSubTerm(int index, ATerm t)
+  {
+    throw new RuntimeException("no children!");
+  }
+
+  //}}}
 }
 
 class ATermWriter

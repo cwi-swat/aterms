@@ -554,4 +554,12 @@ class ATermListImpl
   }
 
   //}}}
+  //{{{ public ATerm setSubTerm(int index, ATerm t)
+
+  public ATerm setSubTerm(int index, ATerm t)
+  {
+    return replace(t,index);
+  }
+
+  //}}}
 }

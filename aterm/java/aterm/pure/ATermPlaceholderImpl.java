@@ -124,6 +124,14 @@ class ATermPlaceholderImpl
   }
 
   //}}}
+  //{{{ public ATerm setPlaceholder(ATerm newtype)
+
+  public ATerm setPlaceholder(ATerm newtype)
+  {
+    return factory.makePlaceholder(newtype, getAnnotations());
+  }
+
+  //}}}
   //{{{ public ATerm setAnnotations(ATermList annos)
 
   public ATerm setAnnotations(ATermList annos)
@@ -155,6 +163,18 @@ class ATermPlaceholderImpl
   public ATerm getSubTerm(int index)
   {
     return type;
+  }
+
+  //}}}
+  //{{{ public ATerm setSubTerm(int index, ATerm t)
+
+  public ATerm setSubTerm(int index, ATerm t)
+  {
+      if (index==1) {
+	  return setPlaceholder(t);
+      } else {
+	  throw new RuntimeException("no "+index+"-th child!");
+      }
   }
 
   //}}}
