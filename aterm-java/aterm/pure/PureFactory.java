@@ -164,11 +164,6 @@ public class PureFactory extends SharedObjectFactory implements ATermFactory {
   }
 
   private static ATerm[] array0 = new ATerm[0];
-  private static ATerm[] array1 = new ATerm[1];
-  private static ATerm[] array2 = new ATerm[2];
-  private static ATerm[] array3 = new ATerm[3];
-  private static ATerm[] array4 = new ATerm[4];
-  private static ATerm[] array5 = new ATerm[5];
 
   public ATermAppl makeAppl(AFun fun, ATerm[] args) {
     return makeAppl(fun, args, empty);
@@ -203,38 +198,28 @@ public class PureFactory extends SharedObjectFactory implements ATermFactory {
   }
 
   public ATermAppl makeAppl(AFun fun, ATerm arg) {
-    array1[0] = arg;
-    return makeAppl(fun,array1);
+    ATerm[] argarray1 = new ATerm[] {arg};
+    return makeAppl(fun,argarray1);
   }
 
   public ATermAppl makeAppl(AFun fun, ATerm arg1, ATerm arg2) {
-    array2[0] = arg1;
-    array2[1] = arg2;
-    return makeAppl(fun,array2);
+    ATerm[] argarray2 = new ATerm[] {arg1, arg2};
+    return makeAppl(fun,argarray2);
   }
 
   public ATermAppl makeAppl(AFun fun, ATerm arg1, ATerm arg2, ATerm arg3) {
-    array3[0] = arg1;
-    array3[1] = arg2;
-    array3[2] = arg3;
-    return makeAppl(fun, array3);
+    ATerm [] argarray3 = new ATerm[] {arg1, arg2, arg3};
+    return makeAppl(fun, argarray3);
   }
 
   public ATermAppl makeAppl(AFun fun, ATerm arg1, ATerm arg2, ATerm arg3, ATerm arg4) {
-    array4[0] = arg1;
-    array4[1] = arg2;
-    array4[2] = arg3;
-    array4[3] = arg4;
-    return makeAppl(fun, array4);
+    ATerm [] argarray4 = new ATerm[] {arg1, arg2, arg3, arg4};
+    return makeAppl(fun, argarray4);
   }
 
   public ATermAppl makeAppl(AFun fun, ATerm arg1, ATerm arg2, ATerm arg3, ATerm arg4, ATerm arg5) {
-    array5[0] = arg1;
-    array5[1] = arg2;
-    array5[2] = arg3;
-    array5[3] = arg4;
-    array5[4] = arg5;
-    return makeAppl(fun, array5);
+    ATerm [] argarray5 = new ATerm[] {arg1, arg2, arg3, arg4, arg5};
+    return makeAppl(fun, argarray5);
   }
 
   public ATermAppl makeAppl(AFun fun, ATerm arg1, ATerm arg2, ATerm arg3, ATerm arg4, ATerm arg5, ATerm arg6) {
