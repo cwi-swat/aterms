@@ -191,7 +191,7 @@ void AT_freeSymbol(SymEntry sym)
   
 	/* Update hashtable */
 	if (hash_table[hash_val] == sym)
-		hash_table[hash_val] = NULL;
+		hash_table[hash_val] = sym->next;
 	else
 	{
 		SymEntry cur, prev;
