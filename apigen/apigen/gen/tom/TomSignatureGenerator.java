@@ -40,7 +40,7 @@ public class TomSignatureGenerator extends Generator {
       if(javaParams.getPackageName() != null) {
         this.packagePrefix += javaParams.getPackageName() + ".";
       }
-      this.packagePrefix += javaParams.getApiName().toLowerCase() + ".";
+      this.packagePrefix += javaParams.getApiExtName(module).toLowerCase() + ".";
       this.packagePrefix += TypeGenerator.packageName() + ".";
     } 
 	}

@@ -244,7 +244,7 @@ public class ADT {
     
     public String getModuleName(TypeConverter conv, String typename) {
     		String modulename= "";
-    		System.out.println("Test : "+ modulesTypes);
+    		//System.out.println("Test : "+ modulesTypes);
     		if (conv.isReserved(typename)) {
     			return modulename;
     		}

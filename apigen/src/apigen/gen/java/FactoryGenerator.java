@@ -10,7 +10,6 @@ import apigen.adt.Field;
 import apigen.adt.ListType;
 import apigen.adt.SeparatedListType;
 import apigen.adt.Type;
-import apigen.adt.api.types.Imports;
 import apigen.adt.api.types.Module;
 import apigen.adt.api.types.Separators;
 import apigen.gen.StringConversions;
