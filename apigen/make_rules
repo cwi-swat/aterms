@@ -4,9 +4,12 @@
 # $Id$
 #
 
-CFLAGS=-Wall -g -O2
+CFLAGS		= -Wall -g -O2
+INCLUDES	= -I ${ATERMINC}
+LDFLAGS		= -L${ATERMLIB}
+LDADD		= -lAterm
 
-SUFFIXES = .grap .pic .ltx .dvi .bbl .ind .idx .xwd .ps .tex .fig
+SUFFIXES 	= .grap .pic .ltx .dvi .bbl .ind .idx .xwd .ps .tex .fig
 
 %.ps: %.dvi
 	dvips -o $@ $<

@@ -50,11 +50,6 @@ booltest_DEPENDENCIES	= booltest.af1 libBooleans.a
 # generated and should be considered intermediate
 %INTERMEDIATE: Booleans.adt
 
-# This can probably be removed ...
-#rolotest.o: rolodex.c rolodex.h
-#booltest.o: Booleans.c Booleans.h
-#listtest.o: list.h
-
 rolodex.c rolodex.h: rolodex.adt rolodex.pro
 	${top_srcdir}/utils/adt-to-c rolodex -prologue rolodex.pro
 

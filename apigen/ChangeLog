@@ -1,4 +1,5 @@
 2001/02/08 (jong@cwi.nl)
+  * Added reflexive ADT to access adt's (creates: libADT.a)
   * sdf directory removed entirely
   * configuration improved (using AC_PACKAGE_REQUIRE)
   * dependency on xt tools removed
