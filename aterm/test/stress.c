@@ -281,18 +281,17 @@ testRead(void)
   } while(t);
 
   fclose(f);
-}
 
-/*}}}  */
-/*{{{  void testPrint(void) */
-
-/**
-  * Test printing functions
-  */
-
-void
-testPrint(void)
-{
+  t = ATreadFromString("f(1)");
+  fprintf(stdout, "read from string: ");
+  ATwriteToTextFile(t, stdout);
+  t = ATreadFromString("f(a,b,<123>,0.456,\"f\")");
+  fprintf(stdout, "\nread from string: ");
+  ATwriteToTextFile(t, stdout);
+  fprintf(stdout, "\nread from string: ");
+  t = ATreadFromString("f(00000004:1234,xyz,[1,2,3])");
+  ATwriteToTextFile(t, stdout);
+  fprintf(stdout, "\n");
 }
 
 /*}}}  */
@@ -318,7 +317,7 @@ void testMatch(void)
 /*{{{  void testPrintf(void) */
 void testPrintf()
 {
-	ATfprintf(stderr, "Test: %3.4d\n", 3);
+/*	ATfprintf(stderr, "Test: %3.4d\n", 3);*/
 }
 /*}}}  */
 
