@@ -5,6 +5,7 @@
 #include "aterm2.h"
 #include "memory.h"
 #include "symbol.h"
+#include "list.h"
 
 #include <assert.h>
 
@@ -29,6 +30,7 @@ void ATinit(int argc, char *argv[],
   error_handler = error;
   AT_initMemory(argc, argv);
   AT_initSymbol(argc, argv);
+  AT_initList(argc, argv);
 /*  ATinitGC(argc, argv, bottomOfStack);
 */
 }

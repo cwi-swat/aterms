@@ -42,6 +42,9 @@ ATerm ATreadFromBinaryFile(FILE *file);
 /* int    ATgetType(ATerm t); */
 #define ATgetType(t) GET_TYPE((t)->header)
 
+/* ATbool ATisEqual(ATerm t1, ATerm t2); */
+#define ATisEqual(t1,t2) ((ATerm)(t1) == (ATerm)(t2))
+
 ATbool ATwriteToTextFile(ATerm t, FILE *file);
 ATbool ATwriteToBinaryFile(ATerm t, FILE *file);
 char  *ATwriteToString(ATerm t);

@@ -555,31 +555,31 @@ ATermList ATmakeList(int n, ...)
 }
 
 /*}}}  */
-/*{{{  ATermList ATmakeList1(ATerm el0) */
+/*{{{  ATermList ATmakeList1(ATerm el) */
 
 /**
   * Build a list with one element.
   */
 
-ATermList ATmakeList1(ATerm el0)
+ATermList ATmakeList1(ATerm el)
 {
   ATerm cur;
   header_type header;
 
-  unsigned int hnr = (int)el0<<1;
+  unsigned int hnr = (int)el<<1 ^ (int)ATempty<<2;
   hnr %= table_size;
  
   header = LIST_HEADER(0, 1);
   cur = hashtable[hnr];
   while(cur && (cur->header != header || 
-		ATgetFirst((ATermList)cur) != el0 ||
+		ATgetFirst((ATermList)cur) != el ||
 		ATgetNext((ATermList)cur) != ATempty))
     cur = cur->next;
 
   if(!cur) {
     cur = AT_allocate(4);
     cur->header = header;
-    ATgetFirst((ATermList)cur) = el0;
+    ATgetFirst((ATermList)cur) = el;
     ATgetNext((ATermList)cur) = ATempty;
     cur->next = hashtable[hnr];
     hashtable[hnr] = cur;

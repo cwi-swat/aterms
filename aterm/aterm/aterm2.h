@@ -129,13 +129,12 @@ ATerm     ATgetFirst(ATermList list);*/
 ATermList ATgetNext(ATermList list);*/
 #define   ATgetNext(l)  ((l)->tail)
 
-ATermList ATgetPrefix(ATermList list);
-ATerm     ATgetLast(ATermList list);
-ATermList ATgetSlice(ATermList list, int start, int end);
-
 /*ATbool    ATisEmpty(ATermList list);*/
 #define ATisEmpty(list) ((list) == ATempty)
 
+ATermList ATgetPrefix(ATermList list);
+ATerm     ATgetLast(ATermList list);
+ATermList ATgetSlice(ATermList list, int start, int end);
 ATermList ATinsert(ATermList list, ATerm el);
 ATermList ATinsertAt(ATermList list, ATerm el, int index);
 ATermList ATappend(ATermList list, ATerm el);
