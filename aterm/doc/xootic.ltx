@@ -54,9 +54,7 @@
 
 %{{{ Title page
 
-\title{Annotated Terms for Efficient Data Exchange \\
-  $Revision$
-}
+\title{Annotated Terms for Efficient Data Exchange}
 \author{M.G.J. van den Brand$^{^1}$\\
         H.A. de Jong$^{^1}$\\
         P. Klint$^{1,2}$\\
@@ -66,9 +64,10 @@
         Department of Software Engineering\vspace{-.2cm}}\\
         {\small\sl Kruislaan 413, 1098 SJ Amsterdam, The Netherlands}
         \vspace{.1cm}\\
-        {\small\sl $^1$University of Amsterdam,
+        {\small\sl $^2$University of Amsterdam,
         Programming Research Group\vspace{-.2cm}}\\
         {\small\sl Kruislaan 403, 1098 SJ Amsterdam, The Netherlands}
+\date{}
 }
 
 \begin{document}
@@ -83,7 +82,7 @@
 How do distributed applications exchange tree-like data structures?  We
 introduce the abstract data type of \emph{Annotated Terms} (\emph{ATerms})
 and discuss their design, implementation and application.  A comprehensive
-procedural interface enables creation and manipulation of Ate-RMS in C
+procedural interface enables creation and manipulation of \ATerms{} in C
 or Java.  The ATerm implementation is based on maximal subterm sharing and
 automatic garbage collection.  A binary exchange format for the concise
 representation of ATerms (sharing preserved) allows the fast exchange of
@@ -286,10 +285,9 @@ show some of the features of the textual representation of \ATerms.
 
 \subsection*{Operations on ATerms}
 
-The operations on \ATerms\ fall into three categories: making and
-matching \ATerms, reading and writing  \ATerms,
-and annotating \ATerms. The total
-of only 13 functions provide enough functionality for most users to
+The operations on \ATerms\ fall into three categories: making and matching
+\ATerms, reading and writing  \ATerms, and annotating \ATerms. The total
+of only 13 functions provides enough functionality for most users to
 build simple applications with \ATerms.  We refer to this interface as
 the \emph{level one} interface of the \ATerm\ data type.
 
@@ -347,7 +345,7 @@ an integer is expected as argument and a new integer ATerm is constructed.
 Match term $t$ against
 pattern $p$, and bind subterms that match with placeholders in
 $p$ with the result variables $a_1$ through $a_n$.
-Again, the type of the result variables depend on the place holders
+Again, the type of the result variables depends on the place holders
 used.
 If the parse of pattern $p$ fails, a message is printed and the program 
 is aborted.
