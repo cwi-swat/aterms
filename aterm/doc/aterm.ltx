@@ -12,6 +12,7 @@ programming environments consist of tools such as editors, parsers,
 optimizers and code generators that exchange syntax trees,
 intermediate code, and the like.
 
+\begin{sloppypar}
 How is this exchange of complex data structures between applications
 achieved?  One solution is Microsoft's Object Linking and Embedding
 (OLE). This is a platform-specific, proprietary, set of primitives to
@@ -22,6 +23,7 @@ is to use OMG's Interface Definition Language (part of the Common
 Object Broker Architecture) to define data structures in a
 language-neutral way. Specific language-bindings provide the mapping
 from IDL data structures to language-specific data structures.
+\end{sloppypar}
 
 All these solutions have their merits but do not really qualify when
 looking for an \emph{open}, \emph{simple}, \emph{efficient},
@@ -224,34 +226,39 @@ scanf} functions in C.
 The operations are:
 
 \begin{itemize}
-
-\item {\tt ATerm ATmake(String $pattern$, ATerm $arg_1$, ..., ATerm $arg_n$)}:
+\begin{sloppypar}
+\item {\tt ATerm ATmake(String $p$, ATerm $a_1$, ..., ATerm $a_n$)}:
 	 Create a new
-term by taking the string pattern, parsing it as an \ATerm\ and filling
-the placeholders in the resulting term with values taken from $arg_1$
-through $arg_n$.
+term by taking the string pattern $p$, parsing it as an \ATerm\ and filling
+the placeholders in the resulting term with values taken from $a_1$
+through $a_n$.
 If the parse fails, a message is printed and the program is aborted.
 The types of the arguments depend on the specific placeholders used
 in \emph{pattern}. For instance when the placeholder {\tt <int>} is used,
 an integer is expected as argument and a new integer ATerm is constructed.
-\item {\tt ATbool ATmatch(ATerm $term$, String $pattern$, ATerm $arg_1$, ..., ATerm $arg_n$)}: 
-Match \emph{term} against
-\emph{pattern}, and bind subterms that match with placeholders in
-\emph{pattern} with the result variables $arg_1$ through $arg_n$.
+\end{sloppypar}
+
+\item 
+\begin{sloppypar}
+{\tt ATbool ATmatch(ATerm $t$, String $p$, ATerm $a_1$, ..., ATerm $a_n$)}: 
+Match term $t$ against
+pattern $p$, and bind subterms that match with placeholders in
+$p$ with the result variables $a_1$ through $a_n$.
 Again, the type of the result variables depend on the placeholders
 used.
-If the parse of \emph{pattern} fails, a message is printed and the program 
+If the parse of pattern $p$ fails, a message is printed and the program 
 is aborted.
 If the term itself contains placeholders these may occur in the 
 resulting substitutions.
 The function returns {\tt true} when the match succeeds,
 {\tt false} otherwise.
+\end{sloppypar}
 
-\item {\tt Boolean ATisEqual(ATerm \emph{t1}, ATerm \emph{t2})}: 
+\item {\tt Boolean ATisEqual(ATerm $t_1$, ATerm $t_2$)}: 
 Check if two \ATerms\ are 
-equal. The annotations of {\emph t1} and {\emph t2} must also be equal.
+equal. The annotations of $t_1$ and $t_2$ must also be equal.
 
-\item {\tt Integer ATgetType(ATerm \emph{term})}: Retrieves the type of an
+\item {\tt Integer ATgetType(ATerm $t$)}: Retrieves the type of an
 \ATerm. This operation returns one of the subtypes mentioned before in
 Section~\ref{aterm-datatype}.
 
@@ -272,28 +279,28 @@ The operations are:
 
 \begin{itemize}
 
-\item {\tt ATerm ATreadFromString(String \emph{string})}: Creates a new term 
+\item {\tt ATerm ATreadFromString(String $s$)}: Creates a new term 
 by parsing
-\emph{string}. When a parse error occurs, a message is printed, and
+the string $s$. When a parse error occurs, a message is printed, and
 a special error value is returned.
 
-\item {\tt ATerm readFromTextFile(File \emph{file})}: Creates a new term by 
-parsing the data from \emph{file}. Again, parse errors result in a 
+\item {\tt ATerm readFromTextFile(File $f$)}: Creates a new term by 
+parsing the data from file $f$. Again, parse errors result in a 
 message being printed and an error value being returned.
 
-\item {\tt ATerm ATreadFromBinaryFile(File \emph{file})}: Creates a new term by reading a
-binary representation from \emph{file}. 
+\item {\tt ATerm ATreadFromBinaryFile(File $f$)}: Creates a new term by reading a
+binary representation from file $f$. 
 
-\item {\tt Boolean ATwriteToTextFile(ATerm \emph{term}, File \emph{file})}: Write the text
-representation of \emph{term} to \emph{file}. Returns {\tt true} for
+\item {\tt Boolean ATwriteToTextFile(ATerm $t$, File $f$)}: Write the text
+representation of term $t$ to file $f$. Returns {\tt true} for
 success and {\tt false} for failure.
 
-\item {\tt Boolean ATwriteToBinaryFile(ATerm \emph{term}, File \emph{file})}: Write a 
-binary representation of \emph{term} to \emph{file}. Returns
+\item {\tt Boolean ATwriteToBinaryFile(ATerm $t$, File $f$)}: Write a 
+binary representation of term $t$ to file $f$. Returns
 {\tt true} for success, and {\tt false} for failure.
 
-\item {\tt String ATwriteToString(ATerm \emph{term})}: Return the text representation
-of \emph{term} as a string.
+\item {\tt String ATwriteToString(ATerm $t$)}: Return the text representation
+of term $t$ as a string.
 
 \end{itemize}
 
@@ -306,19 +313,22 @@ following operations for manipulating annotations:
 
 \begin{itemize}
 
-\item {\tt ATerm ATsetAnnotation(ATerm \emph{term}, ATerm \emph{label}, ATerm \emph{annotation})}:
-Return a copy of \emph{term} with annotation labeled by \emph{label} changed
-to \emph{annotation}. If \emph{term} does not have an annotation with
+\item 
+\begin{sloppypar}
+{\tt ATerm ATsetAnnotation(ATerm $t$, ATerm $l$, ATerm $a$)}:
+Return a copy of term $t$ in which the annotation labeled with $l$ has been changed
+into $a$. If $t$  does not have an annotation with
 the specified label, it is added.
+\end{sloppypar}
 
-\item {\tt ATerm ATgetAnnotation(ATerm \emph{term}, ATerm \emph{label})}:
-Retrieve the annotation labeled by \emph{label} of \emph{term}.
-If \emph{term} does not have an annotation with the specified label,
+\item {\tt ATerm ATgetAnnotation(ATerm $t$, ATerm $l$)}:
+Retrieve the annotation labeled with $l$ from term $t$.
+If $t$ does not have an annotation with the specified label,
 a special error value is returned.
 
-\item {\tt ATerm ATremoveAnnotation(ATerm \emph{term}, ATerm \emph{label})}: Return a copy
-of \emph{term} with its annotation labeled by \emph{label} removed.
-If \emph{term} does not have an annotation with the specified label,
+\item {\tt ATerm ATremoveAnnotation(ATerm $t$, ATerm $l$)}: Return a copy
+of term $t$ from which the annotation labeled with $l$ has been removed.
+If $t$ does not have an annotation with the specified label,
 it is returned unchanged.
 
 \end{itemize}
@@ -484,9 +494,8 @@ we allocate a larger table, rehash all the entries of the
 old table in the new one, and free the old hash table.
 
 It is possible for a user to increase the initial size of
-the hash table, in order to save resizing and rehashing operations.
-
-The \ATerm\ library also provides facilities for defining hash tables
+the hash table in order to save resizing and rehashing operations.
+The \ATerm\ library provides facilities for defining hash tables
 as well. This allows the implementation of a fast lookup mechanism
 for \ATerms. The user-defined hash tables are used to implement
 memo-functions in the \asdf\ to C compiler, see Section \ref{asdf2c}.
@@ -532,6 +541,7 @@ using only a couple of machine words\footnote{We assume a word size
 of 4 bytes in this paper.} per object. Adding a whole word
 for keeping track of the reference count is therefore unacceptable.
 
+\begin{sloppypar}
 \paragraph{Mark-compact Garbage Collection}
 
 Mark-compact garbage collection works by periodically copying all
@@ -545,6 +555,7 @@ But when using C as an implementation language, we cannot
 positively identify \emph{all} references to an object without complex
 support from the programmer. This problem can only be solved by
 using one more level of indirection but this solution is too expensive.
+\end{sloppypar}
 
 \paragraph{Mark-sweep Garbage Collection}
 
@@ -1420,7 +1431,7 @@ is necessary to share as many states as possible.
 \section{Discussion} \label{discussion}
 
 \subsection{Related Work}
-
+\begin{sloppypar}
 \paragraph{Intermediate representations in compiler frameworks}
 There exist numerous frameworks for compilers and programming
 environments that provide facilities for representing intermediate
@@ -1433,6 +1444,7 @@ IDL~\cite{Lamb-IDL} and OMG's IDL~\cite{OMG-IDL} are frameworks for
 representing intermediate data that are not tight to a specific
 compiler construction paradigm but have similar objectives as the
 systems already mentioned.
+\end{sloppypar}
 
 These approaches typically use a grammar-like definition of the
 abstract syntax (including attributes) and provide (generated) access
@@ -1489,8 +1501,9 @@ encoding and data compression techniques are in common use in
 telecommunications. For instance, the ASN.1 standard gives detailed
 rules for data encoding~\cite{ASN.1.PER}.
 
+\begin{sloppypar}
 In an earlier project in our group, the Graph Exchange Language 
-(GEL)\cite{Kam94}
+(GEL)~\cite{Kam94}
 has been developed.  Its is similar in goals as \baf, but \baf\ can
 only represent acyclic directed graph, while GEL can represent
 arbitrary (potentially cyclic) graphs.  The technical approaches are
@@ -1498,6 +1511,7 @@ different as well.  GEL uses a binary-encoded postfix format to
 represent the nodes in the graph and introduces explicit labels to
 reuse previously constructed parts of the graph. \baf\ uses a prefix
 format augmented with generated symbol tables.
+\end{sloppypar}
 
 A final difference is in the \emph{usage} of both approaches.  GEL was
 used as a separate library that could be used in applications and the
@@ -1558,21 +1572,23 @@ operations.
 The \ATerm\ library can be obtained via 
 
 \begin{quote}
+{\small 
 \begin{verbatim}
 http://www.wins.uva.nl/pub/programming-research/software/aterm/
 \end{verbatim}
+}
 \end{quote}
 
-The current version of the library is available for Unix and Linux,
-we are currently porting the library to Windows/NT.
+\noindent The current version of the library is available for Unix and Linux.
+We are currently porting the library to Windows/NT.
 
 
 \section*{Acknowledgements}
 
-We want to thank all current users of the \ATerm\ library,
-special thanks to Jan-Friso Groote, for his input and sometimes
-severe requirements, Merijn de Jonge and Jeroen Scheerders,
-for detecting quite a lot of (hairy) bugs.
+We want to thank all current users of the \ATerm\ library.
+Special thanks to Jan-Friso Groote (for his input and sometimes
+severe requirements) and to Merijn de Jonge and Jeroen Scheerder
+(for detecting quite a lot of intricate bugs).
 Finally, we want to thank Pierre-Etienne Moreau for the fruitful
 discussions on this subject during his stay in Amsterdam.
 
