@@ -14,5 +14,5 @@ configuration interface
 
 requires
   aterm		2.0.2
-  aterm-java    1.3beta
+  aterm-java    1.4
   shared-objects 1.3beta
