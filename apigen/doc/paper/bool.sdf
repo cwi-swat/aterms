@@ -1,8 +1,0 @@
-module Bool
-exports sorts Bool
-exports context-free syntax
-  "true"          -> Bool
-  "false"         -> Bool
-  "not" Bool      -> Bool
-  Bool "and" Bool -> Bool {left}
-  Bool "or" Bool  -> Bool {left}

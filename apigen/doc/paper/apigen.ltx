@@ -9,10 +9,11 @@
 % {{{  packages
 
 \usepackage{verbatim}
+\usepackage{ASF+SDF}
+\usepackage{ASF+SDF-options}
 
 % }}}
 % {{{  commands
-
 
 \newcommand{\C}{\mbox{\sc C}}
 \newcommand{\adt}{\mbox{\sc adt}}
@@ -27,6 +28,7 @@
 \newcommand{\java}{\mbox{\sc Java}}
 \newcommand{\metaenv}{{\sc Asf+Sdf}\ Meta-En\-vir\-on\-ment}
 \newcommand{\sdf}{\mbox{\sc Sdf}}
+
 % }}}
 
 % {{{  Title page
@@ -68,6 +70,7 @@ this \api{} in various programming languages.
 % }}}
 % {{{  Introduction
 
+
 \section{Introduction}
 \label{sec:intro}
 
@@ -81,37 +84,76 @@ nature, which helps develop applications at the level of the (abstract)
 syntax. Specifications written in this way can be compiled to a target
 machine specific, executable program.
 
-% {{{  \subsection{\asdf\ in a nutshell}
+% {{{  subsection{\asdf\ in a nutshell}
 
 \subsection{\asdf\ in a nutshell}
 
-\texttt{TODO: intro asf + intro sdf}.
-
-Figure~\ref{fig:boolean-syntax} shows a sample syntax for the booleans,
-using only the constructors \texttt{true} and \texttt{false}, a unary
-operator for negation (\texttt{not}), and binary operators for conjunction
-(\texttt{and}) and disjunction (\texttt{or}). We purposely leave the
-discussion about operator precedence unadressed as it is of little
-relevance considering our (\api\ generation) point of view.
-
-% {{{  fig:boolean-syntax
+The specification formalism \asdf~\cite{BHK89,HHKR92} is a
+combination of the algebraic specification formalism \asf\ and the
+syntax definition formalism \sdf. An overview can be found in~\cite{DHK96}. 
+As an illustration, Figure~\ref{fig:bool-example} presents the
+definition of the Boolean datatype in \asdf.  \asdf\ specifications
+consist of modules, each module has an \sdf-part (defining lexical and
+context-free syntax) and an \asf-part (defining equations).  The \sdf\
+part corresponds to signatures in ordinary algebraic specification
+formalisms. However, syntax is not restricted to plain prefix notation
+since arbitrary context-free grammars can be defined.  The syntax
+defined in the \sdf-part of a module can be used immediately when
+defining equations, the syntax in equations is thus \emph{user-defined}.
 
 \begin{figure}
 \hrulefill
-\begin{footnotesize}
-\verbatiminput{bool.sdf}
-\caption{
-  \label{fig:boolean-syntax}
-  Syntax for the booleans in \sdf.
-}
-\end{footnotesize}
+\verbatiminput{bool.example}
+\caption{\label{fig:bool-example} \asdf\ specification of the Booleans}
 \hrulefill
 \end{figure}
 
-% }}}
+The emphasis in this chapter will be on the compilation of the equations
+appearing in a specification. They have the following distinctive features:
 
-Some examples of valid boolean terms are:
-  \texttt{true}, \texttt{not false}, \texttt{true and not false}.
+\begin{itemize}
+\item Conditional equations with positive and negative conditions.
+\item Non left-linear equations.
+\item List matching.
+\item Default equations.
+\end{itemize}
+
+It is possible to execute specifications by interpreting the equations
+as conditional rewrite rules.  The semantics of \asdf\ are based on
+innermost rewriting.  Default equations are tried when all other
+applicable equations have failed, because either the arguments did not
+match or one of the conditions failed.
+
+One of the powerful features of the \asdf\ specification language is
+list matching.  Figure \ref{fig:set-example} shows a single equation which
+removes multiple occurrences of identifiers from a set. In this
+example, variables with a {\tt *} in their name are list-variables that may
+match zero or more identifiers.  The implementation of list matching
+may involve backtracking to find a match that satisfies the left-hand side
+of the rewrite rule as well as all its conditions.
+There is only backtracking within the scope of a rewrite rule, 
+so if the right-hand side of the rewrite rule is normalized and this
+normalization fails {\em no} backtracking is performed to find a new match.
+
+The development of \asdf\ specifications is supported by an interactive
+programming environment, the \asdf\ Meta-Environment~\cite{Kli93}.
+In this environment specifications can be developed and tested.
+It provides syntax-directed editors, a parser generator, and a rewrite engine.
+Given this rewrite engine terms can be reduced by interpreting the equations
+as rewrite rules.
+For instance, the term
+\begin{quote}
+{\tt true \& ( false | true )}
+\end{quote}
+reduces to {\tt true} when applying the equations of Figure
+\ref{fig:bool-example}.
+
+\begin{figure}
+\hrulefill
+\verbatiminput{set.example}
+\caption{\label{fig:set-example} \asdf\ specification of the Set equation}
+\hrulefill
+\end{figure}
 
 % }}}
 % {{{  \subsection{Annotated Terms: the \aterm\ syntax}
@@ -181,7 +223,7 @@ context-free syntax
 
 \noindent The production
 {\footnotesize\verb+Bool "and" Bool" -> Bool {left}+}
-from Figure~\ref{fig:boolean-syntax} looks like
+from Figure~\ref{fig:bool-example} looks like
 this\footnote{The insertion of \texttt{cf(opt(layout))} at each
 location where the input term is allowed to contain whitespace is done
 automatically for each context-free syntax rule by the \sdf\ normalizer
