@@ -177,7 +177,7 @@ PROLOGUE="${APILIB}.pro"
 
 DICTTOC=dicttoc
 
-GENCAPI="java -cp ${prefix}/classes apigen.c.CGen"
+GENCAPI="java -cp ${CLASSPATH}:${prefix}/classes apigen.c.CGen"
 
 # }}}
 
