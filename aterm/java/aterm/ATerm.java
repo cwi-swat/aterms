@@ -160,22 +160,23 @@ public interface ATerm {
     /**
      * Gets all annotations of this term.
      * 
-     * @return all annotations of this term or null if this term has no annotations
+     * @return all annotations of this term
      * 
      * @see #setAnnotations
      */
-    public ATerm getAnnotations();
+    public ATermList getAnnotations();
 
     /**
      * Sets all annotations of this term.
+     *
      * 
-     * @param annos the annotations to set. Annotations are cleared when annos is null.
+     * @param annos the annotations to set.
      * 
      * @return a new version of this term with the requested annotations.
      * 
      * @see #getAnnotations
      */
-    public ATerm setAnnotations(ATerm annos);
+    public ATerm setAnnotations(ATermList annos);
 
     /**
      * Removes all annotations of this term.

@@ -212,4 +212,35 @@ public interface ATermList extends ATerm {
      * @return a reverse order copy of this list.
      */
     public ATermList reverse();
+
+    /**
+      * Retrieves an element from a dictionary list.
+      * A dictionary list is a list of [key,value] pairs.
+      *
+      * @param key the key to look for
+      *
+      * @return the value associated with key, or null when key is not present.
+      */
+    public ATerm dictGet(ATerm key);
+
+    /**
+      * Sets the value for an element in a dictionary list.
+      * A dictionary list is a list of [key,value] pairs.
+      *
+      * @param key the key to set
+      * @param value the value to associate with key
+      *
+      * @return the new dictionary list
+      */
+    public ATermList dictPut(ATerm key, ATerm value);
+
+    /**
+      * Removes an element from a dictionary list.
+      * A dictionary list is a list of [key,value] pairs.
+      *
+      * @param key the key to remove
+      *
+      * @return the new dictionary list
+      */
+    public ATermList dictRemove(ATerm key);
 }

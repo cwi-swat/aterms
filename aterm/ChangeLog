@@ -19,8 +19,10 @@
 
 $Id$
 
-2000/02/28 (jong@cwi.nl)
+2000/02/28 ({jong,olivierp}@cwi.nl)
  * Version 1.5
+ * Fixed several bugs in JFG's hash code reported by Arne de Bruijn
+ * Fixed annotations in Java ATerm code
 
 2000/02/27 (jong@cwi.nl)
  * Added switch "-no-date" to prevent outputting timestamp in utils/dicttoc.c

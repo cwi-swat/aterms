@@ -31,43 +31,43 @@ class ATermBlobImpl
 {
   byte[] data;
 
-  //{ static int hashFunction(byte[] data)
+  //{{{ static int hashFunction(byte[] data, ATermList annos)
 
-  static int hashFunction(byte[] data)
+  static int hashFunction(byte[] data, ATermList annos)
   {
-    return Math.abs(data.hashCode());
+    return Math.abs(data.hashCode() + annos.hashCode());
   }
 
-  //}
+  //}}}
 
-  //{ public int hashCode()
+  //{{{ public int hashCode()
 
   public int hashCode()
   {
-    return hashFunction(data);
+    return hashFunction(data, annotations);
   }
 
-  //}
-  //{ public int getType()
+  //}}}
+  //{{{ public int getType()
 
   public int getType()
   {
     return ATerm.BLOB;
   }
 
-  //}
+  //}}}
 
-  //{ protected ATermBlobImpl(PureFactory factory, byte[] data)
+  //{{{ protected ATermBlobImpl(PureFactory factory, byte[] data, ATermList annos)
 
-  protected ATermBlobImpl(PureFactory factory, byte[] data)
+  protected ATermBlobImpl(PureFactory factory, byte[] data, ATermList annos)
   {
-    super(factory);
+    super(factory, annos);
     this.data = data;
   }
 
-  //}
+  //}}}
 
-  //{ public boolean match(ATerm pattern, List list)
+  //{{{ public boolean match(ATerm pattern, List list)
 
   protected boolean match(ATerm pattern, List list)
   {
@@ -90,30 +90,39 @@ class ATermBlobImpl
     return super.match(pattern, list);
   }
 
-  //}
+  //}}}
 
-  //{ public String toString()
+  //{{{ public String toString()
 
   public String toString()
   {
-    return String.valueOf(data.length) + "#" + String.valueOf(hashCode());
+    return String.valueOf(data.length) + "#" + String.valueOf(hashCode())
+      + super.toString();
   }
 
-  //}
-  //{ public byte[] getBlobData()
+  //}}}
+  //{{{ public byte[] getBlobData()
 
   public byte[] getBlobData()
   {
     return data;
   }
 
-  //}
-  //{ public int getBlobSize()
+  //}}}
+  //{{{ public int getBlobSize()
 
   public int getBlobSize()
   {
     return data.length;
   }
 
-  //}
+  //}}}
+  //{{{ public ATerm setAnnotations(ATermList annos)
+
+  public ATerm setAnnotations(ATermList annos)
+  {
+    return factory.makeBlob(data, annos);
+  }
+
+  //}}}
 }

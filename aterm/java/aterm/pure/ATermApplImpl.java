@@ -32,9 +32,9 @@ class ATermApplImpl
   AFun fun;
   ATerm[] args;
 
-  //{{{ static int hashFunction(AFun fun, ATerm[] args)
+  //{{{ static int hashFunction(AFun fun, ATerm[] args, ATermList annos)
 
-  static int hashFunction(AFun fun, ATerm[] args)
+  static int hashFunction(AFun fun, ATerm[] args, ATermList annos)
   {
     int hnr;
 
@@ -43,7 +43,7 @@ class ATermApplImpl
       hnr = (hnr << 1) ^ (hnr >> 1) ^ args[i].hashCode();
     }
 
-    return Math.abs(hnr);
+    return Math.abs(hnr + annos.hashCode());
   }
 
   //}}}
@@ -52,7 +52,7 @@ class ATermApplImpl
 
   public int hashCode()
   {
-    return hashFunction(fun, args);
+    return hashFunction(fun, args, annotations);
   }
 
   //}}}
@@ -65,11 +65,12 @@ class ATermApplImpl
 
   //}}}
 
-  //{{{ protected ATermApplImpl(PureFactory factory, AFun fun, ATerm[] args)
+  //{{{ protected ATermApplImpl(PureFactory factory, AFun fun, ATerm[] args, annos)
 
-  protected ATermApplImpl(PureFactory factory, AFun fun, ATerm[] args)
+  protected ATermApplImpl(PureFactory factory, AFun fun, ATerm[] args,
+			  ATermList annos)
   {
-    super(factory);
+    super(factory, annos);
     this.fun  = fun;
     this.args = args;
   }
@@ -168,7 +169,7 @@ class ATermApplImpl
     StringBuffer result = new StringBuffer();
 
     if (args.length == 0) {
-      return fun.toString();
+      return fun.toString() + super.toString();
     }
 
     result.append(fun.toString());
@@ -181,6 +182,7 @@ class ATermApplImpl
     }
 
     result.append(')');
+    result.append(super.toString());
 
     return result.toString();
   }
@@ -263,6 +265,14 @@ class ATermApplImpl
       newargs[i] = this.args[i].make(args);
     }
     return factory.makeAppl(fun, newargs);
+  }
+
+  //}}}
+  //{{{ public ATerm setAnnotations(ATermList annos)
+
+  public ATerm setAnnotations(ATermList annos)
+  {
+    return factory.makeAppl(fun, args, annos);
   }
 
   //}}}

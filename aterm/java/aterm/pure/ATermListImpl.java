@@ -34,9 +34,9 @@ class ATermListImpl
   ATermList next;
   int length;
 
-  //{{{ static int hashFunction(ATerm first, ATermList next)
+  //{{{ static int hashFunction(ATerm first, ATermList next, ATermList annos)
 
-  static int hashFunction(ATerm first, ATermList next)
+  static int hashFunction(ATerm first, ATermList next, ATermList annos)
   {
     int hnr;
 
@@ -45,7 +45,7 @@ class ATermListImpl
     }
 
     hnr = next.hashCode();
-    return Math.abs(first.hashCode() ^ (hnr << 1) ^ (hnr >> 1));
+    return Math.abs(first.hashCode() ^ (hnr << 1) ^ (hnr >> 1) + annos.hashCode());
   }
 
   //}}}
@@ -53,7 +53,7 @@ class ATermListImpl
 
   public int hashCode()
   {
-    return hashFunction(first, next);
+    return hashFunction(first, next, annotations);
   }
 
   //}}}
@@ -66,11 +66,24 @@ class ATermListImpl
 
   //}}}
 
-  //{{{ protected ATermListImpl(PureFactory factory, ATerm first, ATermList next)
+  //{{{ protected ATermListImpl(PureFactory factory)
 
-  protected ATermListImpl(PureFactory factory, ATerm first, ATermList next)
+  protected ATermListImpl(PureFactory factory)
   {
-    super(factory);
+    super(factory, null);
+    this.annotations = this;
+    this.first  = null;
+    this.next   = null;
+    this.length = 0;
+  }
+
+  //}}}
+  //{{{ protected ATermListImpl(factory, ATerm first, next, annos)
+
+  protected ATermListImpl(PureFactory factory, ATerm first, ATermList next,
+			  ATermList annos)
+  {
+    super(factory, annos);
     this.first  = first;
     this.next   = next;
 
@@ -166,6 +179,8 @@ class ATermListImpl
     }
     
     result.append("]");
+    result.append(super.toString());
+
     return result.toString();
   }
 
@@ -497,5 +512,73 @@ class ATermListImpl
     return next.reverse().insert(first);
   }
 
-  //}  
+  //}}}
+  //{{{ public ATerm dictGet(ATerm key)
+
+  public ATerm dictGet(ATerm key)
+  {
+    if (isEmpty()) {
+      return null;
+    }
+
+    ATermList pair = (ATermList)first;
+
+    if (key.equals(pair.getFirst())) {
+      return pair.getNext().getFirst();
+    }
+
+    return next.dictGet(key);
+  }
+
+  //}}}
+  //{{{ public ATermList dictPut(ATerm key, ATerm value)
+
+  public ATermList dictPut(ATerm key, ATerm value)
+  {
+    ATermList pair;
+
+    if (isEmpty()) {
+      pair = factory.makeList(key, factory.makeList(value));
+      return factory.makeList(pair);
+    }
+
+    pair = (ATermList)first;
+
+    if (key.equals(pair.getFirst())) {
+      pair = factory.makeList(key, factory.makeList(value));
+      return factory.makeList(pair, next);
+    }
+
+    return factory.makeList(first, next.dictPut(key, value), annotations);
+  }
+
+  //}}}
+  //{{{ public ATermList dictRemove(ATerm key)
+
+  public ATermList dictRemove(ATerm key)
+  {
+    ATermList pair;
+
+    if (isEmpty()) {
+      return this;
+    }
+
+    pair = (ATermList)first;
+
+    if (key.equals(pair.getFirst())) {
+      return next;
+    }
+
+    return factory.makeList(first, next.dictRemove(key), annotations);
+  }
+
+  //}}}
+  //{{{ public ATerm setAnnotations(ATermList annos)
+
+  public ATerm setAnnotations(ATermList annos)
+  {
+    return factory.makeList(first, next, annos);
+  }
+
+  //}}}
 }

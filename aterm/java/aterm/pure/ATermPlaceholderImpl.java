@@ -33,9 +33,9 @@ class ATermPlaceholderImpl
 
   //{{{ static int hashFunction(ATerm type)
 
-  static int hashFunction(ATerm type)
+  static int hashFunction(ATerm type, ATermList annos)
   {
-    return Math.abs(type.hashCode()+1);
+    return Math.abs(type.hashCode() + 1 + annos.hashCode());
   }
 
   //}}}
@@ -44,7 +44,7 @@ class ATermPlaceholderImpl
 
   public int hashCode()
   {
-    return hashFunction(type);
+    return hashFunction(type, annotations);
   }
 
   //}}}
@@ -57,11 +57,11 @@ class ATermPlaceholderImpl
 
   //}}}
 
-  //{{{ protected ATermPlaceholderImpl(PureFactory factory, ATerm type)
+  //{{{ protected ATermPlaceholderImpl(PureFactory factory, ATerm type, ATermList annos)
 
-  protected ATermPlaceholderImpl(PureFactory factory, ATerm type)
+  protected ATermPlaceholderImpl(PureFactory factory, ATerm type, ATermList annos)
   {
-    super(factory);
+    super(factory, annos);
     this.type = type;
   }
 
@@ -152,7 +152,7 @@ class ATermPlaceholderImpl
       result = "[" + result + "]";
     }
 
-    return "<" + result + ">";
+    return "<" + result + ">" + super.toString();
   }
 
   //}}}
@@ -161,6 +161,14 @@ class ATermPlaceholderImpl
   public ATerm getPlaceholder()
   {
     return type;
+  }
+
+  //}}}
+  //{{{ public ATerm setAnnotations(ATermList annos)
+
+  public ATerm setAnnotations(ATermList annos)
+  {
+    return factory.makePlaceholder(type, annos);
   }
 
   //}}}

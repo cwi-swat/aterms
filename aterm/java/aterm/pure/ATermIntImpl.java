@@ -31,43 +31,43 @@ class ATermIntImpl
 {
   int value;
 
-  //{ static int hashFunction(int value)
+  //{{{ static int hashFunction(int value, ATermList annos)
 
-  static int hashFunction(int value)
+  static int hashFunction(int value, ATermList annos)
   {
-    return Math.abs(value);
+    return Math.abs(value + annos.hashCode());
   }
 
-  //}
+  //}}}
 
-  //{ public int hashCode()
+  //{{{ public int hashCode()
 
   public int hashCode()
   {
-    return value;
+    return hashFunction(value, annotations);
   }
 
-  //}
-  //{ public int getType()
+  //}}}
+  //{{{ public int getType()
 
   public int getType()
   {
     return ATerm.INT;
   }
 
-  //}
+  //}}}
 
-  //{ protected ATermIntImpl(PureFactory factory, int value)
+  //{{{ protected ATermIntImpl(PureFactory factory, int value, ATermList annos)
 
-  protected ATermIntImpl(PureFactory factory, int value)
+  protected ATermIntImpl(PureFactory factory, int value, ATermList annos)
   {
-    super(factory);
+    super(factory, annos);
     this.value = value;
   }
 
-  //}
+  //}}}
 
-  //{ public boolean match(ATerm pattern, List list)
+  //{{{ public boolean match(ATerm pattern, List list)
 
   protected boolean match(ATerm pattern, List list)
   {
@@ -92,21 +92,29 @@ class ATermIntImpl
     return super.match(pattern, list);
   }
 
-  //}
-  //{ public String toString()
+  //}}}
+  //{{{ public String toString()
 
   public String toString()
   {
-    return String.valueOf(value);
+    return String.valueOf(value) + super.toString();
   }
 
-  //}
-  //{ public int getInt()
+  //}}}
+  //{{{ public int getInt()
 
   public int getInt()
   {
     return value;
   }
 
-  //}
+  //}}}
+  //{{{ public ATerm setAnnotations(ATermList annos)
+
+  public ATerm setAnnotations(ATermList annos)
+  {
+    return factory.makeInt(value, annos);
+  }
+
+  //}}}
 }

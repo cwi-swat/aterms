@@ -61,18 +61,26 @@ public class PureFactory
     this.afun_table_size = afun_table_size;
     this.afun_table = new HashedWeakRef[afun_table_size];
 
-    empty = new ATermListImpl(this, null, null);
+    empty = new ATermListImpl(this);
     term_table[empty.hashCode() % this.term_table_size] = new HashedWeakRef(empty, null);
   }
 
   //}}}
   
-  //{{{ public synchronized ATermInt makeInt(int val)
+  //{{{ public ATermInt makeInt(int val)
 
-  public synchronized ATermInt makeInt(int val)
+  public ATermInt makeInt(int val)
+  {
+    return makeInt(val, empty);
+  }
+
+  //}}}
+  //{{{ public synchronized ATermInt makeInt(int val, ATermList annos)
+
+  public synchronized ATermInt makeInt(int val, ATermList annos)
   {
     ATerm term;
-    int hnr = ATermIntImpl.hashFunction(val);
+    int hnr = ATermIntImpl.hashFunction(val, annos);
     int idx = hnr % term_table_size;
 
     HashedWeakRef prev, cur;
@@ -89,7 +97,7 @@ public class PureFactory
 	}
       } else {
 	if (term.getType() == ATerm.INT) {
-	  if (((ATermInt)term).getInt() == val) {
+	  if (((ATermInt)term).getInt() == val && term.getAnnotations() == annos) {
 	    return (ATermInt)term;
 	  }
 	}
@@ -98,7 +106,7 @@ public class PureFactory
     }
     
     // No integer term with 'val' found, so let's create one!
-    term = new ATermIntImpl(this, val);
+    term = new ATermIntImpl(this, val, annos);
     cur = new HashedWeakRef(term, term_table[idx]);
     term_table[idx] = cur;
 
@@ -106,12 +114,20 @@ public class PureFactory
   }
 
   //}}}
-  //{{{ public synchronized ATermReal makeReal(double val)
+  //{{{ public ATermReal makeReal(double val)
 
-  public synchronized ATermReal makeReal(double val)
+  public ATermReal makeReal(double val)
+  {
+    return makeReal(val, empty);
+  }
+
+  //}}}
+  //{{{ public synchronized ATermReal makeReal(double val, ATermList annos)
+
+  public synchronized ATermReal makeReal(double val, ATermList annos)
   {
     ATerm term;
-    int hnr = ATermRealImpl.hashFunction(val);
+    int hnr = ATermRealImpl.hashFunction(val, annos);
     int idx = hnr % term_table_size;
 
     HashedWeakRef prev, cur;
@@ -128,7 +144,7 @@ public class PureFactory
 	}
       } else {
 	if (term.getType() == ATerm.REAL) {
-	  if (((ATermReal)term).getReal() == val) {
+	  if (((ATermReal)term).getReal() == val && term.getAnnotations() == annos) {
 	    return (ATermReal)term;
 	  }
 	}
@@ -137,7 +153,7 @@ public class PureFactory
     }
     
     // No real term with 'val' found, so let's create one!
-    term = new ATermRealImpl(this, val);
+    term = new ATermRealImpl(this, val, annos);
     cur = new HashedWeakRef(term, term_table[idx]);
     term_table[idx] = cur;
 
@@ -157,16 +173,24 @@ public class PureFactory
 
   public ATermList makeList(ATerm singleton)
   {
-    return makeList(singleton, empty);
+    return makeList(singleton, empty, empty);
   }
 
   //}}}
-  //{{{ public synchronized ATermList makeList(ATerm first, ATermList next)
+  //{{{ public ATermList makeList(ATerm first, ATermList next)
 
-  public synchronized ATermList makeList(ATerm first, ATermList next)
+  public ATermList makeList(ATerm first, ATermList next)
+  {
+    return makeList(first, next, empty);
+  }
+
+  //}}}
+  //{{{ public synchronized ATermList makeList(ATerm first, ATermList next, annos)
+
+  public synchronized ATermList makeList(ATerm first, ATermList next, ATermList annos)
   {
     ATerm term;
-    int hnr = ATermListImpl.hashFunction(first, next);
+    int hnr = ATermListImpl.hashFunction(first, next, annos);
     int idx = hnr % term_table_size;
 
     HashedWeakRef prev, cur;
@@ -184,7 +208,8 @@ public class PureFactory
       } else {
 	if (term.getType() == ATerm.LIST) {
 	  ATermList list = (ATermList)term;
-	  if (list.getFirst() == first && list.getNext() == next) {
+	  if (list.getFirst() == first && list.getNext() == next
+	      && term.getAnnotations() == annos) {
 	    return list;
 	  }
 	}
@@ -193,7 +218,7 @@ public class PureFactory
     }
     
     // No existing term found, so let's create one!
-    term = new ATermListImpl(this, first, next);
+    term = new ATermListImpl(this, first, next, annos);
     cur = new HashedWeakRef(term, term_table[idx]);
     term_table[idx] = cur;
 
@@ -201,12 +226,20 @@ public class PureFactory
   }
 
   //}}}
-  //{{{ public synchronized ATermPlaceholder makePlaceholder(ATerm type)
+  //{{{ public ATermPlaceholder makePlaceholder(ATerm type)
 
-  public synchronized ATermPlaceholder makePlaceholder(ATerm type)
+  public ATermPlaceholder makePlaceholder(ATerm type)
+  {
+    return makePlaceholder(type, empty);
+  }
+
+  //}}}
+  //{{{ public synchronized ATermPlaceholder makePlaceholder(ATerm type, ATermList ans)
+
+  public synchronized ATermPlaceholder makePlaceholder(ATerm type, ATermList annos)
   {
     ATerm term;
-    int hnr = ATermPlaceholderImpl.hashFunction(type);
+    int hnr = ATermPlaceholderImpl.hashFunction(type, annos);
     int idx = hnr % term_table_size;
 
     HashedWeakRef prev, cur;
@@ -224,7 +257,7 @@ public class PureFactory
       } else {
 	if (term.getType() == ATerm.PLACEHOLDER) {
 	  ATermPlaceholder ph = (ATermPlaceholder)term;
-	  if (ph.getPlaceholder() == type) {
+	  if (ph.getPlaceholder() == type && term.getAnnotations() == annos) {
 	    return ph;
 	  }
 	}
@@ -233,7 +266,7 @@ public class PureFactory
     }
     
     // No existing term found, so let's create one!
-    term = new ATermPlaceholderImpl(this, type);
+    term = new ATermPlaceholderImpl(this, type, annos);
     cur = new HashedWeakRef(term, term_table[idx]);
     term_table[idx] = cur;
 
@@ -241,12 +274,20 @@ public class PureFactory
   }
 
   //}}}
-  //{{{ public synchronized ATermBlob makeBlob(byte[] data)
+  //{{{ public ATermBlob makeBlob(byte[] data)
 
-  public synchronized ATermBlob makeBlob(byte[] data)
+  public ATermBlob makeBlob(byte[] data)
+  {
+    return makeBlob(data, empty);
+  }
+
+  //}}}
+  //{{{ public synchronized ATermBlob makeBlob(byte[] data, ATermList annos)
+
+  public synchronized ATermBlob makeBlob(byte[] data, ATermList annos)
   {
     ATerm term;
-    int hnr = ATermBlobImpl.hashFunction(data);
+    int hnr = ATermBlobImpl.hashFunction(data, annos);
     int idx = hnr % term_table_size;
 
     HashedWeakRef prev, cur;
@@ -264,7 +305,7 @@ public class PureFactory
       } else {
 	if (term.getType() == ATerm.BLOB) {
 	  ATermBlob blob = (ATermBlob)term;
-	  if (blob.getBlobData() == data) {
+	  if (blob.getBlobData() == data && term.getAnnotations() == annos) {
 	    return blob;
 	  }
 	}
@@ -273,7 +314,7 @@ public class PureFactory
     }
     
     // No existing term found, so let's create one!
-    term = new ATermBlobImpl(this, data);
+    term = new ATermBlobImpl(this, data, annos);
     cur = new HashedWeakRef(term, term_table[idx]);
     term_table[idx] = cur;
 
@@ -305,8 +346,8 @@ public class PureFactory
 	}
       } else {
 	// use == because name is interned.
-	if (fun.getName() == name && fun.getArity() == arity &&
-	    fun.isQuoted() == isQuoted) {
+	if (fun.getName() == name && fun.getArity() == arity
+	    && fun.isQuoted() == isQuoted) {
 	  return fun;
 	}
       }
@@ -322,9 +363,17 @@ public class PureFactory
   }
 
   //}}}
-  //{{{ public synchronized ATermAppl makeAppl(AFun fun, ATerm[] args)
+  //{{{ public ATermAppl makeAppl(AFun fun, ATerm[] args)
 
-  public synchronized ATermAppl makeAppl(AFun fun, ATerm[] args)
+  public ATermAppl makeAppl(AFun fun, ATerm[] args)
+  {
+    return makeAppl(fun, args, empty);
+  }
+
+  //}}}
+  //{{{ public synchronized ATermAppl makeAppl(AFun fun, ATerm[] args, ATermList anns)
+
+  public synchronized ATermAppl makeAppl(AFun fun, ATerm[] args, ATermList annos)
   {
     ATerm term;
     int hnr;
@@ -336,7 +385,7 @@ public class PureFactory
 					 fun.getArity() + " != " + args.length);
     }
 
-    hnr = ATermApplImpl.hashFunction(fun, args);
+    hnr = ATermApplImpl.hashFunction(fun, args, annos);
     idx = hnr % term_table_size;
 
     prev = null;
@@ -355,10 +404,10 @@ public class PureFactory
 	  ATermAppl appl = (ATermAppl)term;
 	  if (appl.getAFun() == fun) {
 	    ATerm[] appl_args = appl.getArgumentArray();
-	    if (appl_args.length == args.length) {
+	    if (appl_args.length == args.length && term.getAnnotations() == annos) {
 	      boolean found = true;
 	      for (int i=0; i<args.length; i++) {
-		if(appl_args[i] != args[i]){
+		if(appl_args[i] != args[i]) {
 		  found = false;
 		  break;
 		}
@@ -374,7 +423,7 @@ public class PureFactory
     }
     
     // No existing term found, so let's create one!
-    term = new ATermApplImpl(this, fun, args);
+    term = new ATermApplImpl(this, fun, args, annos);
     cur = new HashedWeakRef(term, term_table[idx]);
     term_table[idx] = cur;
 
@@ -382,9 +431,9 @@ public class PureFactory
   }
 
   //}}}
-  //{{{ public synchronized ATermAppl makeAppl(AFun fun, ATermList args)
+  //{{{ public ATermAppl makeAppl(AFun fun, ATermList args)
 
-  public synchronized ATermAppl makeAppl(AFun fun, ATermList args)
+  public ATermAppl makeAppl(AFun fun, ATermList args)
   {
     ATerm[] arg_array;
 
@@ -896,48 +945,6 @@ public class PureFactory
   public ATerm make(ATerm pattern, List args)
   {
     return pattern.make(args);
-  }
-
-  //}}}
-
-  //{{{ public ATerm setAnnotation(ATerm term, ATerm label, ATerm anno)
-
-  public ATerm setAnnotation(ATerm term, ATerm label, ATerm anno)
-  {
-    throw new RuntimeException("not yet implemented!");
-  }
-
-  //}}}
-  //{{{ public ATerm removeAnnotation(ATerm term, ATerm label)
-
-  public ATerm removeAnnotation(ATerm term, ATerm label)
-  {
-    throw new RuntimeException("not yet implemented!");
-  }
-
-  //}}}
-  //{{{ public ATerm getAnnotation(ATerm term, ATerm label)
-
-  public ATerm getAnnotation(ATerm term, ATerm label)
-  {
-    throw new RuntimeException("not yet implemented!");
-  }
-
-  //}}}
-
-  //{{{ public ATerm setAnnotations(ATerm term, ATerm annos)
-
-  public ATerm setAnnotations(ATerm term, ATerm annos)
-  {
-    throw new RuntimeException("not yet implemented!");
-  }
-
-  //}}}
-  //{{{ public ATerm removeAnnotations(ATerm term)
-
-  public ATerm removeAnnotations(ATerm term)
-  {
-    throw new RuntimeException("not yet implemented!");
   }
 
   //}}}

@@ -31,14 +31,15 @@ import java.io.*;
 public abstract class ATermImpl
   implements ATerm
 {
-  private ATerm annotations;
+  ATermList annotations;
   PureFactory factory;
 
   //{{{ public ATermImpl(PureFactory factory)
 
-  public ATermImpl(PureFactory factory)
+  public ATermImpl(PureFactory factory, ATermList annos)
   {
     this.factory = factory;
+    this.annotations = annos;
   }
 
   //}}}
@@ -55,7 +56,10 @@ public abstract class ATermImpl
 
   public ATerm setAnnotation(ATerm label, ATerm anno)
   {
-    return factory.setAnnotation(this, label, anno);
+    ATermList new_annos = annotations.dictPut(label, anno);
+    ATerm result = setAnnotations(new_annos);
+
+    return result;
   }
 
   //}}}
@@ -63,7 +67,7 @@ public abstract class ATermImpl
 
   public ATerm removeAnnotation(ATerm label)
   {
-    return factory.removeAnnotation(this, label);
+    return setAnnotations(annotations.dictRemove(label));
   }
 
   //}}}
@@ -71,30 +75,22 @@ public abstract class ATermImpl
 
   public ATerm getAnnotation(ATerm label)
   {
-    return factory.getAnnotation(this, label);
+    return annotations.dictGet(label);
   }
 
   //}}}
 
-  //{{{ public ATerm setAnnotations(ATerm annos)
-
-  public ATerm setAnnotations(ATerm annos)
-  {
-    return factory.setAnnotations(this, annos);
-  }
-
-  //}}}
   //{{{ public ATerm removeAnnotations()
 
   public ATerm removeAnnotations()
   {
-    return factory.removeAnnotations(this);
+    return setAnnotations(factory.empty);
   }
 
   //}}}
-  //{{{ public ATerm getAnnotations()
+  //{{{ public ATermList getAnnotations()
 
-  public ATerm getAnnotations()
+  public ATermList getAnnotations()
   {
     return annotations;
   }
@@ -192,6 +188,29 @@ public abstract class ATermImpl
   {
     PrintStream ps = new PrintStream(stream);
     ps.print(this.toString());
+  }
+
+  //}}}
+  //{{{ public String toString()
+
+  public String toString()
+  {
+    if (annotations.isEmpty()) {
+      return "";
+    } else {
+      StringBuffer result = new StringBuffer();
+      result.append("{");
+      ATermList list = annotations;
+      while (!list.isEmpty()) {
+	result.append(list.getFirst().toString());
+	list = list.getNext();
+	if (!list.isEmpty()) {
+	  result.append(",");
+	}
+      }
+      result.append("}");
+      return result.toString();
+    }
   }
 
   //}}}

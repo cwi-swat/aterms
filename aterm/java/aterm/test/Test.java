@@ -131,6 +131,47 @@ public class Test
   }
 
   //}}}
+  //{{{ public void testDict()
+
+  public void testDict()
+  {
+    ATermList dict = factory.makeList();
+    ATerm key, value;
+
+    for (int i=0; i<5; i++) {
+      key = factory.parse("key" + i);
+      value = factory.parse("value" + i);
+      dict = dict.dictPut(key, value);
+    }
+
+    key = factory.parse("key3");
+    value = factory.parse("value3");
+    assert(dict.dictGet(key).equals(value));
+  }
+
+  //}}}
+  //{{{ public void testAnnos()
+
+  public void testAnnos()
+  {
+    ATerm t, key, value;
+    ATermList annos;
+
+    t = factory.parse("f");
+    for (int i=0; i<5; i++) {
+      key = factory.parse("key" + i);
+      value = factory.parse("value" + i);
+      t = t.setAnnotation(key, value);
+    }
+
+    key = factory.parse("key3");
+    value = factory.parse("value3");
+    assert(t.getAnnotation(key).equals(value));
+    t = t.removeAnnotation(key);
+    assert(t.getAnnotation(key) == null);
+  }
+
+  //}}}
   //{{{ public void testParser()
 
   public void testParser()
@@ -146,6 +187,7 @@ public class Test
     t = factory.parse("f(\"x y z\"(),<abc(31)>,[])");
     t = factory.parse("home([<name(\"\",String)>,<phone(\"\",PhoneNumber)>])");
     t = factory.parse("[ a , b ]");
+    t = factory.parse("f(a){[x,y],[1,2]}");
   }
 
   //}}}
@@ -156,6 +198,8 @@ public class Test
     testMakeInt();
     testMakeReal();
     testMakeAppl();
+    testDict();
+    testAnnos();
     testParser();
     /*testMakeList();
     testMakePlaceholder();

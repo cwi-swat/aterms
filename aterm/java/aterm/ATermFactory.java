@@ -62,9 +62,6 @@ public interface ATermFactory
   ATermAppl makeAppl(AFun fun, ATerm[] args);
   ATermAppl makeAppl(AFun fun, ATermList args);
 
-  ATerm setAnnotation(ATerm term, ATerm label, ATerm anno);
-  ATerm removeAnnotation(ATerm term, ATerm label);
-
   ATerm readFromTextFile(InputStream stream) throws IOException;
   ATerm readFromBinaryFile(InputStream stream) throws IOException;
   ATerm readFromFile(InputStream stream) throws IOException;

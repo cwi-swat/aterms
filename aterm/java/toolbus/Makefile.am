@@ -2,7 +2,7 @@
 
 javadir		= ${prefix}/classes/toolbus
 
-EXTRA_DIST	= test.tifs
+EXTRA_DIST	= test.tb test.tifs
 
 java_JAVA	= Tool.java AbstractTool.java TestTool.java JavaTif.java \
 			Testing.java
