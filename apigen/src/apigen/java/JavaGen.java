@@ -277,7 +277,7 @@ public class JavaGen
 
   private void genAccessors(Type type)
   {
-    printFoldOpen("abstract isXXX() methods");
+    printFoldOpen("abstract public boolean isXXX() methods");
     Iterator alts = type.alternativeIterator();
     while (alts.hasNext()) {
       Alternative alt = (Alternative)alts.next();
@@ -286,7 +286,7 @@ public class JavaGen
     }
     printFoldClose();
 
-    printFoldOpen("abstract hasXXX() methods");
+    printFoldOpen("abstract public boolean hasXXX() methods");
     Iterator fields = type.fieldIterator();
     while (fields.hasNext()) {
       Field field = (Field)fields.next();
@@ -294,7 +294,6 @@ public class JavaGen
       println("  abstract public boolean " + methodName + "();");
     }
     printFoldClose();
-    println();
   }
 
   //}}}
@@ -369,6 +368,8 @@ public class JavaGen
 
   private void genAltIsMethods(Type type, Alternative alt)
   {
+    printFoldOpen("public boolean isXXX() methods");
+
     Iterator alts = type.alternativeIterator();
     while (alts.hasNext()) {
       Alternative curAlt = (Alternative)alts.next();
@@ -386,7 +387,8 @@ public class JavaGen
       println("  }");
       printFoldClose();
     }
-    println();
+    
+    printFoldClose();
   }
 
   //}}}
@@ -394,6 +396,8 @@ public class JavaGen
 
   private void genAltHasMethods(Type type, Alternative alt)
   {
+    printFoldOpen("public boolean hasXXX() methods");
+
     String altId = alt.getId();
     Iterator fields = type.fieldIterator();
     while (fields.hasNext()) {
@@ -412,7 +416,8 @@ public class JavaGen
       println("  }");
       printFoldClose();
     }
-    println();
+
+    printFoldClose();
   }
 
   //}}}
