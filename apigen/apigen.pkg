@@ -13,6 +13,6 @@ identification
 configuration interface
 
 requires
-  aterm		2.0.3
+  aterm		2.1
   aterm-java    1.5
   shared-objects 1.4
