@@ -106,6 +106,14 @@ testSymbol(void)
 	assert(symmies[1] != symmies[2]);
 	assert(symmies[1] != symmies[3]);
 	assert(symmies[2] != symmies[3]);
+
+	for (i=0; i< 3*65535/2; i++)
+	{
+		char buf[BUFSIZ];
+		sprintf(buf, "xxx%d", i);
+		ATmakeSymbol(buf, 0, ATtrue);
+	}
+
 }
 
 /*}}}  */
