@@ -3,6 +3,43 @@ dnl Process this file with autoconf to produce a configure script.
 AC_INIT(Makefile.in)
 AM_INIT_AUTOMAKE(aterm, 0.22)
 
+dnl Default values
+CC_GCC=gcc
+CFLAGS_GCC="-Wall -O4"
+LFLAGS_GCC=""
+DEFS_GCC="-DNDEBUG"
+INCL_GCC=""
+
+CC_CC=cc
+CFLAGS_CC="-O"
+LFLAGS_CC=""
+DEFS_CC="-DNDEBUG"
+INCL_CC=""
+
+CC_DBG=gcc
+CFLAGS_DBG="-Wall -g"
+LFLAGS_DBG="-g"
+DEFS_DBG=""
+INCL_DBG=""
+
+CC_PROF=gcc
+CFLAGS_PROF="-Wall -pg"
+LFLAGS_PROF="-pg"
+DEFS_PROF=""
+INCL_PROF=""
+
+CC_CC64=cc
+CFLAGS_CC64=""
+LFLAGS_CC64="-64"
+DEFS_CC64=""
+INCL_CC64=""
+
+CC_SHARED=gcc
+CFLAGS_SHARED="-Wall"
+LFLAGS_SHARED=""
+DEFS_SHARED=""
+INCL_SHARED=""
+
 AC_PROG_CC
 
 CURDATE=`date`
@@ -16,42 +53,11 @@ AC_AIX
 AC_SET_MAKE
 
 AC_CHECK_PROG(TOOLBUS,toolbus,toolbus,true)
-AC_CHECK_PROG(CC_GCC,gcc,gcc,true)
-AC_CHECK_PROG(CC_CC,cc,cc,true)
-AC_CHECK_PROG(CC_DBG,gcc,gcc,true)
-AC_CHECK_PROG(CC_PROF,gcc,gcc,true)
-AC_CHECK_PROG(CC_NS,cc,cc,true)
 
-CFLAGS_GCC="-Wall -O4"
-CFLAGS_CC="-O"
-
-DEFS_GCC="\$(DEFS) -DNDEBUG"
-DEFS_CC="\$(DEFS) -DNDEBUG"
-
-DEFS_NS="${DEFS_CC} -DNO_SHARING"
-
-if test ${CC_DBG} = gcc; then
-	CFLAGS_DBG="-Wall -g"
-	DEFS_DBG="\$(DEFS) -DDEBUG_ALL"
-	INCL_DBG=
-	LFLAGS_DBG=-g
-elif test ${CC_DBG} = cc; then
-	CFLAGS_DBG="-g"
-	DEFS_DBG="$\(DEFS) -DDEBUG_ALL"
-	INCL_DBG=
-	LFLAGS_DBG=-g
-fi
-
-if test ${CC_PROF} = gcc; then
-	CFLAGS_PROF="-Wall -pg"
-	DEFS_PROF="\$(DEFS)"
-	INCL_PROF=
-	LFLAGS_PROF=-pg
-elif test ${CC_PROF} = cc; then
-	CFLAGS_PROF="-xpg"
-	DEFS_PROF="\$(DEFS)"
-	INCL_PROF=
-	LFLAGS_PROF=-xpg
+if test ${TOOLBUS} = "true" 
+then
+  echo "The toolbus executable is not in your path, giving up!"
+  exit
 fi
 
 AC_ARG_WITH(java,
@@ -59,47 +65,111 @@ AC_ARG_WITH(java,
 JAVA_SUBDIR=java1.2,
 )
 
-AC_ARG_WITH(64bit,
-[  --with-64bit   create 64 bit cc version of the library (libATerm-cc64.a)],
-LIB_CC64=libATerm-cc64.la,
+AC_ARG_WITH(gcc,
+[  --with-gcc   create gcc version of the library (libATerm-gcc.a)],
+ATERM_LIB_GCC=libATerm-gcc.a
+ASFIX_LIB_GCC=libAsFix-gcc.a
+TOOLBUS_LIB_GCC=libATB-gcc.a
+,
 )
-CC_CC64="${CC_CC}"
-CFLAGS_CC64="${CFLAGS_CC} -64"
-LFLAGS_CC64="${LFLAGS_CC} -64"
-DEFS_CC64="${DEFS_CC}"
-INCL_CC64="${INCL_CC}"
 
-AC_SUBST(LIB_SHARED)
-AC_SUBST(LIB_CC64)
+AC_ARG_WITH(cc,
+[  --with-cc   create cc version of the library (libATerm-cc.a)],
+ATERM_LIB_CC=libATerm-cc.a
+ASFIX_LIB_CC=libAsFix-cc.a
+TOOLBUS_LIB_CC=libATB-cc.a
+,
+)
+
+AC_ARG_WITH(dbg,
+[  --with-dbg   create debug version of the library (libATerm-dbg.a)],
+ATERM_LIB_DBG=libATerm-dbg.a
+ASFIX_LIB_DBG=libAsFix-dbg.a
+TOOLBUS_LIB_DBG=libATB-dbg.a
+,
+)
+
+AC_ARG_WITH(prof,
+[  --with-prof   create debug version of the library (libATerm-prof.a)],
+ATERM_LIB_PROF=libATerm-prof.a
+ASFIX_LIB_PROF=libAsFix-prof.a
+TOOLBUS_LIB_PROF=libATB-prof.a
+,
+)
+
+
+#AC_ARG_WITH(64bit,
+#[  --with-64bit   create 64 bit cc version of the library (libATerm-cc64.a)],
+#ATERM_LIB_CC64=libATerm-cc64.a
+#ASFIX_LIB_CC64=libAsFix-cc64.a
+#TOOLBUS_LIB_CC64=libATB-cc64.a
+#,
+#)
+
+#AC_ARG_WITH(shared,
+#[  --with-shared   create a shared-library version of the library (libATerm-shared.so.${VERSION})],
+#ATERM_LIB_SHARED=libATerm-shared.so.${VERSION}
+#ASFIX_LIB_SHARED=libAsFix-shared.so.${VERSION}
+#TOOLBUS_LIB_SHARED=libATB-shared.so.${VERSION}
+#,
+#)
+
+AC_SUBST(ATERM_LIB_GCC)
+AC_SUBST(ATERM_LIB_CC)
+AC_SUBST(ATERM_LIB_DBG)
+AC_SUBST(ATERM_LIB_PROF)
+AC_SUBST(ATERM_LIB_SHARED)
+AC_SUBST(ATERM_LIB_CC64)
+
+AC_SUBST(ASFIX_LIB_GCC)
+AC_SUBST(ASFIX_LIB_CC)
+AC_SUBST(ASFIX_LIB_DBG)
+AC_SUBST(ASFIX_LIB_PROF)
+AC_SUBST(ASFIX_LIB_SHARED)
+AC_SUBST(ASFIX_LIB_CC64)
+
+AC_SUBST(TOOLBUS_LIB_GCC)
+AC_SUBST(TOOLBUS_LIB_CC)
+AC_SUBST(TOOLBUS_LIB_DBG)
+AC_SUBST(TOOLBUS_LIB_PROF)
+AC_SUBST(TOOLBUS_LIB_SHARED)
+AC_SUBST(TOOLBUS_LIB_CC64)
+
 AC_SUBST(CC_GCC)
 AC_SUBST(CC_CC)
-AC_SUBST(CC_CC64)
 AC_SUBST(CC_DBG)
 AC_SUBST(CC_PROF)
-AC_SUBST(CC_NS)
+AC_SUBST(CC_SHARED)
+AC_SUBST(CC_CC64)
+
 AC_SUBST(CFLAGS_CC)
-AC_SUBST(CFLAGS_CC64)
 AC_SUBST(CFLAGS_GCC)
 AC_SUBST(CFLAGS_DBG)
 AC_SUBST(CFLAGS_PROF)
+AC_SUBST(CFLAGS_SHARED)
+AC_SUBST(CFLAGS_CC64)
 
 AC_SUBST(DEFS_CC)
-AC_SUBST(DEFS_CC64)
 AC_SUBST(DEFS_GCC)
 AC_SUBST(DEFS_DBG)
 AC_SUBST(DEFS_PROF)
-AC_SUBST(DEFS_NS)
+AC_SUBST(DEFS_SHARED)
+AC_SUBST(DEFS_CC64)
 
 AC_SUBST(INCL_CC)
-AC_SUBST(INCL_CC64)
 AC_SUBST(INCL_GCC)
 AC_SUBST(INCL_DBG)
 AC_SUBST(INCL_PROF)
+AC_SUBST(INCL_SHARED)
+AC_SUBST(INCL_CC64)
+
 AC_SUBST(LFLAGS_CC)
-AC_SUBST(LFLAGS_CC64)
 AC_SUBST(LFLAGS_GCC)
 AC_SUBST(LFLAGS_DBG)
 AC_SUBST(LFLAGS_PROF)
+AC_SUBST(LFLAGS_SHARED)
+AC_SUBST(LFLAGS_CC64)
+
 AC_SUBST(JAVA_SUBDIR)
 
 AC_HAVE_FUNCS(strdup)

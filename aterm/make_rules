@@ -10,16 +10,16 @@ DEFS += -DVERSION="\"$(VERSION)\"" -DCURDATE="\"`date`\""
 DEFS += $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 
 ## Library specific compiler flags
-CC_COMPILE     = $(CC_CC)   $(CFLAGS_CC)   $(DEFS_CC) 
-CC64_COMPILE   = $(CC_CC64) $(CFLAGS_CC64) $(DEFS_CC64)
 GCC_COMPILE    = $(CC_GCC)  $(CFLAGS_GCC)  $(DEFS_GCC)
+CC_COMPILE     = $(CC_CC)   $(CFLAGS_CC)   $(DEFS_CC) 
 DBG_COMPILE    = $(CC_DBG)  $(CFLAGS_DBG)  $(DEFS_DBG)
 PROF_COMPILE   = $(CC_PROF) $(CFLAGS_PROF) $(DEFS_PROF)
-NS_COMPILE     = $(CC_NS)   $(CFLAGS_NS)   $(DEFS_NS)
+CC64_COMPILE   = $(CC_CC64) $(CFLAGS_CC64) $(DEFS_CC64)
+SHARED_COMPILE = $(CC_SHARED) $(CFLAGS_SHARED)   $(DEFS_SHARED)
 
 ## Rules for compiling C files to include in static libraries
 %-cc.o   : %.c $(ALLINCLUDES)
-	$(CC_COMPILE) $(INCLUDE) -c $< -o $@
+	$(CC_COMPILE) $(INCLUDES) -c $< -o $@
 
 %-cc64.o : %.c $(ALLINCLUDES)
 	$(CC64_COMPILE) $(INCLUDES) -c $< -o $@

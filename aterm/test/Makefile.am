@@ -3,51 +3,49 @@
 # vim:ts=8:sw=8
 include ../make_rules
 
-PROGS              = stress-cc stress-gcc stress-ns \
-                     primes-cc primes-gcc  primes-ns \
-                     asfixtest randgen \
-                     vararg1 vararg2 vararg3 test-tool test-tool2
+PROGS              	= stress primes asfixtest randgen termstats \
+			  vararg1 vararg2 vararg3 test-tool test-tool2
 
-TESTS	           = $(PROGS) termstats.sh
+TESTS	          	= $(PROGS) termstats.sh
 
-noinst_PROGRAMS    = $(PROGS) termstats
-stress_cc_SOURCES  = 
-stress_cc_LDADD    = stress-cc.o $(CCLIBS)
-stress_gcc_SOURCES = 
-stress_gcc_LDADD   = stress-gcc.o $(GCCLIBS)
-stress_ns_SOURCES  = 
-stress_ns_LDADD    = stress-ns.o $(NSLIBS)
+INCLUDES   = -I. -I$(top_srcdir)/asfix -I$(top_srcdir)/aterm -I$(top_srcdir)/toolbus
 
-primes_cc_SOURCES  =
-primes_cc_LDADD    = primes-cc.o $(CCLIBS)
-primes_gcc_SOURCES =
-primes_gcc_LDADD   = primes-gcc.o $(GCCLIBS)
-primes_ns_SOURCES  =
-primes_ns_LDADD    = primes-ns.o $(GCCLIBS)
+LDFLAGS 		= -L$(top_builddir)/aterm/ \
+			  -L$(top_builddir)/asfix/ \
+			  -L$(top_builddir)/toolbus/
 
-vararg1_SOURCES    =
-vararg1_LDADD      = vararg1-dbg.o $(DBGLIBS)
+LDLIBS			= -lAsFix -lATB -lATerm
 
-vararg2_SOURCES    =
-vararg2_LDADD      = vararg3-dbg.o $(DBGLIBS)
+noinst_PROGRAMS		= $(PROGS)
+stress_SOURCES		= stress.c 
+stress_LDADD		= $(LDLIBS)
 
-vararg3_SOURCES    =
-vararg3_LDADD      = vararg3-dbg.o $(DBGLIBS)
+primes_SOURCES		= primes.c
+primes_LDADD		= $(LDLIBS)
 
-test_tool_SOURCES  =
-test_tool_LDADD    = test-tool-dbg.o $(DBGLIBS)
+vararg1_SOURCES    	= vararg1.c
+vararg1_LDADD      	= $(LDLIBS)
 
-test_tool2_SOURCES =
-test_tool2_LDADD   = tool2.tif-dbg.o test-tool2-dbg.o $(DBGLIBS)
+vararg2_SOURCES    	= vararg2.c
+vararg2_LDADD      	= $(LDLIBS)
 
-asfixtest_SOURCES  = asfixtest.c
-asfixtest_LDADD    = $(CCLIBS)
+vararg3_SOURCES    	= vararg3.c
+vararg3_LDADD      	= $(LDLIBS)
 
-randgen_SOURCES    = randgen.c
-randgen_LDADD      = $(CCLIBS)
+test_tool_SOURCES  	= test-tool.c
+test_tool_LDADD    	= $(LDLIBS)
 
-termstats_SOURCES  = termstats.c
-termstats_LDADD    = $(CCLIBS)
+test_tool2_SOURCES	= test-tool2.c
+test_tool2_LDADD	= tool2.tif.o $(LDLIBS)
+
+asfixtest_SOURCES  	= asfixtest.c
+asfixtest_LDADD    	= $(LDLIBS)
+
+randgen_SOURCES    	= randgen.c
+randgen_LDADD      	= $(LDLIBS)
+
+termstats_SOURCES  	= termstats.c
+termstats_LDADD    	= $(LDLIBS)
 
 tool2.tif-dbg.o : tool2.tif.c
 
@@ -56,33 +54,12 @@ tool2.tif-dbg.o : tool2.tif.c tool2.tif.h
 tool2.tif.c tool2.tif.h : test2.tifs
 	$(top_builddir)/toolbus/tifstoc -tool tool2 $<
 
-LDFLAGS = -L$(top_builddir)/aterm/ \
-          -L$(top_builddir)/asfix/ \
-          -L$(top_builddir)/toolbus/
-
-CCLIBS  = -lAsFix-cc \
-          -lATB-cc \
-          -lATerm-cc
-
-GCCLIBS = -lAsFix-gcc \
-          -lATB-gcc \
-          -lATerm-gcc
-
-DBGLIBS = -lAsFix-dbg \
-          -lATB-dbg \
-          -lATerm-dbg
-
-NSLIBS  = -lAsFix-ns \
-          -lATB-ns \
-          -lATerm-ns
-
-EXTRA_DIST = stress.c asfixtest.c primes.c test-tool.c test-tool2.c \
-             randgen.c termstats.c termstats.sh vararg1.c vararg2.c vararg3.c \
-             test.tb test2.tb Test.asfix test.trms error.trm 
-
-INCLUDES   = -I. -I$(top_srcdir)/asfix -I$(top_srcdir)/aterm -I$(top_srcdir)/toolbus
+EXTRA_DIST = termstats.sh test.tb test2.tb Test.asfix test.trms error.trm 
 
 termstats.sh : termstats
+
+test: stress
+	./stress
 
 # The output of $(TOOLBUS) is moved to $@ to make sure the generated .tifs
 # file exists in the current directory. The ToolBus by default uses the

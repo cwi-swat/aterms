@@ -1,5 +1,10 @@
 $Id$
 
+2000/04/01 <olivierp@cwi.nl>
+   * Cleaned up support for gcc/cc/dbg/prof variants of the 
+	libraries.
+   * Added an ATerm specific section to the INSTALL file.
+	
 2000/03/01 <mdejonge@cwi.nl>
    * generation of shared libraries temporarily disabled because of
      instability of libtool/automake.

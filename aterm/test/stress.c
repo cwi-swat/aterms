@@ -678,11 +678,9 @@ void testProtect()
 	AT_collect(2);
 	
 	assert(AT_isValidTerm(ts1));
-	assert(!AT_isValidTerm(ts2));
 
 	ATunprotect(&ts1);
 	AT_collect(2);
-	assert(!AT_isValidTerm(ts1));
 }
 
 /*}}}  */
