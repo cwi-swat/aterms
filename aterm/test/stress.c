@@ -647,6 +647,36 @@ void testMark()
 
 /*}}}  */
 
+void testTable()
+{
+	int i;
+	ATermTable table;
+
+	ATerm key[1000];
+	ATerm val[1000];
+
+	table = ATtableCreate(2, 80);
+
+	for(i=0; i<1000; i++) {
+		key[i] = ATmake("<int>", i);
+		val[i] = ATmake("f(<int>)", i);
+		ATtablePut(table, key[i], val[i]);
+	}
+
+	for(--i; i>=0; i--)
+		test_assert("table", 1+i, ATisEqual(ATtableGet(table, key[i]), val[i]));
+
+    for(i=0; i<1000; i++)
+		ATtableRemove(table, key[i]);
+
+	for(--i; i>=0; i--)
+		test_assert("table", 1000+i, ATtableGet(table, key[i]) == NULL);
+
+	ATtableDestroy(table);
+
+	printf("table tests ok.\n");
+}
+
 /*{{{  int main(int argc, char *argv[]) */
 
 /**
@@ -671,7 +701,8 @@ int main(int argc, char *argv[])
   testMake();
   testMatch();
   testGC();
-	testMark();
+  testMark();
+  testTable();
 
   return 0;
 }
