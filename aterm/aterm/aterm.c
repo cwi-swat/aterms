@@ -60,6 +60,19 @@ static ATerm sparse_term(int *c, char **s);
 
 /*}}}  */
 
+/*{{{  void AT_cleanup() */
+
+/**
+	* Perform necessary cleanup.
+	*/
+
+void AT_cleanup()
+{
+  AT_cleanupGC();
+	AT_cleanupMemory();
+}
+
+/*}}}  */
 /*{{{  void ATinit(int argc, char *argv[], ATerm *bottomOfStack) */
 
 /**
@@ -100,6 +113,8 @@ void ATinit(int argc, char *argv[], ATerm *bottomOfStack)
   AT_initGC(argc, argv, bottomOfStack);
 
 	initialized = ATtrue;
+
+	atexit(AT_cleanup);
 }
 
 /*}}}  */

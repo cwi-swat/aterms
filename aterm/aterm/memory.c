@@ -20,16 +20,20 @@
 /* when less than GC_THRESHOLD percent of the terms has been freed by
    the previous garbage collect, a new block will be allocated.
    Otherwise a new garbage collect is started. */
-#define GC_THRESHOLD 25 
+#define GC_THRESHOLD 45 
 
 #define MAX_DESTRUCTORS     16
 #define MAX_BLOCKS_PER_SIZE 1024
 
 #define TERM_HASH_OPT       "-termtable"
+#define HASH_INFO_OPT       "-hashinfo"
 
 #define CHECK_ARITY(ari1,ari2) DBG_ARITY(assert((ari1) == (ari2)))
 
 #define EMPTY_HASH_NR 12347
+
+#define INFO_HASHING    1
+#define MAX_INFO_SIZES 256
 
 
 /*}}}  */
@@ -56,6 +60,12 @@ static ATbool (*destructors[MAX_DESTRUCTORS])(ATermBlob) = { NULL };
 static ATerm arg_buffer[MAX_ARITY];
 
 ATermList ATempty;
+
+static int infoflags = 0;
+
+static int gc_count = 0;
+static int hash_info_before_gc[MAX_INFO_SIZES][3];
+static int hash_info_after_gc[MAX_INFO_SIZES][3];
 
 /*}}}  */
 
@@ -173,7 +183,7 @@ static unsigned int hash_number_anno(unsigned int header, int n, ATerm w[], ATer
 
 /*}}}  */
 
-/*{{{  AT_initMemory(int argc, char *argv[]) */
+/*{{{  void AT_initMemory(int argc, char *argv[]) */
 
 /**
   * Initialize memory allocation datastructures
@@ -184,16 +194,27 @@ void AT_initMemory(int argc, char *argv[])
   int i;
 
   table_size = 16411;
-  for (i = 1; i < argc; i++)
+
+	/*{{{  Analyze arguments */
+
+  for (i = 1; i < argc; i++) {
     if (streq(argv[i], TERM_HASH_OPT))
       table_size = atoi(argv[++i]);
+		if(streq(argv[i], HASH_INFO_OPT))
+			infoflags |= INFO_HASHING;
+	}
 
-  DBG_MEM(fprintf(stderr, "initial term table size = %d\n", table_size));
+	/*}}}  */
+
+	/*{{{  Initialize blocks */
 
   for(i=0; i<MAX_TERM_SIZE; i++) {
     at_nrblocks[i] = 0;
     at_freelist[i] = NULL;
   }
+
+	/*}}}  */
+	/*{{{  Create term term table */
 
   hashtable = (ATerm *)calloc(table_size, sizeof(ATerm ));
   if(!hashtable) {
@@ -206,11 +227,94 @@ void AT_initMemory(int argc, char *argv[])
 		block_table[i].first_after  = NULL;
   }
 
+	/*}}}  */
+	/*{{{  Create the empty list */
+
   ATempty = (ATermList)AT_allocate(TERM_SIZE_LIST);
   ATempty->header = EMPTY_HEADER(0);
   ATempty->next = NULL;
   hashtable[EMPTY_HASH_NR % table_size] = (ATerm)ATempty;
 	ATprotect((ATerm *)&ATempty);
+
+	/*}}}  */
+	/*{{{  Initialize info structures */
+
+	for(i=0; i<MAX_INFO_SIZES; i++) {
+		hash_info_before_gc[i][IDX_TOTAL] = 0;
+		hash_info_before_gc[i][IDX_MIN] = MYMAXINT;
+		hash_info_before_gc[i][IDX_MAX] = 0;
+		hash_info_after_gc[i][IDX_TOTAL] = 0;
+		hash_info_after_gc[i][IDX_MIN] = MYMAXINT;
+		hash_info_after_gc[i][IDX_MAX] = 0;
+	}
+
+	/*}}}  */
+
+  DBG_MEM(fprintf(stderr, "initial term table size = %d\n", table_size));
+}
+
+/*}}}  */
+/*{{{  void AT_cleanupMemory() */
+
+/**
+	* Print hashtable info
+	*/
+
+void AT_cleanupMemory()
+{
+	if(infoflags & INFO_HASHING) {
+		int i, max = MAX_INFO_SIZES-1;
+		FILE *f = fopen("hashing.stats", "w");
+
+		if(!f)
+			ATerror("cannot open hashing statisics file: \"hashing.stats\"\n");
+
+		while(hash_info_before_gc[max][IDX_MIN] == 0)
+			max--;
+
+		if(gc_count > 0) {
+			for(i=0; i<=max; i++) {
+				fprintf(f, "%8d %8d %8d   %8d %8d %8d\n", 
+								hash_info_before_gc[i][IDX_MIN],
+								hash_info_before_gc[i][IDX_TOTAL]/gc_count,
+								hash_info_before_gc[i][IDX_MAX],
+								hash_info_after_gc[i][IDX_MIN],
+								hash_info_after_gc[i][IDX_TOTAL]/gc_count,
+								hash_info_after_gc[i][IDX_MAX]);
+			}
+		}
+	}
+}
+
+/*}}}  */
+/*{{{  static void hash_info(int stats[3][]) */
+
+static void hash_info(int stats[MAX_INFO_SIZES][3]) 
+{
+	int i, len;
+	static int count[MAX_INFO_SIZES];
+
+	/* Initialize statistics */
+	for(i=0; i<MAX_INFO_SIZES; i++)
+		count[i] = 0;
+
+	/* Gather statistics on the current fill of the hashtable */
+	for(i=0; i<table_size; i++) {
+		ATerm cur = hashtable[i];
+		len = 0;
+		while(cur) {
+			len++;
+			cur = cur->next; 
+		}
+		if(len >= MAX_INFO_SIZES)
+			len = MAX_INFO_SIZES-1;
+		count[len]++;
+	}
+
+	/* Update global statistic information */
+	for(i=0; i<MAX_INFO_SIZES; i++) {
+		STATS(stats[i], count[i]);
+	}
 }
 
 /*}}}  */
@@ -279,7 +383,12 @@ ATerm AT_allocate(int size)
 #endif
 				allocate_block(size);
 		} else {
-			AT_collect(size);
+			gc_count++;
+			if(infoflags & INFO_HASHING)
+				hash_info(hash_info_before_gc);
+			AT_collect(size);	
+			if(infoflags & INFO_HASHING)
+				hash_info(hash_info_after_gc);
 			for(i=MIN_TERM_SIZE; i<MAX_TERM_SIZE; i++)
 				alloc_since_gc[size] = 0;
 		}

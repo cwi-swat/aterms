@@ -75,23 +75,22 @@ ATerm AT_getPattern(const char *pat)
   at_entry    *bucket;
   
   for(hash_val = 0; *walk; walk++)
-	hash_val = 251 * hash_val + *walk;
+		hash_val = 251 * hash_val + *walk;
   hash_val %= TABLE_SIZE;
   
   bucket = &(pattern_table[hash_val]);
-  if (bucket->pat)
-	{
-	  if (streq(bucket->pat, pat))
-		return bucket->term;
-	  else
-		free(bucket->pat);
+  if (bucket->pat) {
+		if (streq(bucket->pat, pat))
+			return bucket->term;
+		else
+			free(bucket->pat);
 	}
   else
-	ATprotect(&(bucket->term));
+		ATprotect(&(bucket->term));
   
   bucket->pat = strdup(pat);
   if (!bucket->pat)
-	ATerror("ATvmake: no room for pattern.\n");
+		ATerror("ATvmake: no room for pattern.\n");
   
   bucket->term = ATreadFromString(pat);
   return bucket->term;

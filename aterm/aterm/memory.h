@@ -41,6 +41,7 @@ extern ATerm at_freelist[MAX_TERM_SIZE];
 extern BlockBucket block_table[BLOCK_TABLE_SIZE];
 
 void AT_initMemory(int argc, char *argv[]);
+void AT_cleanupMemory();
 ATerm AT_allocate(int size);
 void  AT_free(int size, ATerm t);
 void  AT_collect(int size);

@@ -1,6 +1,6 @@
 
 PRODUCT		= aterm
-VERSION		= 0.0.4
+VERSION		= 0.0.5
 
 ATERMSRCS	= aterm.c list.c make.c memory.c symbol.c gc.c
 ATERMLIBS	= libATerm-gcc.a libATerm-cc.a libATerm-dbg.a libATerm-prof.a
