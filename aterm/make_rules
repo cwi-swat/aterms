@@ -25,32 +25,31 @@
 #
 
 # Common defines for all libraries
-DEFS += -DVERSION="\"$(VERSION)\"" -DCURDATE="\"`date`\""
-DEFS += $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
+STDDEFS = $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS)
 
 ## Library specific compiler flags
-GCC_COMPILE    = $(CC_GCC)  $(CFLAGS_GCC)  $(DEFS_GCC)
-CC_COMPILE     = $(CC_CC)   $(CFLAGS_CC)   $(DEFS_CC) 
-DBG_COMPILE    = $(CC_DBG)  $(CFLAGS_DBG)  $(DEFS_DBG)
-PROF_COMPILE   = $(CC_PROF) $(CFLAGS_PROF) $(DEFS_PROF)
-CC64_COMPILE   = $(CC_CC64) $(CFLAGS_CC64) $(DEFS_CC64)
-SHARED_COMPILE = $(CC_SHARED) $(CFLAGS_SHARED)   $(DEFS_SHARED)
+GCC_COMPILE    = $(CC_GCC)    $(CFLAGS_GCC)    $(DEFS_GCC)    $(STDDEFS)
+CC_COMPILE     = $(CC_CC)     $(CFLAGS_CC)     $(DEFS_CC)     $(STDDEFS)
+DBG_COMPILE    = $(CC_DBG)    $(CFLAGS_DBG)    $(DEFS_DBG)    $(STDDEFS)
+PROF_COMPILE   = $(CC_PROF)   $(CFLAGS_PROF)   $(DEFS_PROF)   $(STDDEFS)
+CC64_COMPILE   = $(CC_CC64)   $(CFLAGS_CC64)   $(DEFS_CC64)   $(STDDEFS)
+SHARED_COMPILE = $(CC_SHARED) $(CFLAGS_SHARED) $(DEFS_SHARED) $(STDDEFS)
 
 ## Rules for compiling C files to include in static libraries
 %-cc.o   : %.c $(ALLINCLUDES)
-	$(CC_COMPILE) $(INCLUDES) -c $< -o $@
+	CFLAGS= $(CC_COMPILE) -c $< -o $@
 
 %-cc64.o : %.c $(ALLINCLUDES)
-	$(CC64_COMPILE) $(INCLUDES) -c $< -o $@
+	$(CC64_COMPILE) -c $< -o $@
 
 %-gcc.o  : %.c $(ALLINCLUDES)
-	$(GCC_COMPILE) $(INCLUDES) -c $< -o $@
+	$(GCC_COMPILE) -c $< -o $@
 
 %-dbg.o  : %.c $(ALLINCLUDES)
-	$(DBG_COMPILE) $(INCLUDES) -c $< -o $@
+	$(DBG_COMPILE) -c $< -o $@
 
 %-prof.o : %.c $(ALLINCLUDES)
-	$(PROF_COMPILE) $(INCLUDES) -c $< -o $@
+	$(PROF_COMPILE) -c $< -o $@
 
 %-ns.o   : %.c $(ALLINCLUDES)
-	$(NS_COMPILE) $(INCLUDES) -c $< -o $@
+	$(NS_COMPILE) -c $< -o $@
