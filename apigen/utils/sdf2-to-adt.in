@@ -30,6 +30,7 @@ Parameters:
   -t | --table <FILE>     override APIGEN-parsetable       [see below]
   -l | --label <FILE>     override labeling equations      [see below]
   -g | --generator <FILE> override compiled generator      [see below]
+  -I | --imploded         ADT without AsFix (appl/prod)    [off]
   -v | --verbose          be verbose during generation     [off]
   -s | --skip-cleanup     skip cleanup (debugging aid)     [off]
   -h | --help             display this information
@@ -37,7 +38,8 @@ Parameters:
 Default locations:
    APIGEN-parsetable = ${APITABLE}
   Labeling equations = ${ADDLABELS}
-  Compiled generator = ${SDF2TOADT}
+  Standard generator = ${SDF2TOADT}
+  Imploded generator = ${SDF2IMPL}
 
 Example: ${PRG} --remove-cons -i Booleans.sdf -o Booleans.adt
 
@@ -95,6 +97,7 @@ INPUT=""
 OUTPUT=""
 VERBOSE=0
 CLEANUP=1
+IMPLODED=0
 CONSOPT='cons-expand'
 
 # data needed
@@ -102,11 +105,12 @@ CONSOPT='cons-expand'
 ADDLABELS=${PKGDATA}/AddLabels.eqs
 
 # binaries
-SDF2TOADT=${bindir}/Sdf2-to-ADT
-     SGLR=${SGLRBIN}/sglr
-  UNPARSE=${PTBIN}/unparsePT
-APPLYFUNC=${PTBIN}/apply-function
-EVALUATOR=${ASFBIN}/asfe
+ SDF2TOADT=${bindir}/Sdf2-to-ADT
+SDF2TOIMPL=${bindir}/Sdf2-to-Imploded-ADT
+      SGLR=${SGLRBIN}/sglr
+   UNPARSE=${PTBIN}/unparsePT
+ APPLYFUNC=${PTBIN}/apply-function
+ EVALUATOR=${ASFBIN}/asfe
 
 # }}}
 
@@ -141,6 +145,9 @@ do
     -g | --generator)
       shift; SDF2TOADT=$1 ;;
 
+    -I | --imploded)
+      IMPLODED=1 ;;
+
     -v | --verbose)
       VERBOSE=1 ;;
 
@@ -172,6 +179,14 @@ if [ "a${OUTPUT}" = "a" ]; then
   OUTPUT=${INPUT}.adt
 fi
 
+if [ ${IMPLODED} -eq 1 ]; then
+  GENERATOR=${SDF2TOIMPL}
+  FUNC="sdf-to-imploded-adt"
+else
+  GENERATOR=${SDF2TOADT}
+  FUNC="sdf-to-asfix2me-adt-${CONSOPT}"
+fi
+
 # }}}
 
 # {{{  err()
@@ -194,9 +209,8 @@ info " - Labeling ${INPUT} (parsed)"
 ${APPLYFUNC} -f add-labels -s SDF -i .api_1_$$ -o .api_2_$$ || err
 ${EVALUATOR} -e ${ADDLABELS} -i .api_2_$$ -o .api_3_$$ || err
 
-info " - Generating ADT (${SDF2TOADT})"
-func="sdf-to-asfix2me-adt-${CONSOPT}"
-${APPLYFUNC} -f ${func} -s ATerm < .api_3_$$ > .api_4_$$ || err
-${SDF2TOADT} < .api_4_$$ | ${UNPARSE} > ${OUTPUT} || err
+info " - Generating ADT (${GENERATOR})"
+${APPLYFUNC} -f ${FUNC} -s ATerm < .api_3_$$ > .api_4_$$ || err
+${GENERATOR} < .api_4_$$ | ${UNPARSE} > ${OUTPUT} || err
 
 # }}}

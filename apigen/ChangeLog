@@ -1,3 +1,8 @@
+2002/05/29 (jong@cwi.nl)
+ * Replaced sdf2-to-imploded-adt script by a "-I|--imploded" flag to
+   sdf2-to-adt
+ * Many additions and improvements to the doc/apigen paper.
+
 2001/03/04 (jurgenv@cwi.nl)
  * Added sdf2-to-imploded-adt tool. 
  * Bumped to 1.3beta

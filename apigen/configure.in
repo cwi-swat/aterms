@@ -129,7 +129,6 @@ Makefile
 spec/Makefile
 utils/Makefile
 utils/sdf2-to-adt
-utils/sdf2-to-imploded-adt
 utils/adt-to-c
 utils/adt-to-java
 apigen/Makefile
