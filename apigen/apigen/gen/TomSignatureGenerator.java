@@ -6,6 +6,11 @@ import apigen.adt.*;
 
 public abstract class TomSignatureGenerator extends Generator {
     protected String api_name = "";
+    protected StringConversions converter;
+    
+    public TomSignatureGenerator() {
+    	converter = new StringConversions();
+    }
     
 	protected void createTomSignatureStream(String name, String directory) {
 		createFileStream(name, ".t", directory);
@@ -15,7 +20,7 @@ public abstract class TomSignatureGenerator extends Generator {
 		String directory,
 		String api_name,
 		ADT api) {
-		String filename = buildId(api_name);
+		String filename = converter.makeIdentifier(api_name);
 		this.api_name = api_name;
 		createTomSignatureStream(filename, directory);
 
@@ -187,7 +192,7 @@ public abstract class TomSignatureGenerator extends Generator {
 		fields = type.altFieldIterator(alt.getId());
 		while (fields.hasNext()) {
 			Field field = (Field) fields.next();
-			String field_id = buildId(field.getId());
+			String field_id = converter.makeIdentifier(field.getId());
 			println("  get_slot("+ field_id + ",t) { " + OperatorGetSlot("t", field_id) + "}");
 		}
 

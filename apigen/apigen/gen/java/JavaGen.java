@@ -2,12 +2,18 @@ package apigen.gen.java;
 
 //{{{ imports
 
-import java.io.*;
-import java.util.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
-// import aterm.pure.PureFactory;
-
-import apigen.adt.*;
+import apigen.adt.ADT;
+import apigen.adt.Alternative;
+import apigen.adt.Field;
+import apigen.adt.Type;
 import apigen.gen.Generator;
 import aterm.ParseError;
 import aterm.pure.PureFactory;
@@ -17,18 +23,6 @@ import aterm.pure.PureFactory;
 public class JavaGen
 extends Generator
 {
-  
-  //{{{ private final static String[][] RESERVED_TYPES =
-
-  protected String[][] RESERVED_TYPES =
-  { { "int",  "Integer"    },
-    { "real", "Double" },
-    { "str",  "String" },
-    { "term", "ATerm" }
-  };
-
-  //}}}
-
   public static boolean folding = false;
   public static boolean visitable = false;
   public static boolean jtom = false;
@@ -44,9 +38,12 @@ extends Generator
   private String api_constructor;
   
   private InputStream input;
-	private String path;
+  private String path;
 
-
+  protected void initTypeConverter() {
+  	typeConverter  = new JavaTypeConverter();
+  }
+  
   //{{{ private static void usage()
 
   private static void usage()
@@ -134,19 +131,15 @@ extends Generator
 
   public JavaGen(InputStream input, String api_name, String basedir, String pkg, List imports)
     throws IOException
-  {
-    initializeConstants(RESERVED_TYPES);
-        
+  {        
     this.api_name = api_name;
-    this.api_factory = capitalize(buildId(api_name)) + "Factory";
-    this.api_constructor = capitalize(buildId(api_name)) + "Constructor";
+    this.api_factory = stringConverter.makeCapitalizedIdentifier(api_name) + "Factory";
+    this.api_constructor = stringConverter.makeCapitalizedIdentifier(api_name) + "Constructor";
     this.input   = input;
     this.basedir = basedir;
     this.pkg	 = pkg;
     this.imports = imports;
     
-
-
     factory = new PureFactory();
     try {
       aterm.ATerm adt = factory.readFromFile(input);
@@ -176,7 +169,7 @@ extends Generator
 
 private void genMakeIncludeFile(ADT api) {
     char sep = File.separatorChar;
-    String cap_api_name = capitalize(buildId(api_name));
+    String cap_api_name = stringConverter.makeCapitalizedIdentifier(api_name);
   
     createFileStream(cap_api_name + "MakeRules","", basedir);
     String prefix = cap_api_name + "API";
@@ -408,8 +401,8 @@ private void genMakeIncludeFile(ADT api) {
     while (bottoms.hasNext()) {
       String type = (String) bottoms.next();
       
-      if (!isReservedType(type)) {
-        println("    " + capitalize(buildId(type)) + ".initialize(this);");
+      if (!typeConverter.isReserved(type)) {
+        println("    " + stringConverter.makeCapitalizedIdentifier(type) + ".initialize(this);");
       }
     }
   }
@@ -633,7 +626,7 @@ private void genMakeIncludeFile(ADT api) {
   }
     
   private void genDefaultIsMethod(Alternative alt) {   
-      println("  public boolean is" + capitalize(buildId(alt.getId())) + "()");
+      println("  public boolean is" + stringConverter.makeCapitalizedIdentifier(alt.getId()) + "()");
       println("  {");
       println("    return false;");
       println("  }");
@@ -641,7 +634,7 @@ private void genMakeIncludeFile(ADT api) {
   }
   
   private void genOverrideIsMethod(Alternative alt) {
-    println("  public boolean is" + capitalize(buildId(alt.getId())) + "()");
+    println("  public boolean is" + stringConverter.makeCapitalizedIdentifier(alt.getId()) + "()");
     println("  {");
     println("    return true;");
     println("  }");
@@ -660,7 +653,7 @@ private void genMakeIncludeFile(ADT api) {
   
   private void genDefaultHasMethod(Field field)
   {    
-      println("  public boolean has" + capitalize(buildId(field.getId())) + "()");
+      println("  public boolean has" + stringConverter.makeCapitalizedIdentifier(field.getId()) + "()");
       println("  {");
       println("    return false;");
       println("  }");
@@ -679,7 +672,7 @@ private void genMakeIncludeFile(ADT api) {
   
   private void genOverrideHasMethod(Field field)
   {
-     println("  public boolean has" + capitalize(buildId(field.getId())) + "()");
+     println("  public boolean has" + stringConverter.makeCapitalizedIdentifier(field.getId()) + "()");
      println("  {");
      println("    return true;");
      println("  }");
@@ -711,7 +704,7 @@ private void genMakeIncludeFile(ADT api) {
   
   private void genAlternativeClassImpl(Type type, Alternative alt)
   {
-    String type_id = buildId(type.getId());
+    String type_id = stringConverter.makeIdentifier(type.getId());
     String alt_class = buildAltClassImplName(type, alt);
     
     println("public class " + alt_class);
@@ -890,7 +883,7 @@ private void genMakeIncludeFile(ADT api) {
     int count = 0;
     while (fields.hasNext()) {
       Field field = (Field) fields.next();
-      if (!isReservedType(field.getType())) {
+      if (!typeConverter.isReserved(field.getType())) {
         count++;
       }
     }
@@ -903,7 +896,8 @@ private void genMakeIncludeFile(ADT api) {
     printFoldOpen("initializePattern()");
     println("  static public void initializePattern()");
     println("  {");
-    println("    pattern = getStaticFactory().parse(\"" + escapeQuotes(alt.buildMatchPattern().toString()) + "\");");
+    println("    pattern = getStaticFactory().parse(\"" + 
+              stringConverter.escapeQuotes(alt.buildMatchPattern().toString()) + "\");");
     println("  }");
     println();
     printFoldClose();
@@ -933,7 +927,7 @@ private void genMakeIncludeFile(ADT api) {
 		  Iterator fields = type.altFieldIterator(alt.getId());
 		  for (int i = 0; fields.hasNext(); i++) {
 		  	  Field field = (Field) fields.next();
-			  String field_name = capitalize(buildId(field.getId()));
+			  String field_name = stringConverter.makeCapitalizedIdentifier(field.getId());
 			  String field_type = field.getType();
 			  String field_class = buildClassName(field_type);
 			  
@@ -975,7 +969,7 @@ private void genMakeIncludeFile(ADT api) {
 	private void genAltGetAndSetMethod(Type type, Alternative alt, Field field) {
     String class_name = buildClassName(type);
     String alt_class_name = buildAltClassName(type, alt);
-    String field_name = capitalize(buildId(field.getId()));
+    String field_name = stringConverter.makeCapitalizedIdentifier(field.getId());
     String field_id = buildFieldId(field.getId());
     String field_type = field.getType();
     String field_class = buildClassName(field_type);
@@ -1033,7 +1027,7 @@ private void genMakeIncludeFile(ADT api) {
   
   private void genDefaultGetAndSetMethod(Type type, Field field) {
     String class_name = buildClassName(type);
-    String field_name = capitalize(buildId(field.getId()));
+    String field_name = stringConverter.makeCapitalizedIdentifier(field.getId());
     String field_id = buildFieldId(field.getId());
     String field_type_id = buildClassName(field.getType());
     
@@ -1190,22 +1184,16 @@ private void genMakeIncludeFile(ADT api) {
     return buildClassName(type) + "Impl";
   }
 
-	private String buildClassName(String typeId) {
-		String nativeType = (String)reservedTypes.get(typeId);
-		
-		if (nativeType != null) {
-		  return nativeType;
-		}
-		
-		return buildId(typeId);
-	}
+  private String buildClassName(String typeId) {
+	return stringConverter.makeIdentifier(typeConverter.getType(typeId));
+  }
 
   //}}}
   //{{{ private String buildAltClassName(Type type, Alternative alt)
 
   private String buildAltClassName(Type type, Alternative alt)
   {
-    return buildClassName(type.getId()) + "_" + capitalize(buildId(alt.getId()));
+    return buildClassName(type.getId()) + "_" + stringConverter.makeCapitalizedIdentifier(alt.getId());
   }
 
   //}}}
@@ -1219,13 +1207,7 @@ private void genMakeIncludeFile(ADT api) {
 
   private String buildTypeId(String typeId)
   {
-    String nativeType = (String)reservedTypes.get(typeId);
-
-    if (nativeType != null) {
-      return nativeType;
-    }
-
-    return buildId(typeId);
+	return stringConverter.makeIdentifier(typeConverter.getType(typeId));
   }
 
   //}}}
@@ -1233,12 +1215,12 @@ private void genMakeIncludeFile(ADT api) {
 
   private String buildFieldId(String fieldId)
   {
-    return "_" + buildId(fieldId);
+    return "_" + stringConverter.makeIdentifier(fieldId);
   }
   
   private String buildFieldIndex(String fieldId)
   {
-    return "index_" + buildId(fieldId);
+    return "index_" + stringConverter.makeIdentifier(fieldId);
   }
 
   //}}}

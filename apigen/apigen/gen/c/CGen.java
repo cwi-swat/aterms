@@ -13,17 +13,11 @@ import apigen.gen.Generator;
 
 //}}}
 
-public class CGen 
-extends Generator {
-	//{{{ Constants
-
-	private final static String[][] RESERVED_TYPES = { { "int", "int" }, {
-			"real", "double" }, {
-			"str", "char *" }, {
-			"term", "ATerm" }
-	};
-
-	//}}}
+public class CGen extends Generator {
+	
+   protected void initTypeConverter() {
+		typeConverter = new CTypeConverter();
+	}
 
 	/* Optimization disabled because of possible presence of annotations! */
 	private static final boolean OPTIMIZE_WITHOUT_ANNOS = false;
@@ -128,14 +122,12 @@ extends Generator {
 		throws IOException {
 		this.input = input;
 		this.output = output;
-		this.capOutput = capitalize(output);
+		this.capOutput = stringConverter.capitalize(output);
 		this.prefix = prefix;
 		this.prologue = prologue;
 		this.make_term_compatibility = make_term_compatibility;
 		afuns_by_name = new HashMap();
 		afuns_by_afun = new HashMap();
-
-		initializeConstants(RESERVED_TYPES);
 
 		factory = new PureFactory();
 
@@ -280,7 +272,7 @@ extends Generator {
 	//{{{ private void genInitFunction(API api)
 
 	private void genInitFunction(ADT api) {
-		String decl = "void " + prefix + "init" + buildId(capOutput) + "Api(void)";
+		String decl = "void " + prefix + "init" + stringConverter.makeIdentifier(capOutput) + "Api(void)";
 		header.println(decl + ";");
 
 		printFoldOpen(source, decl);
@@ -303,7 +295,7 @@ extends Generator {
 		printFoldOpen(source, "term conversion functions");
 		while (types.hasNext()) {
 			Type type = (Type) types.next();
-			String type_id = buildId(type.getId());
+			String type_id = stringConverter.makeIdentifier(type.getId());
 			String type_name = buildTypeName(type);
 
 			//{{{ PPPXXXFromTerm(ATerm t)
@@ -371,7 +363,7 @@ extends Generator {
 
 		while (types.hasNext()) {
 			Type type = (Type) types.next();
-			String type_id = buildId(type.getId());
+			String type_id = stringConverter.makeIdentifier(type.getId());
 			String type_name = buildTypeName(type);
 
 			String decl =
@@ -432,7 +424,7 @@ extends Generator {
 							ATerm ph = ((ATermPlaceholder) last).getPlaceholder();
 							if (ph.getType() == ATerm.LIST) {
 								ATermAppl field = (ATermAppl) (((ATermList) ph).getFirst());
-								result = "(ATermList)" + buildId(field.getName());
+								result = "(ATermList)" + stringConverter.makeIdentifier(field.getName());
 							}
 						}
 						if (result == null) {
@@ -487,7 +479,7 @@ extends Generator {
 				{
 					ATermAppl hole =
 						(ATermAppl) ((ATermPlaceholder) pattern).getPlaceholder();
-					String name = buildId(hole.getName());
+					String name = stringConverter.makeIdentifier(hole.getName());
 					String type = hole.getArgument(0).toString();
 					if (type.equals("int")) {
 						result = "(ATerm)ATmakeInt(" + name + ")";
@@ -519,7 +511,7 @@ extends Generator {
 		printFoldOpen(source, "constructors");
 		while (types.hasNext()) {
 			Type type = (Type) types.next();
-			String type_id = buildId(type.getId());
+			String type_id = stringConverter.makeIdentifier(type.getId());
 			String type_name = buildTypeName(type);
 
 			Iterator alts = type.alternativeIterator();
@@ -542,11 +534,11 @@ extends Generator {
 				/*
 				source.print("  return (" + type_name + ")ATmakeTerm("
 					     + prefix + "pattern" + type_id
-					     + capitalize(buildId(alt.getId())));
+					     + stringConverter.makeCapitalizedIdentifier(alt.getId())));
 				Iterator fields = type.altFieldIterator(alt.getId());
 				while (fields.hasNext()) {
 				  Field field = (Field)fields.next();
-				  source.print(", " + buildId(field.getId()));
+				  source.print(", " + stringConverter.makeIdentifier(field.getId()));
 				}
 				source.println(");");
 				 */
@@ -565,18 +557,18 @@ extends Generator {
 	//{{{ private String buildConstructorName(Type type, Alternative alt)
 
 	private String buildConstructorName(Type type, Alternative alt) {
-		String type_id = buildId(type.getId());
-		String alt_id = buildId(alt.getId());
-		return prefix + "make" + type_id + capitalize(alt_id);
+		String type_id = stringConverter.makeIdentifier(type.getId());
+		String alt_id = stringConverter.makeCapitalizedIdentifier(alt.getId());
+		return prefix + "make" + type_id + alt_id;
 	}
 
 	//}}}
 	//{{{ private String buildConstructorDecl(Type type, Alternative alt)
 
 	private String buildConstructorDecl(Type type, Alternative alt) {
-		String type_id = buildId(type.getId());
+		String type_id = stringConverter.makeIdentifier(type.getId());
 		String type_name = buildTypeName(type);
-		String alt_id = buildId(alt.getId());
+		String alt_id = stringConverter.makeIdentifier(alt.getId());
 
 		StringBuffer decl = new StringBuffer();
 		decl.append(type_name + " " + buildConstructorName(type, alt) + "(");
@@ -591,7 +583,7 @@ extends Generator {
 				decl.append(", ");
 			}
 			decl.append(
-				buildTypeName(field.getType()) + " " + buildId(field.getId()));
+				buildTypeName(field.getType()) + " " + stringConverter.makeIdentifier(field.getId()));
 		}
 		decl.append(")");
 
@@ -635,7 +627,7 @@ extends Generator {
 	//{{{ private void genTypeIsValid(Type type)
 
 	private void genTypeIsValid(Type type) {
-		String type_id = buildId(type.getId());
+		String type_id = stringConverter.makeIdentifier(type.getId());
 		String type_name = buildTypeName(type);
 		String decl =
 			"ATbool " + prefix + "isValid" + type_id + "(" + type_name + " arg)";
@@ -670,7 +662,7 @@ extends Generator {
 	//{{{ private void genIsAlt(Type type, Alternative alt)
 
 	private void genIsAlt(Type type, Alternative alt) {
-		String type_id = buildId(type.getId());
+		String type_id = stringConverter.makeIdentifier(type.getId());
 		String type_name = buildTypeName(type);
 		String decl =
 			"inline ATbool " + buildIsAltName(type, alt) + "(" + type_name + " arg)";
@@ -698,7 +690,7 @@ extends Generator {
 
 		//{{{ Create match_code
 
-		pattern = prefix + "pattern" + type_id + capitalize(buildId(alt.getId()));
+		pattern = prefix + "pattern" + type_id + stringConverter.makeCapitalizedIdentifier(alt.getId());
 		if (!OPTIMIZE_WITHOUT_ANNOS || contains_placeholder) {
 			match_code.append("ATmatchTerm((ATerm)arg, " + pattern);
 			Iterator fields = type.altFieldIterator(alt.getId());
@@ -824,7 +816,7 @@ extends Generator {
 	//{{{ private String buildIsAltName(Type type, String altId)
 
 	private String buildIsAltName(Type type, String altId) {
-		return prefix + "is" + buildId(type.getId()) + capitalize(buildId(altId));
+		return prefix + "is" + stringConverter.makeIdentifier(type.getId()) + stringConverter.makeCapitalizedIdentifier(altId);
 	}
 
 	//}}}
@@ -832,14 +824,14 @@ extends Generator {
 	//{{{ private void genHasField(Type type, Field field)
 
 	private void genHasField(Type type, Field field) {
-		String type_id = buildId(type.getId());
+		String type_id = stringConverter.makeIdentifier(type.getId());
 		String type_name = buildTypeName(type);
 		String decl =
 			"ATbool "
 				+ prefix
 				+ "has"
 				+ type_id
-				+ capitalize(buildId(field.getId()))
+				+ stringConverter.makeCapitalizedIdentifier(field.getId())
 				+ "("
 				+ type_name
 				+ " arg)";
@@ -881,7 +873,7 @@ extends Generator {
 
 		while (types.hasNext()) {
 			Type type = (Type) types.next();
-			String type_id = buildId(type.getId());
+			String type_id = stringConverter.makeIdentifier(type.getId());
 			String type_name = buildTypeName(type);
 
 			StringBuffer decl_buf = new StringBuffer();
@@ -931,7 +923,7 @@ extends Generator {
 
 	private String genAcceptor(Field field) {
 		String type = buildTypeName(field.getType());
-		String name = "accept" + capitalize(buildId(field.getId()));
+		String name = "accept" + stringConverter.makeCapitalizedIdentifier(field.getId());
 
 		return type + " (*" + name + ")(" + type + ")";
 	}
@@ -940,8 +932,8 @@ extends Generator {
 	//{{{ private void genSortVisitorAltImpl(String type, Alternative alt)
 
 	private void genSortVisitorAltImpl(Type type, Alternative alt) {
-		String type_id = buildId(type.getId());
-		String alt_id = buildId(alt.getId());
+		String type_id = stringConverter.makeIdentifier(type.getId());
+		String alt_id = stringConverter.makeIdentifier(alt.getId());
 		String type_name = buildTypeName(type);
 		String cons_name = buildConstructorName(type, alt);
 
@@ -961,13 +953,13 @@ extends Generator {
 					Field param = (Field) params.next();
 					if (!param.getType().equals(type.getId())) {
 						source.print(", ");
-						source.print("accept" + capitalize(buildId(param.getId())));
+						source.print("accept" + stringConverter.makeCapitalizedIdentifier(param.getId()));
 					}
 				}
 				source.print(")");
 			}
 			else {
-				String acceptor_name = "accept" + capitalize(buildId(field.getId()));
+				String acceptor_name = "accept" + stringConverter.makeCapitalizedIdentifier(field.getId());
 				source.print(
 					acceptor_name + " ? " + acceptor_name + "(" + getter_name + "(arg))");
 				source.print(" : " + getter_name + "(arg)");
@@ -985,10 +977,10 @@ extends Generator {
 	//{{{ private void genGetField(Type type, Field field)
 
 	private void genGetField(Type type, Field field) {
-		String type_id = buildId(type.getId());
+		String type_id = stringConverter.makeIdentifier(type.getId());
 		String type_name = buildTypeName(type);
 		String field_type_name = buildTypeName(field.getType());
-		String fieldId = capitalize(buildId(field.getId()));
+		String fieldId = stringConverter.makeCapitalizedIdentifier(field.getId());
 		String decl =
 			field_type_name
 				+ " "
@@ -1046,8 +1038,8 @@ extends Generator {
 	//{{{ private String buildGetterName(Type type, Field field)
 
 	private String buildGetterName(Type type, Field field) {
-		String type_id = buildId(type.getId());
-		String fieldId = capitalize(buildId(field.getId()));
+		String type_id = stringConverter.makeIdentifier(type.getId());
+		String fieldId = stringConverter.makeCapitalizedIdentifier(field.getId());
 
 		return prefix + "get" + type_id + fieldId;
 	}
@@ -1110,9 +1102,9 @@ extends Generator {
 	//{{{ private void genSetField(Type type, Field field)
 
 	private void genSetField(Type type, Field field) {
-		String type_id = buildId(type.getId());
+		String type_id = stringConverter.makeIdentifier(type.getId());
 		String type_name = buildTypeName(type);
-		String field_id = buildId(field.getId());
+		String field_id = stringConverter.makeIdentifier(field.getId());
 		String field_type_name = buildTypeName(field.getType());
 		String decl =
 			type_name
@@ -1120,7 +1112,7 @@ extends Generator {
 				+ prefix
 				+ "set"
 				+ type_id
-				+ capitalize(field_id)
+				+ stringConverter.capitalize(field_id)
 				+ "("
 				+ type_name
 				+ " arg, "
@@ -1150,7 +1142,7 @@ extends Generator {
 			source.print("    return (" + type_name + ")");
 			Iterator steps = loc.stepIterator();
 			String arg =
-				genReservedTypeSetterArg(field.getType(), buildId(field.getId()));
+				genReservedTypeSetterArg(field.getType(), stringConverter.makeIdentifier(field.getId()));
 			genSetterSteps(steps, new LinkedList(), arg);
 			source.println(";");
 			source.println("  }");
@@ -1160,7 +1152,7 @@ extends Generator {
 			"  ATabort(\""
 				+ type_id
 				+ " has no "
-				+ capitalize(field_id)
+				+ stringConverter.capitalize(field_id)
 				+ ": %t\\n\", arg);");
 		source.println("  return (" + type_name + ")NULL;");
 
@@ -1230,18 +1222,18 @@ extends Generator {
 	//{{{ private String buildTypeName(String typeId)
 
 	private String buildTypeName(String typeId) {
-		String nativeType = (String) reservedTypes.get(typeId);
-
-		if (nativeType != null) {
-			return nativeType;
+		String name = typeConverter.getType(typeId);
+		
+		if (typeConverter.isReserved(typeId)) {
+			return name;
 		}
 		else {
-			return prefix + buildId(typeId);
+			return prefix + name;
 		}
 	}
 
 	//}}}
-	//{{{ private String buildId(String id)
+	//{{{ private String stringConverter.makeIdentifier(String id)
 
 	//}}}
 	//{{{ private boolean isSpecialChar(char c)
@@ -1266,14 +1258,14 @@ extends Generator {
 		Iterator types = api.typeIterator();
 		while (types.hasNext()) {
 			Type type = (Type) types.next();
-			String id = buildId(type.getId());
+			String id = stringConverter.makeIdentifier(type.getId());
 			Iterator alts = type.alternativeIterator();
 			while (alts.hasNext()) {
 				Alternative alt = (Alternative) alts.next();
 				ATerm entry =
 					factory.make(
 						"[<appl>,<term>]",
-						prefix + "pattern" + id + buildId(capitalize(alt.getId())),
+						prefix + "pattern" + id + stringConverter.makeCapitalizedIdentifier(alt.getId()),
 						alt.buildMatchPattern());
 				term_list = factory.makeList(entry, term_list);
 			}

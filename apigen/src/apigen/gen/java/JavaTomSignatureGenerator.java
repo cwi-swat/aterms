@@ -3,12 +3,17 @@ package apigen.gen.java;
 import apigen.gen.TomSignatureGenerator;
 
 public class JavaTomSignatureGenerator extends TomSignatureGenerator {
+	
+	protected void initTypeConverter() {
+		typeConverter = new JavaTypeConverter();
+	}
+	
 	private String buildTypeName(String type) {
-		return capitalize(buildId(type));
+		return converter.makeCapitalizedIdentifier(type);
 	}
 
 	private String buildAltTypeName(String type, String alt) {
-		return capitalize(type + "_" + capitalize(alt));
+		return converter.capitalize(type + "_" + converter.capitalize(alt));
 	}
 
 	protected String StringImpl() {
@@ -120,7 +125,7 @@ public class JavaTomSignatureGenerator extends TomSignatureGenerator {
 	}
 
 	protected String OperatorName(String id) {
-		return buildId(id);
+		return converter.makeIdentifier(id);
 	}
 
 	protected String OperatorType(String type, String id) {
@@ -137,16 +142,16 @@ public class JavaTomSignatureGenerator extends TomSignatureGenerator {
 			+ "!= null) &&"
 			+ term
 			+ ".is"
-			+ capitalize(buildAltTypeName(type, alt) + "()");
+			+ converter.capitalize(buildAltTypeName(type, alt) + "()");
 	}
 
 	protected String OperatorGetSlot(String term, String slot) {
-		return term + ".get" + capitalize(slot) + "()";
+		return term + ".get" + converter.capitalize(slot) + "()";
 	}
 
 	protected String OperatorMake(String type, String alt, String arguments) {
 		return "get"
-			+ capitalize(buildId(api_name))
+			+ converter.makeCapitalizedIdentifier(api_name)
 			+ "Factory"
 			+ "().make"
 			+ buildAltTypeName(type, alt)
@@ -154,7 +159,7 @@ public class JavaTomSignatureGenerator extends TomSignatureGenerator {
 	}
 
 	protected String FieldName(String id) {
-		return buildId(id);
+		return converter.makeIdentifier(id);
 	}
 
 	protected String FieldType(String type) {
