@@ -620,8 +620,15 @@ This scan of the run-time stack causes all objects referenced from local
 variables to be protected from being garbage collected.
 Our garbage collector 
 is a  conservative collector in the sense that some of the words on the
-stack could accidentally look like object references, resulting in objects 
-marked as 'live' that are actually garbage.
+stack could accidentally have the same bitpattern as object references.
+Because there is now way to separate these 'fake' bitpatterns from
+'real' object references, this can cause
+objects to be marked as `live' when there are actually garbage.
+Note that bitpatterns on the stack that do not point to valid objects
+are not traversed at all. Only when a bitpattern represents an address
+that is a valid object address it is followed to mark the corresponding
+object.
+
 When all live objects are marked, a single sweep through the heap
 is used to store all objects that are free in separate lists of free
 objects, one list for each object size.
@@ -661,20 +668,6 @@ Figure \ref{header}):
 \begin{figure}[tb]
   \centerline{\epsfig{file=header.ps,scale=0.6}}
   \caption{\label{header}The header layout}
-
-{\bf 
-PK: De volgende wijzigingen zijn nodig in deze figuur:
-\begin{itemize}
-\item De volgorde aanpassen aan die in de tekst, dw.z INT, REAL, APPL, LIST, PLACEHOLDER, BLOB.
-
-\item Links steeds de tekst ``Encoding of XXX terms'' vervangen door ``XXX''.
-
-\item Bij lijsten: Head en Tail vervangen door First en Next
-
-\item Nu staan alleen bij APPL rechts indices van woorden: vervangen door
-0, 1, ... (ipv ``Word 0'' enz. Zet bij alle types deze indices.
-\end{itemize}
-}
 \end{figure}
  
 \begin{itemize}
@@ -1260,6 +1253,7 @@ Application 				& Time (sec) 	& Memory (Mb) \\ \hline \hline
 \end{center}
 \end{table}
 
+
 \subsection{Other applications}
 
 Other applications are still under development and include:
@@ -1274,7 +1268,6 @@ states as possible. (** ref? **)
 \item A tool for the detection of code clones in legacy code.
 
 \end{itemize}
-
 
 %}}}
 
