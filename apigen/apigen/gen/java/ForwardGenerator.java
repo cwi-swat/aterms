@@ -24,7 +24,7 @@ public class ForwardGenerator extends JavaGenerator {
 	}
 
 	public static String className(String apiName) {
-		  return StringConversions.capitalize(apiName) + "Fwd";
+		  return StringConversions.capitalize(apiName + "Fwd");
 	}
 	 
 	protected void foreachType(ADT adt) {

@@ -45,14 +45,6 @@ public abstract class JavaGenerator extends Generator {
 		}
 	}
 
-	public static String getClassImplName(String type) {
-		return getClassName(type) + "Impl";
-	}
-
-	public static String getClassName(String typeId) {
-		return StringConversions.makeIdentifier(converter.getType(typeId));
-	}
-
 	public static String getTypeId(String typeId) {
 		return StringConversions.makeIdentifier(converter.getType(typeId));
 	}
@@ -94,7 +86,7 @@ public abstract class JavaGenerator extends Generator {
 		while (fields.hasNext()) {
 		  Field field = (Field) fields.next();
 	      String field_id = getFieldId(field.getId());
-	      print(getClassName(getClassName(field.getType())) + " " + field_id);
+	      print(TypeGenerator.className(field.getType()) + " " + field_id);
 	
 		  if (fields.hasNext()) {
 		    print(", ");

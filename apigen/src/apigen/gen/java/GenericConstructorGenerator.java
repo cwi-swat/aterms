@@ -15,7 +15,7 @@ public class GenericConstructorGenerator extends JavaGenerator {
 		super(directory,getConstructorClassName(apiName),pkg,new LinkedList(),verbose,folding); 
 		
 		className = getConstructorClassName(apiName);
-		factoryName = FactoryGenerator.getFactoryClassName(apiName);
+		factoryName = FactoryGenerator.className(apiName);
 	}
 	
 	public static String getConstructorClassName(String apiName) {

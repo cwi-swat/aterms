@@ -13,12 +13,12 @@ public class FactoryGenerator extends JavaGenerator {
     
 	public FactoryGenerator(ADT adt, String directory, String apiName, String pkg, List standardImports, 
 	                                    boolean verbose, boolean folding) {
-		super(directory,getFactoryClassName(apiName),pkg,standardImports,verbose,folding);
-		this.className = getFactoryClassName(apiName);
+		super(directory,className(apiName),pkg,standardImports,verbose,folding);
+		this.className = className(apiName);
 		this.adt = adt;
 	}
 
-	public static String getFactoryClassName(String apiName) {
+	public static String className(String apiName) {
 		return  StringConversions.makeCapitalizedIdentifier(apiName) + "Factory";
 	}
 	
@@ -64,8 +64,8 @@ public class FactoryGenerator extends JavaGenerator {
 		 Iterator alts = type.alternativeIterator();
 		 while (alts.hasNext()) {
 		   Alternative alt = (Alternative) alts.next();
-		   String altClassName = AlternativeGenerator.getAltClassName(type,alt);
-		   String typeClassName = getClassName(type.getId());
+		   String altClassName = AlternativeGenerator.className(type,alt);
+		   String typeClassName = TypeGenerator.className(type.getId());
 		   String protoVar = "proto" + altClassName;
 		   String funVar = "fun" + altClassName;
         
@@ -82,7 +82,7 @@ public class FactoryGenerator extends JavaGenerator {
 		 Iterator alts = type.alternativeIterator();
 		 while (alts.hasNext()) {
 		   Alternative alt = (Alternative) alts.next();
-		   String altClassName = AlternativeGenerator.getAltClassName(type,alt);
+		   String altClassName = AlternativeGenerator.className(type,alt);
 		   String protoVar = "proto" + altClassName;
 		   String funVar = "fun" + altClassName;
         
@@ -113,12 +113,12 @@ public class FactoryGenerator extends JavaGenerator {
 	   while (types.hasNext()) {
 		 Type type = (Type)types.next();
       
-		 println("    " + getClassName(type.getId()) + ".initialize(this);");
+		 println("    " + TypeGenerator.className(type) + ".initialize(this);");
       
 		 Iterator alts = type.alternativeIterator();
 		 while (alts.hasNext()) {
 		   Alternative alt = (Alternative)alts.next();
-		   String altClassName = AlternativeGenerator.getAltClassName(type,alt);
+		   String altClassName = AlternativeGenerator.className(type,alt);
 		   String protoVar = "proto" + altClassName;
 		   String funVar = "fun" + altClassName;
 

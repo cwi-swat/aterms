@@ -18,25 +18,26 @@ public class AlternativeGenerator extends JavaGenerator {
 		List standardImports,
 		boolean verbose,
 		boolean folding) {
-		super(directory, getAltClassName(type, alt), pkg, standardImports, verbose, folding);
+		super(directory, className(type, alt), pkg, standardImports, verbose, folding);
 		this.type = type;
 		this.alt = alt;
 	}
 
+    public static String className(Type type, Alternative alt) {
+    	return className(type.getId(),alt.getId());
+    }
+    
 	public static String className(String type, String alt) {
-		return StringConversions.makeCapitalizedIdentifier(type) + "_" + StringConversions.makeCapitalizedIdentifier(alt);
-	}
-
-	public static String getAltClassName(Type type, Alternative alt) {
-		return className(type.getId(), alt.getId());
+		return StringConversions.makeCapitalizedIdentifier(type) + "_" + 
+		          StringConversions.makeCapitalizedIdentifier(alt);
 	}
 
 	public void run() {
-		if (!new File(getPath(directory, getAltClassName(type,alt), ".java")).exists()) {
-			info("generating " + getAltClassName(type,alt) + extension);
+		if (!new File(getPath(directory, className(type,alt), ".java")).exists()) {
+			info("generating " + className(type,alt) + extension);
 			super.run();
 		} else {
-			info("preserving " + getAltClassName(type,alt) + extension);
+			info("preserving " + className(type,alt) + extension);
 		}
 	}
 
@@ -46,8 +47,8 @@ public class AlternativeGenerator extends JavaGenerator {
 	}
 
 	private void genAlternativeClass(Type type, Alternative alt) {
-		String alt_class = getAltClassName(type, alt);
-		String alt_impl_class = AlternativeImplGenerator.getAltClassImplName(type.getId(), alt.getId());
+		String alt_class = className(type, alt);
+		String alt_impl_class = AlternativeImplGenerator.className(type.getId(), alt.getId());
 
 		println("public class " + alt_class);
 		println("extends " + alt_impl_class);

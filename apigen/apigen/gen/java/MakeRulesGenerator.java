@@ -38,8 +38,8 @@ public class MakeRulesGenerator extends  Generator {
 			print(prefix + bucket++ + "=");
 		  }
       
-		  print("\\\n" + getClassFileName(JavaGenerator.getClassName(type.getId())));
-		  print(" " + getClassFileName(JavaGenerator.getClassImplName(type.getId())));
+		  print("\\\n" + getClassFileName(TypeGenerator.className(type.getId())));
+		  print(" " + getClassFileName(TypeImplGenerator.className(type)));
 		  i++;
             
 		  Iterator alts = type.alternativeIterator();
@@ -51,8 +51,8 @@ public class MakeRulesGenerator extends  Generator {
 			  print(prefix + bucket++ + "=");
 			}
                
-			print("\\\n" + getClassFileName(AlternativeImplGenerator.getAltClassImplName(type.getId(),alt.getId())));
-			print(" " + getClassFileName(AlternativeGenerator.getAltClassName(type,alt))); 
+			print("\\\n" + getClassFileName(AlternativeImplGenerator.className(type.getId(),alt.getId())));
+			print(" " + getClassFileName(AlternativeGenerator.className(type,alt))); 
 			i++;
 		  }
 		}
@@ -61,7 +61,7 @@ public class MakeRulesGenerator extends  Generator {
 		println();
     
 		print(prefix + "=\\\n" + 
-		getClassFileName(FactoryGenerator.getFactoryClassName(name)) + " " + 
+		getClassFileName(FactoryGenerator.className(name)) + " " + 
 		getClassFileName(GenericConstructorGenerator.getConstructorClassName(name)) + "\\\n");
 		
 		while(--bucket >= 0) {

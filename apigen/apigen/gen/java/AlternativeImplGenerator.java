@@ -30,7 +30,7 @@ public class AlternativeImplGenerator extends JavaGenerator {
 		boolean verbose,
 		boolean folding,
 		boolean visitable) {
-		super(directory, getAltClassImplName(type.getId(),alt.getId()), pkg, standardImports, verbose, folding);
+		super(directory, className(type.getId(),alt.getId()), pkg, standardImports, verbose, folding);
 		this.type = type;
 		this.alt = alt;
 		this.apiName = apiName;
@@ -38,14 +38,18 @@ public class AlternativeImplGenerator extends JavaGenerator {
 		/* some abbreviations */
 		this.typeId = type.getId();
 		this.altId = alt.getId();
-		this.className = getAltClassImplName(typeId,altId);
-		this.subClassName = AlternativeGenerator.getAltClassName(type,alt);
-		this.superClassName = TypeGenerator.getClassName(typeId);
+		this.className = className(typeId,altId);
+		this.subClassName = AlternativeGenerator.className(type,alt);
+		this.superClassName = TypeGenerator.className(type);
 		this.visitable = visitable;
 	}
 
-	public static String getAltClassImplName(String type, String alt) {
-			return AlternativeGenerator.className(type, alt) + "Impl";
+	public static String className(String type, String alt) {
+		return AlternativeGenerator.className(type, alt) + "Impl";
+	}
+	
+	public static String className(Type type, Alternative alt) {
+		return className(type.getId(),alt.getId()); 
 	}
 		
 	protected void generate() {
@@ -220,7 +224,7 @@ public class AlternativeImplGenerator extends JavaGenerator {
 		println("    java.util.List children = trm.match(pattern);");  
 		println();
 		println("    if (children != null) {");    
-		print  ("      " + superClassName + " tmp = getStatic" + FactoryGenerator.getFactoryClassName(apiName) + 
+		print  ("      " + superClassName + " tmp = getStatic" + FactoryGenerator.className(apiName) + 
 				"().make" + subClassName + "(");
 
 		fields = type.altFieldIterator(alt.getId());
@@ -228,7 +232,7 @@ public class AlternativeImplGenerator extends JavaGenerator {
 		while (fields.hasNext()) {
 		  Field field = (Field) fields.next();
 		  String fieldType = field.getType();
-		  String fieldClass = getClassName(fieldType);
+		  String fieldClass = TypeGenerator.className(fieldType);
       
 		  if (fieldType.equals("str")) {
 			print("(String) children.get(" + argnr + ")");
@@ -265,7 +269,7 @@ public class AlternativeImplGenerator extends JavaGenerator {
 		String fieldName = StringConversions.makeCapitalizedIdentifier(field.getId());
 		String fieldId = getFieldId(field.getId());
 		String fieldType = field.getType();
-		String fieldClass = getClassName(fieldType);
+		String fieldClass = TypeGenerator.className(fieldType);
 		String fieldIndex = getFieldIndex(field.getId());
 
 		// getter    
@@ -366,7 +370,7 @@ public class AlternativeImplGenerator extends JavaGenerator {
 		}
 		
 	private void genOverrrideSetArgument(Type type, Alternative alt) {
-			String alt_classname = AlternativeGenerator.getAltClassName(type,alt);
+			String alt_classname = AlternativeGenerator.className(type,alt);
 		
 			println("  public aterm.ATermAppl setArgument(aterm.ATerm arg, int i) {");
 			if (type.getAltArity(alt) > 0) {
@@ -376,7 +380,7 @@ public class AlternativeImplGenerator extends JavaGenerator {
 			  for (int i = 0; fields.hasNext(); i++) {
 				  Field field = (Field) fields.next();
 				  String field_type = field.getType();
-				  String field_class = getClassName(field_type);
+				  String field_class = TypeGenerator.className(field_type);
 			  
 				  String instance_of;
 			
@@ -414,18 +418,18 @@ public class AlternativeImplGenerator extends JavaGenerator {
 		}
 		
 	private void genAltMake(Type type, Alternative alt) {
-		String altClassName = AlternativeGenerator.getAltClassName(type,alt);
+		String altClassName = AlternativeGenerator.className(type,alt);
     
 		println("  protected aterm.ATermAppl make(aterm.AFun fun, aterm.ATerm[] i_args," +
 				" aterm.ATermList annos) {");
-		println("    return get" + FactoryGenerator.getFactoryClassName(apiName) + "().make" + altClassName +
+		println("    return get" + FactoryGenerator.className(apiName) + "().make" + altClassName +
 				"(fun, i_args, annos);");
 		println("  }");
 		}
 
 
 		private void genAltClone(Type type, Alternative alt) {
-		String altClassName = AlternativeGenerator.getAltClassName(type,alt);
+		String altClassName = AlternativeGenerator.className(type,alt);
 		
 		println("  public shared.SharedObject duplicate() {");
 		println("    " + altClassName + " clone = new " + altClassName + "();");
@@ -440,7 +444,7 @@ public class AlternativeImplGenerator extends JavaGenerator {
 	  // This is not well thought out yet!
 	  private void genAltVisitableInterface(Type type, Alternative alt)
 	  {
-		String altClassName = AlternativeGenerator.getAltClassName( type,alt );
+		String altClassName = AlternativeGenerator.className( type,alt );
 
 		println("  public void accept(Visitor v) throws jjtraveler.visitFailure");
 		println("  {");

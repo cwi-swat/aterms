@@ -18,13 +18,13 @@ public class TypeImplGenerator extends JavaGenerator {
 		String apiName,
 		List standardImports,
 		boolean verbose) {
-		super(directory, getClassImplName(type.getId()), pkg, standardImports, verbose, false);
+		super(directory, className(type), pkg, standardImports, verbose, false);
 		this.type = type;
 		this.apiName = apiName;
 	}
 	
-	public static String getClassImplName(String type) {
-		return TypeGenerator.getClassName(type) + "Impl";
+	public static String className(Type type) {
+		return TypeGenerator.className(type.getId()) + "Impl";
 	}
 
 	protected void generate() {
@@ -39,9 +39,9 @@ public class TypeImplGenerator extends JavaGenerator {
 	}
 
 	private void genTypeClassImpl(Type type) {
-		String class_impl_name = getClassImplName(type.getId());
-		String class_name = TypeGenerator.getClassName(type.getId());
-		String get_factory = "getStatic" + FactoryGenerator.getFactoryClassName(apiName) + "()";
+		String class_impl_name = className(type);
+		String class_name = TypeGenerator.className(type.getId());
+		String get_factory = "getStatic" + FactoryGenerator.className(apiName) + "()";
        
 			println("abstract public class " + class_impl_name + " extends " + 
 			GenericConstructorGenerator.getConstructorClassName(apiName));
@@ -87,7 +87,7 @@ public class TypeImplGenerator extends JavaGenerator {
 		  Iterator alts = type.alternativeIterator();
 		  while (alts.hasNext()) {
 			Alternative alt = (Alternative) alts.next();    
-			String alt_class_name = AlternativeGenerator.getAltClassName(type, alt);
+			String alt_class_name = AlternativeGenerator.className(type, alt);
 			println("    if ((tmp = " + alt_class_name + ".fromTerm(trm)) != null) {");
 			println("      return tmp;");
 			println("    }");
@@ -112,10 +112,10 @@ public class TypeImplGenerator extends JavaGenerator {
 	  }
    
 	private void genDefaultGetAndSetMethod(Type type, Field field) {
-	   String class_name = TypeGenerator.getClassName(type.getId());
+	   String class_name = TypeGenerator.className(type.getId());
 	   String field_name = StringConversions.makeCapitalizedIdentifier(field.getId());
 	   String field_id = getFieldId(field.getId());
-	   String field_type_id = TypeGenerator.getClassName(field.getType());
+	   String field_type_id = TypeGenerator.className(field.getType());
     
 	   // getter    
 	   println("  public " + field_type_id + " get" + field_name + "()");
