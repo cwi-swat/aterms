@@ -29,7 +29,7 @@ booltest_LDADD		= libBooleans.a ${LDADD}
 booltest_DEPENDENCIES	= booltest.af1 libBooleans.a
 
 librolodex.a rolodex/rolodex.h: rolodex.adt rolodex.pro
-	${top_srcdir}/utils/apigen rolodex 1.0
+	${top_srcdir}/utils/gen-c-api rolodex 1.0
 	@cd rolodex; \
 	./reconf; \
 	./configure --with-aterm-inc=${ATERMINC}; \
