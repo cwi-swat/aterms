@@ -1,0 +1,44 @@
+aterm-cc.o: aterm.c _aterm.h aterm2.h aterm1.h encoding.h abool.h \
+ symbol.h memory.h list.h make.h gc.h util.h
+list-cc.o: list.c list.h aterm2.h aterm1.h encoding.h abool.h symbol.h
+make-cc.o: make.c aterm2.h aterm1.h encoding.h abool.h symbol.h make.h \
+ deprecated.h util.h
+memory-cc.o: memory.c aterm2.h aterm1.h encoding.h abool.h symbol.h \
+ memory.h util.h debug.h
+symbol-cc.o: symbol.c aterm2.h aterm1.h encoding.h abool.h symbol.h \
+ memory.h util.h debug.h
+gc-cc.o: gc.c _aterm.h aterm2.h aterm1.h encoding.h abool.h symbol.h \
+ memory.h util.h gc.h
+aterm-gcc.o: aterm.c _aterm.h aterm2.h aterm1.h encoding.h abool.h \
+ symbol.h memory.h list.h make.h gc.h util.h
+list-gcc.o: list.c list.h aterm2.h aterm1.h encoding.h abool.h symbol.h
+make-gcc.o: make.c aterm2.h aterm1.h encoding.h abool.h symbol.h make.h \
+ deprecated.h util.h
+memory-gcc.o: memory.c aterm2.h aterm1.h encoding.h abool.h symbol.h \
+ memory.h util.h debug.h
+symbol-gcc.o: symbol.c aterm2.h aterm1.h encoding.h abool.h symbol.h \
+ memory.h util.h debug.h
+gc-gcc.o: gc.c _aterm.h aterm2.h aterm1.h encoding.h abool.h symbol.h \
+ memory.h util.h gc.h
+aterm-dbg.o: aterm.c _aterm.h aterm2.h aterm1.h encoding.h abool.h \
+ symbol.h memory.h list.h make.h gc.h util.h
+list-dbg.o: list.c list.h aterm2.h aterm1.h encoding.h abool.h symbol.h
+make-dbg.o: make.c aterm2.h aterm1.h encoding.h abool.h symbol.h make.h \
+ deprecated.h util.h
+memory-dbg.o: memory.c aterm2.h aterm1.h encoding.h abool.h symbol.h \
+ memory.h util.h debug.h
+symbol-dbg.o: symbol.c aterm2.h aterm1.h encoding.h abool.h symbol.h \
+ memory.h util.h debug.h
+gc-dbg.o: gc.c _aterm.h aterm2.h aterm1.h encoding.h abool.h symbol.h \
+ memory.h util.h gc.h
+aterm-prof.o: aterm.c _aterm.h aterm2.h aterm1.h encoding.h abool.h \
+ symbol.h memory.h list.h make.h gc.h util.h
+list-prof.o: list.c list.h aterm2.h aterm1.h encoding.h abool.h symbol.h
+make-prof.o: make.c aterm2.h aterm1.h encoding.h abool.h symbol.h make.h \
+ deprecated.h util.h
+memory-prof.o: memory.c aterm2.h aterm1.h encoding.h abool.h symbol.h \
+ memory.h util.h debug.h
+symbol-prof.o: symbol.c aterm2.h aterm1.h encoding.h abool.h symbol.h \
+ memory.h util.h debug.h
+gc-prof.o: gc.c _aterm.h aterm2.h aterm1.h encoding.h abool.h symbol.h \
+ memory.h util.h gc.h

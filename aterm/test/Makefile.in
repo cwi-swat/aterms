@@ -89,21 +89,13 @@ test-tool2: test-tool2.c tool2.tif.c tool2.tif.h
 		tool2.tif.c $(LIBS_DBG) -L../toolbus -lATB-dbg -lsocket -lnsl
 
 tool2.tif.c tool2.tif.h: test2.tifs
-	../toolbus/ctif -tool tool2 test2.tifs
+	../toolbus/tifstoc -tool tool2 test2.tifs
 
 test2.tifs: test2.tb
 	$(TOOLBUS) -gentifs test2.tb
 	
 
 depend: tool2.tif.c tool2.tif.h
-	$(CC_GCC) -MM $(DEFS) $(INCL) $(TESTSRCS) > /tmp/.gendep
-	cat /tmp/.gendep | sed "s/.o:/-cc.o:/"   >  .depend
-	cat /tmp/.gendep | sed "s/.o:/-gcc.o:/"  >> .depend
-	cat /tmp/.gendep | sed "s/.o:/-dbg.o:/"  >> .depend
-	cat /tmp/.gendep | sed "s/.o:/-prof.o:/" >> .depend
-	rm -f /tmp/.gendep
-
-.depend: tool2.tif.c tool2.tif.h
 	$(CC_GCC) -MM $(DEFS) $(INCL) $(TESTSRCS) > /tmp/.gendep
 	cat /tmp/.gendep | sed "s/.o:/-cc.o:/"   >  .depend
 	cat /tmp/.gendep | sed "s/.o:/-gcc.o:/"  >> .depend
