@@ -1,3 +1,6 @@
+2001/11/22 (vandenbr@loria.fr)
+ * Added a few special symbols encountered in ELAN.
+
 2001/11/14 (jong@cwi.nl)
  * Removed '-w on' invocation on asfe
  * Removed '-m' invocations and now uses apply-function from

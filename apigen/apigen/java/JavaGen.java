@@ -27,6 +27,8 @@ public class JavaGen
     ":Colon",	    ";SemiColon",
     "=Equals",	    "#Hash",
     "/Slash",	    "\\Backslash",
+    "*Star",        "_Underscore",
+    "$Dollar",      "'SingleQuote",
   };
 
   //}}}

@@ -31,6 +31,7 @@ public class CGen
     "=Equals",	    "#Hash",
     "/Slash",	    "\\Backslash",
     "*Star",	    "_Underscore",
+    "$Dollar",	    "'SingleQuote",
   };
 
   private final static String[][] RESERVED_TYPES =
