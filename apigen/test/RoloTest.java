@@ -15,12 +15,15 @@ public class RoloTest
 
   public void run() throws jjtraveler.VisitFailure, java.io.IOException {
       RoloList list = RoloList.fromTerm(factory.readFromFile(directory + "/rolodex.trm"));
-      Collector d = new Collector();
-      jjtraveler.Visitor debugger = new jjtraveler.BottomUp(d);
-      debugger.visit(list);
-      System.err.println(d.concatenation);
 
-      testAssert(d.concatenation.equals("123456"),"bottom-up");
+      System.err.println("data: " + list);
+      Collector c = new Collector();
+      jjtraveler.Visitor tester = new jjtraveler.BottomUp(c);
+      tester.visit(list);
+
+      System.err.println("result: " + c.concatenation);
+
+      testAssert(c.concatenation.equals("voice(1)voice(2)voice(3)"),"bottom-up");
   }
 
   public final static void main(String[] args) throws jjtraveler.VisitFailure,
@@ -47,12 +50,8 @@ class Collector extends Fwd {
     super (new jjtraveler.Identity());
   }
 
-  public void voidVisit(jjtraveler.Visitable v) {
-    // do nothing
-  }
-
-  public void visit_PhoneNumber_Voice(jjtraveler.Visitable v) {
-    System.err.println(v.toString());
+  public void visit_PhoneNumber_Voice(PhoneNumber_VoiceImpl v) {
+    System.err.println("hai: " + v.toString());
     concatenation = concatenation + v.toString();
   }
 }
