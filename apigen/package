@@ -13,10 +13,10 @@ identification
 configuration interface
 
 requires
-  aterm PARSE_ERROR_IN_PACKAGE_DEF
+  aterm 2.4
 
 aterm-java 1.6
 
 shared-objects 1.4
 
-JJTraveler PARSE_ERROR_IN_PACKAGE_DEF
+JJTraveler 0.4.4
