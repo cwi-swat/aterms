@@ -374,7 +374,7 @@ public class APIGenerator extends CGenerator {
 							+ StringConversions.makeIdentifier(field.getName());
 				}
 			}
-			if (result == null) {
+			if (result == null || result.length()==0) {
 				result = "ATmakeList1(" + genConstructorImpl(last) + ")";
 			}
 			for (int i = length - 2; i >= 0; i--) {
