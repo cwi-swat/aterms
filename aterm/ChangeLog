@@ -1,5 +1,9 @@
 $Id$
 
+2001/08/07 (jong@cwi.nl)
+ * Changed direct prints to stderr to ATwarning calls in bafio.c
+ * ChangeLog entry for ATcompare and ATsort added
+
 2001/07/31 (jurgenv@cwi.nl)
  * Bumped version to 1.6.3
 

@@ -854,7 +854,7 @@ static ATbool write_arg(sym_entry *trm_sym, ATerm arg, int arg_idx,
   /*	ATfprintf(stderr, "writing arg term index of %t = %d\n",
 	arg, arg_trm_idx);*/
   if (writeBits(arg_trm_idx, arg_sym->term_width, writer)<0) {
-ATfprintf(stderr, "writeBits in write_arg failed for %t\n", arg);
+    /*ATfprintf(stderr, "writeBits in write_arg failed for %t\n", arg);*/
     return ATfalse;
   }
 
@@ -862,7 +862,7 @@ ATfprintf(stderr, "writeBits in write_arg failed for %t\n", arg);
     arg, arg_trm_idx, arg_sym->id, arg_sym->cur_index);*/
   if (arg_trm_idx >= arg_sym->cur_index && 
      !write_term(arg, writer, anno_done)) {
-fprintf(stderr, "write_term in write_arg failed\n");
+    /*fprintf(stderr, "write_term in write_arg failed\n");*/
     return ATfalse;
   }
 	
@@ -1527,54 +1527,62 @@ ATerm read_baf(byte_reader *reader)
 
   /*{{{  Read header */
 
-  if(readInt(&val, reader) < 0)
+  if (readInt(&val, reader) < 0) {
     return NULL;
+  }
 
-  if(val == 0) {
-    if(readInt(&val, reader) < 0)
+  if (val == 0) {
+    if (readInt(&val, reader) < 0)
       return NULL;
   }
 
-  if(val != BAF_MAGIC) {
-    fprintf(stderr, "read_baf: input is not in BAF!\n");
+  if (val != BAF_MAGIC) {
+    ATwarning("read_baf: input is not in BAF!\n");
     return NULL;
   }
 
-  if(readInt(&val, reader) < 0)
-    return NULL;
-
-  if(val != BAF_VERSION) {
-    fprintf(stderr, "read_baf: wrong BAF version, giving up!\n");
+  if (readInt(&val, reader) < 0) {
     return NULL;
   }
 
-  if(readInt(&val, reader) < 0)
+  if (val != BAF_VERSION) {
+    ATwarning("read_baf: wrong BAF version, giving up!\n");
     return NULL;
+  }
+
+  if (readInt(&val, reader) < 0) {
+    return NULL;
+  }
   nr_unique_symbols = val;
 		
-  if(readInt(&nr_unique_terms, reader) < 0)
+  if (readInt(&nr_unique_terms, reader) < 0) {
     return NULL;
+  }
 
-  if(!silent)
+  if (!silent) {
     fprintf(stderr, "reading %d unique symbols and %d unique terms.\n",
 	    nr_unique_symbols, nr_unique_terms);
+  }
 
   /*}}}  */
   /*{{{  Allocate symbol space */
 
   read_symbols = (sym_read_entry *)calloc(nr_unique_symbols,
 					  sizeof(sym_read_entry));
-  if(!read_symbols)
+  if (!read_symbols) {
     ATerror("read_baf: out of memory when allocating %d syms.\n",
 	    nr_unique_symbols);
+  }
 
   /*}}}  */
 
-  if(!read_all_symbols(reader))
+  if (!read_all_symbols(reader)) {
     return NULL;
+  }
 
-  if(readInt(&val, reader) < 0)
+  if (readInt(&val, reader) < 0) {
     return NULL;
+  }
 
   result = read_term(&read_symbols[val], reader);
  

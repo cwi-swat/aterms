@@ -107,7 +107,7 @@ live objects are marked, a single sweep through the heap is used to
 store all objects that are free in separate lists of free objects.
 
 More information on this and other garbage collection techniques is
-readily available, e.g. in~\cite[Chapter 13]{Appel97}.
+readily available, e.g. in~\cite[Chapter 13]{App97}.
 
 % }}}
 % {{{  \section{ATerm Memory Encoding}
@@ -199,11 +199,13 @@ a branch or jump instruction is executed regardless of the branch outcome.
 \subsection{Understanding \emph{strength reduction}}
 
 The compiler optimization called \emph{strength reduction} tries to
-replace expensive operations such as multiplications and divisions by
-less expensive additions and subtractions. In general, strength reduction
-finds \emph{induction} variables, assigns their initial value outside
-(before) the loop and then updates the value of the induction variable
-inside the loop using a simpler computation.
+replace expensive operations such as multiplications and divisions by less
+expensive additions and subtractions. In general, strength reduction finds
+\emph{induction} variables, assigns their initial value outside (before)
+the loop and then updates the value of the induction variable inside the
+loop using a simpler computation. A more elaborate discussion on induction
+variables and strength reduction, as well as an example of how it can
+be applied in a Java compiler, can be found in~\cite[Chapter 17]{App97}.
 
 Figure~\ref{fig:strength-reduction} shows an example of a code
 snippet before and after applying strength reduction. It shows how a

@@ -5,7 +5,9 @@ include ../make_rules
 
 TESTS	          	= stress
 
-EXTRA_DIST 		= termstats.sh test.trms error.trm stress.dict
+EXTRA_DIST 		= termstats.sh test.trms error.trm stress.dict \
+			  vararg1.c vararg2.c vararg3.c
+
 CLEANFILES		= stress_dict.c stress_dict.h
 
 INCLUDES		= -I$(top_srcdir)/aterm \
@@ -14,8 +16,7 @@ INCLUDES		= -I$(top_srcdir)/aterm \
 LDFLAGS 		= -L$(top_builddir)/aterm/
 LDLIBS			= -lATerm
 
-noinst_PROGRAMS		= stress primes randgen termstats vararg1 vararg2 \
-			vararg3
+noinst_PROGRAMS		= stress primes randgen termstats
 
 stress_SOURCES		= stress_dict.c stress_dict.h stress.c
 stress_LDADD		= $(LDLIBS)
@@ -23,14 +24,15 @@ stress_LDADD		= $(LDLIBS)
 primes_SOURCES		= primes.c
 primes_LDADD		= $(LDLIBS)
 
-vararg1_SOURCES    	= vararg1.c
-vararg1_LDADD      	= $(LDLIBS)
-
-vararg2_SOURCES    	= vararg2.c
-vararg2_LDADD      	= $(LDLIBS)
-
-vararg3_SOURCES    	= vararg3.c
-vararg3_LDADD      	= $(LDLIBS)
+# To be used to find out which vararg-implementation
+# is used on a new platform. Do not remove, but uncomment
+# as needed.
+#vararg1_SOURCES    	= vararg1.c
+#vararg1_LDADD      	= $(LDLIBS)
+#vararg2_SOURCES    	= vararg2.c
+#vararg2_LDADD      	= $(LDLIBS)
+#vararg3_SOURCES    	= vararg3.c
+#vararg3_LDADD      	= $(LDLIBS)
 
 randgen_SOURCES    	= randgen.c
 randgen_LDADD      	= $(LDLIBS)

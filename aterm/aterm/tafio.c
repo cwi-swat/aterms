@@ -877,8 +877,8 @@ static ATerm readFromSharedText(int *c, byte_reader *reader, ATermIndexedSet abb
   term = rparse_term(c, reader, abbrevs);
 
   if (!term) {
-    fprintf(stderr, "readFromSharedText: parse error at line %d, col %d\n", line, col);
-    fflush(stderr);
+    ATwarning("readFromSharedText: parse error at line %d, col %d\n",
+	      line, col);
   }
 		
   return term;

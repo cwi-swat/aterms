@@ -1859,7 +1859,7 @@ sparse_quoted_appl(int *c, char **s)
 	/*	case '\n':
 		case '\r':
 		case '\t':
-	 */
+		*/
 	return NULL;
       case '\\':
 	snext_char(c, s);
@@ -2837,7 +2837,7 @@ int AT_calcTermDepth(ATerm t)
 
 /* Calculate checksum using the
    "RSA Data Security, Inc. MD5 Message-Digest Algorithm" (see RFC1321)
- */
+   */
 
 unsigned char *ATchecksum(ATerm t)
 {
