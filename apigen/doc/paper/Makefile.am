@@ -1,8 +1,4 @@
-#
-# Makefile.am
-#
 # $Id$
-#
 
 SPECS = ATerms.sdf Symbol.sdf Tree.sdf Attributes.sdf
 FIGS = old-new.eps gen.eps names.eps
@@ -11,7 +7,7 @@ SOURCES = jlap.ltx $(SPECS) $(EXAMPLES) $(FIGS)
 
 include ${top_srcdir}/make_rules
 
-doc: jlap.ps cwi.ps
+doc: cwi.ps jlap.ps
 
 jlap.ps: jlap.dvi $(PICS)
 jlap.dvi: $(SOURCES) $(PICS)
@@ -20,5 +16,3 @@ cwi.ps: cwi.dvi $(PICS)
 cwi.dvi: $(SOURCES) $(PICS)
 
 CLEANFILES = *.aux *.blg *.dvi *.log *.ps
-
-# end of Makefile.am
