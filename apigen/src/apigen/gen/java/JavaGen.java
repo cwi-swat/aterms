@@ -1073,7 +1073,7 @@ extends Generator
     String operator_name = capitalize(buildId(alt.getId()));
     String alt_class_name = buildAltClassName(type,alt);
       
-    print  ("%op " + class_name + " " + alt_class_name); // operator_name if Tom can deal with it
+    print  ("%op " + class_name + " " + operator_name); // operator_name if Tom can deal with it
     
     Iterator fields = type.altFieldIterator(alt.getId());
     if (fields.hasNext()) {
