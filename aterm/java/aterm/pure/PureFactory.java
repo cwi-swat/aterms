@@ -111,6 +111,7 @@ public class PureFactory
 	    return (ATermInt)term;
 	  }
 	}
+	prev = cur;
       }
       cur = cur.next;
     }
@@ -159,6 +160,7 @@ public class PureFactory
 	  }
 	}
       }
+      prev = cur;
       cur = cur.next;
     }
     
@@ -223,6 +225,7 @@ public class PureFactory
 	    return list;
 	  }
 	}
+	prev = cur;
       }
       cur = cur.next;
     }
@@ -271,6 +274,7 @@ public class PureFactory
 	    return ph;
 	  }
 	}
+	prev = cur;
       }
       cur = cur.next;
     }
@@ -319,6 +323,7 @@ public class PureFactory
 	    return blob;
 	  }
 	}
+	prev = cur;
       }
       cur = cur.next;
     }
@@ -428,6 +433,7 @@ public class PureFactory
 	    }
 	  }
 	}
+	prev = cur;
       }
       cur = cur.next;
     }

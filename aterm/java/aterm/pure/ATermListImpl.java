@@ -548,7 +548,7 @@ class ATermListImpl
 
   public int getNrSubTerms()
   {
-    return first == null ? 0 : 2;
+    return length;
   }
 
   //}}}
@@ -556,11 +556,7 @@ class ATermListImpl
 
   public ATerm getSubTerm(int index)
   {
-    if (index == 0) {
-      return first;
-    } else {
-      return next;
-    }
+    return elementAt(index);
   }
 
   //}}}
