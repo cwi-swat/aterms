@@ -15,12 +15,13 @@ intermediate code, and the like.
 \begin{sloppypar}
 How is this exchange of complex data structures between applications
 achieved?  One solution is Microsoft's Object Linking and Embedding
-(OLE). This is a platform-specific, proprietary, set of primitives to
-construct Windows applications. Another, language-specific, solution
-is to use Java's serialization interface. This allows writing and
-reading Java objects as sequential byte streams. Yet another solution
-is to use OMG's Interface Definition Language (part of the Common
-Object Broker Architecture) to define data structures in a
+(OLE)~\cite{OLE}.  This is a platform-specific, proprietary, set of
+primitives to construct Windows applications. Another,
+language-specific, solution is to use Java's serialization
+interface~\cite{Java}. This allows writing and reading Java objects as
+sequential byte streams. Yet another solution is to use OMG's
+Interface Definition Language (part of the Common Object Broker
+Architecture~\cite{OMG-IDL}) to define data structures in a
 language-neutral way. Specific language-bindings provide the mapping
 from IDL data structures to language-specific data structures.
 \end{sloppypar}
@@ -966,20 +967,17 @@ constant can occur which will be shared, but no other regularities can
 be exploited and there are many subterms with a relatively high arity.
 
 \item[COBOL Parse Table:] a generated parse table for COBOL including
-embedded SQL and CICS. 
-The grammar consists of 1885 productions,
-the number of states in the table is 6151,
-the action-table contains 218592 non-empty entries, 
-and the goto-table contains 95245 non-empty entries.
-This is an example on abstract data type represented as \ATerm.
+embedded SQL and CICS.  The grammar consists of 1885 productions and
+the generated automaton has 6151 states.  The parse tables contains an
+action-table (218592 non-empty entries) and a goto-table (95245
+non-empty entries).  This is an example of an abstract data type
+represented as \ATerm.
 
 \item[COBOL System:] a COBOL system consisting of 117 programs with
-a total of 247548 lines of COBOL that has been parsed with the
-above parse table.
-The parse trees constructed for these COBOL programs are represented
-as \ATerms, see Section \ref{asfix} for more details.
-Note that due to the specific form of parse trees we use,
-the amount of sharing is substantial.
+a total of 247548 lines of COBOL source code. It has been parsed with
+the above parse table.  The parse trees constructed for these COBOL
+programs are represented as \ATerms, see Section \ref{asfix} for more
+details.
 
 \item[Risla library:] a parse tree of the component library for the Risla
 language, a domain specific language for describing financial products
