@@ -1,5 +1,5 @@
 [
-  [Entries, Empty, []],
-  [Entries, List, [<head(Entry)>, <[tail(Entries)]>]],
-  [Entry, Constructor, [<sort(term)>,<alternative(term)>,<term-pattern(term)>]]
+  constructor(Entries, Empty, []),
+  constructor(Entries, List, [<head(Entry)>, <[tail(Entries)]>]),
+  constructor(Entry, Constructor, constructor(<sort(term)>,<alternative(term)>,<term-pattern(term)>))
 ]

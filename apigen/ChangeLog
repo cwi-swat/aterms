@@ -1,6 +1,8 @@
 2003-05-08  (jurgenv@cwi.nl)
  * Apified ApiGen by using ADT.adt for reading in ADT files
- 
+ * Changed ADT format, an Entry used to look like [Sort,Alt,Pattern],
+   now its: constructor(Sort,Alt,Pattern)
+   
 2003-07-07 	(jurgenv@cwi.nl)
  * Added generation of is<type> predicates. You can now ask any term that is build by a generated
     factory if he is of a specific type.

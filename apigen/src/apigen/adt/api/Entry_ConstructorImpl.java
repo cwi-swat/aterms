@@ -1,7 +1,5 @@
 package apigen.adt.api;
 
-import aterm.ATerm;
-
 abstract public class Entry_ConstructorImpl
 extends Entry
 {
@@ -24,7 +22,7 @@ extends Entry
   }
   static public void initializePattern()
   {
-    pattern = getStaticFactory().parse("[<term>,<term>,<term>]");
+    pattern = getStaticFactory().parse("constructor(<term>,<term>,<term>)");
   }
 
   static public Entry fromTerm(aterm.ATerm trm)
@@ -71,32 +69,32 @@ extends Entry
     return true;
   }
 
-  public ATerm getSort()
+  public aterm.ATerm getSort()
   {
    return this.getArgument(index_sort);
   }
 
-  public Entry setSort(ATerm _sort)
+  public Entry setSort(aterm.ATerm _sort)
   {
     return (Entry) super.setArgument(_sort, index_sort);
   }
 
-  public ATerm getAlternative()
+  public aterm.ATerm getAlternative()
   {
    return this.getArgument(index_alternative);
   }
 
-  public Entry setAlternative(ATerm _alternative)
+  public Entry setAlternative(aterm.ATerm _alternative)
   {
     return (Entry) super.setArgument(_alternative, index_alternative);
   }
 
-  public ATerm getTermPattern()
+  public aterm.ATerm getTermPattern()
   {
    return this.getArgument(index_termPattern);
   }
 
-  public Entry setTermPattern(ATerm _termPattern)
+  public Entry setTermPattern(aterm.ATerm _termPattern)
   {
     return (Entry) super.setArgument(_termPattern, index_termPattern);
   }

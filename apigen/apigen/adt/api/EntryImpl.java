@@ -6,12 +6,12 @@ import java.io.IOException;
 
 abstract public class EntryImpl extends ADTConstructor
 {
-  static Entry fromString(String str)
+  public static Entry fromString(String str)
   {
     aterm.ATerm trm = getStaticADTFactory().parse(str);
     return fromTerm(trm);
   }
-  static Entry fromTextFile(InputStream stream) throws aterm.ParseError, IOException
+  public static Entry fromTextFile(InputStream stream) throws aterm.ParseError, IOException
   {
     aterm.ATerm trm = getStaticADTFactory().readFromTextFile(stream);
     return fromTerm(trm);
@@ -29,6 +29,10 @@ abstract public class EntryImpl extends ADTConstructor
 
 
     throw new RuntimeException("This is not a Entry: " + trm);
+  }
+
+  public boolean isEntry()  {
+    return true;
   }
 
   public boolean isConstructor()
@@ -51,32 +55,32 @@ abstract public class EntryImpl extends ADTConstructor
     return false;
   }
 
-  public ATerm getSort()
+  public aterm.ATerm getSort()
   {
      throw new RuntimeException("This Entry has no Sort");
   }
 
-  public Entry setSort(ATerm _sort)
+  public Entry setSort(aterm.ATerm _sort)
   {
      throw new RuntimeException("This Entry has no Sort");
   }
 
-  public ATerm getAlternative()
+  public aterm.ATerm getAlternative()
   {
      throw new RuntimeException("This Entry has no Alternative");
   }
 
-  public Entry setAlternative(ATerm _alternative)
+  public Entry setAlternative(aterm.ATerm _alternative)
   {
      throw new RuntimeException("This Entry has no Alternative");
   }
 
-  public ATerm getTermPattern()
+  public aterm.ATerm getTermPattern()
   {
      throw new RuntimeException("This Entry has no TermPattern");
   }
 
-  public Entry setTermPattern(ATerm _termPattern)
+  public Entry setTermPattern(aterm.ATerm _termPattern)
   {
      throw new RuntimeException("This Entry has no TermPattern");
   }

@@ -6,12 +6,12 @@ import java.io.IOException;
 
 abstract public class EntriesImpl extends ADTConstructor
 {
-  static Entries fromString(String str)
+  public static Entries fromString(String str)
   {
     aterm.ATerm trm = getStaticADTFactory().parse(str);
     return fromTerm(trm);
   }
-  static Entries fromTextFile(InputStream stream) throws aterm.ParseError, IOException
+  public static Entries fromTextFile(InputStream stream) throws aterm.ParseError, IOException
   {
     aterm.ATerm trm = getStaticADTFactory().readFromTextFile(stream);
     return fromTerm(trm);
@@ -33,6 +33,10 @@ abstract public class EntriesImpl extends ADTConstructor
 
 
     throw new RuntimeException("This is not a Entries: " + trm);
+  }
+
+  public boolean isEntries()  {
+    return true;
   }
 
   public boolean isEmpty()

@@ -35,4 +35,12 @@ implements aterm.ATerm
     return (ADTFactory) getStaticFactory();
   }
 
+  public boolean isEntries() {
+    return false;
+  }
+
+  public boolean isEntry() {
+    return false;
+  }
+
 }
