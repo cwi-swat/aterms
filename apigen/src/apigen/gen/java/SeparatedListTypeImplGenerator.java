@@ -3,8 +3,6 @@ package apigen.gen.java;
 import java.util.Iterator;
 import java.util.List;
 
-import sun.security.krb5.internal.ccache.ao;
-
 import apigen.adt.Field;
 import apigen.adt.SeparatedListType;
 import apigen.adt.api.Separators;
