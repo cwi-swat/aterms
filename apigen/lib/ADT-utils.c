@@ -6,46 +6,46 @@
 
 /*}}}  */
 
-/*{{{  ADTforeachEntry(ADTEntries entries, ADTEntryFunc func, void *user_data) */
+/*{{{  ADT_foreachEntry(ADT_Entries entries, ADT_EntryFunc func, void *user_data) */
 
 void
-ADTforeachEntry(ADTEntries entries, ADTEntryFunc func, void *user_data)
+ADT_foreachEntry(ADT_Entries entries, ADT_EntryFunc func, void *user_data)
 {
-  while (ADThasEntriesHead(entries)) {
-    ADTEntry entry = ADTgetEntriesHead(entries);
+  while (ADT_hasEntriesHead(entries)) {
+    ADT_Entry entry = ADT_getEntriesHead(entries);
     func(entry, user_data);
-    entries = ADTgetEntriesTail(entries);
+    entries = ADT_getEntriesTail(entries);
   }
 }
 
 /*}}}  */
 
-/*{{{  ADTsubstitute(ADTEntries entries, ADTSubstFunc substitute, void *user_data) */
+/*{{{  ADT_substitute(ADT_Entries entries, ADT_SubstFunc substitute, void *user_data) */
 
-ADTEntries
-ADTsubstitute(ADTEntries entries, ADTSubstFunc substitute, void *user_data)
+ADT_Entries
+ADT_substitute(ADT_Entries entries, ADT_SubstFunc substitute, void *user_data)
 {
-  ATermList todo  = (ATermList)ADTEntriesToTerm(entries);
+  ATermList todo  = (ATermList)ADT_EntriesToTerm(entries);
   ATermList done = ATempty;
 
   while (!ATisEmpty(todo)) {
-    ADTEntry before = ADTEntryFromTerm(ATgetFirst(todo));
-    ADTEntry after  = substitute(before, user_data);
+    ADT_Entry before = ADT_EntryFromTerm(ATgetFirst(todo));
+    ADT_Entry after  = substitute(before, user_data);
 
     if (after != NULL) {
-      done = ATinsert(done, ADTEntryToTerm(after));
+      done = ATinsert(done, ADT_EntryToTerm(after));
     }
 
     todo = ATgetNext(todo);
   }
 
-  return ADTEntriesFromTerm((ATerm)ATreverse(done));
+  return ADT_EntriesFromTerm((ATerm)ATreverse(done));
 }
 
 /*}}}  */
 
 
-ADTEntries ADTconcatEntries (ADTEntries l1, ADTEntries l2)
+ADT_Entries ADT_concatEntries (ADT_Entries l1, ADT_Entries l2)
 {
-  return (ADTEntries) ATconcat((ATermList) l1, (ATermList) l2);
+  return (ADT_Entries) ATconcat((ATermList) l1, (ATermList) l2);
 }

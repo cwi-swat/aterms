@@ -1,19 +1,19 @@
-#ifndef _ADT_UTIL_H
-#define _ADT_UTIL_H
+#ifndef _ADT__UTIL_H
+#define _ADT__UTIL_H
 
 #include <ADT.h>
 
-typedef void     (*ADTEntryFunc) (ADTEntry, void *);
-typedef ADTEntry (*ADTSubstFunc) (ADTEntry, void *);
+typedef void     (*ADT_EntryFunc) (ADT_Entry, void *);
+typedef ADT_Entry (*ADT_SubstFunc) (ADT_Entry, void *);
 
-void           ADTforeachEntry   (ADTEntries    entries,
-				  ADTEntryFunc  func,
+void           ADT_foreachEntry   (ADT_Entries    entries,
+				  ADT_EntryFunc  func,
 				  void         *user_data);
 
-ADTEntries     ADTsubstitute     (ADTEntries    entries,
-				  ADTSubstFunc  func,
+ADT_Entries     ADT_substitute     (ADT_Entries    entries,
+				  ADT_SubstFunc  func,
 				  void         *user_data);
 
-ADTEntries ADTconcatEntries (ADTEntries l1, ADTEntries l2);
+ADT_Entries ADT_concatEntries (ADT_Entries l1, ADT_Entries l2);
 
-#endif /* _ADT_UTIL_H */
+#endif /* _ADT__UTIL_H */

@@ -20,5 +20,5 @@ ADT.c ADT.h ADT.dict ADT_dict.c ADT_dict.h: ADT.adt ADT.pro
 	${ADT_TO_C} \
 		--input ADT.adt		\
 		--prologue ADT.pro	\
-		--prefix ADT		\
+		--prefix ADT_		\
 		--classpath ${top_builddir}:${EXTERNAL_JARS}

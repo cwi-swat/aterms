@@ -20,5 +20,5 @@ OLDADT.c OLDADT.h OLDADT.dict OLDADT_dict.c OLDADT_dict.h: OLDADT.adt OLDADT.pro
 	${ADT_TO_C} \
 		--input OLDADT.adt		\
 		--prologue OLDADT.pro	\
-		--prefix OLDADT		\
+		--prefix OLDADT_		\
 		--classpath ${top_builddir}:${EXTERNAL_JARS}
