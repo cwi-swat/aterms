@@ -502,10 +502,10 @@ interface also uses the following types:
 	{\tt ATmakeAppl} described above.
 }
 
-\Macro{\tt ATget\Symbol}{\Symbol}{\tt ATermAppl}
+\Macro{\tt ATget\Symbol}{\Symbol}{\tt ATermAppl appl}
 {Get the symbol of an application}
 
-\Macro{\tt ATgetArgument}{\ATerm}{\tt ATermAppl, int nr}
+\Macro{\tt ATgetArgument}{\ATerm}{\tt ATermAppl appl, int nr}
 {Get the {\tt nr}-th argument of an application}
 
 \Function{\tt ATsetArgument}{ATermAppl}{ATermAppl appl, ATerm arg, int n}
@@ -542,7 +542,7 @@ interface also uses the following types:
 	The elements should be passed as arguments $1\ldots n$.
 }
 
-\Macro{\tt ATmakeList0()}{\tt ATermList}{}
+\Macro{\tt ATmakeList0}{\tt ATermList}{}
 {Macro defined to point to the empty list {\tt []}}
 
 \Function{\tt ATmakeList1}{\tt ATermList}{\ATerm\ el0}

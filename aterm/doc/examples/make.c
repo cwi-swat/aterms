@@ -7,7 +7,7 @@ char  *func = "f";
 ATerm term[4];
 term[0] = ATmake("<int>" , ival);       /* integer value: 42                */
 term[1] = ATmake("<str>" , func);       /* quoted application: "f", no args */
-term[2] = ATmake("<real>", dval);       /* real value: 3.14                 */
+term[2] = ATmake("<real>", rval);       /* real value: 3.14                 */
 term[3] = ATmake("<blob>", 8, blob);    /* blob of size 8, data: 12345678   */
 
 ATerm list[3];
