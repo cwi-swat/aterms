@@ -53,7 +53,7 @@
 \label{abstract}
 
 Using the \atlib\ to represent tree-like datastructures has become a
-popular activity, especially to developers of e.g. lexical scanners,
+popular activity, especially amongst developers of e.g. lexical scanners,
 parsers, rewrite engines and model checkers. Practical experience with the
 \atlib\ in the \metaenv\ has shown that the development and maintenance
 of tools that access \aterms\ using handcrafted code is involved and
@@ -95,10 +95,11 @@ respect to changes in the parsetree format.
 Since the development of the \atlib~\cite{BJKO2000} in 1999, its use
 for the implementation of tree-like data structures has become quite
 popular amongst developers of scanners, parsers, rewrite engines and
-model checkers. Apart from its inevitable deployment in the tools of the
-\metaenv\ for which it was specifically designed, the \atlib\ is used
-amongst others in: \texttt{todo: complete refs, name more examples} the
-ELAN system~\cite{BR01}, Stratego~\cite{Vis01.rta}, CASL, muCRL toolkit?
+model checkers. Apart from its inevitable deployment in the tools of
+the \metaenv\ for which it was specifically designed, the \atlib\ is
+used amongst others in: the ELAN system~\cite{BR01}, The implementation
+of the Stratego Language~\cite{Vis01.rta}, CASL~\texttt{MISSING REF},
+and the $\mu$CRL ToolSet~\cite{mucrl-toolset}.
 
 As more and more tools in the \metaenv\ were converted to work with
 the \atlib, it became apparent that the tools had become inflexible with
@@ -113,7 +114,7 @@ The coding practise that uses such structural knowledge is not in any
 way restricted to the realm of parse trees. In fact, anyone who has
 programmed with the \atlib, will probably be familiar with patterns such
 as \texttt{and(<bool>,<bool>)}. And given such a pattern, what could
-be easier than to write a function that extracts the left-hand side?
+be easier than writing a function that extracts the left-hand side?
 But as these patterns become longer and more intricate with a liberal
 sprinkling of quoted strings containing backslash-escaped quotes,
 and as they begin to contain lists and annotations, the once so simple
