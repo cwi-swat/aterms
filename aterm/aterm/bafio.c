@@ -1427,8 +1427,9 @@ ATreadFromBinaryFile(FILE *file)
 	if(readIntFromFile(&nr_unique_terms, file) < 0)
 		return NULL;
 
-	fprintf(stderr, "reading %d unique symbols and %d unique terms.\n",
-					nr_unique_symbols, nr_unique_terms);
+	if(!silent)
+		fprintf(stderr, "reading %d unique symbols and %d unique terms.\n",
+						nr_unique_symbols, nr_unique_terms);
 
 	/*}}}  */
 	/*{{{  Allocate symbol space */
