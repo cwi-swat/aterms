@@ -20,12 +20,29 @@
 
 package aterm.pure;
 
-import java.io.*;
-import java.util.*;
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 import shared.SharedObject;
-
-import aterm.*;
+import aterm.AFun;
+import aterm.ATerm;
+import aterm.ATermAppl;
+import aterm.ATermBlob;
+import aterm.ATermFactory;
+import aterm.ATermInt;
+import aterm.ATermList;
+import aterm.ATermPlaceholder;
+import aterm.ATermReal;
+import aterm.Visitor;
+import aterm.ParseError;
+import jjtraveler.VisitFailure;
 
 public abstract class ATermImpl extends ATermVisitableImpl implements ATerm, SharedObject {
   private ATermList annotations;
@@ -156,7 +173,7 @@ public abstract class ATermImpl extends ATermVisitableImpl implements ATerm, Sha
     try {
       writer.visitChild(this);
       writer.getStream().flush();
-    } catch (ATermVisitFailure e) {
+    } catch (VisitFailure e) {
       throw new IOException(e.getMessage());
     }
   }
@@ -202,7 +219,7 @@ public abstract class ATermImpl extends ATermVisitableImpl implements ATerm, Sha
 
 }
 
-class ATermWriter extends ATermVisitor {
+class ATermWriter extends Visitor {
 
   private static char[] TOBASE64 =
     {
@@ -303,7 +320,7 @@ class ATermWriter extends ATermVisitor {
     position += txt.length();
   }
 
-  public void visitChild(ATerm child) throws ATermVisitFailure {
+  public void visitChild(ATerm child) throws  VisitFailure {
     if (table != null) {
       Integer abbrev = (Integer) table.get(child);
       if (abbrev != null) {
@@ -341,7 +358,7 @@ class ATermWriter extends ATermVisitor {
     }
   }
 
-  public void visitAppl(ATermAppl appl) throws ATermVisitFailure {
+  public void visitAppl(ATermAppl appl) throws VisitFailure {
     AFun fun = appl.getAFun();
     String name = fun.toString();
     stream.print(name);
@@ -361,7 +378,7 @@ class ATermWriter extends ATermVisitor {
     }
   }
 
-  public void visitList(ATermList list) throws ATermVisitFailure {
+  public void visitList(ATermList list) throws VisitFailure {
     while (!list.isEmpty()) {
       visitChild(list.getFirst());
       list = list.getNext();
@@ -372,7 +389,7 @@ class ATermWriter extends ATermVisitor {
     }
   }
 
-  public void visitPlaceholder(ATermPlaceholder ph) throws ATermVisitFailure {
+  public void visitPlaceholder(ATermPlaceholder ph) throws VisitFailure {
     stream.print('<');
     position++;
     visitChild(ph.getPlaceholder());
@@ -380,19 +397,19 @@ class ATermWriter extends ATermVisitor {
     position++;
   }
 
-  public void visitInt(ATermInt i) throws ATermVisitFailure {
+  public void visitInt(ATermInt i) throws VisitFailure {
     String txt = String.valueOf(i.getInt());
     stream.print(txt);
     position += txt.length();
   }
 
-  public void visitReal(ATermReal r) throws ATermVisitFailure {
+  public void visitReal(ATermReal r) throws VisitFailure {
     String txt = String.valueOf(r.getReal());
     stream.print(txt);
     position += txt.length();
   }
 
-  public void visitBlob(ATermBlob blob) throws ATermVisitFailure {
+  public void visitBlob(ATermBlob blob) throws VisitFailure {
     String txt = String.valueOf(blob.getBlobSize()) + "#" + String.valueOf(blob.hashCode());
     stream.print(txt);
     position += txt.length();

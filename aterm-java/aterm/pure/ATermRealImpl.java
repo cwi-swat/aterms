@@ -22,6 +22,8 @@ package aterm.pure;
 
 import java.util.List;
 
+import jjtraveler.VisitFailure;
+
 import shared.SharedObject;
 
 import aterm.*;
@@ -81,7 +83,7 @@ class ATermRealImpl extends ATermImpl implements ATermReal {
     return getPureFactory().makeReal(value, annos);
   }
 
-  public void accept(ATermVisitor v) throws ATermVisitFailure {
+  public void accept(Visitor v) throws VisitFailure {
     v.visitReal(this);
   }
 

@@ -20,6 +20,7 @@
 
 package aterm.pure;
 
+import jjtraveler.VisitFailure;
 import shared.SharedObject;
 
 import aterm.*;
@@ -182,7 +183,7 @@ class AFunImpl extends ATermImpl implements AFun {
     return result.toString();
   }
 
-  public void accept(ATermVisitor v) throws ATermVisitFailure {
+  public void accept(Visitor v) throws VisitFailure {
     v.visitAFun(this);
   }
 

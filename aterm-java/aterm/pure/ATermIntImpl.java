@@ -22,9 +22,16 @@ package aterm.pure;
 
 import java.util.List;
 
-import shared.SharedObject;
+import jjtraveler.VisitFailure;
 
-import aterm.*;
+import shared.SharedObject;
+import aterm.AFun;
+import aterm.ATerm;
+import aterm.ATermAppl;
+import aterm.ATermInt;
+import aterm.ATermList;
+import aterm.ATermPlaceholder;
+import aterm.Visitor;
 
 class ATermIntImpl extends ATermImpl implements ATermInt {
   int value;
@@ -89,7 +96,7 @@ class ATermIntImpl extends ATermImpl implements ATermInt {
     return getPureFactory().makeInt(value, annos);
   }
 
-  public void accept(ATermVisitor v) throws ATermVisitFailure {
+  public void accept(Visitor v) throws VisitFailure {
     v.visitInt(this);
   }
 

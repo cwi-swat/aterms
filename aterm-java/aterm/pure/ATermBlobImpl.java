@@ -22,6 +22,8 @@ package aterm.pure;
 
 import java.util.List;
 
+import jjtraveler.VisitFailure;
+
 import shared.SharedObject;
 
 import aterm.*;
@@ -85,7 +87,7 @@ class ATermBlobImpl extends ATermImpl implements ATermBlob {
     return getPureFactory().makeBlob(data, annos);
   }
 
-  public void accept(ATermVisitor v) throws ATermVisitFailure {
+  public void accept(Visitor v) throws VisitFailure {
     v.visitBlob(this);
   }
 

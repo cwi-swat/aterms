@@ -1,5 +1,10 @@
 $Id$
 
+2003-03-14 <jurgenv@cwi.nl>
+ * Removed specialized visitor package from aterm implementation
+ * Made aterm implementation depend on and use jjtraveler-1.3.jar
+ * TODO: make real dependency on jjtraveler package instead of jar inclusion
+ 
 Tue Feb 25 16:16:51 CET 2003 <jong@cwi.nl>
  * Removed unused fields,variables and methods as reported by Eclipse
 

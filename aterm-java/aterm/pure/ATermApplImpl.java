@@ -22,6 +22,8 @@ package aterm.pure;
 
 import java.util.List;
 
+import jjtraveler.VisitFailure;
+
 import shared.SharedObject;
 
 import aterm.*;
@@ -207,7 +209,7 @@ public class ATermApplImpl extends ATermImpl implements ATermAppl {
     return make(fun, args, annos);
   }
 
-  public void accept(ATermVisitor v) throws ATermVisitFailure {
+  public void accept(Visitor v) throws VisitFailure {
     v.visitAppl(this);
   }
 

@@ -22,6 +22,8 @@ package aterm.pure;
 
 import java.util.List;
 
+import jjtraveler.VisitFailure;
+
 import shared.SharedObject;
 
 import aterm.*;
@@ -147,7 +149,7 @@ class ATermPlaceholderImpl extends ATermImpl implements ATermPlaceholder {
     return getPureFactory().makePlaceholder(type, annos);
   }
 
-  public void accept(ATermVisitor v) throws ATermVisitFailure {
+  public void accept(Visitor v) throws VisitFailure {
     v.visitPlaceholder(this);
   }
 

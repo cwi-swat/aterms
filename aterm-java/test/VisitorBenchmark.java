@@ -1,9 +1,10 @@
 package test;
 
-import java.io.*;
+import java.io.IOException;
 
-import aterm.*;
-import aterm.visitor.*;
+import aterm.AFun;
+import aterm.ATerm;
+import aterm.ATermFactory;
 
 public class VisitorBenchmark
 {
@@ -12,18 +13,18 @@ public class VisitorBenchmark
   static AFun fun;
 
   public final static void main(String[] args)
-    throws IOException, VisitFailure
+    throws IOException, jjtraveler.VisitFailure
   {
     try {
       int depth  = 5;
       int fanout = 5;
-
+     
       long beforeBuild = System.currentTimeMillis();
       fun = factory.makeAFun("f", fanout, false);
       ATerm term = buildTerm(depth, fanout);
       long beforeVisit = System.currentTimeMillis();
       NodeCounter nodeCounter = new NodeCounter();
-      Visitor topDownNodeCounter = new TopDown(nodeCounter);
+      jjtraveler.Visitor topDownNodeCounter = new jjtraveler.TopDown(nodeCounter);
       try {
 	topDownNodeCounter.visit(term);
 	long end   = System.currentTimeMillis();
@@ -32,7 +33,7 @@ public class VisitorBenchmark
 			   + ": build=" + (beforeVisit-beforeBuild)
 			   + ", visit=" + (end-beforeVisit));
 	//System.out.println("term = " + term);
-      } catch (VisitFailure e) {
+      } catch (jjtraveler.VisitFailure e) {
 	System.err.println("WARING: VisitFailure: " + e.getMessage());
       }
     } catch (NumberFormatException e) {
@@ -56,13 +57,14 @@ public class VisitorBenchmark
 }
 
 class NodeCounter
-  implements Visitor
+  implements jjtraveler.Visitor
 {
   private int count;
 
-  public void visit(Visitable visitable)
+  public jjtraveler.Visitable visit(jjtraveler.Visitable visitable)
   {
     count++;
+    return visitable;
   }
 
   public int getCount()

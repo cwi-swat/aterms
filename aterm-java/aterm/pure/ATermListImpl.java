@@ -20,11 +20,18 @@
 
 package aterm.pure;
 
-import java.util.*;
+import java.util.List;
+import java.util.Vector;
+
+import jjtraveler.VisitFailure;
 
 import shared.SharedObject;
-
-import aterm.*;
+import aterm.AFun;
+import aterm.ATerm;
+import aterm.ATermAppl;
+import aterm.ATermList;
+import aterm.ATermPlaceholder;
+import aterm.Visitor;
 
 class ATermListImpl extends ATermImpl implements ATermList {
   ATerm first;
@@ -481,7 +488,7 @@ class ATermListImpl extends ATermImpl implements ATermList {
     return getPureFactory().makeList(first, next, annos);
   }
 
-  public void accept(ATermVisitor v) throws ATermVisitFailure {
+  public void accept(Visitor v) throws VisitFailure {
     v.visitList(this);
   }
 
