@@ -3,12 +3,17 @@ package apigen.gen.c;
 import apigen.gen.TomSignatureGenerator;
 
 public class CTomSignatureGenerator extends TomSignatureGenerator {
+	
+	protected void initTypeConverter() {
+		typeConverter = new CTypeConverter();
+	}
+	
 	private String buildTypeName(String type) {
-		return capitalize(buildId(type));
+		return converter.makeCapitalizedIdentifier(type);
 	}
 
 	private String buildAltTypeName(String type, String alt) {
-		return capitalize(type + "_" + capitalize(alt));
+		return converter.capitalize(type + converter.capitalize(alt));
 	}
 
 	protected String StringImpl() {
@@ -64,7 +69,7 @@ public class CTomSignatureGenerator extends TomSignatureGenerator {
 	}
 
 	protected String DoubleGetSubTerm(String term, String n) {
-		return "0";
+		return "0.0";
 	}
 
 	protected String DoubleEquals(String s1, String s2) {
@@ -75,11 +80,11 @@ public class CTomSignatureGenerator extends TomSignatureGenerator {
 		return "ATerm";
 	}
 
-	protected String ATermGetFunSym(String arg) {
+		protected String ATermGetFunSym(String arg) {
 		return "((ATgetType("
 			+ arg + ") == AT_APPL)?ATgetAFun((ATermAppl)"
 			+ arg
-			+ "):null)";
+			+ "):NULL)";
 	}
 
 	protected String ATermCmpFunSym(String s1, String s2) {
@@ -91,7 +96,7 @@ public class CTomSignatureGenerator extends TomSignatureGenerator {
 	}
 
 	protected String ATermEquals(String s1, String s2) {
-                return "ATisEqual(" + s1 + "," + s2 + ")";
+		return "ATisEqual(" + s1 + "," + s2 + ")";
 	}
 
 	protected String TypeName(String type) {
@@ -103,23 +108,24 @@ public class CTomSignatureGenerator extends TomSignatureGenerator {
 	}
 
 	protected String TypeGetFunSym(String arg) {
-		return "null";
+		return "NULL";
 	}
 
 	protected String TypeCmpFunSym(String arg1, String arg2) {
-		return "false";
+		return "!(0==0)";
 	}
 
 	protected String TypeGetSubTerm(String term, String n) {
-		return "null";
+		return "NULL";
 	}
 
-	protected String TypeEquals(String arg1, String arg2) {
-		return "ATisEqual(" + arg1 + "," + arg2 + ")";
+	protected String TypeEquals(String type, String arg1, String arg2) {
+		return "isEqual" + buildTypeName(type)
+                  + "(" + arg1 + "," + arg2 + ")";
 	}
 
 	protected String OperatorName(String id) {
-		return buildId(id);
+		return converter.makeIdentifier(id);
 	}
 
 	protected String OperatorType(String type, String id) {
@@ -131,29 +137,23 @@ public class CTomSignatureGenerator extends TomSignatureGenerator {
 	}
 
 	protected String OperatorIsFSym(String term, String type, String alt) {
-		return "("
-			+ term
-			+ "!= null) &&"
-			+ term
-			+ ".is"
-			+ capitalize(buildAltTypeName(type, alt) + "()");
+                return "is"
+                  + converter.capitalize(buildAltTypeName(type, alt)
+                  + "(" + term + ")");
 	}
 
-	protected String OperatorGetSlot(String term, String slot) {
-		return term + ".get" + capitalize(slot) + "()";
+	protected String OperatorGetSlot(String term, String type, String slot) {
+		return "get" + converter.capitalize(buildAltTypeName(type,slot)) + "(" + term + ")";
 	}
 
 	protected String OperatorMake(String type, String alt, String arguments) {
-		return "get"
-			+ capitalize(buildId(api_name))
-			+ "Factory"
-			+ "().make"
+		return "make"
 			+ buildAltTypeName(type, alt)
 			+ arguments;
 	}
 
 	protected String FieldName(String id) {
-		return buildId(id);
+		return converter.makeIdentifier(id);
 	}
 
 	protected String FieldType(String type) {

@@ -1,3 +1,6 @@
+2003-02-27    <pem@bach>
+
+ * Tom Signature generation improved to support C code
 
 2003/02/26 (jurgenv@cwi.nl)
  * Refactored Tom Signature generation in an abstract class which generates

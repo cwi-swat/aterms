@@ -60,11 +60,11 @@ public abstract class TomSignatureGenerator extends Generator {
 	protected abstract String TypeGetFunSym(String arg1);
 	protected abstract String TypeCmpFunSym(String arg1, String arg2);
 	protected abstract String TypeGetSubTerm(String term, String n);
-	protected abstract String TypeEquals(String arg1, String arg2);
+	protected abstract String TypeEquals(String type, String arg1, String arg2);
 
     protected abstract String OperatorName(String id);
     protected abstract String OperatorType(String type, String id);
-	protected abstract String OperatorGetSlot(String string, String field_id);
+	protected abstract String OperatorGetSlot(String string, String type, String field_id);
 	protected abstract String OperatorIsFSym(String string, String type,  String alt);
 	protected abstract String OperatorFSym(String type, String alt);
 	protected abstract String OperatorMake(String type, String alt, String args);
@@ -146,7 +146,7 @@ public abstract class TomSignatureGenerator extends Generator {
 				TypeGetFunSym("t"),
 				TypeCmpFunSym("s1", "s2"),
 				TypeGetSubTerm("t", "n"),
-				TypeEquals("t1", "t2"))
+				TypeEquals(type.getId(),"t1", "t2"))
 			);
 		println();
 
@@ -187,13 +187,13 @@ public abstract class TomSignatureGenerator extends Generator {
 		}
 		println(" {");
 		println("  fsym {" + OperatorFSym(class_name, operator_name) + "}");
-		println("  is_fsym(t) { (" + OperatorIsFSym("t", class_name, operator_name) + "}");
+		println("  is_fsym(t) { " + OperatorIsFSym("t", class_name, operator_name) + "}");
 			
 		fields = type.altFieldIterator(alt.getId());
 		while (fields.hasNext()) {
 			Field field = (Field) fields.next();
 			String field_id = converter.makeIdentifier(field.getId());
-			println("  get_slot("+ field_id + ",t) { " + OperatorGetSlot("t", field_id) + "}");
+			println("  get_slot("+ field_id + ",t) { " + OperatorGetSlot("t", class_name, field_id) + "}");
 		}
 
 		String arg = "(";
