@@ -201,10 +201,21 @@ public class FactoryGenerator extends JavaGenerator {
 					genMakeFixedSizedList(returnTypeName, methodName, listType);
 					genReverseLists(listType, methodName);
 					genConcatLists(listType, methodName);
-					//					genAppendLists(listType, methodName);
+					genAppendLists(listType, methodName);
 				}
 			}
 		}
+	}
+
+	private void genAppendLists(ListType type, String makeMethodName) {
+		JavaGenerationParameters params = getJavaGenerationParameters();
+		String className = TypeGenerator.qualifiedClassName(params, type);
+		String elementTypeName = TypeGenerator.qualifiedClassName(params, type.getElementType());
+
+		println("  public " + className + " append" + "(" + className + " list, " + elementTypeName + " elem) {");
+		println("    return concat(list, " + makeMethodName + "(elem));");
+		println("  }");
+		println();
 	}
 
 	private void genConcatLists(ListType type, String makeMethodName) {
@@ -334,7 +345,7 @@ public class FactoryGenerator extends JavaGenerator {
 		return buf.toString();
 	}
 
-	private void genAppendSeparatedLists(SeparatedListType type, String methodName) {
+	private void genAppendSeparatedLists(SeparatedListType type, String makeMethodName) {
 		JavaGenerationParameters params = getJavaGenerationParameters();
 		String qualifiedClassName = TypeGenerator.qualifiedClassName(params, type);
 		String className = TypeGenerator.className(type);
@@ -358,9 +369,8 @@ public class FactoryGenerator extends JavaGenerator {
 				+ formalSeps
 				+ elementTypeName
 				+ " elem) {");
-		println("    return concat(list, " + actualSeps + methodName + "(elem));");
+		println("    return concat(list, " + actualSeps + makeMethodName + "(elem));");
 		println("  }");
-
 	}
 
 	private String buildActualSeparatorArgumentList(SeparatedListType type, boolean convert) {

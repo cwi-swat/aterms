@@ -143,13 +143,26 @@ public class ListTest {
 				(ATermList) p);
 		testAssert(factory.concat(sep, l1, l2, sep).toTerm().isEqual(pc), "concat test");
 
-		testAppend();
 		testElementAt();
 		testMakeLists();
 		testReverse();
 		testConcat();
+		testAppend();
+		testSeparatedAppend();
 		testMakeSeparatedLists();
 		testNineSeps();
+	}
+
+	private void testAppend() {
+		Module m = factory.makeModule_Default("m");
+		Modules list = factory.makeModules();
+
+		list = list.append(m);
+		testAssert(list.equals(factory.makeModules(m)), "append to empty list");
+		
+		Module q = factory.makeModule_Default("q");
+		list = list.append(q);
+		testAssert(list.equals(factory.makeModules(m, q)), "append to singleton list");
 	}
 
 	private void testConcat() {
@@ -237,7 +250,7 @@ public class ListTest {
 		}
 	}
 
-	private void testAppend() {
+	private void testSeparatedAppend() {
 		Separated empty = factory.makeSeparated();
 		Module m = factory.makeModule_Default("m");
 		Layout l = factory.makeLayout_Default(" ");

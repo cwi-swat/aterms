@@ -55,7 +55,31 @@ public class ListTypeGenerator extends TypeGenerator {
 		genInsertMethods();
 		genReverseMethods();
 		genConcatMethods();
+		genAppendMethods();
 		println("}");
+	}
+
+	private void genAppendMethods() {
+		if (!type.getElementType().equals("term")) {
+			genAppendMethod();
+		}
+		genOverrideAppendMethod();
+	}
+
+	private void genOverrideAppendMethod() {
+		String elemName = "elem";
+		String elem = getConverter().makeATermToBuiltinConversion(elementType, elemName);
+		println("  public aterm.ATermList append(aterm.ATerm " + elemName + ") {");
+		println("    return append((" + elementTypeName + ") " + elem + ");");
+		println("  }");
+		println();
+	}
+
+	private void genAppendMethod() {
+		println("  public " + typeName + " append(" + elementTypeName + " elem) {");
+		println("    return " + buildFactoryGetter() + ".append(this, elem);");
+		println("  }");
+		println();
 	}
 
 	private void genConcatMethods() {
