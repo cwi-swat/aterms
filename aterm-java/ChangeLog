@@ -1,3 +1,23 @@
+2002-10-31  Pierre-Etienne Moreau  <pem@escher.loria.fr>
+
+  * aterm/pure/ATermIntImpl.java: 
+    - initHashCode added
+    - hashFunction added	
+
+  * aterm/pure/ATermListImpl.java: 
+    - initHashCode added
+    - hashFunction added	
+
+  * aterm/pure/ATermApplImpl.java: 
+    - initHashCode added
+    - init makes a copy of the array
+    - hashFunction added
+    - serialize added
+
+  * aterm/pure/PureFactory.java: use a new hashing mechanism
+    - hashCode is computed in each ATerm implementation
+    - no array allocation is needed to compute the hashCode
+
 2002-10-29    <vinju@loria.fr>
   * Added ugly config script in order to detect the location of this 
     package easily in the meta package.

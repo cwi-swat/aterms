@@ -21,8 +21,8 @@ public class TestPrimes {
 
   public void test1() 
   {
-    assertTrue(getPrimes(30) ==
-	       factory.parse("[1,2,3,5,7,11,13,17,19,23,29]"));
+    assertTrue(getPrimes(30) == factory.parse("[1,2,3,5,7,11,13,17,19,23,29]"));
+    assertTrue(getPrimes(500).getLength() == 96);
   }
 
   public TestPrimes(ATermFactory factory) {

@@ -16,9 +16,9 @@ public class TestFib {
   public final static void main(String[] args) {
     TestFib t = new TestFib(new PureFactory());
 
-      //t.test1();
-      //t.test2();
-    t.test3(24);
+    t.test1();
+    t.test2();
+    t.test3(15);
   }
 
   public TestFib(ATermFactory factory) {
@@ -67,9 +67,9 @@ public class TestFib {
     ATermAppl res = normalizeFib(factory.makeAppl(fib,N));
     long end   = System.currentTimeMillis();
       //System.out.println("fib(" + n + ") = " + res);
-     System.out.println("fib(" + n + ") in " + (end-start) + " ms");
 
-     System.out.println(factory);
+    System.out.println("fib(" + n + ") in " + (end-start) + " ms");
+      //System.out.println(factory);
   }
     
   public ATermAppl normalizePlus(ATermAppl t) {

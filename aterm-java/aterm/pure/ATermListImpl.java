@@ -30,6 +30,21 @@ class ATermListImpl extends ATermImpl implements ATermList {
       this.length = 1 + next.getLength();
     }
   }
+
+  protected void initHashCode(ATermList annos, ATerm first, ATermList next) {
+    this.first = first;
+    this.next = next;
+    this.internSetAnnotations(annos);
+    this.setHashCode(this.hashFunction());
+      //super.init(hashCode, annos);
+    
+    if (first == null && next == null) {
+      this.length = 0;
+    } else {
+      this.length = 1 + next.getLength();
+    }
+  }
+
   
   public Object clone() {
     ATermListImpl clone = new ATermListImpl(getPureFactory());
@@ -428,4 +443,30 @@ class ATermListImpl extends ATermImpl implements ATermList {
     return replace(t, index);
   }
 
+  private int hashFunction() {
+    /* Set up the internal state */
+    int a = 0x9e3779b9; /* the golden ratio; an arbitrary value */
+    int b = 0x9e3779b9; /* the golden ratio; an arbitrary value */
+    int c = 0;          /* the previous hash value */
+
+    /*------------------------------------- handle the last 11 bytes */
+    a += (getAnnotations().hashCode()<<16);
+    a += (next.hashCode()<<8);
+    a += (first.hashCode());
+    
+    a -= b; a -= c; a ^= (c >> 13);
+    b -= c; b -= a; b ^= (a << 8);
+    c -= a; c -= b; c ^= (b >> 13);
+    a -= b; a -= c; a ^= (c >> 12);
+    b -= c; b -= a; b ^= (a << 16);
+    c -= a; c -= b; c ^= (b >> 5);
+    a -= b; a -= c; a ^= (c >> 3);
+    b -= c; b -= a; b ^= (a << 10);
+    c -= a; c -= b; c ^= (b >> 15);
+
+    /*-------------------------------------------- report the result */
+    return c;
+  }
+
+  
 }

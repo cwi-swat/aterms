@@ -21,37 +21,22 @@ class ATermApplImpl extends ATermImpl implements ATermAppl {
   protected void init(int hashCode, ATermList annos, AFun fun, ATerm[] i_args) {
     super.init(hashCode, annos);
     this.fun = fun;
-    this.args = i_args;
-  }
-
-  protected void initCopy(int hashCode, ATermList annos, AFun fun, ATerm[] i_args) {
-    super.init(hashCode, annos);
-    this.fun = fun;
     this.args = new ATerm[fun.getArity()];
     for(int i=0; i<this.args.length; i++) {
       this.args[i] = i_args[i];
     }
   }
 
-  protected void initTest(ATermList annos, AFun fun, ATerm[] i_args) {
+  protected void initHashCode(ATermList annos, AFun fun, ATerm[] i_args) {
     this.fun  = fun;
     this.args = i_args;
     this.internSetAnnotations(annos);
-    this.setHashCode(this.doobs_hashFunction());
-      //super.init(this.doobs_hashFunction(), annos);
-
-      /*
-        System.out.println("term = " + this + "\thash = " + hashCode());
-        if(getArity()>0) {
-        ATerm sub = getArgument(0);
-        System.out.println("\tsubterm = " + sub + "\thash = " + sub.hashCode());
-        }
-      */
+    this.setHashCode(this.hashFunction());
   }
 
   public Object clone() {
     ATermApplImpl clone = new ATermApplImpl(getPureFactory());
-    clone.initCopy(hashCode(), getAnnotations(), fun, args);
+    clone.init(hashCode(), getAnnotations(), fun, args);
     return clone;
   }
   
@@ -224,7 +209,7 @@ class ATermApplImpl extends ATermImpl implements ATermAppl {
     return o;
   }
 
-  private int doobs_hashFunction() {
+  private int hashFunction() {
     int initval = 0; /* the previous hash value */
     int a, b, c, len;
 
@@ -234,9 +219,8 @@ class ATermApplImpl extends ATermImpl implements ATermAppl {
     c = initval; /* the previous hash value */
 
     /*---------------------------------------- handle most of the key */
-    //int k = 0;
-    if (len >= 12) { //12) {
-      return shared.SharedObjectFactory.doobs_hashFunction(serialize());
+    if (len >= 12) {
+      return PureFactory.doobs_hashFunction(serialize());
     }
 
     /*------------------------------------- handle the last 11 bytes */

@@ -104,13 +104,9 @@ public class PureFactory extends SharedObjectFactory implements ATermFactory {
   
   public ATermInt makeInt(int value, ATermList annos) {
     synchronized (protoInt) {
-      protoInt.init(hashInt(annos, value), annos, value);
+      protoInt.initHashCode(annos, value);
       return (ATermInt) build(protoInt);
     }
-  }
-  
-  static private int hashInt(ATermList annos, int value) {
-    return doobs_hashFunction(new Object[] { annos, new Integer(value) });
   }
   
   public ATermReal makeReal(double value, ATermList annos) {
@@ -148,62 +144,28 @@ public class PureFactory extends SharedObjectFactory implements ATermFactory {
   
   public ATermList makeList(ATerm first, ATermList next, ATermList annos) {
     synchronized (protoList) {
-      protoList.init(hashList(annos, first, next), annos, first, next);
+      protoList.initHashCode(annos, first, next);
       return (ATermList) build(protoList);
     }
   }
-  
-  static private int hashList(ATermList annos, ATerm first, ATermList next) {
-    return doobs_hashFunction(new Object[] { annos, first, next });
-  }
 
-  private static ATerm[] array1= new ATerm[1+2-2];
-  private static ATerm[] array2= new ATerm[2+2-2];
-  private static ATerm[] array3= new ATerm[3+2];
-  private static ATerm[] array4= new ATerm[4+2];
-
-  static private int hashApplNoCopy(ATermList annos, AFun fun, ATerm[] hashArgs) {
-    hashArgs[hashArgs.length-2] = annos;
-    hashArgs[hashArgs.length-1] = fun;
-    return doobs_hashFunction(hashArgs);
-  }
-
-  static private int hashAppl(ATermList annos, AFun fun, ATerm[] args) {
-    ATerm[] hashArgs = new ATerm[args.length+2];
-    for(int i=0; i<args.length; i++) {
-      hashArgs[i] = args[i];
-    }
-    hashArgs[args.length]   = annos;
-    hashArgs[args.length+1] = fun;
-    return doobs_hashFunction(hashArgs);
-  }
+  private static ATerm[] array0 = new ATerm[0];
+  private static ATerm[] array1 = new ATerm[1];
+  private static ATerm[] array2 = new ATerm[2];
+  private static ATerm[] array3 = new ATerm[3];
+  private static ATerm[] array4 = new ATerm[4];
 
   public ATermAppl makeAppl(AFun fun, ATerm[] args) {
-      //return makeAppl(fun, args, empty);
-    protoAppl.initTest(empty, fun,args);
-    return (ATermAppl) build(protoAppl);
-
-    
+    return makeAppl(fun, args, empty);
   }
 
   public ATermAppl makeAppl(AFun fun, ATerm[] args, ATermList annos) {
     synchronized (protoAppl) {
-      protoAppl.init(hashAppl(annos, fun, args), annos, fun, args);
+      protoAppl.initHashCode(annos, fun,args);
       return (ATermAppl) build(protoAppl);
     }
   }
   
-  private ATermAppl internMakeAppl(AFun fun, ATerm[] args) {
-    return internMakeAppl(fun, args, empty);
-  }
-
-  private ATermAppl internMakeAppl(AFun fun, ATerm[] args, ATermList annos) {
-    synchronized (protoAppl) {
-      protoAppl.initCopy(hashApplNoCopy(annos, fun, args), annos, fun, args);
-      return (ATermAppl) build(protoAppl);
-    }
-  }
-
   public ATermAppl makeApplList(AFun fun, ATermList list) {
     return makeApplList(fun, list, empty);
   }
@@ -211,76 +173,54 @@ public class PureFactory extends SharedObjectFactory implements ATermFactory {
   public ATermAppl makeApplList(AFun fun, ATermList list, ATermList annos) {
     ATerm[] arg_array;
 
-    arg_array = new ATerm[list.getLength()+2]; // +2 for efficient hashAppl
+    arg_array = new ATerm[list.getLength()];
 
     int i = 0;
     while (!list.isEmpty()) {
       arg_array[i++] = list.getFirst();
       list = list.getNext();
     }
-
-    return internMakeAppl(fun, arg_array, annos);
+    return makeAppl(fun, arg_array, annos);
   }
 
   public ATermAppl makeAppl(AFun fun) {
-    return internMakeAppl(fun, new ATerm[0+2]); // +2 for efficient hashAppl
+    return makeAppl(fun, array0);
   }
 
   public ATermAppl makeAppl(AFun fun, ATerm arg) {
-      //ATerm[] args = { arg,null,null };
-      //return internMakeAppl(fun, args);
-
-      array1[0] = arg;
-      //return internMakeAppl(fun, array1);
-
-      //protoAppl.initTest(empty, fun,new ATerm[] {arg});
-      protoAppl.initTest(empty, fun,array1);
-      return (ATermAppl) build(protoAppl);
-    
+    array1[0] = arg;
+    return makeAppl(fun,array1);
   }
 
   public ATermAppl makeAppl(AFun fun, ATerm arg1, ATerm arg2) {
-      //ATerm[] args = { arg1, arg2,null,null };
-      //return internMakeAppl(fun, args);
-
-      array2[0] = arg1;
-      array2[1] = arg2;
-      //return internMakeAppl(fun, array2);
-
-        //protoAppl.initTest(empty, fun,new ATerm[] {arg1,arg2});
-      protoAppl.initTest(empty, fun,array2);
-    return (ATermAppl) build(protoAppl);
-
+    array2[0] = arg1;
+    array2[1] = arg2;
+    return makeAppl(fun,array2);
   }
 
   public ATermAppl makeAppl(AFun fun, ATerm arg1, ATerm arg2, ATerm arg3) {
-      //ATerm[] args = { arg1, arg2, arg3,null,null };
-      //return internMakeAppl(fun, args);
     array3[0] = arg1;
     array3[1] = arg2;
     array3[2] = arg3;
-    return internMakeAppl(fun, array3);
+    return makeAppl(fun, array3);
   }
 
   public ATermAppl makeAppl(AFun fun, ATerm arg1, ATerm arg2, ATerm arg3, ATerm arg4) {
-      //ATerm[] args = { arg1, arg2, arg3, arg4,null,null };
-      //return internMakeAppl(fun, args);
     array4[0] = arg1;
     array4[1] = arg2;
     array4[2] = arg3;
     array4[3] = arg4;
-    return internMakeAppl(fun, array4);
-    
+    return makeAppl(fun, array4);
   }
 
   public ATermAppl makeAppl(AFun fun, ATerm arg1, ATerm arg2, ATerm arg3, ATerm arg4, ATerm arg5) {
-    ATerm[] args = { arg1, arg2, arg3, arg4, arg5,null,null };
-    return internMakeAppl(fun, args);
+    ATerm[] args = { arg1, arg2, arg3, arg4, arg5 };
+    return makeAppl(fun, args);
   }
 
   public ATermAppl makeAppl(AFun fun, ATerm arg1, ATerm arg2, ATerm arg3, ATerm arg4, ATerm arg5, ATerm arg6) {
-    ATerm[] args = { arg1, arg2, arg3, arg4, arg5, arg6,null,null };
-    return internMakeAppl(fun, args);
+    ATerm[] args = { arg1, arg2, arg3, arg4, arg5, arg6 };
+    return makeAppl(fun, args);
   }
 
   public ATermAppl makeAppl(
@@ -292,8 +232,8 @@ public class PureFactory extends SharedObjectFactory implements ATermFactory {
     ATerm arg5,
     ATerm arg6,
     ATerm arg7) {
-    ATerm[] args = { arg1, arg2, arg3, arg4, arg5, arg6, arg7,null,null };
-    return internMakeAppl(fun, args);
+    ATerm[] args = { arg1, arg2, arg3, arg4, arg5, arg6, arg7 };
+    return makeAppl(fun, args);
   }
 
   public ATermList getEmpty() {
