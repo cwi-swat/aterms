@@ -75,7 +75,7 @@
 /*}}}  */
 /*{{{  types */
 
-struct ATermTable
+struct _ATermTable
 {
   long sizeMinus1;
   long nr_entries; /* the number of occupied positions in the hashtable,
@@ -85,11 +85,11 @@ struct ATermTable
   int max_load;
   long max_entries;
   long *hashtable; long nr_tables;
-  struct ATerm ***keys;
+  struct _ATerm ***keys;
   long nr_free_tables;
   long first_free_position;
   long **free_table;
-  struct ATerm ***values;
+  struct _ATerm ***values;
 };
 
 /*}}}  */
@@ -351,7 +351,7 @@ ATermIndexedSet ATindexedSetCreate(long initial_size, int max_load_pct)
 	long i;
   ATermIndexedSet hashset;
 
-  hashset = (ATermIndexedSet)malloc(sizeof(struct ATermTable));
+  hashset = (ATermIndexedSet)malloc(sizeof(struct _ATermTable));
   if (hashset==NULL) { 
 		ATerror("ATindexedSetCreate: cannot allocate new ATermIndexedSet n");
   }

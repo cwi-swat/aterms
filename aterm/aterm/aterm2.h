@@ -41,7 +41,7 @@
   * We define some new datatypes.
   */
 
-typedef struct _ATermInt
+typedef struct
 {
 	header_type header;
 	ATerm       next;
@@ -61,12 +61,12 @@ typedef struct
 	ATerm       next;
 } *ATermAppl;
 
-typedef struct ATermList
+typedef struct _ATermList
 {
 	header_type header;
 	ATerm       next;
 	ATerm       head;
-	struct ATermList *tail;
+	struct _ATermList *tail;
 } *ATermList;
 
 typedef struct
@@ -83,15 +83,10 @@ typedef struct
 	void       *data;
 } *ATermBlob;
 
-/* gewijzigd door JFG */
+struct _ATermTable;
 
-struct ATermTable;
-
-typedef struct ATermTable *ATermIndexedSet;
-typedef struct ATermTable *ATermTable;
-
-/* einde wijziging JFG */
-
+typedef struct _ATermTable *ATermIndexedSet;
+typedef struct _ATermTable *ATermTable;
 
 /** The following functions implement the operations of
   * the 'standard' ATerm interface, and should appear

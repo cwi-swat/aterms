@@ -43,10 +43,10 @@
 typedef MachineWord AFun;
 
 /* The Symbol type */
-typedef struct SymEntry
+typedef struct _SymEntry
 {
   header_type header;
-  struct SymEntry *next;
+  struct _SymEntry *next;
   Symbol  id;
   char   *name;
   int     count;  /* used in bafio.c */
@@ -62,8 +62,8 @@ typedef struct SymEntry
 /* void AT_unmarkSymbol(Symbol sym); */
 #define AT_unmarkSymbol(s) (at_lookup_table[(s)]->header &= ~MASK_MARK)
 
-struct ATerm;
-extern struct ATerm **at_lookup_table_alias;
+struct _ATerm;
+extern struct _ATerm **at_lookup_table_alias;
 extern SymEntry *at_lookup_table;
 
 unsigned int AT_symbolTableSize();

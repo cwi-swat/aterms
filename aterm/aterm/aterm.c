@@ -2415,7 +2415,7 @@ calcCoreSize(ATerm t)
     size = 8 + arity * 4;
     if (!AT_isMarkedSymbol(sym)) {
       size += strlen(ATgetName(sym)) + 1;
-      size += sizeof(struct SymEntry);
+      size += sizeof(struct _SymEntry);
       AT_markSymbol(sym);
     }
     for (i = 0; i < arity; i++)

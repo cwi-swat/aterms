@@ -51,14 +51,14 @@
 #define TERM_SIZE_BLOB        3
 #define TERM_SIZE_LIST        4
 #define TERM_SIZE_PLACEHOLDER 3
-#define TERM_SIZE_SYMBOL      (sizeof(struct SymEntry)/sizeof(header_type))
+#define TERM_SIZE_SYMBOL      (sizeof(struct _SymEntry)/sizeof(header_type))
 #else
 #define TERM_SIZE_INT         3
 #define TERM_SIZE_REAL        4
 #define TERM_SIZE_BLOB        3
 #define TERM_SIZE_LIST        4
 #define TERM_SIZE_PLACEHOLDER 3
-#define TERM_SIZE_SYMBOL      (sizeof(struct SymEntry)/sizeof(header_type))
+#define TERM_SIZE_SYMBOL      (sizeof(struct _SymEntry)/sizeof(header_type))
 #endif
 
 #define IS_MARKED(h)    (((h) & MASK_MARK) ? ATtrue : ATfalse)

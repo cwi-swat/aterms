@@ -78,15 +78,15 @@
 /*}}}  */
 /*{{{  types */
 
-typedef struct trm_bucket
+typedef struct _trm_bucket
 {
-  struct trm_bucket *next;
+  struct _trm_bucket *next;
   ATerm t;
 } trm_bucket;
 
-typedef struct top_symbol
+typedef struct _top_symbol
 {
-  struct top_symbol *next;
+  struct _top_symbol *next;
   AFun s;
 
   int index;
@@ -105,7 +105,7 @@ typedef struct
   top_symbol **toptable;
 } top_symbols;
 
-typedef struct sym_entry
+typedef struct _sym_entry
 {
   AFun id;
   int	arity;
@@ -123,7 +123,7 @@ typedef struct sym_entry
   int cur_index;
   int nr_times_top; /* # occurences of this symbol as topsymbol */
 
-  struct sym_entry *next_topsym;
+  struct _sym_entry *next_topsym;
 } sym_entry;
 
 typedef struct

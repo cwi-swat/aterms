@@ -43,10 +43,10 @@
 
 #define AT_SYMBOL       7
 
-typedef struct ATerm
+typedef struct _ATerm
 {
 	header_type   header;
-	struct ATerm *next;
+	struct _ATerm *next;
 } *ATerm;
 
 /** The following functions implement the operations of
