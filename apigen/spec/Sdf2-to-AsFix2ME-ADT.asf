@@ -135,7 +135,7 @@ equations
   lexical-to-adt($ModName, $Symbol* -> $Sort $Attributes, $ConsOption) = 
 %%    [ $TypeId, $AltId, appl($AFProd,<lex(Lexical)>) ],
     [ $TypeId, lex-to-cf, 
-      appl(prod([lex(sort($AFSort))],cf(sort($AFSort)),$AFAttrs),
+      appl(prod([lex(sort($AFSort))],cf(sort($AFSort)),no-attrs),
            [<lex(Lexical)>])]
 
 [equ-build-list-entries-empty]
