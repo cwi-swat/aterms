@@ -9,12 +9,12 @@ exports
 
   lexical syntax
     [\ \t\n]			-> LAYOUT
-    [t][r][u][e]		-> Bool {cons("true")} 
 
   context-free restrictions
     LAYOUT? -/- [\ \t\n]
 
   context-free syntax
+    true				-> Bool {cons("true")}
     false				-> Bool {cons("false")}
     "left":Bool "&" "right":Bool	-> Bool {cons("and"),left}
     "left":Bool "|" "right":Bool	-> Bool {cons("or"),left}

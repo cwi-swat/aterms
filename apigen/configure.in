@@ -6,7 +6,7 @@ dnl
 
 dnl Process this file with autoconf to produce a configure script.
 AC_INIT(configure.in)
-AM_INIT_AUTOMAKE(apigen, 0.8.7)
+AM_INIT_AUTOMAKE(apigen, 1.0)
 
 dnl Add current dir to searchpath
 ACLOCAL="${ACLOCAL} -I ."
@@ -93,7 +93,7 @@ AC_SUBST(ASCLIB)
 dnl }}}
 dnl {{{ Handle --with-pt-support
 
-AC_PACKAGE_REQUIRE(pt-support, asource,
+AC_PACKAGE_REQUIRE(pt-support, unparsePT,
 	[  --with-pt-support=DIR   ParseTree is in DIR])
 AC_SUBST(PT_SUPPORT)
 
@@ -103,11 +103,8 @@ AC_SUBST(ASFIXINC)
 ASFIXLIB=${PT_SUPPORT}/lib
 AC_SUBST(ASFIXLIB)
 
-ASOURCEBIN=${PT_SUPPORT}/bin
-AC_SUBST(ASOURCEBIN)
-
-A2METOA1BIN=${PT_SUPPORT}/bin
-AC_SUBST(A2METOA1BIN)
+UNPARSEBIN=${PT_SUPPORT}/bin
+AC_SUBST(UNPARSEBIN)
 
 dnl }}}
 
@@ -155,8 +152,6 @@ apigen/java/Makefile
 test/Makefile
 doc/Makefile
 doc/paper/Makefile
-spec/sdf2-to-adt/Makefile
-spec/sdf2-to-asfix2me-adt/Makefile
 spec/add-labels/Makefile
 ,
 chmod +x utils/sdf2-to-adt utils/adt-to-c utils/adt-to-java

@@ -10,7 +10,7 @@ SGLR			= ${SGLRBIN}/sglr
 SDF2TABLE		= ${PGENBIN}/sdf2table
 ADT_TO_C		= ${top_builddir}/utils/adt-to-c
 SDF2_TO_ADT		= ${top_builddir}/utils/sdf2-to-adt
-GENERATOR		= ${top_builddir}/spec/sdf2-to-adt/Sdf2-to-ADT
+GENERATOR		= ${top_builddir}/spec/Sdf2-to-ADT
 PARSETABLE		= ${top_srcdir}/spec/Sdf2-to-ADT.trm.tbl 
 LABEL_EQS		= ${top_srcdir}/spec/add-labels/AddLabels.eqs 
 
@@ -31,15 +31,15 @@ listtest_LDADD		= -L. -llist -lATerm
 listtest_DEPENDENCIES	= liblist.a
 
 booltest_SOURCES	= booltest.c
-booltest_LDADD		= -L. -lBooleans -lATerm
-booltest_DEPENDENCIES	= booltest.af1 libBooleans.a
+booltest_LDADD		= -L. -lBooleans -L$(PT_SUPPORT)/include -lmept -L$(ATERM)/include -lATerm
+booltest_DEPENDENCIES	= booltest.pt libBooleans.a
 
 CLEANFILES		= ${noinst_PROGRAMS} ${noinst_LIBRARIES} \
 			rolodex*.[ch] rolodex_dict.[ch] \
 			list.[ch] list_dict.[ch] \
 			Booleans.[ch] Booleans.dict \
 			Booleans_dict.[ch] Booleans.trm.tbl Booleans.adt \
-			booltest.af1
+			booltest.pt
 
 EXTRA_DIST		= rolodex.adt Booleans.sdf list.adt list.pro \
 			booltest.trm
@@ -60,12 +60,13 @@ list.c list.h: list.adt list.pro
 Booleans.c Booleans.h: Booleans.adt
 	${ADT_TO_C} \
 		--input Booleans.adt \
+		--prologue ${top_srcdir}/test/Booleans.pro \
 		--prefix SDF \
 		--compat-term \
 		--classpath ${top_builddir}:${ATERM}/classes
 
-booltest.af1: Booleans.trm.tbl booltest.trm
-	${SGLR} -1 -p Booleans.trm.tbl -i ${top_srcdir}/test/booltest.trm -o $@
+booltest.pt: Booleans.trm.tbl booltest.trm
+	${SGLR} -p Booleans.trm.tbl -i ${top_srcdir}/test/booltest.trm -o $@
 
 %.adt: %.sdf ${PARSETABLE} ${LABEL_EQS} ${GENERATOR}
 	${SDF2_TO_ADT} \

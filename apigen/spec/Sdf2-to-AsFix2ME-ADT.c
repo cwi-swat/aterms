@@ -5448,15 +5448,50 @@ FUNC_EXIT ( make_nf2 ( lf_143sym , arg0 , arg1 ) ) ;
 }
 }
 ATerm lf_146 ( ATerm arg0 , ATerm arg1 ) {
+{
+ATerm tmp [ 2 ] ;
 FUNC_ENTRY ( lf_146sym , ATmakeAppl ( lf_146sym , arg0 , arg1 ) ) ;
 if ( check_sym ( arg0 , lf_113sym ) ) {
 {
 ATerm atmp00 = arg_0 ( arg0 ) ;
+if ( check_sym ( atmp00 , lf_112sym ) ) {
+{
+ATerm atmp000 = arg_0 ( atmp00 ) ;
+if ( check_sym ( atmp000 , lf_111sym ) ) {
+{
+ATerm atmp0000 = arg_0 ( atmp000 ) ;
+if ( check_sym ( atmp0000 , lf_110sym ) ) {
+{
+ATerm atmp00000 = arg_0 ( atmp0000 ) ;
+if ( check_sym ( atmp00000 , lf_list_41sym ) ) {
+{
+ATerm atmp000000 = arg_0 ( atmp00000 ) ;
 if ( check_sym ( arg1 , lf_76sym ) ) {
-FUNC_EXIT ( lf_94 ( lf_list_83 ( make_list ( make_nf2 ( lf_121sym , lf_116 ( lf_list_41 ( ( ATerm ) ATmakeList ( 4 , char_table [ 99 ] , char_table [ 111 ] , char_table [ 110 ] , char_table [ 115 ] ) ) ) , lf_list_120 ( make_list ( atmp00 ) ) ) ) ) ) ) ;
+if ( not_empty_list ( atmp000000 ) ) {
+if ( term_equal ( list_head ( atmp000000 ) , make_char ( 34 ) ) ) {
+( tmp [ 0 ] = list_tail ( atmp000000 ) ) ;
+if ( not_empty_list ( tmp [ 0 ] ) ) {
+( tmp [ 1 ] = list_prefix ( tmp [ 0 ] ) ) ;
+if ( term_equal ( list_last ( tmp [ 0 ] ) , make_char ( 34 ) ) ) {
+FUNC_EXIT ( lf_94 ( lf_list_83 ( make_list ( make_nf2 ( lf_121sym , lf_116 ( lf_list_41 ( ( ATerm ) ATmakeList ( 4 , char_table [ 99 ] , char_table [ 111 ] , char_table [ 110 ] , char_table [ 115 ] ) ) ) , lf_list_120 ( make_list ( make_nf1 ( lf_112sym , make_nf1 ( lf_111sym , lf_110 ( lf_list_41 ( cons ( make_list_char ( 34 ) , cons ( make_list_char ( 92 ) , cons ( make_list_char ( 34 ) , cons ( make_list ( tmp [ 1 ] ) , ( ATerm ) ATmakeList ( 3 , char_table [ 92 ] , char_table [ 34 ] , char_table [ 34 ] ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ;
 }
+}
+}
+}
+}
+}
+}
+}
+}
+}
+}
+}
+}
+{
+ATerm atmp00 = arg_0 ( arg0 ) ;
 if ( check_sym ( arg1 , lf_79sym ) ) {
 FUNC_EXIT_CONST ( constant235 , lf_94 ( lf_list_83 ( make_list ( null ( ) ) ) ) ) ;
+}
 }
 }
 }
@@ -5504,7 +5539,16 @@ FUNC_EXIT_CONST ( constant247 , lf_94 ( lf_list_83 ( make_list ( make_nf2 ( lf_1
 }
 }
 }
+if ( check_sym ( arg0 , lf_113sym ) ) {
+{
+ATerm atmp00 = arg_0 ( arg0 ) ;
+if ( check_sym ( arg1 , lf_76sym ) ) {
+FUNC_EXIT ( lf_94 ( lf_list_83 ( make_list ( make_nf2 ( lf_121sym , lf_116 ( lf_list_41 ( ( ATerm ) ATmakeList ( 4 , char_table [ 99 ] , char_table [ 111 ] , char_table [ 110 ] , char_table [ 115 ] ) ) ) , lf_list_120 ( make_list ( atmp00 ) ) ) ) ) ) ) ;
+}
+}
+}
 FUNC_EXIT ( make_nf2 ( lf_146sym , arg0 , arg1 ) ) ;
+}
 }
 ATerm lf_87 ( ATerm arg0 , ATerm arg1 ) {
 {

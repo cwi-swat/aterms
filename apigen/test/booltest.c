@@ -9,10 +9,10 @@ static void testBooleans(SDFBoolList l)
 {
   SDFBool b, left, right, bool[2];
   SDFBoolElems elems;
-  char* ws;
+  SDFLayout layout;
   SDFBool true;
 
-  true = SDFmakeBoolTrue("true");
+  true = SDFmakeBoolTrue();
 
   /*ATfprintf(stderr, "l=%t\n", l);*/
 
@@ -49,10 +49,10 @@ static void testBooleans(SDFBoolList l)
   assert(SDFisBoolFalse(right));
 
   assert(SDFhasBoolWsAfterAmp(b));
-  ws = SDFgetBoolWsAfterAmp(b);
-  assert(!strcmp(ws, " "));
+  layout = SDFgetBoolWsAfterAmp(b);
 
-  bool[1] = SDFmakeBoolOr(SDFmakeBoolAnd(true,ws,ws,SDFmakeBoolFalse()),ws,ws,true);
+  bool[1] = SDFmakeBoolOr(SDFmakeBoolAnd(true,layout,layout,SDFmakeBoolFalse()),
+                          layout,layout,true);
   assert(ATisEqual(bool[0], bool[1]));
 
   elems = SDFgetBoolElemsTail(elems);
@@ -64,15 +64,17 @@ int main(int argc, char *argv[])
 {
   ATerm bottomOfStack;
   ATerm term;
+  PT_Tree tree;
 
   ATinit(argc, argv, &bottomOfStack);
   SDFinitBooleansApi();
 
-  term = ATreadFromNamedFile("booltest.af1");
+  term = ATreadFromNamedFile("booltest.pt");
   assert(term);
   ATprotect(&term);
 
-  testBooleans(SDFmakeBoolListFromTerm(ATgetArgument((ATermAppl)term, 6)));
+  tree = PT_getParseTreeTree(PT_ParseTreeFromTerm(term));
+  testBooleans(SDFBoolListFromTerm(PT_TreeToTerm(tree)));
 
   return 0;
 }

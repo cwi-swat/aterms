@@ -1,3 +1,8 @@
+2001/07/13 ({jong,markvdb}@cwi.nl)
+ * Removed AsFix1 functionality.
+ * Uses the new Asf+Sdf compiler.
+ * Version 1.0.
+               
 2001/07/04 (jurgenv@cwi.nl)
  * generated lex-to-cf injections no longer inherit the attributes of the
    user defined lexical productions.
