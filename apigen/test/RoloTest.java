@@ -46,7 +46,7 @@ class Collector extends Fwd {
         super(new jjtraveler.Identity());
     }
 
-    public void visit_PhoneNumber_Voice(PhoneNumber_VoiceImpl v) {
+    public void visit_PhoneNumber_Voice(PhoneNumber_Voice v) {
         concatenation = concatenation + v.getVoice();
     }
 }
