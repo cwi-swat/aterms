@@ -7,7 +7,7 @@ $Id$
   * Changed configuration option --with-xml to --with-libxml2 to
     conform with autobundle
   * Delayed calling xml2-config to build time 
-  * Rereleased 0.1
+  * Re-released 0.1 (just enhanced configuration, no new functionality)
 
 2002-07-24 (jurgenv@cwi.nl)
   * Made aterm2xml compliant with Meta-Environment commandline interface
