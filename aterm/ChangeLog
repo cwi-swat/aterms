@@ -1,6 +1,12 @@
 $Id$
 
-2001/19/08 (olivierp@cwi.nl)
+2001/06/25 ({jong,olivierp}@cwi.nl)
+ * Version is now 1.6.1
+ * Fixed bug in Java in removing of 'empty' weak references
+ * Fixed performance problem in hash function calculation.
+ * Added first version of visitor benchmark.
+
+2001/06/19 (olivierp@cwi.nl)
  * Worked on bringing visitor implementation closer to Joost's official
    framework.
 
