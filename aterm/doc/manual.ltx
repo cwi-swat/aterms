@@ -82,13 +82,18 @@
 
 %----[ INTRODUCTION ]----
 \section{Introduction}\label{intro}
-This manual describes the functionality provided by the \ATlib.
+This manual describes the functionality provided by the \ATlib. It is
+intended to be a manual on how to use the \ATlib. Readers who are interested 
+in the design details of the \ATlib, can find these in {\tt [REF TO ATERM
+REPORT]}.
+
 Section~\ref{usage} explains the basic steps that must be taken to
 initialise and work with the \ATlib.
 
-The level one interface described in Section~\ref{lvl1} offers a set of
-operations on \aterms\ that is sufficiently powerful for most users, yet is
-simple enough to be learned in a relatively short period of time.
+The level one interface described in Section~\ref{lvl1} offers a
+set of operations on \aterms\ that is sufficiently powerful
+for most users, yet is simple enough to comprehend in a relatively short
+period of time.
 
 Section~\ref{lvl2} describes the level two interface which is intented for
 \aterm\ `power users', providing a more extensive set of datastructures and
@@ -99,24 +104,54 @@ these programs can be found in Section~\ref{utils}.
 
 %----[ USAGE ]----
 \section{Using the \ATlib}\label{usage}
-This section explains the basics of using the \ATlib.
+This section explains the basics of using the \ATlib. One design decision,
+basing the \ATlib\ on maximally shared \ATerms, has some consequences that
+readers should be familiar with before using the \ATlib.
+Section~\ref{sharing} therefore addresses the notion of \emph{maximal
+sharing} and its consequences on the use of \aterms.
 
-First, the library must be initialised.  This ensures that the garbage
-collector is activated and that all necessary internal structures are set
-up. Section~\ref{init} demonstrates initialisation of the \ATlib\ and shows
-all possible commandline options which alter the behaviour of the \ATlib\
-in any way.
+The \ATlib\ has a built-in garbage collector. Section~\ref{gc} explains
+what this garbage collector does and when it is invoked.
 
-From time to time the \ATlib\ will engage in garbage collection activities
-to clean up \aterms\ that are no longer in use. The garbage collector
-detects references to \aterms\ that are on the stack and in any of the
-registers.  As it is also possible to have global references to \aterms\
-which cannot be detected in this way, it is the user's responsibility to
-protect these references from premature erasure. Section~\ref{prot}
-explains how to protect global \aterm\ variables and arrays of \aterms.
+To use the \ATlib, it must first be initialised.  This ensures that the
+garbage collector is activated and that all necessary internal structures
+are set up. Section~\ref{init} demonstrates initialisation of the \ATlib\
+and shows all possible commandline options. These alter the behaviour of the
+\ATlib.
 
-The \ATlib\ is capable of storing \aterms\ in a compact, binary notation.
-Section~\ref{baf} describes this binary \aterm\ format.
+The garbage collector detects references to \aterms\ that are on the stack
+and in any of the registers.  As it is also possible to have global
+references to \aterms\ which the garbage collector cannot detect, it is the
+user's responsibility to protect these references from premature erasure.
+Section~\ref{prot} explains how to protect global \aterm\ variables and
+arrays of \aterms.
+
+The \ATlib\ is capable of storing \aterms\ in a compact, portable binary
+notation.  Section~\ref{baf} describes this binary \aterm\ format.
+
+%----[ SHARING ]---
+\subsection{Maximal sharing}\label{sharing}
+Although explaining the design details of the \ATlib\ is beyond the scope
+of this manual, it is important that users realise that the \ATlib\ is
+implemented using maximally shared \ATerms. This means that before a new
+\ATerm\ is created, a lookup is done to see if that term already exists. If
+so, that term is resued and no new term is created, resulting in maximally
+shared terms. This has the advantage that equality of terms can be
+expressed as being physically the same term, i.e. both terms must have the
+same memory address. It also means that, as terms can be shared without the
+user knowing it, they can not be modified without creating unwanted side
+effects. Thus, users should not tamper with \ATerms. Rather, they should
+use the functionality provided in the level one and level two interfaces.
+
+%----[ GARBAGE COLLECTOR]-
+\subsection{Garbage collector}\label{gc}
+The \ATlib\ uses garbage collection to find and delete unused \ATerms. This
+relieves users of the burden of explicitly allocating and freeing every
+\ATerm\ used in an application. Each time a new \ATerm\ is allocated the
+garbage collector decides whether time has come to free resources claimed
+by unsed \ATerms\ or whether there is still enough space to create the
+requested term. Details on the design and implementation of this garbage
+collection can be found in {\tt [REF TO ATERM REPORT]}.
 
 %----[ INITIALISING ATERM LIBRARY ]----
 \subsection{Initialising the \ATlib}\label{init}
@@ -131,6 +166,7 @@ The following code demonstrates a typical initialisation of the \ATlib.
 
 \smallskip\noindent
 The following commandline options can be passed to the \ATlib:
+\medskip
 
 \begin{tabular}{|l|l|}
  \hline
@@ -171,23 +207,8 @@ When the lifetime of an \aterm\ that was protected as described in
 Section~\ref{prot} has expired, it should be unprotected to free any
 internal resources it holds. Note that these resources are not released
 immediately. Instead, they are no longer marked as protected to the garbage
-collector and as such may be freed at the next garbage collection.  The
-following table shows which function should be used to unprotect the
-respective \aterms.
-
-\smallskip
-\begin{center}
-\begin{tabular}{|l|l|}
-\hline
-	{\tt ATprotect}			&	{\tt ATunprotect}
-								(p.~\pageref{at-unprot})	\\
-	{\tt ATprotectArray}	&	{\tt ATunprotectArray}
-								(p.~\pageref{at-unprot-arr})	\\
-	{\tt ATprotectSymbol}	&	{\tt ATunprotect\Symbol}
-								(p.~\pageref{at-unprot-sym})	\\
-\hline
-\end{tabular}
-\end{center}
+collector and as such may be freed at the next garbage collection. For each
+{\tt ATprotect} function, there is a matching {\tt ATunprotect} function.
 
 %----[ BINARY ATERM FORMAT ]----
 \subsection{Binary \aterm\ Format ({\sc baf})}\label{baf}
@@ -309,7 +330,10 @@ for efficiency reasons.
 	of the function symbol to be used and the types of the arguments.  It
 	must be followed by exactly the number of arguments that are used in the
 	pattern. Also, the types of the arguments must match the respective
-	types used in the pattern.
+	types used in the pattern. Both {\tt <appl>} and {\tt <str>} create
+	function applications. The difference is that {\tt <appl>} creates one
+	with an \emph{unquoted} function symbol, whereas {\tt <str>} yields a
+	quoted version.
 
 	\smallskip\noindent
 	Here are some examples of {\tt ATmake}:
@@ -337,6 +361,12 @@ arguments}
 	If the \aterm\ matches the pattern, \ATtrue\ is returned and the
 	variables will be filled according to the pattern, otherwise \ATfalse\
 	is returned.
+
+	The {\tt <list>} pattern can be used to match the tail of a list as
+	well as a variable number of arguments in a function application. Thus
+	the first few arguments may be matched explicitly while ``the rest'' of
+	the arguments is directed to a list.
+
 
 	\smallskip\noindent
 	Here are a few examples of {\tt ATmatch}:
@@ -1028,6 +1058,8 @@ ATreadFromFile}, it can calculate the size of both textual representations
 of \aterms\ as well as {\sc baf} representations.
 
 \smallskip\noindent Usage: {\tt termsize < }\emph{inputfile}.
+
+%----[ INDEX ]----
 
 \renewcommand{\indexname}
 	{Index\addcontentsline{toc}{section}{\numberline{}Index}}
