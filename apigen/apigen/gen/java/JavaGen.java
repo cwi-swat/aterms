@@ -718,9 +718,7 @@ extends Generator
   }
 
 	private void genAltHashFunction(Type type, Alternative alt) 
-  {
-    
-        
+  {       
     if (!hasReservedTypeFields(type,alt)) {
       int arity = computeAltArity(type, alt);
       String goldenratio = "0x9e3779b9";
@@ -1102,6 +1100,7 @@ extends Generator
     while (fields.hasNext()) {
       Field field = (Field) fields.next();
       String field_type = field.getType();
+      String field_class = buildClassName(field_type);
       
       if (field_type.equals("str")) {
         print("(String) children.get(" + argnr + ")");
@@ -1116,7 +1115,7 @@ extends Generator
         print("(aterm.ATerm) children.get(" + argnr + ")");
       }
       else {
-        print(field_type + ".fromTerm( (aterm.ATerm) children.get(" + argnr + "))");
+        print(field_class + ".fromTerm( (aterm.ATerm) children.get(" + argnr + "))");
       }
       
       if (fields.hasNext()) {
