@@ -13,3 +13,4 @@ configure
 diff.out
 stamp-h*
 update.out
+*.cache
