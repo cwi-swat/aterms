@@ -515,6 +515,9 @@ int ATBhandleAny(void)
 
   FD_ZERO(&set);
   max = ATBgetDescriptors(&set) + 1;
+  if (max <= 1) {
+    return -1;
+  }
 
   count = select(max, &set, NULL, NULL, NULL);
   assert(count > 0);
@@ -525,8 +528,10 @@ int ATBhandleAny(void)
   do {
     if(connections[cur] && FD_ISSET(cur, &set)) {
       last = cur;
-      if(ATBhandleOne(cur) < 0)
-	return -1;
+      if(ATBhandleOne(cur) < 0) {
+	ATBdisconnect(cur);
+      }
+      /* Signal 'activity', even on error! */
       return cur;
     }
     cur = (cur+1) % max;
