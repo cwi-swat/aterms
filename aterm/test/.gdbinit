@@ -1,3 +1,4 @@
+# $Id$
 
 define termtype
   set $type = ($arg0->header & ((1<<5) | (1<<6) | (1<<7))) >> 5
