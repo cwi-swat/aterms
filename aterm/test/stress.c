@@ -1077,7 +1077,7 @@ void testIndexedSet()
 
 void testDictToC()
 {
-  init_stress_dict();
+  init_stress_dict_dict();
   test_assert("dicttoc", 1, ATisEqual(patternA, 
 				      ATparse("patroon(\"a\",<term>)")));
   test_assert("dicttoc", 2, ATisEqual(patternB, ATparse("patroon(\"b\")")));

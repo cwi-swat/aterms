@@ -6,7 +6,7 @@ TESTS = stress
 
 EXTRA_DIST = \
 	error.trm \
-	stress.dict \
+	stress_dict.dict \
 	termstats.sh \
 	test.trms \
 	vararg1.c \
@@ -14,6 +14,8 @@ EXTRA_DIST = \
 	vararg3.c
 
 CLEANFILES = test.taf test.blob stress_dict.c stress_dict.h
+
+BUILTSOURCES = stress_dict.c stress_dict.h
 
 INCLUDES = \
 	-I$(top_srcdir) \
@@ -50,5 +52,5 @@ randgen_LDADD = $(LDLIBS)
 termstats_SOURCES = termstats.c
 termstats_LDADD = $(LDLIBS)
 
-%_dict.c %_dict.h: %.dict ${top_builddir}/utils/dicttoc
-	${top_builddir}/utils/dicttoc -dict $<
+.dict.c:
+	${top_builddir}/utils/dicttoc -file-prefix $* -dict $<

@@ -1,5 +1,8 @@
 $Id$
 
+Tue May  13 16:02:03 CEST 2004 <{jurgenv,kooiker}@cwi.nl>
+ * utils/Makefile.am: made Cygwin complient
+
 Sat May  1 13:48:03 CEST 2004 <jurgenv@cwi.nl>
  * Fixed a bug in AT_removeAnnotations. The newly allocated aterm
    was not initialized at age 0, instead it inherited the age of
