@@ -1044,9 +1044,9 @@ public class World
 				break;
       default:
 				if(Character.isLetter((char)channel.last()) ||
-					 //{ Parse an unquoted function
-					 
 					 channel.last() == '_') {
+					//{ Parse an unquoted function
+					 
 					fun = parseId(channel);
 					if(channel.last() == '(') {
 						channel.readNext();
@@ -1113,7 +1113,8 @@ public class World
       str.append((char)channel.last());
       channel.read();    
     } while(Character.isLetterOrDigit((char)channel.last()) || 
-						channel.last() == '-' || channel.last() == '_');
+						channel.last() == '-' || channel.last() == '_' || 
+						channel.last() == '+' || channel.last() == '*');
     channel.skipWhitespace();
     return str.toString();
   }
@@ -1204,8 +1205,8 @@ public class World
       if(channel.last() == 'e' || channel.last() == 'E') {
 				str.append(channel.last());
 				channel.read();
-				if(channel.last() == '-') {
-					str.append('-');
+				if(channel.last() == '-' || channel.last() == '+') {
+					str.append(channel.last());
 					channel.read();
 				}
 				if(!Character.isDigit((char)channel.last()))
