@@ -2,6 +2,7 @@
 2003/02/26 (jurgenv@cwi.nl)
  * Refactored Tom Signature generation in an abstract class which generates
    a skeleton and a Java Tom Signature class which is specific for Java.
+ * Refactored string and type identifier manipulation into separate classes
 
 2003/02/06 (jurgenv@cwi.nl)
  * Bumped to 1.6beta
