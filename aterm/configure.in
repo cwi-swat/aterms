@@ -32,7 +32,7 @@ AC_CHECK_PROG(CC_CC,cc,cc,true)
 AC_CHECK_PROG(CC_DBG,gcc,gcc,true)
 AC_CHECK_PROG(CC_PROF,gcc,gcc,true)
 
-CFLAGS_GCC="-Wall -pedantic -O4"
+CFLAGS_GCC="-Wall -O4"
 CFLAGS_CC="-O"
 DEFS='-DCURDATE="\"${CURDATE}\"" -DVERSION="\"${VERSION}\""'
 
@@ -40,7 +40,7 @@ DEFS_GCC="${DEFS} -DNDEBUG"
 DEFS_CC="${DEFS} -DNDEBUG"
 
 if test ${CC_DBG} = gcc; then
-	CFLAGS_DBG="-Wall -pedantic -g"
+	CFLAGS_DBG="-Wall -g"
 	DEFS_DBG="${DEFS} -DDEBUG_ALL"
 	INCL_DBG=
 	LFLAGS_DBG=-g
@@ -52,7 +52,7 @@ elif test ${CC_DBG} = cc; then
 fi
 
 if test ${CC_PROF} = gcc; then
-	CFLAGS_PROF="-Wall -pedantic -pg"
+	CFLAGS_PROF="-Wall -pg"
 	DEFS_PROF="${DEFS}"
 	INCL_PROF=
 	LFLAGS_PROF=-pg
