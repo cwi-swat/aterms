@@ -3,7 +3,14 @@ package apigen.gen.java;
 import apigen.gen.TypeConversions;
 
 public class JavaTypeConversions implements TypeConversions {
+    private String atermFactory;
+    private String factory;
 
+    public JavaTypeConversions(String atermFactory, String factory) {
+        this.atermFactory = atermFactory;
+        this.factory = factory;
+    }
+    
     public String getIntegerType() {
         return "int";
     }
@@ -23,35 +30,34 @@ public class JavaTypeConversions implements TypeConversions {
     public String getStringType() {
         return "String";
     }
-
-    /**
-     * assumption: there is a variable "factory" that points to 
-     * an ATermFactory present in the context
-     */
+    
+    public String getCharsType() {
+        return "String";
+    }
+    
+    
     public String makeIntegerToATermConversion(String expression) {
-        return "(aterm.ATerm) factory.makeInt(" + expression + ")";
+        return "(aterm.ATerm) " + atermFactory + ".makeInt(" + expression + ")";
     }
 
-    /**
-     * assumption: there is a variable "factory" that points to 
-     * an ATermFactory present in the context
-     */
+    
     public String makeRealToATermConversion(String expression) {
-        return "(aterm.ATerm) factory.makeReal(" + expression + ")";
+        return "(aterm.ATerm) " + atermFactory + ".makeReal(" + expression + ")";
     }
 
-    /**
-     * assumption: there is a variable "factory" that points to 
-     * an ATermFactory present in the context
-     */
+    
     public String makeStringToATermConversion(String expression) {
-        return "(aterm.ATerm) factory.makeAppl(factory.makeAFun(" + expression + ", 0, false))";
+        return "(aterm.ATerm) " + atermFactory + ".makeAppl(factory.makeAFun(" + expression + ", 0, false))";
     }
 
     public String makeListToATermConversion(String expression) {
         return "(aterm.ATermList) " + expression;
     }
 
+    public String makeCharsToATermConversion(String expression) {
+        return "stringToChars(" + expression + ")";
+    }
+    
     public String makeATermToIntegerConversion(String expression) {
         return "((aterm.ATermInt) " + expression + ").getInt()";
     }
@@ -66,5 +72,9 @@ public class JavaTypeConversions implements TypeConversions {
 
     public String makeATermToListConversion(String expression) {
         return "(aterm.ATermList) " + expression;
+    }
+
+    public String makeATermToCharsConversion(String expression) {
+        return "charsToString(" + expression + ")";
     }
 }

@@ -50,7 +50,7 @@ public class CTypeConversions implements TypeConversions {
     }
 
     public String makeCharsToATermConversion(String expression) {
-        return prefix + "stringToChars(" + expression + ")";
+        return "((ATerm) " + prefix + "stringToChars(" + expression + "))";
     }
 
     public String makeATermToIntegerConversion(String expression) {

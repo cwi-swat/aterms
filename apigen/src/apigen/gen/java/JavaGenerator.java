@@ -12,7 +12,7 @@ import apigen.gen.StringConversions;
 import apigen.gen.TypeConverter;
 
 public abstract class JavaGenerator extends Generator {
-    private static TypeConverter converter = new TypeConverter(new JavaTypeConversions());
+    private static TypeConverter converter = new TypeConverter(new JavaTypeConversions("factory","getFactory()"));
 
     private String basePackageName;
     private List imports;

@@ -251,6 +251,9 @@ public class AlternativeGenerator extends JavaGenerator {
 		else if (fieldType.equals("real")) {
 			print("getFactory().makeReal(" + fieldId + ")");
 		}
+        else if (fieldType.equals("chars")) {
+            print(buildFactoryGetter() + ".stringToChars(" + fieldId + ")");
+        }
 		else {
 			print(fieldId);
 		}
@@ -260,6 +263,11 @@ public class AlternativeGenerator extends JavaGenerator {
 		println();
 	}
 
+    private String buildFactoryGetter() {
+        return AbstractTypeGenerator.getFactoryMethodName(getGenerationParameters())
+        + "()";
+    }
+    
 	private void genFieldGetterMethod(String fieldName, String fieldType, String fieldClass, String fieldIndex) {
 		println("  public " + fieldClass + " get" + fieldName + "() {");
 
@@ -275,8 +283,11 @@ public class AlternativeGenerator extends JavaGenerator {
 		else if (fieldType.equals("term")) {
 			println("   return this.getArgument(" + fieldIndex + ");");
 		}
+        else if (fieldType.equals("chars")) {
+            println("   return " + buildFactoryGetter() + ".charsToString(this.getArgument(" + fieldIndex + "));");
+        }
 		else {
-			println("    return (" + fieldClass + ") this.getArgument(" + fieldIndex + ") ;");
+			println("    return (" + fieldClass + ") this.getArgument(" + fieldIndex + ");");
 		}
 
 		println("  }");
@@ -351,6 +362,9 @@ public class AlternativeGenerator extends JavaGenerator {
 				else if (fieldType.equals("term")) {
 					instance_of = "aterm.ATerm";
 				}
+                else if (fieldType.equals("chars")) {
+                    instance_of = "aterm.ATermList";
+                }
 				else {
 					instance_of = fieldClass;
 				}

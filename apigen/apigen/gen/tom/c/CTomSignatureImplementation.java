@@ -17,7 +17,7 @@ public class CTomSignatureImplementation implements TomSignatureImplementation {
 	}
 
 	static {
-		converter = new TypeConverter(new CTypeConversions());
+		converter = new TypeConverter(new CTypeConversions(""));
 	}
 
 	private String buildTypeName(String type) {

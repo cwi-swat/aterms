@@ -63,4 +63,19 @@ public class TomTypeConversions implements TypeConversions {
         // TODO Auto-generated method stub
         return null;
     }
+
+    public String getCharsType() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public String makeCharsToATermConversion(String expression) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public String makeATermToCharsConversion(String expression) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }

@@ -70,7 +70,8 @@ public class APIGenerator extends CGenerator {
     }
 
     private void genStaticCharsToString() {
-        println("char *" + prefix + "charsToString(ATerm arg) {");
+        println("char *" + prefix + "charsToString(ATerm arg)");
+        println("{");
         println("  ATermList list = (ATermList) arg;"); 
         println("  int len = ATgetLength(list);");
         println("  int i;");
@@ -840,7 +841,7 @@ public class APIGenerator extends CGenerator {
         String type = hole.getArgument(0).toString();
         TypeConverter converter = new TypeConverter(new CTypeConversions(prefix));
         
-        return converter.makeBuiltinToATermConversion(type, name);
+        return "(ATerm) " + converter.makeBuiltinToATermConversion(type, name);
     }
 
     private String buildApplConstructorImpl(ATerm pattern) {
@@ -1516,7 +1517,7 @@ public class APIGenerator extends CGenerator {
     private String genBuiltinToATerm(String type, String id) {
         TypeConverter converter = new TypeConverter(new CTypeConversions(prefix));
         
-        return converter.makeBuiltinToATermConversion(type,id);
+        return "((ATerm) " + converter.makeBuiltinToATermConversion(type,id) + ")";
     }
 
     private String getATermTypeName(int type) {

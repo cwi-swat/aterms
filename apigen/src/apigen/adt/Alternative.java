@@ -13,7 +13,7 @@ import aterm.ATermPlaceholder;
 
 public class Alternative {
 
-	protected static final String[] RESERVED_TYPES = { "int", "real", "str", "term" };
+	protected static final String[] RESERVED_TYPES = { "int", "real", "str", "term", "chars" };
 
 	protected String id;
 	protected ATerm pattern;
@@ -82,6 +82,9 @@ public class Alternative {
 			else if (ph.match("term") != null) {
 				return ATerm.APPL;
 			}
+            else if (ph.match("chars") != null) {
+                return ATerm.LIST;
+            }
 			else {
 				throw new RuntimeException("strange root pattern: " + match_pattern);
 			}

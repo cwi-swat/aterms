@@ -62,9 +62,45 @@ public class FactoryGenerator extends JavaGenerator {
         genMakeLists(api);
         genTypeFromTermMethods(api);
         genTypeFromMethods(api);
+        genConversions();
         println("}");
     }
 
+    private void genConversions() {
+      genCharsToString();
+      genStringToChars();  
+    }
+    private void genCharsToString() {
+        println("  public String " + "charsToString(aterm.ATerm arg) {");
+        println("    aterm.ATermList list = (aterm.ATermList) arg;");
+        println("    int len = list.getLength();");
+        println("    StringBuffer str = new StringBuffer();");
+        println();
+        println("    for (int i = 0; !list.isEmpty(); list = list.getNext(), i++) {");
+        println("      str.append((byte) ((aterm.ATermInt) list.getFirst()).getInt());");
+        println("    }");
+        println();
+        println("    return str.toString();");
+        println("  }");
+        println();
+    }
+
+    private void genStringToChars() {
+        println("  public aterm.ATerm " + "stringToChars(String str) {");
+        println("    int len = str.length();");
+        println("    byte chars[] = str.getBytes();");
+        println("    aterm.ATermFactory factory = getPureFactory();");
+        println("    aterm.ATermList result = factory.makeList();");
+        println();
+        println("    for (int i = len - 1; i >= 0; i--) {");
+        println("      result = result.insert(factory.makeInt((int) chars[i]));");
+        println("    }");
+        println();
+        println("    return (aterm.ATerm) result;");
+        println("  }");
+        println();
+    }
+    
     private void genPureFactoryGetter() {
         println("  public aterm.pure.PureFactory getPureFactory() {");
         println("    return factory;");
@@ -765,6 +801,8 @@ public class FactoryGenerator extends JavaGenerator {
                 println("    args.add((aterm.ATerm)" + getArgumentCall + ");");
             } else if (field_type.equals("list")) {
                 println("    args.add((aterm.ATermList)" + getArgumentCall + ");");
+            } else if (field_type.equals("chars")) {
+                println("    args.add((aterm.ATerm) stringToChars(" + getArgumentCall + "));");
             } else {
                 println("    args.add(" + getArgumentCall + ".toTerm());");
             }
@@ -995,6 +1033,8 @@ public class FactoryGenerator extends JavaGenerator {
             result = "(aterm.ATerm) children.get(" + argnr + ")";
         } else if (fieldType.equals("list")) {
             result = "(aterm.ATermList) children.get(" + argnr + ")";
+        } else if (fieldType.equals("chars")) {
+            result = "(String) charsToString((aterm.ATerm) children.get(" + argnr + "))";
         } else {
             result = fieldClass + "FromTerm((aterm.ATerm) children.get(" + argnr + "))";
         }
