@@ -1,21 +1,23 @@
 # $Id: Makefile.am,v 1.13 2003/06/27 09:13:16 markvdb Exp $
 
-include ADTMakeRules.am
+SUBDIRS = types
 
-EXTRA_DIST = ADTMakeRules.am ${java_JAVA}
+EXTRA_DIST = ${java_JAVA}
 
 JAVAROOT = ${top_builddir}
 javadir = ${prefix}/classes/apigen/adt/api
 
 CLASSPATH_ENV=CLASSPATH=${JAVAROOT}:${EXTERNAL_JARS}
 
-java_JAVA = ${ADTAPI}
+java_JAVA = \
+	AbstractType.java \
+	Factory.java
 
 api:
 	adt-to-java \
-		--input ${top_srcdir}/lib-2.0/ADT.adt \
-		--folding \
-		--package apigen.adt.api \
-		--name ADT \
-		--verbose
-	mv ${srcdir}/ADTMakeRules ${srcdir}/ADTMakeRules.am
+		--input ${top_srcdir}/lib-3.0/ADT.adt \
+		--package apigen.adt \
+		--name api \
+		--verbose \
+		--nojar \
+		--output ../../..
