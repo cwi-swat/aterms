@@ -1172,6 +1172,14 @@ AT_writeToStringBuffer(ATerm t, char *buffer)
 }
 
 /*}}}  */
+/*{{{  int ATcalcTextSize(ATerm t) */
+
+int ATcalcTextSize(ATerm t)
+{
+  return AT_calcTextSize(t);
+}
+
+/*}}}  */
 
 /*{{{  static void store_char(int char) */
 

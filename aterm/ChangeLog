@@ -1,6 +1,8 @@
 $Id$
 
 2001/05/16 (jong@cwi.nl)
+ * Made public versions of AT_writeToStringBuffer and AT_calcTextSize to
+   prepare move of ToolBus specific code from ATerm-distro to ToolBus.
  * Added make(String trm) (synonym for parse(String trm)) as per C-interface.
  * Added documentation on "Connecting Java Tools"
 

@@ -26,7 +26,6 @@ int  AT_calcSubterms(ATerm t);
 int  AT_calcUniqueSubterms(ATerm t);
 int  AT_calcUniqueSymbols(ATerm t);
 int  AT_calcTermDepth(ATerm t);
-void AT_writeToStringBuffer(ATerm t, char *buffer);
 void AT_assertUnmarked(ATerm t);
 void AT_assertMarked(ATerm t);
 int AT_calcAllocatedSize();
