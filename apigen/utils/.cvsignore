@@ -5,3 +5,4 @@ adt-to-c
 adt-to-java
 concat-adt
 upgrade-adt
+*.o

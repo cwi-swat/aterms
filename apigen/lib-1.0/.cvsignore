@@ -7,3 +7,4 @@ ADT10_dict.h
 Makefile
 Makefile.in
 libADT10.a
+*.o

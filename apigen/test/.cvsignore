@@ -2,8 +2,6 @@
 *.class
 *.java.sh
 .deps
-ListCons*.java
-ListFac*.java
 Makefile
 Makefile.in
 Module*.java
