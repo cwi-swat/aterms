@@ -4,7 +4,7 @@ SUBDIRS = aterm test config .
 
 ACLOCAL_FLAGS = -I .
 
-EXTRA_DIST = $(wildcard *.pkg)
+EXTRA_DIST = package
 
 noinst_DATA = ${JAVADOCDIR}.tar.gz
 data_DATA = ${JARFILE} 
@@ -45,6 +45,6 @@ ${JAVADOCDIR}.tar.gz: ${JAVA_FILES}
 
 noinst_SCRIPTS = ${PACKAGE}-${VERSION}.pkg
 
-${PACKAGE}-${VERSION}.pkg: ${PACKAGE}.pkg Makefile
-	sed 's#__VERSION__#${VERSION}#g;\
-             s#__PACKAGE__#${PACKAGE}#g' < $< > $@
+${PACKAGE}-${VERSION}.pkg: package Makefile
+	cp $ < $@
+
