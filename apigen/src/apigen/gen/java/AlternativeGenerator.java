@@ -67,6 +67,7 @@ public class AlternativeGenerator extends JavaGenerator {
 	private void genAlternativeClass(Type type, Alternative alt) {
 		boolean visitable = getJavaGenerationParameters().isVisitable();
 		print("public class " + className + " extends " + superClassName);
+	
 		if (visitable) {
 			print(" implements jjtraveler.Visitable");
 		}

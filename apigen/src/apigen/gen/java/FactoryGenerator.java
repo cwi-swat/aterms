@@ -36,7 +36,7 @@ public class FactoryGenerator extends JavaGenerator {
 		StringBuffer buf = new StringBuffer();
 		buf.append(params.getPackageName());
 		buf.append('.');
-		buf.append(StringConversions.decapitalize(params.getApiName()));
+		buf.append(params.getApiName().toLowerCase());
 		buf.append('.');
 		buf.append(className());
 		return buf.toString();
