@@ -321,16 +321,33 @@ generic visitor combinator support.
 \subsection{\asdf\ in a nutshell}
 \label{sec:asdf-nutshell}
 
-The specification formalism \asdf~\cite{BHK89,HHKR92} is a combination of
-the algebraic specification formalism \asf\ and the syntax definition
-formalism \sdf. An overview can be found in~\cite{DHK96}. As an
-illustration, Figure~\ref{fig:bool-example} presents the definition of
+The specification formalism \asdf~\cite{BHK89,HHKR92,tool.demo} is a
+combination of the algebraic specification formalism \asf\ and the syntax
+definition formalism \sdf. An overview can be found in~\cite{DHK96}. As
+an illustration, Figure~\ref{fig:bool-example} presents the definition of
 the Boolean datatype in \asdf. \asdf\ specifications consist of modules,
 where each module has an \sdf-part (defining lexical and context-free
-syntax) and an \asf-part (defining equations). The \sdf\ part corresponds
+syntax) and an \asf-part (defining equations).
+
+The \sdf\ part corresponds
 to signatures in ordinary algebraic specification formalisms. However,
 syntax is not restricted to plain prefix notation but instead arbitrary
-context-free grammars can be defined. The syntax defined in the \sdf-part
+context-free grammars can be defined. \sdf\ contains some interesting
+features that make it possible to give concise definitions of
+context-free grammers:
+\begin{itemize}
+\item Both context-free and lexical syntax can be specified.
+\item Lexical syntax can be described using regular expressions.
+\item Associativity can be specified using \emph{attributes} (left, right,
+non-assoc).
+\item Priority relations between productions can be specified in priority sections.
+\item Grammar specifications can be modular.
+\item Modules and sorts can be parameterized.
+\item A number of heavily used constructs are builtin including lists,
+separated lists, alternatives, tuples, and function application.
+\end{itemize}
+
+The syntax defined in the \sdf-part
 of a module can be used immediately when defining equations, thus making
 the syntax used in equations \emph{user-defined}.
 
@@ -363,17 +380,6 @@ rewriting. Default equations are tried when all other applicable equations
 have failed, either because the arguments did not match or because one
 of the conditions failed.
 
-One of the powerful features of the \asdf\ specification language is
-list matching. Figure~\ref{fig:set-example} shows a single equation which
-removes multiple occurrences of identifiers from a set. In this example,
-variables with a {\tt *} in their name are list-variables that may match
-zero or more identifiers. The implementation of list matching may involve
-backtracking to find a match that satisfies the left-hand side of the
-rewrite rule as well as all of its conditions. Backtracking is only
-performed within the scope of a rewrite rule, so if the right-hand side
-of the rewrite rule is normalized and this normalization fails {\em no}
-backtracking is performed to find a new match.
-
 The development of \asdf\ specifications is supported by an interactive
 programming environment, the \metaenv~\cite{Kli93,BKMO97}. In this environment
 specifications can be developed and tested. It provides syntax-directed
@@ -386,19 +392,6 @@ rules. For instance, the term
 
 reduces to {\tt true} when applying the equations of
 Figure~\ref{fig:bool-example}.
-
-% {{{  fig:set-example
-
-\begin{figure}
-\begin{snippet}
-\hrulefill
-\verbatiminput{set.example}
-\caption{\label{fig:set-example} \asdf\ specification of the Set equation}
-\hrulefill
-\end{snippet}
-\end{figure}
-
-% }}}
 
 % }}}
 % {{{  \subsection{Annotated Terms: the \aterm\ syntax}
@@ -442,7 +435,7 @@ by a subterm and a closing angular bracket. Examples are: \texttt{<int>},
 
 From a \sdf-specification, a parse table can be generated using the
 \texttt{pgen} tool from the \metaenv. This parse table can subsequently
-be used by \texttt{sglr}: the scannerless, generalized LR parser to
+be used by \texttt{sglr}\cite{sglr}: the scannerless, generalized LR parser to
 parse input terms over the syntax described by the \sdf-specification.
 The result of a succesful parse is a parse tree. The data structure used
 to represent parse trees is called \asfix, and is implemented using the
