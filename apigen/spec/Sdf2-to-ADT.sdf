@@ -2,24 +2,31 @@ module Sdf2-to-ADT
   imports ATerm-Utils Sdf2
 
 exports
+  sorts ConsOption
+
   context-free syntax
-    sdf-to-adt ( SDF )				-> ATerm
-    sdf-to-adt ( Module )			-> ATerm
-    sdf-module-to-adt ( Module )		-> ATerm
+    cons-expand					-> ConsOption
+    cons-remove					-> ConsOption
+
+  context-free syntax
+    sdf-to-adt ( SDF, ConsOption )		-> ATerm
+    sdf-to-adt ( Module, ConsOption )		-> ATerm
+    sdf-module-to-adt ( Module, ConsOption )	-> ATerm
 
 %%context-free syntax
 %%  "build-asfix-attr"	-> UQLiteral {reject}
 
 hiddens
   context-free syntax
-    section-to-adt ( ModuleName , Section )		-> ATerms
-    grammar-to-adt ( ModuleName , Grammar )		-> ATerms
-    productions-to-adt ( ModuleName , Production* )	-> ATerms
-    production-to-adt ( ModuleName , Production )	-> ATerms
+    section-to-adt ( ModuleName , Section, ConsOption )		-> ATerms
+    grammar-to-adt ( ModuleName , Grammar, ConsOption )		-> ATerms
+    productions-to-adt ( ModuleName , Production*, ConsOption )	-> ATerms
+    production-to-adt ( ModuleName , Production, ConsOption )	-> ATerms
     lexicals-to-adt ( Production* )			-> ATerms
     lexical-to-adt ( Production )			-> ATerms
     sort-to-afun ( Sort )				-> AFun
-    build-asfix-prod ( ModuleName , Symbol* , Symbol , Attributes) -> ATerm
+    build-asfix-prod ( ModuleName , Symbol* , Symbol ,
+                       Attributes, ConsOption)		-> ATerm
     build-asfix-prod-args ( Symbol* )			-> ATerms
     build-asfix-prod-arg ( Symbol )			-> ATerm
     build-list-entries ( Symbol* )			-> ATerms
@@ -35,9 +42,9 @@ hiddens
     build-asfix-appl-args ( Symbol* )			-> ATerms
     build-asfix-appl-arg ( Symbol )			-> ATerm
 
-    build-asfix-attrs ( Attributes )			-> ATerm
-    build-asfix-attr-list ( { Attribute "," }+ )	-> ATerms
-    build-asfix-attr ( Attribute )			-> ATerm
+    build-asfix-attrs ( Attributes, ConsOption )		-> ATerm
+    build-asfix-attr-list ( { Attribute "," }+, ConsOption )	-> ATerms
+    build-asfix-attr ( Attribute, ConsOption )			-> ATerms
 
   variables
     "$ADT"[0-9]*	-> ATerm
@@ -45,6 +52,7 @@ hiddens
     "$AFArgs"		-> { ATerm "," }*
     "$AFAttr"		-> ATerm
     "$AFAttr+"		-> { ATerm "," }+
+    "$AFAttr*"[0-9]*	-> { ATerm "," }*
     "$AFAttrs"		-> ATerm
     "$AFIter"		-> ATerm
     "$AFModName"	-> AT-Literal
@@ -58,6 +66,7 @@ hiddens
     "$Attr+"		-> { Attribute "," }+
     "$Attributes"	-> Attributes
     "$Char*"[0-9]*	-> CHAR*
+    "$ConsOption"	-> ConsOption
     "$ElemSortName"	-> AFun
     "$ElemType"		-> AFun
     "$Entries"[0-9]*	-> { ATerm "," }*

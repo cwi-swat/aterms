@@ -1,80 +1,92 @@
 equations
 
 [equ-sdf-to-adt-definition-empty]
-  sdf-to-adt(definition ) = [ ]
+  sdf-to-adt(definition ,$ConsOption) = [ ]
 
 [equ-sdf-to-adt-defintion-divide]
-  sdf-module-to-adt($Module) = $ADT1,
-  sdf-to-adt(definition $Module*) = $ADT2,
+  sdf-module-to-adt($Module, $ConsOption) = $ADT1,
+  sdf-to-adt(definition $Module*, $ConsOption) = $ADT2,
   merge-adts($ADT1, $ADT2) = $ADT3
   ===>
-  sdf-to-adt(definition $Module $Module*) = $ADT3
+  sdf-to-adt(definition $Module $Module*, $ConsOption) = $ADT3
 
 [equ-sdf-to-adt-module]
-  sdf-to-adt($Module) = sdf-module-to-adt($Module)
+  sdf-to-adt($Module, $ConsOption) = sdf-module-to-adt($Module, $ConsOption)
 
 [equ-sdf-module-to-adt-empty]
-  sdf-module-to-adt(module $ModName $ImpSection*) = [ ]
+  sdf-module-to-adt(module $ModName $ImpSection*, $ConsOption) = [ ]
 
 [equ-sdf-module-to-adt-divide]
-  section-to-adt($ModName, $Section) = $Entries1,
-  sdf-module-to-adt(module $ModName $ImpSection* $Section*) = [ $Entries2 ]
+  section-to-adt($ModName, $Section, $ConsOption) = $Entries1,
+  sdf-module-to-adt(module $ModName $ImpSection* $Section*, $ConsOption) = [ $Entries2 ]
   ===>
-  sdf-module-to-adt(module $ModName $ImpSection* $Section $Section*) = 
+  sdf-module-to-adt(module $ModName $ImpSection* $Section $Section*, $ConsOption) = 
 	[ $Entries1, $Entries2 ]
 
 [equ-section-to-adt-exports]
-  section-to-adt($ModName, exports $Grammar) = grammar-to-adt($ModName, $Grammar)
+  section-to-adt($ModName, exports $Grammar, $ConsOption) =
+    grammar-to-adt($ModName, $Grammar, $ConsOption)
 
 [equ-section-to-adt-hiddens]
-  section-to-adt($ModName, hiddens $Grammar) = grammar-to-adt($ModName, $Grammar)
+  section-to-adt($ModName, hiddens $Grammar, $ConsOption) = grammar-to-adt($ModName, $Grammar, $ConsOption)
 
 [default-grammar-to-adt]
-  grammar-to-adt($ModName, $Grammar) =
+  grammar-to-adt($ModName, $Grammar, $ConsOption) =
 
 [equ-grammar-to-adt-divide]
-  grammar-to-adt($ModName, $Grammar1) = $Entries1,
-  grammar-to-adt($ModName, $Grammar2) = $Entries2
+  grammar-to-adt($ModName, $Grammar1, $ConsOption) = $Entries1,
+  grammar-to-adt($ModName, $Grammar2, $ConsOption) = $Entries2
   ===>
-  grammar-to-adt($ModName, $Grammar1 $Grammar2) = $Entries1, $Entries2
+  grammar-to-adt($ModName, $Grammar1 $Grammar2, $ConsOption) = $Entries1, $Entries2
 
 [equ-grammar-to-adt-context-free-syntax]
-  grammar-to-adt($ModName, context-free syntax $Production*) = 
-	productions-to-adt($ModName, $Production*)
+  grammar-to-adt($ModName, context-free syntax $Production*, $ConsOption) = 
+	productions-to-adt($ModName, $Production*, $ConsOption)
 
 [equ-grammar-to-adt-lexical-syntax]
-  grammar-to-adt($ModName, lexical syntax $Production*) =
+  grammar-to-adt($ModName, lexical syntax $Production*, $ConsOption) =
         lexicals-to-adt($Production*)
 
 [equ-productions-to-adt-empty]
-  productions-to-adt($ModName, ) =
+  productions-to-adt($ModName, , $ConsOption) =
 
 [equ-productions-to-adt-divide]
-  production-to-adt($ModName, $Production) = $Entries1,
-  productions-to-adt($ModName, $Production*) = $Entries2
+  production-to-adt($ModName, $Production, $ConsOption) = $Entries1,
+  productions-to-adt($ModName, $Production*, $ConsOption) = $Entries2
   ===>
-  productions-to-adt($ModName, $Production $Production*) = $Entries1, $Entries2
+  productions-to-adt($ModName, $Production $Production*, $ConsOption) = $Entries1, $Entries2
 
-[equ-production-to-adt]
+[equ-production-to-adt-cons]
   $Attributes = { $Attr*1, cons(at-literal(""" $Char* """)), $Attr*2 },
   $AltId   = afun($Char*),
   $TypeId  = sort-to-afun($Sort),
-  $AFProd  = build-asfix-prod($ModName, $Symbol*, $Sort, $Attributes),
+  $AFProd  = build-asfix-prod($ModName, $Symbol*, $Sort, $Attributes, $ConsOption),
   $AFArgs  = build-asfix-appl-args($Symbol*),
   $Entry   = [ $TypeId, $AltId, appl($AFProd, w(""), [$AFArgs]) ],
   $Entries = build-list-entries($Symbol*)
   ===>
-  production-to-adt($ModName, $Symbol* -> $Sort $Attributes) = $Entry, $Entries
+  production-to-adt($ModName, $Symbol* -> $Sort $Attributes, $ConsOption) = $Entry, $Entries
 
+[equ-production-to-adt-bracket]
+  $Attributes = { bracket },
+  $AltId   = afun("B" "r" "a" "c" "k" "e" "t"),
+  $TypeId  = sort-to-afun($Sort),
+  $AFProd  = build-asfix-prod($ModName, $Symbol*, $Sort, $Attributes, $ConsOption),
+  $AFArgs  = build-asfix-appl-args($Symbol*),
+  $Entry   = [ $TypeId, $AltId, appl($AFProd, w(""), [$AFArgs]) ],
+  $Entries = build-list-entries($Symbol*)
+  ===>
+  production-to-adt($ModName, $Symbol* -> $Sort $Attributes, $ConsOption) = $Entry, $Entries
+ 
 [default-production-to-adt]
   $AltId   = afun("D" "e" "f" "a" "u" "l" "t"),
   $TypeId  = sort-to-afun($Sort),
-  $AFProd  = build-asfix-prod($ModName, $Symbol*, $Sort, $Attributes),
+  $AFProd  = build-asfix-prod($ModName, $Symbol*, $Sort, $Attributes, $ConsOption),
   $AFArgs  = build-asfix-appl-args($Symbol*),
   $Entry   = [ $TypeId, $AltId, appl($AFProd, w(""), [$AFArgs]) ],
   $Entries = build-list-entries($Symbol*)
   ===>
-  production-to-adt($ModName, $Symbol* -> $Sort $Attributes) = $Entry, $Entries
+  production-to-adt($ModName, $Symbol* -> $Sort $Attributes, $ConsOption) = $Entry, $Entries
  
 
 
@@ -85,9 +97,9 @@ equations
   $AFModName = modname-to-lit($ModName),
   $AFArgs    = build-asfix-prod-args($Symbol*),
   $AFSort    = sort-to-lit($Sort),
-  $AFAttrs   = build-asfix-attrs($Attributes)
+  $AFAttrs   = build-asfix-attrs($Attributes, $ConsOption)
   ===>
-  build-asfix-prod($ModName, $Symbol*, $Sort, $Attributes) =
+  build-asfix-prod($ModName, $Symbol*, $Sort, $Attributes, $ConsOption) =
     prod(id($AFModName),w(""),[$AFArgs],w(""),l("->"),w(""),sort($AFSort),w(""),$AFAttrs)
 
 [equ-modname-to-lit]
@@ -292,37 +304,46 @@ equations
 	iter-sep(l("{"),w(""),sort($ElemSortName),w(""),ql($AFSep),w(""),l("}"),w(""),$AFIter)
 
 [equ-build-asfix-attrs-empty]
-  build-asfix-attrs() = no-attrs
+  build-asfix-attrs(, $ConsOption) = no-attrs
 
 [equ-build-asfix-attrs-empty]
-  build-asfix-attrs({}) = no-attrs
+  build-asfix-attrs({}, $ConsOption) = no-attrs
+
+[equ-build-asfix-attrs-not-empty-no-attrs]
+  build-asfix-attr-list($Attr+, $ConsOption) = 
+  ===>
+  build-asfix-attrs({$Attr+}, $ConsOption) = no-attrs
 
 [equ-build-asfix-attrs-not-empty]
-  build-asfix-attr-list($Attr+) = $AFAttr+
+  build-asfix-attr-list($Attr+, $ConsOption) = $AFAttr+
   ===>
-  build-asfix-attrs({$Attr+}) = attrs(l("{"),w(""),[$AFAttr+],w(""),l("}"))
+  build-asfix-attrs({$Attr+}, $ConsOption) = attrs(l("{"),w(""),[$AFAttr+],w(""),l("}"))
 
 [equ-build-asfix-attr-list-single]
-  build-asfix-attr-list($Attr) = build-asfix-attr($Attr)
+  build-asfix-attr-list($Attr, $ConsOption) = build-asfix-attr($Attr, $ConsOption)
 
 [equ-build-asfix-attr-list-divide]
-  build-asfix-attr($Attr) = $AFAttr,
-  build-asfix-attr-list($Attr+) = $AFAttr+
+  build-asfix-attr($Attr, $ConsOption) = $AFAttr*1,
+  build-asfix-attr-list($Attr+, $ConsOption) = $AFAttr*2
   ===>
-  build-asfix-attr-list($Attr,$Attr+) = $AFAttr,w(""),sep(","),w(""),$AFAttr+
+  build-asfix-attr-list($Attr, $Attr+, $ConsOption) =
+     $AFAttr*1,w(""),sep(","),w(""),$AFAttr*2
 
-[equ-build-asfix-attr-left]        build-asfix-attr(left)        = l("left")
-[equ-build-asfix-attr-right]       build-asfix-attr(right)       = l("right")
-[equ-build-asfix-attr-assoc]       build-asfix-attr(assoc)       = l("assoc")
-[equ-build-asfix-attr-bracket]     build-asfix-attr(bracket)     = l("bracket")
-[equ-build-asfix-attr-constructor] build-asfix-attr(constructor) = l("constructor")
-[equ-build-asfix-attr-memo]        build-asfix-attr(memo)        = l("memo")
-[equ-build-asfix-attr-traverse]    build-asfix-attr(traverse)    = l("traverse")
-[equ-build-asfix-attr-avoid]       build-asfix-attr(avoid)       = l("avoid")
-[equ-build-asfix-attr-prefer]      build-asfix-attr(prefer)      = l("prefer")
+[equ-build-asfix-attr-left]        build-asfix-attr(left, $ConsOption)        = l("left")
+[equ-build-asfix-attr-right]       build-asfix-attr(right, $ConsOption)       = l("right")
+[equ-build-asfix-attr-assoc]       build-asfix-attr(assoc, $ConsOption)       = l("assoc")
+[equ-build-asfix-attr-bracket]     build-asfix-attr(bracket, $ConsOption)     = l("bracket")
+[equ-build-asfix-attr-constructor] build-asfix-attr(constructor, $ConsOption) = l("constructor")
+[equ-build-asfix-attr-memo]        build-asfix-attr(memo, $ConsOption)        = l("memo")
+[equ-build-asfix-attr-traverse]    build-asfix-attr(traverse, $ConsOption)    = l("traverse")
+[equ-build-asfix-attr-avoid]       build-asfix-attr(avoid, $ConsOption)       = l("avoid")
+[equ-build-asfix-attr-prefer]      build-asfix-attr(prefer, $ConsOption)      = l("prefer")
 
-[equ-build-asfix-attr-cons]
-  build-asfix-attr(cons(at-literal(""" $Char* """))) = 
+[equ-build-asfix-attr-cons-remove]
+  build-asfix-attr(cons(at-literal(""" $Char* """)), cons-remove) =
+
+[equ-build-asfix-attr-cons-expand]
+  build-asfix-attr(cons(at-literal(""" $Char* """)), cons-expand) =
     ql(at-literal(""" "c" "o" "n" "s" "(" $Char* ")" """))
 
 [equ-lexicals-to-adt-empty]
