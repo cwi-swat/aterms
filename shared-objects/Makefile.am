@@ -3,7 +3,7 @@ SUBDIRS = shared config .
 JARFILE = shared-objects-${VERSION}.jar
 
 data_DATA = ${JARFILE}
-CLEANFILES = ${JARFILE}
+CLEANFILES = ${JARFILE} ${PACKAGE}-${VERSION}.pkg
 
 ${JARFILE}:
 	jar cf ${JARFILE} \

@@ -1,5 +1,8 @@
 # $Id$
 
+Mon Feb  2 14:33:06 CET 2004 <jong@cwi.nl>
+ * add generated package file to CLEANFILES
+
 2004/01/30 <jurgenv@cwi.nl>
  * Compliant with automake-1.6
 
