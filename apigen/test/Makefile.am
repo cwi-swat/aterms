@@ -23,10 +23,15 @@ EXTRA_DIST		= rolodex.adt rolodex.pro Booleans.sdf Booleans.pro
 noinst_PROGRAMS		= ${PROGS}
 rolotest_SOURCES	= rolotest.c
 rolotest_LDADD		= librolodex.a ${LDADD}
+rolotest_DEPENDENCIES	= librolodex.a
 
 booltest_SOURCES	= booltest.c
 booltest_LDADD		= libBooleans.a ${LDADD}
 booltest_DEPENDENCIES	= booltest.af1 libBooleans.a
+
+# Needed for first time making (when no .deps dir exists)
+rolotest.o: rolodex/rolodex.h
+booltest.o: Booleans/Booleans.h
 
 librolodex.a rolodex/rolodex.h: rolodex.adt rolodex.pro
 	${top_srcdir}/utils/gen-c-api rolodex 1.0
