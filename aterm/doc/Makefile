@@ -8,6 +8,8 @@ EXAMPLEFILES	= init.c make.c match.c prot.c app1.c app2.c app3.c \
 				  plac.c
 EXAMPLES		= $(patsubst %,$(EXAMPLEDIR)/%,$(EXAMPLEFILES))
 
+install: all
+
 all: at.ps manual.ps
 
 at.ps: at.dvi $(PICS)
