@@ -771,42 +771,43 @@ ATermList fparse_terms(int *c, FILE *f)
 
 static ATermAppl fparse_quoted_appl(int *c, FILE *f)
 {
-  ATbool escaped = ATfalse;
   int len = 0;
   ATermList args = ATempty;
   Symbol sym;
   char *name;
 
   /* First parse the identifier */
-  do {
-    fnext_char(c, f);
-    if(*c == EOF)
-      return NULL;
-    if(escaped) {
-      switch(*c) {
-	case 'n':
-	  buffer[len++] = '\n';
-	  break;
-	case 'r':
-	  buffer[len++] = '\r';
-	  break;
-	case 't':
-	  buffer[len++] = '\t';
-	  break;
-	case '\\':
-	  buffer[len++] = '\\';
-	  break;
-	default:
-	  buffer[len++] = '\\';
-	  buffer[len++] = *c;
-	  break;
+   fnext_char( c, f );
+   while( *c != '"' )
+   {
+      switch( *c )
+      {
+         case EOF:
+            return NULL;
+         case '\\':
+            fnext_char( c, f );
+            if( *c == EOF ) return NULL;
+            switch( *c )
+            {
+               case '\n':
+               case '\r':
+               case '\t':
+               case '\\':
+                  buffer[len++] = *c;
+                  break;
+               default:
+                  buffer[len++] = '\\';
+                  buffer[len++] = *c;
+                  break;
+            }
+            break;
+         default:
+            buffer[len++] = *c;
+            break;
       }
-      escaped = ATfalse;
-    } else if(*c == '\\')
-      escaped = ATtrue;
-    else if(*c != '"')
-      buffer[len++] = *c;
-  } while(*c != '"');
+      fnext_char( c, f );
+   }
+
   buffer[len] = '\0';
   name = strdup(buffer);
   if(!name)
