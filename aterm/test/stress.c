@@ -22,7 +22,6 @@
 /*{{{  globals */
 
 char stress_id[] = "$Id$";
-static ATerm T[16] = { NULL };
 
 /*}}}  */
 
@@ -197,6 +196,13 @@ testAppl(void)
   * Test list operations.
   */
 
+ATbool lower3(ATerm t)
+{
+	if(ATgetInt((ATermInt)t) < 3)
+		return ATtrue;
+	return ATfalse;
+}
+
 void testList(void)
 {
   int i;
@@ -285,6 +291,10 @@ void testList(void)
 	test_assert("list-ops", 22, 
 							ATisEqual(ATremoveAll((ATermList)ATparse("[1,2,3,2]"),
 																		ATparse("2")), ATparse("[1,3]")));
+
+	test_assert("list-ops", 23,
+							ATisEqual(ATfilter((ATermList)ATparse("[1,2,3,4,5,6,5,4,3,2,1]"),
+																 lower3), ATparse("[1,2,2,1]")));
 
   printf("list tests ok.\n");
 }

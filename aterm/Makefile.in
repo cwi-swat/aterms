@@ -1,0 +1,74 @@
+
+PRODUCT 	= @PRODUCT@
+VERSION		= @VERSION@
+CLEAN		= @CLEAN@
+@SET_MAKE@
+
+srcdir      = @srcdir@
+top_srcdir  = @top_srcdir@
+prefix      = @prefix@
+exec_prefix = @exec_prefix@
+bindir      = $(exec_prefix)/bin
+libdir      = $(exec_prefix)/lib
+includedir  = $(prefix)/include
+
+DIRS		= aterm toolbus asfix test
+DISTDIR		= ${PRODUCT}-${VERSION}
+DISTFILE	= ${DISTDIR}.tar.gz
+TMPDIR		= /tmp
+
+INSTALL		= @INSTALL@
+INSTALL_DAT	= @INSTALL_DAT@
+INSTALL_PRG	= @INSTALL_PRG@
+
+DISTFILES	= configure.in configure Makefile.in install-sh
+
+all:
+	@for dir in ${DIRS}; \
+	do \
+		echo "make all in $$dir"; \
+		cd $$dir; ${MAKE} -s all; \
+		cd ..; \
+	done
+
+clean:
+	@${CLEAN}
+	@for dir in ${DIRS}; \
+	do \
+		echo "make clean in $$dir"; \
+		cd $$dir; ${MAKE} -s clean; \
+		cd ..; \
+	done
+
+dist: all
+	@echo "making distribution: ${DISTFILE}"
+	@pwd=`pwd`; \
+	cd ${TMPDIR}; \
+	rm -rf ${DISTDIR}; \
+	mkdir ${DISTDIR}; \
+	cd $$pwd; \
+	${INSTALL_PRG} configure ${TMPDIR}/${DISTDIR}; \
+	${INSTALL_PRG} install-sh ${TMPDIR}/${DISTDIR}; \
+	${INSTALL_DAT} configure.in ${TMPDIR}/${DISTDIR}; \
+	${INSTALL_DAT} Makefile.in ${TMPDIR}/${DISTDIR}; \
+	${INSTALL_DAT} README.txt ${TMPDIR}/${DISTDIR}; \
+	${INSTALL_DAT} TODO.txt  ${TMPDIR}/${DISTDIR}; \
+	cd ${TMPDIR}; \
+	cd ${DISTDIR}; \
+	mkdir ${DIRS}; \
+	cd $$pwd; \
+	for dir in ${DIRS}; \
+	do \
+		cd $$pwd/$$dir; ${MAKE} -s DISTDIR=${TMPDIR}/${DISTDIR}/$$dir dist; \
+	done; \
+	cd ${TMPDIR}; tar cf - ${DISTDIR} | gzip -c > $$pwd/${DISTFILE}
+
+install: all
+	@mkdir -p ${bindir} ${libdir} ${includedir}
+	@for dir in ${DIRS}; \
+	do \
+		echo "make install in $$dir"; \
+		cd $$dir; ${MAKE} -s install; \
+		cd ..; \
+	done
+

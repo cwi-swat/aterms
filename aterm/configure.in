@@ -1,0 +1,115 @@
+dnl Process this file with autoconf to produce a configure script.
+AC_INIT
+
+PRODUCT=aterm
+VERSION=0.1
+
+AC_SUBST(PRODUCT)
+AC_SUBST(VERSION)
+
+AC_PREFIX_DEFAULT('/usr/local')
+
+INSTALL='$(top_srcdir)/install-sh -c'
+INSTALL_PRG='$(top_srcdir)/install-sh -c'
+INSTALL_DAT='$(top_srcdir)/install-sh -c -m 644'
+
+AC_SUBST(INSTALL)
+AC_SUBST(INSTALL_PRG)
+AC_SUBST(INSTALL_DAT)
+
+AC_PROG_RANLIB
+AR=ar
+AC_SUBST(AR)
+
+AC_AIX
+
+AC_SET_MAKE
+
+AC_CHECK_PROG(TOOLBUS,toolbus,toolbus,true)
+AC_CHECK_PROG(CC_GCC,gcc,gcc,true)
+AC_CHECK_PROG(CC_CC,cc,cc,true)
+AC_CHECK_PROG(CC_DBG,gcc,gcc,true)
+AC_CHECK_PROG(CC_PROF,gcc,gcc,true)
+
+CFLAGS_GCC="-Wall -pedantic -O4"
+CFLAGS_CC="-O"
+
+DEFS='-DVERSION="\"$(VERSION)\""'
+if test ${CC_DBG} = gcc; then
+	CFLAGS_DBG="-Wall -pedantic -g"
+	DEFS_DBG="$(DEFS) -DDEBUG_ALL"
+	INCL_DBG=
+	LFLAGS_DBG=-g
+elif test ${CC_DBG} = cc; then
+	CFLAGS_DBG="-g"
+	DEFS_DBG="$(DEFS) -DDEBUG_ALL"
+	INCL_DBG=
+	LFLAGS_DBG=-g
+fi
+
+if test ${CC_PROF} = gcc; then
+	CFLAGS_PROF="-Wall -pedantic -pg"
+	DEFS_PROF="$(DEFS)"
+	INCL_PROF=
+	LFLAGS_PROF=-pg
+elif test ${CC_PROF} = cc; then
+	CFLAGS_PROF="-xpg"
+	DEFS_PROF="$(DEFS)"
+	INCL_PROF=
+	LFLAGS_PROF=-xpg
+fi
+
+AC_SUBST(CC_GCC)
+AC_SUBST(CC_CC)
+AC_SUBST(CC_DBG)
+AC_SUBST(CC_PROF)
+AC_SUBST(CFLAGS_CC)
+AC_SUBST(CFLAGS_GCC)
+AC_SUBST(CFLAGS_DBG)
+AC_SUBST(CFLAGS_PROF)
+AC_SUBST(DEFS_CC)
+AC_SUBST(DEFS_GCC)
+AC_SUBST(DEFS_DBG)
+AC_SUBST(DEFS_PROF)
+AC_SUBST(INCL_CC)
+AC_SUBST(INCL_GCC)
+AC_SUBST(INCL_DBG)
+AC_SUBST(INCL_PROF)
+AC_SUBST(LFLAGS_CC)
+AC_SUBST(LFLAGS_GCC)
+AC_SUBST(LFLAGS_DBG)
+AC_SUBST(LFLAGS_PROF)
+
+CLEAN="rm -f *~ a.out core *.o *.dvi *.log *.aux lib*.a"
+AC_SUBST(CLEAN)
+
+AC_HAVE_FUNCS(strdup)
+
+dnl Find out which libraries we need
+
+SOCKET_FOUND=no
+AC_CHECK_LIB(sun,socket,[SOCKET_FOUND=yes;LIBS="$LIBS -lsun"])
+if test ${SOCKET_FOUND} = no; then
+   AC_CHECK_LIB(socket, socket,[SOCKET_FOUND=yes;LIBS="$LIBS -lsocket"])
+   if test ${SOCKET_FOUND} = no; then
+      AC_CHECK_LIB(bsd,
+                   socket,
+                   [SOCKET_FOUND=yes;LIBS="$LIBS -lbsd";DEFS="$DEFS -D_BSD=43"]
+)
+   fi
+fi
+
+GETHOSTNAME_FOUND=no
+AC_CHECK_LIB(sun,gethostname,[GETHOSTNAME_FOUND=yes])
+if test ${GETHOSTNAME_FOUND} = no; then
+   AC_CHECK_LIB(nsl,gethostname,[GETHOSTNAME_FOUND=yes;LIBS="$LIBS -lnsl"])
+fi
+
+AC_OUTPUT( \
+	Makefile \
+	asfix/Makefile \
+	aterm/Makefile \
+	test/Makefile \
+	toolbus/Makefile \
+	, )
+

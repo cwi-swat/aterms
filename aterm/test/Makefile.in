@@ -1,0 +1,114 @@
+# @configure_input@
+
+PRODUCT		= @PRODUCT@
+VERSION		= @VERSION@
+
+srcdir		= @srcdir@
+top_srcdir	= @top_srcdir@
+prefix		= @prefix@
+exec_prefix	= @exec_prefix@
+bindir      = $(exec_prefix)/bin
+libdir      = $(exec_prefix)/lib
+includedir  = $(prefix)/include
+
+CC_GCC		= @CC_GCC@
+CC_CC		= @CC_CC@
+CC_DBG		= @CC_DBG@
+CC_PROF		= @CC_PROF@
+
+CFLAGS_CC	= @CFLAGS_CC@
+CFLAGS_DBG	= @CFLAGS_DBG@
+CFLAGS_DBG	= @CFLAGS_DBG@
+CFLAGS_PROF	= @CFLAGS_PROF@
+
+DEFS_CC		= @DEFS_CC@
+DEFS_DBG	= @DEFS_DBG@
+DEFS_DBG	= @DEFS_DBG@
+DEFS_PROF	= @DEFS_PROF@
+
+INCL_CC		= @INCL_CC@
+INCL_DBG	= @INCL_DBG@
+INCL_DBG	= @INCL_DBG@
+INCL_PROF	= @INCL_PROF@
+
+LFLAGS_CC	= @LFLAGS_CC@
+LFLAGS_DBG	= @LFLAGS_DBG@
+LFLAGS_DBG	= @LFLAGS_DBG@
+LFLAGS_PROF	= @LFLAGS_PROF@
+
+LIBS_CC		= -L../aterm -L../asfix -L../toolbus \
+			-lATerm-cc -lAsFix-cc -lATB-cc
+LIBS_DBG	= -L../aterm -L../asfix -L../toolbus \
+			-lATerm-dbg -lAsFix-dbg -lATB-dbg
+
+INSTALL		= @INSTALL@
+INSTALL_PRG	= @INSTALL_PRG@
+INSTALL_DAT	= @INSTALL_DAT@
+
+TOOLBUS		= @TOOLBUS@
+INCL		= -I../asfix -I../aterm -I../toolbus
+TESTPRGS	= stress-cc stress-gcc primes-cc primes-gcc asfixtest \
+		test-tool test-tool2
+TESTSRCS	= stress.c asfixtest.c primes.c test-tool.c test-tool2.c
+TESTOBJS	= stress.o asfixtest.o primes.o test-tool.o test-tool2.o
+DISTFILES	= test.tb test2.tb Test.asfix test.trms error.trm Makefile.in \
+		${TESTSRCS}
+
+all: $(TESTPRGS) $(TESTS)
+
+clean:
+	@CLEAN@ *.tif.c *.tif.h ${TESTPRGS} *.tifs
+
+dist: ${DISTFILES}
+	@cp ${DISTFILES} ${DISTDIR}
+
+install:
+
+stress-cc: stress.c
+	$(CC_CC) $(CFLAGS_CC) $(INCL) $(LFLAGS) -o stress-cc stress.c $(LIBS_CC)
+
+stress-gcc: stress.c
+	$(CC_DBG) $(CFLAGS_DBG) $(INCL) $(LFLAGS) -o stress-gcc stress.c $(LIBS_DBG)
+
+asfixtest: asfixtest.c
+	$(CC_DBG) $(CFLAGS_DBG) $(INCL) $(LFLAGS) -o asfixtest asfixtest.c \
+	-L../asfix -lAsFix-gcc $(LIBS_DBG)
+
+primes-cc: primes.c
+	$(CC_CC) $(CFLAGS_CC) $(INCL) $(LFLAGS) -o primes-cc primes.c $(LIBS_CC)
+
+primes-gcc: primes.c
+	$(CC_DBG) $(CFLAGS_DBG) $(INCL) $(LFLAGS) -o primes-gcc primes.c $(LIBS_DBG)
+
+test-tool: test-tool.c
+	$(CC_DBG) $(CFLAGS_DBG) $(INCL) $(LFLAGS) -o test-tool test-tool.c \
+		$(LIBS_DBG) -L../toolbus -lATB-dbg -lsocket -lnsl
+
+test-tool2: test-tool2.c tool2.tif.c tool2.tif.h
+	$(CC_DBG) $(CFLAGS_DBG) $(INCL) $(LFLAGS) -o test-tool2 test-tool2.c \
+		tool2.tif.c $(LIBS_DBG) -L../toolbus -lATB-dbg -lsocket -lnsl
+
+tool2.tif.c tool2.tif.h: test2.tifs
+	../toolbus/ctif -tool tool2 test2.tifs
+
+test2.tifs: test2.tb
+	$(TOOLBUS) -gentifs test2.tb
+	
+
+depend: tool2.tif.c tool2.tif.h
+	$(CC_GCC) -MM $(DEFS) $(INCL) $(TESTSRCS) > /tmp/.gendep
+	cat /tmp/.gendep | sed "s/.o:/-cc.o:/"   >  .depend
+	cat /tmp/.gendep | sed "s/.o:/-gcc.o:/"  >> .depend
+	cat /tmp/.gendep | sed "s/.o:/-dbg.o:/"  >> .depend
+	cat /tmp/.gendep | sed "s/.o:/-prof.o:/" >> .depend
+	rm -f /tmp/.gendep
+
+.depend: tool2.tif.c tool2.tif.h
+	$(CC_GCC) -MM $(DEFS) $(INCL) $(TESTSRCS) > /tmp/.gendep
+	cat /tmp/.gendep | sed "s/.o:/-cc.o:/"   >  .depend
+	cat /tmp/.gendep | sed "s/.o:/-gcc.o:/"  >> .depend
+	cat /tmp/.gendep | sed "s/.o:/-dbg.o:/"  >> .depend
+	cat /tmp/.gendep | sed "s/.o:/-prof.o:/" >> .depend
+	rm -f /tmp/.gendep
+
+include .depend
