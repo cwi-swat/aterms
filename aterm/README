@@ -27,19 +27,15 @@ GNU mirror. In the Netherlands for instance, you could try:
 ftp://ftp.nl.net/pub/gnu.
 
 Installation should be a matter of simply configuring and making:
-./configure --prefix <installation directory, i.e. /usr/local>
+./configure --prefix <installation directory, e.g. /usr/local>
 gmake
 gmake install
 
 If you have any questions, find any problems or are missing some
 features in this library, please let us know. You can contact us at:
 
-Pieter Olivier,                             Hayco de Jong,
-CWI,                                        CWI,
-Amsterdam, the Netherlands.                 Amsterdam, the Netherlands.
-e-mail: olivierp@cwi.nl                     e-mail: jong@cwi.nl
-tel.:  +31 20 5924084                       tel.:  +31 20 5924084
-
+Pieter Olivier <olivierp@cwi.nl>,
+Hayco de Jong, <jong@cwi.nl>
 
 
 Miscellaneous remarks for old ToolBus or aterm-lib users
