@@ -320,6 +320,38 @@ void testPrintf()
 /*	ATfprintf(stderr, "Test: %3.4d\n", 3);*/
 }
 /*}}}  */
+/*{{{  void testAnno(void) */
+
+/**
+  * Test annotations
+  */
+
+void testAnno(void)
+{
+  int i;
+  ATerm t[8];
+  ATerm term, label, value, value2;
+
+  term  = ATreadFromString("f(a)");
+  label = ATreadFromString("label");
+  value = ATreadFromString("value");
+  value2= ATreadFromString("value2");
+  t[0]  = ATsetAnnotation(term, label, value);
+  t[1]  = ATsetAnnotation(term, label, value);
+  t[2]  = ATsetAnnotation(term, label, value2);
+  t[3]  = ATgetAnnotation(t[1], label);
+  assert(ATisEqual(t[3], value));
+  t[4] = ATsetAnnotation(t[1], label, value2);
+  assert(ATisEqual(ATgetAnnotation(t[4], label), value2));
+
+  for(i=0; i<3; i++)
+    ATprintf("annotated result %d: %t\n", i, t[i]);
+
+  assert(ATisEqual(t[0], t[1]));
+  assert(!ATisEqual(t[0], t[2]));
+}
+
+/*}}}  */
 
 /*{{{  int main(int argc, char *argv[]) */
 
@@ -340,6 +372,7 @@ int main(int argc, char *argv[])
   testOther();
   testRead();
   testPrintf();
+  testAnno();
 
   return 0;
 }
