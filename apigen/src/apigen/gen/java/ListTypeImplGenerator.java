@@ -82,9 +82,10 @@ public class ListTypeImplGenerator extends TypeImplGenerator {
 
 	private void genInsertMethod() {
 		String className = ListTypeGenerator.className(type);
-		
-		println("  public aterm.ATermList insert(aterm.ATerm head) {");
-		println("    return (aterm.ATermList)" + staticFactoryGetter() + ".make" + className + "((" + elementTypeName + ") head, (" + className + ") this);");
+		//println("  public aterm.ATermList insert(aterm.ATerm head) {");
+		//println("    return (aterm.ATermList)" + staticFactoryGetter() + ".make" + className + "((" + elementTypeName + ") head, (" + className + ") this);");
+		println("  public " + className + " insert(" + elementTypeName + " head) {");
+		println("    return " + staticFactoryGetter() + ".make" + className + "(head, (" + className + ") this);");
 		println("  }");
 		
 	}
@@ -210,8 +211,7 @@ public class ListTypeImplGenerator extends TypeImplGenerator {
 		println("       throw new RuntimeException(\"This is not a " + className + ":\" + trm);");
 		println("     }");
 		println("  }");
-		ATermFactory f;
-
+		
 	}
 
 	private void genToTerm() {

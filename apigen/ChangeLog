@@ -1,3 +1,12 @@
+2003-08-10  (moreau@loria.fr)
+ * fix several bugs related to Tom
+ * introduced a TomTypeConverter
+ * for each list operator: list(ListSort, EltSort)
+   generates 2 free Tom  operators and 1 associative Tom operator: 
+   - <ListSort> empty<ListSort>()
+   - <ListSort> many<ListSort>(<ListSort>,<EltSort>)
+   - <ListSort> conc<EltSort>(<EltSort>*)
+   
 2003-08-10  (jurgenv@cwi.nl)
  * Added caching of ATerm representation in list classes (just like normal
    constructors) If they were constructed by calling fromTerm(), the toTerm()

@@ -171,12 +171,33 @@ public class TomSignatureGenerator extends Generator {
 					impl.ListTail(type.getId()),
 					impl.ListEmpty(type.getId())));
 			println("");
+			// conc operator
 			println("%oplist " + type.getId() + " conc" + eltType + "(" + eltType + "*) {");
 			println("  fsym { null }");
 			println("  is_fsym(t) {" + impl.ListIsList("t",type.getId()) + "}");
 			println("  make_empty() {" + impl.ListmakeEmpty(type.getId()) + "}");
 			println("  make_insert(e,l) {" + impl.ListmakeInsert(type.getId(), eltType) +"}");
 			println("}");
+			// empty operator
+			String class_name = "class_name";
+			println("%op " + type.getId() + " empty" + type.getId()+ "{");
+			println("  fsym { null }");
+	  	 	println("  is_fsym(t) { " + prefix + impl.OperatorIsFSym("t", class_name, "empty") + "}");
+			println("  make() {" + impl.ListmakeEmpty(type.getId()) +"}");
+			println("}");
+			// many operator
+			println("%op " + type.getId() + " many" + type.getId() 
+			               + "(head:" + eltType + ", tail:" + type.getId() + ") {");
+			println("  fsym { null }");
+			
+			println("  is_fsym(t) { " + prefix + impl.OperatorIsFSym("t", class_name, "many") + "}");
+			println("  get_slot(head,t) { " + impl.OperatorGetSlot("t", class_name, "head") + "}");
+			println("  get_slot(tail,t) { " + impl.OperatorGetSlot("t", class_name, "tail") + "}");
+			println("  make(e,l) {" + impl.ListmakeInsert(type.getId(),eltType) +"}");
+			println("}");
+			
+			println();
+			genListTypeTomAltOperators(type);
 		} else {
 			println(
 				TypeTermTemplate(
@@ -186,12 +207,24 @@ public class TomSignatureGenerator extends Generator {
 					impl.TypeCmpFunSym("s1", "s2"),
 					impl.TypeGetSubTerm("t", "n"),
 					impl.TypeEquals(type.getId(), "t1", "t2")));
+					
+			println();
+			genTomAltOperators(type);
 		}
-		println();
-
-		genTomAltOperators(type);
+		
 	}
+	
+	private void genListTypeTomAltOperators(Type type) {
+			Iterator alts = type.alternativeIterator();
 
+			while (alts.hasNext()) {
+				Alternative alt = (Alternative) alts.next();
+				if(!(alt.getId().equals("many") || alt.getId().equals("empty"))) {
+					genTomAltOperator(type, alt);
+				}
+			}
+		}
+		
 	private void genTomAltOperators(Type type) {
 		Iterator alts = type.alternativeIterator();
 
