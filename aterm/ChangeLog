@@ -8,6 +8,7 @@ $Id$
  * folded ATerm{Visitable,Visitor,VisitFailure}.java.in
  * fixed accept-method in ATermListImpl.java (return-type was: vooid)
  * added support for shared text files to Java library
+ * fixed support for external visitor packages
 
 2001/03/29 ({jong,olivierp}@cwi.nl)
  * added java/visitor/.cvsignore

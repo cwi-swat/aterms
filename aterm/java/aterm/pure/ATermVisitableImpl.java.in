@@ -1,0 +1,29 @@
+package aterm.pure;
+
+import aterm.*;
+
+import @VISITOR_PKG@.*;
+
+public abstract class ATermVisitableImpl
+  implements ATermVisitable
+{
+  abstract public int getNrSubTerms();
+  abstract public ATerm getSubTerm(int index);
+
+  //{{{ public int getNrChildren()
+
+  public int getNrChildren()
+  {
+    return getNrSubTerms();
+  }
+
+  //}}}
+  //{{{ public Visitable getChild(int index)
+
+  public Visitable getChild(int index)
+  {
+    return getSubTerm(index);
+  }
+
+  //}}}
+}

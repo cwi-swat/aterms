@@ -2,7 +2,6 @@ package aterm.pure;
 
 import aterm.*;
 import java.util.List;
-import aterm.visitor.*;
 
 class ATermApplImpl
   extends ATermImpl
@@ -239,17 +238,17 @@ class ATermApplImpl
   }
 
   //}}}
-  //{{{ public int getNrChildren()
+  //{{{ public int getNrSubTerms()
 
-  public int getNrChildren()
+  public int getNrSubTerms()
   {
     return args.length;
   }
 
   //}}}
-  //{{{ public Visitable getChild(int index)
+  //{{{ public ATerm getSubTerm(int index)
 
-  public Visitable getChild(int index)
+  public ATerm getSubTerm(int index)
   {
     return args[index];
   }

@@ -1,13 +1,13 @@
 package aterm.pure;
 
 import aterm.*;
-import aterm.visitor.*;
 
 import java.util.*;
 import java.io.*;
 import java.text.*;
 
 public abstract class ATermImpl
+  extends ATermVisitableImpl
   implements ATerm
 {
   ATermList annotations;
@@ -169,7 +169,7 @@ public abstract class ATermImpl
     try {
       writer.visitChild(this);
       writer.getStream().flush();
-    } catch (VisitFailure e) {
+    } catch (ATermVisitFailure e) {
       throw new IOException(e.getMessage());
     }
   }
@@ -218,17 +218,17 @@ public abstract class ATermImpl
 
   //}}}
 
-  //{{{ public int getNrChildren()
+  //{{{ public int getNrSubTerms()
 
-  public int getNrChildren()
+  public int getNrSubTerms()
   {
     return 0;
   }
 
   //}}}
-  //{{{ public Visitable getChild(int index)
+  //{{{ public ATerm getSubTerm(int index)
 
-  public Visitable getChild(int index)
+  public ATerm getSubTerm(int index)
   {
     throw new RuntimeException("no children!");
   }

@@ -207,6 +207,7 @@ AC_OUTPUT( \
 	java/aterm/ATermVisitor.java \
 	java/aterm/ATermVisitFailure.java \
 	java/aterm/pure/Makefile \
+	java/aterm/pure/ATermVisitableImpl.java \
 	java/aterm/visitor/Makefile \
 	java/aterm/test/Makefile \
         java/toolbus/Makefile \
