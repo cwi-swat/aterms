@@ -27,7 +27,7 @@
 #ifndef AFUN_H
 #define AFUN_H
 
-#include "abool.h"
+#include "atypes.h"
 #include "encoding.h"
 
 #define Symbol AFun
@@ -40,7 +40,7 @@
 #define AS_EMPTY_LIST		5
 #define AS_ANNOTATION		6
 
-typedef int AFun;
+typedef MachineWord AFun;
 
 /* The Symbol type */
 typedef struct SymEntry
@@ -54,7 +54,7 @@ typedef struct SymEntry
 } *SymEntry;
 
 /* defined on SymEntry */
-#define SYM_IS_FREE(sym)          (((int)(sym) & 1) == 1)
+#define SYM_IS_FREE(sym)          (((MachineWord)(sym) & 1) == 1)
 
 struct ATerm;
 extern struct ATerm **at_lookup_table_alias;

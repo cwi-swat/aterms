@@ -41,7 +41,7 @@
   * We define some new datatypes.
   */
 
-typedef struct
+typedef struct _ATermInt
 {
 	header_type header;
 	ATerm       next;
@@ -154,19 +154,16 @@ ATermList ATmakeList1(ATerm el0);
 #define ATmakeList6(el0, el1, el2, el3, el4, el5) \
                 ATinsert(ATmakeList5(el1,el2,el3,el4,el5), el0)
 
-/*
-int       ATgetLength(ATermList list);*/
-#define   ATgetLength(l) GET_LENGTH((l)->header)
+/* int ATgetLength(ATermList list);*/
+#define   ATgetLength(l) ((int)GET_LENGTH((l)->header))
 
-/*
-ATerm     ATgetFirst(ATermList list);*/
+/* ATerm ATgetFirst(ATermList list);*/
 #define   ATgetFirst(l) ((l)->head)
 
-/*
-ATermList ATgetNext(ATermList list);*/
+/* ATermList ATgetNext(ATermList list);*/
 #define   ATgetNext(l)  ((l)->tail)
 
-/*ATbool    ATisEmpty(ATermList list);*/
+/*ATbool ATisEmpty(ATermList list);*/
 #define ATisEmpty(list) ((ATbool)((list) == ATempty))
 
 ATermList ATgetPrefix(ATermList list);
@@ -225,7 +222,7 @@ ATermBlob ATmakeBlob(int size, void *data);
 /*void   *ATgetBlobData(ATermBlob blob);*/
 #define ATgetBlobData(blob) ((blob)->data)
 /*int     ATgetBlobSize(ATermBlob blob);*/
-#define ATgetBlobSize(blob) GET_LENGTH((blob)->header)
+#define ATgetBlobSize(blob) ((int)GET_LENGTH((blob)->header))
 
 void    ATregisterBlobDestructor(ATbool (*destructor)(ATermBlob));
 void    ATunregisterBlobDestructor(ATbool (*destructor)(ATermBlob));

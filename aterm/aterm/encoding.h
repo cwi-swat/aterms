@@ -35,21 +35,36 @@
 
 #define SHIFT_ARITY   2
 #define SHIFT_TYPE    5
+
+#if AT_64BIT
+#define SHIFT_LENGTH  32
+#else
 #define SHIFT_LENGTH  8
+#endif /* AT_64BIT */
+
 #define SHIFT_SYMBOL  SHIFT_LENGTH
 #define SHIFT_SYM_ARITY SHIFT_LENGTH
 
+#ifdef AT_64BIT
 #define TERM_SIZE_INT         3
-#define TERM_SIZE_REAL        4
-#define TERM_SIZE_BLOB        4
+#define TERM_SIZE_REAL        3
+#define TERM_SIZE_BLOB        3
 #define TERM_SIZE_LIST        4
 #define TERM_SIZE_PLACEHOLDER 3
 #define TERM_SIZE_SYMBOL      (sizeof(struct SymEntry)/sizeof(header_type))
+#else
+#define TERM_SIZE_INT         3
+#define TERM_SIZE_REAL        4
+#define TERM_SIZE_BLOB        3
+#define TERM_SIZE_LIST        4
+#define TERM_SIZE_PLACEHOLDER 3
+#define TERM_SIZE_SYMBOL      (sizeof(struct SymEntry)/sizeof(header_type))
+#endif
 
 #define IS_MARKED(h)    (((h) & MASK_MARK) ? ATtrue : ATfalse)
 #define GET_TYPE(h)     (((h) & MASK_TYPE) >> SHIFT_TYPE)
 #define HAS_ANNO(h)     ((h) & MASK_ANNO)
-#define GET_ARITY(h)	(((h) & MASK_ARITY) >> SHIFT_ARITY)
+#define GET_ARITY(h)	((int)(((h) & MASK_ARITY) >> SHIFT_ARITY))
 #define GET_SYMBOL(h)	((h) >> SHIFT_SYMBOL)
 #define GET_LENGTH(h)	((h) >> SHIFT_LENGTH)
 #define IS_QUOTED(h)	(((h) & MASK_QUOTED) ? ATtrue : ATfalse)
@@ -74,20 +89,38 @@
 #define INT_HEADER(anno)          ((anno) | AT_INT << SHIFT_TYPE)
 #define REAL_HEADER(anno)         ((anno) | AT_REAL << SHIFT_TYPE)
 #define EMPTY_HEADER(anno)        ((anno) | AT_LIST << SHIFT_TYPE)
+
 #define LIST_HEADER(anno,len)     ((anno) | (AT_LIST << SHIFT_TYPE) | \
-				   (len << SHIFT_LENGTH) | (2 << SHIFT_ARITY))
+				   ((MachineWord)(len) << SHIFT_LENGTH) | (2 << SHIFT_ARITY))
+
 #define PLACEHOLDER_HEADER(anno)  ((anno) | (AT_PLACEHOLDER << SHIFT_TYPE) | \
            1 << SHIFT_ARITY)
+
 #define BLOB_HEADER(anno,len)     ((anno) | (AT_BLOB << SHIFT_TYPE) | \
-				   ((len) << SHIFT_LENGTH))
-#define SYMBOL_HEADER(arity,quoted) (((quoted) ? MASK_QUOTED : 0) | \
-		       ((arity) << SHIFT_SYM_ARITY) | (AT_SYMBOL << SHIFT_TYPE))
+				   ((MachineWord)(len) << SHIFT_LENGTH))
+
+#define SYMBOL_HEADER(arity,quoted) \
+	(((quoted) ? MASK_QUOTED : 0) | \
+	 ((MachineWord)(arity) << SHIFT_SYM_ARITY) | \
+	 (AT_SYMBOL << SHIFT_TYPE))
+
 #define FREE_HEADER               (AT_FREE << SHIFT_TYPE)
 
 #define ARG_OFFSET 2
 
-/* This assumes 32 bits int */
+
+
+#ifdef AT_64BIT
+
+typedef unsigned long header_type;
+#define HEADER_BITS 64
+#else
+
 typedef unsigned int header_type;
 #define HEADER_BITS 32
+
+#endif /* AT_64BIT */
+
+#define MAX_HEADER_BITS 64
 
 #endif

@@ -41,6 +41,7 @@
 #include "util.h"
 #include "bafio.h"
 #include "version.h"
+#include "atypes.h"
 
 /*}}}  */
 /*{{{  defines */
@@ -400,7 +401,7 @@ ATunprotect(ATerm * term)
 void ATprotectArray(ATerm *start, int size)
 {
 	ProtEntry *entry;
-	unsigned int hnr;
+	ShortHashNumber hnr;
 
 #ifndef NDEBUG
 	int i;
@@ -423,7 +424,8 @@ void ATprotectArray(ATerm *start, int size)
 	}
 	entry = free_prot_entries;
 	free_prot_entries = free_prot_entries->next;
-	hnr = (unsigned int)start;
+	hnr = ADDR_TO_SHORT_HNR(start);
+	
 	hnr %= at_prot_table_size;
 	entry->next = at_prot_table[hnr];
 	at_prot_table[hnr] = entry;
@@ -440,10 +442,10 @@ void ATprotectArray(ATerm *start, int size)
 
 void ATunprotectArray(ATerm *start)
 {
-	unsigned int hnr;
+	ShortHashNumber hnr;
 	ProtEntry *entry, *prev;
 	
-	hnr = (unsigned int)start;
+	hnr = ADDR_TO_SHORT_HNR(start);
 	hnr %= at_prot_table_size;
 	entry = at_prot_table[hnr];
 
@@ -624,7 +626,17 @@ ATvfprintf(FILE * stream, const char *format, va_list args)
 		break;
 
 	    case AT_APPL:
-		fprintf(stream, "<appl>(...(%d))", GET_ARITY(t->header));
+		if (AT_isValidSymbol(ATgetAFun(t))) {
+		    	AT_printSymbol(ATgetAFun(t), stream);
+			fprintf(stream, "(...(%d))",
+				GET_ARITY(t->header));
+		} else {
+			fprintf(stream, "<sym>(...(%d))",
+				GET_ARITY(t->header));
+		}
+		if (HAS_ANNO(t->header)) {
+			fprintf(stream, "{}");
+		}
 		break;
 	    case AT_FREE:
 		fprintf(stream, "@");
@@ -2098,10 +2110,13 @@ AT_markTerm(ATerm t)
 				sym = ATgetSymbol((ATermAppl) t);
 				AT_markSymbol(sym);
 				arity = GET_ARITY(t->header);
-				if (arity > MAX_INLINE_ARITY)
+				if (arity > MAX_INLINE_ARITY) {
 					arity = ATgetArity(sym);
-				for (i = 0; i < arity; i++)
-					*current++ = ATgetArgument((ATermAppl) t, i);
+				}
+				for (i = 0; i < arity; i++) {
+					ATerm arg = ATgetArgument((ATermAppl) t, i);
+					*current++ = arg;
+				}
 				break;
 				
 			case AT_LIST:

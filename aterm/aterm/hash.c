@@ -108,19 +108,54 @@ static long approximatepowerof2(long n)
 }
 
 /*}}}  */
+/*{{{  static long calc_long_max() */
+static long calc_long_max()
+{
+	long try_long_max;
+	long long_max;
+	long delta;
+
+	try_long_max = 1;
+	do {
+		long_max = try_long_max;
+		try_long_max = long_max * 2;
+	} while (try_long_max > 0);
+
+	delta = long_max;
+	while (delta > 1) {
+		while (long_max + delta < 0) {
+			delta /= 2;
+		}
+		long_max += delta;
+	}
+
+	return long_max;
+
+}
+/*}}}  */
 /*{{{  static long calculateNewSize(sizeMinus1, nrdel, nrentries) */
 
 static long calculateNewSize
           (long sizeMinus1, long nr_deletions, long nr_entries)
 { 
+
+	/* Hack: LONG_MAX (limits.h) is often unreliable, we need to find
+	 * out the maximum possible value of a signed long dynamically.
+	 */
+	static long st_long_max = 0;
+
 	/* the resulting length has the form 2^k-1 */
 
   if (nr_deletions >= nr_entries/2) { 
 		return sizeMinus1;
   }
 
-  if (sizeMinus1 > LONG_MAX / 2) {
-     return LONG_MAX-1;
+	if (st_long_max == 0) {
+		st_long_max = calc_long_max();
+	}
+
+  if (sizeMinus1 > st_long_max / 2) {
+     return st_long_max-1;
 	}
 
   return (2*sizeMinus1)+1;

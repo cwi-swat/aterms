@@ -147,6 +147,11 @@ void mark_phase()
   ATerm *stackTop;
   ATerm *start, *stop, *cur;
 
+#ifdef AT_64BIT
+	ATerm oddTerm;
+	AFun oddSym;
+#endif
+
 #ifdef WIN32
      unsigned int r_eax, r_ebx, r_ecx, r_edx, \
                    r_esi, r_edi, r_esp, r_ebp;
@@ -227,10 +232,25 @@ void mark_phase()
 			AT_markTerm(*cur);
 			nr_reg_terms++;
 		}
-		if (AT_isValidSymbol((Symbol)*cur)) {
-			AT_markSymbol((Symbol)*cur);
+
+		if (AT_isValidSymbol((AFun)*cur)) {
+			AT_markSymbol((AFun)*cur);
 			nr_reg_syms++;
 		}
+
+#ifdef AT_64BIT
+		oddTerm = *((ATerm *)((MachineWord)cur)+4);
+		if (AT_isValidTerm(oddTerm)) {
+			AT_markTerm(oddTerm);
+			nr_reg_terms++;
+		}
+
+		oddSym = *((AFun *)((MachineWord)cur)+4);
+		if (AT_isValidSymbol(oddSym)) {
+			AT_markSymbol(oddSym);
+			nr_reg_syms++;
+		}
+#endif
 	}
 
 	STATS(register_terms, nr_reg_terms);
@@ -258,12 +278,26 @@ void mark_phase()
 			AT_markSymbol((Symbol)*cur);
 			nr_stack_syms++;
 		}
+
+#ifdef AT_64BIT
+		oddTerm = *((ATerm *)((MachineWord)cur)+4);
+		if (AT_isValidTerm(oddTerm)) {
+			AT_markTerm(oddTerm);
+			nr_reg_terms++;
+		}
+
+		oddSym = *((AFun *)((MachineWord)cur)+4);
+		if (AT_isValidSymbol(oddSym)) {
+			AT_markSymbol(oddSym);
+			nr_reg_syms++;
+		}
+#endif
   }
 
 #ifdef WIN32
 /* Alex: Env variabele wordt verderop in de code ook al doorlopen
          omdat hij op de stack staat. De aantallen reg_terms moeten dus
-          achteraf van de aantallen stack_terms worden agfetrokken
+          achteraf van de aantallen stack_terms worden afgetrokken
    Adjust the nr_stack-variables because the reg-array is also on the stack
  */
      nr_stack_terms = nr_stack_terms - nr_reg_terms;

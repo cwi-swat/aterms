@@ -44,7 +44,7 @@
 #define SYM_ARITY	16
 
 #define SHIFT_INDEX 1
-#define SYM_GET_NEXT_FREE(sym)    ((sym) >> SHIFT_INDEX)
+#define SYM_GET_NEXT_FREE(sym)    ((MachineWord)(sym) >> SHIFT_INDEX)
 #define SYM_SET_NEXT_FREE(next)   (1 | ((next) << SHIFT_INDEX))
 
 #define INITIAL_PROTECTED_SYMBOLS   1024
@@ -193,21 +193,21 @@ void AT_printSymbol(Symbol sym, FILE *f)
 }
 /*}}}  */
 
-/*{{{  unsigned int AT_hashSymbol(char *name, int arity) */
+/*{{{  ShortHashNumber AT_hashSymbol(char *name, int arity) */
 
 /**
 	* Calculate the hash value of a symbol.
 	*/
 
-unsigned int AT_hashSymbol(char *name, int arity)
+ShortHashNumber AT_hashSymbol(char *name, int arity)
 {
-	unsigned int hash_val;
+	ShortHashNumber hnr;
   char *walk = name;
 
-  for(hash_val = arity*3; *walk; walk++)
-    hash_val = 251 * hash_val + *walk;
+  for(hnr = arity*3; *walk; walk++)
+    hnr = 251 * hnr + *walk;
   
-	return hash_val;
+	return hnr;
 }
 
 
@@ -217,16 +217,16 @@ unsigned int AT_hashSymbol(char *name, int arity)
 
 Symbol ATmakeSymbol(char *name, int arity, ATbool quoted)
 {
-  header_type   header = SYMBOL_HEADER(arity, quoted);
-  unsigned int  hash_val = AT_hashSymbol(name, arity) % table_size;
-  SymEntry      cur;
+  header_type header = SYMBOL_HEADER(arity, quoted);
+  ShortHashNumber hnr = AT_hashSymbol(name, arity) % table_size;
+  SymEntry cur;
   
 	if(arity >= MAX_ARITY)
 		ATabort("cannot handle symbols with arity %d (max=%d)\n",
 						arity, MAX_ARITY);
 
   /* Find symbol in table */
-  cur = hash_table[hash_val];
+  cur = hash_table[hnr];
   while (cur && (cur->header != header || !streq(cur->name, name)))
     cur = cur->next;
   
@@ -235,7 +235,7 @@ Symbol ATmakeSymbol(char *name, int arity, ATbool quoted)
 
     cur = (SymEntry) AT_allocate(TERM_SIZE_SYMBOL);
     cur->header = header;
-    cur->next = hash_table[hash_val];
+    cur->next = hash_table[hnr];
     cur->name = strdup(name);
     if (cur->name == NULL)
       ATerror("ATmakeSymbol: no room for name of length %d\n",
@@ -244,13 +244,13 @@ Symbol ATmakeSymbol(char *name, int arity, ATbool quoted)
 		cur->count = 0;
 		cur->index = -1;
 
-    hash_table[hash_val] = cur;
+    hash_table[hnr] = cur;
 
     free_entry = first_free;
     if(free_entry == -1)
       ATerror("AT_initSymbol: out of symbol slots!\n");
 
-    first_free = SYM_GET_NEXT_FREE((int)at_lookup_table[first_free]);
+    first_free = SYM_GET_NEXT_FREE(at_lookup_table[first_free]);
     at_lookup_table[free_entry] = cur;
     cur->id = free_entry;
   }
@@ -267,7 +267,7 @@ Symbol ATmakeSymbol(char *name, int arity, ATbool quoted)
 
 void AT_freeSymbol(SymEntry sym)
 {
-	unsigned int hash_val;
+	ShortHashNumber hnr;
 	ATerm t = (ATerm)sym;
 	char *walk = sym->name;
 
@@ -275,17 +275,17 @@ void AT_freeSymbol(SymEntry sym)
 	assert(sym->name);
 
 	/* Calculate hashnumber */
-	for(hash_val = GET_LENGTH(sym->header)*3; *walk; walk++)
-		hash_val = 251 * hash_val + *walk;
-	hash_val %= table_size;
+	for(hnr = GET_LENGTH(sym->header)*3; *walk; walk++)
+		hnr = 251 * hnr + *walk;
+	hnr %= table_size;
   
 	/* Update hashtable */
-	if (hash_table[hash_val] == sym)
-		hash_table[hash_val] = sym->next;
+	if (hash_table[hnr] == sym)
+		hash_table[hnr] = sym->next;
 	else
 	{
 		SymEntry cur, prev;
-		prev = hash_table[hash_val]; 
+		prev = hash_table[hnr]; 
 		for (cur = prev->next; cur != sym; prev = cur, cur = cur->next)
 			assert(cur != NULL);
 		prev->next = cur->next;
@@ -313,16 +313,16 @@ void AT_freeSymbol(SymEntry sym)
 
 ATbool AT_findSymbol(char *name, int arity, ATbool quoted)
 {
-  header_type   header = SYMBOL_HEADER(arity, quoted);
-  unsigned int  hash_val = AT_hashSymbol(name, arity) % table_size;
-  SymEntry      cur;
+  header_type header = SYMBOL_HEADER(arity, quoted);
+  ShortHashNumber hnr = AT_hashSymbol(name, arity) % table_size;
+  SymEntry cur;
   
 	if(arity >= MAX_ARITY)
 		ATabort("cannot handle symbols with arity %d (max=%d)\n",
 						arity, MAX_ARITY);
 
   /* Find symbol in table */
-  cur = hash_table[hash_val];
+  cur = hash_table[hnr];
   while (cur && (cur->header != header || !streq(cur->name, name)))
     cur = cur->next;
   
