@@ -284,7 +284,7 @@ labeling and referring to terms.  Instead of \texttt{f(g(a),g(a))},
 one could then write \texttt{f(1:g(a), \#1)}. The first occurrence of
 \texttt{g(a)} is labeled with ``\texttt{1}'', and the second
 occurrence refers to this label (``\texttt{\#1}'').},
-and any sharing in the in-memory representation of terms is lost.
+and any sharing of the in-memory representation of terms is lost.
 
 The binary format (Binary ATerm Format, see Section~\ref{baf}) is 
 portable, machine-readable, very compact, 
@@ -408,7 +408,7 @@ that make this a fairly unique problem:
 \end{itemize}
 
 With these considerations in mind, we will now discuss
-maximal sharing of terms (Section~\ref{max-sharing}),
+maximal (in-memory) sharing of terms (Section~\ref{max-sharing}),
 garbage collection (Section~\ref{garbage-collection}),
 the encoding of terms (Section~\ref{term-encoding}), and
 the Binary ATerm Format (Section~\ref{baf}).
@@ -986,7 +986,7 @@ represented as \aterms\ of
 98 Casl files,
 the total number of lines of Casl code is 2,506.
 For more details on Casl and the abstract syntax tree representation
-in \aterm\ we refer to Section \ref{casfix}. 
+as \aterms\ we refer to Section \ref{casfix}. 
 
 \item[lcc Parse Forest:] a new back-end similar to the ASDL back-end
 \cite{Wan97} has been added to the lcc compiler \cite{Han99}.
@@ -1136,7 +1136,7 @@ The six columns give the size of the text
 representation of the test term in bytes, the average number of bytes per node,
 the time needed to read the text file, the average time needed to read a node,
 the time needed to write the text file, and the average time needed to write a node.
-On the average, a node requires 5.3 bytes and reading and writing requires
+On the average, a node requires 6.2 bytes and reading and writing requires
 10.5 $\mu$s and 2.7 $\mu$s, respectively.
 
 
@@ -1257,10 +1257,10 @@ better than the worst case compression using \baf\ (12\%).
 \begin{tabular}{|l||r|r|r|} \hline
 
                         & \multicolumn{1}{c|}{Memory}   & \multicolumn{1}{c|}{\ascii}   & \multicolumn{1}{c|}{\baf}\\ \hline \hline
-Size per node (bytes)   & 2.9           & 5.27   & 0.54  \\
+Size per node (bytes)   & 4.51          &  6.20  & 1.45  \\
 
-Read node ($\mu$s)      &               & 8.49   & 1.32 \\
-Write node ($\mu$s)     &               & 2.47   & 2.38\\ \hline
+Read node ($\mu$s)      &               & 10.50  & 1.32 \\
+Write node ($\mu$s)     &               &  2.66  & 2.42 \\ \hline
 \end{tabular}
 \caption{Summary of measurements (based on Real Case averages)} \label{summary}
 \end{center}
@@ -1269,10 +1269,14 @@ Write node ($\mu$s)     &               & 2.47   & 2.38\\ \hline
 \subsection{Summary of Measurements}
 
 These measurements are summarized in Table~\ref{summary}.
-For in-memory storage, 2.9 bytes are needed per node.
-Using \baf, only 0.54 bytes (4.3 bits!) are needed to represent a node.
+For in-memory storage, 4.5 bytes are needed per node.
+Using \baf, only 1.54 bytes are needed to represent a node.
 Also observe that reading \baf\ is an order of magnitude faster than
 reading terms in textual form.
+In case of parse trees represented as \asfix\ (COBOL System and
+Risla Library) less than 2 bytes are needed to represent a node
+in memory and less than 2 bits (0.20 bytes) are needed to represent it in
+binary format.
 
 %}}}
 
@@ -1754,6 +1758,34 @@ it. \baf\ is, on the other hand, completely integrated in the \ATerm\
 implementation and is only used by the standard read and write
 functions for \ATerms. The \baf\ format is therefore never visible to
 programmers.
+
+\paragraph{Hash consing}
+
+In LISP, the success of hash consing~\cite{Alan:78} has been limited
+by the existence of the functions \texttt{rplaca} and \texttt{rplacd}
+that can destructively modify a list structure. To support destructive
+updates, one has to support two kinds of list structures ``mono copy''
+lists with maximal sharing and ``multi copy'' lists without maximal
+sharing.  Before destructively changing a mono copy list, it has to be
+converted to a multi copy list. In the 1970's, E. Goto has
+experimented with a Lisp dialect (HLisp) supporting hash consing and
+list types as just sketched.  See~\cite{TerashimaKanada:90} for a
+recent overview of this work and its applications.
+
+A striking observation can be made in the context of
+SML~\cite{AppelGoncalves:93} where sharing resulted in slightly
+increased execution speed and only marginal space savings.  On closer
+inspection, we come to the conclusion that both methods for term
+sharing are different and can not be compared easily.  We share terms
+immediately when they are created: the costs are a table lookup and
+the storage needed for the table while the benefits are space savings
+due to sharing and a fast equality test (one pointer comparison).
+In~\cite{AppelGoncalves:93} sharing of subterms is \emph{only}
+determined during garbage collection in order to minimize the overhead
+of a table lookup at term creation. This implies that local terms that
+have not yet survived one garbage collection are not yet shared thus
+loosing most of the benefits (space savings and fast equality test) as
+well. 
 
 \subsection{History}
 
