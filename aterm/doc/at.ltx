@@ -96,7 +96,7 @@ of function application.
 Besides these function applications, a small number of other subtypes
 are allowed, to make the \ATerm\ datatype more generally applicable.
 These subtypes include integer constants, real number constants,
-binary large objects (blobs), lists of aterms, and the special
+binary large data objects (blobs), lists of aterms, and the special
 placeholder subtype that is used to indicate typed holes in \ATerms.
 
 The fact that the \ATerm\ datatype is used within the components
@@ -113,10 +113,11 @@ to add extra information to the \ATerms.
 %}}}
 %{{{ The ATerm datatype
 
-\subsection{The \ATerm\ datatype}
+\subsection{The \ATerm\ Datatype}
 \label{aterm}
-We introduce a single datatype called \emph{annotated term} (or \emph{ATerm}).
-This datatype can be defined as follows.
+We describe the datatype called \emph{annotated term} (or \emph{ATerm})
+in more detail.
+The abstract definition of this datatype is as follows.
 \begin{itemize}
 \item An integer constant is an \ATerm.
 \item A real constant is an \ATerm.
@@ -126,7 +127,7 @@ This datatype can be defined as follows.
       The number of arguments of the function is called
       the \emph{arity} of the function.
 \item A blob (Binary Large data OBject) containing a length indication
-      and a byte array of binary data (possibly of very large size)
+      and a byte array of binary data (possibly of a huge size)
       is an \ATerm.
 \item A placeholder term containing an \ATerm\ representing the
       type of the placeholder is an \ATerm.
@@ -152,6 +153,10 @@ readable form. In Section \ref{implementation} we also discuss a compact
 binary format for the exchange of \ATerms\ in a format that is only 
 suitable for processing by a machine.
 
+The first section of the concrete syntax definition defines a number
+of syntactic features which are not visible to the outside world.
+XXX UITBREIDEN XXX
+
 \vspace{0.4cm}
 {\NOAUTOHEADER  \input{spec/ATerm.mtx}}
 \vspace{0.4cm}
@@ -161,7 +166,8 @@ of data stored in the blob.
 
 \subsection{Operations}
 \label{operations}
- On this ATerm datatype, we have 13 operations. We also introduce
+
+On this \ATerm\ datatype, we have 13 operations. We also introduce
 6 constants that represent the different subtypes:
 \begin{itemize}
 \item {\tt INT}:  An integer term.
