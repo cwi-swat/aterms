@@ -42,7 +42,7 @@ public class CTypeConversions implements TypeConversions {
     }
 
     public String makeStringToATermConversion(String expression) {
-        return "(ATerm) ATmakeAppl(ATmakeAFun(" + expression + ", 0, ATfalse))";
+        return "(ATerm) ATmakeAppl(ATmakeAFun(" + expression + ", 0, ATtrue))";
     }
 
     public String makeListToATermConversion(String expression) {

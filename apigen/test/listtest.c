@@ -44,7 +44,9 @@ static void testList()
   sep[6] = concatSeparated(sep[6],l1,l2,sep[6]);
   
   assert(isEqualSeparated(reverseSeparated(sep[5]),sep[6])); 
+
   assert(getSeparatedLength(sep[6]) == 4);
+
   assert(isEqualSeparated(SeparatedFromTerm(ATparse("[\"m2\",l(\"l1\"),\"sep\",l(\"l2\"),\"m1\",l(\"l1\"),\"sep\",l(\"l2\"),\"m2\",l(\"l1\"),\"sep\",l(\"l2\"),\"m1\"]")),sep[6]));
 
   /* Someone did not trust the proof of the length calculation

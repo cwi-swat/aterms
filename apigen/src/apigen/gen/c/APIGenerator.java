@@ -1112,7 +1112,7 @@ public class APIGenerator extends CGenerator {
             }
             print("    return (" + field_type_name + ")");
             Iterator steps = loc.stepIterator();
-            String type_getter = genATermToBuiltin(field.getType(), "arg");
+            String type_getter = genATermToBuiltin(field.getType(), genGetterSteps(steps, "arg"));
             print(type_getter);
             println(";");
             if (locs.hasNext()) {
@@ -1202,7 +1202,7 @@ public class APIGenerator extends CGenerator {
                     print("ATreplaceTail((ATermList)");
                     break;
             }
-            genGetterSteps(parentPath.iterator(), "arg");
+            print(genGetterSteps(parentPath.iterator(), "arg"));
             if (step.getType() == Step.TAIL) {
                 print(", (ATermList)");
             } else {
@@ -1216,21 +1216,20 @@ public class APIGenerator extends CGenerator {
         }
     }
 
-    private void genGetterSteps(Iterator steps, String arg) {
+    private String genGetterSteps(Iterator steps, String arg) {
         if (steps.hasNext()) {
             Step step = (Step) steps.next();
             int index = step.getIndex();
             switch (step.getType()) {
                 case Step.ARG :
-                    genGetterSteps(
+                    return genGetterSteps(
                         steps,
                         "ATgetArgument((ATermAppl)" + arg + ", " + step.getIndex() + ")");
-                    break;
                 case Step.ELEM :
                     if (index == 0) {
-                        genGetterSteps(steps, "ATgetFirst((ATermList)" + arg + ")");
+                        return genGetterSteps(steps, "ATgetFirst((ATermList)" + arg + ")");
                     } else {
-                        genGetterSteps(
+                        return genGetterSteps(
                             steps,
                             "ATelementAt((ATermList)"
                                 + arg
@@ -1238,22 +1237,20 @@ public class APIGenerator extends CGenerator {
                                 + step.getIndex()
                                 + ")");
                     }
-                    break;
                 case Step.TAIL :
                     if (index == 0) {
-                        genGetterSteps(steps, arg);
+                        return genGetterSteps(steps, arg);
                     } else if (index == 1) {
-                        genGetterSteps(steps, "ATgetNext((ATermList)" + arg + ")");
+                        return genGetterSteps(steps, "ATgetNext((ATermList)" + arg + ")");
                     } else {
-                        genGetterSteps(
+                        return genGetterSteps(
                             steps,
                             "ATgetTail((ATermList)" + arg + ", " + step.getIndex() + ")");
                     }
-                    break;
             }
-        } else {
-            print(arg);
-        }
+        } 
+	
+	return arg;
     }
 
     private void genHasField(Type type, Field field) {

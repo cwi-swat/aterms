@@ -47,7 +47,7 @@ public class JavaTypeConversions implements TypeConversions {
 
     
     public String makeStringToATermConversion(String expression) {
-        return "(aterm.ATerm) " + atermFactory + ".makeAppl(factory.makeAFun(" + expression + ", 0, false))";
+        return "(aterm.ATerm) " + atermFactory + ".makeAppl(factory.makeAFun(" + expression + ", 0, true))";
     }
 
     public String makeListToATermConversion(String expression) {
