@@ -1,0 +1,19 @@
+dnl $Id$
+
+AC_INIT(configure.in)
+AM_INIT_AUTOMAKE(aterm-java, 2.0beta)
+
+AC_SET_MAKE
+
+AC_ARG_WITH(shared-objects,
+   [  --with-shared-objects=JAR       /path/to/shared-objects-<version>.jar],
+   ,SHARED_OBJECTS=${datadir}/shared-objects.jar)
+AC_SUBST(SHARED_OBJECTS)
+
+AC_OUTPUT(
+  Makefile
+  aterm/Makefile
+  aterm/pure/Makefile
+  aterm/test/Makefile
+  aterm/visitor/Makefile
+)
