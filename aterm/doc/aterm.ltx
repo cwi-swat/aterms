@@ -61,7 +61,7 @@ In this paper we describe the data type of \emph{Annotated Terms}, or
 just \emph{ATerms}, that have the above characteristics.  They form a
 solution for our implementation needs in the areas of interactive
 programming environments \cite{Kli93.meta,BKMO97} and distributed
-applications~\cite{BK98} but are much more widely applicable.
+applications~\cite{BK98} but are more widely applicable.
 Typically, we want to exchange and process tree-like data structures
 such as parse trees, abstract syntax trees, parse tables, generated
 code, and formatted source texts. The applications involved include
@@ -106,7 +106,7 @@ the operations defined on it (Section~\ref{aterm-operations}).
 %}}}
 %{{{ The ATerm datatype
 
-\subsection{The \ATerm\ Data type}
+\subsection{The \ATerm\ Data Type}
 \label{aterm-datatype}
 
 The data type of \ATerms\ ({\tt ATerm}) is defined as follows:
@@ -188,8 +188,9 @@ show some of the features of the textual representation of \ATerms.
 \label{aterm-operations}
 
 The operations on \ATerms\ fall into three categories: making and
-matching (Section~\ref{making}), annotating (Section~\ref{annotating}),
-and reading and writing (Section~\ref{reading}) of \ATerms. The total
+matching (Section~\ref{making}), 
+reading and writing (Section~\ref{reading}) of \ATerms, 
+and annotating (Section~\ref{annotating}). The total
 of only 13 functions provide enough functionality for most users to
 build simple applications with \ATerms.  We refer to this interface as
 the \emph{level one} interface of the \ATerm\ datatype.
@@ -205,7 +206,8 @@ strict superset of the level one interface (see Appendix \ref{level2}
 for further details).
 
 Observe that \ATerms\ are a purely functional data type and that no
-destructive updates are possible.
+destructive updates are possible, see Section \ref{max-sharing} 
+for more details.
 
 \subsubsection{Making and Matching \ATerms} \label{making}
 
@@ -257,7 +259,7 @@ The function returns {\tt true} when the match succeeds,
 
 \item {\tt Boolean ATisEqual(ATerm $t_1$, ATerm $t_2$)}: 
 Check if two \ATerms\ are 
-equal. The annotations of $t_1$ and $t_2$ must also be equal.
+equal. The annotations of $t_1$ and $t_2$ must be equal as well.
 
 \item {\tt Integer ATgetType(ATerm $t$)}: Retrieves the type of an
 \ATerm. This operation returns one of the subtypes mentioned before in
@@ -271,7 +273,8 @@ For reasons of efficiency and conciseness, reading and writing can
 take place in two forms: using ordinary text files and using special
 binary files.  In the first form, files are read and written in a
 format that is identical to the textual representation discussed
-earlier in Section~\ref{aterm-datatype}.  This format is human-readable,
+earlier in Section~\ref{aterm-datatype} and Appendix \ref{concrete-syntax}.  
+This format is human-readable,
 space-inefficient, and any sharing in terms is lost.  In the second
 form, a dedicated binary format is used (Binary ATerm Format, see
 Section~\ref{baf}). This portable format is machine-readable, very
@@ -382,8 +385,9 @@ that make this a fairly unique problem:
 
 \item In order to have a portable yet efficient implementation, the
       implementation language will be C. This poses some special 
-      requirements for the garbage collection strategy\footnote{We have also
-      implemented the library in Java. In this case, a lot of the issues
+      requirements for the garbage collection strategy\footnote{We have
+      implemented the library in Java as well. 
+      In this case, a lot of the issues
       we discuss in this paper are not relevant, either because we can use 
       built-in features of Java (garbage collection), or
       because we just cannot express these low level concerns in Java.}.
@@ -444,7 +448,7 @@ immutable can be expensive. It is often the responsibility of the user
 of the library to choose algorithms that minimize the effect of this
 shortcoming.
 
-\subsubsection{Searching for shared subterms}
+\subsubsection{Searching for Shared Subterms}
 
 The maximal sharing of terms can only be maintained when we check at
 term creation time whether a particular term already exists. The
@@ -498,14 +502,15 @@ It is possible for a user to increase the initial size of
 the hash table in order to save resizing and rehashing operations.
 The \ATerm\ library provides facilities for defining hash tables
 as well. This allows the implementation of a fast lookup mechanism
-for \ATerms. The user-defined hash tables are used to implement
+for \ATerms. The user-defined hash tables are used, for instance, 
+to implement
 memo-functions in the \asdf\ to C compiler, see Section \ref{asdf2c}.
 
 %{{{ Garbage collection
 
 \subsection{Garbage Collection} \label{garbage-collection}
 
-\subsubsection{Which technique?}
+\subsubsection{Which Technique?}
 The most common strategies for automatic recycling of unused space
 are reference counting, mark-compact collection, and 
 mark-sweep collection. We discuss these three strategies 
@@ -529,7 +534,7 @@ be circular.
 
 Unfortunately, in languages like C that do not offer much runtime support
 for dynamic memory management, the programmer needs to assist
-in updating reference counts, for instance at function exit.
+in updating reference counts, for instance, at function exit.
 Maybe an even bigger disadvantage is that reference counts need to
 be updated every time the number of references to an object changes.
 The total amount of work that has to be done for a pure reference counting
@@ -537,7 +542,7 @@ approach is much higher than for the other strategies.
 
 Another disadvantage of reference counting is the space overhead needed 
 to store the reference count.
-As we shall see later on, it is possible to implement the \ATerm\ data type
+As we shall see later, it is possible to implement the \ATerm\ data type
 using only a couple of machine words\footnote{We assume a word size
 of 4 bytes in this paper.} per object. Adding a whole word
 for keeping track of the reference count is therefore unacceptable.
@@ -788,7 +793,7 @@ with type {\tt AT\_LIST}, which represents the list of annotations.
 
 As discussed in the introduction, the efficient exchange of \ATerms\ 
 between processes is very important. The simplest form of exchange 
-is based on the concrete syntax presented in Section \ref{concrete-syntax}.
+is based on the concrete syntax presented in Appendix \ref{concrete-syntax}.
 This would involve pretty printing the term on one side, and parsing it
 on the other. The concrete syntax is not a very efficient exchange format
 however, because the sharing of function symbols and subterms cannot 
@@ -821,7 +826,7 @@ the next argument.  In this way, every subterm is written exactly
 once. Every time a parent term wishes to refer to a subterm, it just
 uses the subterm's index.
 
-\subsubsection{Exploiting \ATerm\ regularities}
+\subsubsection{Exploiting \ATerm\ Regularities}
 When sending a large term containing a lot of subterms, the subterm
 indices can become quite large. Consequently a lot of bits are needed
 to represent these indices. We can considerably reduce the size of
@@ -912,7 +917,7 @@ written as strings to improve the readability.}:
 
 
 \noindent Following this symbol information, the actual term {\tt
-mult(s(s(z),s(z))} can be encoded using only a handfull of bits. Note
+mult(s(s(z),s(z))} can be encoded using only a handful of bits. Note
 that the first function symbol in the symbol table is always the top
 function symbol of the term (in this case: {\tt mult}):
 
@@ -1437,7 +1442,7 @@ Application 				& Time (sec) 	& Memory (Mb) \\ \hline \hline
 \end{table}
 
 
-\subsection{Other applications}
+\subsection{Other Applications}
 
 Other applications are still under development and include:
 
