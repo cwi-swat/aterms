@@ -81,10 +81,10 @@ dnl {{{ Handle --with-asc-support
 AC_PACKAGE_REQUIRE(asc-support, asc-support-config,
 	[  --with-asc-support=DIR  asc-support is in DIR])
 
-ASCINC=${ASCSUPPORT}/include
+ASCINC=${ASC_SUPPORT}/include
 AC_SUBST(ASCINC)
 
-ASCLIB=${ASCSUPPORT}/lib
+ASCLIB=${ASC_SUPPORT}/lib
 AC_SUBST(ASCLIB)
 
 dnl }}}
