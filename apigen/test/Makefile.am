@@ -4,7 +4,7 @@
 # $Id$
 #
 
-include ../make_rules
+include ${top_srcdir}/make_rules
 
 SGLR			= ${SGLRBIN}/sglr
 SDF2TABLE		= ${PGENBIN}/sdf2table
@@ -18,6 +18,22 @@ TESTS			= rolotest booltest listtest
 noinst_PROGRAMS		= ${TESTS}
 noinst_LIBRARIES	= librolodex.a liblist.a libBooleans.a
 
+librolodex_a_SOURCES	= rolodex.c rolodex_dict.c
+liblist_a_SOURCES	= list.c list_dict.c
+libBooleans_a_SOURCES	= Booleans.c Booleans_dict.c
+
+rolotest_SOURCES	= rolotest.c
+rolotest_LDADD		= -L. -lrolodex -lATerm
+rolotest_DEPENDENCIES	= librolodex.a
+
+listtest_SOURCES	= listtest.c
+listtest_LDADD		= -L. -llist -lATerm
+listtest_DEPENDENCIES	= liblist.a
+
+booltest_SOURCES	= booltest.c
+booltest_LDADD		= -L. -lBooleans -lATerm
+booltest_DEPENDENCIES	= booltest.af1 libBooleans.a
+
 CLEANFILES		= ${noinst_PROGRAMS} ${noinst_LIBRARIES} \
 			rolodex*.[ch] rolodex_dict.[ch] \
 			list.[ch] list_dict.[ch] \
@@ -28,38 +44,22 @@ CLEANFILES		= ${noinst_PROGRAMS} ${noinst_LIBRARIES} \
 EXTRA_DIST		= rolodex.adt Booleans.sdf list.adt list.pro \
 			booltest.trm
 
-librolodex_a_SOURCES	= rolodex.c rolodex_dict.c
-liblist_a_SOURCES	= list.c list_dict.c
-libBooleans_a_SOURCES	= Booleans.c Booleans_dict.c
-
-rolotest_SOURCES	= rolotest.c
-rolotest_LDADD		= librolodex.a ${LDADD}
-rolotest_DEPENDENCIES	= librolodex.a
-
-listtest_SOURCES	= listtest.c
-listtest_LDADD		= liblist.a ${LDADD}
-listtest_DEPENDENCIES	= liblist.a
-
-booltest_SOURCES	= booltest.c
-booltest_LDADD		= libBooleans.a ${LDADD}
-booltest_DEPENDENCIES	= booltest.af1 libBooleans.a
-
 rolodex.c rolodex.h: rolodex.adt
 	${ADT_TO_C} \
 		--input ${top_srcdir}/test/rolodex.adt \
-		--classpath ${top_srcdir}:${ATERM}/classes
+		--classpath ${top_builddir}:${ATERM}/classes
 
 list.c list.h: list.adt list.pro
 	${ADT_TO_C} \
 		--input ${top_srcdir}/test/list.adt \
 		--prologue ${top_srcdir}/test/list.pro \
-		--classpath ${top_srcdir}:${ATERM}/classes
+		--classpath ${top_builddir}:${ATERM}/classes
 
 Booleans.c Booleans.h: Booleans.adt
 	${ADT_TO_C} \
 		--input Booleans.adt \
 		--prefix SDF \
-		--classpath ${top_srcdir}:${ATERM}/classes
+		--classpath ${top_builddir}:${ATERM}/classes
 
 booltest.af1: Booleans.trm.tbl booltest.trm
 	${SGLR} -1 -p Booleans.trm.tbl -i ${top_srcdir}/test/booltest.trm -o $@

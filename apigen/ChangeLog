@@ -1,4 +1,8 @@
 2001/02/27 (jong@cwi.nl)
+ * several references to ${top_srcdir} changed to ${top_builddir}
+   to fix problems revealed by the build-script (mainly CLASSPATH related)
+
+2001/02/27 (jong@cwi.nl)
  * Version 0.8
  * Several fixes to prepare apigen for a dailybuild regime
  * apigen succesfully handles "gmake clean all check install distcheck"
