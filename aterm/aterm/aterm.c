@@ -3374,6 +3374,86 @@ ATbool AT_isEqual(ATerm t1, ATerm t2)
 }
 
 /*}}}  */
+/*{{{  ATbool ATisEqualModuloAnnotations(ATerm t1, ATerm t2) */
+
+ATbool ATisEqualModuloAnnotations(ATerm t1, ATerm t2)
+{
+  int type;
+  ATbool result = ATtrue;
+
+  if(t1 == t2)
+    return ATtrue;
+
+  if (t1 == NULL || t2 == NULL) {
+    return ATfalse;
+  }
+
+  type = ATgetType(t1);
+  if(type != ATgetType(t2)) {
+    return ATfalse;
+  }
+
+  switch(type) {
+    case AT_APPL:
+      {
+	ATermAppl appl1 = (ATermAppl)t1, appl2 = (ATermAppl)t2;
+	AFun sym = ATgetAFun(appl1);
+	int i, arity = ATgetArity(sym);
+
+	if(sym != ATgetAFun(appl2))
+	  return ATfalse;
+
+	for(i=0; i<arity; i++)
+	  if(!ATisEqualModuloAnnotations(ATgetArgument(appl1, i), 
+					 ATgetArgument(appl2, i))) {
+	    return ATfalse;
+	  }
+      }
+      break;
+
+    case AT_LIST:
+      {
+	ATermList list1 = (ATermList)t1, list2 = (ATermList)t2;
+	if(ATgetLength(list1) != ATgetLength(list2)) {
+	  return ATfalse;
+	}
+
+	while(!ATisEmpty(list1)) {
+	  if(!AT_isEqual(ATgetFirst(list1), ATgetFirst(list2)))
+	    return ATfalse;
+
+	  list1 = ATgetNext(list1);
+	  list2 = ATgetNext(list2);
+	}
+      }
+      break;
+
+    case AT_INT:
+      result = ((ATgetInt((ATermInt)t1) == ATgetInt((ATermInt)t2)) ? ATtrue : ATfalse);
+      break;
+
+    case AT_REAL:
+      result = ((ATgetReal((ATermReal)t1) == ATgetReal((ATermReal)t2)) ? ATtrue : ATfalse);
+      break;
+
+    case AT_BLOB:
+      result = ((ATgetBlobData((ATermBlob)t1) == ATgetBlobData((ATermBlob)t2)) &&
+		(ATgetBlobSize((ATermBlob)t1) == ATgetBlobSize((ATermBlob)t2))) ? ATtrue : ATfalse;
+      break;
+
+    case AT_PLACEHOLDER:
+      result = AT_isEqual(ATgetPlaceholder((ATermPlaceholder)t1), 
+			  ATgetPlaceholder((ATermPlaceholder)t1));
+      break;
+
+    default:
+      ATerror("illegal term type: %d\n", type);
+  }
+
+  return result;
+}
+
+/*}}}  */
 
 /*{{{  ATerm ATremoveAllAnnotations(ATerm t) */
 

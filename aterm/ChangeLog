@@ -2,6 +2,7 @@ $Id$
 
 Tue Apr 27 11:09:50 CEST 2004 <jurgenv@cwi.nl>
  * Removed all #ifndef PO directives from the header files
+ * Added ATisEqualModuloAnnotations function
 
 Wed Apr 14 13:43:28 CEST 2004 <jurgenv@cwi.nl>
  * GET_SYMBOL macro used shifts to retrieve a symbol key, but did
@@ -12,7 +13,6 @@ Wed Apr 14 13:43:28 CEST 2004 <jurgenv@cwi.nl>
 
 Thu Apr  1 14:14:57 CEST 2004 <jong@cwi.nl>
  * patch by Armijn Hemel to add aterm.spec.in (used to generate RPM)
-
 
 Wed Feb 11 15:36:36 CET 2004 <kooiker@cwi.nl>
  * aterm/gc.c: remove verbose print: minor_sweep_phase_young 

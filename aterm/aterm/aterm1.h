@@ -81,6 +81,8 @@ extern ATbool AT_isDeepEqual(ATerm t1, ATerm t2);
 #endif
 #define ATisEqualAFun(f1, f2) ((f1) == (f2))
 
+ATbool ATisEqualModuloAnnotations(ATerm t1, ATerm t2);
+
 ATbool ATwriteToTextFile(ATerm t, FILE *file);
 long   ATwriteToSharedTextFile(ATerm t, FILE *f);
 ATbool ATwriteToBinaryFile(ATerm t, FILE *file);
