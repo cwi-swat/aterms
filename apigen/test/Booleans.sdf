@@ -18,5 +18,5 @@ exports
     open:"[" elems:{ Bool ";" }* close:"]" -> BoolList {cons(list)}
 
    context-free priorities
-    Bool "&" Bool -> Bool
-  > Bool "|" Bool -> Bool
+    lop:Bool and:"&" rop:Bool -> Bool
+  > lop:Bool or:"|" rop:Bool -> Bool
