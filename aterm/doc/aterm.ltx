@@ -643,9 +643,6 @@ free-list, which is an extremely cheap operation.  If garbage
 collection does not yield enough free objects, new memory blocks will
 be allocated to satisfy allocation requests.
 
-REMARK on how the distinction, between ATerm addresses and integers
-which are in the same range, is discovered.
-
 %}}}
 
 %{{{ Term encoding
@@ -870,11 +867,32 @@ position & {\tt mult}               & {\tt s}    		& {\tt z} \\
 \end{center}
 \vspace{0.5cm}
 
-Given this additional information (which is included in the table at
-the start of the \baf\ file) the following bits need to be written in
-order to encode the example term {\tt mult(s(s(z),s(z)))}:
+We start by writing the symbol information to file. To do this,
+we write the following bytes\footnote{when the value of these numbers
+used exceeds 127, two or more bytes are used to encode them. Strings are
+written as strings to improve the readability.}:
 
-{\bf Vraag: waar blijft het functiesymbool {\tt mult} zelf?}
+\begin{tabbing}
+4 {\tt "mult"} \= : \= The length (4) and ASCII representation of {\tt mult}. \\
+2              \> : \> The arity of {\tt mult}. \\
+1 1            \> : \> There is only only one symbol that can occur at the first \\
+               \>   \> argument position of {\tt mult}. This is symbol {\tt s} which \\
+               \>   \> has index 1. \\
+1 1            \> : \> At the second argument position, {\tt s} is also the only possible \\
+               \>   \> top symbol. \\
+1 {\tt "s"}    \> : \> The length (1) and ASCII representation of {\tt s}.\\
+1              \> : \> The arity of {\tt s}.\\
+2 1 2          \> : \> The single argument of {\tt s} can either have two different top \\
+               \>   \> function symbols: {\tt s} with index 1 or {\tt z} with index 2. \\
+1 {\tt "z"}    \> : \> The length (1) and ASCII representation of {\tt z}.\\
+0              \> : \> The arity of {\tt z}. \\
+\end{tabbing}
+
+
+When the symbols are written, the actual term ({\tt mult(s(s(z),s(z)))}) can be encoded 
+using only a handfull of bits. Note that the first function symbol in the symbol table
+is always the top function symbol so the \baf\ reader knows to start using the function
+symbol {\tt mult}.
 
 \begin{tabbing}
 00 \= : \= \kill
@@ -941,12 +959,12 @@ We have used the parse tree for a XXX-line CASL specification.
 \begin{figure}[tb]
 \begin{center}
 \begin{tabular}{|l||c|c|c|} \hline
-Term			&	\# nodes	& Bytes	& Bytes/Node	\\ \hline \hline
-Random10		&	x		& x	& x		\\ \hline
-Random5			&	x		& x	& x		\\ \hline
-COBOL Parse Table 	&	x		& x	& x		\\ \hline
-COBOL Program 		&	x		& x	& x		\\ \hline
-CASL Specification	&	x		& x	& x		\\ \hline
+Term			&	\# nodes& Bytes	& Bytes/Node	\\ \hline \hline
+Random10		&	1000000	&2997120& 3.00		\\ \hline
+Random5			&	1000000	&3343670& 3.34 		\\ \hline
+COBOL Parse Table 	&	x	& x	& x		\\ \hline
+COBOL Program 		&	x	& x	& x		\\ \hline
+CASL Specification	&	x	& x	& x		\\ \hline
 \end{tabular}
 \caption{Memory usage for \ATerms} \label{measurements-in-memory}
 \end{center}
@@ -959,17 +977,17 @@ and the average number of bytes needed per node.
 
 \begin{figure}[tb]
 \begin{center}
-\begin{tabular}{|l||c|c|c|c|c|c|} \hline
+\begin{tabular}{|l||c|c|c|c|c|c|c|} \hline
 
-Term			& Bytes	& Bytes/	& Read	& Read/ 	& Write	& Write/	\\
-			& 	& Node		& 	& Node 		& 	& Node		\\
-			& 	& 		& (s)	& (ms) 		& (s)	& (ms)		\\ \hline \hline
+Term			& Read   &BAF	& Bytes/& Read	& Read/ & Write	& Write/	\\
+			& Text   &Bytes  & Node	&       & Node 	& 	& Node		\\
+			& (s)    & 	&       & (s)   & (us) 	& (s)	& (us)			\\ \hline \hline
 
-Random10		& x	& x		& x	& x		& x	& x		\\ \hline
-Random5			& x	& x		& x	& x		& x	& x		\\ \hline
-COBOL Parse Table	& x	& x		& x	& x		& x	& x		\\ \hline
-COBOL Program		& x	& x		& x	& x		& x	& x		\\ \hline
-CASL Specification	& x	& x		& x	& x		& x	& x		\\ \hline
+Random10		& 15.9   &567419& 0.57	&2.06	& 2.06	& 2.76	& 2.76		\\ \hline
+Random5			& 14.9   &748015& 0.75	&1.30	& 1.30	& 3.27	& 3.27		\\ \hline
+COBOL Parse Table	& x      & x	& x	& x	& x	& x	& x		\\ \hline
+COBOL Program		& x      & x	& x	& x	& x	& x	& x		\\ \hline
+CASL Specification	& x      & x	& x	& x	& x	& x	& x		\\ \hline
 \end{tabular}
 \caption{Reading and writing \baf} \label{measurements-baf}
 \end{center}
@@ -980,13 +998,13 @@ CASL Specification	& x	& x		& x	& x		& x	& x		\\ \hline
 \begin{tabular}{|l||c|c|c|c|c|} \hline
 
 Term			& Ascii		& \baf		& Compression	& {\tt gzip} 	& Compression\\
-			& (bytes)  	& (bytes)	&	(\%)	& (bytes)	& (\%)\\	\hline \hline
+			& (bytes)  	& (bytes)	&	(\%)	& (bytes)	& (\%)\\ \hline \hline
 
-Random10		& x		& x		& x		& x		& x		\\ \hline
-Random5			& x		& x		& x		& x		& x		\\ \hline
-COBOL Parse Table	& x		& x		& x		& x		& x		\\ \hline
-COBOL Program		& x		& x		& x		& x		& x		\\ \hline
-CASL Specification	& x		& x		& x		& x		& x		\\ \hline
+Random10		& 6199981	& 567419	& 90.85		& 439293	& 92.9	\\ \hline
+Random5			& 6400040	& 748015	& 88.3		& 548784	& 91.4	\\ \hline
+COBOL Parse Table	& x		& x		& x		& x		& x	\\ \hline
+COBOL Program		& x		& x		& x		& x		& x	\\ \hline
+CASL Specification	& x		& x		& x		& x		& x	\\ \hline
 \end{tabular}
 \caption{\baf\ \emph{versus} {\tt gzip}} \label{measurements-baf-gzip}
 \end{center}
