@@ -1684,7 +1684,7 @@ ASDL and \aterms\ can be compared at two different levels:
 \begin{center}
 \begin{tabular}{|l||r|r|r|} \hline
 Term                & \ascii  & BAF    & ASDL pickle \\ \hline
-COBOL Parse Table & 4212633 & 213683 & 2507957 \\ \hline    
+COBOL Parse Table & 4211366 & 370450   & 5262426 \\ \hline    
 \end{tabular}
 \caption{Sizes of the COBOL parse table} \label{asdlaterm1}
 \end{center}
@@ -1704,8 +1704,10 @@ representation in BAF is 45 times smaller than the ASDL pickle.
 \begin{table}[tb]
 \begin{center}
 \begin{tabular}{|l||r|r|r|} \hline
- Term                 & \ascii  & BAF    & ASDL pickle \\ \hline
-COBOL program in \asfix & 6778877 & 41087 & 1836850 \\ \hline    
+ Term                   & \ascii  &   BAF & ASDL pickle \\ \hline
+%% COBOL program in \asfix & 6778877 & 41087 & 1836850  \\ \hline
+lcc Parse Forest           &  370742 & 624091 & 1290595   \\ \hline
+
 \end{tabular}
 \caption{Sizes of an \asfix\ term} \label{asdlaterm2}
 \end{center}
