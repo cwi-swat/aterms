@@ -16,12 +16,13 @@ public class CGen
 {
   public static boolean verbose = false;
 
+  private ATermFactory factory;
+
   private InputStream input;
   private String      output;
   private String      capOutput;
   private String      prefix;
   private String      prologue;
-
   private String      macro;
 
   private PrintStream source;
@@ -104,7 +105,7 @@ public class CGen
     this.prefix    = prefix;
     this.prologue  = prologue;
 
-    ATermFactory factory = new PureFactory();
+    factory = new PureFactory();
 
     ATerm adt = factory.readFromFile(input);
 
@@ -115,7 +116,7 @@ public class CGen
 
     String source_name = output + ".c";
     source = new PrintStream(new FileOutputStream(source_name));
- 
+
     genPrologue(api);
     genTypes(api);
     genInitFunction(api);
@@ -123,6 +124,10 @@ public class CGen
     genConstructors(api);
     genAccessors(api);
     genEpilogue(api);
+
+    ATerm dict = buildDictionary(api);
+    OutputStream dict_out = new FileOutputStream(output + ".dict");
+    dict.writeToTextFile(dict_out);
   }
 
   //}}}
@@ -620,6 +625,31 @@ public class CGen
   private String buildTypeName(Type type)
   {
     return prefix + type.getId();
+  }
+
+  //}}}
+
+  //{{{ private ATerm buildDictionary(API api)
+
+  private ATerm buildDictionary(API api)
+  {
+    ATermList entries = factory.makeList();
+
+    Iterator types = api.typeIterator();
+    while (types.hasNext()) {
+      Type type = (Type)types.next();
+      String id = prefix + type.getId();
+      Iterator alts = type.alternativeIterator();
+      while (alts.hasNext()) {
+	Alternative alt = (Alternative)alts.next();
+	ATerm entry = factory.make("[<appl>,<term>]",
+				   "pattern" + id + capitalize(alt.getId()),
+				   alt.getPattern());
+	entries = factory.makeList(entry, entries);
+      }
+    }
+
+    return factory.make("[afuns([]),terms(<term>)]", entries);
   }
 
   //}}}
