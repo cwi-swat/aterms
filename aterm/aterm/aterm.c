@@ -3206,7 +3206,6 @@ ATbool ATdiff(ATerm t1, ATerm t2, ATerm *template, ATerm *diffs)
 
 /*}}}  */
 
-
 /*{{{  ATbool AT_isDeepEqual(ATerm t1, ATerm t2) */
 
 /**
@@ -3227,8 +3226,9 @@ ATbool AT_isDeepEqual(ATerm t1, ATerm t2)
   }
 
   type = ATgetType(t1);
-  if(type != ATgetType(t2))
+  if (type != ATgetType(t2)) {
     return ATfalse;
+  }
 
   switch(type) {
     case AT_APPL:
@@ -3463,6 +3463,248 @@ ATerm ATremoveAllAnnotations(ATerm t)
       return NULL;
   }
 }
-
 /*}}}  */
 
+/*{{{  static int AT_compareArguments(ATermAppl t1, ATermAppl t2)  */
+
+static int AT_compareArguments(ATermAppl t1, ATermAppl t2) 
+{
+  int arity1;
+  int arity2;
+  int i;
+  ATerm arg1;
+  ATerm arg2;
+  int result = 0;
+
+  arity1 = ATgetArity(ATgetAFun(t1));
+  arity2 = ATgetArity(ATgetAFun(t2));
+  
+  
+  for (i = 0; result == 0 && i < arity1 && i < arity2; i++) {
+    arg1 = ATgetArgument(t1, i);
+    arg2 = ATgetArgument(t2, i);
+    result = ATcompare(arg1,arg2);
+  }
+
+  if (arity1 < arity2) {
+    return -1;
+  }
+  else if (arity1 > arity2) {
+    return 1;
+  }
+
+  return result;
+
+}
+
+/*}}}  */
+/*{{{  static int AT_compareAppls(ATermAppl t0, ATermAppl t2) */
+
+static int AT_compareAppls(ATermAppl t1, ATermAppl t2)
+{
+  AFun fun1;
+  AFun fun2;
+  char *name1;
+  char *name2;
+  int result;
+
+  fun1 = ATgetAFun(t1);
+  fun2 = ATgetAFun(t2);
+
+  name1 = ATgetName(fun1);
+  name2 = ATgetName(fun2);
+
+  result = strcmp(name1,name2);
+  if (result != 0) {
+    return result;
+  }
+
+  return AT_compareArguments(t1,t2);
+
+}
+
+/*}}}  */
+/*{{{  static int AT_compareInts(ATermInt t1, ATermInt t2)  */
+
+static int AT_compareInts(ATermInt t1, ATermInt t2) 
+{
+  int i1;
+  int i2;
+  i1 = ATgetInt(t1);
+  i2 = ATgetInt(t2);
+  if (i1 < i2) {
+    return -1;
+  }
+  else if (i1 > i2) {
+    return 1;
+  }
+  return 0;
+}
+
+/*}}}  */
+/*{{{  static int AT_compareReals(ATermReal t1, ATermReal t2)  */
+
+static int AT_compareReals(ATermReal t1, ATermReal t2) 
+{
+  double r1;
+  double r2;
+  r1 = ATgetReal(t1);
+  r2 = ATgetReal(t2);
+  if (r1 < r2) {
+    return -1;
+  }
+  else if (r1 > r2) {
+    return 1;
+  }
+  return 0;
+}
+
+/*}}}  */
+/*{{{  static int AT_compareLists(ATermList t1, ATermList t2)  */
+
+static int AT_compareLists(ATermList t1, ATermList t2) 
+{
+  int length1;
+  int length2;
+  ATerm elt1;
+  ATerm elt2;
+  int result = 0;
+
+  while (result == 0 && !ATisEmpty(t1) && !ATisEmpty(t2)) {
+    elt1 = ATgetFirst(t1);
+    elt2 = ATgetFirst(t2);
+   
+    result = ATcompare(elt1,elt2);
+
+    t1 = ATgetNext(t1);
+    t2 = ATgetNext(t2);
+  }
+  
+  if (result != 0) {
+    return result;
+  }
+
+  length1 = ATgetLength(t1);
+  length2 = ATgetLength(t2);
+
+  if (length1 < length2) {
+    return -1;
+  }
+  else if (length1 > length2) {
+    return 1;
+  }
+  return 0;
+}
+
+/*}}}  */
+/*{{{  static int AT_comparePlaceholders(ATermPlaceholder t1, ATermPlaceholder t2)  */
+
+static int AT_comparePlaceholders(ATermPlaceholder t1, ATermPlaceholder t2) 
+{
+  ATerm type1;
+  ATerm type2;
+  type1 = ATgetPlaceholder(t1);
+  type2 = ATgetPlaceholder(t2);
+  return ATcompare(type1,type2);
+}
+
+/*}}}  */
+/*{{{  static int AT_compareBlobs(ATermBlob t1, ATermBlob t2)  */
+
+static int AT_compareBlobs(ATermBlob t1, ATermBlob t2) 
+{
+  char *data1;
+  char *data2;
+  int size1;
+  int size2;
+  int result = 0;
+  data1 = ATgetBlobData(t1);
+  data2 = ATgetBlobData(t2);
+  size1 = ATgetBlobSize(t1);
+  size2 = ATgetBlobSize(t2);
+
+  if (size1 < size2) {
+    result = memcmp(data1, data2, size1);
+    if (result == 0) {
+      return -1;
+    }
+  }
+  else if (size1 > size2) {
+    result = memcmp(data1, data2, size2);
+    if (result == 0) {
+      return 1;
+    }
+  }
+  else {
+    return memcmp(data1, data2, size1);
+  }
+
+  return result;
+}
+
+/*}}}  */
+/*{{{  int ATcompare(ATerm t1, ATerm t2) */
+
+int ATcompare(ATerm t1, ATerm t2)
+{
+  int type1;
+  int type2;
+  int result = 0;
+
+  if (ATisEqual(t1, t2)) {
+    return 0;
+  }
+
+  type1 = ATgetType(t1);
+  type2 = ATgetType(t2);
+	
+  if (type1 < type2) {
+    return -1;
+  }
+  else if (type2 > type1) {
+    return 1;
+  }
+
+  switch (type1) {
+    case AT_APPL:
+      result = AT_compareAppls((ATermAppl) t1, (ATermAppl) t2);
+      break;
+    case AT_INT:
+      result = AT_compareInts((ATermInt) t1, (ATermInt) t2);
+      break;
+    case AT_REAL:
+      result = AT_compareReals((ATermReal) t1, (ATermReal) t2);
+      break;
+    case AT_LIST:
+      result = AT_compareLists((ATermList) t1, (ATermList) t2);
+      break;
+    case AT_PLACEHOLDER:
+      result = AT_comparePlaceholders((ATermPlaceholder) t1, 
+				    (ATermPlaceholder) t2);
+      break;
+    case AT_BLOB:
+      result = AT_compareBlobs((ATermBlob) t1, (ATermBlob) t2);
+      break;
+    default:
+      ATabort("Unknown ATerm type %d\n", type1);
+      break;
+  }
+
+  if (result == 0) {
+    ATerm annos1 = ATgetAnnotations(t1);
+    ATerm annos2 = ATgetAnnotations(t2);
+    if (annos1 && annos2) {
+      return ATcompare(annos1,annos2);
+    }
+    if (annos1) {
+      return 1;
+    }
+    if (annos2) {
+      return -1;
+    }
+  }
+
+  return result;
+}
+
+/*}}}  */

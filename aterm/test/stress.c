@@ -858,18 +858,18 @@ void testMark()
   int i;
   ATerm zero = ATparse("zero");
   ATerm one  = ATparse("one");
-  ATerm t1 = NULL;
-  ATerm t2 = NULL;
+  ATerm atappl = NULL;
+  ATerm atint = NULL;
   ATerm result = NULL;
 
-  t1 = zero;
-  t2 = one;
+  atappl = zero;
+  atint = one;
 
   for(i=0; i<100000; i++) {
-    t1 = ATmake("succ(<int>,<term>)", i, t1);
-    t2 = ATmake("succ(<int>,<term>)", i, t2);
+    atappl = ATmake("succ(<int>,<term>)", i, atappl);
+    atint = ATmake("succ(<int>,<term>)", i, atint);
   }
-  result = ATmake("result(<term>,<term>)", t1, t2);
+  result = ATmake("result(<term>,<term>)", atappl, atint);
   /*AT_assertUnmarked(result); Needs stacksize >> 8M */
 
   AT_markTerm(result);
@@ -1111,30 +1111,30 @@ void testBaffle()
 {
   char buf[BUFSIZ], *ptr;
   FILE *file;
-  ATerm test2, test1 = ATparse("f(1,a,<abc>,[24,g]{[a,b]})");
+  ATerm tesatint, tesatappl = ATparse("f(1,a,<abc>,[24,g]{[a,b]})");
   ATermBlob blob;
   int len = 0;
   test_assert("baffle", 1, AT_calcUniqueSubterms(ATparse("f(a,[1])"))==5);
   sprintf(buf, "baffle-test-%d.baf", (int)getpid());
   file = fopen(buf, "wb");
   if(file) {
-    test_assert("baffle", 2, ATwriteToBinaryFile(test1, file));
+    test_assert("baffle", 2, ATwriteToBinaryFile(tesatappl, file));
     fclose(file);
     file = fopen(buf, "rb");
-    test2 = ATreadFromBinaryFile(file); 
-    test_assert("baffle", 3, test2);
-    test_assert("baffle", 4, ATisEqual(test1, test2));
+    tesatint = ATreadFromBinaryFile(file); 
+    test_assert("baffle", 3, tesatint);
+    test_assert("baffle", 4, ATisEqual(tesatappl, tesatint));
     fclose(file);
     unlink(buf);
   } else {
     fprintf(stderr, "warning could not open file: %s for writing.\n", buf);
   }
 
-  ptr = ATwriteToBinaryString(test1, &len);
-  ATfprintf(stderr, "term written to binary string: %t, size=%d\n", test1, len);
-  test2 = ATreadFromBinaryString(ptr, len);
-  ATfprintf(stderr, "term read from binary string : %t\n", test2);
-  test_assert("baffle", 5, ATisEqual(test1, test2));
+  ptr = ATwriteToBinaryString(tesatappl, &len);
+  ATfprintf(stderr, "term written to binary string: %t, size=%d\n", tesatappl, len);
+  tesatint = ATreadFromBinaryString(ptr, len);
+  ATfprintf(stderr, "term read from binary string : %t\n", tesatint);
+  test_assert("baffle", 5, ATisEqual(tesatappl, tesatint));
 
   ptr = ATwriteToBinaryString((ATerm)ATmakeBlob(4, strdup("abc")), &len);
   blob = (ATermBlob)ATreadFromBinaryString(ptr, len);
@@ -1219,29 +1219,29 @@ void testChecksum()
 
 void testDiff()
 {
-  ATerm t1 = ATparse("f(a)");
-  ATerm t2 = ATparse("f(b)");
+  ATerm atappl = ATparse("f(a)");
+  ATerm atint = ATparse("f(b)");
   ATerm diffs;
   ATerm template;
 
-  test_assert("diff", 0, ATdiff(t1, t2, &template, &diffs));
+  test_assert("diff", 0, ATdiff(atappl, atint, &template, &diffs));
   test_assert("diff", 1, ATisEqual(template, ATparse("f(<diff-appls>)")));
   test_assert("diff", 2, ATisEqual(diffs, ATparse("[diff(a,b)]")));
 
   diffs = NULL;
-  test_assert("diff", 3, ATdiff(t1, t2, NULL, &diffs));
+  test_assert("diff", 3, ATdiff(atappl, atint, NULL, &diffs));
   test_assert("diff", 4, ATisEqual(diffs, ATparse("[diff(a,b)]")));
 
   template = NULL;
-  test_assert("diff", 5, ATdiff(t1, t2, &template, NULL));
+  test_assert("diff", 5, ATdiff(atappl, atint, &template, NULL));
   test_assert("diff", 6, ATisEqual(template, ATparse("f(<diff-appls>)")));
 
-  test_assert("diff", 7, ATdiff(t1, t2, NULL, NULL));
+  test_assert("diff", 7, ATdiff(atappl, atint, NULL, NULL));
 
-  t1 = ATparse("[<f(4,3.14)>,[] ,[a,b],[e,f]]");
-  t2 = ATparse("[<f(5,3.14)>,[1],7    ,[e]]");
+  atappl = ATparse("[<f(4,3.14)>,[] ,[a,b],[e,f]]");
+  atint = ATparse("[<f(5,3.14)>,[1],7    ,[e]]");
 
-  test_assert("diff", 0, ATdiff(t1, t2, &template, &diffs));
+  test_assert("diff", 0, ATdiff(atappl, atint, &template, &diffs));
 
   /*ATfprintf(stderr, "template = %t, diffs = %t\n", template, diffs);*/
 
@@ -1251,6 +1251,119 @@ void testDiff()
 				   ATparse("[diff(4,5),diff([],[1]),diff([a,b],7),diff([f],[])]")));
 
   printf("diff tests ok.\n");
+}
+
+/*}}}  */
+/*{{{  void testCompare()  */
+
+void testCompare() 
+{
+  ATerm atappl = ATmake("f(a)");
+  ATerm atint = ATmake("10");
+  ATerm atreal = ATmake("3.14");
+  ATerm atlist = ATmake("[1,2,3]");
+  ATerm atplaceholder = ATparse("<term>");
+  ATerm atanno = ATmake("f(a){[a,b],[b,d]}");
+
+  char *data1 = "ik ben data";
+  ATerm atblob = (ATerm)ATmakeBlob(strlen(data1)+1, data1);
+
+  /* appl biggers */
+  ATerm atappl0 = ATmake("g(a)");
+  ATerm atappl1 = ATmake("f(a,b)");
+  /* appl smaller */
+  ATerm atappl2 = ATmake("f");
+  ATerm atappl3 = ATmake("b(a)");
+
+  /* int bigger */
+  ATerm atint4 = ATmake("11");
+  /* int smaller */
+  ATerm atint5 = ATmake("2");
+
+  /* real bigger */
+  ATerm atreal6 = ATmake("5.2323");
+  /* real smaller */
+  ATerm atreal7 = ATmake("1.000");
+
+  /* list bigger */
+  ATerm atlist1 = ATmake("[1,2,3,4]");
+  ATerm atlist2 = ATmake("[5,2,3]");
+
+  /* list smaller */
+  ATerm atlist3 = ATmake("[1,2]");
+  ATerm atlist4 = ATmake("[0,2,3]");
+
+  /* placeholder smaller */
+  ATerm atplaceholder1 = ATmake("<serm>");
+
+  /* placeholder bigger */
+  ATerm atplaceholder2 = ATmake("<uerm>");
+
+  /* annos smaller */
+  ATerm atanno1 = ATmake("f(a)");
+  ATerm atanno2 = ATmake("f(a){[a,b]}");
+
+  /* annos bigger */
+  ATerm atanno3 = ATmake("f(b)");
+  ATerm atanno4 = ATmake("f(a){[a,b],[c,d]}");
+
+  /* blob bigger */
+  char *data2 = "ik ben ook data";
+  char *data3 = "ik ben data ook";
+  ATerm atblob2 = (ATerm)ATmakeBlob(strlen(data2)+1, data2);
+  ATerm atblob3 = (ATerm)ATmakeBlob(strlen(data3)+1, data3);
+
+  /* blob smaller */
+  char *data4 = "ik ben bata";
+  ATerm atblob4 = (ATerm)ATmakeBlob(strlen(data4)+1, data4);
+
+  test_assert("type-cmp", 0,  ATcompare(atappl, atint) == -1);
+  test_assert("type-cmp", 1,  ATcompare(atint, atreal) == -1);
+  test_assert("type-cmp", 2,  ATcompare(atreal, atlist) == -1);
+  test_assert("type-cmp", 3,  ATcompare(atlist, atplaceholder) == -1);
+  test_assert("type-cmp", 4,  ATcompare(atplaceholder, atblob) == -1);
+
+
+  test_assert("appl-cmp", 0, ATcompare(atappl,atappl) == 0);
+  test_assert("appl-cmp", 1, ATcompare(atappl0,atappl) == 1);
+  test_assert("appl-cmp", 1, ATcompare(atappl1,atappl) == 1);
+  test_assert("appl-cmp", 2, ATcompare(atappl2,atappl) == -1);
+  test_assert("appl-cmp", 3, ATcompare(atappl3,atappl) == -1);
+
+  test_assert("int-cmp", 0, ATcompare(atint,atint) == 0);
+  test_assert("int-cmp", 1, ATcompare(atint4,atint) == 1);
+  test_assert("int-cmp", 3, ATcompare(atint5,atint) == -1);
+
+  test_assert("real-cmp", 0, ATcompare(atreal,atreal) == 0);
+  test_assert("real-cmp", 1, ATcompare(atreal6,atreal) == 1);
+  test_assert("real-cmp", 3, ATcompare(atreal7,atreal) == -1);
+
+  test_assert("list-cmp", 0, ATcompare(atlist,atlist) == 0);
+  test_assert("list-cmp", 1, ATcompare(atlist1,atlist) == 1);
+  test_assert("list-cmp", 2, ATcompare(atlist2,atlist) == 1);
+  test_assert("list-cmp", 3, ATcompare(atlist3,atlist) == -1);
+  test_assert("list-cmp", 3, ATcompare(atlist4,atlist) == -1);
+
+  test_assert("placeholder-cmp", 0, 
+	      ATcompare(atplaceholder,atplaceholder) == 0);
+  test_assert("placeholder-cmp", 1, 
+	      ATcompare(atplaceholder1,atplaceholder) == -1);
+  test_assert("placeholder-cmp", 2, 
+	      ATcompare(atplaceholder2,atplaceholder) == 1);
+
+  test_assert("anno-cmp", 0, ATcompare(atanno,atanno) == 0);
+  test_assert("anno-cmp", 1, ATcompare(atanno1,atanno) == -1);
+  test_assert("anno-cmp", 2, ATcompare(atanno2,atanno) == -1);
+  test_assert("anno-cmp", 3, ATcompare(atanno3,atanno) == 1);
+  test_assert("anno-cmp", 4, ATcompare(atanno4,atanno) == 1);
+
+  test_assert("blob-cmp", 0, ATcompare(atblob,atblob2) == -1);
+  test_assert("blob-cmp", 1, ATcompare(atblob2,atblob) == 1);
+  test_assert("blob-cmp", 2, ATcompare(atblob,atblob) == 0);
+
+  test_assert("blob-cmp", 3, ATcompare(atblob,atblob3) == -1);
+  test_assert("blob-cmp", 4, ATcompare(atblob4,atblob) == -1);
+
 }
 
 /*}}}  */

@@ -244,6 +244,16 @@ ATerm ATremoveAllAnnotations(ATerm t);
 unsigned char *ATchecksum(ATerm t);
 ATbool ATdiff(ATerm t1, ATerm t2, ATerm *templ, ATerm *diffs);
 
+/* Compare two ATerms. This is a complete stable ordering on ATerms.
+ * They are compared 'lexicographically', function names before the
+ * arguments, terms before annotations. Function names are compared
+ * using strcmp, integers and reals are compared
+ * using integer and double comparison, blobs are compared using memcmp. 
+ * If the types of the terms are different the integer value of ATgetType
+ * is used.
+ */
+int ATcompare(ATerm t1, ATerm t2);
+
 void ATsetChecking(ATbool on);
 ATbool ATgetChecking(void);
 

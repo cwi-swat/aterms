@@ -3322,6 +3322,7 @@ void AT_printAllAFunCounts(FILE *file)
 /*}}}  */
 /*{{{  int AT_calcAllocatedBytes() */
 
+
 /**
  * Calculate all allocated bytes containing ATerms.
  */
