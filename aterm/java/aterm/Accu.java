@@ -1,8 +1,8 @@
-package visitor;
+package aterm;
 
 import java.io.*;
 
-import aterm.*;
+import visitor.*;
 
 public class Accu
   extends ATermVisitorBridge

@@ -1,5 +1,10 @@
 $Id$
 
+2001/03/29 ({jong,olivierp})
+ * added java/visitor/.cvsignore
+ * moved example file Accu.java from java/visitor to java/aterm
+ * fixed some compilation errors in Java traversal combinator support
+
 2001/03/28 ({jong,olivierp})
  * Added traversal combinator support
 
