@@ -600,6 +600,8 @@ int main(int argc, char *argv[])
   testMatch();
   testGC();
 
+  ATprintf("term: %t\n", ATmake("u1(choice(1))"));
+
   return 0;
 }
 

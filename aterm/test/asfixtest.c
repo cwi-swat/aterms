@@ -14,9 +14,7 @@ int main(int argc, char **argv)
 
   fname = "/home/markvdb/NEW-META/aterm/test/Test.asfix";
 
-  ATinit(argc,argv, NULL, &bottomOfStack);
-
-  AFinit();
+  AFinit(argc, argv, &bottomOfStack);
   AFinitExpansionTerms();
   AFinitAsFixPatterns();
 

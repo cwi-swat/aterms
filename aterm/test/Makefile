@@ -6,7 +6,7 @@ CFLAGS_CC	= -O
 #CFLAGS_CC	= -g
 CFLAGS_GCC	= -g -ansi -pedantic -Wall
 
-INCL		= -I../asfix -I../aterm
+INCL		= -I../asfix -I../aterm -I../toolbus
 DEFS		=
 LFLAGS		=
 
@@ -16,9 +16,10 @@ LIBS_CC		= -L../aterm -lATerm-cc
 AR			= ar
 
 EFENCE		= /home/olivierp/ElectricFence-2.0.5
-TESTPRGS	= stress-cc stress-gcc primes-cc primes-gcc asfixtest
-TESTSRCS	= stress.c asfixtest.c primes.c
-TESTOBJS	= stress.o asfixtest.o primes.o
+TESTPRGS	= stress-cc stress-gcc primes-cc primes-gcc asfixtest \
+		test-tool
+TESTSRCS	= stress.c asfixtest.c primes.c test-tool
+TESTOBJS	= stress.o asfixtest.o primes.o test-tool.o
 
 all: $(TESTPRGS) $(TESTS)
 
@@ -37,6 +38,10 @@ primes-cc: primes.c
 
 primes-gcc: primes.c
 	$(CC_GCC) $(CFLAGS_GCC) $(INCL) $(LFLAGS) -o primes-gcc primes.c $(LIBS_GCC)
+
+test-tool: test-tool.c
+	$(CC_GCC) $(CFLAGS_GCC) $(INCL) $(LFLAGS) -o test-tool test-tool.c \
+		$(LIBS_GCC) -L../toolbus -lATB-dbg -lsocket -lnsl
 
 clean:
 	rm -f $(TESTPRGS) $(TESTOBJS) *~ core
