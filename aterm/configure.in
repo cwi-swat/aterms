@@ -209,7 +209,6 @@ AC_OUTPUT( \
 	aterm/Makefile \
 	utils/Makefile \
 	test/Makefile \
-	toolbus/Makefile \
 	java/Makefile \
 	java/aterm/Makefile \
 	java/aterm/ATermVisitable.java \
