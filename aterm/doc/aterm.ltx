@@ -58,7 +58,7 @@ In this paper we describe the data type of \emph{Annotated Terms}, or
 just \emph{ATerms}, that have the above characteristics.  They form a
 solution for our implementation needs in the areas of interactive
 programming environments \cite{Kli93.meta,BKMO97} and distributed
-applications~\cite{toolbus} but are much more widely applicable.
+applications~\cite{BK98} but are much more widely applicable.
 Typically, we want to exchange and process tree-like data structures
 such as parse trees, abstract syntax trees, parse tables, generated
 code, and formatted source texts. The applications involved include
@@ -411,15 +411,16 @@ check on terms ({\tt term\_equal}) becomes very cheap: it reduces from
 an operation that is linear in the number of subterms to be compared
 to a constant operation (pointer equality).
 
-Another consequence of our approach is less fortunate.
-Because terms can be shared without the creator knowing it,
-terms cannot be modified without creating unwanted side-effects.
-This means that terms effectively become \emph{immutable} after creation.
-Destructive updates on maximally shared terms are not allowed, except maybe
-in special situations where it is known in advance that a term is not
-shared. Especially in list operations, this immutability can be
-expensive. It is often the responsibility of the user of the library
-to choose algorithms that minimize the effect of this shortcoming.
+Another consequence of our approach is less fortunate.  Because terms
+can be shared without the creator knowing it, terms cannot be modified
+without creating unwanted side-effects.  This means that terms
+effectively become \emph{immutable} after creation.  Destructive
+updates on maximally shared terms are not allowed, except maybe in
+special situations where it is known in advance that a term is not
+shared. Especially in list operations, the fact that \ATerms\ are
+immutable can be expensive. It is often the responsibility of the user
+of the library to choose algorithms that minimize the effect of this
+shortcoming.
 
 \subsubsection{Searching for shared subterms}
 
@@ -1077,7 +1078,7 @@ one can easily develop tools for processing \asfix\ terms which do not
 have to consult a common database with grammar information. Examples
 of such tools are a (structure) editor or a rewrite engine.
 
-\asfix\ is defined by an apropriate set of function symbols for
+\asfix\ is defined by an appropriate set of function symbols for
 representing common constructs in a parse tree.  These function
 symbols include the following:
 
@@ -1296,59 +1297,135 @@ states as possible. (** ref? **)
 
 \section{Discussion} \label{discussion}
 
+\subsection{Related Work}
+
+\paragraph{Intermediate representations in compiler frameworks}
+There exist numerous frameworks for compilers and programming
+environments that provide facilities for representing intermediate
+data. Examples are Centaur's VTP~\cite{xxx}, Eli~\cite{Eli92},
+Cocktail's Ast~\cite{Ast92} SUIF~\cite{Suif94} and Montana ***.
+Lamb's IDL~\cite{Lamb-IDL} and OMG's IDL~\cite{OMG-IDL} are frameworks
+for representing intermediate data that are not tight to a specific
+compiler construction paradigm but have similar objectives as the
+systems already mentioned.
+
+These approaches typically use a grammar-like definition of the
+abstract syntax (including attributes) and provide (generated) access
+functions as well as readers and writers for these intermediate data. In most
+cases support exists for accessing the intermediate data from a small
+collection of source languages.
+
+The major difference between these approaches and \ATerms is that they
+operate at different levels of abstraction. \ATerms\ just provide the
+lower-level representation for terms (or more precisely directed
+acyclic graphs), while intermediate representations for compilers are
+more specialized and give a higher-level view on the intermediate
+data.  They provide primitives for representing program constructs,
+symbol tables, flow graphs and other derived information. In most
+cases they also provide a fixed formats for representing programs at
+different levels of abstraction ranging from call graphs to
+machine-like instructions. \ATerms\ are thus simpler and more general
+and they can be used to represent each of these compiler's
+intermediate formats.
+
+Another difference is that most compiler frameworks use a
+statically typed intermediate representation.  The major advantage is
+early error-detection.  The disadvantages are, however, less
+flexibility and the need to generate different access functions for
+each different intermediate format. In the case of \ATerms, a dynamic
+check may be necessary on the intermediate data but only a single,
+generic, set of access functions is needed.
+
+\paragraph{XML}
+The Extensible Markup Language~\cite{XML1.0} is a recently
+standardized format for Web documents. Unlike HTML, XML makes a strict
+distinction between \emph{content} and \emph{presentation}.  XML can
+be \emph{extended} by adding user-defined \emph{tags} to parts of a
+document and by defining the overall structure of the document thus
+enabling well-formedness checks on documents.  Although the original
+objectives are completely different, there are striking similarities
+between \ATerms \ and XML: both serve the representation of
+hierarchically structured data and both allow arbitrary extensions
+(adding tags \emph{versus} adding function symbols).  There is also a
+straightforward translation possible between \ATerms\ and XML.
+
+The main difference between the two is that XML is more verbose and
+does not provide a simple mechanism to represent sharing.  This may
+not be a problem for Web documents like catalogues and database
+records, but is does present a major obstacle in our case when we need
+to exchange huge terms between tools. We are currently considering
+whether some link between \ATerms\ and XML may be advantageous.
+
+\paragraph{Data encodings}
+
+As described in Section~\ref{baf}, we use a form of data encoding to
+compress \ATerms\ when they are exchanged between tools.  Of course,
+encoding and data compression techniques are in common use in
+telecommunications. For instance, the ASN.1 standard gives detailed
+rules for data encoding~\cite{ASN.1.PER}.
+
+In an earlier project in our group, the Graph Encoding Language (GEL)
+has been developed.  Its is similar in goals as \baf, but \baf\ can
+only represent acyclic directed graph, while GEL can represent
+arbitrary (potentially cyclic) graphs.  The technical approaches are
+different as well.  GEL uses a binary-encoded postfix format to
+represent the nodes in the graph and introduces explicit labels to
+reuse previously constructed parts of the graph. \baf\ uses a prefix
+format augmented with generated symbol tables.
+
+A final difference is in the \emph{usage} of both approaches.  GEL was
+used as a separate library that could be used in applications and the
+graph encoding was therefore visible to the programmer's using
+it. \baf\ is, on the other hand, completely integrated in the \ATerm\
+implementation and is only used by the standard read and write
+functions for \ATerms. The \baf\ format is therefore never visible to
+programmers.
+
 \subsection{History}
 
-A very first version of a \ATerm\ library was developed in combination
-with the \TB\ \cite{BK98}. This first version was used to represent
-terms which were transported between tools connected to the \TB. 
-Parallel to the development of the \TB, a formalism was developed
-to represent parse trees \cite{??}.
-The requirements for this formalism were:
-\begin{itemize}
-\item It should be easy machine processable.
-\item It should have a textual representation for human inspection.
-\item It should provide a mechanism to store auxiliary information.
-\item The parse trees should be self-contained, thus all applied
-production rules must be available as well as the original layout
-and comments.
-\end{itemize}
-The first version of this formalism to represent parse trees was quite
-similar to the term representation used in the \TB.
-This observation triggered the combination of both data types into the
-\ATerm\ data type.
+Terms are so simple that most programmers prefer to write their own
+implementation rather than using (or even \emph{looking for}) an
+existing implementation. This is all-right, except when this happens in
+a group of cooperating developers as in our case. 
 
-
-\section{Related Work}
-
-\begin{itemize}
-\item IDL
-\item SGML
-\item GEL
-\end{itemize}
+A very first version of the \ATerm\ library was developed as part of
+the \TB\ coordination architecture~\cite{BK98}. It was used to
+represent data which were transported between tools written in
+different languages running on different machines.  Simultaneously, we
+were developing a formalism for representing parse trees \cite{AsFix}.
+In addition, incompatible term formats ware in use in various of our
+compiler projects\cite{PumAndJasper}. Observing the similarities between all
+these incompatible term data types triggered the work on \ATerms\ as
+described here. The benefits are twofold. First, a common term data
+type is used in more applications and investments in it easily
+pay-off.  Second, the mere existence of a common data type leads to
+new, unanticipated, applications. For instance, we now use \ATerms\ for
+representing parse tables as well.
 
 \subsection{Conclusions}
 
-\begin{itemize}
-\item The average garbage collection time for the applications we developed
-using the \ATerm\ library is less then 10 percent.
-\item The \ATerm\ library is powerful enough to develop both memory
-and computational applications, e.g., the {\sc Asf+Sdf} compiler \cite{BOHK98}
-is entirely based on this library and the application developed by
-JanFriso Groote.
-\item The current implementation is running on SGI, Solaris, and Linux. 
-\item The using BAF reduces the term size by a factor  and reduces the
-processing time by a factor XXX.
-\end{itemize}
+As stated in the introduction, \ATerms\ are intended to form an \emph{open}
+\emph{simple}, 
+\emph{efficient}, \emph{concise}, and \emph{language
+independent} solution for the exchange of complex data structures
+between distributed applications.
+
+\ATerms\ \emph{are} open and language independent since they do not
+depend on any specific hardware or software platform.  \ATerms \
+\emph{are} simple: the level one interface consists of only 13
+functions.  \ATerms\ \emph{are} efficient and concise as shown by the
+measurements in Section~\ref{measurements}.  In encoded form, 6 bits
+are  needed per node!  Last but not least, \ATerms\ are
+also \emph{useful} as shown on Section~\ref{applications}.
+
+The most innovative aspects of \ATerms\ are the simple procedural
+interface based on the \emph{make-and-match} paradigm, term
+annotations, maximal subterm sharing, and the concise binary encoding
+of terms that is completely hidden behind high-level read and write
+operations.
 
 %}}}
-%{{{ Future Work
 
-\section{Future Work}
+\section*{Acknowledgments}
 
-\begin{itemize}
-\item Generational garbage collector.
-\item BAF for JAVA. 
-\item Porting to Windows platform.
-\end{itemize}
-
-%}}}
+?????
