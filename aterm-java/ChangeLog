@@ -1,3 +1,7 @@
+2004-08-06  Antoine Reilles  <tonio@bonzai>
+
+	* aterm/pure/SingletonFactory.java: if you need a singleton PureFactory...
+
 2004-04-08  pem  <pem@polly.loria.fr>
 
  * aterm/pure/PureFactory.java: make the parseId function compatible with the C version of the ATerm library

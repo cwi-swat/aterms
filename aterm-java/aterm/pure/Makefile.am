@@ -15,6 +15,7 @@ JAVASOURCES = \
 	ATermRealImpl.java \
 	ATermVisitableImpl.java \
 	PureFactory.java\
+	SingletonFactory.java\
 	ATermWriter.java
 
 java_JAVA       = $(JAVASOURCES)
