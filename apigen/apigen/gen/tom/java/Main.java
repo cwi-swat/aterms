@@ -39,6 +39,7 @@ public class Main {
 	private static TomGenerationParameters buildDefaultParameters() {
 		TomGenerationParameters params = new TomGenerationParameters();
 		params.setOutputDirectory(".");
+		params.setPrefix("");
 		return params;
 	}
 
