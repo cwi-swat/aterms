@@ -1206,6 +1206,7 @@ extends Generator
     println("  get_fun_sym(t) { t }");
     println("  cmp_fun_sym(s1,s2) { s1.equals(s2) }");
     println("  get_subterm(t,n) { null }");
+    println("  equals(t1,t2) { t1.equals(t2) }");
     println("}");
     println();
     println("%typeterm Integer {");
@@ -1213,6 +1214,7 @@ extends Generator
     println("  get_fun_sym(t) { t }");
     println("  cmp_fun_sym(s1,s2) { s1.equals(s2) }");
     println("  get_subterm(t,n) { null }");
+    println("  equals(t1,t2) { t1.equals(t2) }");
     println("}");
     println();
     println("%typeterm Double {");
@@ -1220,6 +1222,7 @@ extends Generator
     println("  get_fun_sym(t) { t }");
     println("  cmp_fun_sym(s1,s2) { s1.equals(s2) }");
     println("  get_subterm(t,n) { null }");
+    println("  equals(t1,t2) { t1.equals(t2) }");
     println("}");
     println();
     println("%typeterm ATerm {");
@@ -1227,6 +1230,7 @@ extends Generator
     println("  get_fun_sym(t) { ((t instanceof ATermAppl)?((ATermAppl)t).getAFun():null) }");
     println("  cmp_fun_sym(s1,s2) { s1 == s2 }");
     println("  get_subterm(t,n) { (((ATermAppl)t).getArgument(n)) }");
+    println("  equals(t1,t2) { t1.equals(t2) }");
     println("}");
     println();
    
@@ -1250,6 +1254,7 @@ extends Generator
     println("  get_fun_sym(t) { null }");
     println("  cmp_fun_sym(s1,s2) { false }");
     println("  get_subterm(t,n) { null }");
+    println("  equals(t1,t2) { t1.equals(t2) }");
     println("}");
     println();
     
