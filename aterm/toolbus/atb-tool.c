@@ -82,8 +82,6 @@ static void handshake(Connection *connection);
 /**
  * Initialize the ToolBus layer.
  *
- * PRE: Underlying ATerm layer has been initialized.
- *
  */
 
 int

@@ -642,8 +642,6 @@ int main(int argc, char *argv[])
 
 	prg = argv[0];
 
-	ATBinit(argc, argv, &topOfStack);
-
 	for(i=1; i<argc; i++) {
 		if(strprefix("-help", argv[i]))
 			usage(argv[0]);
@@ -661,8 +659,11 @@ int main(int argc, char *argv[])
 			tifname = argv[i];
 		}
 	}
+	ATBinit(argc, argv, &topOfStack);
+
 	if(!tifname || !tool)
 		usage(argv[0]);
+
 
 	strcpy(buf[0], output ? output : tool);
 
