@@ -1,0 +1,4 @@
+#!/bin/sh
+CLASSPATH=../..:$CLASSPATH
+export CLASSPATH
+java apigen.java.JavaGen $@

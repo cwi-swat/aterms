@@ -1,3 +1,7 @@
+2001/03/26 ({jong,olivierp}@cwi.nl)
+ * added initial adt-to-java support
+ * version 0.8.1
+
 2001/03/02 (jong@cwi.nl)
  * change == to = in shell-scripts to check string-equality
 

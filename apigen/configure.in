@@ -6,7 +6,7 @@ dnl
 
 dnl Process this file with autoconf to produce a configure script.
 AC_INIT(configure.in)
-AM_INIT_AUTOMAKE(apigen, 0.8)
+AM_INIT_AUTOMAKE(apigen, 0.8.1)
 
 dnl Add current dir to searchpath
 ACLOCAL="${ACLOCAL} -I ."
@@ -145,15 +145,17 @@ spec/Makefile
 utils/Makefile
 utils/sdf2-to-adt
 utils/adt-to-c
+utils/adt-to-java
 apigen/Makefile
 apigen/c/Makefile
+apigen/java/Makefile
 test/Makefile
 doc/Makefile
 doc/paper/Makefile
 spec/sdf2-to-adt/Makefile
 spec/add-labels/Makefile
 ,
-chmod +x utils/sdf2-to-adt utils/adt-to-c
+chmod +x utils/sdf2-to-adt utils/adt-to-c utils/adt-to-java
 )
 
 dnl }}}
