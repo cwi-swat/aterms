@@ -11,6 +11,7 @@ CLASSPATH_ENV	= CLASSPATH=${top_srcdir}:${EXTERNAL_JARS}
 java_JAVA=\
 	ADT.java\
 	AlternativeConstructor.java\
+	Alternative.java\
 	AlternativeList.java\
 	ListAlternative.java\
 	ListAlternativeEmpty.java\
