@@ -164,7 +164,7 @@ ATerm     ATdictGet(ATerm dict, ATerm key);
 ATerm     ATdictPut(ATerm dict, ATerm key, ATerm value);
 ATerm     ATdictRemove(ATerm dict, ATerm key);
 
-ATermTable ATtableCreate();
+ATermTable ATtableCreate(int initial_size, int max_load_pct);
 void       ATtableDestroy(ATermTable table);
 void       ATtablePut(ATermTable table, ATerm key, ATerm value);
 ATerm	   ATtableGet(ATermTable table, ATerm key);

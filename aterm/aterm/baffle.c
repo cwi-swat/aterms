@@ -1,10 +1,9 @@
+void foo();
+
+#if 0
 /**
  * baf.c
  */
-
-void foo();
-
-#if 0 /* NOT FINISHED YET!!! */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -15,7 +14,7 @@ void foo();
 #define	BAF_MAGIC	0xbaf
 #define BAF_VERSION	0x0100			/* version 1.0 */
 
-#define CMD_INIT	AT_FREE			/* reuse */
+#define CMD_RESET	AT_FREE			/* reuse */
 #define CMD_PUSH	AT_APPL			/* reuse */
 #define CMD_INT		AT_INT
 #define CMD_REAL	AT_REAL
@@ -177,6 +176,90 @@ readIntFromFile(unsigned int *val, FILE *file)
 	return 5;
 }
 
+static
+int
+writeToBinaryFile(ATerm t, FILE *f)
+{
+	int       lcv;
+	int       index;
+	char      buf[32];		/* Must be large enough to fit a double */
+	Symbol    sym;
+	ATermInt  index_term;
+	ATermAppl appl;
+	ATermList list;
+	ATermBlob blob;
+
+	/* If t is already on the stack, return its index. */
+	index_term = (ATermInt) ATtableGet(t);
+	if (index_term != NULL)
+		return ATgetInt(index_term);
+
+	/* Otherwise, push t on the stack and return its index. */
+	switch(ATgetType(t))
+	{
+		case AT_APPL:
+			appl = (ATermAppl) t;
+			sym = ATgetSymbol(appl);
+			for (lcv = ATgetArity(sym)-1; lcv >= 0; --lcv)
+			{
+				ATerm arg = ATgetArgument(appl, lcv);
+				index = writeToBinaryFile(arg, f);
+				if (index < 0)
+					return index;
+				if (writeIntToFile(CMD_PUSH, f) <= 0)
+					return -1;
+				if (writeIntToFile(index, f) <= 0)
+					return -1;
+			}
+			index = writeSymToFile(sym, f);
+			if (index < 0)
+				return index;
+			if (writeIntToFile(CMD_PUSH, f) <= 0)
+				return -1;
+			if (writeIntToFile(index, f) <= 0)
+				return -1;
+			if (writeIntToFile(CMD_APPL, f) <=0)
+				return -1;
+			break;
+
+		case AT_INT:
+			if (writeIntToFile(CMD_INT, f) <= 0)
+				return -1;
+			if (writeIntToFile(ATgetInt((ATermInt)t), f) <= 0)
+				return -1;
+			break;
+		case AT_REAL:
+			if (writeIntToFile(CMD_REAL, f) <= 0)
+				return -1;
+			sprintf(buf, "%lf", ATgetReal((ATermReal)t));
+			if (writeStringToFile(buf, strlen(buf), f) <= 0)
+				return -1;
+			break;
+		case AT_LIST:
+			break;
+		case AT_PLACEHOLDER:
+			plac = ATgetPlaceholder((ATermPlaceholder)t);
+			index = writeToBinaryFile(plac, f);
+			if (index < 0)
+				return index;
+			if (writeIntToFile(CMD_PUSH, f) <= 0)
+					return -1;
+			if (writeIntToFile(index, f) <= 0)
+					return -1;
+			if (writeIntToFile(CMD_PLAC, f) <=0)
+				return -1;
+			break;
+		case AT_BLOB:
+			if (writeIntToFile(CMD_BLOB, f) <= 0)
+				return -1;
+			blob = (ATermBlob)t;
+			if (writeStringToFile(ATgetBlobData(blob),
+								  ATgetBlobSize(blob), f) <= 0)
+				return -1;
+			break;
+	}
+}
+
 ATbool
 ATwriteToBinaryFile(ATerm t, FILE *file)
 {
@@ -184,20 +267,24 @@ ATwriteToBinaryFile(ATerm t, FILE *file)
 	ATbool result = ATtrue;
 
 	/* Initialize stacks */
+	term_stack_depth = 0;
+	term_stack = ATtableCreate( (4*nr_terms/3) + 1, 75 );
 
+	sym_stack_depth = 0;
+	sym_stack = ATtableCreate(512, 75);
 
 	/* Write an INIT command */
-	result = result && writeIntToFile(CMD_INIT,    file);
+	result = result && writeIntToFile(CMD_RESET,   file);
 	result = result && writeIntToFile(BAF_MAGIC,   file);
 	result = result && writeIntToFile(BAF_VERSION, file);
 	result = result && writeIntToFile(nr_terms,    file);
 
-	if (result == ATfalse)
-		return ATfalse;
+	result = result && writeToBinaryFile(t, file);
 
 	/* Destroy stacks */
+	ATtableDestroy(sym_stack);
+	ATtableDestroy(term_stack);
 
-	return ATtrue;
+	return result;
 }
-
-#endif /* NOT FINISHED YET!!! */
+#endif

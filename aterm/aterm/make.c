@@ -107,13 +107,21 @@ void AT_initMake(int argc, char *argv[])
 		pattern_table[lcv].term = NULL;
 	}
 	symbol_int  = ATmakeSymbol("int",  0, ATfalse);
+	ATprotectSymbol(symbol_int);
 	symbol_str  = ATmakeSymbol("str",  0, ATfalse);
+	ATprotectSymbol(symbol_str);
 	symbol_real = ATmakeSymbol("real", 0, ATfalse);
+	ATprotectSymbol(symbol_real);
 	symbol_appl = ATmakeSymbol("appl", 0, ATfalse);
+	ATprotectSymbol(symbol_appl);
 	symbol_list = ATmakeSymbol("list", 0, ATfalse);
+	ATprotectSymbol(symbol_list);
 	symbol_blob = ATmakeSymbol("blob", 0, ATfalse);
+	ATprotectSymbol(symbol_blob);
 	symbol_term = ATmakeSymbol("term", 0, ATfalse);
+	ATprotectSymbol(symbol_term);
 	symbol_placeholder = ATmakeSymbol("placeholder", 0, ATfalse);
+	ATprotectSymbol(symbol_placeholder);
 }
 /*}}}  */
 /*{{{  ATerm ATmake(const char *pat, ...) */
