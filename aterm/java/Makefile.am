@@ -1,4 +1,4 @@
-SUBDIRS		= aterm toolbus
+SUBDIRS		= aterm
 
 noinst_DATA	= ${JAVADOCDIR}.tar.gz
 
