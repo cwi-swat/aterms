@@ -31,6 +31,9 @@ tst-alloc: test-alloc
 clean:
 	rm -f $(TESTPRGS) $(TESTOBJS) *~ core
 
+depend:
+	$(CC) -MM $(CFLAGS) $(DEFS) $(INCLUDES) $(TESTSRCS) > .depend
+
 .depend:
 	$(CC) -MM $(CFLAGS) $(DEFS) $(INCLUDES) $(TESTSRCS) > .depend
 
