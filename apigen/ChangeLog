@@ -2,6 +2,9 @@
  * Apified ApiGen by using ADT.adt for reading in ADT files
  * Changed ADT format, an Entry used to look like [Sort,Alt,Pattern],
    now its: constructor(Sort,Alt,Pattern)
+ * Added tool convert-old-adt to convert old-style ADT to new style
+   ADT's. WARNING: this tool does not pretty-print the output, you get
+   an ATerm one-liner as a result!
    
 2003-07-07 	(jurgenv@cwi.nl)
  * Added generation of is<type> predicates. You can now ask any term that is build by a generated
