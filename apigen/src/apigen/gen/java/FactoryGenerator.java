@@ -13,12 +13,11 @@ public class FactoryGenerator extends JavaGenerator {
     private boolean jtype;
   
 	public FactoryGenerator(ADT adt, String directory, String apiName, String pkg, List standardImports, 
-	                                    boolean verbose, boolean folding, boolean jtype) {
+	                                    boolean verbose, boolean folding) {
 		super(directory,className(apiName),pkg,standardImports,verbose);
 		this.className = className(apiName);
 		this.adt = adt;
-                this.jtype = jtype;
-	}
+    }
 
 	public static String className(String apiName) {
 		return  StringConversions.makeCapitalizedIdentifier(apiName) + "Factory";
@@ -123,13 +122,7 @@ public class FactoryGenerator extends JavaGenerator {
 		   String altClassName = AlternativeGenerator.className(type,alt);
 		   String protoVar = "proto" + altClassName;
 		   String funVar = "fun" + altClassName;
-
-                   String afunName;
-                   if(jtype) {
-                     afunName = altClassName;
-                   } else {
-                     afunName = StringConversions.makeCapitalizedIdentifier(alt.getId());
-                   }
+           String afunName = alt.getId();
                    
 		   println();        
 		   println("    " + altClassName + ".initializePattern();");
