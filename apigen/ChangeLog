@@ -1,5 +1,10 @@
 
-Wed Jan 29 09:44:48 CET 2003 <jong@cwi.nl>
+2003/02/06 (jurgenv@cwi.nl)
+ * Bumped to 1.6beta
+ * Make functions of factory now return type of alternative not of the abstract
+   type
+
+2003/01/29 (jong@cwi.nl)
  * Remove generated binary libraries in test/ from CVS
  * Add generated binary libraries in test/ to .cvsignore
  * Remove COPYING from .cvsignore

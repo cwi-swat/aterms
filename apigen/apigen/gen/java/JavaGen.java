@@ -347,20 +347,19 @@ extends Generator
       while (alts.hasNext()) {
         Alternative alt = (Alternative) alts.next();
         String altClassName = buildAltClassName(type,alt);
-        String typeClassName = buildClassName(type.getId());
         String protoVar = "proto" + altClassName;
         String funVar = "fun" + altClassName;
         
         printFoldOpen("make " + altClassName);
-        println("  protected " + typeClassName + " make" + altClassName + 
+        println("  protected " + altClassName + " make" + altClassName + 
                 "(aterm.AFun fun, aterm.ATerm[] args, aterm.ATermList annos) {");
         println("    synchronized (" + protoVar + ") {");
         println("      " + protoVar + ".initHashCode(annos,fun,args);");
-        println("      return (" + typeClassName + ") build(" + protoVar + ");");
+        println("      return (" + altClassName + ") build(" + protoVar + ");");
         println("    }");
         println("  }");
         println();
-        print  ("  public " + typeClassName + " make" + altClassName + "(");
+        print  ("  public " + altClassName + " make" + altClassName + "(");
         makeFormalTypedAltArgumentList(type, alt);
         println(") {");
         print  ("    aterm.ATerm[] args = new aterm.ATerm[] {");
