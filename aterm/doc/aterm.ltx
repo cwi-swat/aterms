@@ -1553,6 +1553,67 @@ records, but is does present a major obstacle in our case when we need
 to exchange huge terms between tools. We are currently considering
 whether some link between \ATerms\ and XML may be advantageous.
 
+\paragraph{ASDL}
+
+The abstract syntax definition language (ASDL) \cite{Wan97} is a 
+language for describing
+tree data structures and is used as intermediate representation language
+between the various phases of a compiler \cite{Han99}. 
+The goals of ASDL and \aterms\
+are in fact quite similar, exchanging syntax trees between tools,
+although that \aterms\ are more general in the sense that other information
+*** ander woord *** can also be represented as an \aterm.
+The ASDL pickles and the \aterms\ BAF format are comparable
+with respect to functionality, both are binary representations
+of among others syntax trees. But before a tool can process a tree
+obtained as an ASDL pickle, it has to unpickle it, which may take
+quite some memory. Tools processing \aterms\ can process \aterms\ in
+BAF format with preserving the sharing internally.
+
+In fact there are three different levels of comparison:
+\begin{enumerate}
+\item ASDL pickle versus plain \aterms.
+\item ASDL pickle versus arbitrary structured information 
+represented as an \aterm.
+\item ASDL pickle versus the parse tree represented as an 
+\aterm (or what we call
+\asfix).
+\end{enumerate} 
+The first level the structured information stored in the \aterm\ is ignored,
+in Table \ref{asdlaterm1} the sizes of COBOL parse table are given, where
+the ASDF pickle represents the plain \ascii\ version of the table.
+
+\begin{table}[tb]
+\begin{center}
+\begin{tabular}{|l||r|r|r|} \hline
+                  & \ascii  & BAF    & ASDL pickle \\
+COBOL parse table & 4212633 & 213683 & 2507957 \\ \hline    
+\end{tabular}
+\caption{Sizes of the COBOL parse table} \label{asdlaterm1}
+\end{center}
+\end{table}
+
+The second level we define the structure information coded in the
+\aterm\ explicit in the ASDL definition, so we have to give
+the ASDL definition of the parse tables and use this structured information
+when pickling, see Table \ref{asdlaterm2} for the resulting sizes.
+
+\begin{table}[tb]
+\begin{center}
+\begin{tabular}{|l||r|r|r|} \hline
+                  & \ascii  & BAF    & ASDL pickle \\
+COBOL parse table & 4212633 & 213683 & ??? \\ \hline    
+\end{tabular}
+\caption{Sizes of the COBOL parse table} \label{asdlaterm2}
+\end{center}
+\end{table}
+
+The third level is not very useful for comparison, 
+because \asfix\ represents parse trees
+whereas ASDL typical represents the abstract syntax tree.
+In the \asfix\ representation much more information is coded than
+in ASDL.
+
 \paragraph{Data encodings}
 
 As described in Section~\ref{baf}, we use a form of data encoding to
