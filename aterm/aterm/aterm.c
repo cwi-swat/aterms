@@ -748,6 +748,32 @@ ATwriteToTextFile(ATerm t, FILE * f)
 }
 
 /*}}}  */
+
+/*{{{  ATerm ATwriteToNamedTextFile(char *name) */
+
+/**
+  * Write an ATerm to a named plaintext file
+  */
+
+ATbool ATwriteToNamedTextFile(ATerm t, const char *name)
+{  
+  FILE  *f;
+  ATbool result;
+
+  if(!strcmp(name, "-"))
+    return ATwriteToTextFile(t, stdout);
+
+  if(!(f = fopen(name, "w")))
+    return NULL;
+
+  result = ATwriteToTextFile(t, f);
+  fclose(f);
+
+  return result;
+}
+
+/*}}}  */
+
 /*{{{  char *ATwriteToString(ATerm t) */
 
 /**
@@ -1562,13 +1588,16 @@ ATerm ATreadFromFile(FILE *file)
 /*{{{  ATerm ATreadFromNamedFile(char *name) */
 
 /**
-	* Read an ATerm from a named file
-	*/
+  * Read an ATerm from a named file
+  */
 
 ATerm ATreadFromNamedFile(const char *name)
 {  
-	FILE  *f;
+  FILE  *f;
   ATerm t;
+
+  if(!strcmp(name, "-"))
+    return ATreadFromFile(stdin);
 
   if(!(f = fopen(name, "r")))
     return NULL;

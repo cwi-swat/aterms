@@ -1148,6 +1148,32 @@ ATwriteToBinaryFile(ATerm t, FILE *file)
 
 /*}}}  */
 
+/*{{{  ATerm ATwriteToNamedBinaryFile(char *name) */
+
+/**
+  * Write an ATerm to a named BAF file
+  */
+
+ATbool ATwriteToNamedBinaryFile(ATerm t, const char *name)
+{  
+  FILE  *f;
+  ATbool result;
+
+  if(!strcmp(name, "-"))
+    return ATwriteToBinaryFile(t, stdout);
+
+  if(!(f = fopen(name, "w")))
+    return NULL;
+
+  result = ATwriteToBinaryFile(t, f);
+  fclose(f);
+
+  return result;
+}
+
+/*}}}  */
+
+
 /*{{{  Symbol read_symbol(FILE *file) */
 
 /**

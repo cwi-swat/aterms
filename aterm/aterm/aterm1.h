@@ -64,6 +64,8 @@ extern ATbool AT_isEqual(ATerm t1, ATerm t2);
 
 ATbool ATwriteToTextFile(ATerm t, FILE *file);
 ATbool ATwriteToBinaryFile(ATerm t, FILE *file);
+ATbool ATwriteToNamedTextFile(ATerm t, const char *name);
+ATbool ATwriteToNamedBinaryFile(ATerm t, const char *name);
 char  *ATwriteToString(ATerm t);
 ATerm  ATsetAnnotation(ATerm t, ATerm label, ATerm anno);
 ATerm  ATgetAnnotation(ATerm t, ATerm label);
