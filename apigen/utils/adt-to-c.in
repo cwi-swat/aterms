@@ -4,7 +4,7 @@
 
      PRG=`basename $0`
   prefix=@prefix@
-  ATERM=@ATERM@/classes
+  ATERM=@ATERM@
 ATERMBIN=@ATERMBIN@
 
 # }}}
