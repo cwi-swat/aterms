@@ -1,6 +1,7 @@
 
 /*{{{  includes */
 
+#include <unistd.h>
 #include <stdlib.h>
 #include <values.h>
 #include <sys/times.h>
