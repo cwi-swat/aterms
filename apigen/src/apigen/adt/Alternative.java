@@ -6,28 +6,32 @@ import aterm.ATermAppl;
 import aterm.ATermList;
 import aterm.ATermPlaceholder;
 
-public abstract class Alternative {
-	
+public class Alternative {
+
 	protected static final String[] RESERVED_TYPES = { "int", "real", "str", "term" };
 
 	protected String id;
 	protected ATerm pattern;
 
+	public Alternative(String id, ATerm pattern) {
+		this.id = id;
+		this.pattern = pattern;
+	}
+
 	protected static boolean containsPlaceholder(ATerm term) {
 		switch (term.getType()) {
 			case ATerm.PLACEHOLDER :
 				return true;
-	
+
 			case ATerm.LIST :
 				{
 					ATermList list = (ATermList) term;
 					if (list.isEmpty()) {
 						return false;
 					}
-					return containsPlaceholder(list.getFirst())
-						|| containsPlaceholder(list.getNext());
+					return containsPlaceholder(list.getFirst()) || containsPlaceholder(list.getNext());
 				}
-	
+
 			case ATerm.APPL :
 				{
 					ATermAppl appl = (ATermAppl) term;
@@ -39,7 +43,7 @@ public abstract class Alternative {
 					}
 					return false;
 				}
-	
+
 			default :
 				return false;
 		}
@@ -55,29 +59,23 @@ public abstract class Alternative {
 
 	public int getPatternType() {
 		ATerm match_pattern = buildMatchPattern();
-	
+
 		if (match_pattern.getType() == ATerm.PLACEHOLDER) {
 			ATerm ph = ((ATermPlaceholder) match_pattern).getPlaceholder();
 			if (ph.match("int") != null) {
 				return ATerm.INT;
-			}
-			else if (ph.match("real") != null) {
+			} else if (ph.match("real") != null) {
 				return ATerm.REAL;
-			}
-			else if (ph.match("str") != null) {
+			} else if (ph.match("str") != null) {
 				return ATerm.APPL;
-			}
-			else if (ph.match("list") != null) {
+			} else if (ph.match("list") != null) {
 				return ATerm.LIST;
-			}
-			else if (ph.match("term") != null) {
+			} else if (ph.match("term") != null) {
 				throw new RuntimeException("multiple alts with <term> pattern?");
-			}
-			else {
+			} else {
 				throw new RuntimeException("strange root pattern: " + match_pattern);
 			}
-		}
-		else {
+		} else {
 			return match_pattern.getType();
 		}
 	}
@@ -102,7 +100,7 @@ public abstract class Alternative {
 					}
 					return pattern.getFactory().makeAppl(fun, newargs);
 				}
-	
+
 			case ATerm.LIST :
 				{
 					ATermList list = (ATermList) t;
@@ -117,24 +115,22 @@ public abstract class Alternative {
 					}
 					return list;
 				}
-	
+
 			case ATerm.PLACEHOLDER :
 				{
 					ATerm ph = ((ATermPlaceholder) t).getPlaceholder();
 					if (ph.getType() == ATerm.LIST) {
 						return pattern.getFactory().parse("<list>");
-					}
-					else {
+					} else {
 						ATerm type = ((ATermAppl) ph).getArgument(0);
 						if (isReservedType(type.toString())) {
 							return pattern.getFactory().makePlaceholder(type);
-						}
-						else {
+						} else {
 							return pattern.getFactory().parse("<term>");
 						}
 					}
 				}
-	
+
 			default :
 				return t;
 		}
@@ -146,7 +142,7 @@ public abstract class Alternative {
 				return true;
 			}
 		}
-	
+
 		return false;
 	}
 

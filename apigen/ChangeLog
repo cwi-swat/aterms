@@ -1,3 +1,7 @@
+2003-05-09  (jurgenv@cwi.nl)
+ * Refactored generation of list constructors to a simpler design. There
+   is a special Type ListType that generates two constructors on the fly now.
+   
 2003-05-09  (jurgenv@cwi.nl,moreau@loria.fr)
  * Fixed a number of small problems in configure.in and Makefile.am's
 
