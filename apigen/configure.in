@@ -27,6 +27,37 @@ AR=ar
 AC_SUBST(AR)
 
 dnl }}}
+dnl {{{  Determine which libraries to use for programs using sockets
+
+NOSOCKLIBS=$LIBS
+dnl first, the socket functions
+SOCKET_FOUND=no
+SOCKLIBS=
+AC_CHECK_LIB(sun,socket,[SOCKET_FOUND=yes;SOCKLIBS="-lsun"])
+if test ${SOCKET_FOUND} = no; then
+  AC_CHECK_LIB(socket, socket,[SOCKET_FOUND=yes;SOCKLIBS="-lsocket"])
+  if test ${SOCKET_FOUND} = no; then
+    AC_CHECK_LIB(bsd,socket,[SOCKET_FOUND=yes;SOCKLIBS="-lbsd";DEFS="$DEFS -D_BS
+D=43"])
+  fi
+fi
+
+dnl then gethostname
+GHN_FOUND=no
+AC_CHECK_LIB(sun,gethostname,[GHN_FOUND=yes])
+if test ${GHN_FOUND} = no; then
+  AC_CHECK_LIB(nsl,gethostname,[GHN_FOUND=yes;SOCKLIBS="$SOCKLIBS -lnsl"])
+fi
+
+LIBS=$NOSOCKLIBS
+AC_CHECK_LIB(dl, dlopen)
+
+dnl Checks for header files.
+AC_CHECK_HEADER(getopt.h)
+
+AC_SUBST(SOCKLIBS)
+
+dnl }}}
 
 dnl {{{ Handle --with-asc-support
 
@@ -127,6 +158,27 @@ SGLRBIN=${withval},
 SGLRBIN="${SGLR}/bin")
 
 AC_SUBST(SGLRBIN)
+
+dnl }}}
+dnl {{{ Handle --with-xt
+
+AC_PATH_PROG(XT, add-labels, no)
+if test "${XT}" = "no"; then
+	XT='${prefix}'
+else
+	XT=`dirname \`dirname ${XT}\``
+fi
+
+AC_ARG_WITH(xt,
+[  --with-xt=DIR           xt distribution is in DIR],
+XT=${withval},)
+
+AC_ARG_WITH(xt-bin,
+[  --with-xt-bin=DIR       xt executables are in DIR],
+XTBIN=${withval},
+XTBIN="${XT}/bin")
+
+AC_SUBST(XTBIN)
 
 dnl }}}
 
