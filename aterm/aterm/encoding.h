@@ -23,7 +23,7 @@
 #define TERM_SIZE_LIST        4
 #define TERM_SIZE_PLACEHOLDER 3
 
-#define GET_MARK(h)     ((h) & MASK_MARK)
+#define IS_MARKED(h)    ((h) & MASK_MARK)
 #define GET_TYPE(h)     (((h) & MASK_TYPE) >> SHIFT_TYPE)
 #define HAS_ANNO(h)     ((h) & MASK_ANNO)
 #define GET_ARITY(h)	(((h) & MASK_ARITY) >> SHIFT_ARITY)
@@ -31,17 +31,19 @@
 #define GET_LENGTH(h)	((h) >> SHIFT_LENGTH)
 #define IS_QUOTED(h)	((h) & MASK_QUOTED)
 
-#define SET_MARK(h)			((h) | MASK_MARK)
-#define SET_TYPE(h, type)	(((h) & ~MASK_TYPE) | ((type) << SHIFT_TYPE))
-#define SET_ANNO(h)			((h) | MASK_ANNO)
-#define SET_ARITY(h, ar)	(((h) & ~MASK_ARITY) | ((ar) << SHIFT_ARITY))
-#define SET_SYMBOL(h, sym)	(((h) & ~MASK_SYMBOL) | (sym) << SHIFT_SYMBOL)
-#define SET_LENGTH(h, len)  (((h) & ~MASK_LENGTH) | (len) << SHIFT_LENGTH)
-#define SET_QUOTED(h)		((h) | MASK_QUOTED)
+#define SET_MARK(h)			((h) |= MASK_MARK)
+#define SET_ANNO(h)			((h) |= MASK_ANNO)
+#define SET_ARITY(h, ar)    ((h) = (((h) & ~MASK_ARITY) | \
+									((ar) << SHIFT_ARITY)))
+#define SET_SYMBOL(h, sym)	((h) = (((h) & ~MASK_SYMBOL) | \
+									((sym) << SHIFT_SYMBOL)))
+#define SET_LENGTH(h, len)  ((h) = (((h) & ~MASK_LENGTH) | \
+									((len) << SHIFT_LENGTH)))
+#define SET_QUOTED(h)		((h) |= MASK_QUOTED)
 
-#define CLR_MARK(h)			((h) & ~MASK_MARK)
-#define CLR_ANNO(h)			((h) & ~MASK_ANNO)
-#define CLR_QUOTED(h)		((h) & ~MASK_QUOTED)
+#define CLR_MARK(h)			((h) &= ~MASK_MARK)
+#define CLR_ANNO(h)			((h) &= ~MASK_ANNO)
+#define CLR_QUOTED(h)		((h) &= ~MASK_QUOTED)
 
 #define APPL_HEADER(anno,ari,sym) ((anno) | ((ari) << SHIFT_ARITY) | \
 				   (AT_APPL << SHIFT_TYPE) | \

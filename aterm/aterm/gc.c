@@ -4,10 +4,11 @@
 #include <sys/times.h>
 #include <limits.h>
 
-#include "gc.h"
+#include "_aterm.h"
+#include "symbol.h"
 #include "memory.h"
-#include "aterm2.h"
 #include "util.h"
+#include "gc.h"
 
 /*}}}  */
 /*{{{  externals */
@@ -35,17 +36,6 @@ void AT_initGC(int argc, char *argv[], ATerm *bottomOfStack)
 
 /*}}}  */
 
-/*{{{  void mark_term(ATerm t) */
-
-/**
-  * Mark a term.
-  */
-
-void mark_term(ATerm t)
-{
-}
-
-/*}}}  */
 /*{{{  void mark_phase() */
 
 /**
@@ -66,12 +56,15 @@ void mark_phase()
   /* Traverse protected terms */
   for(i=0; i<at_nrprotected; i++)
 		if(*at_protected[i])
-			mark_term(*at_protected[i]);
+			AT_markTerm(*at_protected[i]);
 
   /* Traverse the stack */
-  for(cur=start; cur<stop; cur++)
-		if (AT_isValidTerm(*cur))
-			mark_term(*cur);
+  for(cur=start; cur<stop; cur++) {
+	if (AT_isValidTerm(*cur))
+	  AT_markTerm(*cur);
+	if (AT_isValidSymbol((Symbol)*cur))
+	  AT_markSymbol((Symbol)*cur);
+  }
 }
 
 /*}}}  */

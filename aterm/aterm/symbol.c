@@ -225,4 +225,16 @@ ATbool AT_isValidSymbol(Symbol sym)
 }
 
 /*}}}  */
+/*{{{  void AT_markSymbol(Symbol s) */
+
+/**
+  * Mark a symbol by setting its mark bit.
+  */
+
+void AT_markSymbol(Symbol s)
+{
+  lookup_table[s]->header |= MASK_MARK;
+}
+
+/*}}}  */
 

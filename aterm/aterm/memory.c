@@ -149,7 +149,7 @@ static void allocate_block(int size)
 	((ATerm)(((header_type *)data)+idx))->next = NULL;
 
 	/* Place the new block in the block_table */
-	idx = (((int)newblock) >> BLOCK_SHIFT) % BLOCK_TABLE_SIZE;
+	idx = (((unsigned int)newblock) >> BLOCK_SHIFT) % BLOCK_TABLE_SIZE;
 	newblock->next_after = block_table[idx].first_after;
 	block_table[idx].first_after = newblock;
 	idx = (idx+1) % BLOCK_TABLE_SIZE;
@@ -1084,12 +1084,11 @@ ATerm AT_setAnnotations(ATerm t, ATerm annos)
   ATbool found;
   ATerm cur;
   
-  if(HAS_ANNO(t->header)) {
-    header = t->header;
+	header = t->header;
+  if(HAS_ANNO(header))
     size--;
-  } else {
-    header = SET_ANNO(t->header);
-  }
+  else
+    SET_ANNO(header);
 
   hnr = hash_number_anno(header, size-2, ((ATerm *)t)+2, annos);
   cur = hashtable[hnr];
@@ -1150,7 +1149,8 @@ ATerm AT_removeAnnotations(ATerm t)
   if(!HAS_ANNO(t->header))
     return t;
 
-  header = CLR_ANNO(t->header);
+	header = t->header;
+  CLR_ANNO(header);
   size = term_size(t)-1;
 
   hnr = hash_number(header, size-2, ((ATerm *)t)+2);
@@ -1262,7 +1262,7 @@ ATerm ATremoveAnnotation(ATerm t, ATerm label)
 ATbool AT_isValidTerm(ATerm term)
 {
 	block *cur;
-	int idx = (((int)term)>>BLOCK_SHIFT) % BLOCK_TABLE_SIZE;
+	int idx = (((unsigned int)term)>>BLOCK_SHIFT) % BLOCK_TABLE_SIZE;
   header_type header;
   int         type;
 	ATbool inblock = ATfalse;
@@ -1291,28 +1291,17 @@ ATbool AT_isValidTerm(ATerm term)
 	if(!inblock)
 		return ATfalse;
 
+	/* Check if we point to the start of a term. Pointers inside terms
+     are not allowed.
+	 */
+  if((((header_type)term - (header_type)cur->data) % cur->size) != 0)
+		return ATfalse;
+
   header = term->header;
   type = GET_TYPE(header);
 
-	/* We still have two possibilities for invalid terms:
-     1 - We point to the start of a term that is free
-     2 - We point inside a term
-		 The first case is easy to detect, because the type must be AT_FREE.
-     The second case means that we point to a word which may contain a pointer
-		 to a term, in which case the lowest two bits are zero for which we
-     have defined the type AT_ILLEGAL.
-	*/
-	if (type == AT_FREE || type == AT_ILLEGAL)
-		return ATfalse;
-
-	/* Now the only possibility for an invalid term is that
-     we point inside an int or real term.
-		 To make sure, we check on the alignment.
-	 */
-  if((((header_type)cur->data - (header_type)term) % cur->size) != 0)
-		return ATfalse;
-	
-	return ATtrue;
+	/* The only possibility left for an invalid term is AT_FREE */
+	return (type == AT_FREE ? ATfalse : ATtrue);
 }
 
 /*}}}  */

@@ -16,10 +16,9 @@
 #define AT_INT          1 
 #define AT_REAL         2
 #define AT_APPL         3
-#define AT_ILLEGAL      4   /* The lowest two bits may not be zero! */
-#define AT_LIST         5
-#define AT_PLACEHOLDER  6
-#define AT_BLOB         7
+#define AT_LIST         4
+#define AT_PLACEHOLDER  5
+#define AT_BLOB         6
 
 typedef struct ATerm
 {

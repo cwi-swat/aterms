@@ -9,14 +9,14 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
-#include "aterm2.h"
+#include <assert.h>
+
+#include "_aterm.h"
 #include "memory.h"
 #include "symbol.h"
 #include "list.h"
 #include "make.h"
 #include "gc.h"
-
-#include <assert.h>
 
 /*}}}  */
 /*{{{  defines */
@@ -208,6 +208,7 @@ int ATfprintf(FILE *stream, const char *format, ...)
 }
 /*}}}  */
 /*{{{  int ATvfprintf(FILE *stream, const char *format, va_list args) */
+
 int ATvfprintf(FILE *stream, const char *format, va_list args)
 {
     const char *p;
@@ -224,7 +225,7 @@ int ATvfprintf(FILE *stream, const char *format, va_list args)
 	}
 
 	s = fmt;
-	while (!isalpha(*p))	/* parse formats %-20s, etc. */
+	while (!isalpha((int)*p))	/* parse formats %-20s, etc. */
 	    *s++ = *p++;
 	*s++ = *p;
 	*s = '\0';
@@ -275,6 +276,7 @@ int ATvfprintf(FILE *stream, const char *format, va_list args)
     }
     return result;
 }
+
 /*}}}  */
 
 /*{{{  static void resize_buffer(int n) */
@@ -1368,4 +1370,52 @@ ATerm ATreadFromString(const char *string)
 }
 
 /*}}}  */
+
+/*{{{  void AT_markTerm(ATerm t) */
+
+/**
+  * Mark a term and all of its children.
+  */
+
+void AT_markTerm(ATerm t)
+{
+  int i, arity;
+  Symbol sym;
+
+  if(IS_MARKED(t->header))
+	return;
+
+  SET_MARK(t->header);
+  
+  switch(GET_TYPE(t->header)) {
+	case AT_INT:
+	case AT_REAL:
+	case AT_BLOB:
+	  break;
+
+	case AT_APPL:
+	  sym = ATgetSymbol((ATermAppl)t);
+	  AT_markSymbol(sym);
+	  arity = GET_ARITY(t->header);
+	  if(arity > MAX_INLINE_ARITY)
+		arity = ATgetArity(sym);
+	  for(i=0; i<arity; i++)
+		AT_markTerm(ATgetArgument((ATermAppl)t, i));
+	  break;
+
+	case AT_LIST:
+	  if(!ATisEmpty((ATermList)t)) {
+		AT_markTerm(ATgetFirst((ATermList)t));
+		AT_markTerm((ATerm)ATgetNext((ATermList)t));
+	  }
+	  break;
+	  
+	case AT_PLACEHOLDER:
+	  AT_markTerm(ATgetPlaceholder((ATermPlaceholder)t));
+	  break;
+  }
+}
+
+/*}}}  */
+
 
