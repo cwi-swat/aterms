@@ -26,7 +26,7 @@ CLASSES = $(patsubst %.java,%.class,$(SOURCE))
 all: ${CLASSES}
 
 %.class: %.java
-	javac -classpath ..:$$CLASSPATH $<
+	javac -classpath ../..:$$CLASSPATH $<
 
 install: ${CLASSES}
 	@mkdir -p ${classdir}/aterm/util
