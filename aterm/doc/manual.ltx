@@ -486,7 +486,9 @@ arguments}
 \Describe{
 	As \ATerms\ are created using \emph{maximal sharing} (see
 	Section~\ref{sharing}), testing equality is performed in constant time
-	by comparing the addresses of {\tt t1} and {\tt t2}}
+	by comparing the addresses of {\tt t1} and {\tt t2}. Note however
+that {\tt ATisEqual} only returns {\tt ATtrue} when {\tt t1} and {\tt t2}
+are completely equal, inclusive any annotations they might have!}
 
 \Function{ATwriteToTextFile}{ATbool}{\aterm\ t, FILE *f}
 {Writes term {\tt t} to file {\tt f} in textual format}
@@ -1179,323 +1181,6 @@ representations of \aterms.
 
 \appendix
 
-%{{{ The Java implementation
-
-\section{Java implementation}
-
-Besides the C implementaton discussed upto now, we also developed
-a Java implementation of the ATerm datatype. We have tried to
-keep the interfaces of the C implementation and the Java implementation
-as close together as possible. Unfortunately, constraints imposed by
-both languages prohibit the use of a single interface for both languages.
-In this section we will discuss the Java interface, and highlight the
-differences with the C interface where appropriate.
-
-Most differences are introduced by the fact that Java is a much more
-powerful language than C. Garbage collection for instance is a built-in 
-feature of the Java language, so no {\tt protect} and {\tt unprotect}
-functions are needed in Java.
-
-\emph{Note that the Java version is still experimental, and therefore
-subject to change!}
-
-%{{{ Class hierarchy
-
-\subsection{Class hierarchy}
-
-Because Java is an object oriented language, we have partitioned
-the Java implementation in a number of classes. The resulting class
-hierarchy is shown in Figure \ref{class-hierarchy}.
-
-\begin{figure}[htb]
-\centerline{\epsfig{scale=0.5, file=hierarchy.ps}}
-\caption{\label{class-hierarchy}Simple ATerm class library}
-\end{figure}
-
-Each of the subclasses of the abstract base class {\tt ATerm} represents 
-one of the \aterm\ types. The {\tt ATerm} class also implements the
-Level 1 functionality discussed earlier. This means that users who only need
-to use this Level 1 interface, only need to get familiar with the class
-{\tt ATerm} and its methods!
-
-The class {\tt World} is used to implement maximal sharing, and is 
-normally not used directly by the users of the \aterm\ library.
-
-%}}}
-
-%{{{ The class ATerm
-
-\subsection{The class {\tt ATerm}}
-
-This class implements the basic functionality to create and manipulate
-\aterms. 
-
-%{{{ Creating ATerm objects
-
-\subsubsection{Creating {\tt ATerm} objects}
-Because of the need to maintain maximal sharing, users of the
-\aterm\ library do not create {\tt ATerm} objects directly using one
-of its constructors, but instead use one of the following static methods 
-in the {\tt ATerm} class:
-
-\Method{parse}{\ATerm}{String string}
-{Parse an \aterm\ from its string representation}
-\Throws{ParseError}{when {\tt string} is not a valid term.}
-\Describe{
-	This function takes a String as input and tries to parse
-        it as an ATerm. If {\tt string} represents a valid \aterm,
-        an \ATerm\ object is returned. If the parsing fails, 
-	a ParseError is thrown.
-}
-
-\Method{readFromTextFile}{\ATerm}{InputStream i}
-{Read an \aterm\ from an {\tt InputStream}}
-\Throws{IOException}{when an I/O error occurs.}
-\Throws{ParseError}{when the string read from {tt i} is not a valid term.}
-\Describe{
-  This function takes an InputStream as input and reads one byte at
-  a time. Note that the current implementation can only handle ASCII
-  characters, not full Unicode.}
-
-\Method{make}{\ATerm}{String pattern,Object arg1,Object arg2,...,Object argn}
-{Parse a pattern and fill in the placeholders in it using {\tt arg1}
-through {\tt argn}.}
-\Throws{ParseError}{when {\tt pattern} does not represent a valid term.}
-\Describe{
-  The rules for matching are the same as in the {\tt ATmatch} function in
-  the C library.
-  Note that this is not a single method but rather a set of six different
-  methods, one for each number of {\tt arg} arguments from zero to five.
-  When you need to use a pattern with more than five placeholders, you
-  must use the more general {\tt make} method described next.
-  When the number of placeholders in {\tt pattern} is larger than the
-  number of actual {\tt arg} arguments, a {\tt RuntimeException} is
-  thrown. When the number of placeholders is less than the number of
-  arguments, the excess arguments are ignored. When the type of one
-  of the arguments does not match the placeholder type as shown
-  in the following table, a {\tt ClassCastException} is thrown.
-}
-
-\begin{tabular}{|l|l|}
-\hline
-Placeholder   & Argument type \\
-              &               \\
-\hline
-{\tt <int>}   & Integer       \\
-{\tt <real>}  & Double        \\
-{\tt <str>}   & String        \\
-{\tt <appl>}  & String        \\
-{\tt <term>}  & ATerm         \\
-{\tt <list>}  & ATermList     \\
-\hline
-\end{tabular}
-
-%}}}
-%{{{ Analyzing terms
-
-\subsection{Analyzing terms}
-Besides creating terms, you can also analyze them using the methods
-described here.
-
-\Method{getType}{int}{}
-{Retrieve the type of this \ATerm\ object.}
-\Describe{This method returns one of the following
-possible constants, indicating the type of the \ATerm\ object:
-\begin{itemize}
-\item {\tt ATerm.AT\_INT}: The object is of type {\tt ATermInt}
-\item {\tt ATerm.AT\_REAL}: The object is of type {\tt ATermReal}
-\item {\tt ATerm.AT\_APPL}: The object is of type {\tt ATermAppl}
-\item {\tt ATerm.AT\_LIST}: The object is of type {\tt ATermList}
-\item {\tt ATerm.AT\_PLACEHOLDER}: The object is of type {\tt ATermPlaceholder}
-\item {\tt ATerm.AT\_BLOB}: The object is of type {\tt ATermBlob}
-\end{itemize}
-In principle, the {\tt instanceof} operator can be used to
-retrieve the same information. However, the {\tt getType} method is much
-faster and the resulting integer value can be used in a {\tt switch}
-statement, while the {\tt instanceof} operator is only a boolean
-predicate.
-}
-
-\Method{match}{Vector}{String pattern}
-{Match a term against a String pattern, possibly yielding a list of subterms
-matching with placeholders.}
-\Throws{ParseError}{when {\tt pattern} does not represent a valid term.}
-\Describe{
-The pattern is parsed as an \ATerm, and the result is matched against
-the object this method is called on. When the match succeeds, a {\tt Vector}
-is returned containing a list of objects resulting from matches of subterms
-with placeholders in the pattern. When the match fails, {\tt null} is 
-returned.
-}
-
-\Method{match}{Vector}{ATerm pattern}
-{Match a term against a \ATerm\ pattern, possibly yielding a list of
-subterms matching with placeholders.}
-\Describe{
-{\tt pattern} is matched against
-the object this method is called on. When the match succeeds, a {\tt Vector}
-is returned containing a list of objects resulting from matches of subterms
-with placeholders in the pattern. When the match fails, {\tt null} is 
-returned.
-}
-
-\Method{isEqual}{boolean}{ATerm term}
-{Perform an equality check between two \ATerms}
-\Describe{Because of the maximal sharing, this operation is very cheap
-because no deep equality check is needed.}
-
-%}}}
-%{{{ Output methods
-
-\subsubsection{Output methods}
-Some methods are needed to convert \ATerms\ to {\tt String}s and to
-write \ATerms\ to {\tt OutputStream}s and {\tt PrintWriter}s.
-
-\Method{writeToTextFile}{void}{OutputStream s}
-{Write an \ATerm\ to an {\tt OutputStream}.}
-\Throws{IOException}{When an I/O error occured}
-
-\Method{print}{void}{OutputStream s}
-{Print an \ATerm\ to an {\tt OutputStream}.}
-\Describe{The only difference with the method {\tt writeToTextFile}
-is that this method does not throw an {\tt IOException} when something
-goes wrong, but instead fails silently.}
-
-\Method{writeToString}{String}{}
-{Return the {\tt String} representation of an \ATerm.}
-
-%}}}
-
-%}}}
-%{{{ The class ATermInt
-
-\subsection{The class {\tt ATermInt}}
-
-This class is used to represent integer terms. It has only one
-useful method:
-
-\Method{getInt}{int}{}
-{Retrieve the integer value held by this \ATerm.}
-
-%}}}
-%{{{ The class ATermReal
-
-\subsection{The class {\tt ATermReal}}
-
-This class is used to represent real valued terms. It has only one
-useful method:
-
-\Method{getReal}{double}{}
-{Retrieve the real value held by this \ATerm.}
-
-%}}}
-%{{{ The class ATermAppl
-
-\subsection{The class {\tt ATermAppl}}
-
-This class is used to represent function applications. 
-It adds the following methods to the {\tt ATerm} base class:
-
-\Method{getName}{String}{}
-{Retrieve the function name of this function application.}
-
-\Method{isQuoted}{boolean}{}
-{Ask if this function application has a quoted function name.}
-
-\Method{getArity}{int}{}
-{Retrieve the arity of this function application.}
-
-\Method{getArguments}{ATermList}{}
-{Retrieve the list of function arguments of this function application.}
-
-\Method{getArgument}{ATerm}{int}
-{Retrieve a specific function argument of this function application.}
-
-%}}}
-%{{{ The class ATermList
-
-\subsection{The class {\tt ATermList}}
-
-This class is used to represent lists of terms. 
-It adds the following methods to the {\tt ATerm} base class:
-
-\Method{isEmpty}{boolean}{}
-{Check if we are dealing with the empty list.}
-
-\Method{getFirst}{ATerm}{}
-{Retrieve the first element of this list.}
-
-\Method{getNext}{ATermList}{}
-{Retrieve a list containing all elements except the first one.}
-
-\Method{getLength}{int}{}
-{Retrieve the length of this list.}
-
-\Method{indexOf}{int}{ATerm el, int start}
-{Retrieve the index of the first occurrence of {\tt el} after position
-{\tt start}.}
-\Describe{When {\tt el} does not occur after position {\tt start},
--1 is returned. When {\tt start} is negative, it is interpreted as an
-offset from the end of the list.}
-
-\Method{lastIndexOf}{int}{ATerm el, int start}
-{Retrieve the index of the last occurrence of {\tt el} before position
-{\tt start}.}
-\Describe{When {\tt el} does not occur before position {\tt start},
--1 is returned. When {\tt start} is negative, it is interpreted as an
-offset from the end of the list.}
-
-\Method{concat}{ATermList}{ATermList rhs}
-{Concatenate two lists.}
-
-\Method{append}{ATermList}{ATerm el}
-{Append one element to a list.}
-
-\Method{elementAt}{ATerm}{int index}
-{Retrieve a specific indexed element from a list.}
-\Describe{When {\tt index} is larger than the number of elements
-in the list, an {\tt IllegalArgumentException} is thrown.}
-
-\Method{removeElementAt}{ATermList}{int index}
-{Return a list where the element at {\tt index} is removed.}
-\Describe{When {\tt index} is larger than the number of elements
-in the list, a {\tt NullpointerException} is thrown.}
-
-%}}}
-%{{{ The class ATermPlaceholder
-
-\subsection{The class {\tt ATermPlaceholder}}
-
-This class is used to represent placeholder terms. It has only one
-useful method:
-
-\Method{getPlaceholderType}{ATerm}{}
-{Retrieve the type of this placeholder.}
-
-%}}}
-
-%{{{ The class World
-
-\subsection{The class {\tt World}}
-
-This class represents a term database containing a set of
-terms that is maximally shared. Normally a single applications
-only uses one instance of this class. In this case, there is no
-need to call any of the methods in this class, because the {\tt ATerm}
-class and its subclasses provide a much cleaner interface to the
-functionality offered by the {\tt World} class. In some rare cases
-however, an application might need to create more than one 
-{\tt World} instance. This could be the case for instance when
-different Threads need to manipulate diverse terms and the overhead
-of locking and unlocking the same {\tt World} object by both threads
-for every term creation is too big.
-
-A complete discussion of the {\tt World} class falls outside
-the scope of this document.
-
-%}}}
-
-%}}}
 %{{{ The ToolBus layer
 
 \section{The ToolBus layer}
@@ -1809,6 +1494,533 @@ the following code:
     }
   }
 \end{verbatim}
+
+%}}}
+
+%}}}
+%{{{ The Java implementation
+
+\section{Java implementation}
+
+Besides the C implementaton discussed upto now, we also developed
+a Java implementation of the ATerm datatype. We have tried to
+keep the interfaces of the C implementation and the Java implementation
+as close together as possible. Unfortunately, constraints imposed by
+both languages prohibit the use of a single interface for both languages.
+In this section we will discuss the Java interface, and highlight the
+differences with the C interface where appropriate.
+
+Most differences are introduced by the fact that Java is a much more
+powerful language than C. Garbage collection for instance is a built-in 
+feature of the Java language, so no {\tt protect} and {\tt unprotect}
+functions are needed in Java.
+
+\emph{Note that the Java version is still experimental, and therefore
+subject to change!}
+
+%{{{ Class hierarchy
+
+\subsection{Class hierarchy}
+
+Because Java is an object oriented language, we have partitioned
+the Java implementation in a number of classes. The resulting class
+hierarchy is shown in Figure \ref{class-hierarchy}.
+
+\begin{figure}[htb]
+\centerline{\epsfig{scale=0.5, file=hierarchy.ps}}
+\caption{\label{class-hierarchy}Simple ATerm class library}
+\end{figure}
+
+Each of the subclasses of the abstract base class {\tt ATerm} represents 
+one of the \aterm\ types. The {\tt ATerm} class also implements the
+Level 1 functionality discussed earlier. This means that users who only need
+to use this Level 1 interface, only need to get familiar with the class
+{\tt ATerm} and its methods!
+
+The class {\tt World} is used to implement maximal sharing, and is 
+normally not used directly by the users of the \aterm\ library.
+
+%}}}
+
+%{{{ The class ATerm
+
+\subsection{The class {\tt ATerm}}
+
+This class implements the basic functionality to create and manipulate
+\aterms. 
+
+%{{{ Creating ATerm objects
+
+\subsubsection{Creating {\tt ATerm} objects}
+Because of the need to maintain maximal sharing, users of the
+\aterm\ library do not create {\tt ATerm} objects directly using one
+of its constructors, but instead use one of the following static methods 
+in the {\tt ATerm} class:
+
+\Method{parse}{\ATerm}{String string}
+{Parse an \aterm\ from its string representation}
+\Throws{ParseError}{when {\tt string} is not a valid term.}
+\Describe{
+	This function takes a String as input and tries to parse
+        it as an ATerm. If {\tt string} represents a valid \aterm,
+        an \ATerm\ object is returned. If the parsing fails, 
+	a ParseError is thrown.
+}
+
+\Method{readFromTextFile}{\ATerm}{InputStream i}
+{Read an \aterm\ from an {\tt InputStream}}
+\Throws{IOException}{when an I/O error occurs.}
+\Throws{ParseError}{when the string read from {tt i} is not a valid term.}
+\Describe{
+  This function takes an InputStream as input and reads one byte at
+  a time. Note that the current implementation can only handle ASCII
+  characters, not full Unicode.}
+
+\Method{make}{\ATerm}{String pattern,Object arg1,Object arg2,...,Object argn}
+{Parse a pattern and fill in the placeholders in it using {\tt arg1}
+through {\tt argn}.}
+\Throws{ParseError}{when {\tt pattern} does not represent a valid term.}
+\Describe{
+  The rules for matching are the same as in the {\tt ATmatch} function in
+  the C library.
+  Note that this is not a single method but rather a set of six different
+  methods, one for each number of {\tt arg} arguments from zero to five.
+  When you need to use a pattern with more than five placeholders, you
+  must use the more general {\tt make} method described next.
+  When the number of placeholders in {\tt pattern} is larger than the
+  number of actual {\tt arg} arguments, a {\tt RuntimeException} is
+  thrown. When the number of placeholders is less than the number of
+  arguments, the excess arguments are ignored. When the type of one
+  of the arguments does not match the placeholder type as shown
+  in the following table, a {\tt ClassCastException} is thrown.
+}
+
+\begin{tabular}{|l|l|}
+\hline
+Placeholder   & Argument type \\
+              &               \\
+\hline
+{\tt <int>}   & Integer       \\
+{\tt <real>}  & Double        \\
+{\tt <str>}   & String        \\
+{\tt <appl>}  & String        \\
+{\tt <term>}  & ATerm         \\
+{\tt <list>}  & ATermList     \\
+\hline
+\end{tabular}
+
+%}}}
+%{{{ Analyzing terms
+
+\subsection{Analyzing terms}
+Besides creating terms, you can also analyze them using the methods
+described here.
+
+\Method{getType}{int}{}
+{Retrieve the type of this \ATerm\ object.}
+\Describe{This method returns one of the following
+possible constants, indicating the type of the \ATerm\ object:
+\begin{itemize}
+\item {\tt ATerm.AT\_INT}: The object is of type {\tt ATermInt}
+\item {\tt ATerm.AT\_REAL}: The object is of type {\tt ATermReal}
+\item {\tt ATerm.AT\_APPL}: The object is of type {\tt ATermAppl}
+\item {\tt ATerm.AT\_LIST}: The object is of type {\tt ATermList}
+\item {\tt ATerm.AT\_PLACEHOLDER}: The object is of type {\tt ATermPlaceholder}
+\item {\tt ATerm.AT\_BLOB}: The object is of type {\tt ATermBlob}
+\end{itemize}
+In principle, the {\tt instanceof} operator can be used to
+retrieve the same information. However, the {\tt getType} method is much
+faster and the resulting integer value can be used in a {\tt switch}
+statement, while the {\tt instanceof} operator is only a boolean
+predicate.
+}
+
+\Method{match}{Vector}{String pattern}
+{Match a term against a String pattern, possibly yielding a list of subterms
+matching with placeholders.}
+\Throws{ParseError}{when {\tt pattern} does not represent a valid term.}
+\Describe{
+The pattern is parsed as an \ATerm, and the result is matched against
+the object this method is called on. When the match succeeds, a {\tt Vector}
+is returned containing a list of objects resulting from matches of subterms
+with placeholders in the pattern. When the match fails, {\tt null} is 
+returned.
+}
+
+\Method{match}{Vector}{ATerm pattern}
+{Match a term against a \ATerm\ pattern, possibly yielding a list of
+subterms matching with placeholders.}
+\Describe{
+{\tt pattern} is matched against
+the object this method is called on. When the match succeeds, a {\tt Vector}
+is returned containing a list of objects resulting from matches of subterms
+with placeholders in the pattern. When the match fails, {\tt null} is 
+returned.
+}
+
+\Method{isEqual}{boolean}{ATerm term}
+{Perform an equality check between two \ATerms}
+\Describe{Because of the maximal sharing, this operation is very cheap
+because no deep equality check is needed.}
+
+%}}}
+%{{{ Output methods
+
+\subsubsection{Output methods}
+Some methods are needed to convert \ATerms\ to {\tt String}s and to
+write \ATerms\ to {\tt OutputStream}s and {\tt PrintWriter}s.
+
+\Method{writeToTextFile}{void}{OutputStream s}
+{Write an \ATerm\ to an {\tt OutputStream}.}
+\Throws{IOException}{When an I/O error occured}
+
+\Method{print}{void}{OutputStream s}
+{Print an \ATerm\ to an {\tt OutputStream}.}
+\Describe{The only difference with the method {\tt writeToTextFile}
+is that this method does not throw an {\tt IOException} when something
+goes wrong, but instead fails silently.}
+
+\Method{println}{void}{OutputStream s}
+{Print an \ATerm\ followed by a newline to an {\tt OutputStream}}
+\Describe{This method does the same as the {\tt print} method,
+but also prints a newline afterwards as well as flushing the
+{\tt OutputStream} before returning.}
+
+\Method{writeToString}{String}{}
+{Return the {\tt String} representation of an \ATerm.}
+
+%}}}
+
+%}}}
+%{{{ The class ATermInt
+
+\subsection{The class {\tt ATermInt}}
+
+This class is used to represent integer terms. It has only one
+useful method:
+
+\Method{getInt}{int}{}
+{Retrieve the integer value held by this \ATerm.}
+
+%}}}
+%{{{ The class ATermReal
+
+\subsection{The class {\tt ATermReal}}
+
+This class is used to represent real valued terms. It has only one
+useful method:
+
+\Method{getReal}{double}{}
+{Retrieve the real value held by this \ATerm.}
+
+%}}}
+%{{{ The class ATermAppl
+
+\subsection{The class {\tt ATermAppl}}
+
+This class is used to represent function applications. 
+It adds the following methods to the {\tt ATerm} base class:
+
+\Method{getName}{String}{}
+{Retrieve the function name of this function application.}
+
+\Method{isQuoted}{boolean}{}
+{Ask if this function application has a quoted function name.}
+
+\Method{getArity}{int}{}
+{Retrieve the arity of this function application.}
+
+\Method{getArguments}{ATermList}{}
+{Retrieve the list of function arguments of this function application.}
+
+\Method{getArgument}{ATerm}{int}
+{Retrieve a specific function argument of this function application.}
+
+%}}}
+%{{{ The class ATermList
+
+\subsection{The class {\tt ATermList}}
+
+This class is used to represent lists of terms. 
+It adds the following methods to the {\tt ATerm} base class:
+
+\Method{isEmpty}{boolean}{}
+{Check if we are dealing with the empty list.}
+
+\Method{getFirst}{ATerm}{}
+{Retrieve the first element of this list.}
+
+\Method{getNext}{ATermList}{}
+{Retrieve a list containing all elements except the first one.}
+
+\Method{getLength}{int}{}
+{Retrieve the length of this list.}
+
+\Method{indexOf}{int}{ATerm el, int start}
+{Retrieve the index of the first occurrence of {\tt el} after position
+{\tt start}.}
+\Describe{When {\tt el} does not occur after position {\tt start},
+-1 is returned. When {\tt start} is negative, it is interpreted as an
+offset from the end of the list.}
+
+\Method{lastIndexOf}{int}{ATerm el, int start}
+{Retrieve the index of the last occurrence of {\tt el} before position
+{\tt start}.}
+\Describe{When {\tt el} does not occur before position {\tt start},
+-1 is returned. When {\tt start} is negative, it is interpreted as an
+offset from the end of the list.}
+
+\Method{concat}{ATermList}{ATermList rhs}
+{Concatenate two lists.}
+
+\Method{append}{ATermList}{ATerm el}
+{Append one element to a list.}
+
+\Method{elementAt}{ATerm}{int index}
+{Retrieve a specific indexed element from a list.}
+\Describe{When {\tt index} is larger than the number of elements
+in the list, an {\tt IllegalArgumentException} is thrown.}
+
+\Method{removeElementAt}{ATermList}{int index}
+{Return a list where the element at {\tt index} is removed.}
+\Describe{When {\tt index} is larger than the number of elements
+in the list, a {\tt NullpointerException} is thrown.}
+
+%}}}
+%{{{ The class ATermPlaceholder
+
+\subsection{The class {\tt ATermPlaceholder}}
+
+This class is used to represent placeholder terms. It has only one
+useful method:
+
+\Method{getPlaceholderType}{ATerm}{}
+{Retrieve the type of this placeholder.}
+
+%}}}
+%{{{ The class World
+
+\subsection{The class {\tt World}}
+
+This class represents a term database containing a set of
+terms that is maximally shared. Normally a single applications
+only uses one instance of this class. In this case, there is no
+need to call any of the methods in this class, because the {\tt ATerm}
+class and its subclasses provide a much cleaner interface to the
+functionality offered by the {\tt World} class. In some rare cases
+however, an application might need to create more than one 
+{\tt World} instance. This could be the case for instance when
+different Threads need to manipulate diverse terms and the overhead
+of locking and unlocking the same {\tt World} object by both threads
+for every term creation is too big.
+
+A complete discussion of the {\tt World} class falls outside
+the scope of this document.
+
+%}}}
+
+%}}}
+%{{{ The ToolBus layer in the Java implementation
+
+\section{ToolBus support in Java}
+
+The Java layer also has ToolBus support situated in the package
+{\tt aterm.toolbus}.
+This section explains how to use this support to build
+toolbus tools. 
+
+%{{{ Generation of tool interfaces
+
+\subsection{Generation of tool interfaces}
+
+Just as in the C case, the Java version of the \ATerm\ library provides 
+a program that takes a standard
+\toolbus\ \emph{tifs} file, which is generated by the toolbus interpreter
+when started with the {\tt -gentifs} option, and generates a
+a tool interface in Java for use with the \ATerm\ library.
+This program is called {\tt tifstojava}.
+
+The generated interface consists of an abstract class that
+must be subclassed to implement a fully functional ToolBus tool.
+The only thing that has to be done in the subclass is to implement
+a number of abstract methods that correspond to the elements of the
+input signature of the tool. The generated superclass takes actually
+reads the input terms received from the ToolBus and delegates the
+actual work to the corresponding interface methods.
+
+The {\tt tifstojava} program can be called as follows:
+\begin{verbatim}
+tifstojava -tool <tool> -tifs <tifs> [-class <classname> -package <package>]
+\end{verbatim}
+
+Normally the class name is constructed from the tool name, but this
+can be overridden using the {\tt -class} option. By default no package
+declaration is generated, but this can be changed using the
+{\tt -package} option.
+
+%}}}
+%{{{ Example
+
+\subsection{Example}
+
+Suppose we take the same simple \toolbus\ script {\tt "test.tb"}
+as it was used in the C version:
+
+\begin{verbatim}
+  tool testing is { command = "java-adapter -class TestingTool" }
+
+  process TEST is
+  let
+    T : testing,
+    R : str
+  in
+    execute(testing, T?) .
+    snd-do(T, f1(42)) .
+    snd-eval(T, f2("hello world!")) .
+    rec-value(T, result(R?)) .
+    printf("result: %s\n", R)
+  endlet
+
+  toolbus(TEST)
+\end{verbatim}
+
+Using the command:
+\begin{verbatim}
+  {\tt toolbus -gentifs test.tb}
+\end{verbatim}
+we generate a file called {\tt "test.tifs"}. Using the command:
+\begin{verbatim}
+  {\tt tifstojava -tool testing -tifs test.tifs}\newline
+\end{verbatim}
+we generate the Java source file {\tt "TestingTif.java"} that looks
+like this:
+
+\begin{verbatim}
+abstract public class TestingTif extends aterm.tool.Tool
+{
+  ...
+
+  // Override these abstract methods to handle incoming ToolBus terms
+  abstract void f1(int i0) throws ToolException;
+  abstract ATerm f2(String s0) throws ToolException;
+  abstract void recTerminate(ATerm t0) throws ToolException;
+
+  ...
+}
+\end{verbatim}
+
+This class inherits the {\tt Runnable} interface and the {\tt run}
+method from its superclass {\tt Tool}. This method contains the
+actual \toolbus\ event loop.
+
+A fully functional \toolbus\ tool can now be implemented by
+subclassing the generated class TestingTif:
+
+\begin{verbatim}
+public class TestingTool extends TestingTif
+{
+  void f1(int i)
+  {
+     System.out.println("f1 called: " + i);
+  }
+
+  ATerm f2(String s0)
+  {
+    return ATerm.make("snd-value(result(<str>))", s0);
+  }
+
+  void recTerminate(ATerm t0)
+  {
+    System.exit(0);
+  }
+
+  public static void main(String[] args)
+    throws UnknownHostException, IOException, ToolException
+  {
+    TestingTool T = new TestingTool(args);
+    T.connect();
+    T.run();
+  }
+}
+\end{verbatim}
+
+This tool has exactly the same functionality as the test tool
+in the C example. Notice how the {\tt main} function is used
+to construct a new instance of {\tt TestingTool}. This instance
+is then connected to the \toolbus\ and the \toolbus\ event loop
+is started.
+
+%}}}
+%{{{ Tool class
+
+\subsection{The class Tool}
+The only really interesting class in the Java \toolbus\ support
+is the {\tt Tool} class. The {\tt Tool} class has three constructors:
+
+\Method{Tool}{}{String name}
+{Create a simple tool that will connect to a ToolBus instance
+on the localhost on the standard ToolBus port ({\tt 8998})}
+\Throws{UnknownHostException}{when something is seriously
+wrong with the network support of the local machine.}
+
+\Method{Tool}{}{String name, InetAddress address, int port}
+{Create a tool that will connect to a ToolBus instance on
+a host with the given internet address on the given port.}
+\Throws{UnknownHostException}{when the host cannot be found.}
+
+\Method{Tool}{}{String[] args}
+{Create a tool that will connect using a configuration that
+is taken from a list of arguments.}
+\Describe{The arguments should contain at least the
+option {\tt -TB\_TOOL\_NAME <name>} and can optionally contain:
+\begin{itemize}
+\item {\tt -TB\_HOST <host>} indicating the host to connect to.
+\item {\tt -TB\_PORT <port>} indicating the port to connect to.
+\item {\tt -TB\_TOOL\_ID <id>} indicating the tool id when already
+assigned by the \toolbus
+\item {\tt -TB\_VERBOSE} to print debugging information to stderr
+\end{itemize}
+}
+
+The other public methods in this class are:
+
+\Method{connect}{void}{}
+{Connect to a running \toolbus\ instance.}
+\Throws{IOException}{when the connect cannot be established}
+\Throws{ToolException}{when something goes wrong during the
+handshake with the \toolbus.}
+
+\Method{run}{void}{}
+{Start the \toolbus\ eventloop.}
+\Describe{This method does not return until the connection
+with the \toolbus\ has been terminated.}
+
+\Method{send}{void}{ATerm term}
+{Send a term to the \toolbus.}
+\Throws{ToolException}{when the write to the \toolbus\ fails.}
+
+\Method{event}{void}{ATermAppl appl}
+{Send an event to the \toolbus.}
+\Throws{ToolException}{when the write to the \toolbus\ fails.}
+\Describe{This is a convenience method that simplifies the
+sending of events to the \toolbus. 
+{\tt event((ATermAppl)ATerm.parse("an-event"))} is equivalent 
+to {\tt send(ATerm.parse("snd-event(an-event)"))}.}
+
+\Method{post}{void}{ATermAppl appl}
+{Post an event to the \toolbus.}
+\Throws{ToolException}{when the write to the \toolbus\ fails.}
+\Describe{This method is equivalent to {\tt event}, except that
+events are queued when not yet acknowledged. This means that
+this method can be used to send events regardless whether the
+previouse event of this type has been acknowledged. The event
+will only be send after the acknowledgement of the previous event
+has been processed.}
+
+\Method{setVerbose}{void}{boolean on}
+{Change the verbose mode of this tool.}
+\Describe{When in verbose mode, debug information is printed on
+{\tt stderr}.}
 
 %}}}
 
