@@ -340,7 +340,8 @@ public class SharedObjectFactory {
   private int getFreshId() {
       //System.out.println("CurrentId: "+currentId+" vs "+usedId[indexId]);
     if (currentId < usedId[indexId]) {
-        //System.out.println("ID"+currentId);
+      if (currentId == -(1<<31))
+        System.out.println("First ID"+currentId);
       return currentId++; 
     } else {
         // We try the next index in the usedId array
