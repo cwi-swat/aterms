@@ -74,7 +74,7 @@ public class AlternativeImplGenerator extends JavaGenerator {
 	    println("public class " + className);
 	    println("extends " + typeId);
 	    if (visitable) {
-	      println("implements Visitable");
+	      println("implements jjtraveler.Visitable");
 	    }
 	    println("{");
 	    println("  static private aterm.ATerm pattern = null;");
@@ -446,7 +446,7 @@ public class AlternativeImplGenerator extends JavaGenerator {
 	  {
 		String altClassName = AlternativeGenerator.className( type,alt );
 
-		println("  public void accept(Visitor v) throws jjtraveler.visitFailure");
+		println("  public void accept(jjtraveler.Visitor v) throws jjtraveler.VisitFailure");
 		println("  {");
 		println("    v.visit" + altClassName + "(this);");
 		println("  }");
