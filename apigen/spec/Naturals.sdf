@@ -16,4 +16,4 @@ hiddens
     LAYOUT? -/- [\ \n\t]
 
   variables
-    "Nat"[0-9]*		-> Nat
+    "$Nat"[0-9]*		-> Nat

@@ -1,13 +1,13 @@
 equations
   
 [lower-equal]
-  lowest(Nat, Nat) = Nat
+  lowest($Nat, $Nat) = $Nat
 
 [lower-zero-1]
-  lowest(zero, succ(Nat)) = zero
+  lowest(zero, succ($Nat)) = zero
 
 [lower-zero-2]
-  lowest(succ(Nat), zero) = zero
+  lowest(succ($Nat), zero) = zero
 
 [lower-succ]
-  lowest(succ(Nat1), succ(Nat2)) = succ(lowest(Nat1, Nat2))
+  lowest(succ($Nat1), succ($Nat2)) = succ(lowest($Nat1, $Nat2))
