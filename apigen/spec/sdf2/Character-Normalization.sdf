@@ -1,6 +1,0 @@
-module Character-Normalization
-imports Character-Syntax
-
-hiddens
-  variables
-    "c+"[0-9\']* -> CHAR+
