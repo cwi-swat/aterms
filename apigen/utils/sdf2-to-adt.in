@@ -37,6 +37,7 @@ fi
 # {{{ Variable section
 
 MODULE=$1
+CONSOPT='cons-remove'
 MODULE=`basename $MODULE .sdf`
 MODULE=`basename $MODULE .sdf2`
 SDFFILE="$1"
@@ -68,7 +69,7 @@ fi
 
 # }}}
 
-echo "sdf-to-adt(`${ADDLABELS} ${SDFFILE}`)" | \
+echo "sdf-to-adt(`${ADDLABELS} ${SDFFILE}`, $CONSOPT)" | \
 ${SGLR} -1 -p ${TABLE} | \
 ${SDF2TOADT} | \
 ${ASOURCE} > ${ADTFILE}
