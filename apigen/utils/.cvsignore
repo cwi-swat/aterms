@@ -3,3 +3,4 @@ Makefile
 Makefile.in
 adt-to-c
 adt-to-java
+concat-adt

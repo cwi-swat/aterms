@@ -10,3 +10,4 @@ adt-to-c
 adt-to-java
 sdf2-to-adt
 sdf2-to-imploded-adt
+libADT.a
