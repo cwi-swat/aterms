@@ -31,7 +31,6 @@ import shared.SharedObjectFactory;
 public class PureFactory extends SharedObjectFactory implements ATermFactory {
 
   private static int DEFAULT_TERM_TABLE_SIZE = 16; // means 2^16 entrie
-  private static int DEFAULT_PATTERN_CACHE_SIZE = 4321;
   
   private ATermListImpl protoList;
   private ATermApplImpl protoAppl;

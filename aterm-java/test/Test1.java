@@ -346,21 +346,8 @@ public class Test1 {
   }
   
   protected  void testPatternMake() {
-    ATerm[] T = new ATerm[10];
     List list = new ArrayList();
     ATerm result;
-
-      /*
-    T[0] = factory.makeInt(1);
-    T[1] = factory.makeInt(2);
-    T[2] = factory.makeInt(3);
-    T[3] = factory.makeAppl(factory.makeAFun("a",0,false));
-    T[4] = factory.makeAppl(factory.makeAFun("b",0,false));
-    T[5] = factory.makeAppl(factory.makeAFun("c",0,false));
-    T[6] = factory.parse("f(a,b,c)");
-    T[7] = factory.parse("[1,2,3]");
-    T[8] = factory.parse("f(1,2,3)");
-      */
 
     list.clear(); 
     result = factory.make("23", list);
@@ -376,9 +363,6 @@ public class Test1 {
     
     list.clear(); 
     result = factory.make("GL(\"toto\")", list);
-/*    result = factory.make("GL(
-    "{\n  System.out.println(\"%{\\n\" + decapString(vDeclGL) + \"\\n%}\"); \n  prettyPrintList(vDeclList); \n  prettyPrintList(vRuleList); \n  System.out.println(\"%%\\n\" + decapString(vMainGL));\n  return ;\n}"
-*/
     System.out.println("\tresult = " + result);
 
     list.clear(); list.add(new Integer(1));
