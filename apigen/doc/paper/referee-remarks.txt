@@ -107,10 +107,31 @@ The reference has been added.
  nonterminal nor use "cons" annotations? Moreover, SDF for ATerms and
  AsFix (provided in appendix A and B) also do not use these features.
 
+We feel this issue is addressed in the section "Deriving the ADT from
+a SDF specification". We explain that rather than implementing several
+heuristics to come up with a naming scheme, we depend heavily on the
+presence of annotations.  The observation that these are not obligatory
+in SDF is correct, and as a consequence, we are unable to handle grammars
+which do not use this optional feature. In the actual implementation
+we have experimented with some "sensible" defaults (e.g. for unlabeled
+literals, we can re-use the literal), but we emphasize that to generate
+predictable, legible (function)names, we depend on annotated grammar
+rules.
+
+
  - The section 5 is too short and have to be expanded. This section
  is very important for readers and somehow justify the work done. If
  the paper can not be extended due to page limitation then authors can
  shorten some lenghty explanations in sections 2, 3 and 4.
+
+We feel that the for this "Special Issue on ATerms" the focus of the
+paper should be on the description of the techniques used and the
+relation to ATerms. We do agree that we could probably elaborate on
+the figures described in Section 5 (application of our techniques to
+the Meta Environment) in a paper that describes different techniques,
+e.g. evaluating and comparing  their efficiency or amount of code
+reduction.
+
 
  - In the related work authors compare their work with Grammars as
  Contract, Zephyr ASDL, (D)COM, XML data binding, Generative Programming
@@ -122,44 +143,27 @@ The reference has been added.
  from language definition. Authors should compare their work also with
  this research area.
 
+Our techniques both use the meta-environment described in [Heering2000]
+and improves the tools used in that very same meta-environment. So not
+only are we closely related to the research area described therein,
+our tools and techniques *are* exactly those mentioned. A reference to
+[Heering2000] has been added to the Related Work section to reflect this.
+
+We do not feel that [Henriques2002] is closely related enough to the
+generation of an API (and implementation) on a data structure as described
+in our paper to explicitly compare their work. There is more work that
+is related in one way or another, so we decided to mention only those
+we felt are most closely related.
+
+
  - The citation [EFB01] for Aspect Oriented Programming (AOP) seems
  to me is unfair for AOP inventors. The credit have to be put to AOP
  inventors first.  Therefore, I suggest to change this reference with
  the following reference
 
-@InProceedings{   kla+97a,
-  author        = {Gregor Kiczales and John Lamping and Anurag Mendhekar and
-                  Chris Maeda and Cristina Lopes and Jean-Marc Loingtier and
-                  John Irwin},
-  title         = {Aspect-Oriented Programming},
-  booktitle     = {11th Europeen Conference on Object-Oriented Programming},
-  year          = 1997,
-  editor        = {Mehmet Aksit and Satoshi Matsuoka},
-  volume        = 1241,
-  series        = {LNCS},
-  pages         = {220-242},
-  publisher     = {Springer Verlag},
-  keywords      = {aop, aspect-oriented programming},
-  abstract      =
-{http://www.parc.xerox.com/csl/groups/sda/publications/papers/Kiczales-ECOOP97/}
-
-}
+We have updated the reference to the one suggested by the referee.
 
 
-Typos:
+ - Typos pointed out by referee(s)
 
-Page 19, Figure 4: The production "not Bool -> Bool" is missing in the Fig. 4
-
-Page 22: ATermsthat -> ATerms that
-
-Page 26: Aspect Oriented Programming[EFB01]
-          -> Aspect Oriented Programming [EFB01]
-
-Page 27: In the reference [BR01] the name of the workshop (conference) is
-missing.
-
-Page 28, reference [JV01]:  Symposion -> Symposium
-
-
-
-
+The reported typos have been fixed.
