@@ -1,5 +1,11 @@
 $Id$
 
+2003-03-18 <jurgenv@cwi.nl>
+ * Use shared-objects-config script to obtain last version of 
+   shared-objects
+ * aterm-java-config script now prints last version of aterm-java.jar
+   file
+
 Mon Mar 17 10:13:11 CET 2003 <jong@cwi.nl>
  * Major hack to fix unexpected dependency on jjtraveler:
    As long as jjtraveler.jar is in aterm-java, it needs to
