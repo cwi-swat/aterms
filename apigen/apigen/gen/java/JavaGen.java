@@ -5,39 +5,22 @@ package apigen.gen.java;
 import java.io.*;
 import java.util.*;
 
-import aterm.pure.PureFactory;
+// import aterm.pure.PureFactory;
 
 import apigen.*;
 import apigen.adt.*;
+import apigen.gen.Generator;
+import aterm.pure.PureFactory;
 
 //}}}
 
 public class JavaGen
+extends Generator
 {
-  //{{{ private final static String[] SPECIAL_CHAR_WORDS =
-
-  // Do *NOT* add an entry for '-' (Dash) here, the dash is used
-  // as a word-separator!
-
-  private final static String[] SPECIAL_CHAR_WORDS =
-  { "[BracketOpen", "]BracketClose",
-    "{BraceOpen",   "}BraceClose",
-    "(ParenOpen",   ")ParenClose",
-    "<LessThan",    ">GreaterThan",
-    "|Bar",         "&Amp",
-    "+Plus",	    ",Comma",
-    ".Period",	    "~Tilde",
-    ":Colon",	    ";SemiColon",
-    "=Equals",	    "#Hash",
-    "/Slash",	    "\\Backslash",
-    "*Star",        "_Underscore",
-    "$Dollar",      "'SingleQuote",
-  };
-
-  //}}}
+  
   //{{{ private final static String[][] RESERVED_TYPES =
 
-  private final static String[][] RESERVED_TYPES =
+  protected String[][] RESERVED_TYPES =
   { { "int",  "Integer"    },
     { "real", "Double" },
     { "str",  "String" },
@@ -46,7 +29,6 @@ public class JavaGen
 
   //}}}
 
-  public static boolean verbose = false;
   public static boolean folding = false;
   public static boolean visitable = false;
 
@@ -58,14 +40,6 @@ public class JavaGen
   private String class_name;
   
   private InputStream input;
-  private PrintStream stream;
-
-  private Map    specialChars;
-  private char   last_special_char;
-  private String last_special_char_word;
-
-  private Map    reservedTypes;
-
 	private String path;
 
   //{{{ private static void usage()
@@ -150,17 +124,8 @@ public class JavaGen
     this.basedir = basedir;
     this.pkg	 = pkg;
     this.imports = imports;
-    specialChars = new HashMap();
-    reservedTypes = new HashMap();
-
-    for (int i=0; i<SPECIAL_CHAR_WORDS.length; i++) {
-      String word = SPECIAL_CHAR_WORDS[i];
-      specialChars.put(new Character(word.charAt(0)), word.substring(1));
-    }
-
-    for (int i=0; i<RESERVED_TYPES.length; i++) {
-      reservedTypes.put(RESERVED_TYPES[i][0], RESERVED_TYPES[i][1]);
-    }
+    
+    initializeConstants(RESERVED_TYPES);
 
     factory = new PureFactory();
     aterm.ATerm adt = factory.readFromFile(input);
@@ -965,93 +930,7 @@ public class JavaGen
   }
 
   //}}}
-  //{{{ private String buildId(String id)
-
-  private String buildId(String id)
-  {
-    StringBuffer buf = new StringBuffer();
-    boolean cap_next = false;
-
-    if (id.equals("aterm.ATerm")) {
-      return id;
-    }
-    
-    for (int i=0; i<id.length(); i++) {
-      char c = id.charAt(i);
-      if (isSpecialChar(c)) {
-	      buf.append(getSpecialCharWord(c));
-	      cap_next = true;
-      } else {
-	      switch (c) {
-	      case '-':
-	        cap_next = true;
-	        break;
-	      default:
-	        if (cap_next) {
-	          buf.append(Character.toUpperCase(c));
-	          cap_next = false;
-	        } else {
-	          buf.append(c);
-	        }
-	        break;
-	      }
-      }
-    }
-
-    return buf.toString();
-  }
-
-  //}}}
-  //{{{ private boolean isSpecialChar(char c)
-
-  private boolean isSpecialChar(char c)
-  {
-    return getSpecialCharWord(c) != null;
-  }
-
-  //}}}
-  //{{{ private String getSpecialCharWord(char c)
-
-  private String getSpecialCharWord(char c)
-  {
-    if (c == last_special_char) {
-      return last_special_char_word;
-    }
-
-    last_special_char = c;
-    last_special_char_word = (String)specialChars.get(new Character(c));
-
-    return last_special_char_word;
-  }
-
-  //}}}
-
-  //{{{ private boolean isReservedType(ATerm t)
-
-  private boolean isReservedType(String s)
-  {
-    return reservedTypes.containsKey(s);
-  }
-   
-  //}}}
-
-  //{{{ private String escapeQuotes(String s)
-
-  private String escapeQuotes(String s)
-  {
-    StringBuffer buf = new StringBuffer(s.length()*2);
-    for (int i=0; i<s.length(); i++) {
-      char c = s.charAt(i);
-      if (c == '"' || c == '\\') {
-	buf.append('\\');
-      }
-      buf.append(c);
-    }
-    return buf.toString();
-  }
-
-  //}}}
-
+ 
   //{{{ private void printFoldOpen(int fold_level, String comment)
 
   private void printFoldOpen(int fold_level, String comment)
@@ -1085,7 +964,7 @@ public class JavaGen
 
   //{{{ private void printFoldOpen(String comment)
 
-  private void printFoldOpen(String comment)
+  protected void printFoldOpen(String comment)
   {
     printFoldOpen(1, comment);
   }
@@ -1093,46 +972,11 @@ public class JavaGen
   //}}}
   //{{{ private void printFoldClose()
 
-  private void printFoldClose()
+  protected void printFoldClose()
   {
     printFoldClose(1);
   }
 
   //}}}
 
-  //{{{ private void println()
-
-  private void println()
-  {
-    stream.println();
-  }
-
-  //}}}
-  //{{{ private void println(String msg)
-
-  private void println(String msg)
-  {
-    stream.println(msg);
-  }
-
-  //}}}
-  //{{{ private void print(String msg)
-
-  private void print(String msg)
-  {
-    stream.print(msg);
-  }
-
-  //}}}
-
-  //{{{ private void info(String msg)
-
-  private void info(String msg)
-  {
-    if (verbose) {
-      System.err.println(msg);
-    }
-  }
-
-  //}}}
 }
