@@ -18,7 +18,8 @@ public class CGen
   { "[BracketOpen", "]BracketClose",
     "{BraceOpen",   "}BraceClose",
     "(ParenOpen",   ")ParenClose",
-    "|Bar",         "&Amp"
+    "|Bar",         "&Amp",
+    "+Plus",	    ",Comma",
   };
   public static boolean verbose = false;
 
@@ -162,6 +163,16 @@ public class CGen
   {
     /* Header stuff */
     macro = "_" + output.toUpperCase() + "_H";
+    StringBuffer buf = new StringBuffer();
+    for (int i=0; i<macro.length(); i++) {
+      if (Character.isLetterOrDigit(macro.charAt(i))) {
+	buf.append(macro.charAt(i));
+      } else {
+	buf.append('_');
+      }
+    }
+    macro = buf.toString();
+
     header.println("#ifndef " + macro);
     header.println("#define " + macro);
 
@@ -220,6 +231,23 @@ public class CGen
   }
 
   //}}}
+  //{{{ private String buildDictInitFunc(String name)
+
+  private String buildDictInitFunc(String name)
+  {
+    StringBuffer buf = new StringBuffer();
+    for (int i=0; i<name.length(); i++) {
+      char c = name.charAt(i);
+      if (Character.isLetterOrDigit(c)) {
+	buf.append(c);
+      } else {
+	buf.append('_');
+      }
+    }
+    return buf.toString();
+  }
+
+  //}}}
   //{{{ private void genInitFunction(API api)
 
   private void genInitFunction(API api)
@@ -231,7 +259,8 @@ public class CGen
     printFoldOpen(source, decl);
     source.println(decl);
     source.println("{");
-    source.println("  init_" + buildId(output) + "_dict();");
+    String dictInitfunc = buildDictInitFunc(output);
+    source.println("  init_" + dictInitfunc + "_dict();");
     source.println("}");
     printFoldClose(source);
     source.println();
