@@ -16,7 +16,8 @@ java_JAVA=\
 	Location.java\
 	Step.java\
 	Type.java\
-	ListType.java
+	ListType.java\
+	SeparatedListType.java
 
 javadir         = ${prefix}/classes/apigen/adt
 JAVAROOT	= ${top_builddir}
