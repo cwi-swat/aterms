@@ -157,10 +157,18 @@ This paper describes how an annotated grammar or syntax definition
 can be used to generate a library of functions that provide access to
 the parse trees of terms over this grammar. In particular we describe
 how a \sdf-specification commonly found when using the \metaenv\ is
-used to collect the information necessary to build a mapping between
-grammar productions and their \aterm-pattern in the underlying \asfix\
-parse tree, and how this mapping is subsequently used to generate \C\
-functions that provide an \api\ to these parse trees.
+used to collect the information into an \emph{annotated data type}
+(\adt), necessary to build a mapping between grammar productions
+and their \aterm-pattern in the underlying \asfix\ parse tree, and
+how this mapping is subsequently used to generate \C\ functions that
+provide an \api\ to these parse trees. A schematic overview is shown
+in Figure~\ref{fig:old-new}.
+
+\begin{figure}[htb]
+\centerline{\epsfig{file=old-new.eps,scale=0.8}}
+\caption{\label{fig:old-new}Overview of an application before
+and after introduction of \api-generation.}
+\end{figure}
 
 Although this paper uses tools from the \metaenv\ as a running example,
 the maintenance issues addressed here are not specific to parse trees
