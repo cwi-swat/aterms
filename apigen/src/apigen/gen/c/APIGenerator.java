@@ -224,7 +224,9 @@ public class APIGenerator extends CGenerator {
 		
 		hprintln(decl + ";");
 		println(decl + " {");
-		
+		println("  if (ATisEmpty((ATermList) arg)) {");
+		println("    return 0;");
+		println("  }");
 		println("  return (ATgetLength((ATermList) arg) / " + (seps.getLength() + 1) + ") + 1;");
 		println("}");
 	}
