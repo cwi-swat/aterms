@@ -114,7 +114,7 @@ public class SeparatedListTypeImplGenerator extends ListTypeImplGenerator {
         Iterator fields = type.separatorFieldIterator();
         while (fields.hasNext()) {
             Field field = (Field) fields.next();
-            String fieldId = AlternativeImplGenerator.getFieldId(field.getId());
+            String fieldId = JavaGenerator.getFieldId(field.getId());
             println("    this." + fieldId + " = " + fieldId + ";");
         }
     }
@@ -140,7 +140,7 @@ public class SeparatedListTypeImplGenerator extends ListTypeImplGenerator {
     private void genSeparatorGetterAndSetter(Field field) {
         String fieldName = StringConversions.makeCapitalizedIdentifier(field.getId());
         String fieldClass = TypeGenerator.className(field.getType());
-        String fieldId = AlternativeGenerator.getFieldId(field.getId());
+        String fieldId = JavaGenerator.getFieldId(field.getId());
         String className = TypeGenerator.className(type);
 
         if (converter.isReserved(field.getType())) {
@@ -235,7 +235,7 @@ public class SeparatedListTypeImplGenerator extends ListTypeImplGenerator {
 
         while (fields.hasNext()) {
             Field field = (Field) fields.next();
-            String fieldId = AlternativeImplGenerator.getFieldId(field.getId());
+            String fieldId = JavaGenerator.getFieldId(field.getId());
             result += fieldId + ", ";
         }
 
@@ -246,7 +246,7 @@ public class SeparatedListTypeImplGenerator extends ListTypeImplGenerator {
         Iterator fields = listType.separatorFieldIterator();
         while (fields.hasNext()) {
             Field field = (Field) fields.next();
-            String fieldId = AlternativeImplGenerator.getFieldId(field.getId());
+            String fieldId = JavaGenerator.getFieldId(field.getId());
             print(
                 " && "
                     + fieldId
@@ -260,7 +260,7 @@ public class SeparatedListTypeImplGenerator extends ListTypeImplGenerator {
 
     private void genSeparatorField(Field field) {
         String fieldClass = TypeGenerator.className(field.getType());
-        String fieldId = AlternativeImplGenerator.getFieldId(field.getId());
+        String fieldId = JavaGenerator.getFieldId(field.getId());
         println("  protected " + fieldClass + " " + fieldId + " = null;");
     }
 

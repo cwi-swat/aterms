@@ -175,7 +175,7 @@ public class FactoryGenerator extends JavaGenerator {
 		Iterator seps = type.separatorFieldIterator();
 		while (seps.hasNext()) {
 			Field sep = (Field) seps.next();
-			String fieldId = AlternativeImplGenerator.getFieldId(sep.getId());
+			String fieldId = JavaGenerator.getFieldId(sep.getId());
 			String fieldGet = "get" + StringConversions.makeCapitalizedIdentifier(sep.getId());
 			println("      " + fieldId + " = list." + fieldGet + "();");
 
@@ -214,7 +214,7 @@ public class FactoryGenerator extends JavaGenerator {
 		while (separators.hasNext()) {
 			Field separator = (Field) separators.next();
 			String fieldId = separator.getId();
-			String fieldName = AlternativeImplGenerator.getFieldId(fieldId);
+			String fieldName = JavaGenerator.getFieldId(fieldId);
 			String fieldType = TypeGenerator.className(separator.getType());
 			String capitalizedFieldId = StringConversions.makeCapitalizedIdentifier(fieldId);
 			String fieldGetter = "get" + capitalizedFieldId + "()";
@@ -722,7 +722,7 @@ public class FactoryGenerator extends JavaGenerator {
 	}
 
 	private void genFactoryListTypeFromTerm(NormalListType type) {
-		String className = ListTypeGenerator.className(type);
+		String className = TypeGenerator.className(type);
 		String elementType = type.getElementType();
 		String elementTypeName = TypeGenerator.className(elementType);
 
@@ -754,7 +754,7 @@ public class FactoryGenerator extends JavaGenerator {
 	}
 
 	private void genFactorySeparatedListTypeFromTermMethod(SeparatedListType type) {
-		String className = ListTypeGenerator.className(type);
+		String className = TypeGenerator.className(type);
 		String makeClassName = "make" + className;
 		String manyPattern = "pattern" + className + "Many";
 		String elementClass = TypeGenerator.className(type.getElementType());
@@ -869,7 +869,7 @@ public class FactoryGenerator extends JavaGenerator {
 		int i;
 		for (i = 1; fields.hasNext(); i++) {
 			Field field = (Field) fields.next();
-			String fieldId = AlternativeImplGenerator.getFieldId(field.getId());
+			String fieldId = JavaGenerator.getFieldId(field.getId());
 			String fieldType = TypeGenerator.className(field.getType());
 			println("        " + fieldType + " " + fieldId + " = " + buildFieldMatchResultRetriever(i, field) + ";");
 		}

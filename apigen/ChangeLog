@@ -1,6 +1,9 @@
 # $Id$
 
 2003/09/01 <kooiker@cwi.nl>
+ * remove all warnings found by Eclipse in the non-generated code
+
+2003/09/01 <kooiker@cwi.nl>
  * updated tests to use delegate instance factory
  * fixed factory calls to PureFactory calls in non-generated code
 
