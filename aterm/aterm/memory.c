@@ -1094,8 +1094,7 @@ ATerm AT_removeAnnotations(ATerm t)
 
 void AT_freeTerm(int size, ATerm t)
 {
-  ATbool found;
-  int i, nrargs = size-ARG_OFFSET;
+  int i;
   HashNumber hnr = hash_number(t, size);
   ATerm prev = NULL, cur;
 
@@ -1119,8 +1118,6 @@ void AT_freeTerm(int size, ATerm t)
   cur = hashtable[hnr];
 
   do {
-    ATerm *arg_cur, *arg_t;
-
     if(!cur) {
       ATabort("### cannot find term %n at %p in hashtable at pos %d"
 	      ", header = %d\n", t, t, hnr, t->header);
