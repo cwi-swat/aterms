@@ -628,6 +628,19 @@ static void fnext_char(int *c, FILE *f)
 
 static void fskip_layout(int *c, FILE *f)
 {
+  while(isspace(*c))
+    fnext_char(c, f);
+}
+
+/*}}}  */
+/*{{{  static void fnext_skip_layout(int *c, FILE *f) */
+
+/**
+  * Skip layout from file.
+  */
+
+static void fnext_skip_layout(int *c, FILE *f)
+{
   do {
     fnext_char(c, f);
   } while(isspace(*c));
@@ -645,8 +658,10 @@ ATermList fparse_terms(int *c, FILE *f)
   ATermList tail = ATempty;
   ATerm el = fparse_term(c, f);
 
-  if(*c == ',')
+  if(*c == ',') {
+    fnext_skip_layout(c, f);
     tail = fparse_terms(c, f);
+  }
 
   return ATinsert(tail, el);
 }
@@ -684,14 +699,15 @@ static ATermAppl fparse_quoted_appl(int *c, FILE *f)
   if(!name)
     ATerror("fparse_quoted_appl: symbol to long.");
 
-  fskip_layout(c, f);
+  fnext_skip_layout(c, f);
 
   /* Time to parse the arguments */
   if(*c == '(') {
+    fnext_skip_layout(c, f);
     args = fparse_terms(c, f);
     if(args == NULL || *c != ')')
       return NULL;
-    fskip_layout(c, f);
+    fnext_skip_layout(c, f);
   }
 
   /* Wrap up this function application */
@@ -724,15 +740,15 @@ static ATermAppl fparse_unquoted_appl(int *c, FILE *f)
   if(!name)
     ATerror("fparse_unquoted_appl: symbol to long.");
 
-  if(isspace(*c))
-    fskip_layout(c, f);
+  fskip_layout(c, f);
 
   /* Time to parse the arguments */
   if(*c == '(') {
+    fnext_skip_layout(c, f);
     args = fparse_terms(c, f);
     if(args == NULL || *c != ')')
       return NULL;
-    fskip_layout(c, f);
+    fnext_skip_layout(c, f);
   }
 
   /* Wrap up this function application */
@@ -833,23 +849,28 @@ static ATerm fparse_num_or_blob(int *c, FILE *f, ATbool canbeblob)
 static ATerm fparse_term(int *c, FILE *f)
 {
   ATerm t, result = NULL;
-  fskip_layout(c, f);
 
   switch(*c) {
     case '"':
       result = (ATerm)fparse_quoted_appl(c, f);
       break;
     case '[':
-      result = (ATerm)fparse_terms(c, f);
-      if(result == NULL || *c != ']')
-	return NULL;
-      fskip_layout(c, f);
+      fnext_skip_layout(c, f);
+      if(*c == ']')
+	result = (ATerm)ATempty;
+      else {
+	result = (ATerm)fparse_terms(c, f);
+	if(result == NULL || *c != ']')
+	  return NULL;
+      }
+      fnext_skip_layout(c, f);
       break;
     case '<':
+      fnext_skip_layout(c, f);
       t = fparse_term(c, f);
       if(t != NULL && *c == '>') {
 	result = (ATerm)ATmakePlaceholder(t);
-	fskip_layout(c, f);
+	fnext_skip_layout(c, f);
       }
       break;
     default:
@@ -862,6 +883,21 @@ static ATerm fparse_term(int *c, FILE *f)
       else
 	result = NULL;
   }
+
+  fskip_layout(c, f);
+
+  if(*c == '{') {
+    /* Term is annotated */
+    fnext_skip_layout(c, f);
+    if(*c != '}') {
+      ATermList annos = fparse_terms(c, f);
+      if(annos == NULL || *c != '}')
+	return NULL;
+      result = AT_setAnnotations(result, annos);
+    }
+    fnext_skip_layout(c, f);
+  }
+
   return result;
 }
 
@@ -881,13 +917,16 @@ ATerm ATreadFromTextFile(FILE *file)
   error_idx = 0;
   memset(error_buf, 0, ERROR_SIZE);
 
+  fnext_skip_layout(&c, file);
+
   return fparse_term(&c, file);
 }
 
 /*}}}  */
 
 #define snext_char(c,s) ((*c) = *(*s)++)
-#define sskip_layout(c,s) do { snext_char(c, s); } while(isspace(*c))
+#define sskip_layout(c,s) while(isspace(*c)) snext_char(c,s)
+#define snext_skip_layout(c,s) do { snext_char(c, s); } while(isspace(*c))
 
 /*{{{  static ATermList sparse_terms(int *c, char **s) */
 
@@ -900,8 +939,10 @@ ATermList sparse_terms(int *c, char **s)
   ATermList tail = ATempty;
   ATerm el = sparse_term(c, s);
 
-  if(*c == ',')
+  if(*c == ',') {
+    snext_skip_layout(c, s);
     tail = sparse_terms(c, s);
+  }
 
   return ATinsert(tail, el);
 }
@@ -939,14 +980,15 @@ static ATermAppl sparse_quoted_appl(int *c, char **s)
   if(!name)
     ATerror("fparse_quoted_appl: symbol to long.");
 
-  sskip_layout(c, s);
+  snext_skip_layout(c, s);
 
   /* Time to parse the arguments */
   if(*c == '(') {
+    snext_skip_layout(c, s);
     args = sparse_terms(c, s);
     if(args == NULL || *c != ')')
       return NULL;
-    sskip_layout(c, s);
+    snext_skip_layout(c, s);
   }
 
   /* Wrap up this function application */
@@ -979,15 +1021,15 @@ static ATermAppl sparse_unquoted_appl(int *c, char **s)
   if(!name)
     ATerror("fparse_unquoted_appl: symbol to long.");
 
-  if(isspace(*c))
-    sskip_layout(c, s);
+  sskip_layout(c, s);
 
   /* Time to parse the arguments */
   if(*c == '(') {
+    snext_skip_layout(c, s);
     args = sparse_terms(c, s);
     if(args == NULL || *c != ')')
       return NULL;
-    sskip_layout(c, s);
+    snext_skip_layout(c, s);
   }
 
   /* Wrap up this function application */
@@ -1088,23 +1130,28 @@ static ATerm sparse_num_or_blob(int *c, char **s, ATbool canbeblob)
 static ATerm sparse_term(int *c, char **s)
 {
   ATerm t, result = NULL;
-  sskip_layout(c, s);
 
   switch(*c) {
     case '"':
       result = (ATerm)sparse_quoted_appl(c, s);
       break;
     case '[':
-      result = (ATerm)sparse_terms(c, s);
-      if(result == NULL || *c != ']')
-	return NULL;
-      sskip_layout(c, s);
+      snext_skip_layout(c, s);
+      if(*c == ']')
+	result = (ATerm)ATempty;
+      else {
+	result = (ATerm)sparse_terms(c, s);
+	if(result == NULL || *c != ']')
+	  return NULL;
+      }
+      snext_skip_layout(c, s);
       break;
     case '<':
+      snext_skip_layout(c, s);
       t = sparse_term(c, s);
       if(t != NULL && *c == '>') {
 	result = (ATerm)ATmakePlaceholder(t);
-	sskip_layout(c, s);
+	snext_skip_layout(c, s);
       }
       break;
     default:
@@ -1117,6 +1164,21 @@ static ATerm sparse_term(int *c, char **s)
       else
 	result = NULL;
   }
+
+  sskip_layout(c, s);
+
+  if(*c == '{') {
+    /* Term is annotated */
+    snext_skip_layout(c, s);
+    if(*c != '}') {
+      ATermList annos = sparse_terms(c, s);
+      if(annos == NULL || *c != '}')
+	return NULL;
+      result = AT_setAnnotations(result, annos);
+    }
+    snext_skip_layout(c, s);
+  }
+
   return result;
 }
 
@@ -1130,6 +1192,9 @@ static ATerm sparse_term(int *c, char **s)
 ATerm ATreadFromString(char *string)
 {
   int c;
+
+  snext_skip_layout(&c, &string);
+
   return sparse_term(&c, &string);
 }
 

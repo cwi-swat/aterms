@@ -995,36 +995,27 @@ ATermList AT_getAnnotations(ATerm t)
 }
 
 /*}}}  */
+/*{{{  ATerm AT_setAnnotations(ATerm t, ATermList annos) */
 
-/*{{{  ATerm ATsetAnnotation(ATerm t, ATerm label, ATerm anno) */
+/**
+  * Change the annotations of a term.
+  */
 
-ATerm ATsetAnnotation(ATerm t, ATerm label, ATerm anno)
+ATerm AT_setAnnotations(ATerm t, ATermList annos)
 {
   unsigned int hnr;
   int i, size = term_size(t);
   header_type header;
   ATbool found;
-
-  ATermList annos;
-  ATerm cur, oldanno = ATgetAnnotation(t, label);
-
-  ATprintf("size of %t = %d\n", t, size);
-
-  if(HAS_ANNO(t->header))
+  ATerm cur;
+  
+  if(HAS_ANNO(t->header)) {
+    header = t->header;
     size--;
+  } else {
+    header = SET_ANNO(t->header);
+  }
 
-  if(oldanno && ATisEqual(oldanno, anno))
-    return t;
-
-  /* Build the desired set of annotations */
-  annos = AT_getAnnotations(t);
-  if(!annos)
-    annos = ATempty;
-  ATprintf("old annotations: %t\n", annos);
-  annos = ATdictSet(annos, label, anno);
-
-  /* See if the desired annotated version of the term already exists */
-  header = SET_ANNO(t->header);
   hnr = hash_number_anno(t->header, size-2, ((ATerm *)t)+2, (ATerm)annos);
   cur = hashtable[hnr];
   found = ATfalse;
@@ -1067,6 +1058,85 @@ ATerm ATsetAnnotation(ATerm t, ATerm label, ATerm anno)
 }
 
 /*}}}  */
+/*{{{  ATerm AT_removeAnnotations(ATerm t) */
+
+/**
+  * Remove all annotations of a term.
+  */
+
+ATerm AT_removeAnnotations(ATerm t)
+{
+  unsigned int hnr;
+  int i, size;
+  header_type header;
+  ATbool found;
+  ATerm cur;
+  
+  if(!HAS_ANNO(t->header))
+    return t;
+
+  header = CLR_ANNO(t->header);
+  size = term_size(t)-1;
+
+  hnr = hash_number(t->header, size-2, ((ATerm *)t)+2);
+  cur = hashtable[hnr];
+  found = ATfalse;
+  
+  /* Look through the hashtable for an identical term */
+  while(cur && !found) {
+    if(cur->header != header) {
+      /* header is different, must be another term */
+      cur = cur->next;
+    } else {
+      ATbool rest_equal = ATtrue;
+
+      /* check if other components are equal */
+      for(i=2; i<size; i++) {
+	if(((ATerm *)cur)[i] != ((ATerm *)t)[i]) {
+	  rest_equal = ATfalse;
+	  break;
+	}
+      }
+
+      if(rest_equal)
+	found = ATtrue;
+      else
+	cur = cur->next;
+    }
+  }
+
+  if(!found) {
+    /* We need to create a new term */
+    cur = AT_allocate(size);
+    cur->header = header;
+    cur->next   = hashtable[hnr];
+    hashtable[hnr] = cur;
+
+    for(i=2; i<size; i++)
+      ((ATerm *)cur)[i] = ((ATerm *)t)[i];
+  }
+  return cur;
+}
+
+/*}}}  */
+
+/*{{{  ATerm ATsetAnnotation(ATerm t, ATerm label, ATerm anno) */
+
+ATerm ATsetAnnotation(ATerm t, ATerm label, ATerm anno)
+{
+  ATermList newannos, oldannos = AT_getAnnotations(t);
+
+  if(!oldannos)
+    oldannos = ATempty;
+
+  newannos = ATdictSet(oldannos, label, anno);
+
+  if(ATisEqual(oldannos, newannos))
+    return t;
+  return AT_setAnnotations(t, newannos);
+}
+
+/*}}}  */
 /*{{{  ATerm ATgetAnnotation(ATerm t, ATerm label) */
 
 /**
@@ -1080,6 +1150,28 @@ ATerm ATgetAnnotation(ATerm t, ATerm label)
     return NULL;
 
   return ATdictGet(annos, label);
+}
+
+/*}}}  */
+/*{{{  ATerm ATremoveAnnotation(ATerm t, ATerm label) */
+
+/**
+  * Remove an annotation
+  */
+
+ATerm ATremoveAnnotation(ATerm t, ATerm label)
+{
+  ATermList newannos, oldannos = AT_getAnnotations(t);
+
+  if(!oldannos)
+    return t;
+
+  newannos = ATdictRemove(oldannos, label);
+
+  if(ATisEqual(newannos, oldannos))
+    return t;
+
+  return AT_setAnnotations(t, newannos);
 }
 
 /*}}}  */
