@@ -103,6 +103,7 @@ void AT_printSymbol(Symbol sym, FILE *f)
       /* We need to escape special characters */
       switch(*id) {
 	case '\\':
+	   id++;
 	case '"':
 	  fputc('\\', f);
 	  fputc(*id, f);
