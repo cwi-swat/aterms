@@ -19,6 +19,8 @@ extern int at_nrprotected;
 /*}}}  */
 /*{{{  globals */
 
+char gc_id[] = "$Id$";
+
 static ATerm *stackBot = NULL;
 
 /*}}}  */

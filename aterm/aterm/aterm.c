@@ -32,6 +32,8 @@
 /*}}}  */
 /*{{{  globals */
 
+char aterm_id[] = "$Id$";
+
 /* error_handler is called when a fatal error is detected */
 static void (*error_handler)(const char *format, va_list args) = NULL;
 
