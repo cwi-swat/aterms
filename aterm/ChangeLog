@@ -19,8 +19,17 @@
 
 $Id$
 
+2000/11/07 (jong@cwi.nl)
+  * Version 1.4.5 (released)
+
+2000/10/31 ({jong,markvdb,olivierp}@cwi.nl)
+  * Fixed off-by-one bug in ATwriteToString
+
 2000/10/31 (jong@cwi.nl)
   * Fixed "configure --help" statement for --with-prof
+
+2000/10/05 (olivierp@cwi.nl)
+  * Annotations are now kept by ATsetArgument
 
 2000/9/06 ({jong,olivierp}@cwi.nl)
   * Added _ for struct names to avoid C++ problems
