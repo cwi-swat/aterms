@@ -72,11 +72,12 @@ void AT_initBafIO(int argc, char *argv[])
 	ATprotectArray(empty_args, MAX_ARITY);
 
 	arg_stack_size = DEFAULT_ARG_STACK_SIZE;
-	arg_stack = (ATerm *)malloc(arg_stack_size*sizeof(ATerm));
+	arg_stack = (ATerm *)calloc(arg_stack_size,sizeof(ATerm));
 	if(!arg_stack)
 		ATerror("cannot allocate initial argument stack of size %d\n",
 						DEFAULT_ARG_STACK_SIZE);
 	arg_stack_depth = 0;
+        ATprotectArray(arg_stack, DEFAULT_ARG_STACK_SIZE);
 }
 
 /*}}}  */
@@ -586,7 +587,7 @@ static ATerm readFromBinaryFile(FILE *f)
 {
 	unsigned int cmd, len;
 	unsigned int value[4];
-	int i, major, minor;
+	int i, major, minor, old_size;
 	double real;
 	ATerm t, annos, idx, sym_appl;
 	ATermList list;
@@ -743,8 +744,13 @@ static ATerm readFromBinaryFile(FILE *f)
 
 				if(arg_stack_depth >= arg_stack_size) {
 					/* We need to resize the argument stack */
+					ATunprotectArray(arg_stack);
+					old_size = arg_stack_size;
 					arg_stack_size *= 2;
 					arg_stack = realloc(arg_stack, arg_stack_size*sizeof(ATerm));
+					for(i=old_size; i<arg_stack_size; i++)
+					  arg_stack[i] = NULL;
+					ATprotectArray(arg_stack, arg_stack_size);
 				}
 
 				arg_stack[arg_stack_depth++] = t;

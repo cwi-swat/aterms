@@ -666,6 +666,10 @@ void ATtablePut(ATermTable table, ATerm key, ATerm value)
   unsigned int hnr = TABLE_HASH((unsigned int)key, key->header);
   hnr %= table->size;
 
+
+  assert(AT_isValidTerm(key));
+  assert(AT_isValidTerm(value));
+
   table->entries[hnr] = (ATermList)ATdictPut((ATerm)table->entries[hnr], 
 											 key, value);
 	table->nr_entries++;
@@ -688,8 +692,11 @@ void ATtablePut(ATermTable table, ATerm key, ATerm value)
 			ATermList list = old_entries[i];
 			while(!ATisEmpty(list)) {
 				ATermList pair = (ATermList)ATgetFirst(list);
-				ATerm key = ATgetFirst(pair);
-				ATerm val = ATgetFirst(ATgetNext(pair));
+				ATerm key, val;
+
+if(ATgetType(pair) != AT_LIST) ATerror("illegal entry in table: %t\n", pair);
+				key = ATgetFirst(pair);
+				val = ATgetFirst(ATgetNext(pair));
 				ATtablePut(table, key, val);
 				list = ATgetNext(list);
 			}
