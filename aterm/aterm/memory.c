@@ -2245,7 +2245,7 @@ void AT_printAllAFunCounts(FILE *file)
 
 	for(i=0; i<nr_syms; i++) {
 		if(afuns[i] != -1)
-			ATfprintf(stderr, "%y: %d\n", afuns[i], at_lookup_table[afuns[i]]->count);
+			ATfprintf(file, "%y: %d\n", afuns[i], at_lookup_table[afuns[i]]->count);
 	}
 }
 
