@@ -451,12 +451,7 @@ int ATBhandleOne(int fd)
 	if(appl == NULL)
 	  return -1;
 	
-	ATfprintf(stderr, "Handling: %t\n", appl);
-
 	result = connections[fd]->handler(fd, (ATerm)appl);
-
-	if (result != NULL)
-		ATfprintf(stderr, "result: %t\n", result);
 
 	if(result)
 	  return ATBwriteTerm(fd, result);
