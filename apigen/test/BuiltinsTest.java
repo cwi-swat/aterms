@@ -54,7 +54,7 @@ public class BuiltinsTest {
     }
 
     public final static void main(String[] args) {
-        BuiltinsTest test = new BuiltinsTest(new Factory(new PureFactory()));
+        BuiltinsTest test = new BuiltinsTest(Factory.getInstance(new PureFactory()));
         test.run();
         return;
     }

@@ -26,7 +26,7 @@ public class RoloTest {
   }
 
   public final static void main(String[] args) throws jjtraveler.VisitFailure, java.io.IOException {
-    RoloTest test = new RoloTest(new Factory(new PureFactory()));
+    RoloTest test = new RoloTest(Factory.getInstance(new PureFactory()));
     directory = args[0];
 
     test.run();

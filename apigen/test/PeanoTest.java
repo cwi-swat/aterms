@@ -102,7 +102,7 @@ public class PeanoTest {
   }
 
   public final static void main(String[] args) {
-    PeanoTest test = new PeanoTest(new Factory(new PureFactory()));
+    PeanoTest test = new PeanoTest(Factory.getInstance(new PureFactory()));
     test.run1();
   }
 

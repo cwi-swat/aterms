@@ -1,3 +1,7 @@
+2004-08-06  Antoine Reilles  <tonio@bonzai>
+
+	* generates singletons for java factories
+
 2004-08-05 pem
 
 	* allows cyclic importations

@@ -202,9 +202,22 @@ public class FactoryGenerator extends JavaGenerator {
     }
 
     private void genConstructor() {
-        println("  public " + getClassName() + "(aterm.pure.PureFactory factory) {");
+        println("  private " + getClassName() + "(aterm.pure.PureFactory factory) {");
         println("    this.factory = factory;");
-        println("    initialize();");
+        println("  }");
+        println();
+        println("  private static " + getClassName() + " instance = null;");
+        println();
+        println("  public static " + getClassName() + " getInstance(aterm.pure.PureFactory factory) {");
+        println("    if (instance == null) {");
+        println("        instance = new " + getClassName() + "(factory);");
+        println("        instance.initialize();");
+        println("    }");
+        println("    if (instance.factory != factory) {");
+        println("        throw new RuntimeException(\"Dont create two " + getClassName() + " factories with differents PureFactory \");");
+        println("    } else {");
+        println("        return instance;");
+        println("    }");
         println("  }");
         println();
     }
@@ -1205,8 +1218,8 @@ public class FactoryGenerator extends JavaGenerator {
     		String moduleName;
     		while(it.hasNext()) {
     		    moduleName = (String) it.next();
-    		    println("    this."+FactoryGenerator.className(moduleName).toLowerCase()+" = new "+
-    		            FactoryGenerator.qualifiedClassName(getJavaGenerationParameters(), moduleName)+"(factory);");
+    		    println("    this."+FactoryGenerator.className(moduleName).toLowerCase()+" = "+
+    		            FactoryGenerator.qualifiedClassName(getJavaGenerationParameters(), moduleName)+".getInstance(factory);");
     		}
     }
     

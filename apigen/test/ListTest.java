@@ -305,7 +305,7 @@ public class ListTest {
 	}
 
 	public final static void main(String[] args) {
-		ListTest test = new ListTest(new Factory(new PureFactory()));
+		ListTest test = new ListTest(Factory.getInstance(new PureFactory()));
 
 		test.run();
 		return;
