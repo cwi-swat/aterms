@@ -1,379 +1,381 @@
 $Id$
 
 2002/01/04 <jong@cwi.nl>
- * Added "--with-cflags=" support to configure.in
- * Removed explicit overwriting of CFLAGS in aterm/Makefile.am
+* Added "--with-cflags=" support to configure.in
+* Removed explicit overwriting of CFLAGS in aterm/Makefile.am
+* Removed all leading spaces in ChangeLog entries.
 
-2001/12/20 ({jurgenv,olivierp,jong}@cwi.nl)
- * Added assert in ATconcat, second argument should be an AT_LIST.
+2001/12/20 <{jurgenv,olivierp,jong}@cwi.nl>
+* Added assert in ATconcat, second argument should be an AT_LIST.
 
-2001/12/11 (mdejonge@cwi.nl)
- * Makefile.am: added LICENSE to EXTRA_DIST variable because this file was
-   not distributed yet.
+2001/12/11 <mdejonge@cwi.nl>
+* Makefile.am: added LICENSE to EXTRA_DIST variable because this file was
+  not distributed yet.
 
-2001/11/28 (jong@cwi.nl)
- * version 1.6.6beta started
- * Generated files 'stress_dict.[ch]' moved to MAINTAINERCLEANFILES.
+2001/11/28 <jong@cwi.nl>
+* version 1.6.6beta started
+* Generated files 'stress_dict.[ch]' moved to MAINTAINERCLEANFILES.
 
-2001/11/22 (jong@cwi.nl)
- * Version 1.6.5 released, containing C-support for tuple syntax.
+2001/11/22 <jong@cwi.nl>
+* Version 1.6.5 released, containing C-support for tuple syntax.
 
 2001/11/21 (jong@cwi.nl)
- * Quoted, empty tuple is now printed as "", rather than ""()
- * Changed the output of the empty tuple to be "()", rather than ""
- * Fixed several typo's in aterm.c ("to long" -> "too long").
- * Toplevel Makefile.am now uses 'install' rather than 'cp+chmod'
+* Quoted, empty tuple is now printed as "", rather than ""()
+* Changed the output of the empty tuple to be "()", rather than ""
+* Fixed several typo's in aterm.c ("to long" -> "too long").
+* Toplevel Makefile.am now uses 'install' rather than 'cp+chmod'
 
 2001/11/15 (jong@cwi.nl)
- * version 1.6.5beta started
- * Implemented tuple syntax at Eelco Visser's request.
+* version 1.6.5beta started
+* Implemented tuple syntax at Eelco Visser's request.
    example: ("a","b") is now allowed by the ATerm parser.
 
 2001/11/12 (jong@cwi.nl)
- * Version 1.6.4 released
+* Version 1.6.4 released
 
 2001/10/08 (Joost.Visser@cwi.nl)
- * Added declaration of method setChildAt to the aterm.visitor.Visitable
-   class and corresponding implementations to aterm.pure.*, in order to 
-   conform to the JJTraveler framework (version 0.1).
+* Added declaration of method setChildAt to the aterm.visitor.Visitable
+  class and corresponding implementations to aterm.pure.*, in order to 
+  conform to the JJTraveler framework (version 0.1).
 
 2001/08/28 (jong@cwi.nl)
- * C-library warnings issued by gcc-3.0.1 fixed
+* C-library warnings issued by gcc-3.0.1 fixed
 
 2001/08/17 (jong@cwi.nl)
- * Version 1.6.4beta started
- * Started work on doc/xootic.ltx
+* Version 1.6.4beta started
+* Started work on doc/xootic.ltx
 
 2001/08/14 (jong@cwi.nl)
- * Version 1.6.3 released
- * Added script utils/genpkg.sh which generates toplevel "aterm.pkg"
-   for package-base from information in configure.in
+* Version 1.6.3 released
+* Added script utils/genpkg.sh which generates toplevel "aterm.pkg"
+  for package-base from information in configure.in
 
 2001/08/07 (jong@cwi.nl)
- * Changed direct prints to stderr to ATwarning calls in bafio.c
- * ChangeLog entry for ATcompare and ATsort added
+* Changed direct prints to stderr to ATwarning calls in bafio.c
+* ChangeLog entry for ATcompare and ATsort added
 
 2001/07/31 (jurgenv@cwi.nl)
- * Bumped version to 1.6.3
+* Bumped version to 1.6.3
 
 2001/07/12 (jong@cwi.nl)
- * Java-source for toolbus support moved from ATerm-pkg to TB-pkg
+* Java-source for toolbus support moved from ATerm-pkg to TB-pkg
 
 2001/07/11 (jong@cwi.nl)
- * C-source for toolbus support moved from ATerm-pkg to TB-pkg
+* C-source for toolbus support moved from ATerm-pkg to TB-pkg
 
 2001/07/09 (olivierp@cwi.nl)
- * version is now 1.6.2
- * Added some functions to ToolBus layer in order to support the
-   new toolbus adapter
+* version is now 1.6.2
+* Added some functions to ToolBus layer in order to support the
+  new toolbus adapter
 
 2001/07/02 (olivierp@cwi.nl)
- * Fixed CLASSPATH problem with tifstojava
+* Fixed CLASSPATH problem with tifstojava
 
 2001/06/25 ({jong,olivierp}@cwi.nl)
- * Version is now 1.6.1
- * Fixed bug in Java in removing of 'empty' weak references,
-   thanks to Bert Huijben
- * Fixed performance problem in hash function calculation.
- * Added first version of visitor benchmark.
- * Replaced generic hashfunction with specific HASHNUMBER{3,4} macros,
-   thanks to Pierre-Etienne
+* Version is now 1.6.1
+* Fixed bug in Java in removing of 'empty' weak references,
+  thanks to Bert Huijben
+* Fixed performance problem in hash function calculation.
+* Added first version of visitor benchmark.
+* Replaced generic hashfunction with specific HASHNUMBER{3,4} macros,
+  thanks to Pierre-Etienne
 
 
 2001/06/19 (olivierp@cwi.nl)
- * Worked on bringing visitor implementation closer to Joost's official
-   framework.
+* Worked on bringing visitor implementation closer to Joost's official
+  framework.
 
 2001/06/08 (olivierp@cwi.nl)
- * Fixed implementation of AT(un)registerBlobDestructor
+* Fixed implementation of AT(un)registerBlobDestructor
 
 2001/06/01 (olivierp@cwi.nl)
- * Added ATprotectMemory/ATunprotectMemory functions requested by
-   Pierre-Etienne Moreau
+* Added ATprotectMemory/ATunprotectMemory functions requested by
+  Pierre-Etienne Moreau
 
 2001/05/31 ({jong,olivierp}@cwi.nl)
- * version is now 1.6
- * Added support for pointers that point INSIDE aterms:
-   this should fix the strange gc problems in gcc-2.95.2 related
-   to strength-reduce optimizations.
- * fixed ATermList.concat bug in Java aterm library.
+* version is now 1.6
+* Added support for pointers that point INSIDE aterms:
+  this should fix the strange gc problems in gcc-2.95.2 related
+  to strength-reduce optimizations.
+* fixed ATermList.concat bug in Java aterm library.
 
 2001/05/17 (jong@cwi.nl)
- * added configure option: --with-texdoclet <PATH_TO_JAR> which activates
-   generation of java-api.ltx which is used to build java-api.ps.
+* added configure option: --with-texdoclet <PATH_TO_JAR> which activates
+  generation of java-api.ltx which is used to build java-api.ps.
 
 2001/05/16 (jong@cwi.nl)
- * version 1.5.7
- * added --best to gzip on installed documentation
- * added java.pure.PureFactory to generated documentation
- * Made public versions of AT_writeToStringBuffer and AT_calcTextSize to
-   prepare move of ToolBus specific code from ATerm-distro to ToolBus.
- * Added make(String trm) (synonym for parse(String trm)) as per C-interface.
- * Added documentation on "Connecting Java Tools"
+* version 1.5.7
+* added --best to gzip on installed documentation
+* added java.pure.PureFactory to generated documentation
+* Made public versions of AT_writeToStringBuffer and AT_calcTextSize to
+  prepare move of ToolBus specific code from ATerm-distro to ToolBus.
+* Added make(String trm) (synonym for parse(String trm)) as per C-interface.
+* Added documentation on "Connecting Java Tools"
 
 2001/05/15 ({jong,olivierp}@cwi.nl)
- * Optimized ATremoveAllAnnotations
+* Optimized ATremoveAllAnnotations
 
 2001/05/04 ({jong,olivierp}@cwi.nl)
- * Removed debug spam in AbstractTool.java
- * Added support for javadoc generation
+* Removed debug spam in AbstractTool.java
+* Added support for javadoc generation
 
 2001/05/03 (jong@cwi.nl)
- * version 1.5.6
- * Added convenience macros AT{get,set,remove}Annotatations for their
-   "AT_XX" counterparts
+* version 1.5.6
+* Added convenience macros AT{get,set,remove}Annotatations for their
+  "AT_XX" counterparts
 
 2001/04/24 ({jong,olivierp}@cwi.nl)
- * Added java-api documentation in LaTeX
- * Adapted manual.ltx to conform to the specs of the new Java Library.
- * Added example to java toolbus support
- * Fixed a bug in java toolbus support (mread)
+* Added java-api documentation in LaTeX
+* Adapted manual.ltx to conform to the specs of the new Java Library.
+* Added example to java toolbus support
+* Fixed a bug in java toolbus support (mread)
 
 2001/04/04 ({jong,olivierp}@cwi.nl)
- * Fixed locking in Java toolbus support
- * Added support for <str> pattern in Java library
+* Fixed locking in Java toolbus support
+* Added support for <str> pattern in Java library
 
 2001/03/30 ({jong,olivierp}@cwi.nl)
- * version 1.5.5
- * added --with-visitor-pkg option to configure.in
- * configure.in now also creates ATerm{Visitable,Visitor,VisitFailure}.java
- * moved subdir "visitor" from aterm/java to aterm/java/aterm
- * folded ATerm{Visitable,Visitor,VisitFailure}.java.in
- * fixed accept-method in ATermListImpl.java (return-type was: vooid)
- * added support for shared text files to Java library
- * fixed support for external visitor packages
+* version 1.5.5
+* added --with-visitor-pkg option to configure.in
+* configure.in now also creates ATerm{Visitable,Visitor,VisitFailure}.java
+* moved subdir "visitor" from aterm/java to aterm/java/aterm
+* folded ATerm{Visitable,Visitor,VisitFailure}.java.in
+* fixed accept-method in ATermListImpl.java (return-type was: vooid)
+* added support for shared text files to Java library
+* fixed support for external visitor packages
 
 2001/03/29 ({jong,olivierp}@cwi.nl)
- * added java/visitor/.cvsignore
- * moved example file Accu.java from java/visitor to java/aterm
- * fixed some compilation errors in Java traversal combinator support
+* added java/visitor/.cvsignore
+* moved example file Accu.java from java/visitor to java/aterm
+* fixed some compilation errors in Java traversal combinator support
 
 2001/03/28 ({jong,olivierp}@cwi.nl)
- * Added traversal combinator support
+* Added traversal combinator support
 
 2001/03/26 ({markvdb,olivierp}@cwi.nl)
- * Fixed a bug in lists with annotations.
+* Fixed a bug in lists with annotations.
 
 2001/03/26 ({jong,markvdb,olivierp}@cwi.nl)
- * Version 1.5.4
- * Fixed bug in ATisEmpty: the annotated empty list was not considered empty!
+* Version 1.5.4
+* Fixed bug in ATisEmpty: the annotated empty list was not considered empty!
 
 2001/03/21 (olivierp@cwi.nl)
- * Version 1.5.3
- * added object locking in java ToolBus support.
- * fixed tifstojava to generate correct tifs for methods taking complex args
- * fixed error propagation in java ToolBus support
+* Version 1.5.3
+* added object locking in java ToolBus support.
+* fixed tifstojava to generate correct tifs for methods taking complex args
+* fixed error propagation in java ToolBus support
 
 2001/03/06 ({jong,olivierp@cwi.nl})
- * Version 1.5.3beta
- * deprecated.h is now empty (and deprecated)
- * moved ATmatchTerm and friends to aterm1.h
- * added ATcalcUniqueSubterms/Symbols (alias for AT_calcUniqueXxx)
- * Introduced buffered input/output streams in Java ToolBus support
+* Version 1.5.3beta
+* deprecated.h is now empty (and deprecated)
+* moved ATmatchTerm and friends to aterm1.h
+* added ATcalcUniqueSubterms/Symbols (alias for AT_calcUniqueXxx)
+* Introduced buffered input/output streams in Java ToolBus support
 
 2001/03/05 (jong@cwi.nl)
- * Version 1.5.2beta
- * Arne de Bruijn goes on a killing spree :-) Yet another three fixes
-   were submitted: ATermReals are now represented in strings using the
-   %.15e format. Arne also fixed a possible buffer-overflow and a missing
-   '\0' termination in ATermReal handling.
+* Version 1.5.2beta
+* Arne de Bruijn goes on a killing spree :-) Yet another three fixes
+  were submitted: ATermReals are now represented in strings using the
+  %.15e format. Arne also fixed a possible buffer-overflow and a missing
+  '\0' termination in ATermReal handling.
 
 2001/03/02 (jong@cwi.nl)
- * The ATermLibrary is now distributed under LGPL.
- * All remaining references to GPL removed
- * LGPL license added (See toplevel file: COPYING)
- * brushed up README, NEWS, AUTHORS somewhat
+* The ATermLibrary is now distributed under LGPL.
+* All remaining references to GPL removed
+* LGPL license added (See toplevel file: COPYING)
+* brushed up README, NEWS, AUTHORS somewhat
 
 2001/03/01 (jong@cwi.nl)
- * Version 1.5.1
- * deprecated java support removed entirely
- * some GPL headers removed as we are in transition to LGPL
+* Version 1.5.1
+* deprecated java support removed entirely
+* some GPL headers removed as we are in transition to LGPL
 
 2001/02/28 ({jong,olivierp}@cwi.nl)
- * Version 1.5
- * Fixed several bugs in JFG's hash code reported by Arne de Bruijn
- * Implemented annotations in Java ATerm code
+* Version 1.5
+* Fixed several bugs in JFG's hash code reported by Arne de Bruijn
+* Implemented annotations in Java ATerm code
 
 2001/02/27 (jong@cwi.nl)
- * Added switch "-no-date" to prevent outputting timestamp in utils/dicttoc.c
+* Added switch "-no-date" to prevent outputting timestamp in utils/dicttoc.c
 
 2001/02/23 ({jong,olivierp}@cwi.nl)
- * Fixed garbage collection bug reported by Arne de Bruijn <arne@knoware.nl>
- * JavaTif now generates xxxTif.java interface, xxxTool.java class, and
-   xxxBridge.java class
- * Version is now 1.5beta
+* Fixed garbage collection bug reported by Arne de Bruijn <arne@knoware.nl>
+* JavaTif now generates xxxTif.java interface, xxxTool.java class, and
+  xxxBridge.java class
+* Version is now 1.5beta
 
 2001/02/20 (jong@cwi.nl)
- In utils/atrmannos.c:
- * Folding added
- * Superfluous #includes removed (aterm1.h, stdlib.h, unistd.h)
- * CVS-id added to header
- * Copyright extended to 2001
+In utils/atrmannos.c:
+* Folding added
+* Superfluous #includes removed (aterm1.h, stdlib.h, unistd.h)
+* CVS-id added to header
+* Copyright extended to 2001
 
 2001/02/20 (jurgenv@cwi.nl)
- * Added utility atrmannos. This utility can be used to remove a number
-   of specific annotations or all annotations from a term.
+* Added utility atrmannos. This utility can be used to remove a number
+  of specific annotations or all annotations from a term.
 
 2001/02/19 (jong@cwi.nl)
- * out-of-place sglr-header removed from atremove-annotation.c
+* out-of-place sglr-header removed from atremove-annotation.c
 
 2001/02/19 ({jong,olivierp}@cwi.nl)
- * Fixed dates in ChangeLog
- * Added generation of separate xxxTif and xxxBridge java code
+* Fixed dates in ChangeLog
+* Added generation of separate xxxTif and xxxBridge java code
 
 2001/02/18 (jong@cwi.nl)
- * Improved checks for lrand48() and srand48() by letting configure.in
-   find this out for us, rather than having to #define _APPLE_ (Hi js!)
-   This should make test/randgen.c compile under CygWin.
+* Improved checks for lrand48() and srand48() by letting configure.in
+  find this out for us, rather than having to #define _APPLE_ (Hi js!)
+  This should make test/randgen.c compile under CygWin.
 
 2001/02/15 (olivierp@cwi.nl)
- * Implemented first layer of Java ToolBus support
+* Implemented first layer of Java ToolBus support
 
 2001/02/05 (jong@cwi.nl)
- * TODO file removed as we never us it anyway
- * CWI-phonenumbers removed from several info files
- * Some lingering AsFix remnants removed
- * .depend files removed as automake uses its own depency mechanism
+* TODO file removed as we never us it anyway
+* CWI-phonenumbers removed from several info files
+* Some lingering AsFix remnants removed
+* .depend files removed as automake uses its own depency mechanism
 
 2001/01/22 (jong@cwi.nl)
- * Fixed bug in utils/dicttoc.c which caused 'make distcheck' to fail
- * Version 1.4.7b released for testing.
+* Fixed bug in utils/dicttoc.c which caused 'make distcheck' to fail
+* Version 1.4.7b released for testing.
 
 2001/01/16 (jong@cwi.nl)
- * contracted separate isLetter() and isDigit() to Java's isLetterOrDigit()
+* contracted separate isLetter() and isDigit() to Java's isLetterOrDigit()
 
 2001/01/11 (jong@cwi.nl)
- * fixed bug in parsing of unquoted afuns (digits were ignored)                  
+* fixed bug in parsing of unquoted afuns (digits were ignored)                  
+
 2001/01/11 (jong@cwi.nl)
- * Version 1.4.6pl1 released. An omission in configure.in degraded
-   the usefulness of release 1.4.6 for those who use it for the
-   Java implementation.
+* Version 1.4.6pl1 released. An omission in configure.in degraded
+  the usefulness of release 1.4.6 for those who use it for the
+  Java implementation.
 
 2001/01/09 (jong@cwi.nl)
-  * Version 1.4.6 (released)
-  * Significant progress made in de Java implementation (i.e. the version
-    in java/aterm/pure). This code is still under construction, but is
-    released so external parties who cannot use the cvs-tree can have a
-    go at the Java implementation as well.
+* Version 1.4.6 (released)
+* Significant progress made in de Java implementation (i.e. the version
+  in java/aterm/pure). This code is still under construction, but is
+  released so external parties who cannot use the cvs-tree can have a
+  go at the Java implementation as well.
 
 2000/11/17 (markvdb@cwi.nl)
-  * Memory leak fixed in reading baf.
+* Memory leak fixed in reading baf.
 
 2000/11/07 (jong@cwi.nl)
-  * Version 1.4.5 (released)
+* Version 1.4.5 (released)
 
 2000/10/31 ({jong,markvdb,olivierp}@cwi.nl)
-  * Fixed off-by-one bug in ATwriteToString
+* Fixed off-by-one bug in ATwriteToString
 
 2000/10/31 (jong@cwi.nl)
-  * Fixed "configure --help" statement for --with-prof
+* Fixed "configure --help" statement for --with-prof
 
 2000/10/05 (olivierp@cwi.nl)
-  * Annotations are now kept by ATsetArgument
+* Annotations are now kept by ATsetArgument
 
 2000/9/06 ({jong,olivierp}@cwi.nl)
-  * Added _ for struct names to avoid C++ problems
-  * Version 1.4.4
-  * Renamed TABLE_SIZE and TABLE_MASK to AT_TABLE_SIZE and AT_TABLE_MASK
-  * Renamed new and template variable names to keep C++ compatibility
+* Added _ for struct names to avoid C++ problems
+* Version 1.4.4
+* Renamed TABLE_SIZE and TABLE_MASK to AT_TABLE_SIZE and AT_TABLE_MASK
+* Renamed new and template variable names to keep C++ compatibility
 
 2000/9/05 ({jong,olivierp}@cwi.nl)
-  * Added functions ATgetTail, ATreplaceTail
-  * Version 1.4.3
+* Added functions ATgetTail, ATreplaceTail
+* Version 1.4.3
 
 2000/8/17 ({jong,olivierp}@cwi.nl)
-  * Added and documented ATchecksum function and atsum utility
-  * Added %a format (%y is now deprecated, but still supported)
-  * Added %h format to print checksum of a term
+* Added and documented ATchecksum function and atsum utility
+* Added %a format (%y is now deprecated, but still supported)
+* Added %h format to print checksum of a term
 
 2000/8/16 ({jong,olivierp}@cwi.nl)
-  * Version is now 1.4.2
-  * Introduced some macro's to hide table size calculations
-  * AFun table size now always a power of 2 (abolished % operator).
-  * AFun table now resizes dynamically
-  * Replaced -at-symboltable <size> with -at-afuntable <class>
-  * Added explanation of the taf format and taf related functions and scripts
-  * Fixed ATindexedSet documentation
+* Version is now 1.4.2
+* Introduced some macro's to hide table size calculations
+* AFun table size now always a power of 2 (abolished % operator).
+* AFun table now resizes dynamically
+* Replaced -at-symboltable <size> with -at-afuntable <class>
+* Added explanation of the taf format and taf related functions and scripts
+* Fixed ATindexedSet documentation
 
 2000/8/15 ({jong,olivierp}@cwi.nl)
-  * Version is now 1.4.1
-  * Introduced _afun.h exporting afun-functionality for internal use
-  * moved #inclusion of byteio.h to _afun.h so installed includes
-    no longer need byteio.h
+* Version is now 1.4.1
+* Introduced _afun.h exporting afun-functionality for internal use
+* moved #inclusion of byteio.h to _afun.h so installed includes
+  no longer need byteio.h
 
 2000/8/8 ({jong,olivierp}@cwi.nl)
-  * Version is now 1.4.0
-  * Added shared textual aterm format (.taf files)
-  * Improved naming of ATindexedSet functions (sets have elements, not keys)
-  * Baffle only autodetects when no -rx option was given.
+* Version is now 1.4.0
+* Added shared textual aterm format (.taf files)
+* Improved naming of ATindexedSet functions (sets have elements, not keys)
+* Baffle only autodetects when no -rx option was given.
 
 2000/7/27 ({jong,olivierp}@cwi.nl)
-  * Release 1.3.4
-  * Bugfix which could cause symbol to be unprotected under very
-    specific circumstances
+* Release 1.3.4
+* Bugfix which could cause symbol to be unprotected under very
+  specific circumstances
 
 2000/7/14 (jong@cwi.nl)
-  * Release 1.3.2 (first release that passes "make distcheck" :-)
+* Release 1.3.2 (first release that passes "make distcheck" :-)
 
 2000/7/14 (mdejonge@cwi.nl)
-  * added definition for COMPILE in make_rules to get around a bug in
-    automake
+* added definition for COMPILE in make_rules to get around a bug in
+  automake
 
 2000/7/14 (jong@cwi.nl)
-  * Improved dependencies and cleaning in toolbus/Makefile.am
+* Improved dependencies and cleaning in toolbus/Makefile.am
 
 2000/7/14 ({jong,olivierp}@cwi.nl)
-  * relaxed ATerm parser to accept TB legacy constructs (:,?,$)
-  * added tblog tool that can be used as a replacement for the old
-    Tcl/Tk logger to log executed atoms to a file.
-  * fixed handling of rec-monitor atoms by tifstoc
+* relaxed ATerm parser to accept TB legacy constructs (:,?,$)
+* added tblog tool that can be used as a replacement for the old
+  Tcl/Tk logger to log executed atoms to a file.
+* fixed handling of rec-monitor atoms by tifstoc
 
 2000/7/12 ({jong,olivierp}@cwi.nl)
-  * introduced subdir 'utils' with utility programs
-  * added dicttoc program so constant terms and afuns can be placed in a 
-    special '.dict' file.
+* introduced subdir 'utils' with utility programs
+* added dicttoc program so constant terms and afuns can be placed in a 
+  special '.dict' file.
 	
 2000/6/28 (jong@cwi.nl)
-  * version is now 1.1
-  * ToolBus-tools using the ATerm-library can now ATBpack() terms
-    before sending them. This causes terms to travel over the TB
-    in BAF-encoded form as a binary string.
+* version is now 1.1
+* ToolBus-tools using the ATerm-library can now ATBpack() terms
+  before sending them. This causes terms to travel over the TB
+  in BAF-encoded form as a binary string.
 
 2000/4/25 (olivierp@cwi.nl)
-   * Version 1.0.1: fixed overflow bug in gc heuristics.
-   * Fixed alignment bug in memory.c
+* Version 1.0.1: fixed overflow bug in gc heuristics.
+* Fixed alignment bug in memory.c
 	
 2000/4/18 (mdejonge@cwi.nl)
-   * make dist no longer depends on the existence of ./toolbus/tifstoc
+* make dist no longer depends on the existence of ./toolbus/tifstoc
 
 2000/4/13 (jong@cwi.nl)
-   * Added support for 64bits architecture.
-     Use --with-64bit configure option to create the 64bit library.
+* Added support for 64bits architecture.
+  Use --with-64bit configure option to create the 64bit library.
 
 2000/4/8 (mdejonge@cwi.nl)
-   * Removed all asfix related stuff because the asfix library is now
-     distributed separately (http://www.cwi.nl/projects/MetaEnv)
+* Removed all asfix related stuff because the asfix library is now
+  distributed separately (http://www.cwi.nl/projects/MetaEnv)
 
 2000/3/31 (mdejonge@cwi.nl)
-   * The toolbus is no longer required during the build process of the aterm
-     library
+* The toolbus is no longer required during the build process of the aterm
+  library
 
 2000/03/28 (mdejonge@cwi.nl)
-   * no longer distribute reconf script
-   * version is now 0.24
-   * Added GPL license headers to the files in the distribution
-   * (re) Added \$(DEFS) to compiler flags in configure.in
-   * Updated address of developers of aterm library
+* no longer distribute reconf script
+* version is now 0.24
+* Added GPL license headers to the files in the distribution
+* (re) Added \$(DEFS) to compiler flags in configure.in
+* Updated address of developers of aterm library
 
 2000/03/06 (olivierp@cwi.nl)
-   * Cleaned up support for gcc/cc/dbg/prof variants of the 
+* Cleaned up support for gcc/cc/dbg/prof variants of the 
 	libraries.
-   * Added an ATerm specific section to the INSTALL file.
+* Added an ATerm specific section to the INSTALL file.
 	
 2000/03/01 (mdejonge@cwi.nl)
-   * generation of shared libraries temporarily disabled because of
-     instability of libtool/automake.
+* generation of shared libraries temporarily disabled because of
+  instability of libtool/automake.
 
 2000/02/27 (mdejonge@cwi.nl)
-   * aterm library is now configured/build using automake/libtool
+* aterm library is now configured/build using automake/libtool
 
