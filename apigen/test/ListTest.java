@@ -57,7 +57,11 @@ public class ListTest {
     Modules2 mempty2 = factory.makeModules2_Empty();
 
     ListFactory f = mempty.getListFactory();
-    
+ 
+    l = factory.makeModuleList_Modules(mods[3]);
+    testAssert(l.isModuleList() == true, "is<type> test");
+    testAssert(l.isModules() == true, "is<cons> test");
+        
   }
 
   public final static void main(String[] args) {

@@ -118,7 +118,7 @@ public class Main {
 
 	static private void generateAPI(ADT adt) throws IOException {
 		new FactoryGenerator(adt, basedir, apiName, pkg, imports, verbose, folding).run();
-		new GenericConstructorGenerator(basedir, apiName, pkg, verbose, visitable).run();
+		new GenericConstructorGenerator(adt, basedir, apiName, pkg, verbose, visitable, 0).run();
 		new MakeRulesGenerator(adt, basedir, apiName, verbose).run();
 
         if (visitable) {

@@ -75,6 +75,7 @@ public class TypeImplGenerator extends JavaGenerator {
 		println("  }");
 
 		println();
+        genIsTypeMethod(type);
 		genTypeDefaultProperties(type);
 		genDefaultGetAndSetMethods(type);
 		println();
@@ -160,6 +161,13 @@ public class TypeImplGenerator extends JavaGenerator {
 		 println();
 	 }
   
+    private void genIsTypeMethod(Type type) {
+        println("  public boolean is" + TypeGenerator.className(type) + "()  {");
+        println("    return true;");
+        println("  }");
+        println();  
+    }
+    
 	private void genDefaultIsMethods(Type type)
 	{
 	  Iterator alts = type.alternativeIterator();

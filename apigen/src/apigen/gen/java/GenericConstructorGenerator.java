@@ -1,8 +1,11 @@
 
 package apigen.gen.java;
 
+import java.util.Iterator;
 import java.util.LinkedList;
 
+import apigen.adt.ADT;
+import apigen.adt.Type;
 import apigen.gen.StringConversions;
 
 
@@ -10,14 +13,16 @@ public class GenericConstructorGenerator extends JavaGenerator {
     private boolean visitable;
 	private String className;
     private String factoryName;
+    private ADT api;
     
-	public GenericConstructorGenerator(String directory, String apiName, String pkg, boolean verbose, boolean visitable) {
+	public GenericConstructorGenerator(ADT api, String directory, String apiName, String pkg, boolean verbose, boolean visitable, int arg1) {
 		
 		super(directory,className(apiName),pkg,new LinkedList(),verbose); 
 		
         this.visitable = visitable;
 		className = className(apiName);
 		factoryName = FactoryGenerator.className(apiName);
+        this.api = api;
 	}
 	
 	public static String className(String apiName) {
@@ -66,13 +71,31 @@ public class GenericConstructorGenerator extends JavaGenerator {
 		println("    return (" + factoryName + ") getStaticFactory();");
 		println("  }");
 		println();
+        genDefaultTypePredicates();
         if (visitable) {
           genAccept();
         }
 		println("}");
 	  }
       
-      private void genAccept() {
+      private void genAccept()  {
           println("  abstract public void accept(Visitor v) throws jjtraveler.VisitFailure;"); 
       }
+      
+      private void genDefaultTypePredicates() {
+          Iterator types = api.typeIterator();
+          
+          while (types.hasNext()) {
+              Type type = (Type) types.next();
+              
+              genDefaultTypePredicate(type);
+          }
+      }
+
+	private void genDefaultTypePredicate(Type type) {
+		println("  public boolean is" + TypeGenerator.className(type) + "() {");
+        println("    return false;");
+        println("  }");
+        println();
+	}
 }

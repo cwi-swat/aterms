@@ -1,3 +1,7 @@
+2003-07-07 	(jurgenv@cwi.nl)
+ * Added generation of is<type> predicates. You can now ask any term that is build by a generated
+    factory if he is of a specific type.
+    
 2003-06-27    (jurgenv@cwi.nl)
  * Bumped to 1.7beta
  * Added package definition file
