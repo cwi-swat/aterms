@@ -68,10 +68,12 @@ public class AlternativeImplGenerator extends JavaGenerator {
 		}
 		println("{");
 
+        genInitMethod();
+        genInitHashcodeMethod();
 		genAltConstructor(type, alt);
 		genAltFieldIndexMembers(type, alt);
 		genAltDuplicateMethod(type, alt);
-		genAltEquivalentMethod(type,alt);
+		genAltEquivalentMethod(type, alt);
 		genAltMake(type, alt);
 		genAltToTerm(type, alt);
 		genOverrideProperties(type, alt);
@@ -83,6 +85,18 @@ public class AlternativeImplGenerator extends JavaGenerator {
 		}
 
 		println("}");
+	}
+
+	private void genInitMethod() {
+		println("  protected void init(int hashCode, aterm.ATermList annos, aterm.AFun fun,	aterm.ATerm[] args) {");
+		println("    super.init(hashCode, annos, fun, args);");
+		println("  }");
+	}
+
+	private void genInitHashcodeMethod() {
+		println("  protected void initHashCode(aterm.ATermList annos, aterm.AFun fun, aterm.ATerm[] i_args) {");
+		println("  	super.initHashCode(annos, fun, i_args);");
+		println("  }");
 	}
 
 	private void genAltConstructor(Type type, Alternative alt) {
@@ -414,10 +428,13 @@ public class AlternativeImplGenerator extends JavaGenerator {
 		println("  }");
 		println();
 	}
-	
+
 	private void genAltEquivalentMethod(Type type, Alternative alt) {
 		println("  public boolean equivalent(shared.SharedObject peer) {");
-		println("    if (peer instanceof " + AlternativeGenerator.className(type,alt) + ") {");
+		println(
+			"    if (peer instanceof "
+				+ AlternativeGenerator.className(type, alt)
+				+ ") {");
 		println("      return super.equivalent(peer);");
 		println("    }");
 		println("    return false;");

@@ -53,6 +53,9 @@ public class ListTypeImplGenerator extends TypeImplGenerator {
 				+ typeName
 				+ " extends aterm.pure.ATermListImpl");
 		println("{");
+		
+		genInitMethod();
+		genInitHashcodeMethod();
 		genConstructor(className(type));
 		genGetFactoryMethod();
 		genTermField();
@@ -64,6 +67,18 @@ public class ListTypeImplGenerator extends TypeImplGenerator {
 		genGetEmptyMethod();
 		genInsertMethod();
 		println("}");
+	}
+
+	private void genInitMethod() {
+		println("  protected void init (int hashCode, aterm.ATermList annos, aterm.ATerm first,	aterm.ATermList next) {");
+		println("    super.init(hashCode, annos, first, next);");
+		println("  }");
+	}
+	
+	private void genInitHashcodeMethod() {
+		println("  protected void initHashCode(aterm.ATermList annos, aterm.ATerm first, aterm.ATermList next) {");
+		println("    super.initHashCode(annos, first, next);");
+		println("  }");
 	}
 
 	private void genGetFactoryMethod() {

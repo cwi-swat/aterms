@@ -3,6 +3,12 @@ package apigen.adt.api;
 abstract public class Entry_ConstructorImpl
 extends Entry
 {
+  protected void init(int hashCode, aterm.ATermList annos, aterm.AFun fun,	aterm.ATerm[] args) {
+    super.init(hashCode, annos, fun, args);
+  }
+  protected void initHashCode(aterm.ATermList annos, aterm.AFun fun, aterm.ATerm[] i_args) {
+  	super.initHashCode(annos, fun, i_args);
+  }
   Entry_ConstructorImpl(ADTFactory factory) {
     super(factory);
   }

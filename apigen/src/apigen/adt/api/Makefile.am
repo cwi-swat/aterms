@@ -13,7 +13,7 @@ java_JAVA = ${ADTAPI}
 
 api:
 	adt-to-java \
-		--input ${top_srcdir}/lib/ADT.adt \
+		--input ${top_srcdir}/lib-2.0/ADT.adt \
 		--folding \
 		--package apigen.adt.api \
 		--name ADT \
