@@ -1,7 +1,11 @@
+aclocal.m4
+config.h.in
+Makefile.in
 Makefile
 configure
 config.status
 config.cache
+config.log
 *.tar.gz
 diff.out
 update.out

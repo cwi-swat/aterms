@@ -1,8 +1,11 @@
-*.log
+Makefile.in
+Makefile
 *.aux
-*.toc
-*.ind
-*.ild
-*.blg
 *.bbl
+*.blg
+*.ild
 *.ilg
+*.ind
+*.log
+*.ps
+*.toc

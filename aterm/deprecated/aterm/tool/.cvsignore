@@ -1,2 +1,6 @@
+Makefile.in
 Makefile
+*.class
 test.tifs
+Testing.java
+classjava.stamp
