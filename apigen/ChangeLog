@@ -1,5 +1,7 @@
 2001/11/05 ({jurgenv,markvdb}@cwi.nl)
  * Modulename id are no longer added to exported productions.
+ * Adapted tests.
+ * Regenerated.
 
 2001/10/01 (jurgenv@cwi.nl)
  * Regenerated Sdf2-To-AsFix2ME and AddLabels to work with latest
