@@ -37,3 +37,8 @@ ${JAVADOCDIR}.tar.gz: ${JAVA_FILES}
 	tar cf - ${JAVADOCDIR} | gzip --best > ${JAVADOCDIR}.tar.gz
 	@rm -rf ${JAVADOCDIR}
 
+noinst_SCRIPTS = ${PACKAGE}-${VERSION}.pkg
+
+${PACKAGE}-${VERSION}.pkg: ${PACKAGE}.pkg Makefile
+	sed 's#__VERSION__#${VERSION}#g;\
+             s#__PACKAGE__#${PACKAGE}#g' < $< > $@
