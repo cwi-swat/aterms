@@ -4,6 +4,8 @@
 # $Id$
 #
 
+CLASSPATH	:= $(ATERM)/classes:$(CLASSPATH)
+
 java_JAVA       = JavaGen.java
 
 javadir         = ${prefix}/classes/apigen/java
