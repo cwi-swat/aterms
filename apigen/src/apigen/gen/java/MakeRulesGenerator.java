@@ -7,20 +7,19 @@ import apigen.adt.ADT;
 import apigen.adt.Alternative;
 import apigen.adt.ListType;
 import apigen.adt.Type;
-import apigen.gen.GenerationParameters;
 import apigen.gen.Generator;
 import apigen.gen.StringConversions;
 
 public class MakeRulesGenerator extends Generator {
 	private static final int MAX_FILES_IN_MAKEFILE_VARIABLE = 50;
 
-	private GenerationParameters params;
+	private JavaGenerationParameters params;
 	private ADT adt;
 	private String name;
 	private int bucket;
 	private String prefix;
 
-	public MakeRulesGenerator(ADT adt, GenerationParameters params) {
+	public MakeRulesGenerator(ADT adt, JavaGenerationParameters params) {
 		super(params);
 		this.params = params;
 		this.adt = adt;

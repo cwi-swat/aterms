@@ -4,13 +4,12 @@ import java.util.Iterator;
 
 import apigen.adt.Field;
 import apigen.adt.SeparatedListType;
-import apigen.gen.GenerationParameters;
 import apigen.gen.StringConversions;
 
 public class SeparatedListTypeGenerator extends ListTypeGenerator {
 	private SeparatedListType listType;
 
-	public SeparatedListTypeGenerator(GenerationParameters params, SeparatedListType type) {
+	public SeparatedListTypeGenerator(JavaGenerationParameters params, SeparatedListType type) {
 		super(params, type);
 		this.listType = type;
 	}
@@ -124,7 +123,7 @@ public class SeparatedListTypeGenerator extends ListTypeGenerator {
 
 		if (getConverter().isReserved(field.getType())) {
 			// TODO: find a way to reuse generation of getters in
-			// AlternativeImplGenerator
+			// AlternativeGenerator
 			throw new UnsupportedOperationException("separators with builtin types not yet supported");
 		}
 

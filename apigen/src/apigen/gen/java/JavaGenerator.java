@@ -7,7 +7,6 @@ import java.util.List;
 import apigen.adt.Alternative;
 import apigen.adt.Field;
 import apigen.adt.Type;
-import apigen.gen.GenerationParameters;
 import apigen.gen.Generator;
 import apigen.gen.StringConversions;
 import apigen.gen.TypeConverter;
@@ -22,12 +21,16 @@ public abstract class JavaGenerator extends Generator {
 		return converter;
 	}
 
-	protected JavaGenerator(GenerationParameters params) {
+	protected JavaGenerator(JavaGenerationParameters params) {
 		super(params);
 		this.basePackageName = params.getPackageName();
 		this.imports = params.getImports();
 		setExtension(".java");
 		setDirectory(buildDirectoryName(params.getOutputDirectory(), params.getPackageName()));
+	}
+
+	public JavaGenerationParameters getJavaGenerationParameters() {
+		return (JavaGenerationParameters) getGenerationParameters();
 	}
 
 	public String getDirectory() {
@@ -155,7 +158,7 @@ public abstract class JavaGenerator extends Generator {
 	}
 
 	protected String buildFormalTypedArgumentList(Iterator fields) {
-		GenerationParameters params = getGenerationParameters();
+		JavaGenerationParameters params = getJavaGenerationParameters();
 		StringBuffer buf = new StringBuffer();
 
 		while (fields.hasNext()) {

@@ -6,7 +6,6 @@ import apigen.adt.ADT;
 import apigen.adt.Alternative;
 import apigen.adt.ListType;
 import apigen.adt.Type;
-import apigen.gen.GenerationParameters;
 import apigen.gen.StringConversions;
 
 public class ForwardGenerator extends JavaGenerator {
@@ -15,7 +14,7 @@ public class ForwardGenerator extends JavaGenerator {
 	private ADT adt;
 	private String constructor;
 
-	public ForwardGenerator(ADT adt, GenerationParameters params) {
+	public ForwardGenerator(ADT adt, JavaGenerationParameters params) {
 		super(params);
 		this.adt = adt;
 		this.constructor = GenericConstructorGenerator.qualifiedClassName(params);
@@ -60,7 +59,7 @@ public class ForwardGenerator extends JavaGenerator {
 
 	private void genVisit(Type type, Alternative alt) {
 		String methodName = "visit_" + FactoryGenerator.concatTypeAlt(type, alt);
-		String paramType = AlternativeGenerator.qualifiedClassName(getGenerationParameters(), type, alt);
+		String paramType = AlternativeGenerator.qualifiedClassName(getJavaGenerationParameters(), type, alt);
 
 		genVisitMethod(methodName, paramType);
 	}

@@ -1,11 +1,11 @@
 package apigen.gen;
 
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
 public class GenerationParameters {
 	private String outputDirectory;
-	private String packageName;
 	private String apiName;
 	private String prefix;
 	private boolean verbose;
@@ -13,8 +13,60 @@ public class GenerationParameters {
 	private List inputFiles;
 
 	public GenerationParameters() {
-		imports = new LinkedList();
 		inputFiles = new LinkedList();
+	}
+
+	public void parseArguments(List args) {
+		Iterator iter = args.iterator();
+		while (iter.hasNext()) {
+			String arg = (String) iter.next();
+			if ("--input".startsWith(arg) || "-i".startsWith(arg)) {
+				shift(iter);
+				addInputFile(shiftArgument(iter));
+			}
+			else if ("--folding".startsWith(arg) || "-f".startsWith(arg)) {
+				shift(iter);
+				setFolding(true);
+			}
+			else if ("--output".startsWith(arg) || "-o".startsWith(arg)) {
+				shift(iter);
+				setOutputDirectory(shiftArgument(iter));
+			}
+			else if ("--name".startsWith(arg) || "-n".startsWith(arg)) {
+				shift(iter);
+				setApiName(shiftArgument(iter));
+			}
+			else if ("--verbose".startsWith(arg) || "-v".startsWith(arg)) {
+				shift(iter);
+				setVerbose(true);
+			}
+			else {
+				throw new IllegalArgumentException("unknown argument: " + arg);
+			}
+		}
+		if (args.size() != 0) {
+			throw new IllegalArgumentException("unhandled parameters: " + args);
+		}
+	}
+	
+	public String usage() {
+		StringBuffer buf = new StringBuffer();
+		buf.append("\t-i | --input <in>              <multiple allowed>\n");
+		buf.append("\t-f | --folding                 [off]\n");
+		buf.append("\t-o | --output <outputdir>      [\".\"]\n");
+		buf.append("\t-n | --name <api name>         <obligatory>\n");
+		buf.append("\t-v | --verbose                 [off]\n");
+		return buf.toString();
+	}
+
+	protected String shiftArgument(Iterator args) {
+		String result = (String) args.next();
+		shift(args);
+		return result;
+	}
+
+	protected void shift(Iterator args) {
+		args.remove();
 	}
 
 	public boolean isFolding() {
@@ -49,14 +101,6 @@ public class GenerationParameters {
 		this.outputDirectory = outputDirectory;
 	}
 
-	public String getPackageName() {
-		return packageName;
-	}
-
-	public void setPackageName(String packageName) {
-		this.packageName = packageName;
-	}
-
 	public String getPrefix() {
 		return prefix;
 	}
@@ -72,27 +116,4 @@ public class GenerationParameters {
 	public void setVerbose(boolean verbose) {
 		this.verbose = verbose;
 	}
-
-
-	
-	private boolean visitable;	// TODO refactor into JavaGenerationParameters
-	
-	public boolean isVisitable() {
-		return visitable;
-	}
-
-	public void setVisitable(boolean visitable) {
-		this.visitable = visitable;
-	}
-
-	private List imports;
-
-	public void addImport(String importName) {
-		imports.add(importName);
-	}
-
-	public List getImports() {
-		return imports;
-	}
-
 }

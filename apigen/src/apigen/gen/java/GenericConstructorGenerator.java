@@ -4,7 +4,6 @@ import java.util.Iterator;
 
 import apigen.adt.ADT;
 import apigen.adt.Type;
-import apigen.gen.GenerationParameters;
 import apigen.gen.StringConversions;
 
 public class GenericConstructorGenerator extends JavaGenerator {
@@ -14,7 +13,7 @@ public class GenericConstructorGenerator extends JavaGenerator {
 	private String factoryName;
 	private ADT adt;
 
-	public GenericConstructorGenerator(ADT adt, GenerationParameters params) {
+	public GenericConstructorGenerator(ADT adt, JavaGenerationParameters params) {
 		super(params);
 		this.adt = adt;
 		this.apiName = params.getApiName();
@@ -31,7 +30,7 @@ public class GenericConstructorGenerator extends JavaGenerator {
 		return StringConversions.makeCapitalizedIdentifier(name) + "Constructor";
 	}
 
-	public static String qualifiedClassName(GenerationParameters params) {
+	public static String qualifiedClassName(JavaGenerationParameters params) {
 		StringBuffer buf = new StringBuffer();
 		buf.append(params.getPackageName());
 		buf.append('.');
@@ -114,7 +113,7 @@ public class GenericConstructorGenerator extends JavaGenerator {
 	}
 
 	private void genAccept() {
-		String visitorPackage = VisitorGenerator.qualifiedClassName(getGenerationParameters());
+		String visitorPackage = VisitorGenerator.qualifiedClassName(getJavaGenerationParameters());
 		println("  abstract public void accept(" + visitorPackage + ".Visitor v) throws jjtraveler.VisitFailure;");
 		println();
 	}

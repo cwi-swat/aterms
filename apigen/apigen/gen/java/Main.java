@@ -3,7 +3,10 @@ package apigen.gen.java;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 import apigen.adt.ADT;
 import apigen.adt.Alternative;
@@ -12,7 +15,6 @@ import apigen.adt.SeparatedListType;
 import apigen.adt.Type;
 import apigen.adt.api.ADTFactory;
 import apigen.adt.api.Entries;
-import apigen.gen.GenerationParameters;
 import apigen.gen.TypeConverter;
 import apigen.gen.tom.TomSignatureGenerator;
 import aterm.ATermList;
@@ -20,7 +22,7 @@ import aterm.ParseError;
 
 public class Main {
 	private static TypeConverter converter = new TypeConverter(new JavaTypeConversions());
-	private static GenerationParameters params = new GenerationParameters();
+	private static JavaGenerationParameters params;
 
 	private static boolean jtom = false;
 	private static boolean jtype = false;
@@ -28,69 +30,57 @@ public class Main {
 	private static void usage() {
 		System.err.println("usage: JavaGen [options]");
 		System.err.println("options:");
-		System.err.println("\t-i | --input <in>              <multiple allowed>");
-		System.err.println("\t-f | --folding                 [off]");
-		System.err.println("\t-o | --output <outputdir>      [\".\"]");
-		System.err.println("\t-p | --package <package>       <optional>");
-		System.err.println("\t-n | --name <api name>         <obligatory>");
-		System.err.println("\t-i | --import <package>        (can be repeated)");
-		System.err.println("\t-t | --visitable               [off]");
 		System.err.println("\t-j | --jtom                    [off]");
 		System.err.println("\t-J | --jtype                   [off]");
-		System.err.println("\t-v | --verbose                 [off]");
 	}
 
-	public static void main(String[] args) {
-		if (args.length == 0) {
+	public static void main(String[] arguments) {
+		List args = new LinkedList(Arrays.asList(arguments));
+
+		if (args.size() == 0) {
 			usage();
 		}
 
+		params = new JavaGenerationParameters();
 		params.setOutputDirectory(".");
 		params.setVerbose(false);
 		params.setFolding(false);
 		params.setVisitable(false);
 
-		for (int i = 0; i < args.length; i++) {
-			if ("--input".startsWith(args[i]) || "-i".startsWith(args[i])) {
-				params.addInputFile(args[++i]);
-			}
-			else if ("--folding".startsWith(args[i]) || "-f".startsWith(args[i])) {
-				params.setFolding(true);
-			}
-			else if ("--output".startsWith(args[i]) || "-o".startsWith(args[i])) {
-				params.setOutputDirectory(args[++i]);
-			}
-			else if ("--package".startsWith(args[i]) || "-p".startsWith(args[i])) {
-				params.setPackageName(args[++i]);
-			}
-			else if ("--import".startsWith(args[i]) || "-m".startsWith(args[i])) {
-				params.addImport(args[++i]);
-			}
-			else if ("--name".startsWith(args[i]) || "-n".startsWith(args[i])) {
-				params.setApiName(args[++i]);
-			}
-			else if ("--visitable".startsWith(args[i]) || "-t".startsWith(args[i])) {
-				params.setVisitable(true);
-			}
-			else if ("--verbose".startsWith(args[i]) || "-v".startsWith(args[i])) {
-				params.setVerbose(true);
-			}
-			else if ("--jtom".startsWith(args[i]) || "-j".startsWith(args[i])) {
-				jtom = true;
-			}
-			else if ("--jtype".startsWith(args[i]) || "-J".startsWith(args[i])) {
-				jtype = true;
-			}
-			else if ("--help".startsWith(args[i]) || "-h".startsWith(args[i])) {
-				usage();
-				return;
-			}
-			else {
-				System.err.println("Error: Not a valid option " + args[i]);
-				usage();
-				return;
-			}
+		try {
+			params.parseArguments(args);
 		}
+		catch (IllegalArgumentException e) {
+			StringBuffer buf = new StringBuffer();
+			buf.append('\n');
+			buf.append(e.getMessage());
+			buf.append('\n');
+			buf.append("usage: apigen.gen.java.Main [options]\n");
+			buf.append("options:\n");
+			buf.append(params.usage());
+			System.err.println(buf.toString());
+			System.exit(1);
+		}
+
+		//		for (Iterator iter = args.iterator(); iter.hasNext(); ) {
+		//			String arg = (String) iter.next();
+		//			if ("--jtom".startsWith(args[i]) || "-j".startsWith(args[i])) {
+		//				jtom = true;
+		//			}
+		//			else if ("--jtype".startsWith(args[i]) || "-J".startsWith(args[i]))
+		// {
+		//				jtype = true;
+		//			}
+		//			else if ("--help".startsWith(args[i]) || "-h".startsWith(args[i])) {
+		//				usage();
+		//				return;
+		//			}
+		//			else {
+		//				System.err.println("Error: Not a valid option " + args[i]);
+		//				usage();
+		//				return;
+		//			}
+		//		}
 
 		if (params.getApiName() == null) {
 			System.err.println("Error: Please give a name for the API");

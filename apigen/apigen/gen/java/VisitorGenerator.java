@@ -14,7 +14,7 @@ public class VisitorGenerator extends JavaGenerator {
 
 	private ADT adt;
 
-	public VisitorGenerator(ADT adt, GenerationParameters params) {
+	public VisitorGenerator(ADT adt, JavaGenerationParameters params) {
 		super(params);
 		this.adt = adt;
 	}
@@ -59,7 +59,7 @@ public class VisitorGenerator extends JavaGenerator {
 
 	private void genVisit(Type type, Alternative alt) {
 		String methodName = FactoryGenerator.concatTypeAlt(type, alt);
-		String paramName = AlternativeGenerator.qualifiedClassName(getGenerationParameters(), type, alt);
+		String paramName = AlternativeGenerator.qualifiedClassName(getJavaGenerationParameters(), type, alt);
 		genVisitDecl(methodName, paramName);
 	}
 
@@ -71,7 +71,7 @@ public class VisitorGenerator extends JavaGenerator {
 		return StringConversions.decapitalize(params.getApiName());
 	}
 	
-	public static String qualifiedClassName(GenerationParameters params) {
+	public static String qualifiedClassName(JavaGenerationParameters params) {
 		StringBuffer buf = new StringBuffer();
 		buf.append(params.getPackageName());
 		buf.append('.');

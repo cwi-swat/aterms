@@ -14,7 +14,7 @@ public class AlternativeGenerator extends JavaGenerator {
 	private String className;
 	private String superClassName;
 
-	protected AlternativeGenerator(GenerationParameters params, Type type, Alternative alt) {
+	protected AlternativeGenerator(JavaGenerationParameters params, Type type, Alternative alt) {
 		super(params);
 		this.type = type;
 		this.alt = alt;
@@ -26,7 +26,7 @@ public class AlternativeGenerator extends JavaGenerator {
 		return className;
 	}
 
-	public static String qualifiedClassName(GenerationParameters params, Type type, Alternative alt) {
+	public static String qualifiedClassName(JavaGenerationParameters params, Type type, Alternative alt) {
 		StringBuffer buf = new StringBuffer();
 		buf.append(params.getPackageName());
 		buf.append('.');
@@ -61,7 +61,7 @@ public class AlternativeGenerator extends JavaGenerator {
 	}
 
 	private void genAlternativeClass(Type type, Alternative alt) {
-		boolean visitable = getGenerationParameters().isVisitable();
+		boolean visitable = getJavaGenerationParameters().isVisitable();
 		print("public class " + className + " extends " + superClassName);
 		if (visitable) {
 			print("  implements jjtraveler.Visitable");
@@ -102,7 +102,7 @@ public class AlternativeGenerator extends JavaGenerator {
 	}
 
 	private void genAltConstructor() {
-		GenerationParameters params = getGenerationParameters();
+		JavaGenerationParameters params = getJavaGenerationParameters();
 		println("  public " + className + "(" + FactoryGenerator.qualifiedClassName(params) + " factory) {");
 		println("    super(factory);");
 		println("  }");
@@ -409,7 +409,7 @@ public class AlternativeGenerator extends JavaGenerator {
 	}
 
 	private void genAltVisitableInterface(Type type, Alternative alt) {
-		String visitorPackage = VisitorGenerator.qualifiedClassName(getGenerationParameters());
+		String visitorPackage = VisitorGenerator.qualifiedClassName(getJavaGenerationParameters());
 		String altClassName = FactoryGenerator.concatTypeAlt(type, alt);
 
 		println("  public void accept(" + visitorPackage + ".Visitor v) throws jjtraveler.VisitFailure {");

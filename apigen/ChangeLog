@@ -1,6 +1,8 @@
 # $Id$
 
 Tue Nov 18 11:33:44 CET 2003 <jong@cwi.nl>
+ * refactor generation parameters into generic and (java-) specific parameters.
+   Still have to put jtom specifics (-jtype) in TomGenerationParameters.
  * add support for multiple input files
  * generate each subsort in each own package
  * no longer generate the user-extendable *Impl classes

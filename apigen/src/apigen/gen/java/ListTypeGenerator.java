@@ -2,7 +2,6 @@ package apigen.gen.java;
 
 import apigen.adt.ListType;
 import apigen.adt.Type;
-import apigen.gen.GenerationParameters;
 
 public class ListTypeGenerator extends TypeGenerator {
 	private ListType type;
@@ -10,7 +9,7 @@ public class ListTypeGenerator extends TypeGenerator {
 	private String elementTypeName;
 	private String factory;
 
-	public ListTypeGenerator(GenerationParameters params, ListType type) {
+	public ListTypeGenerator(JavaGenerationParameters params, ListType type) {
 		super(params, type);
 		this.type = type;
 		this.typeName = TypeGenerator.className(type);

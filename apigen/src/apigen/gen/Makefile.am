@@ -6,9 +6,15 @@
 
 SUBDIRS = . tom c java 
 
-CLASSPATH_ENV	= CLASSPATH=${top_srcdir}:$(EXTERNAL_JARS)
+CLASSPATH_ENV = CLASSPATH=${top_srcdir}:$(EXTERNAL_JARS)
 
-java_JAVA       = Generator.java StringConversions.java TypeConverter.java TypeConversions.java
 
-javadir         = ${prefix}/classes/apigen/gen
-JAVAROOT	= ${top_builddir}
+javadir = ${prefix}/classes/apigen/gen
+JAVAROOT = ${top_builddir}
+
+java_JAVA = \
+	GenerationParameters.java \
+	Generator.java \
+	StringConversions.java \
+	TypeConversions.java \
+	TypeConverter.java

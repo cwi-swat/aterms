@@ -12,6 +12,7 @@ java_JAVA = \
 	FactoryGenerator.java \
 	ForwardGenerator.java \
 	GenericConstructorGenerator.java \
+	JavaGenerationParameters.java \
 	JavaGenerator.java \
 	JavaTomSignatureImplementation.java \
 	JavaTypeConversions.java \

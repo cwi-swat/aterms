@@ -5,13 +5,12 @@ import java.util.Iterator;
 import apigen.adt.Alternative;
 import apigen.adt.Field;
 import apigen.adt.Type;
-import apigen.gen.GenerationParameters;
 import apigen.gen.StringConversions;
 
 public class TypeGenerator extends JavaGenerator {
 	private Type type;
 
-	protected TypeGenerator(GenerationParameters params, Type type) {
+	protected TypeGenerator(JavaGenerationParameters params, Type type) {
 		super(params);
 		this.type = type;
 	}
@@ -26,10 +25,10 @@ public class TypeGenerator extends JavaGenerator {
 	}
 
 	public String getQualifiedClassName() {
-		return qualifiedClassName(getGenerationParameters(), type);
+		return qualifiedClassName(getJavaGenerationParameters(), type);
 	}
 
-	public static String qualifiedClassName(GenerationParameters params, String type) {
+	public static String qualifiedClassName(JavaGenerationParameters params, String type) {
 		StringBuffer buf = new StringBuffer();
 		buf.append(params.getPackageName());
 		buf.append('.');
@@ -41,7 +40,7 @@ public class TypeGenerator extends JavaGenerator {
 		return buf.toString();
 	}
 
-	public static String qualifiedClassName(GenerationParameters params, Type type) {
+	public static String qualifiedClassName(JavaGenerationParameters params, Type type) {
 		return qualifiedClassName(params, type.getId());
 	}
 
@@ -74,7 +73,7 @@ public class TypeGenerator extends JavaGenerator {
 	}
 
 	protected void genTypeClassImpl(Type type) {
-		GenerationParameters params = getGenerationParameters();
+		JavaGenerationParameters params = getJavaGenerationParameters();
 		String classImplName = className(type);
 		String className = TypeGenerator.className(type.getId());
 		String superClassName = GenericConstructorGenerator.qualifiedClassName(params);
@@ -108,7 +107,7 @@ public class TypeGenerator extends JavaGenerator {
 	}
 
 	protected void genConstructor(String classImplName) {
-		String factoryName = FactoryGenerator.qualifiedClassName(getGenerationParameters());
+		String factoryName = FactoryGenerator.qualifiedClassName(getJavaGenerationParameters());
 		println("  protected " + classImplName + "(" + factoryName + " factory) {");
 		println("     super(factory);");
 		println("  }");
