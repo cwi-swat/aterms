@@ -1,1 +1,1 @@
-echo "__PREFIX__"
+echo "__PREFIX__/share/shared-objects-__VERSION__.jar"

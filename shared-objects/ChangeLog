@@ -1,3 +1,8 @@
+2003-03-18    <jurgenv@cwi.nl>
+  * shared-objects-config prints current name of exported jar file
+    including the correct version number
+  * Bumped to 1.2beta
+
 2003-01-22    <jurgenv@cwi.nl>
   * Release 1.1
   * Changed license to LGPL
