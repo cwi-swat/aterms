@@ -285,9 +285,9 @@ regardless of the outcome of the preceding branch-instruction.
 The \texttt{ATgetArgument} function is implemented as a macro for
 efficiency reasons, exploiting the knowledge that a specific argument
 of an \appl\ can be found at a particular offset relative to the start
-of the term itself (See~\ref{section:encoding}). Because it is a macro,
-its definition gets expanded inline, without the overhead of setting up
-a new stackframe and invoking another \C{}-function.
+of the term itself (See Section~\ref{section:encoding}). Because it is
+a macro, its definition gets expanded inline, without the overhead of
+setting up a new stackframe and invoking another \C{}-function.
 
 Recall from Section~\ref{section:encoding} that the memory location of
 argument $i$ of an \appl\ is located at byte-offset $4i+8$ relative to
@@ -295,10 +295,10 @@ the start of the term.
 
 In the ``expensive'' version, the computation of the address of argument
 $i$ is done by left-shifting $i$ twice (line 16) and adding the address
-of the start of the application (line 17). The addition of the constant
-offset $8$ is done when the value of argument $i$ is retrieved (line
-19). This version is expensive because it computes $4i+8$ during each
-iteration of the loop.
+of the start of the term (line 17). The addition of the constant offset
+$8$ is done when the value of argument $i$ is retrieved (line 19). This
+version is expensive because it computes $4i+8$ during each iteration
+of the loop.
 
 After applying strength reduction, we see that the computation of $4i+8$
 has been pulled out of the loop and is only performed once (lines 11-13).
@@ -332,9 +332,10 @@ behaviour is highly undesirable.
 %out to be a serious operation...
 
 % }}}
-% {{{  \subsection{Repairing the leak}
 
-\subsection{Repairing the leak}
+% {{{  \subsection{Repairing the bug}
+
+\subsection{Repairing the bug}
 \label{section:repairing}
 
 After spending a considerable amount of time debugging and finally
@@ -352,18 +353,13 @@ ATerm (as is the case when we need to find the address of an \appl\
 given the address of one of its arguments), using modulo and subtraction
 arithmetic.
 
-%% IMPROVE ME
-%%Generic garbage collectors, e.g. \texttt{FIXME:Boehm}, do not usually
-%%have such ``specific size'' blocks. They need to place markers between
-%%allocated structures and walk backwards through the heap to find the
-%%marker, at which point the structure containing the child is located.
-
 % }}}
 
 % }}}
-% {{{  \section{Conclusions and Future Hazards}
 
-\section{Conclusions and Future Hazards}
+% {{{  \section{Conclusions}
+
+\section{Conclusions}
 \label{conclusions}
 
 Writing a conservative garbage collector in \C\ is a fine art. Not only
@@ -376,11 +372,39 @@ role in undermining the hypotheses the garbage collector is based on.
 In our case, the ATerm Garbage Collector had been in use for two years
 before this bug became apparent, and only because some heuristic in \gcc\
 was improved, resulting in the strength reduction optimization being
-applied to a particular function which it previously ignored.
+applied to a particular function which had previously been ignored.
+
+% {{{  \subsection{Related work}
+
+\subsection{Related work}
+\label{section:related}
+
+The ATerm Garbage Collector was created with the specifics of ATerms in
+mind. However, the bug we describe here is not ATerm specific at all. This
+means that it is interesting to see how other, more generic garbage
+collectors have tackled this problem.
+
+The \texttt{gc} garbage collector based on~\cite{BW88} allows for
+\emph{interior pointers} if configured correctly\footnote{The version we
+downloaded (6.0alpha9) had this option enabled by default.}.
+
+The main difference with our collector is that we get away with the
+arduous job of finding all heap-allocated \aterm{}-references by requiring
+the programmer to explicitly \texttt{ATprotect} them. Boehm's \texttt{gc}
+does not place this burden on the programmer, but resorts to sophisticated
+techniques to find all heap-allocated object references.
+
+% }}}
+% {{{  \subsection{Future Hazards}
+
+\subsection{Future Hazards}
+\label{section:hazards}
 
 \texttt{TODO: Future Hazards} What if strength reduction starts beyond
 the end of the term and updates the pointer first thing in the loop, but
 after a (disjoint) ATerm creation is done?
+
+% }}}
 
 % }}}
 % {{{  \section{References}

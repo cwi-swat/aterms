@@ -8,7 +8,7 @@ noinst_DATA	= aterm.pkg
 DISTFILE	= ${distdir}.tar.gz
 WWWDIR		= /hosts/www/projects/MetaEnv/aterm
 
-aterm.pkg:
+aterm.pkg: configure.in ${srcdir}/utils/genpkg.sh
 	${srcdir}/utils/genpkg.sh > $@
 
 www-dist: distcheck
