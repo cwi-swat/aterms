@@ -11,22 +11,23 @@ import apigen.adt.NormalListType;
 import apigen.adt.SeparatedListType;
 import apigen.adt.Type;
 import apigen.adt.api.Separators;
+import apigen.gen.GenerationParameters;
 import apigen.gen.StringConversions;
 
 public class FactoryGenerator extends JavaGenerator {
-	private String className;
+	private List imports;
 	private ADT adt;
+	private String className;
 
-	public FactoryGenerator(
-		ADT adt,
-		String directory,
-		String apiName,
-		String pkg,
-		List standardImports,
-		boolean verbose) {
-		super(directory, className(apiName), pkg, standardImports, verbose);
-		this.className = className(apiName);
+	public FactoryGenerator(ADT adt, GenerationParameters params) {
+		super(params);
 		this.adt = adt;
+		this.className = className(params.getApiName());
+		this.imports = params.getImports();
+	}
+
+	public String getClassName() {
+		return className;
 	}
 
 	public static String className(String apiName) {
@@ -43,7 +44,7 @@ public class FactoryGenerator extends JavaGenerator {
 	}
 
 	private void genFactoryClass(ADT api) {
-		println("public class " + className);
+		println("public class " + getClassName());
 		println("{");
 		genFactoryPrivateMembers(api);
 		genFactoryEmptyLists(api);
@@ -62,7 +63,7 @@ public class FactoryGenerator extends JavaGenerator {
 		println("  {");
 		println("    return factory;");
 		println("  }");
-  	}
+	}
 
 	private void genTypeFromTermMethods(ADT api) {
 		Iterator types = api.typeIterator();
@@ -106,7 +107,7 @@ public class FactoryGenerator extends JavaGenerator {
 	}
 
 	private void genFactoryConstructor() {
-		println("  public " + className + "(PureFactory factory)");
+		println("  public " + getClassName() + "(PureFactory factory)");
 		println("  {");
 		genFactoryConstructorBody();
 		println("  }");
@@ -346,7 +347,7 @@ public class FactoryGenerator extends JavaGenerator {
 	private void genFactoryPrivateMembers(ADT api) {
 		// TODO: maybe ATermFactory is enough in stead of PureFactory
 		println("  private PureFactory factory;");
-		
+
 		Iterator types = api.typeIterator();
 		while (types.hasNext()) {
 			Type type = (Type) types.next();
@@ -531,7 +532,7 @@ public class FactoryGenerator extends JavaGenerator {
 		while (bottoms.hasNext()) {
 			String type = (String) bottoms.next();
 
-			if (!converter.isReserved(type)) {
+			if (!getConverter().isReserved(type)) {
 				println("    " + StringConversions.makeCapitalizedIdentifier(type) + ".initialize(this);");
 			}
 		}
@@ -639,7 +640,7 @@ public class FactoryGenerator extends JavaGenerator {
 		}
 		println(");");
 		println("      return tmp;");
-		println("    }"); // endif      
+		println("    }"); // endif
 		println("    else {");
 		println("      return null;");
 		println("    }");
@@ -726,7 +727,7 @@ public class FactoryGenerator extends JavaGenerator {
 		String elementType = type.getElementType();
 		String elementTypeName = TypeGenerator.className(elementType);
 
-		if (converter.isReserved(elementType)) {
+		if (getConverter().isReserved(elementType)) {
 			// TODO: implement lists of builtins
 			throw new RuntimeException("List of " + elementType + " not yet implemented, sorry!");
 		}
@@ -761,7 +762,8 @@ public class FactoryGenerator extends JavaGenerator {
 		String elementClassFromTerm = elementClass + "FromTerm";
 		Separators separators = type.getSeparators();
 		int headLength = 1 + separators.getLength(); // on the ATerm level
-		int tailIndex = 1 + type.countSeparatorFields(); // on the abstract level
+		int tailIndex = 1 + type.countSeparatorFields(); // on the abstract
+		// level
 
 		println("public " + className + " " + className + "FromTerm(aterm.ATerm trm)");
 		println("  {");

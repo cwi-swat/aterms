@@ -1,36 +1,40 @@
 package apigen.gen.java;
 
-import java.util.List;
-
 import apigen.adt.ListType;
 import apigen.adt.Type;
-import apigen.gen.StringConversions;
+import apigen.gen.GenerationParameters;
 
 public class ListTypeGenerator extends TypeGenerator {
-	protected String typeId;
-	protected String typeName;
-	protected String elementTypeId;
-	protected String elementTypeName;
+	private ListType type;
+	//	private String typeId;
+	private String typeName;
+	//	private String elementTypeId;
+	private String elementTypeName;
+	private String factory;
 
-	public ListTypeGenerator(
-		ListType type,
-		String directory,
-		String pkg,
-		String apiName,
-		List standardImports,
-		boolean verbose) {
-		super(type, directory, pkg, apiName, standardImports, verbose);
-
-		this.typeName = className(type);
-		this.typeId = StringConversions.makeCapitalizedIdentifier(type.getId());
+	public ListTypeGenerator(GenerationParameters params, ListType type) {
+		super(params, type);
+		this.type = type;
+		this.typeName = TypeGenerator.className(type);
+		//		this.typeId =
+		// StringConversions.makeCapitalizedIdentifier(type.getId());
 		this.elementTypeName = TypeGenerator.className(type.getElementType());
-		this.elementTypeId = StringConversions.makeCapitalizedIdentifier(type.getElementType());
+		//		this.elementTypeId =
+		// StringConversions.makeCapitalizedIdentifier(type.getElementType());
+		this.factory = FactoryGenerator.className(params.getApiName());
+	}
+
+	public String getTypeName() {
+		return typeName;
+	}
+
+	public String getFactory() {
+		return factory;
 	}
 
 	protected void generate() {
 		printPackageDecl();
 		printImports();
-		println();
 		genListTypeClassImpl();
 	}
 
@@ -70,32 +74,28 @@ public class ListTypeGenerator extends TypeGenerator {
 	}
 
 	protected void genGetFactoryMethod() {
-		println("  public " + FactoryGenerator.className(apiName) + " " + factoryGetter() + "{");
+		println("  public " + factory + " " + factoryGetter() + "{");
 		println("    return factory;");
 		println("}");
 	}
 
 	protected void genConstructor(String class_impl_name) {
-		println("  protected " + FactoryGenerator.className(apiName) + " factory = null;");
-		println(" " + class_impl_name + "(" + FactoryGenerator.className(apiName) + " factory) {");
+		println("  protected " + factory + " factory = null;");
+		println(" " + class_impl_name + "(" + factory + " factory) {");
 		println("     super(factory.getPureFactory());");
 		println("     this.factory = factory;");
 		println("  }");
 	}
 
 	protected void genInsertMethod() {
-		String className = TypeGenerator.className(type);
-
-		println("  public " + className + " insert(" + elementTypeName + " head) {");
-		println("    return " + factoryGetter() + ".make" + className + "(head, (" + className + ") this);");
+		println("  public " + typeName + " insert(" + elementTypeName + " head) {");
+		println("    return " + factoryGetter() + ".make" + typeName + "(head, (" + typeName + ") this);");
 		println("  }");
 	}
 
 	protected void genOverrideInsertMethod() {
-		ListType listType = (ListType) type;
-		String className = TypeGenerator.className(listType.getElementType());
 		println("  public aterm.ATermList insert(aterm.ATerm head) {");
-		println("    return insert((" + className + ") head);");
+		println("    return insert((" + elementTypeName + ") head);");
 		println("  }");
 	}
 
@@ -158,7 +158,7 @@ public class ListTypeGenerator extends TypeGenerator {
 	}
 
 	protected String factoryGetter() {
-		return "get" + FactoryGenerator.className(apiName) + "()";
+		return "get" + factory + "()";
 	}
 
 	protected void genGetters() {
@@ -194,9 +194,8 @@ public class ListTypeGenerator extends TypeGenerator {
 	}
 
 	protected void genIsEmpty(String className) {
-		String factoryName = FactoryGenerator.className(apiName);
 		println("  public boolean isEmpty() {");
-		println("    return this == " + "get" + factoryName + "().make" + className + "();");
+		println("    return this == " + "get" + factory + "().make" + className + "();");
 		println("  }");
 	}
 

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-    <classpathentry kind="src" path=""/>
+    <classpathentry excluding="test/|lib-1.0/" kind="src" path=""/>
+    <classpathentry kind="src" path="lib-1.0"/>
     <classpathentry kind="src" path="/JJTraveler"/>
     <classpathentry kind="src" path="/aterm-java"/>
     <classpathentry kind="src" path="/shared-objects"/>

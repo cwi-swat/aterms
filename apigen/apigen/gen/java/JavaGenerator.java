@@ -1,146 +1,157 @@
 package apigen.gen.java;
 
+import java.io.File;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 
 import apigen.adt.Alternative;
 import apigen.adt.Field;
 import apigen.adt.Type;
+import apigen.gen.GenerationParameters;
 import apigen.gen.Generator;
 import apigen.gen.StringConversions;
 import apigen.gen.TypeConverter;
 
 public abstract class JavaGenerator extends Generator {
-    static protected TypeConverter converter;
-    protected String pkg;
-    List imports;
+	private static TypeConverter converter = new TypeConverter(new JavaTypeConversions());
 
-    /**
-     * Load the Java type conversions
-     */
-    static {
-        converter = new TypeConverter(new JavaTypeConversions());
-    }
+	private String packageName;
+	private GenerationParameters params;
 
-    /**
-     * A java file generator
-     * @param directory The path of the new java file
-     * @param filename  The name of the new java class
-     * @param pkg       The package that it should go into
-     * @param standardImports The list of imports it should *at least* do
-     * @param verbose   Print information on stderr while generating
-     */
-    protected JavaGenerator(
-        String directory,
-        String filename,
-        String pkg,
-        List standardImports,
-        boolean verbose) {
-        super(directory, filename, ".java", verbose, false);
-        this.pkg = pkg;
-        this.imports = new LinkedList(standardImports);
-    }
+	public static TypeConverter getConverter() {
+		return converter;
+	}
 
-    protected void printImports() {
-        Iterator iter = imports.iterator();
-        while (iter.hasNext()) {
-            println("import " + (String) iter.next() + ";");
-        }
-    }
+	protected JavaGenerator(GenerationParameters params) {
+		super();
+		this.params = params;
+		this.packageName = params.getPackageName();
+		setDirectory(buildDirectoryName(params.getBaseDir(), params.getPackageName(), params.getApiName()));
+		setFileName(getClassName());
+		setExtension(".java");
+	}
 
-    protected void printPackageDecl() {
-        if (pkg.length() > 0) {
-            println("package " + pkg + ";");
-            println();
-        }
-    }
+	private String buildDirectoryName(String baseDir, String pkgName, String apiName) {
+		StringBuffer buf = new StringBuffer();
+		buf.append(baseDir);
+		buf.append(File.separatorChar);
+		buf.append(pkgName.replace('.', File.separatorChar));
+		buf.append(File.separatorChar);
+		buf.append(apiName);
+		System.err.println("buildDirectoryName: " + buf.toString());
+		return buf.toString();
+	}
 
-    /**
-     * Create a variable name from a field name
-     */
-    public static String getFieldId(String fieldId) {
-        return "_" + StringConversions.makeIdentifier(fieldId);
-    }
+	abstract public String getClassName();
 
-    public static String getFieldIndex(String fieldId) {
-        return "index_" + StringConversions.makeIdentifier(fieldId);
-    }
+	protected void printImports() {
+		List imports = params.getImports();
+		if (imports.size() > 0) {
+			Iterator iter = imports.iterator();
+			while (iter.hasNext()) {
+				println("import " + (String) iter.next() + ";");
+			}
+			println();
+		}
+	}
 
-    /**
-     * Print an actual argument list for one specific constructor. The field names
-     * are used for the variable names of the argument positions. In case of a reserved
-     * type the appropriate conversion is generated from target type to ATerm representation.
-     */
-    protected void printActualTypedArgumentList(Type type, Alternative alt) {
-        Iterator fields = type.altFieldIterator(alt.getId());
+	protected void printPackageDecl() {
+		if (packageName.length() > 0) {
+			println("package " + packageName + ';');
+			println();
+		}
+	}
 
-        print(buildActualTypedAltArgumentList(fields));
-    }
+	/**
+	 * Create a variable name from a field name
+	 */
+	public static String getFieldId(String fieldId) {
+		return "_" + StringConversions.makeIdentifier(fieldId);
+	}
 
-    protected String buildActualTypedAltArgumentList(Iterator fields) {
-        String result = "";
+	public static String getFieldIndex(String fieldId) {
+		return "index_" + StringConversions.makeIdentifier(fieldId);
+	}
 
-        while (fields.hasNext()) {
-            Field field = (Field) fields.next();
-            String field_id = getFieldId(field.getId());
-            String field_type = field.getType();
+	/**
+	 * Print an actual argument list for one specific constructor. The field
+	 * names are used for the variable names of the argument positions. In case
+	 * of a reserved type the appropriate conversion is generated from target
+	 * type to ATerm representation.
+	 */
+	protected void printActualTypedArgumentList(Type type, Alternative alt) {
+		Iterator fields = type.altFieldIterator(alt.getId());
 
-            if (field_type.equals("str")) {
-                result += "factory.makeAppl(factory.makeAFun(" + field_id + ", 0, true))";
-            } else if (field_type.equals("int")) {
-                result += "factory.makeInt(" + field_id + ")";
-            } else if (field_type.equals("real")) {
-                result += "factory.makeReal(" + field_id + ")";
-            } else {
-                result += field_id;
-            }
+		print(buildActualTypedAltArgumentList(fields));
+	}
 
-            if (fields.hasNext()) {
-                result += ", ";
-            }
-        }
+	protected String buildActualTypedAltArgumentList(Iterator fields) {
+		String result = "";
 
-        return result;
-    }
+		while (fields.hasNext()) {
+			Field field = (Field) fields.next();
+			String field_id = getFieldId(field.getId());
+			String field_type = field.getType();
 
-    protected String buildActualNullArgumentList(Iterator fields) {
-        String result = "";
+			if (field_type.equals("str")) {
+				result += "factory.makeAppl(factory.makeAFun(" + field_id + ", 0, true))";
+			}
+			else if (field_type.equals("int")) {
+				result += "factory.makeInt(" + field_id + ")";
+			}
+			else if (field_type.equals("real")) {
+				result += "factory.makeReal(" + field_id + ")";
+			}
+			else {
+				result += field_id;
+			}
 
-        while (fields.hasNext()) {
-            Field field = (Field) fields.next();
-            result += "(" + TypeGenerator.className(field.getType()) + ") null";
+			if (fields.hasNext()) {
+				result += ", ";
+			}
+		}
 
-            if (fields.hasNext()) {
-                result += ", ";
-            }
-        }
+		return result;
+	}
 
-        return result;
-    }
-    
-    /**
-     * Print a formal argument list for one specific constructor. The field types are
-     * derived from the ADT, the field names are used for the formal parameter names.
-     */
-    protected void printFormalTypedAltArgumentList(Type type, Alternative alt) {
-        Iterator fields = type.altFieldIterator(alt.getId());
-        print(buildFormalTypedArgumentList(fields));
-    }
+	protected String buildActualNullArgumentList(Iterator fields) {
+		String result = "";
 
-    protected String buildFormalTypedArgumentList(Iterator fields) {
-        String result = "";
-        while (fields.hasNext()) {
-            Field field = (Field) fields.next();
-            String field_id = getFieldId(field.getId());
-            result += TypeGenerator.className(field.getType()) + " " + field_id;
+		while (fields.hasNext()) {
+			Field field = (Field) fields.next();
+			result += "(" + TypeGenerator.className(field.getType()) + ") null";
 
-            if (fields.hasNext()) {
-                result += ", ";
-            }
-        }
+			if (fields.hasNext()) {
+				result += ", ";
+			}
+		}
 
-        return result;
-    }
+		return result;
+	}
+
+	/**
+	 * Print a formal argument list for one specific constructor. The field
+	 * types are derived from the ADT, the field names are used for the formal
+	 * parameter names.
+	 */
+	protected void printFormalTypedAltArgumentList(Type type, Alternative alt) {
+		Iterator fields = type.altFieldIterator(alt.getId());
+		print(buildFormalTypedArgumentList(fields));
+	}
+
+	protected String buildFormalTypedArgumentList(Iterator fields) {
+		String result = "";
+		while (fields.hasNext()) {
+			Field field = (Field) fields.next();
+			String field_id = getFieldId(field.getId());
+			result += TypeGenerator.className(field.getType()) + " " + field_id;
+
+			if (fields.hasNext()) {
+				result += ", ";
+			}
+		}
+
+		return result;
+	}
 
 }

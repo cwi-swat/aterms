@@ -1,44 +1,33 @@
 package apigen.gen.java;
 
 import java.util.Iterator;
-import java.util.List;
 
 import apigen.adt.Field;
 import apigen.adt.SeparatedListType;
-import apigen.adt.api.Separators;
+import apigen.gen.GenerationParameters;
 import apigen.gen.StringConversions;
 
 public class SeparatedListTypeImplGenerator extends ListTypeGenerator {
-	protected Separators separators;
-	SeparatedListType listType;
+	private SeparatedListType listType;
 
-	public SeparatedListTypeImplGenerator(
-		SeparatedListType type,
-		String directory,
-		String pkg,
-		String apiName,
-		List standardImports,
-		boolean verbose) {
-		super(type, directory, pkg, apiName, standardImports, verbose);
-
+	public SeparatedListTypeImplGenerator(GenerationParameters params, SeparatedListType type) {
+		super(params, type);
 		this.listType = type;
-		this.separators = type.getSeparators();
 	}
 
 	protected void generate() {
 		printPackageDecl();
 		printImports();
-		println();
 		genSeparatedListTypeClassImpl();
 	}
 
 	private void genSeparatedListTypeClassImpl() {
-		println("public class " + typeName + " extends aterm.pure.ATermListImpl {");
+		println("public class " + getTypeName() + " extends aterm.pure.ATermListImpl {");
 		genSeparatorFields();
 		genSeparatorsGettersAndSetters();
 		genInitMethod();
 		genInitHashcodeMethod();
-		genConstructor(className(type));
+		genConstructor(getTypeName());
 		genGetFactoryMethod();
 		genTermField();
 		genToTerm();
@@ -53,32 +42,30 @@ public class SeparatedListTypeImplGenerator extends ListTypeGenerator {
 	}
 
 	private void genReverseMethod() {
-		String className = TypeGenerator.className(type);
 		println("  public aterm.ATermList reverse() {");
-		println("    return reverse" + className + "();");
+		println("    return reverse" + getTypeName() + "();");
 		println("  }");
-		println("  public " + className + " reverse" + className + "() {");
-		println("    return " + factoryGetter() + ".reverse((" + className + ")this);");
+		println("  public " + getTypeName() + " reverse" + getTypeName() + "() {");
+		println("    return " + factoryGetter() + ".reverse((" + getTypeName() + ")this);");
 		println("  }");
 
 	}
 
 	protected void genToTerm() {
-		String factoryName = FactoryGenerator.className(apiName);
-
 		println("  public aterm.ATerm toTerm() {");
 		println("    if (term == null) {");
-		println("      term = get" + factoryName + "().toTerm(this);");
+		println("      term = get" + getFactory() + "().toTerm(this);");
 		println("    }");
 		println("    return term;");
 		println("  }");
 		println();
 	}
+
 	protected void genOverrideInsertMethod() {
 		println("  public aterm.ATermList insert(aterm.ATerm head) {");
 		println(
 			"    throw new java.lang.UnsupportedOperationException(\"Insert is not supported for separated lists ("
-				+ type.getId()
+				+ listType.getId()
 				+ "), please use a make method.\");");
 		println("  }");
 	}
@@ -134,9 +121,8 @@ public class SeparatedListTypeImplGenerator extends ListTypeGenerator {
 		String fieldName = StringConversions.makeCapitalizedIdentifier(field.getId());
 		String fieldClass = TypeGenerator.className(field.getType());
 		String fieldId = JavaGenerator.getFieldId(field.getId());
-		String className = TypeGenerator.className(type);
 
-		if (converter.isReserved(field.getType())) {
+		if (getConverter().isReserved(field.getType())) {
 			// TODO: find a way to reuse generation of getters in
 			// AlternativeImplGenerator
 			throw new UnsupportedOperationException("separators with builtin types not yet supported");
@@ -148,31 +134,25 @@ public class SeparatedListTypeImplGenerator extends ListTypeGenerator {
 		println("    }");
 		println(
 			"    throw new UnsupportedOperationException(\"This "
-				+ className
+				+ getClassName()
 				+ " does not have a "
 				+ field.getId()
 				+ ":\" + this);");
 		println("  }");
 
-		println("  public " + className + " set" + fieldName + "(" + fieldClass + " arg) {");
+		println("  public " + getClassName() + " set" + fieldName + "(" + fieldClass + " arg) {");
 		println("    if (!isEmpty() && !isSingle()) {");
 		String arglist = buildActualSeparatorArguments(listType);
 		arglist = arglist.replaceAll(fieldId, "arg");
 		println(
-			"      return get"
-				+ FactoryGenerator.className(apiName)
-				+ "().make"
-				+ className
-				+ "(getHead(), "
-				+ arglist
-				+ "getTail());");
+			"      return get" + getFactory() + "().make" + getClassName() + "(getHead(), " + arglist + "getTail());");
 		println("    }");
-		println("    throw new RuntimeException(\"This " + className + " does not have a " + fieldId + ".\");");
+		println("    throw new RuntimeException(\"This " + getClassName() + " does not have a " + fieldId + ".\");");
 		println("  }");
 	}
 
 	protected void genPredicates() {
-		genIsEmpty(type.getId());
+		genIsEmpty(listType.getId());
 		genIsMany();
 		genIsSingle();
 	}
@@ -187,10 +167,8 @@ public class SeparatedListTypeImplGenerator extends ListTypeGenerator {
 	}
 
 	protected void genEquivalentMethod() {
-		String className = TypeGenerator.className(type);
-
 		println("  public boolean equivalent(shared.SharedObject peer) {");
-		println("    if (peer instanceof " + className + ") {");
+		println("    if (peer instanceof " + getClassName() + ") {");
 		println("      if (isEmpty() || isSingle()) {");
 		println("        return super.equivalent(peer); ");
 		println("      }");
@@ -206,9 +184,8 @@ public class SeparatedListTypeImplGenerator extends ListTypeGenerator {
 	}
 
 	protected void genDuplicateMethod() {
-		String className = TypeGenerator.className(type);
 		println("  public shared.SharedObject duplicate() {");
-		println("    " + className + " clone = new " + className + "(factory);");
+		println("    " + getClassName() + " clone = new " + getClassName() + "(factory);");
 		println(
 			"    clone.init(hashCode(), getAnnotations(), getFirst(), "
 				+ buildActualSeparatorArguments(listType)
@@ -230,12 +207,12 @@ public class SeparatedListTypeImplGenerator extends ListTypeGenerator {
 		return result;
 	}
 
-	protected void genSeparatorFieldsEquivalentConjunction() {
+	private void genSeparatorFieldsEquivalentConjunction() {
 		Iterator fields = listType.separatorFieldIterator();
 		while (fields.hasNext()) {
 			Field field = (Field) fields.next();
 			String fieldId = JavaGenerator.getFieldId(field.getId());
-			print(" && " + fieldId + ".equivalent(((" + TypeGenerator.className(type) + ")peer)." + fieldId + ")");
+			print(" && " + fieldId + ".equivalent(((" + getClassName() + ")peer)." + fieldId + ")");
 		}
 	}
 

@@ -88,7 +88,7 @@ builtins.c builtins.h: builtins.adt
 %.java.sh: Makefile
 	${ADTJAVA} --input ${top_srcdir}/test/$*.adt \
 	           --output ${top_srcdir}/test/$* \
-		   --package test.$* \
+		   --package org.example \
 		   --name $* \
 		   --classpath ${top_builddir}
 	(cd ${top_srcdir} ; pwd ;\

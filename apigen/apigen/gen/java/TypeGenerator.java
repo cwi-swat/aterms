@@ -1,61 +1,59 @@
 package apigen.gen.java;
 
 import java.util.Iterator;
-import java.util.List;
 
 import apigen.adt.Alternative;
 import apigen.adt.Field;
 import apigen.adt.Type;
+import apigen.gen.GenerationParameters;
 import apigen.gen.StringConversions;
 
 public class TypeGenerator extends JavaGenerator {
-	protected Type type;
-	protected String apiName;
+	private Type type;
+	private String superClassName;
+	private String factoryName;
 
-	protected TypeGenerator(
-		Type type,
-		String directory,
-		String pkg,
-		String apiName,
-		List standardImports,
-		boolean verbose) {
-		super(directory, className(type), pkg, standardImports, verbose);
+	protected TypeGenerator(GenerationParameters params, Type type) {
+		super(params);
 		this.type = type;
-		this.apiName = apiName;
+		this.superClassName = GenericConstructorGenerator.className(params.getApiName());
+		this.factoryName = FactoryGenerator.className(params.getApiName());
+	}
+
+	public String getClassName() {
+		return className(type);
 	}
 
 	public static String className(Type type) {
 		return className(type.getId());
 	}
-	
+
 	public static String className(String type) {
-	  if (converter.isReserved(type)) {
-		  return converter.getType(type);
-	  }
-	  else {
-		  return StringConversions.makeIdentifier(converter.getType(type));
-	  }
+		String className = getConverter().getType(type);
+
+		if (!getConverter().isReserved(type)) {
+			className = StringConversions.makeIdentifier(className);
+		}
+
+		return className;
 	}
 
 	protected void generate() {
 		printPackageDecl();
 		printImports();
-		println();
-
 		genTypeClassImpl(type);
 	}
 
 	protected void genTypeClassImpl(Type type) {
-		String class_impl_name = className(type);
-		String class_name = TypeGenerator.className(type.getId());
+		String classImplName = className(type);
+		String className = TypeGenerator.className(type.getId());
 
-		println("abstract public class " + class_impl_name + " extends " + GenericConstructorGenerator.className(apiName));
-		println("{");
+		println("abstract public class " + classImplName + " extends " + superClassName + " {");
 
-		genConstructor(class_impl_name);
+		genConstructor(classImplName);
 		genInitMethod();
 		genInitHashcodeMethod();
-		genIsEqual(class_name);
+		genIsEqual(className);
 		genIsTypeMethod(type);
 		genTypeDefaultProperties(type);
 		genDefaultGetAndSetMethods(type);
@@ -75,15 +73,15 @@ public class TypeGenerator extends JavaGenerator {
 		println("  	super.initHashCode(annos, fun, i_args);");
 		println("  }");
 	}
-	protected void genConstructor(String class_impl_name) {
-		println("  protected " + class_impl_name + "(" + FactoryGenerator.className(apiName) + " factory) {");
+
+	protected void genConstructor(String classImplName) {
+		println("  protected " + classImplName + "(" + factoryName + " factory) {");
 		println("     super(factory);");
 		println("  }");
 	}
 
 	protected void genIsEqual(String class_name) {
-		println("  public boolean isEqual(" + class_name + " peer)");
-		println("  {");
+		println("  public boolean isEqual(" + class_name + " peer) {");
 		println("    return super.isEqual(peer);");
 		println("  }");
 	}
@@ -109,15 +107,13 @@ public class TypeGenerator extends JavaGenerator {
 		String field_type_id = TypeGenerator.className(field.getType());
 
 		// getter
-		println("  public " + field_type_id + " get" + field_name + "()");
-		println("  {");
+		println("  public " + field_type_id + " get" + field_name + "() {");
 		println("     throw new UnsupportedOperationException(\"This " + class_name + " has no " + field_name + "\");");
 		println("  }");
 		println();
 
 		// setter
-		println("  public " + class_name + " set" + field_name + "(" + field_type_id + " " + field_id + ")");
-		println("  {");
+		println("  public " + class_name + " set" + field_name + "(" + field_type_id + " " + field_id + ") {");
 		println("     throw new IllegalArgumentException(\"Illegal argument: \" + " + field_id + ");");
 		println("  }");
 		println();
@@ -133,15 +129,14 @@ public class TypeGenerator extends JavaGenerator {
 	}
 
 	protected void genDefaultHasMethod(Field field) {
-		println("  public boolean has" + StringConversions.makeCapitalizedIdentifier(field.getId()) + "()");
-		println("  {");
+		println("  public boolean has" + StringConversions.makeCapitalizedIdentifier(field.getId()) + "() {");
 		println("    return false;");
 		println("  }");
 		println();
 	}
 
 	protected void genDefaultIsMethod(Alternative alt) {
-		println("  public boolean is" + StringConversions.makeCapitalizedIdentifier(alt.getId()) + "()");
+		println("  public boolean is" + StringConversions.makeCapitalizedIdentifier(alt.getId()) + "() {");
 		println("  {");
 		println("    return false;");
 		println("  }");

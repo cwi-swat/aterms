@@ -14,25 +14,19 @@ import apigen.adt.SeparatedListType;
 import apigen.adt.Type;
 import apigen.adt.api.ADTFactory;
 import apigen.adt.api.Entries;
+import apigen.gen.*;
 import apigen.gen.TypeConverter;
 import apigen.gen.tom.TomSignatureGenerator;
 import aterm.ATermList;
 import aterm.ParseError;
 
 public class Main {
+	private static TypeConverter converter = new TypeConverter(new JavaTypeConversions());
+	private static GenerationParameters params = new GenerationParameters();
+
 	private static boolean visitable = false;
 	private static boolean jtom = false;
 	private static boolean jtype = false;
-	private static boolean folding = false;
-	private static boolean verbose = false;
-
-	private static TypeConverter converter = new TypeConverter(new JavaTypeConversions());
-
-	private static String basedir = ".";
-	private static String pkg = "";
-	private static List imports = null;
-	private static String apiName = "";
-	private static String prefix = "";
 
 	private static void usage() {
 		System.err.println("usage: JavaGen [options]");
@@ -45,13 +39,12 @@ public class Main {
 		System.err.println("\t-n | --name <api name>         [unspecified]");
 		System.err.println("\t-t | --visitable               [off]");
 		System.err.println("\t-j | --jtom                    [off]");
-		System.err.println("\t--jtype                        [off]");
+		System.err.println("\t-J | --jtype                   [off]");
 		System.err.println("\t-v | --verbose                 [off]");
 	}
 
 	public static void main(String[] args) {
 		List inputFiles = new LinkedList();
-		imports = new LinkedList();
 
 		if (args.length == 0) {
 			usage();
@@ -63,33 +56,33 @@ public class Main {
 				inputFiles.add(file);
 			}
 			else if ("--folding".startsWith(args[i]) || "-f".startsWith(args[i])) {
-				folding = true;
+				params.setFolding(true);
 			}
 			else if ("--output".startsWith(args[i]) || "-o".startsWith(args[i])) {
-				basedir = args[++i];
+				params.setBaseDir(args[++i]);
 			}
 			else if ("--package".startsWith(args[i]) || "-p".startsWith(args[i])) {
-				pkg = args[++i];
+				params.setPackageName(args[++i]);
 			}
 			else if ("--import".startsWith(args[i]) || "-m".startsWith(args[i])) {
-				imports.add(args[++i]);
+				params.addImport(args[++i]);
 			}
 			else if ("--name".startsWith(args[i]) || "-n".startsWith(args[i])) {
-				apiName = args[++i];
+				params.setApiName(args[++i]);
 			}
 			else if ("--visitable".startsWith(args[i]) || "-t".startsWith(args[i])) {
-				visitable = true;
+				params.setVisitable(true);
+			}
+			else if ("--verbose".startsWith(args[i]) || "-v".startsWith(args[i])) {
+				params.setVerbose(true);
 			}
 			else if ("--jtom".startsWith(args[i]) || "-j".startsWith(args[i])) {
 				jtom = true;
 			}
-			else if ("--jtype".startsWith(args[i])) {
+			else if ("--jtype".startsWith(args[i]) || "-J".startsWith(args[i])) {
 				jtype = true;
 			}
-			else if ("--verbose".startsWith(args[i]) || "-v".startsWith(args[i])) {
-				verbose = true;
-			}
-			else if ("--help".startsWith(args[i])) {
+			else if ("--help".startsWith(args[i]) || "-h".startsWith(args[i])) {
 				usage();
 				return;
 			}
@@ -100,7 +93,7 @@ public class Main {
 			}
 		}
 
-		if ("".equals(apiName)) {
+		if (params.getApiName() == null) {
 			System.err.println("Error: Please give a name for the API");
 			usage();
 			return;
@@ -109,7 +102,7 @@ public class Main {
 
 	}
 
-	static public void run(List inputFiles) {
+	public static void run(List inputFiles) {
 		Iterator iter = inputFiles.iterator();
 		String fileName = "";
 		try {
@@ -132,24 +125,24 @@ public class Main {
 		catch (ParseError e) {
 			System.err.println("Error: A parse error occurred in the ADT file:" + e);
 		}
-		catch (RuntimeException e) {
-			System.err.println("Error: " + e.getMessage());
-		}
+//		catch (RuntimeException e) {
+//			System.err.println("Error: " + e.getMessage());
+//		}
 	}
 
 	static private void generateAPI(ADT adt) {
-		new FactoryGenerator(adt, basedir, apiName, pkg, imports, verbose).run();
-		new GenericConstructorGenerator(adt, basedir, apiName, pkg, verbose, visitable).run();
-		new MakeRulesGenerator(adt, basedir, apiName, verbose).run();
+		new FactoryGenerator(adt, params).run();
+		new GenericConstructorGenerator(adt, params).run();
+		new MakeRulesGenerator(adt, params).run();
 
 		if (visitable) {
-			new VisitorGenerator(adt, basedir, pkg, imports, verbose).run();
-			new ForwardGenerator(adt, basedir, apiName, pkg, imports, verbose).run();
+			new VisitorGenerator(adt, params).run();
+			new ForwardGenerator(adt, params).run();
 		}
 
 		if (jtom) {
-			JavaTomSignatureImplementation sigImpl = new JavaTomSignatureImplementation(apiName, jtype);
-			new TomSignatureGenerator(adt, sigImpl, basedir, apiName, prefix, verbose, folding).run();
+			JavaTomSignatureImplementation sigImpl = new JavaTomSignatureImplementation(params.getApiName(), jtype);
+			new TomSignatureGenerator(adt, sigImpl, params).run();
 		}
 
 		generateTypeClasses(adt);
@@ -161,21 +154,14 @@ public class Main {
 			Type type = (Type) types.next();
 
 			if (type instanceof NormalListType) {
-				new ListTypeGenerator((NormalListType) type, basedir, pkg, apiName, imports, verbose).run();
-				//				new ListTypeGenerator(type, basedir, pkg, apiName, imports,
-				// verbose).run();
+				new ListTypeGenerator(params, (NormalListType) type).run();
 			}
 			else if (type instanceof SeparatedListType) {
-				new SeparatedListTypeImplGenerator((SeparatedListType) type, basedir, pkg, apiName, imports, verbose)
-					.run();
-				//				new ListTypeGenerator(type, basedir, pkg, apiName, imports,
-				// verbose).run();
+				new SeparatedListTypeImplGenerator(params, (SeparatedListType) type).run();
 
 			}
 			else if (!converter.isReserved(type.getId())) {
-				new TypeGenerator(type, basedir, pkg, apiName, imports, verbose).run();
-				//				new TypeGenerator(type, basedir, pkg, apiName, imports,
-				// verbose).run();
+				new TypeGenerator(params, type).run();
 				generateAlternativeClasses(type);
 			}
 		}
@@ -185,10 +171,7 @@ public class Main {
 		Iterator alt_iter = type.alternativeIterator();
 		while (alt_iter.hasNext()) {
 			Alternative alt = (Alternative) alt_iter.next();
-
-			//			new AlternativeGenerator(type, alt, basedir, pkg, apiName,
-			// imports, verbose).run();
-			new AlternativeGenerator(type, alt, apiName, basedir, pkg, imports, verbose, visitable).run();
+			new AlternativeGenerator(params, type, alt).run();
 		}
 	}
 }

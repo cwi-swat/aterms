@@ -1,37 +1,32 @@
 package apigen.gen.java;
 
 import java.util.Iterator;
-import java.util.LinkedList;
 
 import apigen.adt.ADT;
 import apigen.adt.Type;
+import apigen.gen.GenerationParameters;
 import apigen.gen.StringConversions;
 
 public class GenericConstructorGenerator extends JavaGenerator {
 	private boolean visitable;
 	private String className;
 	private String factoryName;
-	private ADT api;
+	private ADT adt;
 
-	public GenericConstructorGenerator(
-		ADT api,
-		String directory,
-		String apiName,
-		String pkg,
-		boolean verbose,
-		boolean visitable) {
-
-		super(directory, className(apiName), pkg, new LinkedList(), verbose);
-
-		this.visitable = visitable;
-		className = className(apiName);
-		factoryName = FactoryGenerator.className(apiName);
-		this.api = api;
+	public GenericConstructorGenerator(ADT adt, GenerationParameters params) {
+		super(params);
+		this.adt = adt;
+		this.visitable = params.isVisitable();
+		this.className = className(params.getApiName());
+		this.factoryName = FactoryGenerator.className(params.getApiName());
 	}
-
+	
+	public String getClassName() {
+		return className;
+	}
+	
 	public static String className(String apiName) {
-		return StringConversions.makeCapitalizedIdentifier(apiName)
-			+ "Constructor";
+		return StringConversions.makeCapitalizedIdentifier(apiName) + "Constructor";
 	}
 
 	protected void generate() {
@@ -41,8 +36,8 @@ public class GenericConstructorGenerator extends JavaGenerator {
 
 	private void genGenericConstructorClass() {
 		println("abstract public class " + className);
-		println("extends aterm.pure.ATermApplImpl");
-		println("implements aterm.ATerm");
+		println("  extends aterm.pure.ATermApplImpl");
+		println("  implements aterm.ATerm");
 		println("{");
 		println("  protected aterm.ATerm term = null;");
 		println();
@@ -55,7 +50,7 @@ public class GenericConstructorGenerator extends JavaGenerator {
 		println();
 
 		genInitMethod();
-        genInitHashcodeMethod();
+		genInitHashcodeMethod();
 		genToTermMethod();
 		genToStringMethod();
 		genSetTermMethod();
@@ -107,7 +102,7 @@ public class GenericConstructorGenerator extends JavaGenerator {
 	}
 
 	private void genDefaultTypePredicates() {
-		Iterator types = api.typeIterator();
+		Iterator types = adt.typeIterator();
 
 		while (types.hasNext()) {
 			Type type = (Type) types.next();
@@ -117,8 +112,7 @@ public class GenericConstructorGenerator extends JavaGenerator {
 	}
 
 	private void genDefaultTypePredicate(Type type) {
-		println(
-			"  public boolean isSort" + TypeGenerator.className(type) + "() {");
+		println("  public boolean isSort" + TypeGenerator.className(type) + "() {");
 		println("    return false;");
 		println("  }");
 		println();

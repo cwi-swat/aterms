@@ -1,9 +1,11 @@
 package apigen.gen.java;
 
 import java.util.Iterator;
-import java.util.List;
 
-import apigen.adt.*;
+import apigen.adt.Alternative;
+import apigen.adt.Field;
+import apigen.adt.Type;
+import apigen.gen.GenerationParameters;
 import apigen.gen.StringConversions;
 
 public class AlternativeGenerator extends JavaGenerator {
@@ -17,37 +19,33 @@ public class AlternativeGenerator extends JavaGenerator {
 	private String className;
 	private String superClassName;
 
-	protected AlternativeGenerator(
-		Type type,
-		Alternative alt,
-		String apiName,
-		String directory,
-		String pkg,
-		List standardImports,
-		boolean verbose,
-		boolean visitable) {
-		super(directory, className(type.getId(), alt.getId()), pkg, standardImports, verbose);
+	protected AlternativeGenerator(GenerationParameters params, Type type, Alternative alt) {
+		super(params);
+		this.apiName = params.getApiName();
+		this.visitable = params.isVisitable();
 		this.type = type;
 		this.alt = alt;
-		this.apiName = apiName;
-
-		/* some abbreviations */
 		this.typeId = type.getId();
 		this.altId = alt.getId();
-		this.className = className(typeId, altId);
+		this.className = buildClassName(typeId, altId);
 		this.superClassName = TypeGenerator.className(type);
-		this.visitable = visitable;
 	}
 
-	public static String className(String type, String alt) {
-		if (converter.isReserved(alt)) {
+	public String getClassName() {
+		return className;
+	}
+
+	private static String buildClassName(String type, String alt) {
+		if (getConverter().isReserved(alt)) {
 			return alt;
 		}
 		else {
-			return StringConversions.makeCapitalizedIdentifier(type)
-				+ "_"
-				+ StringConversions.makeCapitalizedIdentifier(alt);
+			return StringConversions.makeCapitalizedIdentifier(alt);
 		}
+	}
+
+	public static String className(String type, String alt) {
+		return buildClassName(type, alt);
 	}
 
 	public static String className(Type type, Alternative alt) {
@@ -64,8 +62,7 @@ public class AlternativeGenerator extends JavaGenerator {
 		if (visitable) {
 			print(" implements jjtraveler.Visitable");
 		}
-		println();
-		println("{");
+		println(" {");
 
 		genInitMethod();
 		genInitHashcodeMethod();
@@ -421,7 +418,7 @@ public class AlternativeGenerator extends JavaGenerator {
 		int count = 0;
 		while (fields.hasNext()) {
 			Field field = (Field) fields.next();
-			if (!converter.isReserved(field.getType())) {
+			if (!getConverter().isReserved(field.getType())) {
 				count++;
 			}
 		}

@@ -2,7 +2,12 @@ package apigen.gen.tom;
 
 import java.util.Iterator;
 
-import apigen.adt.*;
+import apigen.adt.ADT;
+import apigen.adt.Alternative;
+import apigen.adt.Field;
+import apigen.adt.NormalListType;
+import apigen.adt.Type;
+import apigen.gen.GenerationParameters;
 import apigen.gen.Generator;
 import apigen.gen.StringConversions;
 
@@ -12,18 +17,11 @@ public class TomSignatureGenerator extends Generator {
 	private ADT adt;
 	private String prefix;
 
-	public TomSignatureGenerator(
-		ADT adt,
-		TomSignatureImplementation impl,
-		String directory,
-		String api_name,
-		String prefix,
-		boolean verbose,
-		boolean folding) {
-		super(directory, StringConversions.makeIdentifier(api_name), ".tom", verbose, folding);
+	public TomSignatureGenerator(ADT adt, TomSignatureImplementation impl, GenerationParameters params) {
+		super(params.getBaseDir(), StringConversions.makeIdentifier(params.getApiName()), ".tom");
 		this.adt = adt;
 		this.impl = impl;
-		this.prefix = prefix;
+		this.prefix = params.getPrefix();
 	}
 
 	public void generate() {
@@ -159,7 +157,7 @@ public class TomSignatureGenerator extends Generator {
 	private void genTomType(Type type) {
 		if (type instanceof NormalListType) {
 			String eltType = ((NormalListType) type).getElementType();
-			
+
 			println(
 				TypeListTemplate(
 					impl.TypeName(type.getId()),
@@ -176,7 +174,8 @@ public class TomSignatureGenerator extends Generator {
 			genTomEmptyOperator(type, class_name);
 			genTomManyOperator(type, eltType, class_name);
 			genListTypeTomAltOperators(type);
-		} else {
+		}
+		else {
 			println(
 				TypeTermTemplate(
 					impl.TypeName(type.getId()),
@@ -185,31 +184,30 @@ public class TomSignatureGenerator extends Generator {
 					impl.TypeCmpFunSym("s1", "s2"),
 					impl.TypeGetSubTerm("t", "n"),
 					impl.TypeEquals(type.getId(), "t1", "t2")));
-					
+
 			println();
 			genTomAltOperators(type);
 		}
-		
+
 	}
-	
+
 	private void genTomManyOperator(Type type, String eltType, String class_name) {
 		// many operator
-		println("%op " + type.getId() + " many" + type.getId() 
-		               + "(head:" + eltType + ", tail:" + type.getId() + ") {");
+		println("%op " + type.getId() + " many" + type.getId() + "(head:" + eltType + ", tail:" + type.getId() + ") {");
 		println("  fsym { null }");
-		
+
 		println("  is_fsym(t) { " + prefix + impl.OperatorIsFSym("t", class_name, "many") + "}");
 		println("  get_slot(head,t) { " + impl.OperatorGetSlot("t", class_name, "head") + "}");
 		println("  get_slot(tail,t) { " + impl.OperatorGetSlot("t", class_name, "tail") + "}");
-		println("  make(e,l) {" + impl.ListmakeInsert(type.getId(),eltType) +"}");
+		println("  make(e,l) {" + impl.ListmakeInsert(type.getId(), eltType) + "}");
 		println("}");
 	}
 
 	private void genTomEmptyOperator(Type type, String class_name) {
-		println("%op " + type.getId() + " empty" + type.getId()+ "{");
+		println("%op " + type.getId() + " empty" + type.getId() + "{");
 		println("  fsym { null }");
 		println("  is_fsym(t) { " + prefix + impl.OperatorIsFSym("t", class_name, "empty") + "}");
-		println("  make() {" + impl.ListmakeEmpty(type.getId()) +"}");
+		println("  make() {" + impl.ListmakeEmpty(type.getId()) + "}");
 		println("}");
 	}
 
@@ -217,23 +215,23 @@ public class TomSignatureGenerator extends Generator {
 		// conc operator
 		println("%oplist " + type.getId() + " conc" + eltType + "(" + eltType + "*) {");
 		println("  fsym { null }");
-		println("  is_fsym(t) {" + impl.ListIsList("t",type.getId()) + "}");
+		println("  is_fsym(t) {" + impl.ListIsList("t", type.getId()) + "}");
 		println("  make_empty() {" + impl.ListmakeEmpty(type.getId()) + "}");
-		println("  make_insert(e,l) {" + impl.ListmakeInsert(type.getId(), eltType) +"}");
+		println("  make_insert(e,l) {" + impl.ListmakeInsert(type.getId(), eltType) + "}");
 		println("}");
 	}
 
 	private void genListTypeTomAltOperators(Type type) {
-			Iterator alts = type.alternativeIterator();
+		Iterator alts = type.alternativeIterator();
 
-			while (alts.hasNext()) {
-				Alternative alt = (Alternative) alts.next();
-				if(!alt.isEmpty() && !alt.isMany()) {
-					genTomAltOperator(type, alt);
-				}
+		while (alts.hasNext()) {
+			Alternative alt = (Alternative) alts.next();
+			if (!alt.isEmpty() && !alt.isMany()) {
+				genTomAltOperator(type, alt);
 			}
 		}
-		
+	}
+
 	private void genTomAltOperators(Type type) {
 		Iterator alts = type.alternativeIterator();
 
@@ -261,7 +259,7 @@ public class TomSignatureGenerator extends Generator {
 
 				if (fields.hasNext()) {
 					print(", ");
-				}	
+				}
 			}
 			print(")");
 		}

@@ -1,56 +1,53 @@
 package apigen.gen.java;
 
 import java.util.Iterator;
-import java.util.List;
 
 import apigen.adt.ADT;
 import apigen.adt.Alternative;
 import apigen.adt.ListType;
 import apigen.adt.Type;
+import apigen.gen.GenerationParameters;
 
 public class VisitorGenerator extends JavaGenerator {
-	private ADT adt;
-    private String className;
+	private static final String CLASS_NAME = "Visitor";
 
-	public VisitorGenerator(
-		ADT adt,
-		String directory,
-		String pkg,
-		List standardImports,
-		boolean verbose) {
-		super(directory, className(), pkg, standardImports, verbose);
+	private ADT adt;
+
+	public VisitorGenerator(ADT adt, GenerationParameters params) {
+		super(params);
 		this.adt = adt;
-        className = className();
-        
+	}
+
+	public String getClassName() {
+		return className();
 	}
 
 	public static String className() {
-		return  "Visitor";
+		return CLASS_NAME;
 	}
 
 	protected void generate() {
 		printPackageDecl();
-	
-		println("public abstract class " + className + " extends jjtraveler.VoidVisitor");
-		println("{");
+
+		println("public abstract class " + getClassName() + " extends jjtraveler.VoidVisitor {");
 		genVisits(adt);
 		println("}");
 	}
-    
+
 	protected void genVisits(ADT adt) {
 		Iterator types = adt.typeIterator();
 		while (types.hasNext()) {
 			Type type = (Type) types.next();
-			
+
 			if (type instanceof ListType) {
-			  genListVisit(type);	
+				genListVisit(type);
 			}
 			else {
-			  Iterator alts = type.alternativeIterator();
-			  while (alts.hasNext()) {
-				  Alternative alt = (Alternative) alts.next();
-			  	  genVisit(type, alt);
-			  }
+				Iterator alts = type.alternativeIterator();
+				while (alts.hasNext()) {
+					Alternative alt = (Alternative) alts.next();
+					genVisit(type, alt);
+				}
 			}
 		}
 	}
@@ -63,12 +60,13 @@ public class VisitorGenerator extends JavaGenerator {
 
 	private void genVisit(Type type, Alternative alt) {
 		String classImplName = AlternativeGenerator.className(type, alt);
-        String className = AlternativeGenerator.className(type, alt);
+		String className = AlternativeGenerator.className(type, alt);
 		genVisitDecl(classImplName, className);
 	}
 
 	private void genVisitDecl(String classImplName, String className) {
-		println("public abstract void visit_" + className + "(" + classImplName + " arg ) throws jjtraveler.VisitFailure;");
+		println(
+			"public abstract void visit_" + className + "(" + classImplName + " arg ) throws jjtraveler.VisitFailure;");
 	}
 
 }

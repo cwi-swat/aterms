@@ -104,6 +104,10 @@ public class StringConversions {
 	static public String capitalize(String s) {
 		return Character.toUpperCase(s.charAt(0)) + s.substring(1);
 	}
+	
+	static public String decapitalize(String s) {
+		return Character.toLowerCase(s.charAt(0)) + s.substring(1);
+	}
 
 	static private boolean isSpecialChar(char c) {
 		return getSpecialCharWord(c) != null;
