@@ -140,7 +140,7 @@ public class ATermApplImpl extends ATermImpl implements ATermAppl {
         if (ph_type.getType() == APPL) {
           ATermAppl appl = (ATermAppl) ph_type;
           if (appl.getName().equals("list") && appl.getArguments().isEmpty()) {
-            ATermList result = PureFactory.getEmpty();
+            ATermList result = ((PureFactory) getFactory()).getEmpty();
             for (int j = args.length - 1; j >= i; j--) {
               result = result.insert(args[j]);
             }
@@ -169,7 +169,7 @@ public class ATermApplImpl extends ATermImpl implements ATermAppl {
   }
 
   public ATermList getArguments() {
-    ATermList result = PureFactory.getEmpty();
+    ATermList result = ((PureFactory) getFactory()).getEmpty();
 
     for (int i = args.length - 1; i >= 0; i--) {
       result = result.insert(args[i]);

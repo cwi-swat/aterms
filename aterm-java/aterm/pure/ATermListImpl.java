@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Vector;
 
 import jjtraveler.VisitFailure;
-
 import shared.SharedObject;
 import aterm.AFun;
 import aterm.ATerm;
@@ -46,28 +45,25 @@ public class ATermListImpl extends ATermImpl implements ATermList {
 		return ATerm.LIST;
 	}
 
-    /**
-     * init is used internally by the PureFactory to initialize a prototype of
-     * an ATermList without using the new operator all the time
-     * 
-     */
-	protected void init(
-		int hashCode,
-		ATermList annos,
-		ATerm first,
-		ATermList next) {
+	/**
+	 * init is used internally by the PureFactory to initialize a prototype of
+	 * an ATermList without using the new operator all the time
+	 * 
+	 */
+	protected void init(int hashCode, ATermList annos, ATerm first, ATermList next) {
 		super.init(hashCode, annos);
 		this.first = first;
 		this.next = next;
 
 		if (first == null && next == null) {
 			this.length = 0;
-		} else {
+		}
+		else {
 			this.length = 1 + next.getLength();
 		}
 	}
 
-    protected void initHashCode(ATermList annos, ATerm first, ATermList next) {
+	protected void initHashCode(ATermList annos, ATerm first, ATermList next) {
 		this.first = first;
 		this.next = next;
 		this.internSetAnnotations(annos);
@@ -76,7 +72,8 @@ public class ATermListImpl extends ATermImpl implements ATermList {
 
 		if (first == null && next == null) {
 			this.length = 0;
-		} else {
+		}
+		else {
 			this.length = 1 + next.getLength();
 		}
 	}
@@ -91,8 +88,7 @@ public class ATermListImpl extends ATermImpl implements ATermList {
 		if (super.equivalent(obj)) {
 			ATermList peer = (ATermList) obj;
 			if (peer.getLength() == length) {
-				return peer.getFirst().equals(first)
-					&& peer.getNext().equals(next);
+				return peer.getFirst().equals(first) && peer.getNext().equals(next);
 			}
 		}
 
@@ -112,24 +108,18 @@ public class ATermListImpl extends ATermImpl implements ATermList {
 	}
 
 	protected boolean match(ATerm pattern, List list) {
-		if (pattern == null) {
-			System.err.println("???");
-		}
-
 		if (pattern.getType() == LIST) {
 			ATermList l = (ATermList) pattern;
 
-			if (l == PureFactory.getEmpty()) {
-				return this == PureFactory.getEmpty();
+			if (l.isEmpty()) {
+				return this.isEmpty();
 			}
 
 			if (l.getFirst().getType() == PLACEHOLDER) {
-				ATerm ph_type =
-					((ATermPlaceholder) l.getFirst()).getPlaceholder();
+				ATerm ph_type = ((ATermPlaceholder) l.getFirst()).getPlaceholder();
 				if (ph_type.getType() == APPL) {
 					ATermAppl appl = (ATermAppl) ph_type;
-					if (appl.getName().equals("list")
-						&& appl.getArguments().isEmpty()) {
+					if (appl.getName().equals("list") && appl.getArguments().isEmpty()) {
 						list.add(this);
 						return true;
 					}
@@ -152,7 +142,8 @@ public class ATermListImpl extends ATermImpl implements ATermList {
 
 				list.addAll(submatches);
 				return true;
-			} else {
+			}
+			else {
 				return l.isEmpty();
 			}
 		}
@@ -174,7 +165,8 @@ public class ATermListImpl extends ATermImpl implements ATermList {
 			 * to be compatible with the C version
 			 */
 			return head;
-		} else {
+		}
+		else {
 			return tail.insert(head);
 		}
 
@@ -186,9 +178,7 @@ public class ATermListImpl extends ATermImpl implements ATermList {
 			if (type.getType() == ATerm.APPL) {
 				ATermAppl appl = (ATermAppl) type;
 				AFun afun = appl.getAFun();
-				if (afun.getName().equals("list")
-					&& afun.getArity() == 0
-					&& !afun.isQuoted()) {
+				if (afun.getName().equals("list") && afun.getArity() == 0 && !afun.isQuoted()) {
 					return true;
 				}
 			}
@@ -197,7 +187,7 @@ public class ATermListImpl extends ATermImpl implements ATermList {
 	}
 
 	public boolean isEmpty() {
-		return this == PureFactory.getEmpty();
+		return this == ((PureFactory) getFactory()).getEmpty();
 	}
 
 	public int getLength() {
@@ -216,7 +206,7 @@ public class ATermListImpl extends ATermImpl implements ATermList {
 		ATermList cur;
 
 		cur = this;
-		while (cur.getNext() != PureFactory.getEmpty()) {
+		while (!cur.getNext().isEmpty()) {
 			cur = cur.getNext();
 		}
 
@@ -232,8 +222,7 @@ public class ATermListImpl extends ATermImpl implements ATermList {
 		}
 
 		if (start > length) {
-			throw new IllegalArgumentException(
-				"start (" + start + ") > length of list (" + length + ")");
+			throw new IllegalArgumentException("start (" + start + ") > length of list (" + length + ")");
 		}
 
 		cur = this;
@@ -257,8 +246,7 @@ public class ATermListImpl extends ATermImpl implements ATermList {
 		}
 
 		if (start > length) {
-			throw new IllegalArgumentException(
-				"start (" + start + ") > length of list (" + length + ")");
+			throw new IllegalArgumentException("start (" + start + ") > length of list (" + length + ")");
 		}
 
 		if (start > 0) {
@@ -270,7 +258,8 @@ public class ATermListImpl extends ATermImpl implements ATermList {
 
 		if (first == el) {
 			return 0;
-		} else {
+		}
+		else {
 			return -1;
 		}
 	}
@@ -360,7 +349,7 @@ public class ATermListImpl extends ATermImpl implements ATermList {
 		ATermList cur, next;
 		List elems;
 
-		if (this == PureFactory.getEmpty()) {
+		if (isEmpty()) {
 			return this;
 		}
 
@@ -369,13 +358,14 @@ public class ATermListImpl extends ATermImpl implements ATermList {
 
 		while (true) {
 			next = cur.getNext();
-			if (next == PureFactory.getEmpty()) {
-				cur = PureFactory.getEmpty();
+			if (next.isEmpty()) {
+				cur = ((PureFactory) getFactory()).getEmpty();
 				for (int i = elems.size() - 1; i >= 0; i--) {
 					cur = cur.insert((ATerm) elems.get(i));
 				}
 				return cur;
-			} else {
+			}
+			else {
 				elems.add(cur.getFirst());
 				cur = cur.getNext();
 			}
@@ -384,7 +374,7 @@ public class ATermListImpl extends ATermImpl implements ATermList {
 
 	public ATermList getSlice(int start, int end) {
 		int i, size = end - start;
-		ATermList result = PureFactory.getEmpty();
+		ATermList result = ((PureFactory) getFactory()).getEmpty();
 		ATermList list;
 
 		List buffer = new Vector(size);
@@ -477,9 +467,7 @@ public class ATermListImpl extends ATermImpl implements ATermList {
 
 		}
 
-		return (ATermList) next.dictPut(key, value).insert(
-			first).setAnnotations(
-			getAnnotations());
+		return (ATermList) next.dictPut(key, value).insert(first).setAnnotations(getAnnotations());
 		//return getPureFactory().makeList(first, next.dictPut(key, value), getAnnotations());
 	}
 
@@ -496,8 +484,7 @@ public class ATermListImpl extends ATermImpl implements ATermList {
 			return next;
 		}
 
-		return (ATermList) next.dictRemove(key).insert(first).setAnnotations(
-			getAnnotations());
+		return (ATermList) next.dictRemove(key).insert(first).setAnnotations(getAnnotations());
 		//return getPureFactory().makeList(first, next.dictRemove(key), getAnnotations());
 	}
 
