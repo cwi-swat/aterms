@@ -44,6 +44,7 @@ static int  error_idx = 0;
 
 extern char *strdup(const char *s);
 static ATerm fparse_term(int *c, FILE *f);
+static ATerm sparse_term(int *c, char *s);
 
 /*}}}  */
 
@@ -797,6 +798,255 @@ ATerm ATreadFromTextFile(FILE *file)
   memset(error_buf, 0, ERROR_SIZE);
 
   return fparse_term(&c, file);
+}
+
+/*}}}  */
+
+#define snext_char(c,s) ((*c) = *(s)++)
+#define sskip_layout(c,s) do { snext_char(c, s); } while(isspace(*c))
+
+/*{{{  static ATermList sparse_terms(int *c, char *s) */
+
+/**
+  * Parse a list of arguments.
+  */
+
+ATermList sparse_terms(int *c, char *s)
+{
+  ATermList tail = ATempty;
+  ATerm el = sparse_term(c, s);
+
+  if(*c == ',')
+    tail = sparse_terms(c, s);
+
+  return ATinsert(tail, el);
+}
+
+/*}}}  */
+/*{{{  static ATermAppl sparse_quoted_appl(int *c, char *s) */
+
+/**
+  * Parse a quoted application.
+  */
+
+static ATermAppl sparse_quoted_appl(int *c, char *s)
+{
+  ATbool escaped = ATfalse;
+  int len = 0;
+  ATermList args = ATempty;
+  Symbol sym;
+  char *name;
+
+  /* First parse the identifier */
+  do {
+    snext_char(c, s);
+    if(*c == EOF)
+      return NULL;
+    if(escaped) {
+      buffer[len++] = *c;
+      escaped = ATfalse;
+    } else if(*c == '\\')
+      escaped = ATtrue;
+    else if(*c != '"')
+      buffer[len++] = *c;
+  } while(*c != '"');
+  buffer[len] = '\0';
+  name = strdup(buffer);
+  if(!name)
+    ATerror("fparse_quoted_appl: symbol to long.");
+
+  sskip_layout(c, s);
+
+  /* Time to parse the arguments */
+  if(*c == '(') {
+    args = sparse_terms(c, s);
+    if(args == NULL || *c != ')')
+      return NULL;
+    sskip_layout(c, s);
+  }
+
+  /* Wrap up this function application */
+  sym = ATmakeSymbol(name, ATgetLength(args), ATtrue);
+  free(name);
+  return ATmakeApplList(sym, args);
+}
+
+/*}}}  */
+/*{{{  static ATermAppl sparse_unquoted_appl(int *c, char *s) */
+
+/**
+  * Parse a quoted application.
+  */
+
+static ATermAppl sparse_unquoted_appl(int *c, char *s)
+{
+  int len = 0;
+  Symbol sym;
+  ATermList args = ATempty;
+  char *name;
+
+  /* First parse the identifier */
+  while(isalpha(*c)) {
+    buffer[len++] = *c;
+    snext_char(c, s);
+  }
+  buffer[len] = '\0';
+  name = strdup(buffer);
+  if(!name)
+    ATerror("fparse_unquoted_appl: symbol to long.");
+
+  if(isspace(*c))
+    sskip_layout(c, s);
+
+  /* Time to parse the arguments */
+  if(*c == '(') {
+    args = sparse_terms(c, s);
+    if(args == NULL || *c != ')')
+      return NULL;
+    sskip_layout(c, s);
+  }
+
+  /* Wrap up this function application */
+  sym = ATmakeSymbol(name, ATgetLength(args), ATfalse);
+  free(name);
+  return ATmakeApplList(sym, args);
+}
+
+/*}}}  */
+/*{{{  static void sparse_num_or_blob(int *c, char *s) */
+
+/**
+  * Parse a number or blob.
+  */
+
+static ATerm sparse_num_or_blob(int *c, char *s, ATbool canbeblob)
+{
+  char num[32], *ptr = num;
+
+  if(*c == '-') {
+    *ptr++ = *c;
+    snext_char(c, s);
+  }
+    
+  while(isdigit(*c)) {
+    *ptr++ = *c;
+    snext_char(c, s);
+  }
+  if(canbeblob && *c == ':') {
+    /*{{{  Must be a blob! */
+
+    int i,size;
+    char *data;
+
+    *ptr = 0;
+    size = atoi(num);
+    if(size == 0)
+      data = NULL;
+    else {
+      data = malloc(size);
+      if(!data)
+	ATerror("fparse_num_or_blob: no room for blob of size %d\n", size);
+    }
+    for(i=0; i<size; i++) {
+      snext_char(c, s);
+      data[i] = *c;
+    }
+    snext_char(c, s);
+    return (ATerm)ATmakeBlob(data, size);
+
+    /*}}}  */
+  } else if(*c == '.' || toupper(*c) == 'E') {
+    /*{{{  A real number */
+
+    if(*c == '.') {
+      *ptr++ = *c;
+      snext_char(c, s);
+      while(isdigit(*c)) {
+	*ptr++ = *c;
+	snext_char(c, s);
+      }
+    }
+    if(toupper(*c) == 'E') {
+      *ptr++ = *c;
+      snext_char(c, s);
+      if(*c == '-') {
+	*ptr++ = *c;
+	snext_char(c, s);
+      }
+      while(isdigit(*c)) {
+	*ptr++ = *c;
+	snext_char(c, s);
+      }
+    }
+    *ptr = '\0';
+    return (ATerm)ATmakeReal(atof(num));
+
+    /*}}}  */
+  } else {
+    /*{{{  An integer */
+
+    *ptr = '\0';
+    return (ATerm)ATmakeInt(atoi(num));
+
+    /*}}}  */
+  }
+  return NULL;
+}
+
+/*}}}  */
+
+/*{{{  static ATerm sparse_term(int *c, char *s) */
+
+/**
+  * Parse a term from file.
+  */
+
+static ATerm sparse_term(int *c, char *s)
+{
+  ATerm t, result = NULL;
+  sskip_layout(c, s);
+
+  switch(*c) {
+    case '"':
+      result = (ATerm)sparse_quoted_appl(c, s);
+      break;
+    case '[':
+      result = (ATerm)sparse_terms(c, s);
+      if(result == NULL || *c != ']')
+	return NULL;
+      sskip_layout(c, s);
+      break;
+    case '<':
+      t = sparse_term(c, s);
+      if(t != NULL && *c == '>') {
+	result = (ATerm)ATmakePlaceholder(t);
+	sskip_layout(c, s);
+      }
+      break;
+    default:
+      if(isalpha(*c))
+	result = (ATerm)sparse_unquoted_appl(c, s);
+      else if(isdigit(*c))
+	result = sparse_num_or_blob(c, s, ATtrue);
+      else if(*c == '.' || *c == '-')
+	result = sparse_num_or_blob(c, s, ATfalse);
+      else
+	result = NULL;
+  }
+  return result;
+}
+
+/*}}}  */
+/*{{{  ATerm ATreadFromString(char *string) */
+
+/**
+  * Read from a string.
+  */
+
+ATerm ATreadFromString(char *string)
+{
+  int c;
+  return sparse_term(&c, string);
 }
 
 /*}}}  */
