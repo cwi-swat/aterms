@@ -12,12 +12,13 @@
 #include "encoding.h"
 #include "abool.h"
 
-#define AT_INT          0
-#define AT_REAL         1
-#define AT_APPL         2
-#define AT_LIST         3
-#define AT_PLACEHOLDER  4
-#define AT_BLOB         5
+#define	AT_FREE         0
+#define AT_INT          (AT_FREE+1)
+#define AT_REAL         (AT_INT+1)
+#define AT_APPL         (AT_REAL+1)
+#define AT_LIST         (AT_APPL+1)
+#define AT_PLACEHOLDER  (AT_LIST+1)
+#define AT_BLOB         (AT_PLACEHOLDER+1)
 
 typedef struct ATerm
 {

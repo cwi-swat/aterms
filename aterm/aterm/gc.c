@@ -65,15 +65,13 @@ void mark_phase()
 
   /* Traverse protected terms */
   for(i=0; i<at_nrprotected; i++)
-	if(*at_protected[i])
-	  mark_term(*at_protected[i]);
+		if(*at_protected[i])
+			mark_term(*at_protected[i]);
 
   /* Traverse the stack */
-  for(cur=start; cur<stop; cur++) {
-	if(1)
-	  mark_term(*cur);
-  }
-
+  for(cur=start; cur<stop; cur++)
+		if (AT_isValidTerm(*cur))
+			mark_term(*cur);
 }
 
 /*}}}  */

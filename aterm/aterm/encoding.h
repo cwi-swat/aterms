@@ -12,10 +12,19 @@
 #define MASK_ARITY	((1<<2) | (1<<3) | (1<<4))
 #define MASK_TYPE	((1<<5) | (1<<6) | (1<<7))
 
-#define SHIFT_ARITY	2
-#define SHIFT_TYPE	5
-#define SHIFT_LENGTH	8
-#define SHIFT_SYMBOL	SHIFT_LENGTH
+#define SHIFT_ARITY   2
+#define SHIFT_TYPE    5
+#define SHIFT_LENGTH  8
+#define SHIFT_SYMBOL  SHIFT_LENGTH
+
+#define	MAGIC_NUMBER  0x9AB1FF00		/* Honour Biff */
+#define MAGIC_MASK    0xFFFFFF00		/* Honour Mask */
+
+#define TERM_SIZE_INT         3
+#define TERM_SIZE_REAL        4
+#define TERM_SIZE_BLOB        4
+#define TERM_SIZE_LIST        4
+#define TERM_SIZE_PLACEHOLDER 3
 
 #define GET_MARK(h)     ((h) & MASK_MARK)
 #define GET_TYPE(h)     (((h) & MASK_TYPE) >> SHIFT_TYPE)
@@ -42,9 +51,11 @@
 				   ((header_type)(sym) << SHIFT_SYMBOL))
 #define INT_HEADER(anno)          ((anno) | AT_INT << SHIFT_TYPE)
 #define REAL_HEADER(anno)         ((anno) | AT_REAL << SHIFT_TYPE)
+#define EMPTY_HEADER(anno)        ((anno) | AT_LIST << SHIFT_TYPE)
 #define LIST_HEADER(anno,len)     ((anno) | AT_LIST << SHIFT_TYPE | \
-				   len << SHIFT_LENGTH)
-#define PLACEHOLDER_HEADER(anno)  ((anno) | AT_PLACEHOLDER << SHIFT_TYPE)
+				   len << SHIFT_LENGTH | 2 << SHIFT_ARITY)
+#define PLACEHOLDER_HEADER(anno)  ((anno) | AT_PLACEHOLDER << SHIFT_TYPE | \
+           1 << SHIFT_ARITY)
 #define BLOB_HEADER(anno,len)     ((anno) | AT_BLOB << SHIFT_TYPE | \
 				   len << SHIFT_LENGTH)
 

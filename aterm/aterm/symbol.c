@@ -22,6 +22,11 @@
 
 #define SYM_ARITY	16
 
+#define SHIFT_INDEX 1
+#define SYM_GET_NEXT_FREE(sym)    ((sym) >> SHIFT_INDEX)
+#define SYM_SET_NEXT_FREE(next)   (1 | ((next) << SHIFT_INDEX))
+#define SYM_IS_FREE(sym)          (((sym) & 1) == 1)
+
 /*}}}  */
 /*{{{  types */
 
@@ -75,8 +80,8 @@ void AT_initSymbol(int argc, char *argv[])
 		        table_size);
 
 	for (i = first_free = 0; i < table_size;)
-		lookup_table[i] = (SymEntry) ++i;
-	lookup_table[i-1] = (SymEntry) -1;			/* Sentinel */
+		lookup_table[i] = (SymEntry) SYM_SET_NEXT_FREE(++i);
+	lookup_table[i-1] = (SymEntry) SYM_SET_NEXT_FREE(-1);		/* Sentinel */
 }
 /*}}}  */
 
@@ -161,7 +166,7 @@ Symbol ATmakeSymbol(char *name, int arity, ATbool quoted)
     if(free_entry == -1)
       ATerror("AT_initSymbol: out of symbol slots!\n");
 
-    first_free = (int)lookup_table[first_free];
+    first_free = SYM_GET_NEXT_FREE((int)lookup_table[first_free]);
     lookup_table[free_entry] = cur;
     cur->id = free_entry;
   }
@@ -203,6 +208,19 @@ int ATgetArity(Symbol sym)
 ATbool ATisQuoted(Symbol sym)
 {
   return IS_QUOTED(lookup_table[sym]->header);
+}
+
+/*}}}  */
+/*{{{  ATbool AT_isValidSymbol(Symbol sym) */
+
+/**
+  * Check if a symbol is valid.
+  */
+
+ATbool AT_isValidSymbol(Symbol sym)
+{
+	return (sym >= 0 && sym < table_size
+		&& !SYM_IS_FREE((int)lookup_table[sym])) ?  ATtrue : ATfalse;
 }
 
 /*}}}  */
