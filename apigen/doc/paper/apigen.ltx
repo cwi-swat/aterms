@@ -347,7 +347,7 @@ location where optional layout in the input term is allowed.
 \item Line 2 tells us that the result sort of this production is
 \texttt{Bool}.
 
-\item Line 3 show the attributes associated with this production. In
+\item Line 3 shows the attributes associated with this production. In
 this case the only attribute is \texttt{left} for left-associativity.
 
 \end{itemize}
@@ -688,10 +688,10 @@ into prefix notation:
 
 \noindent Conceptually nothing has changed: we mean exactly the same
 arguments when we address them as \texttt{lhs}, \texttt{rhs}, and
-\texttt{result} terms in both syntaxes. However, in the underlying parse
-tree the location of \emph{all three} subterms has changed! This in turn
-means that all tools that manipulate, e.g. the \texttt{lhs} of boolean
-terms, have to be updated to reflect this structural change in position.
+\texttt{result} terms in both productions. However, in the underlying
+parse tree the location of \emph{all three} subterms has changed! This
+in turn means that all tools that manipulate, e.g. the \texttt{lhs}
+of boolean terms, have to be updated to reflect this structural change.
 
 In fact, there is hardly any room for flexibility with respect to changes
 in the syntax, unless the arguments happen to remain at their original
@@ -817,10 +817,10 @@ the introduction of an extra function-symbol around them.
 % {{{  Example adt-entry with explanation
 
 As an example of the concrete representation of an \adt\ entry, let
-us look at the boolean \texttt{and}. In this example, we know that
-the sortname of the production is \texttt{Bool}, the alternative
-is called \texttt{and}.  There are two operands, \texttt{lhs} and
-\texttt{rhs}, both of type Bool. In the pattern we put typed placeholders
+us look at the boolean \texttt{and}. In this example, we know that the
+sortname of the production is \texttt{Bool}, the alternative is called
+\texttt{and}.  There are two operands, \texttt{lhs} and \texttt{rhs},
+both of type \texttt{Bool}. In the pattern we put typed placeholders
 \texttt{<lhs(Bool)>} and \texttt{<rhs(Bool)>} at the location of
 the corresponding nonterminals. Also, because this is a parse tree
 pattern, we have to allow layout (whitespace), which in this case can
@@ -841,7 +841,7 @@ occur both after the non-terminal \texttt{lhs}, and after the literal
 
 Lines 1 and 2 contain the sortname and the alternative, respectively.
 Following, in lines 3--7 is the \aterm\ pattern of the actual parse
-tree. Lines 3--5 spell out the \texttt{prod} of the \asfix\ function
+tree. Lines 3--5 show the \texttt{prod} of the \asfix\ function
 application.  Lines 6--7 show the \texttt{args} part. Clearly visible
 are the typed placeholders for \texttt{lhs} and \texttt{rhs}.
 
@@ -1012,10 +1012,10 @@ type definition, and the declarations of the functions contained in the
 \heading{Opaque type definition}
 
 Defining \verb+Bool+ to be a pointer to a non-existant type (in this case
-the \texttt{struct \_Bool}, hides the underlying \aterm\ representation
-from the point of view of \api\ users. Instances of \texttt{Bool} can
-safely be passed around by functions, but any attempt to dereference
-such a pointer results in a compile time error.
+\texttt{struct \_Bool}, hides the underlying \aterm\ representation from
+the point of view of \api\ users. Instances of \texttt{Bool} can safely
+be passed around by functions, but any attempt to dereference such a
+pointer results in a compile time error.
 
 \begin{snippet}
 \begin{verbatim}
@@ -1179,13 +1179,9 @@ and the requested subterm can be returned immediately.
 
 \begin{snippet}
 \begin{verbatim}
-SDF:
-  "not" arg:Bool -> Bool {cons("not")}
-
-Generated:
-Bool getBoolArg(Bool arg) {
+  Bool getBoolArg(Bool arg) {
     return (Bool)ATelementAt((ATermList)ATgetArgument((ATermAppl)arg, 1), 2);
-}
+  }
 \end{verbatim}
 \end{snippet}
 
@@ -1196,11 +1192,6 @@ of the alternative productions).
 
 \begin{snippet}
 \begin{verbatim}
-SDF:
-  lhs:Bool "and" rhs:Bool -> Bool {left, cons("and")}
-  lhs:Bool "or" rhs:Bool  -> Bool {left, cons("or")}
-
-Generated:
   Bool getBoolLhs(Bool arg) {
     if (isBoolAnd(arg)) {
       return (Bool)ATgetFirst((ATermList)ATgetArgument((ATermAppl)arg, 1));
@@ -1242,8 +1233,7 @@ the \aterm\ \emph{in situ}, but instead need to construct a \emph{new}
 
 \begin{snippet}
 \begin{verbatim}
-  Bool setBoolLhs(Bool arg, Bool lhs)
-  {
+  Bool setBoolLhs(Bool arg, Bool lhs) {
     if (isBoolAnd(arg)) {
       return (Bool)
         ATsetArgument((ATermAppl)arg,
@@ -1265,8 +1255,8 @@ the \aterm\ \emph{in situ}, but instead need to construct a \emph{new}
 
 As the construction of a new \aterm\ is very expensive to begin with,
 the gain of eliminating the test for one of the alternatives (as
-implemented in the \texttt{get}ters) is relatively small, which is why
-that particular optimization is omitted here. If we have not found a match
+implemented in the \texttt{get}ters) is minimal, which is why that
+particular optimization is omitted here. If we have not found a match
 after exhaustively testing all the alternatives, the operation is aborted.
 
 % }}}
@@ -1278,6 +1268,22 @@ after exhaustively testing all the alternatives, the operation is aborted.
 
 \section{Code reduction in the \metaenv}
 \label{sec:reduction}
+
+Our main motivation to start this work has been the desire to make changes
+to \asfix, the parse tree format used by our tools in the \metaenv. Of
+particular interest is the dramatic size reduction (in terms of lines
+of code) of the various tools after refactoring them to use the new \api.
+
+This \emph{apification} process consisted of weeding out any and all
+direct \aterm\ manipulations from the tools, replacing them by calls
+to their \api\ counterparts. The resulting code is much easier to read,
+understand and maintain by programmers, whereas before they could only
+be handled by \asfix\ guru's.  In accordance with these subjective
+\emph{feelings} that the code had improved, is the LOC (Lines of
+Code) metric. Comparing versions just before and immediately after
+\emph{apification}, we found out that we had been able to eliminate
+almost half of the (manually written) code. The LOC metrics have been
+summarized in Figure~\ref{fig:reduction}.
 
 \begin{figure}[htb]
 \begin{tabular}{|l|r|r|r|}
@@ -1363,6 +1369,8 @@ Typical example: jaxb (http://java.sun.com/xml/jaxb)
 
 \section{Conclusions and Future Work}
 \label{sec:conclusions}
+
+
 
 % }}}
 
