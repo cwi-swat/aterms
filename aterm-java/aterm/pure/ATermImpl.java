@@ -9,11 +9,19 @@ import aterm.*;
 
 public abstract class ATermImpl extends ATermVisitableImpl implements ATerm, SharedObject {
   private ATermList annotations;
-  private PureFactory factory;
+  static protected PureFactory factory;
   private int hashCode;
 
+  static public void initialize(PureFactory f) {
+    factory = f;
+  }
+
+  static protected PureFactory getStaticFactory() {
+    return factory;
+  }
+  
   public int hashCode() {
-    return hashCode;
+    return this.hashCode;
   }
   
   abstract public Object clone();
@@ -24,10 +32,6 @@ public abstract class ATermImpl extends ATermVisitableImpl implements ATerm, Sha
 
   protected void internSetAnnotations(ATermList annos) {
     this.annotations = annos;
-  }
-
-  protected ATermImpl(PureFactory factory) {
-    this.factory = factory;
   }
 
   protected void init(int hashCode, ATermList annos) {
@@ -45,10 +49,10 @@ public abstract class ATermImpl extends ATermVisitableImpl implements ATerm, Sha
   }
   
   public ATermFactory getFactory() {
-    return factory;
+    return getPureFactory();
   }
   
-  public PureFactory getPureFactory() {
+  protected PureFactory getPureFactory() {
     return factory;
   }
   

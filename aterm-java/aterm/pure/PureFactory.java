@@ -48,14 +48,14 @@ public class PureFactory extends SharedObjectFactory implements ATermFactory {
 
   public PureFactory(int termTableSize) {
     super(termTableSize);
-
-    protoList = new ATermListImpl(this);
-    protoAppl = new ATermApplImpl(this);
-    protoInt = new ATermIntImpl(this);
-    protoReal = new ATermRealImpl(this);
-    protoBlob = new ATermBlobImpl(this);
-    protoPlaceholder = new ATermPlaceholderImpl(this);
-    protoAFun = new AFunImpl(this);
+    ATermImpl.initialize(this);
+    protoList = new ATermListImpl();
+    protoAppl = new ATermApplImpl();
+    protoInt = new ATermIntImpl();
+    protoReal = new ATermRealImpl();
+    protoBlob = new ATermBlobImpl();
+    protoPlaceholder = new ATermPlaceholderImpl();
+    protoAFun = new AFunImpl();
 
     protoList.init(42, null, null, null);
     empty = (ATermList)build(protoList);
@@ -92,16 +92,11 @@ public class PureFactory extends SharedObjectFactory implements ATermFactory {
 
   public AFun makeAFun(String name, int arity, boolean isQuoted) {
     synchronized (protoAFun) {
-      protoAFun.init(hashAFun(name, arity, isQuoted), name, arity, isQuoted);
+      protoAFun.initHashCode(name, arity, isQuoted);
       return (AFun) build(protoAFun);
     }
   }
 
-  static private int hashAFun(String s, int arity, boolean isQuoted) {
-    int c = (isQuoted) ? 7 * (arity + 1) : arity + 1; // to avoid collison 
-    return doobs_hashFunction(s, c);
-  }
-  
   public ATermInt makeInt(int value, ATermList annos) {
     synchronized (protoInt) {
       protoInt.initHashCode(annos, value);
@@ -154,6 +149,7 @@ public class PureFactory extends SharedObjectFactory implements ATermFactory {
   private static ATerm[] array2 = new ATerm[2];
   private static ATerm[] array3 = new ATerm[3];
   private static ATerm[] array4 = new ATerm[4];
+  private static ATerm[] array5 = new ATerm[5];
 
   public ATermAppl makeAppl(AFun fun, ATerm[] args) {
     return makeAppl(fun, args, empty);
@@ -161,7 +157,7 @@ public class PureFactory extends SharedObjectFactory implements ATermFactory {
 
   public ATermAppl makeAppl(AFun fun, ATerm[] args, ATermList annos) {
     synchronized (protoAppl) {
-      protoAppl.initHashCode(annos, fun,args);
+      protoAppl.initHashCode(annos, fun, args);
       return (ATermAppl) build(protoAppl);
     }
   }
@@ -214,8 +210,12 @@ public class PureFactory extends SharedObjectFactory implements ATermFactory {
   }
 
   public ATermAppl makeAppl(AFun fun, ATerm arg1, ATerm arg2, ATerm arg3, ATerm arg4, ATerm arg5) {
-    ATerm[] args = { arg1, arg2, arg3, arg4, arg5 };
-    return makeAppl(fun, args);
+    array5[0] = arg1;
+    array5[1] = arg2;
+    array5[2] = arg3;
+    array5[3] = arg4;
+    array5[4] = arg5;
+    return makeAppl(fun, array5);
   }
 
   public ATermAppl makeAppl(AFun fun, ATerm arg1, ATerm arg2, ATerm arg3, ATerm arg4, ATerm arg5, ATerm arg6) {

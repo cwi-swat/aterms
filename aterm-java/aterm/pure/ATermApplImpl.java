@@ -6,7 +6,7 @@ import shared.SharedObject;
 
 import aterm.*;
 
-class ATermApplImpl extends ATermImpl implements ATermAppl {
+public class ATermApplImpl extends ATermImpl implements ATermAppl {
   AFun fun;
   ATerm[] args;
 
@@ -14,20 +14,17 @@ class ATermApplImpl extends ATermImpl implements ATermAppl {
     return ATerm.APPL;
   }
 
-  protected ATermApplImpl(PureFactory factory) {
-    super(factory);
-  }
-
   protected void init(int hashCode, ATermList annos, AFun fun, ATerm[] i_args) {
     super.init(hashCode, annos);
     this.fun = fun;
     this.args = new ATerm[fun.getArity()];
-    for(int i=0; i<this.args.length; i++) {
+    
+    for(int i=0; i<fun.getArity(); i++) {
       this.args[i] = i_args[i];
     }
   }
 
-  protected void initHashCode(ATermList annos, AFun fun, ATerm[] i_args) {
+  public void initHashCode(ATermList annos, AFun fun, ATerm[] i_args) {
     this.fun  = fun;
     this.args = i_args;
     this.internSetAnnotations(annos);
@@ -35,9 +32,17 @@ class ATermApplImpl extends ATermImpl implements ATermAppl {
   }
 
   public Object clone() {
-    ATermApplImpl clone = new ATermApplImpl(getPureFactory());
+    ATermApplImpl clone = new ATermApplImpl();
     clone.init(hashCode(), getAnnotations(), fun, args);
     return clone;
+  }
+
+  public ATermAppl make(AFun fun, ATerm[] i_args, ATermList annos) {
+    return getPureFactory().makeAppl(fun, i_args, annos);
+  }
+
+  public ATermAppl make(AFun fun, ATerm[] i_args) {
+    return make(fun, i_args, getPureFactory().makeList());
   }
   
   public boolean equivalent(SharedObject obj) {
@@ -155,7 +160,7 @@ class ATermApplImpl extends ATermImpl implements ATermAppl {
     ATerm[] newargs = (ATerm[]) args.clone();
     newargs[index] = newarg;
 
-    return getPureFactory().makeAppl(fun, newargs);
+    return make(fun, newargs, getAnnotations());
   }
 
   public boolean isQuoted() {
@@ -175,11 +180,11 @@ class ATermApplImpl extends ATermImpl implements ATermAppl {
     for (int i = 0; i < this.args.length; i++) {
       newargs[i] = this.args[i].make(args);
     }
-    return getPureFactory().makeAppl(fun, newargs);
+    return make(fun, newargs);
   }
 
   public ATerm setAnnotations(ATermList annos) {
-    return getPureFactory().makeAppl(fun, args, annos);
+    return make(fun, args, annos);
   }
 
   public void accept(ATermVisitor v) throws ATermVisitFailure {
@@ -204,12 +209,12 @@ class ATermApplImpl extends ATermImpl implements ATermAppl {
     for(int i=0; i<arity ; i++) {
       o[i] = getArgument(i);
     }
-    o[o.length-2] = getAnnotations();
-    o[o.length-1] = getAFun();
+    o[arity]   = getAnnotations();
+    o[arity+1] = getAFun();
     return o;
   }
 
-  private int hashFunction() {
+  protected int hashFunction() {
     int initval = 0; /* the previous hash value */
     int a, b, c, len;
 
@@ -217,15 +222,15 @@ class ATermApplImpl extends ATermImpl implements ATermAppl {
     len = getArity();
     a = b = 0x9e3779b9; /* the golden ratio; an arbitrary value */
     c = initval; /* the previous hash value */
-
     /*---------------------------------------- handle most of the key */
     if (len >= 12) {
-      return PureFactory.doobs_hashFunction(serialize());
+      return staticDoobs_hashFuntion(serialize());
+        //return PureFactory.doobs_hashFunction(serialize());
     }
 
     /*------------------------------------- handle the last 11 bytes */
     c += len;
-    c += (getAnnotations().hashCode()<<8);
+      //c += (getAnnotations().hashCode()<<8);
     b += (getAFun().hashCode()<<8);
     
     switch (len) {
@@ -236,11 +241,11 @@ class ATermApplImpl extends ATermImpl implements ATermAppl {
       case 7 : b += (getArgument(6).hashCode() << 16);
       case 6 : b += (getArgument(5).hashCode() << 8);
       case 5 : b += (getArgument(4).hashCode());
-      case 4 : a += (getArgument(3).hashCode() << 24);
+      case 4 : a += (getArgument(3).hashCode() << 8);
       case 3 : a += (getArgument(2).hashCode() << 16);
-      case 2 : a += (getArgument(1).hashCode() << 8);
-      case 1 : a += getArgument(0).hashCode();
-/* case 0: nothing left to add */
+      case 2 : a += (getArgument(1).hashCode() << 24);
+      case 1 : a += (getArgument(0).hashCode());
+          /* case 0: nothing left to add */
     }
       a -= b; a -= c; a ^= (c >> 13);
       b -= c; b -= a; b ^= (a << 8);
@@ -255,5 +260,73 @@ class ATermApplImpl extends ATermImpl implements ATermAppl {
     /*-------------------------------------------- report the result */
     return c;
   }
-  
+
+  static public int staticDoobs_hashFuntion(Object[] o) {
+      //System.out.println("static doobs_hashFuntion");
+    
+    int initval = 0; /* the previous hash value */
+    int a,b,c,len;
+
+   /* Set up the internal state */
+   len = o.length;
+   a = b = 0x9e3779b9;  /* the golden ratio; an arbitrary value */
+   c = initval;         /* the previous hash value */
+
+   /*---------------------------------------- handle most of the key */
+   int k=0;
+   while(len >= 12) {
+      a += (o[k+0].hashCode() +(o[k+1].hashCode()<<8) +
+            (o[k+2].hashCode()<<16) +(o[k+3].hashCode()<<24));
+      b += (o[k+4].hashCode() +(o[k+5].hashCode()<<8) +
+            (o[k+6].hashCode()<<16) +(o[k+7].hashCode()<<24));
+      c += (o[k+8].hashCode() +(o[k+9].hashCode()<<8) +
+            (o[k+10].hashCode()<<16)+(o[k+11].hashCode()<<24));
+        //mix(a,b,c);
+      a -= b; a -= c; a ^= (c>>13); 
+      b -= c; b -= a; b ^= (a<<8); 
+      c -= a; c -= b; c ^= (b>>13); 
+      a -= b; a -= c; a ^= (c>>12);  
+      b -= c; b -= a; b ^= (a<<16); 
+      c -= a; c -= b; c ^= (b>>5); 
+      a -= b; a -= c; a ^= (c>>3);  
+      b -= c; b -= a; b ^= (a<<10); 
+      c -= a; c -= b; c ^= (b>>15);
+      
+      k += 12;
+      len -= 12;
+   }
+
+   /*------------------------------------- handle the last 11 bytes */
+   c += o.length;
+   switch(len)              /* all the case statements fall through */
+   {
+   case 11: c+=(o[k+10].hashCode()<<24);
+   case 10: c+=(o[k+9].hashCode()<<16);
+   case 9 : c+=(o[k+8].hashCode()<<8);
+      /* the first byte of c is reserved for the length */
+   case 8 : b+=(o[k+7].hashCode()<<24);
+   case 7 : b+=(o[k+6].hashCode()<<16);
+   case 6 : b+=(o[k+5].hashCode()<<8);
+   case 5 : b+=o[k+4].hashCode();
+   case 4 : a+=(o[k+3].hashCode()<<24);
+   case 3 : a+=(o[k+2].hashCode()<<16);
+   case 2 : a+=(o[k+1].hashCode()<<8);
+   case 1 : a+=o[k+0].hashCode();
+     /* case 0: nothing left to add */
+   }
+     //mix(a,b,c);
+   a -= b; a -= c; a ^= (c>>13); 
+   b -= c; b -= a; b ^= (a<<8); 
+   c -= a; c -= b; c ^= (b>>13); 
+   a -= b; a -= c; a ^= (c>>12);  
+   b -= c; b -= a; b ^= (a<<16); 
+   c -= a; c -= b; c ^= (b>>5); 
+   a -= b; a -= c; a ^= (c>>3);  
+   b -= c; b -= a; b ^= (a<<10); 
+   c -= a; c -= b; c ^= (b>>15); 
+   
+   /*-------------------------------------------- report the result */
+   return c;
+  }
+
 }

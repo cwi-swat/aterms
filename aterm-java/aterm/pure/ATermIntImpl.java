@@ -13,10 +13,6 @@ class ATermIntImpl extends ATermImpl implements ATermInt {
     return ATerm.INT;
   }
 
-  protected ATermIntImpl(PureFactory factory) {
-    super(factory);
-  }
-  
   protected void init(int hashCode, ATermList annos, int value) {
     super.init(hashCode, annos);
     this.value = value;
@@ -31,7 +27,7 @@ class ATermIntImpl extends ATermImpl implements ATermInt {
 
   
   public Object clone() {
-    ATermIntImpl clone = new ATermIntImpl(getPureFactory());
+    ATermIntImpl clone = new ATermIntImpl();
     clone.init(hashCode(), getAnnotations(), value);
     return clone;
   }
@@ -81,7 +77,7 @@ class ATermIntImpl extends ATermImpl implements ATermInt {
     /* Set up the internal state */
     int a = 0x9e3779b9; /* the golden ratio; an arbitrary value */
     int b = 0x9e3779b9; /* the golden ratio; an arbitrary value */
-    int c = 0;          /* the previous hash value */
+    int c = 2;          /* the previous hash value */
 
     /*------------------------------------- handle the last 11 bytes */
     a += (getAnnotations().hashCode()<<8);

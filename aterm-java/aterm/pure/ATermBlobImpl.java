@@ -13,17 +13,13 @@ class ATermBlobImpl extends ATermImpl implements ATermBlob {
     return ATerm.BLOB;
   }
 
-  protected ATermBlobImpl(PureFactory factory) {
-    super(factory);
-  }
-
   protected void init(int hashCode, ATermList annos, byte[] data) {
     super.init(hashCode, annos);
     this.data = data;
   }
   
   public Object clone() {
-    ATermBlobImpl clone = new ATermBlobImpl(getPureFactory());
+    ATermBlobImpl clone = new ATermBlobImpl();
     clone.init(hashCode(), getAnnotations(), data);
     return clone;
   }

@@ -13,17 +13,13 @@ class ATermRealImpl extends ATermImpl implements ATermReal {
     return ATerm.REAL;
   }
 
-  protected ATermRealImpl(PureFactory factory) {
-    super(factory);
-  }
-  
   protected void init(int hashCode, ATermList annos, double value) {
     super.init(hashCode, annos);
     this.value = value;
   }
   
   public Object clone() {
-    ATermRealImpl clone = new ATermRealImpl(getPureFactory());
+    ATermRealImpl clone = new ATermRealImpl();
     clone.init(hashCode(), getAnnotations(), value);
     return clone;
   }

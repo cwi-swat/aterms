@@ -13,17 +13,13 @@ class ATermPlaceholderImpl extends ATermImpl implements ATermPlaceholder {
     return ATerm.PLACEHOLDER;
   }
 
-  protected ATermPlaceholderImpl(PureFactory factory) {
-    super(factory);
-  }
-  
   protected void init(int hashCode, ATermList annos, ATerm type) {
     super.init(hashCode, annos);
     this.type = type;
   }
   
   public Object clone() {
-    ATermPlaceholderImpl clone = new ATermPlaceholderImpl(getPureFactory());
+    ATermPlaceholderImpl clone = new ATermPlaceholderImpl();
     clone.init(hashCode(), getAnnotations(), type);
     return clone;
   }
