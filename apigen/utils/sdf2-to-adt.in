@@ -103,7 +103,6 @@ ADDLABELS=${PKGDATA}/AddLabels.asf
 # binaries
      SGLR=${SGLRBIN}/sglr
   ASOURCE=${ASOURCEBIN}/asource
-  TRM2BAF=${ATERMBIN}/trm2baf
 SDF2TOADT=${bindir}/Sdf2-to-ADT
 EVALUATOR=${EVALBIN}/asfe
 APPLYFUNC=${EVALBIN}/apply-function
@@ -189,6 +188,6 @@ ${EVALUATOR} -w on -e ${ADDLABELS} -i .api_2_$$ -o .api_3_$$ || err
 info " - Generating ADT (${SDF2TOADT})"
 func="sdf-to-adt-${CONSOPT}"
 ${APPLYFUNC} -f ${func} -s ATerm -m Sdf2-to-ADT < .api_3_$$ > .api_4_$$ || err
-${SDF2TOADT} < .api_4_$$ | ${ASOURCE} | ${TRM2BAF} > ${OUTPUT} || err
+${SDF2TOADT} < .api_4_$$ | ${ASOURCE} > ${OUTPUT} || err
 
 # }}}
