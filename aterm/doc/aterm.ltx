@@ -983,6 +983,9 @@ details.
 language, a domain specific language for describing financial products
 \cite{ADR95}.
 
+\item[LPO:] a linear process operator (LPO) describing the 'firewire'
+protocol with 1 bus and 9 links \cite{Lut99}\cite{GL99}.
+
 \end{description}
 
 \noindent Measurements were performed on an ULTRA SPARC-5 (270 MHz) with 512 Mb
@@ -1009,8 +1012,9 @@ Random			&  1000000 &	 92246 &   90.81 &  2997120 &  3.00   \\ \hline \hline
 
 COBOL Parse Table 	&   733237 &     81115 &   88.94 &  2174662 &  2.97   \\ \hline
 COBOL System 		& 31332871 &    470872 &   98.50 & 12896609 &  0.41   \\ \hline
-Risla library           &   708838 &     40073 &   94.35 &   960170 &  1.35   \\ \hline \hline
-Averages		&	   &	       &   93.93 &	    &  1.57   \\ \hline    
+Risla library           &   708838 &     40073 &   94.35 &   960170 &  1.35   \\ \hline
+LPO                     &  8894391 &    225229 &   97.47 &  3701438 &  0.42   \\ \hline \hline
+Averages		&	   &	       &   94.82 &	    &  1.29   \\ \hline    
 \end{tabular}
 \caption{Memory usage of \ATerms} \label{measurements-in-memory}
 \end{center}
@@ -1024,12 +1028,16 @@ storage of the term, and the average number of bytes needed per
 node. As can be seen from these figures, at least in our applications
 sharing \emph{does} make a difference. By fully exploiting the
 reduncies in the input terms, we can store a node using on the average
-1.6 bytes, and still perform operations on them efficiently.  The
+1.3 bytes, and still perform operations on them efficiently.  The
 worst case behaviour is 15 bytes per node.\footnote{Since we consider
 Random-unique and Random as worst cases, we do not include them in the
 row \emph{Averages} in this and the following tables.}
 
 XXX Table for increasing COBOL and Risla to see how the sharing increases. XXX
+\begin{figure}
+\centerline{\epsfig{file=sharing.eps}}
+\caption{Sharing of a large number of COBOL parse trees}
+\end{figure}
 
 \begin{table}[tb]
 \begin{center}
@@ -1060,8 +1068,9 @@ Random			&6200251 & 6.20	& 15.90	& 15.90	&  3.67	& 3.67	\\ \hline \hline
 
 COBOL Parse Table	&3161908 & 4.31	&  5.83	&  7.95	&  1.89	& 2.58	\\ \hline
 COBOL System	      &135350005 & 4.32	&199.43 &  6.36	& 65.02	& 2.08	\\ \hline
-Risla library           &2955964 & 4.17 &  4.25 &  6.00 &  1.40 & 1.98  \\ \hline \hline
-Averages		&	 & 4.27 &       &  6.77 &       & 2.21  \\ \hline
+Risla library           &2955964 & 4.17 &  4.25 &  6.00 &  1.40 & 1.98  \\ \hline
+LPO                     &41227481& 4.64 & 81.90 &  9.21 & 29.16 & 3.28  \\ \hline \hline
+Averages		&	 & 4.36 &       &  7.38 &       & 2.48  \\ \hline
 \end{tabular}
 \caption{Reading and writing \ATerms\ as Ascii text} \label{measurements-text}
 \end{center}
@@ -1072,8 +1081,8 @@ our sample terms as Ascii text files. The six columns give the size of the text
 representation of the test term in bytes, the average number of bytes per node,
 the time needed to read the text file, average time needed to read a node,
 the time needed to write the text file, and the average time needed to write a node.
-On the average, a node requires 4.3 bytes and reading and writing requires
-6.8, respectively, 2.2 $\mu$s.
+On the average, a node requires 4.4 bytes and reading and writing requires
+7.4, respectively, 2.5 $\mu$s.
 
 
 \begin{table}[tb]
@@ -1104,8 +1113,9 @@ Random			&567419 & 0.57	& 2.06	& 2.06	& 2.76	& 2.76  \\ \hline \hline
 
 COBOL Parse Table	&303621 & 0.41	& 0.50	& 0.68	& 1.36	& 1.85  \\ \hline
 COBOL System		&2279066& 0.07  & 4.88	& 0.16  &20.76	& 0.66	\\ \hline
-Risla library           & 141946& 0.20  & 0.22  & 0.31  & 0.75  & 1.06  \\ \hline \hline
-Averages		&       & 0.23  &       & 0.58  &       & 1.19  \\ \hline
+Risla library           & 141946& 0.20  & 0.22  & 0.31  & 0.75  & 1.06  \\ \hline
+LPO                     &1106661& 0.12  & 1.86  & 0.21  & 9.40  & 1.06  \\ \hline \hline
+Averages		&       & 0.20  &       & 0.34  &       & 1.16  \\ \hline
 \end{tabular}
 \caption{Reading and writing \ATerms\ as \baf} \label{measurements-baf}
 \end{center}
@@ -1119,7 +1129,7 @@ the time to read the \baf\ representation,
 the average read time per node,
 the time to write the \baf\ representation,
 and the average write time per node.
-Typically, we can read a node in 0.6 $\mu$s and write it in 1.2 $\mu$s.
+Typically, we can read a node in 0.3 $\mu$s and write it in 1.2 $\mu$s.
 
 
 \begin{table}[tb]
@@ -1143,8 +1153,9 @@ Random			& 6199981	& 567419	& 90.9		& 439293	& 92.9	\\ \hline \hline
 
 COBOL Parse Table	& 3161908	& 303621	& 90.4		& 243990	& 92.3	\\ \hline
 COBOL System		&135350005      & 2279066	& 98.3		& 3072774	& 97.7	\\ \hline
-Risla library           & 2955964       & 141946        & 95.2          &  80009        & 97.3  \\ \hline \hline
-Averages		&		&		& 94.6		&               & 95.8  \\ \hline
+Risla library           & 2955964       & 141946        & 95.2          &  80009        & 97.3  \\ \hline
+LPO                     &41227481       & 1106661       & 97.3          & 804521        & 98.0  \\ \hline \hline
+Averages		&		&		& 95.3		&               & 96.3  \\ \hline
 \end{tabular}
 \caption{\baf\ \emph{versus} {\tt gzip}} \label{measurements-baf-gzip}
 \end{center}
@@ -1159,7 +1170,7 @@ the size of the \baf\ version of the same term (column 2)
 and percentage of compression achieved (column 3).
 Next, we give the results of compressing the Ascii version of each term
 with {\tt gzip} (column 4), and compression achieved (column 5).
-The compression factors are near 95\% in both cases.
+The compression factors are near 96\% in both cases.
 The worst case compression of {\tt zip} (66\%) is considerably
 better than that of \baf\ (12\%).
 
@@ -1169,10 +1180,10 @@ better than that of \baf\ (12\%).
 \begin{tabular}{|l||r|r|r|} \hline
 
 			& \multicolumn{1}{c|}{Memory}	& \multicolumn{1}{c|}{Ascii}	& \multicolumn{1}{c|}{\baf}\\ \hline \hline
-Size per node (bytes)	& 1.6		& 4.3	&  0.2  \\
+Size per node (bytes)	& 1.3		& 4.4	&  0.2  \\
 
-Read node ($\mu$s)	& 		& 6.8	& 0.6 \\
-Write node ($\mu$s)	& 		& 2.2 	& 1.2\\ \hline
+Read node ($\mu$s)	& 		& 7.4	& 0.3 \\
+Write node ($\mu$s)	& 		& 2.5 	& 1.2\\ \hline
 \end{tabular}
 \caption{Summary of measurements} \label{summary}
 \end{center}
