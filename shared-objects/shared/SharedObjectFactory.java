@@ -18,7 +18,6 @@ public class SharedObjectFactory {
   protected Entry[] table;
 
   private int[] tableSize;
-  private int initialCapacity;
   private int minThreshold;
   private int maxThreshold;
   private float loadFactor;
@@ -50,7 +49,6 @@ public class SharedObjectFactory {
 
     // for statistics
     this.tableSize = new int[hashSize()];
-    this.initialCapacity = hashSize();
     this.loadFactor = 3.0f; //0.75f;
     //this.loadFactor = 0.75f;
 

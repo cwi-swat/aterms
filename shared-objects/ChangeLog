@@ -1,3 +1,9 @@
+# $Id$
+
+Tue Aug 12 09:05:01 CEST 2003 <{jong,kooiker}@cwi.nl>
+ * removed private member 'initialCapacity' which was assigned
+   a value which was never locally read (thanks Eclipse).
+
 2003/07/02    <jurgenv@cwi.nl>
  * Release 1.3
 
