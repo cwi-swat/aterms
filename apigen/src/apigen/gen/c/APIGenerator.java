@@ -22,13 +22,9 @@ public class APIGenerator extends CGenerator {
 	private String prologue;
 	private String macro;
 
-    /* A side-effect of generating the C code is building up these Maps
-     * They are used by the dictionary generator using public field access
-     * A refactoring is needed to fix this hack!!!
-     */
-	public int nextAFun;
-	public Map afuns_by_name;
-	public Map afuns_by_afun;
+    public AFunRegister afunRegister;
+    
+	
 	
 	public APIGenerator(ADT adt, String apiName, String prefix, String prologue, boolean verbose, boolean folding,
 	boolean make_term_compatibility) {
@@ -39,8 +35,7 @@ public class APIGenerator extends CGenerator {
 		this.prologue = prologue;
 		this.make_term_compatibility = make_term_compatibility;
 		
-		afuns_by_name = new HashMap();
-		afuns_by_afun = new HashMap();
+		afunRegister = new AFunRegister();
 	}
 
 	protected void generate() {
@@ -353,7 +348,7 @@ public class APIGenerator extends CGenerator {
 						  "(ATerm)ATmakeAppl"
 							  + (arity <= 6 ? String.valueOf(arity) : "")
 							  + "(";
-					  result += lookupAFunName(appl.getAFun());
+					  result += prefix + afunRegister.lookup(appl.getAFun());
 					  for (int i = 0; i < arity; i++) {
 						  ATerm arg = appl.getArgument(i);
 						  result += ", " + genConstructorImpl(arg);
@@ -1158,19 +1153,8 @@ public class APIGenerator extends CGenerator {
 
 	//}}}
 	
-     //	{{{ public void lookupAFunName(AFun afun)
+	public AFunRegister getAFunRegister() {
+		return afunRegister;
+	}
 
-	  public String lookupAFunName(AFun afun) {
-		  String name = (String) afuns_by_afun.get(afun);
-
-		  if (name == null) {
-			  name = prefix + "afun" + nextAFun++;
-			afuns_by_name.put(name, afun);
-			  afuns_by_afun.put(afun, name);
-		  }
-
-		  return name;
-	  }
-
-	  //}}}
 }

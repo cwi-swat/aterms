@@ -86,8 +86,7 @@ public class Main {
 			new APIGenerator(adt, output, prefix, prologue, verbose, true, make_term_compatibility);
 			apigen.run();
 			new TomSignatureGenerator(adt,new CTomSignatureImplementation(),".",output,verbose,true).run();
-			new CDictionaryGenerator(factory, adt, ".", output, prefix, 
-			apigen.afuns_by_name, apigen.afuns_by_afun, apigen.nextAFun, verbose, true).run();
+			new CDictionaryGenerator(factory, adt, ".", output, prefix,  apigen.getAFunRegister(), verbose, true).run();
 
 		} catch (IOException e) {
 			System.out.println("Failed to read ADT from file");
