@@ -1,4 +1,4 @@
-package apigen.gen;
+package apigen.gen.tom;
 
 public interface TomSignatureImplementation {
 	String StringName();

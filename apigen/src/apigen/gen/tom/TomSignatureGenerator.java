@@ -1,8 +1,10 @@
-package apigen.gen;
+package apigen.gen.tom;
 
 import java.util.Iterator;
 
 import apigen.adt.*;
+import apigen.gen.Generator;
+import apigen.gen.StringConversions;
 
 public class TomSignatureGenerator extends Generator {
     protected String apiName = "";
