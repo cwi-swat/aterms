@@ -71,7 +71,7 @@ ctif: ctif.c atb-tool.h ../aterm/libATerm-dbg.a libATB-dbg.a
 			-L../aterm -lATerm-dbg -L. -lATB-dbg -lsocket -lnsl
 
 clean:
-	rm -f $(ATBLIBS) *.o *~ core
+	rm -f $(ATBLIBS) *.o *~ core ctif 
 
 tag:
 	ctags -t *.[ch]
