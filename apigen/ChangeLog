@@ -1,5 +1,6 @@
 2001/03/27 (jong@cwi.nl)
  * added generation of isXXX() methods to java Apigen.
+ * added generation of hasXXX() methods to java Apigen.
 
 2001/03/26 ({jong,olivierp}@cwi.nl)
  * added initial adt-to-java support

@@ -34,10 +34,10 @@ public class JavaGen
 
   private ATermFactory factory;
 
-  private String      basedir;
-  private String      pkg;
-  private List	      imports;
-  private String      class_name;
+  private String basedir;
+  private String pkg;
+  private List	 imports;
+  private String class_name;
 
   private InputStream input;
   private PrintStream stream;
@@ -181,7 +181,7 @@ public class JavaGen
     println();
     genFactoryMethod(type);
     genConstructor();
-    genIsMethods(type);
+    genAccessors(type);
     println("}");
 
     Iterator alt_iter = type.alternativeIterator();
@@ -273,16 +273,28 @@ public class JavaGen
 
   //}}}
 
-  //{{{ private void genIsMethods(Type type)
+  //{{{ private void genAccessors(Type type)
 
-  private void genIsMethods(Type type)
+  private void genAccessors(Type type)
   {
-    Iterator iter = type.alternativeIterator();
-    while (iter.hasNext()) {
-      Alternative alt = (Alternative)iter.next();
-      String altId = buildId(alt.getId());
-      println("  abstract public boolean is" + altId + "();");
+    printFoldOpen("Accessor methods");
+
+    Iterator alts = type.alternativeIterator();
+    while (alts.hasNext()) {
+      Alternative alt = (Alternative)alts.next();
+      String methodName = buildId("is-" + alt.getId());
+      println("  abstract public boolean " + methodName + "();");
     }
+    println();
+
+    Iterator fields = type.fieldIterator();
+    while (fields.hasNext()) {
+      Field field = (Field)fields.next();
+      String methodName = buildId("has-" + field.getId());
+      println("  abstract public boolean " + methodName + "();");
+    }
+
+    printFoldClose();
   }
 
   //}}}
@@ -301,6 +313,7 @@ public class JavaGen
 
     genAltConstructor(type, alt);
     genAltIsMethods(type, alt);
+    genAltHasMethods(type, alt);
 
     println("}");
   }
@@ -356,23 +369,50 @@ public class JavaGen
 
   private void genAltIsMethods(Type type, Alternative alt)
   {
-    Iterator iter = type.alternativeIterator();
-    while (iter.hasNext()) {
-      Alternative cur = (Alternative)iter.next();
-      String altId = buildId(cur.getId());
+    Iterator alts = type.alternativeIterator();
+    while (alts.hasNext()) {
+      Alternative curAlt = (Alternative)alts.next();
+      String altId = buildId(curAlt.getId());
       String decl = "public boolean is" + altId + "()";
-      printFoldOpen(2, decl);
-      println("    " + decl);
-      println("    {");
-      if (cur == alt) {
-	println("      return true;");
+      printFoldOpen(decl);
+      println("  " + decl);
+      println("  {");
+      if (curAlt == alt) {
+	println("    return true;");
       }
       else {
-	println("      return false;");
+	println("    return false;");
       }
-      println("    }");
-      printFoldClose(2);
+      println("  }");
+      printFoldClose();
     }
+    println();
+  }
+
+  //}}}
+  //{{{ private void genAltHasMethods(Type type, Alternative alt)
+
+  private void genAltHasMethods(Type type, Alternative alt)
+  {
+    String altId = alt.getId();
+    Iterator fields = type.fieldIterator();
+    while (fields.hasNext()) {
+      Field field = (Field)fields.next();
+      String fieldId = buildId("has-" + field.getId());
+      String decl = "public boolean " + fieldId + "()";
+      printFoldOpen(decl);
+      println("  " + decl);
+      println("  {");
+      if (field.hasAltId(altId)) {
+	println("    return true;");
+      }
+      else {
+	println("    return false;");
+      }
+      println("  }");
+      printFoldClose();
+    }
+    println();
   }
 
   //}}}
