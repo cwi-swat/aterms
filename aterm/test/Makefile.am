@@ -27,7 +27,7 @@ PROGS              	= stress primes randgen termstats \
 
 TESTS	          	= stress
 
-EXTRA_DIST = termstats.sh test.tb test2.tb test2.tifs test.trms error.trm  \
+EXTRA_DIST = termstats.sh test.tb test2.tb test.trms error.trm  \
              tool2.tif.c tool2.tif.h stress.dict
 
 CLEANFILES = tool2.tif.c tool2.tif.h stress_dict.c stress_dict.h
