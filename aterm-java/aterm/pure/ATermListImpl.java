@@ -86,7 +86,18 @@ public class ATermListImpl extends ATermImpl implements ATermList {
     return false;
   }
 
-
+  public ATermList insert(ATerm el) {
+	return getPureFactory().makeList(el, this);
+  }
+  
+  public ATermList getEmpty() {
+	  return getPureFactory().makeList();
+  }
+  
+  public ATerm setAnnotations(ATermList annos) {
+	  return getPureFactory().makeList(first, next, annos);
+  }
+	
   protected boolean match(ATerm pattern, List list) {
     if (pattern == null) {
       System.err.println("???");
@@ -151,7 +162,7 @@ public class ATermListImpl extends ATermImpl implements ATermList {
          */
       return head;
     } else {
-      return getPureFactory().makeList(head, tail);
+      return tail.insert(head);
     }
     
   }
@@ -215,12 +226,12 @@ public class ATermListImpl extends ATermImpl implements ATermList {
       cur = cur.getNext();
     }
 
-    while (cur != PureFactory.getEmpty() && cur.getFirst() != el) {
+    while (!cur.isEmpty() && cur.getFirst() != el) {
       cur = cur.getNext();
       ++i;
     }
 
-    return cur == PureFactory.getEmpty() ? -1 : i;
+    return cur.isEmpty() ? -1 : i;
   }
 
   public int lastIndexOf(ATerm el, int start) {
@@ -253,15 +264,15 @@ public class ATermListImpl extends ATermImpl implements ATermList {
       return rhs;
     }
 
-    if (next == PureFactory.getEmpty()) {
-      return getPureFactory().makeList(first, rhs);
+    if (next.isEmpty()) {
+      return rhs.insert(first);
     }
 
-    return getPureFactory().makeList(first, next.concat(rhs));
+    return next.concat(rhs).insert(first);
   }
 
   public ATermList append(ATerm el) {
-    return concat(getPureFactory().makeList(el, PureFactory.getEmpty()));
+  	return this.concat(getEmpty().insert(el));
   }
 
   public ATerm elementAt(int index) {
@@ -288,7 +299,7 @@ public class ATermListImpl extends ATermImpl implements ATermList {
       return this;
     }
 
-    return getPureFactory().makeList(first, result);
+    return result.insert(first);
   }
 
   public ATermList removeElementAt(int index) {
@@ -300,7 +311,7 @@ public class ATermListImpl extends ATermImpl implements ATermList {
       return next;
     }
 
-    return getPureFactory().makeList(first, next.removeElementAt(index - 1));
+    return next.removeElementAt(index - 1).insert(first);
   }
 
   public ATermList removeAll(ATerm el) {
@@ -314,12 +325,9 @@ public class ATermListImpl extends ATermImpl implements ATermList {
       return this;
     }
 
-    return getPureFactory().makeList(first, result);
+    return result.insert((ATerm)first);
   }
 
-  public ATermList insert(ATerm el) {
-    return getPureFactory().makeList(el, this);
-  }
 
   public ATermList insertAt(ATerm el, int i) {
     if (0 > i || i > length) {
@@ -330,7 +338,7 @@ public class ATermListImpl extends ATermImpl implements ATermList {
       return insert(el);
     }
 
-    return getPureFactory().makeList(first, next.insertAt(el, i - 1));
+    return next.insertAt(el, i - 1).insert(first);
   }
 
   public ATermList getPrefix() {
@@ -416,7 +424,7 @@ public class ATermListImpl extends ATermImpl implements ATermList {
 
   public ATermList reverse() {
     ATermList cur = this;
-    ATermList reverse = getPureFactory().makeList();
+    ATermList reverse = this.getEmpty();
     while(!cur.isEmpty()){
       reverse = reverse.insert(cur.getFirst());
       cur = cur.getNext();
@@ -442,18 +450,20 @@ public class ATermListImpl extends ATermImpl implements ATermList {
     ATermList pair;
 
     if (isEmpty()) {
-      pair = getPureFactory().makeList(key, getPureFactory().makeList(value));
-      return getPureFactory().makeList(pair);
+      pair = getEmpty().insert(value).insert(key);
+      return getEmpty().insert(pair);
     }
 
     pair = (ATermList) first;
 
     if (key.equals(pair.getFirst())) {
-      pair = getPureFactory().makeList(key, getPureFactory().makeList(value));
-      return getPureFactory().makeList(pair, next);
+      pair = getEmpty().insert(value).insert(pair);
+      return next.insert(pair);
+      
     }
 
-    return getPureFactory().makeList(first, next.dictPut(key, value), getAnnotations());
+	return (ATermList)next.dictPut(key, value).insert(first).setAnnotations(getAnnotations());
+    //return getPureFactory().makeList(first, next.dictPut(key, value), getAnnotations());
   }
 
   public ATermList dictRemove(ATerm key) {
@@ -469,12 +479,11 @@ public class ATermListImpl extends ATermImpl implements ATermList {
       return next;
     }
 
-    return getPureFactory().makeList(first, next.dictRemove(key), getAnnotations());
+	return (ATermList)next.dictRemove(key).insert(first).setAnnotations(getAnnotations());
+    //return getPureFactory().makeList(first, next.dictRemove(key), getAnnotations());
   }
 
-  public ATerm setAnnotations(ATermList annos) {
-    return getPureFactory().makeList(first, next, annos);
-  }
+  
 
   public void accept(Visitor v) throws VisitFailure {
     v.visitList(this);

@@ -138,7 +138,7 @@ public class ATermApplImpl extends ATermImpl implements ATermAppl {
           if (appl.getName().equals("list") && appl.getArguments().isEmpty()) {
             ATermList result = PureFactory.getEmpty();
             for (int j = args.length - 1; j >= i; j--) {
-              result = getPureFactory().makeList(args[j], result);
+              result = result.insert(args[j]);
             }
             list.add(result);
             return true;
@@ -168,7 +168,7 @@ public class ATermApplImpl extends ATermImpl implements ATermAppl {
     ATermList result = PureFactory.getEmpty();
 
     for (int i = args.length - 1; i >= 0; i--) {
-      result = getPureFactory().makeList(args[i], result);
+      result = result.insert(args[i]);
     }
 
     return result;

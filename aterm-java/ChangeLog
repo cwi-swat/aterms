@@ -1,5 +1,10 @@
 $Id$
 
+2003/08/12 <{pem@loria.fr>
+ * Added the getEmpty() function which returns the empty element of a list
+ * getEmpty and insert are used in ATermListImpl (instead of getPureFactory())
+   This makes generic function usable with apigen 
+ 
 2003/08/12 <{jong,kooiker}@cwi.nl>
  * aterm/Visitor.java: scrapped folding
 

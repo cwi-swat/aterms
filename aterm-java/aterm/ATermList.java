@@ -56,6 +56,13 @@ public interface ATermList extends ATerm {
      */
     public ATerm getLast();
 
+	/**
+	 * Gets the empty list associated to this list.
+	 *
+	 * @return the empty list.
+	 */
+	public ATermList getEmpty();
+
     /**
      * Gets the tail (all but the first element) of this list.
      *
