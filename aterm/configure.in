@@ -3,15 +3,16 @@ AC_INIT
 
 PRODUCT=aterm
 VERSION=0.14
+CURDATE=`date`
 
 AC_SUBST(PRODUCT)
 AC_SUBST(VERSION)
 
 AC_PREFIX_DEFAULT('/usr/local')
 
-INSTALL='$(top_srcdir)/install-sh -c'
-INSTALL_PRG='$(top_srcdir)/install-sh -c'
-INSTALL_DAT='$(top_srcdir)/install-sh -c -m 644'
+INSTALL='${top_srcdir}/install-sh -c'
+INSTALL_PRG='${top_srcdir}/install-sh -c'
+INSTALL_DAT='${top_srcdir}/install-sh -c -m 644'
 
 AC_SUBST(INSTALL)
 AC_SUBST(INSTALL_PRG)
@@ -33,31 +34,31 @@ AC_CHECK_PROG(CC_PROF,gcc,gcc,true)
 
 CFLAGS_GCC="-Wall -pedantic -O4"
 CFLAGS_CC="-O"
-DEFS='-DVERSION="\"$(VERSION)\""'
+DEFS='-DCURDATE="\"${CURDATE}\"" -DVERSION="\"${VERSION}\""'
 
-DEFS_GCC="$(DEFS) -DNDEBUG"
-DEFS_CC="$(DEFS) -DNDEBUG"
+DEFS_GCC="${DEFS} -DNDEBUG"
+DEFS_CC="${DEFS} -DNDEBUG"
 
 if test ${CC_DBG} = gcc; then
 	CFLAGS_DBG="-Wall -pedantic -g"
-	DEFS_DBG="$(DEFS) -DDEBUG_ALL"
+	DEFS_DBG="${DEFS} -DDEBUG_ALL"
 	INCL_DBG=
 	LFLAGS_DBG=-g
 elif test ${CC_DBG} = cc; then
 	CFLAGS_DBG="-g"
-	DEFS_DBG="$(DEFS) -DDEBUG_ALL"
+	DEFS_DBG="${DEFS} -DDEBUG_ALL"
 	INCL_DBG=
 	LFLAGS_DBG=-g
 fi
 
 if test ${CC_PROF} = gcc; then
 	CFLAGS_PROF="-Wall -pedantic -pg"
-	DEFS_PROF="$(DEFS)"
+	DEFS_PROF="${DEFS}"
 	INCL_PROF=
 	LFLAGS_PROF=-pg
 elif test ${CC_PROF} = cc; then
 	CFLAGS_PROF="-xpg"
-	DEFS_PROF="$(DEFS)"
+	DEFS_PROF="${DEFS}"
 	INCL_PROF=
 	LFLAGS_PROF=-xpg
 fi
@@ -78,6 +79,7 @@ AC_SUBST(INCL_CC)
 AC_SUBST(INCL_GCC)
 AC_SUBST(INCL_DBG)
 AC_SUBST(INCL_PROF)
+AC_SUBST(INCL_NS)
 AC_SUBST(LFLAGS_CC)
 AC_SUBST(LFLAGS_GCC)
 AC_SUBST(LFLAGS_DBG)

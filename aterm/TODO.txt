@@ -2,3 +2,5 @@
 - The AsFix interface has not been stabilized yet. Please take note
   that this interface may still change considerably.
 
+- Baffle.version binaries for changing baf versions.
+
