@@ -19,6 +19,9 @@
 
 $Id$
 
+2001/02/19 (jong@cwi.nl)
+ * out-of-place sglr-header removed from atremove-annotation.c
+
 2001/02/19 ({jong,olivierp}@cwi.nl)
  * Fixed dates in ChangeLog
  * Added generation of separate xxxTif and xxxBridge java code
