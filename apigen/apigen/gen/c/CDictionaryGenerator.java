@@ -17,16 +17,14 @@ public class CDictionaryGenerator extends Generator {
 		ADT adt,
 		GenerationParameters params,
 		ATermFactory factory,
-		String directory,
-		String fileName,
 		AFunRegister afunRegister) {
 		super(params);
 		this.adt = adt;
 		this.factory = factory;
 		this.afunRegister = afunRegister;
-		setDirectory(directory);
+		setDirectory(params.getOutputDirectory());
 		setExtension(".dict");
-		setFileName(fileName);
+		setFileName(params.getApiName());
 	}
 
 	protected void generate() {

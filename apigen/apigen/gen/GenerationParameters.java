@@ -6,12 +6,16 @@ import java.util.List;
 public class GenerationParameters {
 	private String outputDirectory;
 	private String packageName;
-	private List imports;
 	private String apiName;
 	private String prefix;
-	private boolean visitable;
 	private boolean verbose;
 	private boolean folding;
+	private List inputFiles;
+
+	public GenerationParameters() {
+		imports = new LinkedList();
+		inputFiles = new LinkedList();
+	}
 
 	public boolean isFolding() {
 		return folding;
@@ -21,8 +25,12 @@ public class GenerationParameters {
 		this.folding = folding;
 	}
 
-	public GenerationParameters() {
-		imports = new LinkedList();
+	public List getInputFiles() {
+		return inputFiles;
+	}
+
+	public void addInputFile(String fileName) {
+		inputFiles.add(fileName);
 	}
 
 	public String getApiName() {
@@ -57,14 +65,18 @@ public class GenerationParameters {
 		this.prefix = prefix;
 	}
 
-	public void addImport(String importName) {
-		imports.add(importName);
+	public boolean isVerbose() {
+		return verbose;
 	}
 
-	public List getImports() {
-		return imports;
+	public void setVerbose(boolean verbose) {
+		this.verbose = verbose;
 	}
 
+
+	
+	private boolean visitable;	// TODO refactor into JavaGenerationParameters
+	
 	public boolean isVisitable() {
 		return visitable;
 	}
@@ -73,12 +85,14 @@ public class GenerationParameters {
 		this.visitable = visitable;
 	}
 
-	public boolean isVerbose() {
-		return verbose;
+	private List imports;
+
+	public void addImport(String importName) {
+		imports.add(importName);
 	}
 
-	public void setVerbose(boolean verbose) {
-		this.verbose = verbose;
+	public List getImports() {
+		return imports;
 	}
 
 }

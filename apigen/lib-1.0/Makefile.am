@@ -17,6 +17,7 @@ EXTRA_DIST = ADT10.adt ADT10.pro
 ADT10.c ADT10.h ADT10.dict ADT10_dict.c ADT10_dict.h: ADT10.adt ADT10.pro
 	${ADT_TO_C} \
 		--input ADT10.adt \
+		--name ADT10 \
 		--prologue ADT10.pro \
 		--prefix ADT10_	 \
 		--classpath ${top_builddir}:${EXTERNAL_JARS}

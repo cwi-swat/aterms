@@ -57,27 +57,27 @@ public class StringConversions {
     /**
      * Creates a C/Java identifier by replacing non-alphanumeric characters
      * by some acronym. Dashes are interpreted as word separators, which is
-     * implemented using CamelCase style.
+     * implemented using javaCase style.
      *
      */
 	static public String makeIdentifier(String id) {
 		StringBuffer buf = new StringBuffer();
-		boolean cap_next = false;
+		boolean capitalizeNextChar = false;
 
 		for (int i = 0; i < id.length(); i++) {
 			char c = id.charAt(i);
 			if (isSpecialChar(c)) {
 				buf.append(getSpecialCharWord(c));
-				cap_next = true;
+				capitalizeNextChar = true;
 			} else {
 				switch (c) {
 					case '-' :
-						cap_next = true;
+						capitalizeNextChar = true;
 						break;
 					default :
-						if (cap_next) {
+						if (capitalizeNextChar) {
 							buf.append(Character.toUpperCase(c));
-							cap_next = false;
+							capitalizeNextChar = false;
 						} else {
 							buf.append(c);
 						}
@@ -90,7 +90,7 @@ public class StringConversions {
 	}
 
   /**
-   * Makes a capitalized C/Java identifier, see also makeIdenfifier
+   * Makes a CamelCase identifier, see also makeIdenfifier
    * 
    */
   static public String makeCapitalizedIdentifier(String id) {

@@ -1,14 +1,17 @@
 package apigen.gen.c;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
+import java.util.Iterator;
 
 import apigen.adt.ADT;
 import apigen.adt.api.ADTFactory;
 import apigen.adt.api.Entries;
 import apigen.gen.GenerationParameters;
 import apigen.gen.tom.TomSignatureGenerator;
+import aterm.ATermList;
+import aterm.ParseError;
 
 public class Main {
 	private static GenerationParameters params = new GenerationParameters();
@@ -16,31 +19,31 @@ public class Main {
 	private static boolean jtom;
 	private static boolean jtype;
 	private static boolean termCompatibility;
-	private static String output;
 	private static String prologue;
-	private static String prefix = "";
 
 	private static void usage() {
 		System.err.println("usage: apigen.gen.c.Main [options]");
 		System.err.println("options:");
 		System.err.println("\t-prefix <prefix>          [\"\"]");
-		System.err.println("\t-input <in>               [-]");
-		System.err.println("\t-output <out>");
+		System.err.println("\t-input <in>               <multiple allowed>");
+		System.err.println("\t-output <outputdir>       [\".\"]");
+		System.err.println("\t-name <api-name>          <obligatory>");
 		System.err.println("\t-prologue <prologue>");
+		System.err.println("\t-verbose");
+
 		System.err.println("\t-jtom");
 		System.err.println("\t-jtype");
-		System.err.println("\t-verbose");
 		System.exit(1);
 	}
 
-	public final static void main(String[] args) throws IOException {
-		String input = "-";
-
-		InputStream inputStream;
-
+	public final static void main(String[] args) {
 		if (args.length == 0) {
 			usage();
 		}
+
+		params.setOutputDirectory(".");
+		params.setVerbose(false);
+		params.setFolding(false);
 
 		for (int i = 0; i < args.length; i++) {
 			if ("-help".startsWith(args[i])) {
@@ -52,14 +55,17 @@ public class Main {
 			else if ("-prefix".startsWith(args[i])) {
 				params.setPrefix(args[++i]);
 			}
+			else if ("-name".startsWith(args[i])) {
+				params.setApiName(args[++i]);
+			}
 			else if ("-output".startsWith(args[i])) {
-				output = args[++i];
+				params.setOutputDirectory(args[++i]);
 			}
 			else if ("-prologue".startsWith(args[i])) {
 				prologue = args[++i];
 			}
 			else if ("-input".startsWith(args[i])) {
-				input = args[++i];
+				params.addInputFile(args[++i]);
 			}
 			else if ("-compatible:term".equals(args[i])) {
 				termCompatibility = true;
@@ -75,45 +81,44 @@ public class Main {
 			}
 		}
 
-		if (input.equals("-")) {
-			inputStream = System.in;
-			if (output == null) {
-				usage();
-			}
-		}
-		else {
-			inputStream = new FileInputStream(input);
-			if (output == null) {
-				int extIndex = input.lastIndexOf('.');
-				output = input.substring(0, extIndex);
-			}
-
-			run(inputStream);
-		}
+		run();
 	}
 
-	static private void run(InputStream input) {
-		ADT adt;
-
+	private static void run() {
+		Iterator iter = params.getInputFiles().iterator();
+		String fileName = "";
 		try {
 			ADTFactory factory = new ADTFactory();
-			Entries entries = factory.EntriesFromFile(input);
-
-			adt = new ADT(entries);
-
-			APIGenerator apigen =
-				new APIGenerator(adt, params, output, prologue, termCompatibility);
-			apigen.run();
-			if (jtom) {
-				new TomSignatureGenerator(adt, new CTomSignatureImplementation(prefix, jtype), params).run();
+			ATermList all = factory.getEmpty();
+			while (iter.hasNext()) {
+				fileName = (String) iter.next();
+				FileInputStream fis = new FileInputStream(fileName);
+				all = all.concat((ATermList) factory.readFromFile(fis));
 			}
-			new CDictionaryGenerator(adt, params, factory, ".", output, apigen.getAFunRegister()).run();
-
+			Entries entries = factory.EntriesFromTerm(all);
+			generateAPI(new ADT(entries));
+		}
+		catch (FileNotFoundException e) {
+			System.err.println("Error: File not found: " + fileName);
 		}
 		catch (IOException e) {
-			System.out.println("Failed to read ADT from file");
-			System.exit(1);
+			System.err.println("Error: Could not read ADT from input: " + fileName);
 		}
+		catch (ParseError e) {
+			System.err.println("Error: A parse error occurred in the ADT file:" + e);
+		}
+//		catch (RuntimeException e) {
+//			System.err.println("Error: " + e.getMessage());
+//		}
+	}
 
+	private static void generateAPI(ADT adt) {
+		ADTFactory factory = new ADTFactory();
+		APIGenerator apigen = new APIGenerator(adt, params, prologue, termCompatibility);
+		apigen.run();
+		if (jtom) {
+			new TomSignatureGenerator(adt, new CTomSignatureImplementation(params.getPrefix(), jtype), params).run();
+		}
+		new CDictionaryGenerator(adt, params, factory, apigen.getAFunRegister()).run();
 	}
 }

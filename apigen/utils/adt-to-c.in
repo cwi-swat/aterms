@@ -19,8 +19,9 @@ Usage: $PRG -i <adt-file> [options]
 
 Parameters:
 
-  -i | --input <FILE>     specify input adt                [not specified]
-  -o | --output <STEM>    generate <STEM>.[ch] etc.        [improvised]
+  -i | --input <FILE>     specify an input adt             <multiple allowed>
+  -o | --output <DIR>     specify output directory         ["."]
+  -n | --name <api-name>  will generate <api-name>.[ch]    <obligatory>
   -p | --prologue <FILE>  specify prologue-code file       [""]
   -P | --prefix <STR>     specify API-prefix               [""]
   -c | --classpath <PATH> override CGen classes            [see below]
@@ -71,14 +72,15 @@ require() {
 # {{{  default settings
 
 # settings/options
-     INPUT=""
-    PREFIX=""
-  PROLOGUE=""
-   VERBOSE=0
+INPUT=""
+OUTPUT="."
+PREFIX=""
+PROLOGUE=""
+VERBOSE=0
 TIMESTAMPS=1
-    COMPAT=0
-      JTOM=0
-     JTYPE=0
+COMPAT=0
+JTOM=0
+JTYPE=0
 
 # data needed
    CGEN=${prefix}/classes
@@ -101,6 +103,9 @@ do
 
     -o | --output)
       shift; OUTPUT=$1 ;;
+
+    -n | --name)
+      shift; NAME=$1 ;;
 
     -p | --prologue)
       shift; PROLOGUE=$1 ;;
@@ -148,11 +153,6 @@ else
   require ${INPUT}
 fi
 
-if [ "a${OUTPUT}" = "a" ]; then
-  OUTPUT=`basename ${INPUT} | cut -d. -f1`
-  info "Improvising output-stem: ${OUTPUT}"
-fi
-
 if [ "a${PROLOGUE}" = "a" ]; then
   OPTIONAL_PROLOGUE=""
 else
@@ -188,19 +188,22 @@ fi
 
 # {{{  generate C code from ADT
 
-java  -classpath ${CGEN}:${JAVA_ATERM}:${SHARED_OBJECTS} apigen.gen.c.Main \
-	  -input ${INPUT}	\
-	  -output ${OUTPUT}	\
-	  ${OPTIONAL_PROLOGUE}	\
-	  ${OPTIONAL_PREFIX}    \
-	  ${OPTIONAL_COMPAT}    \
-	  ${OPTIONAL_JTOM}      \
-	  ${OPTIONAL_JTYPE}
+java \
+  -classpath ${CGEN}:${JAVA_ATERM}:${SHARED_OBJECTS} \
+  apigen.gen.c.Main \
+  -input ${INPUT} \
+  -output ${OUTPUT} \
+  -name ${NAME} \
+  ${OPTIONAL_PROLOGUE} \
+  ${OPTIONAL_PREFIX} \
+  ${OPTIONAL_COMPAT} \
+  ${OPTIONAL_JTOM} \
+  ${OPTIONAL_JTYPE}
 
 if [ $TIMESTAMPS -gt 0 ]; then
-  ${DICTTOC} -dict ${OUTPUT}.dict
+  ${DICTTOC} -dict ${NAME}.dict
 else
-  ${DICTTOC} -no-date -dict ${OUTPUT}.dict
+  ${DICTTOC} -no-date -dict ${NAME}.dict
 fi
 
 # }}}

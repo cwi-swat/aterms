@@ -32,26 +32,20 @@ import aterm.ATermReal;
 public class APIGenerator extends CGenerator {
 	private ADT adt;
 	private String apiName;
-
 	private boolean termCompatibility = false;
-
 	private String prefix;
 	private String prologue;
 	private String macro;
 
 	public AFunRegister afunRegister;
 
-	public APIGenerator(
-		ADT adt,
-		GenerationParameters params,
-		String fileName,
-		String prologue,
-		boolean termCompatibility) {
-		super(params, ".", fileName);
+	public APIGenerator(ADT adt, GenerationParameters params, String prologue, boolean termCompatibility) {
+		super(params);
 		this.adt = adt;
 		this.prologue = prologue;
 		this.termCompatibility = termCompatibility;
-
+		this.apiName = params.getApiName();
+		this.prefix = params.getPrefix();
 		afunRegister = new AFunRegister();
 	}
 
@@ -338,7 +332,6 @@ public class APIGenerator extends CGenerator {
 	}
 
 	private void genSourceIncludes() {
-
 		println("#include <assert.h>");
 		println();
 		println("#include <aterm2.h>");

@@ -11,11 +11,11 @@ abstract public class CGenerator extends Generator {
 	
 	private PrintStream headerStream;
 
-	public CGenerator(GenerationParameters params, String directory, String filename) {
+	public CGenerator(GenerationParameters params) {
 		super(params);
-		setDirectory(directory);
+		setDirectory(params.getOutputDirectory());
 		setExtension(SOURCE_FILE_EXTENSION);
-		setFileName(filename);
+		setFileName(params.getApiName());
 	}
 
 	/**
@@ -24,7 +24,7 @@ abstract public class CGenerator extends Generator {
 	 */
 	public void run() {
 		headerStream = createStream(getDirectory(), getFileName(), HEADER_FILE_EXTENSION);
-		generate();
+		super.run();
 		closeStream(headerStream);
 	}
 

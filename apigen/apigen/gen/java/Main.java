@@ -4,8 +4,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
 
 import apigen.adt.ADT;
 import apigen.adt.Alternative;
@@ -44,8 +42,6 @@ public class Main {
 	}
 
 	public static void main(String[] args) {
-		List inputFiles = new LinkedList();
-
 		if (args.length == 0) {
 			usage();
 		}
@@ -57,8 +53,7 @@ public class Main {
 
 		for (int i = 0; i < args.length; i++) {
 			if ("--input".startsWith(args[i]) || "-i".startsWith(args[i])) {
-				String file = args[++i];
-				inputFiles.add(file);
+				params.addInputFile(args[++i]);
 			}
 			else if ("--folding".startsWith(args[i]) || "-f".startsWith(args[i])) {
 				params.setFolding(true);
@@ -103,12 +98,12 @@ public class Main {
 			usage();
 			return;
 		}
-		run(inputFiles);
+		run();
 
 	}
 
-	public static void run(List inputFiles) {
-		Iterator iter = inputFiles.iterator();
+	public static void run() {
+		Iterator iter = params.getInputFiles().iterator();
 		String fileName = "";
 		try {
 			ADTFactory factory = new ADTFactory();
