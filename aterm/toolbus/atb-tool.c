@@ -38,22 +38,22 @@
 
 typedef struct
 {
-  int         tid;			/* Tool id (assigned by ToolBus)             */
-  int         fd;				/* Filedescriptor of ToolBus connection      */
-  FILE       *stream;         /* The stream associated with fd             */
-  int         port;			/* Well-known ToolBus port (in/out)          */
-  char       *toolname;		/* Tool name (uniquely identifies interface) */
-  char       *host;			/* ToolBus host                              */
-  ATBhandler  handler;		/* Function that handles incoming terms      */
-  ATbool      verbose;		/* Should info be dumped on stderr           */
+  int         tid;	  /* Tool id (assigned by ToolBus)             */
+  int         fd;	  /* Filedescriptor of ToolBus connection      */
+  FILE       *stream;	  /* The stream associated with fd             */
+  int         port;	  /* Well-known ToolBus port (in/out)          */
+  char       *toolname;	  /* Tool name (uniquely identifies interface) */
+  char       *host;	  /* ToolBus host                              */
+  ATBhandler  handler;	  /* Function that handles incoming terms      */
+  ATbool      verbose;	  /* Should info be dumped on stderr           */
 } Connection;
 
 typedef struct
 {
-  AFun afun;					/* afun -1 => slot is empty            */
-  ATbool ack_pending;			/* ack of event is still pending       */
-  int first;					/* First element in the (cyclic) queue */
-  int last;					/* Last element in the (cyclic) queue  */
+  AFun afun;		/* afun -1 => slot is empty            */
+  ATbool ack_pending;	/* ack of event is still pending       */
+  int first;		/* First element in the (cyclic) queue */
+  int last;		/* Last element in the (cyclic) queue  */
   ATerm data[MAX_QUEUE_LEN];	/* Actual queue elements               */
 } EventQueue;
 
@@ -181,7 +181,7 @@ ATBconnect(char *tool, char *host, int port, ATBhandler h)
   int fd;
 
   int tid = port < 0 ? default_tid : -1;
-  port = port >= 0 ? port : default_port;
+  port = port > 0 ? port : default_port;
 
   /* Make new connection */
   fd = connect_to_socket(host, port);
@@ -189,26 +189,33 @@ ATBconnect(char *tool, char *host, int port, ATBhandler h)
   assert(fd >= 0 && fd <= FD_SETSIZE);
 
   /* There cannot be another connection with this descriptor */
-  if (connections[fd] != NULL)
+  if (connections[fd] != NULL) {
     ATerror("ATBconnect: descriptor %d already in use.\n", fd);
+  }
 
   /* Allocate new connection */
   connection = (Connection *) malloc(sizeof(Connection));
-  if (connection == NULL)
+  if (connection == NULL) {
     ATerror("ATBconnect: no memory for new connection %d.\n", fd);
+  }
 
   connection->stream = fdopen(fd, "w");
-  if(connection->stream == NULL)
+  if(connection->stream == NULL) {
     ATerror("couldn't open stream for connection %d\n", fd);
+  }
 
   /* Initialize connection */
   connection->toolname = strdup(tool ? tool : default_toolname);
-  if (connection->toolname == NULL)
+  if (connection->toolname == NULL) {
     ATerror("ATBconnect: no memory for toolname.\n");
+  }
 
   connection->host = strdup(host ? host : default_host);
-  if (connection->host == NULL)
+  if (connection->host == NULL) {
     ATerror("ATBconnect: no memory for host.\n");
+  }
+
+  /*fprintf(stderr, "port=%d, default_port=%d\n", port, default_port);*/
 
   connection->port     = port;
   connection->handler  = h;
@@ -906,5 +913,34 @@ ATerm ATBunpack(ATerm t)
   return t;
 }
 #endif
+
+/*}}}  */
+
+/*{{{  ATbool ATBisValidConnection(int cid) */
+
+ATbool ATBisValidConnection(int cid)
+{
+  return connections[cid] == NULL ? ATfalse : ATtrue;
+}
+
+/*}}}  */
+/*{{{  int ATBgetPort(int cid) */
+
+int ATBgetPort(int cid)
+{
+  assert(connections[cid]);
+
+  return connections[cid]->port;
+}
+
+/*}}}  */
+/*{{{  char *ATBgetHost(int cid) */
+
+char *ATBgetHost(int cid)
+{
+  assert(connections[cid]);
+
+  return connections[cid]->host;
+}
 
 /*}}}  */

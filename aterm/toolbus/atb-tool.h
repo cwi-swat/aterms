@@ -29,6 +29,10 @@ int    ATBhandleAny(void);
 
 int    ATBgetDescriptors(fd_set *set);
 
+ATbool ATBisValidConnection(int cid);
+int    ATBgetPort(int cid);
+char  *ATBgetHost(int cid);
+
 /* Generic signature checker */
 ATerm ATBcheckSignature(ATerm signature, char *sigs[], int nrsigs);
 
