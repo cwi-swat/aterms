@@ -273,7 +273,7 @@ public class APIGenerator extends CGenerator {
 			"  arg1 = "
 				+ prefix
 				+ "make"
-				+ typeName
+				+ typeId
 				+ "Many(("
 				+ elementTypeName
 				+ ")ATgetFirst((ATermList) arg0), "
@@ -309,12 +309,12 @@ public class APIGenerator extends CGenerator {
 			"  return "
 				+ prefix
 				+ "concat"
-				+ typeName
+				+ typeId
 				+ "(arg0, "
-				+ buildListManyActualArgsWithoutHeadAndTail(type)
-				+ prefix
+				+ buildListManyActualArgsWithoutHeadAndTail(type) 
+				+ prefix 
 				+ "make"
-				+ typeName
+				+ typeId
 				+ "Single(arg1));");
 		println("}");
 	}
@@ -669,7 +669,7 @@ public class APIGenerator extends CGenerator {
 				println(decl);
 				println("{");
 
-				genDealWithSeparatedListException(type, type_name, alt);
+				genDealWithSeparatedListException(type, StringConversions.makeCapitalizedIdentifier(type.getId()), alt);
 				genAlternativeConstructorBody(type_name, alt);
 
 				println("}");
