@@ -69,25 +69,27 @@ public class APIGenerator extends CGenerator {
 
 	private void genListApi(ListType type) {
 	   String typeName = buildTypeName(type.getId());
+	   String typeId = StringConversions.makeIdentifier(type.getId());
 	   String elementTypeName = buildTypeName(type.getElementType());
-	   genGetLength(typeName);
-	   genReverse(typeName);
-	   genAppend(typeName, elementTypeName);
-	   genConcat(typeName);
-	   genSlice(typeName);
-	   genGetElementAt(typeName, elementTypeName);
-	   genReplaceElementAt(typeName, elementTypeName);
-	   genListMakes(typeName, elementTypeName);
+	   String elementTypeId = StringConversions.makeIdentifier(type.getElementType());
+	   genGetLength(typeId, typeName);
+	   genReverse(typeId, typeName);
+	   genAppend(typeId, typeName, elementTypeId, elementTypeName);
+	   genConcat(typeId, typeName);
+	   genSlice(typeId, typeName);
+	   genGetElementAt(typeId, typeName, elementTypeId, elementTypeName);
+	   genReplaceElementAt(typeId, typeName, elementTypeId, elementTypeName);
+	   genListMakes(typeId, typeName, elementTypeId, elementTypeName);
 	}
 
-	private void genListMakes(String typeName, String elementTypeName) {
+	private void genListMakes(String typeId, String typeName, String elementTypeId, String elementTypeName) {
        for (int arity = 1; arity <= 6; arity++) {
-       	 genListMake(arity, typeName, elementTypeName);
+       	 genListMake(arity, typeId, typeName, elementTypeId, elementTypeName);
        }
 	}
 
-	private void genListMake(int arity, String typeName, String elementTypeName) {
-		String decl = typeName + " " + prefix + "make" + typeName + arity + "(";
+	private void genListMake(int arity, String typeId, String typeName, String elementTypeId, String elementTypeName) {
+		String decl = typeName + " " + prefix + "make" + typeId + arity + "(";
 		for (int i = 1; i < arity; i++) {
 			decl = decl + elementTypeName + " elem" + i + ", ";
 		}
@@ -103,24 +105,24 @@ public class APIGenerator extends CGenerator {
 		println("}");
 	}
 
-	private void genGetElementAt(String typeName, String elementTypeName) {
-		String decl = elementTypeName + " " + prefix + "get" + typeName + elementTypeName + "At(" + typeName + " arg, int index)";
+	private void genGetElementAt(String typeId, String typeName, String elementTypeId, String elementTypeName) {
+		String decl = elementTypeName + " " + prefix + "get" + typeId + elementTypeId + "At(" + typeName + " arg, int index)";
 		hprintln(decl + ";");
 		println(decl +" {");
 		println(" return (" + elementTypeName + ") ATelementAt((ATermList) arg, index);");
 		println("}");
 	}
 	
-	private void genReplaceElementAt(String typeName, String elementTypeName) {
-		String decl = typeName + " " + prefix + "replace" + typeName + elementTypeName + "At(" + typeName + " arg, " + elementTypeName + " elem, int index)";
+	private void genReplaceElementAt(String typeId, String typeName, String elementTypeId, String elementTypeName) {
+		String decl = typeName + " " + prefix + "replace" + typeId + elementTypeId + "At(" + typeName + " arg, " + elementTypeName + " elem, int index)";
 		hprintln(decl + ";");
 		println(decl +" {");
 		println(" return (" + typeName + ") ATreplace((ATermList) arg, (ATerm) elem, index);");
 		println("}");
 	}
 
-	private void genReverse(String typeName) {
-		String decl = typeName + " " + prefix + "reverse" + typeName + "(" +
+	private void genReverse(String typeId, String typeName) {
+		String decl = typeName + " " + prefix + "reverse" + typeId + "(" +
 		              typeName + " arg)";
 		hprintln(decl + ";");
 		println(decl + " {");
@@ -128,32 +130,32 @@ public class APIGenerator extends CGenerator {
 		println("}");
 	}
 
-	private void genAppend(String typeName, String elementTypeName) {
-		String decl = typeName + " " + prefix + "append" + typeName + "(" + typeName + " arg, " + elementTypeName + " elem)";
+	private void genAppend(String typeId, String typeName, String elementTypeId, String elementTypeName) {
+		String decl = typeName + " " + prefix + "append" + typeId + "(" + typeName + " arg, " + elementTypeName + " elem)";
 		hprintln(decl + ";");
 		println(decl + " {");
 		println("  return (" + typeName + ") ATappend((ATermList) arg, (ATerm) elem);");
 		println("}");
 	}
     
-	private void genConcat(String typeName) {
-	   String decl = typeName + " " + prefix + "concat" + typeName + "(" + typeName + " arg0, " + typeName + " arg1)";
+	private void genConcat(String typeId, String typeName) {
+	   String decl = typeName + " " + prefix + "concat" + typeId + "(" + typeName + " arg0, " + typeName + " arg1)";
 	   hprintln(decl + ";");
 	   println(decl + " {");
 	   println("  return (" + typeName + ") ATconcat((ATermList) arg0, (ATermList) arg1);");
 	   println("}");
 	}
 	
-	private void genSlice(String typeName) {
-		String decl = typeName + " " + prefix + "slice" + typeName + "(" + typeName + " arg, int start, int end)";
+	private void genSlice(String typeId, String typeName) {
+		String decl = typeName + " " + prefix + "slice" + typeId + "(" + typeName + " arg, int start, int end)";
 		hprintln(decl + ";");
 		println(decl + " {");
 		println("  return (" + typeName + ") ATgetSlice((ATermList) arg, start, end);");
 		println("}");
 	}
 		
-	private void genGetLength(String typeName) {
-		String decl = "int " + prefix + "get" + typeName + "Length (" + typeName + " arg)";
+	private void genGetLength(String typeId, String typeName) {
+		String decl = "int " + prefix + "get" + typeId + "Length (" + typeName + " arg)";
 		
 		hprintln(decl + ";");
 		println(decl + " {");
