@@ -137,9 +137,36 @@ class ATermListImpl extends ATermImpl implements ATermList {
       return this;
     }
 
-    return getPureFactory().makeList(first.make(args), (ATermList) next.make(args));
+    ATerm head = first.make(args);
+    ATermList tail = (ATermList) next.make(args);
+    if(isListPlaceHolder(first)) {
+        /*
+         * this is to solve the make([<list>],[]) problem
+         * the result should be [] and not [[]]
+         * to be compatible with the C version
+         */
+      return head;
+    } else {
+      return getPureFactory().makeList(head, tail);
+    }
+    
   }
 
+  private boolean isListPlaceHolder(ATerm pattern) {
+    if (pattern.getType() == ATerm.PLACEHOLDER) {
+      ATerm type = ((ATermPlaceholder) pattern).getPlaceholder();
+      if (type.getType() == ATerm.APPL) {
+        ATermAppl appl = (ATermAppl) type;
+        AFun afun = appl.getAFun();
+        if (afun.getName().equals("list") && afun.getArity() == 0 && !afun.isQuoted()) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  
   public boolean isEmpty() {
     return this == PureFactory.empty;
   }

@@ -219,7 +219,7 @@ public class Test1 {
       // Test prefix/last
     test(Ts[5].getPrefix().equals(Ts[4]), "prefix-1");
     test(Ts[5].getLast().equals(factory.parse("7")), "last-1");
-    
+
     System.out.println("pass: testMakeList");
   }
   
@@ -412,6 +412,16 @@ public class Test1 {
     list.add(new Integer(4));
     result = factory.make("f(1,g(<term>),c,h(<int>))", list);
     System.out.println("\tresult = " + result);
+
+      //Ts[8] = factory.parse();
+    list.clear();
+    list.add(factory.parse("1"));
+    list.add(factory.parse("[]"));
+    result = factory.make("[<term>,<list>]", list);
+    System.out.println("\tresult = " + result);
+    test(((ATermList)result).getFirst() == factory.parse("1"), "make-1a");
+    test(((ATermList)result).getLength() == 1,"make-1b");
+
     
       /*
     list.add(new Integer(1));
