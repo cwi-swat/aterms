@@ -584,6 +584,7 @@ ATermList ATgetArguments(ATermAppl appl)
 }
 
 /*}}}  */
+/*{{{  ATermTable ATtableCreate(int initial_size, int maxload) */
 
 /**
   * Create a new ATerm table.
@@ -613,12 +614,26 @@ ATermTable ATtableCreate(int initial_size, int maxload)
   return table;
 }
 
+/*}}}  */
+/*{{{  void ATtableDestroy(ATermTable table) */
+
+/**
+	* Destroy an ATermTable, freeing all memory associated with it.
+	*/
+
 void ATtableDestroy(ATermTable table)
 {
   ATunprotectArray((ATerm *)table->entries);
   free(table->entries);
   free(table);
 }
+
+/*}}}  */
+/*{{{  void ATtablePut(ATermTable table, ATerm key, ATerm value) */
+
+/**
+	* Store a new key/value pair in an ATermTable.
+	*/
 
 #define TABLE_HASH(key) ((unsigned int)(key)*MAGIC_K)
 
@@ -661,6 +676,13 @@ void ATtablePut(ATermTable table, ATerm key, ATerm value)
   }
 }
 
+/*}}}  */
+/*{{{  ATerm ATtableGet(ATermTable table, ATerm key) */
+
+/**
+	* Retrieve a value from an ATermTable.
+	*/
+
 ATerm ATtableGet(ATermTable table, ATerm key)
 {
   unsigned int hnr = TABLE_HASH((unsigned int)key);
@@ -668,6 +690,13 @@ ATerm ATtableGet(ATermTable table, ATerm key)
 	
   return ATdictGet((ATerm)table->entries[hnr], key);
 }
+
+/*}}}  */
+/*{{{  void ATtableRemove(ATermTable table, ATerm key) */
+
+/**
+	* Remove a key/value pair from an ATermTable.
+	*/
 
 void ATtableRemove(ATermTable table, ATerm key)
 {
@@ -679,5 +708,32 @@ void ATtableRemove(ATermTable table, ATerm key)
   if(ATisEmpty(table->entries[hnr]))
 	  table->free_slots++;
 }
+
+/*}}}  */
+/*{{{  ATermList ATtableKeys(ATermTable table) */
+
+/**
+	* Retrieve a list of all keys in an ATermTable.
+	*/
+
+ATermList ATtableKeys(ATermTable table)
+{
+	int i;
+	ATermList keys = ATempty;
+	ATermList list;
+
+	for(i=0; i<table->size; i++) {
+		list = table->entries[i];
+		while(!ATisEmpty(list)) {
+			ATermList pair = (ATermList)ATgetFirst(list);
+			ATerm key = ATgetFirst(pair);
+			keys = ATinsert(keys, key);
+			list = ATgetNext(list);
+		}
+	}
+	return keys;
+}
+
+/*}}}  */
 
 
