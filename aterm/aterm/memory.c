@@ -2421,11 +2421,7 @@ ATbool AT_isValidTerm(ATerm term)
 }
 
 /*}}}  */
-/*{{{  ATbool ATisValidTerm(ATerm term) */
-
-/**
- * Determine if a given term is valid.
- */
+/*{{{  ATerm AT_isInsideValidTerm(ATerm term) */
 
 ATerm AT_isInsideValidTerm(ATerm term)
 {
@@ -2463,7 +2459,7 @@ ATerm AT_isInsideValidTerm(ATerm term)
 
   if(!inblock) {
     /*fprintf(stderr, "not in block: %p\n", term);*/
-    return ATfalse;
+    return NULL;
   }
 
   offset -= (offset % (cur->size*sizeof(header)));
