@@ -1,7 +1,12 @@
 equations
 
 [equ-gen-c-api]
-  gen-c-api($API) = [ gen-header($API) $$ gen-source($API) ]
+  gen-header($API) = $Header,
+  gen-source($API) = $Source
+  ===
+  gen-c-api($API) =
+	api.h: $Header $$
+	api.c: $Source $$
 
 [equ-gen-header]
   gen-typedefs($API) = $Typedef*,

@@ -3,11 +3,15 @@ module Gen-C-API
   imports C-Syntax Gen-API
 
   exports
-    sorts C-API NEWLINE
+    sorts C-API C-FILETAG C-API-FILE
+
+    lexical syntax
+      [a-zA-Z0-9]+[\.][ch][\:]				-> C-FILETAG
 
     context-free syntax
       "gen-c-api" "(" API ")"				-> C-API
-      "[" C-FILE "$$" C-FILE "]"			-> C-API
+      C-FILETAG C-FILE "$$"				-> C-API-FILE
+      C-API-FILE+					-> C-API
 
   hiddens
 
@@ -58,11 +62,13 @@ module Gen-C-API
       "$FunDeclList"[0-9]*	-> C-CONSTRUCT*
       "$FunImpl"		-> C-CONSTRUCT
       "$FunImplList"[0-9]*	-> C-CONSTRUCT*
+      "$Header"			-> C-FILE
       "$Loc"			-> API-Location
       "$Loc*"[0-9]*		-> API-Location*
       "$Loc+"			-> API-Location+
       "$Pattern"		-> ATerm
       "$SortedField*"		-> API-Field*
+      "$Source"			-> C-FILE
       "$Type"			-> API-Type
       "$Type*"			-> API-Type*
       "$TypeId"			-> AFun
