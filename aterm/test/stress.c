@@ -784,7 +784,13 @@ void testGC()
   test_assert("gc-mark", 3, !IS_MARKED(t[2]->header));
   test_assert("gc-mark", 4, AT_isMarkedSymbol(ATgetSymbol((ATermAppl)t[0])));
   AT_unmarkTerm(t[12]);
+
+  AT_markTerm(t[12]);
+  AT_unmarkAll();
+  test_assert("gc-mark", 5, !IS_MARKED(t[1]->header));
+  test_assert("gc-mark", 6, !AT_isMarkedSymbol(ATgetSymbol((ATermAppl)t[0])));
 #endif
+
 
   printf("gc tests ok.\n");	
 }

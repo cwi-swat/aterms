@@ -547,4 +547,18 @@ void AT_markProtectedSymbols()
 }
 
 /*}}}  */
+/*{{{  void AT_unmarkAllAFuns() */
+
+void AT_unmarkAllAFuns()
+{
+  int i;
+
+  for (i=0; i<table_size; i++) {
+    if (AT_isValidSymbol((AFun)i)) {
+      AT_unmarkSymbol(i);
+    }
+  }
+}
+
+/*}}}  */
 

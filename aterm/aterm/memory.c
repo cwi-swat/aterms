@@ -70,10 +70,6 @@ FINISH(COMBINE(START( (AT_INT<<SHIFT_TYPE) ), val))
 			     (AT_isValidTerm(t) && "term is invalid"))
 
 /*}}}  */
-/*{{{  types */
-
-
-/*}}}  */
 /*{{{  globals */
 
 char memory_id[] = "$Id$";

@@ -2431,6 +2431,29 @@ void AT_unmarkIfAllMarked(ATerm t)
 }
 
 /*}}}  */
+/*{{{  void AT_unmarkAll() */
+
+void AT_unmarkAll()
+{
+  int size;
+
+  for (size=1; size<MAX_TERM_SIZE; size++) {
+    int last = BLOCK_SIZE - (BLOCK_SIZE % size) - size;
+    Block *block = at_blocks[size];
+    while (block) {
+      int idx;
+      ATerm data = (ATerm)block->data;
+      for (idx=0; idx <= last; idx += size) {
+	CLR_MARK(((ATerm)(((header_type *)data)+idx))->header);
+      }
+      block = block->next_by_size;
+    }
+  }
+
+  AT_unmarkAllAFuns();
+}
+
+/*}}}  */
 
 /*{{{  static int calcCoreSize(ATerm t) */
 
@@ -2621,7 +2644,7 @@ int
 AT_calcUniqueSubterms(ATerm t)
 {
   int result = calcUniqueSubterms(t);
-  AT_unmarkTerm(t);
+  AT_unmarkIfAllMarked(t);
   return result;
 }
 

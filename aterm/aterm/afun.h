@@ -50,5 +50,6 @@ void  AT_freeSymbol(SymEntry sym);
 void AT_markProtectedSymbols();
 unsigned int AT_hashSymbol(char *name, int arity);
 ATbool AT_findSymbol(char *name, int arity, ATbool quoted);
+void AT_unmarkAllAFuns();
 
 #endif

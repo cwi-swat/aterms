@@ -21,6 +21,7 @@ extern ProtEntry *at_prot_memory;
 void AT_markTerm(ATerm t);
 void AT_unmarkTerm(ATerm t);
 void AT_unmarkIfAllMarked(ATerm t);
+void AT_unmarkAll();
 int  AT_calcTextSize(ATerm t);
 int  AT_calcCoreSize(ATerm t);
 int  AT_calcSubterms(ATerm t);
