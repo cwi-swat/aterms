@@ -8,8 +8,9 @@ TESTS	          	= stress
 EXTRA_DIST 		= termstats.sh test.trms error.trm stress.dict
 CLEANFILES		= stress_dict.c stress_dict.h
 
-INCLUDES		= -I$(top_srcdir)/aterm
-CFLAGS                  = -Wall -Werror -g -DSRCDIR="\"$(top_srcdir)/test/\""
+INCLUDES		= -I$(top_srcdir)/aterm \
+                           -DSRCDIR="\"$(top_srcdir)/test/\""
+
 LDFLAGS 		= -L$(top_builddir)/aterm/
 LDLIBS			= -lATerm
 
