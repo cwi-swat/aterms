@@ -1,5 +1,9 @@
 $Id$
 
+2002/09/23 <vinju@loria.fr>
+* Fixed a bug in the java library. Singletons did not match with
+  [<term>,<list>].
+
 2002/09/23 <jong@cwi.nl>
  * Fix dates in ChangeLog (October -> September)
  * Fix in ATwriteToString: print '<' and '>' around placeholders
