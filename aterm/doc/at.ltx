@@ -123,7 +123,7 @@ of data stored in the blob.
 
 \subsection{Operations}
 \label{operations}
- On this ATerm datatype, we have 12 operations. We also introduce
+ On this ATerm datatype, we have 13 operations. We also introduce
 6 constants that represent the different subtypes:
 \begin{itemize}
 \item {\tt INT}:  An integer term.
@@ -149,6 +149,8 @@ data from \emph{file}.
 compact binary representation from \emph{file}.
 \item {\tt Integer getType(\emph{term})}: Retrieve the type of a term. This
 operation returns one of the constants mentioned above.
+\item {\tt ATbool ATisEqual(\emph{t1},\emph{t2})}: Check if two terms are 
+equal.
 \item {\tt ATermList match(\emph{term}, \emph{pattern})}: Match \emph{term} against
 \emph{pattern}, and return a list of subterms matching with placeholders
 in \emph{pattern}.
@@ -661,8 +663,8 @@ The operations on ATermList are:
 \item {\tt ATerm getLast(ATermList \emph{list})}: Retrieve the last element from
       \emph{list}.
 \item {\tt ATermList getSlice(ATermList \emph{list}, Integer \emph{start}, 
-   Integer \emph{end})}: Retrieve the portion of \emph{list} between
-   \emph{start} and \emph{end} (inclusive).
+   Integer \emph{end})}: Retrieve the portion of \emph{list} from position
+   \emph{start} to \emph{end-1}. 
 \item {\tt Boolean isEmpty(ATermList \emph{list})}: Check if \emph{list}
 	contains zero elements.
 \item {\tt ATermList insert(ATermList \emph{list}, ATerm \emph{el})}:
@@ -682,11 +684,15 @@ The operations on ATermList are:
 \item {\tt Integer lastIndexOf(ATermList \emph{list}, ATerm \emph{el},
        Integer \emph{n})}:
       Search backwards for \emph{el} in \emph{list}, and return the index of
-	  the last location where the element is present. Start searching at index
-      \emph{n}. If the element is not present before element \emph{n},
-      return -1.
+	  the last location where the element is present. Start searching 
+	at index \emph{n}. 
+	If the element is not present before element \emph{n}, return -1.
 \item {\tt ATerm elementAt(ATermList \emph{list}, Integer \emph{index})}:
       Retrieve element at position \emph{index} from \emph{list}.
+\item {\tt ATermList removeElement(ATermList \emph{list}, ATerm \emph{elem})}:
+	Remove once occurence of an element from a list.
+\item {\tt ATermList removeElementAt(ATermList \emph{list}, 
+	Integer \emph{index})}: Remove an indexed element from a list.
 \end{itemize}
 
 %}}}
@@ -733,10 +739,14 @@ The operations on ATermPlaceholder are:
 
 \paragraph{ATermBlob:} This datatype represents Binary Large OBject terms.
 The memory management of blobs must be done explicitly by the application
-programmer. Blobs are never allocated, freed, or even touched by the
-\ATerm\ library. Blob destructors can be registered using the
-{\tt registerBlobDestructor} function. All registered destructors are
-called before the space occupied by a `dead' ATermBlob is reused. 
+programmer. 
+
+%%Blobs are never allocated, freed, or even touched by the
+%%\ATerm\ library. 
+
+%%Blob destructors can be registered using the
+%%{\tt registerBlobDestructor} function. All registered destructors are
+%%called before the space occupied by a `dead' ATermBlob is reused. 
 
 The operations on ATermBlob are:
 
