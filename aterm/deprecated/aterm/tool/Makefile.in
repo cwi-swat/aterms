@@ -20,7 +20,7 @@ INSTALL_PRG = @INSTALL_PRG@
 SCRIPTS		= tifstojava java-adapter
 DISTFILES   = Makefile.in test.tb test.tifs ${SCRIPTS} ${SOURCE}
 
-SOURCE = Testing.java JavaTif.java ToolBusChannel.java TestTool.java \
+SOURCE = EventQueue.java Testing.java JavaTif.java ToolBusChannel.java TestTool.java \
 		TestingTool.java ToolException.java \
 		Test.java Testing.java Tool.java 
 
