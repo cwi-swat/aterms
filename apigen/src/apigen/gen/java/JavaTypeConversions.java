@@ -16,7 +16,11 @@ public class JavaTypeConversions implements TypeConversions {
 		return "ATerm";
 	}
 
-	public String StringType() {
+	public String ListType() {
+		return "ATermList";
+	}
+
+  public String StringType() {
 		return "String";
 	}
 }

@@ -1,4 +1,13 @@
 
+2003-05-06  Pierre-Etienne Moreau  <pem@escher.loria.fr>
+ 
+ * added "list" type for ATermList
+ 
+2003-04-28  Pierre-Etienne Moreau  <pem@escher.loria.fr>
+
+ * apigen/gen/java/TypeGenerator.java: added a test to prefix the "ATerm"
+   sort by the "aterm." package name in TypeGenerator.className
+
 2003-03-20  (jurgenv@cwi.nl)
  * Removed dependency on shared-objects and jjtraveler. This is handled 
    by aterm-java-config from now on

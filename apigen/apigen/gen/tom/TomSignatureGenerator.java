@@ -7,80 +7,113 @@ import apigen.gen.Generator;
 import apigen.gen.StringConversions;
 
 public class TomSignatureGenerator extends Generator {
-    protected String apiName = "";
-    private TomSignatureImplementation impl;
-    private ADT adt;
-    private String prefix;
-	
-	public TomSignatureGenerator(ADT adt, TomSignatureImplementation impl, 
-	        String directory, String api_name, String prefix, boolean verbose, boolean folding) {
-	   super(directory, StringConversions.makeIdentifier(api_name), ".t", verbose, folding);
-	   this.adt = adt;
-	   this.impl = impl;
-       this.prefix = prefix;
-	}
-	
-	public void generate() {
-		genTomBuiltinTypes();
-		genTomTypes(adt);
-	}
+  protected String apiName = "";
+  private TomSignatureImplementation impl;
+  private ADT adt;
+  private String prefix;
+  
+  public TomSignatureGenerator(ADT adt, TomSignatureImplementation impl, 
+                               String directory, String api_name, String prefix, boolean verbose, boolean folding) {
+    super(directory, StringConversions.makeIdentifier(api_name), ".t", verbose, folding);
+    this.adt = adt;
+    this.impl = impl;
+    this.prefix = prefix;
+  }
+  
+  public void generate() {
+    genTomBuiltinTypes();
+    genTomTypes(adt);
+  }
+  
+  private String TypeTermTemplate(
+    String type,
+    String impl,
+    String get_fun_sym,
+    String cmp_fun_sym,
+    String get_subterm,
+    String equals) {
+    
+    return 
+      "%typeterm " + type + "{\n"
+      + "  implement { " + impl + "}\n"
+      + "  get_fun_sym(t) {" + get_fun_sym + "}\n"
+      + "  cmp_fun_sym(s1,s2) { " + cmp_fun_sym + "}\n"
+      + "  get_subterm(t,n) {" + get_subterm + "}\n"
+      + "  equals(t1,t2) {" + equals+ "}\n"
+      + "}";
+  }
+  
+  private String TypeListTemplate(
+    String type,
+    String impl,
+    String get_fun_sym,
+    String cmp_fun_sym,
+    String equals,
+    String get_head,
+    String get_tail,
+    String is_empty) {
+    
+    return 
+      "%typelist " + type + "{\n"
+      + "  implement { " + impl + "}\n"
+      + "  get_fun_sym(t) {" + get_fun_sym + "}\n"
+      + "  cmp_fun_sym(s1,s2) { " + cmp_fun_sym + "}\n"
+      + "  equals(t1,t2) {" + equals+ "}\n"
+      + "  get_head(l) {" + get_head + "}\n"
+      + "  get_tail(l) {" + get_tail + "}\n"
+      + "  is_empty(l) {" + is_empty + "}\n"
+      + "}";
+  }
 
-	private String TypeTermTemplate(
-		String type,
-		String impl,
-		String get_fun_sym,
-		String cmp_fun_sym,
-		String get_subterm,
-		String equals) {
-
-		return 
-               "%typeterm " + type + "{\n"
-			+ "  implement { " + impl + "}\n"
-			+ "  get_fun_sym(t) {" + get_fun_sym + "}\n"
-			+ "  cmp_fun_sym(s1,s2) { " + cmp_fun_sym + "}\n"
-			+ "  get_subterm(t,n) {" + get_subterm + "}\n"
-			+ "  equals(t1,t2) {" + equals+ "}\n"
-			+ "}";
-	}
-
-	private void genTomBuiltinTypes() {
-		println(
-			TypeTermTemplate(
-				impl.StringName(),
-				impl.StringImpl(),
-				impl.StringGetFunSym("t"),
-				impl.StringCmpFunSym("s1", "s2"),
-		impl.StringGetSubTerm("t", "n"),
-		impl.StringEquals("t1", "t2")));
-		println();
-		println(
-			TypeTermTemplate(
-		impl.IntegerName(),
-		impl.IntegerImpl(),
-		impl.IntegerGetFunSym("t"),
-		impl.IntegerCmpFunSym("s1", "s2"),
-		impl.IntegerGetSubTerm("t", "n"),
-		impl.IntegerEquals("t1", "t2")));
-		println();
-		println(
-			TypeTermTemplate(
-		impl.DoubleName(),
-		impl.DoubleImpl(),
-		impl.DoubleGetFunSym("t"),
-		impl.DoubleCmpFunSym("s1", "s2"),
-		impl.DoubleGetSubTerm("t", "n"),
-		impl.DoubleEquals("t1", "t2")));
-		println();
-		println(
-			TypeTermTemplate(
-		impl.ATermName(),
-		impl.ATermImpl(),
-		impl.ATermGetFunSym("t"),
-		impl.ATermCmpFunSym("s1", "s2"),
-		impl.ATermGetSubTerm("t", "n"),
-		impl.ATermEquals("t1", "t2")));
-		println();
-	}
+  private void genTomBuiltinTypes() {
+          println(
+            TypeTermTemplate(
+              impl.StringName(),
+              impl.StringImpl(),
+              impl.StringGetFunSym("t"),
+              impl.StringCmpFunSym("s1", "s2"),
+              impl.StringGetSubTerm("t", "n"),
+              impl.StringEquals("t1", "t2")));
+          println();
+          println(
+            TypeTermTemplate(
+              impl.IntegerName(),
+              impl.IntegerImpl(),
+              impl.IntegerGetFunSym("t"),
+              impl.IntegerCmpFunSym("s1", "s2"),
+              impl.IntegerGetSubTerm("t", "n"),
+              impl.IntegerEquals("t1", "t2")));
+          println();
+          println(
+            TypeTermTemplate(
+              impl.DoubleName(),
+              impl.DoubleImpl(),
+              impl.DoubleGetFunSym("t"),
+              impl.DoubleCmpFunSym("s1", "s2"),
+              impl.DoubleGetSubTerm("t", "n"),
+              impl.DoubleEquals("t1", "t2")));
+          println();
+          println(
+            TypeTermTemplate(
+              impl.ATermName(),
+              impl.ATermImpl(),
+              impl.ATermGetFunSym("t"),
+              impl.ATermCmpFunSym("s1", "s2"),
+              impl.ATermGetSubTerm("t", "n"),
+              impl.ATermEquals("t1", "t2")));
+          println();
+          println(
+            TypeListTemplate(
+              impl.ATermListName(),
+              impl.ATermListImpl(),
+              impl.ATermListGetFunSym("t"),
+              impl.ATermListCmpFunSym("s1", "s2"),
+              impl.ATermListEquals("t1", "t2"),
+              "l.getFirst()",
+              "l.getNext()",
+              "l.isEmpty()"));
+          println();
+  }
 
 	private void genTomTypes(ADT api) {
 		Iterator types = api.typeIterator();

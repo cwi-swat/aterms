@@ -28,6 +28,8 @@ public class TypeGenerator extends JavaGenerator {
     String res = StringConversions.makeIdentifier(converter.getType(type));
     if(res.equals("ATerm")) {
       res = "aterm." + res;
+    } else if(res.equals("ATermList")) {
+      res = "aterm." + res;
     }
     return res;
   }

@@ -119,6 +119,30 @@ public class JavaTomSignatureImplementation implements TomSignatureImplementatio
 		return s1 + ".equals(" + s2 + ")";
 	}
 
+
+	public String ATermListName() {
+		return "ATermList";
+	}
+
+	public String ATermListImpl() {
+		return converter.ListType();
+	}
+
+	public String ATermListGetFunSym(String arg) {
+		return "((" + arg + " instanceof ATermList)?get"
+			+ StringConversions.makeCapitalizedIdentifier(api_name)
+			+ "Factory"
+			+ "().makeAFun(\"conc\",1,false):null)";
+	}
+
+	public String ATermListCmpFunSym(String s1, String s2) {
+		return s1 + "==" + s2;
+	}
+
+	public String ATermListEquals(String s1, String s2) {
+		return s1 + ".equals(" + s2 + ")";
+	}
+
 	public String TypeName(String type) {
 		return StringConversions.makeCapitalizedIdentifier(converter.getType(type));
 	}
@@ -143,6 +167,9 @@ public class JavaTomSignatureImplementation implements TomSignatureImplementatio
 		return arg1 + ".equals(" + arg2 + ")";
 	}
 
+
+
+  
 	public String OperatorName(String type, String id) {
         if (jtype) {
             return StringConversions.makeIdentifier(type) + "_" +

@@ -100,17 +100,17 @@ public abstract class JavaGenerator extends Generator {
      * Print a formal argument list for one specific constructor. The field types are
      * derived from the ADT, the field names are used for the formal parameter names.
      */
-	protected void printFormalTypedAltArgumentList(Type type, Alternative alt) {
-		Iterator fields = type.altFieldIterator(alt.getId());
-		while (fields.hasNext()) {
-		  Field field = (Field) fields.next();
-	      String field_id = getFieldId(field.getId());
-	      print(TypeGenerator.className(field.getType()) + " " + field_id);
-	
-		  if (fields.hasNext()) {
-		    print(", ");
-		  }
-		}
-	}
+  protected void printFormalTypedAltArgumentList(Type type, Alternative alt) {
+    Iterator fields = type.altFieldIterator(alt.getId());
+    while (fields.hasNext()) {
+      Field field = (Field) fields.next();
+      String field_id = getFieldId(field.getId());
+      print(TypeGenerator.className(field.getType()) + " " + field_id);
+      
+      if (fields.hasNext()) {
+        print(", ");
+      }
+    }
+  }
 
 }

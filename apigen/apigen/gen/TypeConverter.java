@@ -17,6 +17,7 @@ public class TypeConverter implements TypeConversions {
 		reservedTypes.put("real", conv.RealType());
 		reservedTypes.put("str", conv.StringType());
 		reservedTypes.put("term", conv.TermType());
+		reservedTypes.put("list", conv.ListType());
 
 	}
 
@@ -65,4 +66,12 @@ public class TypeConverter implements TypeConversions {
 	public String TermType() {
 		return (String) reservedTypes.get("term");
 	}
+
+	/**
+	 * Returns the implementation type of: list
+	 */
+	public String ListType() {
+		return (String) reservedTypes.get("list");
+	}
+
 }

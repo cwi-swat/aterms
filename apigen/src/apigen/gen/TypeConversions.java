@@ -25,4 +25,10 @@ public interface TypeConversions {
    * @return The target implementation type of the builtin ATerm type: str
    */
   public String StringType();
+
+    /**
+   * 
+   * @return The target implementation type of the builtin ATermList type: list
+   */
+  public String ListType();
 }

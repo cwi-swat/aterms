@@ -193,6 +193,10 @@ public class AlternativeImplGenerator extends JavaGenerator {
 			else if (field_type.equals("term")) {
 			  println("      args.add((aterm.ATerm) getArgument(" + i + "));");
 			}
+                        else if (field_type.equals("list")) {
+			  println("      args.add((aterm.ATermList) getArgument(" + i + "));");
+			}
+
 			else {
 			  println("      args.add(((" + GenericConstructorGenerator.className(apiName) + ") getArgument(" + i + ")).toTerm());");
 			}
@@ -250,6 +254,9 @@ public class AlternativeImplGenerator extends JavaGenerator {
 		  }
 		  else if (fieldType.equals("term")) {
 			print("(aterm.ATerm) children.get(" + argnr + ")");
+		  }
+		  else if (fieldType.equals("list")) {
+			print("(aterm.ATermList) children.get(" + argnr + ")");
 		  }
 		  else {
 			print(fieldClass + ".fromTerm( (aterm.ATerm) children.get(" + argnr + "))");
