@@ -36,6 +36,12 @@ LFLAGS_GCC	= @LFLAGS_GCC@
 LFLAGS_DBG	= @LFLAGS_DBG@
 LFLAGS_PROF	= @LFLAGS_PROF@
 
+LIBS_CC		= @LIBS@
+LIBS_GCC        = @LIBS@
+LIBS_DBG        = @LIBS@
+LIBS_PROF       = @LIBS@
+LIBS_NS         = @LIBS@
+
 AR		= @AR@
 AR_FLAGS	= cr
 
@@ -101,7 +107,7 @@ libATB-prof.a: ${OBJ_PROF}
 
 tifstoc: tifstoc.c atb-tool.h ../aterm/libATerm-dbg.a libATB-dbg.a
 	${CC_DBG} ${CFLAGS_DBG} -I../aterm -o tifstoc tifstoc.c \
-			-L../aterm -lATerm-dbg -L. -lATB-dbg -lsocket -lnsl
+			-L../aterm -lATerm-dbg -L. -lATB-dbg ${LIBS_DBG}
 
 tag:
 	ctags *.[ch]
