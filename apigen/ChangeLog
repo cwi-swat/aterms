@@ -1,11 +1,16 @@
+2003/08/20 (jurgenv@cwi.nl)
+ * isEqual implementation changed from term.isEqual(peer.toTerm()) to
+   super.isEqual(peer). This should be much faster. Also, somehow the toTerm
+   resulted in null references. This problem is still unsolved.
+ * Added fromTerm for separated lists. This is a rather complicated algorithm ;-(
+ * Extended the list types of the ADT formalism with some convenience iterators
+   over fields and separator fields
+
 2003-08-19  (jurgenv@cwi.nl)
  * Committed basic setup for generating separated lists in Java
  * Added several TODO comments where the generated code will have to be
    adapted pretty soon.
- * Added fromTerm for separated lists. This is a rather complicated algorithm ;-(
- * Extended the list types of the ADT formalism with some convenience iterators
-   over fields and separator fields
-   
+      
 2003-08-14  (jurgenv@cwi.nl)
  * Generating reverse method is unnecessary again.
  * Renamed lib directory to lib-2.0 and old-lib directory to lib-1.0
