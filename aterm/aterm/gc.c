@@ -56,7 +56,7 @@ void AT_initGC(int argc, char *argv[], ATerm *bottomOfStack)
   int i;
 
   stackBot = bottomOfStack;
-    //gc_f = fopen("gc.stats", "wb");
+    /*gc_f = fopen("gc.stats", "wb");*/
   gc_f = stderr;
   
   for(i=1; i<argc; i++) {
@@ -111,7 +111,7 @@ ATerm *stack_top()
 
 /*{{{  static void mark_memory(ATerm *start, ATerm *stop) */
 
-//static int nb_cell_in_stack = 0;
+/*static int nb_cell_in_stack = 0;*/
 
 static void mark_memory(ATerm *start, ATerm *stop)
 {
@@ -120,7 +120,7 @@ static void mark_memory(ATerm *start, ATerm *stop)
   ATerm odd_term;
   AFun odd_sym;
 #endif
-    //fprintf(stderr,"---> mark_memory phase [%x,%x]\n",start,stop);
+    /*fprintf(stderr,"---> mark_memory phase [%x,%x]\n",start,stop);*/
     /* Traverse the stack */
   for(cur=start; cur<stop; cur++) {
     if(AT_isPotentialTerm(*cur)) {
@@ -128,14 +128,14 @@ static void mark_memory(ATerm *start, ATerm *stop)
         real_term = AT_isInsideValidTerm(*cur);
         if (real_term != NULL) {
           AT_markTerm(real_term);
-            //printf("mark_memory: cur = %x\ttop sym = %s\n",cur,ATgetName(ATgetAFun(real_term)));
-            //nb_cell_in_stack++;
+            /*printf("mark_memory: cur = %x\ttop sym = %s\n",cur,ATgetName(ATgetAFun(real_term)));*/
+            /*nb_cell_in_stack++;*/
         }
       }
     } else if (AT_isValidSymbol((Symbol)*cur)) {
-        //fprintf(stderr,"mark_memory: AT_markSymbol(%d)\n",(Symbol)*cur);
+        /*fprintf(stderr,"mark_memory: AT_markSymbol(%d)\n",(Symbol)*cur);*/
       AT_markSymbol((Symbol)*cur);
-        //nb_cell_in_stack++;
+        /*nb_cell_in_stack++;*/
     }
 
 #ifdef AT_64BIT
@@ -147,7 +147,7 @@ static void mark_memory(ATerm *start, ATerm *stop)
 
     odd_sym = *((AFun *)((MachineWord)cur)+4);
     if (AT_isValidSymbol(odd_sym)) {
-        //fprintf(stderr,"mark_memory: AT_markSymbol(%d)\n",odd_sym);
+        /*fprintf(stderr,"mark_memory: AT_markSymbol(%d)\n",odd_sym);*/
       AT_markSymbol(odd_sym);
     }
 #endif
@@ -162,7 +162,7 @@ static void mark_memory_young(ATerm *start, ATerm *stop) {
   ATerm odd_term;
   AFun odd_sym;
 #endif
-    //fprintf(stderr,"---> mark_memory_young phase [%x,%x]\n",start,stop);
+    /*fprintf(stderr,"---> mark_memory_young phase [%x,%x]\n",start,stop);*/
     /* Traverse the stack */
   for(cur=start; cur<stop; cur++) {
     if(AT_isPotentialTerm(*cur)) {
@@ -170,14 +170,14 @@ static void mark_memory_young(ATerm *start, ATerm *stop) {
         real_term = AT_isInsideValidTerm(*cur);
         if (real_term != NULL) {
           AT_markTerm_young(real_term);
-            //printf("mark_memory: cur = %x\ttop sym = %s\n",cur,ATgetName(ATgetAFun(real_term)));
-            //nb_cell_in_stack++;
+            /*printf("mark_memory: cur = %x\ttop sym = %s\n",cur,ATgetName(ATgetAFun(real_term)));*/
+            /*nb_cell_in_stack++;*/
         }
       }
     } else if (AT_isValidSymbol((Symbol)*cur)) {
-        //fprintf(stderr,"mark_memory_young: AT_markSymbol_young(%d)\n",(Symbol)*cur);
+        /*fprintf(stderr,"mark_memory_young: AT_markSymbol_young(%d)\n",(Symbol)*cur);*/
       AT_markSymbol_young((Symbol)*cur);
-        //nb_cell_in_stack++;
+        /*nb_cell_in_stack++;*/
     }
 
 #ifdef AT_64BIT
@@ -189,7 +189,7 @@ static void mark_memory_young(ATerm *start, ATerm *stop) {
 
     odd_sym = *((AFun *)((MachineWord)cur)+4);
     if (AT_isValidSymbol(odd_sym)) {
-        //fprintf(stderr,"mark_memory_young: AT_markSymbol_young(%d)\n",odd_sym);
+        /*fprintf(stderr,"mark_memory_young: AT_markSymbol_young(%d)\n",odd_sym);*/
       AT_markSymbol_young(odd_sym);
     }
 #endif
@@ -338,7 +338,7 @@ VOIDCDECL mark_phase()
 
     /* Mark 'parked' symbol */
   if (AT_isValidSymbol(at_parked_symbol)) {
-      //fprintf(stderr,"mark_phase: AT_markSymbol(%d)\n",at_parked_symbol);
+      /*fprintf(stderr,"mark_phase: AT_markSymbol(%d)\n",at_parked_symbol);*/
     AT_markSymbol(at_parked_symbol);
   }
 }
@@ -471,7 +471,7 @@ VOIDCDECL mark_phase_young() {
 
     /* Mark 'parked' symbol */
   if (AT_isValidSymbol(at_parked_symbol)) {
-      //fprintf(stderr,"mark_phase_young: AT_markSymbol_young(%d)\n",at_parked_symbol);
+      /*fprintf(stderr,"mark_phase_young: AT_markSymbol_young(%d)\n",at_parked_symbol);*/
      AT_markSymbol_young(at_parked_symbol);
   }
 }
@@ -501,15 +501,15 @@ void check_unmarked_block(Block **blocks);
 void sweep_phase() {
 #ifndef PO
   int size;
-    // empty the AT_freelist[size]
+    /* empty the AT_freelist[size]*/
   for(size=MIN_TERM_SIZE; size<MAX_TERM_SIZE; size++) {
     at_freelist[size] = NULL;
   }
   old_bytes_in_young_blocks_after_last_major = 0;
   old_bytes_in_old_blocks_after_last_major = 0;
 
-    // Warning: freelist[size] is empty
-    // Warning: do not sweep fresh promoted block
+    /* Warning: freelist[size] is empty*/
+    /* Warning: do not sweep fresh promoted block*/
   major_sweep_phase_old();
   major_sweep_phase_young();
   CHECK_UNMARKED_BLOCK(at_blocks);
@@ -540,7 +540,7 @@ void AT_init_gc_parameters(ATbool low_memory) {
 
   } else {
 #ifndef NO_SHARING
-      // 20MB for 10 sizes in average
+      /* 20MB for 10 sizes in average*/
     gc_min_number_of_blocks = 2*(20*1024*1024)/(10*sizeof(Block));
     max_freeblocklist_size  = 100;
     min_nb_minor_since_last_major = 10;
@@ -548,7 +548,7 @@ void AT_init_gc_parameters(ATbool low_memory) {
     small_allocation_rate_ratio = 25;
     old_increase_rate_ratio = 50;
 #else
-      // 20MB for 10 sizes in average
+      /* 20MB for 10 sizes in average*/
     gc_min_number_of_blocks = 5*(20*1024*1024)/(10*sizeof(Block));
     max_freeblocklist_size  = 1000;
     min_nb_minor_since_last_major = 100;
@@ -587,13 +587,13 @@ static void reclaim_empty_block(Block **blocks, int size, Block *removed_block, 
   at_nrblocks[size]--;
   removed_block->size = 0;
   if(prev_block == NULL) {
-      //fprintf(stderr,"restore_block: remove first\n");
+      /*fprintf(stderr,"restore_block: remove first\n");*/
     blocks[size] = removed_block->next_by_size;
     if(blocks==at_blocks && at_blocks[size]) {
       top_at_blocks[size] = at_blocks[size]->end;
     }
   } else {
-      //fprintf(stderr,"restore_block: remove middle\n");
+      /*fprintf(stderr,"restore_block: remove middle\n");*/
     prev_block->next_by_size = removed_block->next_by_size;
   }
 
@@ -607,7 +607,7 @@ static void reclaim_empty_block(Block **blocks, int size, Block *removed_block, 
   at_freeblocklist = removed_block;
   at_freeblocklist_size++;
         
-    //printf("at_freeblocklist_size = %d\n",at_freeblocklist_size);
+    /*printf("at_freeblocklist_size = %d\n",at_freeblocklist_size);*/
     /*
      * Step 3:
      *
@@ -620,14 +620,14 @@ static void reclaim_empty_block(Block **blocks, int size, Block *removed_block, 
     Block *cur;
     Block *prev = NULL;
           
-      //printf("destroy block %d\n",removed_block);
+      /*printf("destroy block %d\n",removed_block);*/
     assert(removed_block != NULL);
           
     idx = ADDR_TO_BLOCK_IDX(removed_block);
     next_idx = (idx+1)%BLOCK_TABLE_SIZE;
     for(cur=block_table[idx].first_after; cur ; prev=cur, cur=cur->next_after) {
       if(removed_block == cur) {
-          //printf("block found\n");
+          /*printf("block found\n");*/
         break;
       }
     }
@@ -746,7 +746,7 @@ void major_sweep_phase_old() {
     Block *block = at_old_blocks[size];
 
     while(block) {
-        // set empty = 0 to avoid recycling
+        /* set empty = 0 to avoid recycling*/
       int empty = 1;
       int alive_in_block = 0;
       int dead_in_block  = 0;
@@ -756,10 +756,10 @@ void major_sweep_phase_old() {
 
       assert(block->size == size);
 
-        //fprintf(stderr,"major_sweep_phase_old: block (%x)\tsize = %d\n",(unsigned int)block,size);
+        /*fprintf(stderr,"major_sweep_phase_old: block (%x)\tsize = %d\n",(unsigned int)block,size);*/
 
       for(cur=block->data ; cur<block->end ; cur+=size) {
-          // TODO: Optimisation
+          /* TODO: Optimisation*/
 	ATerm t = (ATerm)cur;
 	if(IS_MARKED(t->header)) {
 	  CLR_MARK(t->header);
@@ -779,8 +779,8 @@ void major_sweep_phase_old() {
               case AT_PLACEHOLDER:
               case AT_BLOB:
                 assert(IS_OLD(t->header));
-                  //fprintf(stderr,"*** AT_freeTerm term[%d] = %x\theader = %x\n",size,(unsigned int)t,t->header);
-                  //fprintf(stderr,"MAJOR OLD FREE(%x)\n",(unsigned int)t);
+                  /*fprintf(stderr,"*** AT_freeTerm term[%d] = %x\theader = %x\n",size,(unsigned int)t,t->header);*/
+                  /*fprintf(stderr,"MAJOR OLD FREE(%x)\n",(unsigned int)t);*/
 
                 AT_freeTerm(size, t);
                 t->header=FREE_HEADER;
@@ -811,8 +811,8 @@ void major_sweep_phase_old() {
 #endif
       
       if(empty) {
-          // DO NOT RESTORE THE FREE LIST: free cells have not been inserted
-          // at_freelist[size] = old_freelist;
+          /* DO NOT RESTORE THE FREE LIST: free cells have not been inserted*/
+          /* at_freelist[size] = old_freelist;*/
         assert(top_at_blocks[size] < block->data || top_at_blocks[size] > block->end);
 #ifdef GC_VERBOSE
         fprintf(stderr,"MAJOR OLD: reclaim empty block %p\n",block);
@@ -824,13 +824,13 @@ void major_sweep_phase_old() {
       } else {
         old_bytes_in_old_blocks_after_last_major += (alive_in_block*SIZE_TO_BYTES(size));
         
-          // DO NOT FORGET THIS LINE
-          // update the previous block
+          /* DO NOT FORGET THIS LINE*/
+          /* update the previous block*/
         prev_block = block;
       }
 
       block = next_block;
-        //end   = (block->data) + rounded_block_size;
+        /*end   = (block->data) + rounded_block_size;*/
       alive += alive_in_block;
       reclaiming += dead_in_block;
     }
@@ -869,11 +869,11 @@ void major_sweep_phase_young() {
       
       assert(block->size == size);
 
-        //fprintf(stderr,"major_sweep_phase_young: block (%x)\tsize = %d\n",(unsigned int)block,size);
+        /*fprintf(stderr,"major_sweep_phase_young: block (%x)\tsize = %d\n",(unsigned int)block,size);*/
 
       old_freelist = at_freelist[size];
       for(cur=block->data ; cur<end ; cur+=size) {
-          // TODO: Optimisation
+          /* TODO: Optimisation*/
 	ATerm t = (ATerm)cur;
 	if(IS_MARKED(t->header)) {
 	  CLR_MARK(t->header);
@@ -898,8 +898,8 @@ void major_sweep_phase_young() {
               case AT_PLACEHOLDER:
               case AT_BLOB:
 
-                  //fprintf(stderr,"*** AT_freeTerm term[%d] = %x\theader = %x\n",size,(unsigned int)t,t->header);
-                  //fprintf(stderr,"MAJOR YOUNG FREE(%x)\n",(unsigned int)t);
+                  /*fprintf(stderr,"*** AT_freeTerm term[%d] = %x\theader = %x\n",size,(unsigned int)t,t->header);*/
+                  /*fprintf(stderr,"MAJOR YOUNG FREE(%x)\n",(unsigned int)t);*/
 
                 AT_freeTerm(size, t);
                 t->header = FREE_HEADER;
@@ -935,7 +935,7 @@ void major_sweep_phase_young() {
 #endif
 
 #ifdef GC_VERBOSE
-        //fprintf(stderr,"old_cell_in_young_block ratio = %d\n",100*old_in_block/capacity);
+        /*fprintf(stderr,"old_cell_in_young_block ratio = %d\n",100*old_in_block/capacity);*/
 #endif
        
       if(end==block->end && empty) {
@@ -975,8 +975,8 @@ void major_sweep_phase_young() {
       } else {
         old_bytes_in_young_blocks_after_last_major += (old_in_block*SIZE_TO_BYTES(size));
         
-          // DO NOT FORGET THIS LINE
-          // update the previous block
+          /* DO NOT FORGET THIS LINE*/
+          /* update the previous block*/
         prev_block = block;
       }
 
@@ -1021,11 +1021,11 @@ void minor_sweep_phase_young() {
     Block *block = at_blocks[size];
     header_type *end = top_at_blocks[size];
 
-      // empty the freelist
+      /* empty the freelist*/
     at_freelist[size] = NULL;
         
     while(block) {
-        // set empty = 0 to avoid recycling
+        /* set empty = 0 to avoid recycling*/
       int empty = 1;
       int alive_in_block = 0;
       int dead_in_block  = 0;
@@ -1035,11 +1035,11 @@ void minor_sweep_phase_young() {
       header_type *cur;
       
       assert(block->size == size);
-        //fprintf(stderr,"minor_sweep_phase_young: block (%x)\tsize = %d\n",(unsigned int)block,size);
+        /*fprintf(stderr,"minor_sweep_phase_young: block (%x)\tsize = %d\n",(unsigned int)block,size);*/
       
       old_freelist = at_freelist[size];
       for(cur=block->data ; cur<end ; cur+=size) {
-          // TODO: Optimisation
+          /* TODO: Optimisation*/
 	ATerm t = (ATerm)cur;
 	if(IS_MARKED(t->header) || IS_OLD(t->header)) {
           if(IS_OLD(t->header)) {
@@ -1052,10 +1052,10 @@ void minor_sweep_phase_young() {
 	} else {
 	  switch(ATgetType(t)) {
               case AT_FREE:
-                  // AT_freelist[size] is not empty: so DO NOT ADD t
+                  /* AT_freelist[size] is not empty: so DO NOT ADD t*/
                 t->next = at_freelist[size];
                 at_freelist[size] = t;
-                  //fprintf(stderr,"AT_FREE term[%d] = %x\theader = %x\n",size,t,t->header);
+                  /*fprintf(stderr,"AT_FREE term[%d] = %x\theader = %x\n",size,t,t->header);*/
                 free_in_block++;
                 break;
               case AT_INT:
@@ -1065,8 +1065,8 @@ void minor_sweep_phase_young() {
               case AT_PLACEHOLDER:
               case AT_BLOB:
 
-                  //fprintf(stderr,"MINOR YOUNG FREE(%x)\n",(unsigned int)t);
-                  //fprintf(stderr,"AT_freeTerm term[%d] = %x\theader = %x\n",size,t,t->header);
+                  /*fprintf(stderr,"MINOR YOUNG FREE(%x)\n",(unsigned int)t);*/
+                  /*fprintf(stderr,"AT_freeTerm term[%d] = %x\theader = %x\n",size,t,t->header);*/
                 
                 AT_freeTerm(size, t);
                 
@@ -1078,7 +1078,7 @@ void minor_sweep_phase_young() {
                 break;
               case AT_SYMBOL:
 
-                  //fprintf(stderr,"AT_freeSymbol term[%d] = %x\theader = %x\n",size,t,t->header);
+                  /*fprintf(stderr,"AT_freeSymbol term[%d] = %x\theader = %x\n",size,t,t->header);*/
                 AT_freeSymbol((SymEntry)t);
                 
                 t->header = FREE_HEADER;
@@ -1114,7 +1114,7 @@ void minor_sweep_phase_young() {
       }
 #endif
       
-        // TODO: create freeList Old
+        /* TODO: create freeList Old*/
       if(0 && empty) {
         at_freelist[size] = old_freelist;
         reclaim_empty_block(at_blocks, size, block, prev_block);
@@ -1124,8 +1124,8 @@ void minor_sweep_phase_young() {
       } else {
         old_bytes_in_young_blocks_since_last_major += (old_in_block*SIZE_TO_BYTES(size));
         
-          // DO NOT FORGET THIS LINE
-          // update the previous block
+          /* DO NOT FORGET THIS LINE*/
+          /* update the previous block*/
         prev_block = block;
       }
 
@@ -1184,7 +1184,7 @@ void po_sweep_phase()
               case AT_LIST:
               case AT_PLACEHOLDER:
               case AT_BLOB:
-                  //printf("AT_freeTerm block = %d\tterm = %d\n",block,t);
+                  /*printf("AT_freeTerm block = %d\tterm = %d\n",block,t);*/
                 AT_freeTerm(size, t);
                 reclaiming++;
                 break;
@@ -1223,7 +1223,7 @@ void AT_collect()
   FILE *file = gc_f;
   int size;
 
-      // snapshop
+      /* snapshop*/
   for(size=MIN_TERM_SIZE; size<MAX_TERM_SIZE; size++) {
     nb_live_blocks_before_last_gc[size] = at_nrblocks[size];
     nb_reclaimed_blocks_during_last_gc[size]=0;
@@ -1258,7 +1258,7 @@ void AT_collect()
   FILE *file = gc_f;
   int size;
 
-    // snapshop
+    /* snapshop*/
   for(size=MIN_TERM_SIZE; size<MAX_TERM_SIZE; size++) {
     nb_live_blocks_before_last_gc[size] = at_nrblocks[size];
     nb_reclaimed_blocks_during_last_gc[size]=0;
@@ -1274,9 +1274,9 @@ void AT_collect()
   times(&start);
   CHECK_UNMARKED_BLOCK(at_blocks);
   CHECK_UNMARKED_BLOCK(at_old_blocks);
-    //nb_cell_in_stack=0;
+    /*nb_cell_in_stack=0;*/
   mark_phase();
-    //fprintf(stderr,"AT_collect: nb_cell_in_stack = %d\n",nb_cell_in_stack++);
+    /*fprintf(stderr,"AT_collect: nb_cell_in_stack = %d\n",nb_cell_in_stack++);*/
   times(&mark);
   user = mark.tms_utime - start.tms_utime;
   STATS(mark_time, user);
@@ -1284,8 +1284,8 @@ void AT_collect()
 #ifndef PO
     sweep_phase();
 
-        //fprintf(stderr,"Warning: sweep_phase_young instead of sweep_phase\n");
-    //sweep_phase_young();
+        /*fprintf(stderr,"Warning: sweep_phase_young instead of sweep_phase\n");*/
+    /*sweep_phase_young();*/
 #else
   sweep_phase();
 #endif
@@ -1310,7 +1310,7 @@ void AT_collect_minor()
   FILE *file = gc_f;
   int size;
 
-      // snapshop
+      /* snapshop*/
   for(size=MIN_TERM_SIZE; size<MAX_TERM_SIZE; size++) {
     nb_live_blocks_before_last_gc[size] = at_nrblocks[size];
     nb_reclaimed_blocks_during_last_gc[size]=0;
@@ -1345,7 +1345,7 @@ void AT_collect_minor()
   FILE *file = gc_f;
   int size;
   
-    // snapshop
+    /* snapshop*/
   for(size=MIN_TERM_SIZE; size<MAX_TERM_SIZE; size++) {
     nb_live_blocks_before_last_gc[size] = at_nrblocks[size];
     nb_reclaimed_blocks_during_last_gc[size]=0;
@@ -1361,9 +1361,9 @@ void AT_collect_minor()
   times(&start);
   CHECK_UNMARKED_BLOCK(at_blocks);
   CHECK_UNMARKED_BLOCK(at_old_blocks);
-    //nb_cell_in_stack=0;
+    /*nb_cell_in_stack=0;*/
   mark_phase_young();
-    //fprintf(stderr,"AT_collect_young: nb_cell_in_stack = %d\n",nb_cell_in_stack++);
+    /*fprintf(stderr,"AT_collect_young: nb_cell_in_stack = %d\n",nb_cell_in_stack++);*/
   times(&mark);
   user = mark.tms_utime - start.tms_utime;
   STATS(mark_time, user);

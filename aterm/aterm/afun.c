@@ -359,7 +359,7 @@ ShortHashNumber AT_hashSymbol(char *name, int arity) {
    }
    mix(a,b,c);
    /*-------------------------------------------- report the result */
-     //fprintf(stderr,"AT_hashSymbol(%s,%d) = %u\tsize = %d\n",name,length,c,table_size);
+     /*fprintf(stderr,"AT_hashSymbol(%s,%d) = %u\tsize = %d\n",name,length,c,table_size);*/
    return c;
 }
 #else
@@ -431,7 +431,7 @@ Symbol ATmakeSymbol(char *name, int arity, ATbool quoted)
     hash_table[hnr] = cur;
   }
 
-    //fprintf(stderr,"AT_makeAFun(%d)\tid = %d\n",cur,cur->id);
+    /*fprintf(stderr,"AT_makeAFun(%d)\tid = %d\n",cur,cur->id);*/
   
   return cur->id;
 }
@@ -453,7 +453,7 @@ void AT_freeSymbol(SymEntry sym)
 
   nb_reclaimed_cells_during_last_gc[TERM_SIZE_SYMBOL]++;
   
-  //fprintf(stderr,"AT_freeSymbol(%d)\tid = %d\n",sym, sym->id);
+  /*fprintf(stderr,"AT_freeSymbol(%d)\tid = %d\n",sym, sym->id);*/
   
   /* Assert valid name-pointer */
   assert(sym->name);
@@ -615,11 +615,11 @@ void AT_markProtectedSymbols()
 }
 
 #ifndef PO
-// TODO: Optimisation (Old+Mark in one step)
+/* TODO: Optimisation (Old+Mark in one step)*/
 void AT_markProtectedSymbols_young() {
   int lcv;
 
-    //printf("Warning: AT_markProtectedSymbols_young\n");
+    /*printf("Warning: AT_markProtectedSymbols_young\n");*/
   for(lcv = 0; lcv < nr_protected_symbols; lcv++) {
     if(!IS_OLD(((ATerm)at_lookup_table[protected_symbols[lcv]])->header)) {
       SET_MARK(((ATerm)at_lookup_table[protected_symbols[lcv]])->header);

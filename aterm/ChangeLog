@@ -1,5 +1,12 @@
 $Id$
 
+2002/09/12 <jong@cwi.nl>
+* Fixed ~100 compiler errors due to the use of '//' as comment char,
+  which (contrary to popular belief) *STILL* is not valid C !!!
+  Several compilers (amongst which Sun's CC) complain and refuse to
+  parse '//', even though gcc is willing to accept it.
+  PLEASE REFRAIN FROM USING '//' AS COMMENT CHAR IN A C PROGRAM :-)
+
 2002/09/11 <olivierp@cwi.nl>
 * Merged GENGC version back into the main tree. Let's see how it holds out!
 

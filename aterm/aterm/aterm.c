@@ -2277,8 +2277,8 @@ void AT_markTerm(ATerm t)
     SET_MARK(t->header);
     
 #ifndef PO
-      //fprintf(stderr,"MAJOR OLD MARK(%x)\n",(unsigned int)t);
-      //fprintf(stderr,"INCREMENT_AGE(%x,%d)\n",(unsigned int)t,GET_AGE(t->header));
+      /*fprintf(stderr,"MAJOR OLD MARK(%x)\n",(unsigned int)t);*/
+      /*fprintf(stderr,"INCREMENT_AGE(%x,%d)\n",(unsigned int)t,GET_AGE(t->header));*/
     INCREMENT_AGE(t->header);
 #endif
     
@@ -2294,7 +2294,7 @@ void AT_markTerm(ATerm t)
       case AT_APPL:
 	sym = ATgetSymbol((ATermAppl) t);
 
-          //fprintf(stderr,"AT_markTerm: AT_markSymbol(adr = %d, id = %d)\n",at_lookup_table[(sym)],sym);
+          /*fprintf(stderr,"AT_markTerm: AT_markSymbol(adr = %d, id = %d)\n",at_lookup_table[(sym)],sym);*/
         if(AT_isValidSymbol(sym)) {
           AT_markSymbol(sym);
         } else {
@@ -2349,7 +2349,7 @@ void AT_markTerm_young(ATerm t) {
 #endif
 
   if(IS_MARKED(t->header) || IS_OLD(t->header)) {
-      //fprintf(stderr,"AT_markTerm_young (%p) STOP MARK: age = %d\n",t,GET_AGE(t->header));
+      /*fprintf(stderr,"AT_markTerm_young (%p) STOP MARK: age = %d\n",t,GET_AGE(t->header));*/
     return;
   }
   
@@ -2394,15 +2394,15 @@ void AT_markTerm_young(ATerm t) {
       }
       break;
     }
-      // TODO: optimize
+      /* TODO: optimize*/
     if(IS_MARKED(t->header) || IS_OLD(t->header)) {
-        //fprintf(stderr,"AT_markTerm_young (%p) STOP MARK: age = %d\n",t,GET_AGE(t->header));
+        /*fprintf(stderr,"AT_markTerm_young (%p) STOP MARK: age = %d\n",t,GET_AGE(t->header));*/
       continue;
     }
 
     SET_MARK(t->header);
-      //fprintf(stderr,"MINOR YOUNG MARK(%x)\n",(unsigned int)t);
-      //fprintf(stderr,"YOUNG INCREMENT_AGE(%x,%d)\n",(unsigned int)t,GET_AGE(t->header));
+      /*fprintf(stderr,"MINOR YOUNG MARK(%x)\n",(unsigned int)t);*/
+      /*fprintf(stderr,"YOUNG INCREMENT_AGE(%x,%d)\n",(unsigned int)t,GET_AGE(t->header));*/
     INCREMENT_AGE(t->header);
 
     if(HAS_ANNO(t->header))
@@ -2416,7 +2416,7 @@ void AT_markTerm_young(ATerm t) {
 
       case AT_APPL:
 	sym = ATgetSymbol((ATermAppl) t);
-          //fprintf(stderr,"AT_markTerm_young: AT_markSymbol_young(%d)\n",sym);
+          /*fprintf(stderr,"AT_markTerm_young: AT_markSymbol_young(%d)\n",sym);*/
         if(AT_isValidSymbol(sym)) {
           AT_markSymbol_young(sym);
         } else {

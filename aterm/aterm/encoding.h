@@ -2,16 +2,18 @@
   * encoding.h: Low level encoding of ATerm datatype.
   */
 
-//#define NO_SHARING
+/* #define NO_SHARING */
 
 #ifndef ENCODING_H
 #define ENCODING_H
 
 #ifndef PO
-// |--------------------------------|
-// |info|type |arity|quoted|mark|age|
-// |--------------------------------|
-//  31   9 8 7 6 5 4   3     2   1 0
+/*
+ |--------------------------------|
+ |info|type |arity|quoted|mark|age|
+ |--------------------------------|
+  31   9 8 7 6 5 4   3     2   1 0
+*/
 
 #define	MASK_QUOTED	(1<<3)
 #define	MASK_ANNO	MASK_QUOTED
@@ -43,17 +45,19 @@
 #define IS_YOUNG(h)      (!(IS_OLD(h)))
 #define IS_OLD(h)        (GET_AGE(h) == OLD_AGE)
 
-// TODO: Optimize
+/* TODO: Optimize */
 #define INCREMENT_AGE(h)    (SET_AGE(h,((GET_AGE(h)<OLD_AGE)?(GET_AGE(h)+1):(GET_AGE(h)))))
 
 #define HIDE_AGE_MARK(h)    ((h) & ~MASK_AGE_MARK)
-//#define EQUAL_HEADER(h1,h2) (HIDE_AGE_MARK(h1)==HIDE_AGE_MARK(h2))
+/* #define EQUAL_HEADER(h1,h2) (HIDE_AGE_MARK(h1)==HIDE_AGE_MARK(h2)) */
 #define EQUAL_HEADER(h1,h2) (HIDE_AGE_MARK(h1^h2) == 0)
-#else // PO
-// |----------------------------|
-// |info|type |arity|mark|quoted|
-// |----------------------------|
-//  31   7 6 5 4 3 2   1    0
+#else /* PO */
+/*
+ |----------------------------|
+ |info|type |arity|mark|quoted|
+ |----------------------------|
+  31   7 6 5 4 3 2   1    0
+  */
 #define	MASK_QUOTED	(1<<0)
 #define	MASK_ANNO	MASK_QUOTED
 #define MASK_MARK	(1<<1)
@@ -70,7 +74,7 @@
 #endif /* AT_64BIT */
 
 #define EQUAL_HEADER(h1,h2) ((h1)==(h2))
-#endif // PO
+#endif /* PO */
 
 #define SHIFT_SYMBOL  SHIFT_LENGTH
 #define SHIFT_SYM_ARITY SHIFT_LENGTH

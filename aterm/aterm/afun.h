@@ -33,11 +33,11 @@ typedef struct _SymEntry
 /* void AT_markSymbol(Symbol sym); */
 #ifndef PO
 
-//#define AT_markSymbol(s)   { INCREMENT_AGE(at_lookup_table[(s)]->header); 
-//                             (at_lookup_table[(s)]->header |= MASK_MARK); }
+/*#define AT_markSymbol(s)   { INCREMENT_AGE(at_lookup_table[(s)]->header); */
+/*                             (at_lookup_table[(s)]->header |= MASK_MARK); }*/
 #define AT_markSymbol(s)       (at_lookup_table[(s)]->header |= MASK_AGE_MARK)
 #define AT_markSymbol_young(s) if(!IS_OLD(at_lookup_table[(s)]->header)) AT_markSymbol(s)
-//#define AT_markSymbol_young(s) AT_markSymbol(s)
+/*#define AT_markSymbol_young(s) AT_markSymbol(s)*/
 
 #else
 #define AT_markSymbol(s)   (at_lookup_table[(s)]->header |= MASK_MARK)

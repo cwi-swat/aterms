@@ -36,13 +36,13 @@ typedef struct Block
 {
   int size;
   struct Block *next_by_size;
-//#ifndef PO
-//  struct Block *next;
-//  struct Block *foo;
-//#else
+/*#ifndef PO*/
+/*  struct Block *next;*/
+/*  struct Block *foo;*/
+/*#else*/
   struct Block *next_before;
   struct Block *next_after;
-//#endif
+/*#endif*/
 
 #ifndef PO
   header_type *end;
@@ -68,11 +68,11 @@ extern int at_freeblocklist_size;
 
 extern int at_nrblocks[MAX_TERM_SIZE];
 extern ATerm at_freelist[MAX_TERM_SIZE];
-//#ifndef PO
-//extern Block *block_table[BLOCK_TABLE_SIZE];
-//#else
+/*#ifndef PO*/
+/*extern Block *block_table[BLOCK_TABLE_SIZE];*/
+/*#else*/
 extern BlockBucket block_table[BLOCK_TABLE_SIZE];
-//#endif
+/*#endif*/
 
 extern int nb_minor_since_last_major;
 extern int old_bytes_in_young_blocks_after_last_major;
