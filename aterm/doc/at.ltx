@@ -29,6 +29,7 @@
 \title{Efficient Annotated Terms}
 \author{M.G.J. van den Brand$^{^1}$\\
         H.A. de Jong$^{^2}$\\
+        P. Klint$^{1,2}$\\
         P.A. Olivier$^{^2}$\\
         \vspace{.1cm}\\
         {\small\sl $^1$CWI,
@@ -38,8 +39,9 @@
         {\small\sl $^1$University of Amsterdam,
         Programming Research Group\vspace{-.2cm}}\\
         {\small\sl Kruislaan 403, 1098 SJ Amsterdam, The Netherlands}
-        \vspace{.1cm}\\
-        {\small \sl\tt Mark.van.den.Brand@cwi.nl,jong@wins.uva.nl,olivierp@wins.uva.nl}} 
+        %%\vspace{.1cm}\\
+        %%{\small \sl\tt Mark.van.den.Brand@cwi.nl, jong@wins.uva.nl, Paul.Klint@cwi.nl, olivierp@wins.uva.nl}
+}
 
 \begin{document}
 \maketitle
@@ -49,13 +51,19 @@
 %{{{ Abstract
 
 \begin{abstract}
-In this paper, we introduce the abstract datatype \emph{Annotated Term}
-(\emph{\ATerm}).
-We discuss a number of applications of this datatype, and its
-time and space efficient implementation.
-
-*** TO BE IMPROVED ***
-
+How do distributed applications exchange complex datastructures?  To
+this end, we introduce the abstract datatype of \emph{Annotated Terms}
+(\emph{ATerms}) and discuss their design, implementation and
+application.  A comprehensive procedural interface enables
+creation and manipulation of ATerms in C. A Java version is also
+supported.  The ATerm implementation is based on maximal subterm
+sharing and automatic garbage collection.  A binary exchange format for the
+concise representation of ATerms (sharing preserved) allows the
+fast exchange of Aterms between applications.  In a typical
+application, ***X*** bytes are needed to represent a node in memory,
+and ***Y*** bits are needed to represent it in binary format. It is
+shown that the implementation of ATerms scales up to the manipulation
+of ATerms in the giga-byte range.
 \end{abstract}
 
 %}}}
