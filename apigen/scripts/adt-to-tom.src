@@ -2,7 +2,30 @@
 
 set -e
 
-APIGEN=apigen.gen.tom.java.Main
+TOMGEN=apigen.gen.tom.java.Main
 CLASSPATH=__APIGEN_CLASSES__:__JAVA_ATERM__
 
-java -classpath ${CLASSPATH} ${APIGEN} $*
+java -classpath ${CLASSPATH} ${TOMGEN} $*
+
+while [ $# -gt 0 ]
+do
+  case $1 in
+    --javagen)
+      shift;
+      JAVAGEN=TRUE ;
+      break;;
+     *)
+      shift;
+  esac
+  shift
+done
+
+if [ "a${JAVAGEN}" != "a" ]; then
+  PARAMS=apigen.env
+  . ${PARAMS}
+  CLASSES=`echo ${FILES} | sed -e 's/.java/.class/g'`
+  JARFILE=${APINAME}-${VERSION}.jar
+  javac -classpath ${DIRECTORY}:${CLASSPATH} ${FILES}
+  jar cf ${JARFILE} ${CLASSES}
+  rm -f ${PARAMS}
+fi
