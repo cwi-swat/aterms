@@ -87,7 +87,7 @@ public class TypeImplGenerator extends JavaGenerator {
 	protected void genIsEqual(String class_name) {
 		println("  public boolean isEqual(" + class_name + " peer)");
 		println("  {");
-		println("    return term.isEqual(peer.toTerm());");
+		println("    return super.isEqual(peer);");
 		println("  }");
 	}
 

@@ -1,9 +1,11 @@
 package apigen.gen.java;
 
+import java.util.Iterator;
 import java.util.List;
 
 import apigen.adt.ListType;
 import apigen.adt.NormalListType;
+import apigen.adt.SeparatedListType;
 import apigen.adt.Type;
 import apigen.gen.StringConversions;
 
@@ -71,7 +73,7 @@ public class ListTypeImplGenerator extends TypeImplGenerator {
     }
 
     protected void genInitMethod() {
-        println("  protected void init (int hashCode, aterm.ATermList annos, aterm.ATerm first,	aterm.ATermList next) {");
+        println("  protected void init (int hashCode, aterm.ATermList annos, aterm.ATerm first, aterm.ATermList next) {");
         println("    super.init(hashCode, annos, first, next);");
         println("  }");
     }

@@ -1265,22 +1265,16 @@ public class APIGenerator extends CGenerator {
 	}
 
 	private String buildListManyFormalArgsWithoutHeadAndTail(SeparatedListType type) {
-		Iterator fields = type.altFieldIterator("many");
+		Iterator fields = type.separatorFieldIterator();
 		String result = "";
-		fields.next(); // skip head
 		boolean first = true;
 		
 		while (fields.hasNext()) {
 			Field field = (Field) fields.next();
-			
-			if (!fields.hasNext()) {
-				break; // skip tail
-			}
-			
+				
 			result += buildTypeName(field.getType()) + " " + StringConversions.makeIdentifier(field.getId());
 			result += ", ";
 		}
-		
 		return result;
 	}
 

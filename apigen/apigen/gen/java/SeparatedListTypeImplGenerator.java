@@ -6,6 +6,7 @@ import java.util.List;
 import apigen.adt.Field;
 import apigen.adt.SeparatedListType;
 import apigen.adt.api.Separators;
+import apigen.gen.StringConversions;
 
 public class SeparatedListTypeImplGenerator extends ListTypeImplGenerator {
     protected Separators separators;
@@ -44,7 +45,7 @@ public class SeparatedListTypeImplGenerator extends ListTypeImplGenerator {
             classModifier() + " class " + typeName + " extends aterm.pure.ATermListImpl");
         println("{");
         genSeparatorFields();
-        genSeparatorGettersAndSetters();
+        genSeparatorsGettersAndSetters();
         genInitMethod();
         genInitHashcodeMethod();
         genConstructor(className(type));
@@ -56,12 +57,49 @@ public class SeparatedListTypeImplGenerator extends ListTypeImplGenerator {
         genPredicates();
         genSharedObjectInterface();
         genGetEmptyMethod();
-        genInsertMethod();
         genOverrideInsertMethod();
         println("}");
     }
 
-    private void genSeparatorGettersAndSetters() {
+    protected void genInitMethod() {
+        println(
+            "  protected void init (int hashCode, aterm.ATermList annos, aterm.ATerm first, "
+                + buildFormalSeparatorArguments(listType)
+                + "aterm.ATermList next) {");
+        println("    super.init(hashCode, annos, first, next);");
+        genSeparatorInitAssigmnents(listType);
+        println("  }");
+    }
+
+    protected void genInitHashcodeMethod() {
+        println(
+            "  protected void initHashCode(aterm.ATermList annos, aterm.ATerm first, "
+                + buildFormalSeparatorArguments(listType)
+                + "aterm.ATermList next) {");
+        println("    super.initHashCode(annos, first, next);");
+        println("  }");
+    }
+
+    private void genSeparatorInitAssigmnents(SeparatedListType type) {
+        Iterator fields = type.separatorFieldIterator();
+        while (fields.hasNext()) {
+            Field field = (Field) fields.next();
+            String fieldId = AlternativeImplGenerator.getFieldId(field.getId());
+            println("    this." + fieldId + " = " + fieldId + ";");
+        }
+    }
+
+    private String buildFormalSeparatorArguments(SeparatedListType type) {
+        String result = buildFormalTypedArgumentList(type.separatorFieldIterator());
+
+        if (result.length() > 0) {
+            result += ", ";
+        }
+
+        return result;
+    }
+
+    private void genSeparatorsGettersAndSetters() {
         Iterator fields = listType.separatorFieldIterator();
         while (fields.hasNext()) {
             Field field = (Field) fields.next();
@@ -70,9 +108,25 @@ public class SeparatedListTypeImplGenerator extends ListTypeImplGenerator {
     }
 
     private void genSeparatorGetterAndSetter(Field field) {
-        String fieldName = field.getId();
-        //println("  public get"  );
-        
+        String fieldName = StringConversions.makeCapitalizedIdentifier(field.getId());
+        String fieldClass = TypeGenerator.className(field.getType());
+        String fieldId = AlternativeGenerator.getFieldId(field.getId());
+        String className = TypeGenerator.className(type);
+
+        if (converter.isReserved(field.getType())) {
+            // TODO: find a way to reuse generation of getters in AlternativeImplGenerator
+            throw new UnsupportedOperationException("separators with builtin types not yet supported");
+        }
+
+        println("  public " + fieldClass + " get" + fieldName + "() {");
+        println("    return " + fieldId + ";");
+        println("  }");
+
+        // TODO : implement separator setters
+        println(
+            "  public " + className + " set" + fieldName + "(" + fieldClass + " arg) {");
+        println("    return (" + className + ") null; // not yet implemented");
+        println("  }");
     }
 
     protected void genPredicates() {
@@ -95,7 +149,6 @@ public class SeparatedListTypeImplGenerator extends ListTypeImplGenerator {
 
         println("  public boolean equivalent(shared.SharedObject peer) {");
         println("    if (peer instanceof " + className + ") {");
-        // TODO: generate isSingle
         println("      if (isEmpty() || isSingle()) {");
         println("        return super.equivalent(peer); ");
         println("      }");
@@ -114,23 +167,25 @@ public class SeparatedListTypeImplGenerator extends ListTypeImplGenerator {
         String className = TypeGenerator.className(type);
         println("  public shared.SharedObject duplicate() {");
         println("    " + className + " clone = new " + className + "(factory);");
-        println("    clone.init(hashCode(), getAnnotations(), getFirst(), getNext());");
-        genCloneSetSeparatorFields();
+        println(
+            "    clone.init(hashCode(), getAnnotations(), getFirst(), "
+                + buildActualSeparatorArguments(listType)
+                + "getNext());");
         println("    return clone;");
         println("  }");
     }
 
-    protected void genCloneSetSeparatorFields() {
-        Iterator fields = listType.separatorFieldIterator();
+    private String buildActualSeparatorArguments(SeparatedListType type) {
+        Iterator fields = type.separatorFieldIterator();
+        String result = "";
+
         while (fields.hasNext()) {
             Field field = (Field) fields.next();
-            genCloneSetSeparatorField(field);
+            String fieldId = AlternativeImplGenerator.getFieldId(field.getId());
+            result += fieldId + ", ";
         }
-    }
 
-    protected void genCloneSetSeparatorField(Field field) {
-        String fieldId = AlternativeImplGenerator.getFieldId(field.getId());
-        println("    clone." + fieldId + " = " + fieldId + ";");
+        return result;
     }
 
     protected void genSeparatorFieldsEquivalentConjunction() {

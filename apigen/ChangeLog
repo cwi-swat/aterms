@@ -2,6 +2,9 @@
  * Committed basic setup for generating separated lists in Java
  * Added several TODO comments where the generated code will have to be
    adapted pretty soon.
+ * Added fromTerm for separated lists. This is a rather complicated algorithm ;-(
+ * Extended the list types of the ADT formalism with some convenience iterators
+   over fields and separator fields
    
 2003-08-14  (jurgenv@cwi.nl)
  * Generating reverse method is unnecessary again.

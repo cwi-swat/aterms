@@ -141,15 +141,24 @@ public class FactoryGenerator extends JavaGenerator {
 
                 String empty = "empty" + className;
 
-                genFactoryMakeEmptyList(className, empty);
-                genFactoryMakeSingletonList(className, elementClassName, empty);
-                genFactoryMakeManyList(className, elementClassName);
-                genFactoryMakeManyTermList(className);
-
-                // TODO: generated correct code for separated lists here
+                if (type instanceof NormalListType) {
+                    genFactoryMakeEmptyList(className, empty);
+                    genFactoryMakeSingletonList(className, elementClassName, empty);
+                    genFactoryMakeManyList(className, elementClassName);
+                    genFactoryMakeManyTermList(className);
+                } else if (type instanceof SeparatedListType) {
+                    SeparatedListType lType = (SeparatedListType) type;
+                    genFactoryMakeEmptyList(className, empty);
+                    genFactoryMakeSingletonSeparatedList(
+                        lType,
+                        className,
+                        elementClassName,
+                        empty);
+                    genFactoryMakeManySeparatedList(lType, className, elementClassName);
+                    genFactoryMakeManySeparatedTermList(lType, className);
+                }
             }
         }
-
     }
 
     private void genFactoryMakeManyTermList(String className) {
@@ -186,10 +195,76 @@ public class FactoryGenerator extends JavaGenerator {
         println("  }");
     }
 
+    private void genFactoryMakeManySeparatedList(
+        SeparatedListType type,
+        String className,
+        String elementClassName) {
+        String formalSeps = buildFormalTypedArgumentList(type.separatorFieldIterator());
+        String actualSeps =
+            buildActualTypedAltArgumentList(type.separatorFieldIterator());
+        if (formalSeps.length() > 0) {
+            formalSeps += ", ";
+            actualSeps += ", ";
+        }
+
+        println(
+            "  public "
+                + className
+                + " make"
+                + className
+                + "("
+                + elementClassName
+                + " head, "
+                + formalSeps
+                + className
+                + " tail) {");
+        println(
+            "    return ("
+                + className
+                + ") make"
+                + className
+                + "((aterm.ATerm) head, "
+                + actualSeps
+                + "(aterm.ATermList) tail, empty);");
+        println("  }");
+    }
+
+    private void genFactoryMakeManySeparatedTermList(
+        SeparatedListType type,
+        String className) {
+        String formalSeps = buildFormalTypedArgumentList(type.separatorFieldIterator());
+        String actualSeps =
+            buildActualTypedAltArgumentList(type.separatorFieldIterator());
+        if (formalSeps.length() > 0) {
+            formalSeps += ", ";
+            actualSeps += ", ";
+        }
+
+        println(
+            "  protected "
+                + className
+                + " make"
+                + className
+                + "(aterm.ATerm head, "
+                + formalSeps
+                + "aterm.ATermList tail, aterm.ATermList annos) {");
+        println("    synchronized (proto" + className + ") {");
+        println(
+            "      proto"
+                + className
+                + ".initHashCode(annos, head, "
+                + actualSeps
+                + "tail);");
+        println("      return (" + className + ") build(proto" + className + ");");
+        println("    }");
+        println("  }");
+    }
+
     private void genFactoryMakeSingletonList(
         String className,
         String elementClassName,
         String empty) {
+
         println(
             "  public "
                 + className
@@ -203,6 +278,35 @@ public class FactoryGenerator extends JavaGenerator {
         println("  }");
     }
 
+    private void genFactoryMakeSingletonSeparatedList(
+        SeparatedListType type,
+        String className,
+        String elementClassName,
+        String empty) {
+        String separators = buildActualNullArgumentList(type.separatorFieldIterator());
+        if (separators.length() > 0) {
+            separators += ", ";
+        }
+
+        println(
+            "  public "
+                + className
+                + " make"
+                + className
+                + "("
+                + elementClassName
+                + " elem ) {");
+        println(
+            "    return ("
+                + className
+                + ") make"
+                + className
+                + "(elem, "
+                + separators
+                + empty
+                + ");");
+        println("  }");
+    }
     private void genFactoryMakeEmptyList(String className, String empty) {
         println("  public " + className + " make" + className + "() {");
         println("    return " + empty + ";");
@@ -220,6 +324,7 @@ public class FactoryGenerator extends JavaGenerator {
             if (type instanceof ListType) {
                 String protoVar = "proto" + typeClassName;
                 println("  private " + typeClassName + " " + protoVar + ";");
+                println("  private aterm.ATerm pattern" + typeClassName + "Many;");
             } else {
                 while (alts.hasNext()) {
                     Alternative alt = (Alternative) alts.next();
@@ -347,32 +452,13 @@ public class FactoryGenerator extends JavaGenerator {
         while (types.hasNext()) {
             Type type = (Type) types.next();
 
-            if (type instanceof ListType) {
-                String emptyHashCode = new Integer(42 * (2 + listTypesCount)).toString();
-                String className = TypeGenerator.className(type);
-                println("    proto" + className + " = new " + className + "(this);");
-                println(
-                    "    proto"
-                        + className
-                        + ".init("
-                        + emptyHashCode
-                        + ", null, null, null);");
-                println(
-                    "    empty"
-                        + className
-                        + " = ("
-                        + className
-                        + ") build(proto"
-                        + className
-                        + ");");
-                println(
-                    "    empty"
-                        + className
-                        + ".init("
-                        + emptyHashCode
-                        + ", empty"
-                        + className
-                        + ", null, null);");
+            if (type instanceof NormalListType) {
+                genNormalListTypeInitialization(listTypesCount, type);
+                listTypesCount++;
+            } else if (type instanceof SeparatedListType) {
+                genSeparatedListTypeInitialization(
+                    listTypesCount,
+                    (SeparatedListType) type);
                 listTypesCount++;
             } else {
                 Iterator alts = type.alternativeIterator();
@@ -420,6 +506,106 @@ public class FactoryGenerator extends JavaGenerator {
         }
     }
 
+    private void genNormalListTypeInitialization(int listTypesCount, Type type) {
+        String className = TypeGenerator.className(type);
+        genInitializedPrototype(className);
+        genInitializeEmptyList(listTypesCount, className);
+    }
+
+    private void genSeparatedListTypeInitialization(
+        int listTypesCount,
+        SeparatedListType type) {
+        String className = TypeGenerator.className(type);
+        genInitializedPrototype(className);
+        genInitializeEmptySeparatedList(type, listTypesCount, className);
+        genInitializeManyPattern(type, className);
+    }
+
+    private void genInitializeManyPattern(SeparatedListType type, String className2) {
+        Alternative alt = type.getManyAlternative();
+
+        println(
+            "    pattern"
+                + TypeGenerator.className(type)
+                + "Many"
+                + " = parse(\""
+                + StringConversions.escapeQuotes(alt.buildMatchPattern().toString())
+                + "\");");
+    }
+
+    private void genInitializeEmptySeparatedList(
+        SeparatedListType type,
+        int listTypesCount,
+        String className) {
+        String emptyHashCode = buildInitialEmptyListHashcode(listTypesCount).toString();
+        println(
+            "    proto"
+                + className
+                + ".init("
+                + emptyHashCode
+                + ", null, null, "
+                + buildAmountOfSeparatorsNullExpressions(type)
+                + "null);");
+        println(
+            "    empty"
+                + className
+                + " = ("
+                + className
+                + ") build(proto"
+                + className
+                + ");");
+        println(
+            "    empty"
+                + className
+                + ".init("
+                + emptyHashCode
+                + ", empty"
+                + className
+                + ", null, "
+                + buildAmountOfSeparatorsNullExpressions(type)
+                + "null);");
+    }
+
+    private String buildAmountOfSeparatorsNullExpressions(SeparatedListType type) {
+        String result = "";
+        Iterator fields = type.separatorFieldIterator();
+        while (fields.hasNext()) {
+            Field field = (Field) fields.next();
+            result += "null, ";
+        }
+        return result;
+    }
+
+    private void genInitializeEmptyList(int listTypesCount, String className) {
+        String emptyHashCode = buildInitialEmptyListHashcode(listTypesCount).toString();
+        println(
+            "    proto" + className + ".init(" + emptyHashCode + ", null, null, null);");
+        println(
+            "    empty"
+                + className
+                + " = ("
+                + className
+                + ") build(proto"
+                + className
+                + ");");
+        println(
+            "    empty"
+                + className
+                + ".init("
+                + emptyHashCode
+                + ", empty"
+                + className
+                + ", null, null);");
+    }
+
+    private void genInitializedPrototype(String className) {
+        println("    proto" + className + " = new " + className + "(this);");
+    }
+
+    private Integer buildInitialEmptyListHashcode(int listTypesCount) {
+        return new Integer(42 * (2 + listTypesCount));
+    }
+
     private void genAltFromTerm(Type type, Alternative alt) {
         String subClassName = AlternativeGenerator.className(type, alt);
         String superClassName = TypeGenerator.className(type);
@@ -445,23 +631,9 @@ public class FactoryGenerator extends JavaGenerator {
         argnr = 0;
         while (fields.hasNext()) {
             Field field = (Field) fields.next();
-            String fieldType = field.getType();
-            String fieldClass = TypeGenerator.className(fieldType);
-
-            if (fieldType.equals("str")) {
-                print("(String) children.get(" + argnr + ")");
-            } else if (fieldType.equals("int")) {
-                print("((Integer) children.get(" + argnr + ")).intValue()");
-            } else if (fieldType.equals("real")) {
-                print("((Double) children.get(" + argnr + ")).doubleValue()");
-            } else if (fieldType.equals("term")) {
-                print("(aterm.ATerm) children.get(" + argnr + ")");
-            } else if (fieldType.equals("list")) {
-                print("(aterm.ATermList) children.get(" + argnr + ")");
-            } else {
-                print(
-                    fieldClass + "FromTerm( (aterm.ATerm) children.get(" + argnr + "))");
-            }
+            String fieldType;
+            String fieldClass;
+            print(buildFieldMatchResultRetriever(argnr, field));
 
             if (fields.hasNext()) {
                 print(", ");
@@ -475,6 +647,28 @@ public class FactoryGenerator extends JavaGenerator {
         println("      return null;");
         println("    }");
         println("  }");
+    }
+
+    private String buildFieldMatchResultRetriever(int argnr, Field field) {
+        String fieldType = field.getType();
+        String fieldClass = TypeGenerator.className(fieldType);
+        String result = "";
+
+        if (fieldType.equals("str")) {
+            result = "(String) children.get(" + argnr + ")";
+        } else if (fieldType.equals("int")) {
+            result = "((Integer) children.get(" + argnr + ")).intValue()";
+        } else if (fieldType.equals("real")) {
+            result = "((Double) children.get(" + argnr + ")).doubleValue()";
+        } else if (fieldType.equals("term")) {
+            result = "(aterm.ATerm) children.get(" + argnr + ")";
+        } else if (fieldType.equals("list")) {
+            result = "(aterm.ATermList) children.get(" + argnr + ")";
+        } else {
+            result = fieldClass + "FromTerm( (aterm.ATerm) children.get(" + argnr + "))";
+        }
+
+        return result;
     }
 
     private void genTypeFromTermMethod(Type type) {
@@ -590,39 +784,106 @@ public class FactoryGenerator extends JavaGenerator {
         String elementTypeName = TypeGenerator.className(elementType);
         Separators separators = type.getSeparators();
         String nextElement = buildGetNextElementCall(type);
+        String actualSeparators =
+            buildActualTypedAltArgumentList(type.separatorFieldIterator());
+        if (actualSeparators.length() > 0) {
+            actualSeparators += ", ";
+        }
+
+        // TODO: make this work for separators that are not palindromes, the reverse in 
+        // combination with the match with the many pattern currently prevents this.
+        // Note that non-palindrome separators do not occur naturally anyway if the API is
+        // generated from an SDF definition
+
         println("  public " + className + " " + className + "FromTerm(aterm.ATerm trm)");
         println("  {");
-        println("     if (trm instanceof aterm.ATermList) {");
-        println("        aterm.ATermList list = ((aterm.ATermList) trm).reverse();");
-        println("        " + className + " result = make" + className + "();");
-        println("        for (; !list.isEmpty(); list = list." + nextElement + ") {");
-        println(
-            "          "
-                + elementTypeName
-                + " elem = "
-                + elementTypeName
-                + "FromTerm(list.getFirst());");
-        println("           if (elem != null) {");
-        println("             result = make" + className + "(elem, result);");
-        println("           }");
-        println("           else {");
-        println(
-            "             throw new RuntimeException(\"Invalid element in "
-                + className
-                + ": \" + elem);");
-        println("          }");
-        println("          if (list.getNext().isEmpty()) {");
-        println("             break;");
-        println("          }");
-        println("        }");
-        println("        return result;");
-        println("     }");
-        println("     else {");
+        println("     if (!(trm instanceof aterm.ATermList)) {");
         println(
             "       throw new RuntimeException(\"This is not a "
                 + className
                 + ": \" + trm);");
         println("     }");
+
+        println("     aterm.ATermList list = ((aterm.ATermList) trm);");
+        println("     if (list.isEmpty()) {");
+        println("       return make" + className + "();");
+        println("     }");
+        println("     else if (list.getLength() == 1) {");
+        println(
+            "       return make"
+                + className
+                + "("
+                + elementTypeName
+                + "FromTerm(list.getFirst()));");
+        println("     }");
+        println("     else {");
+        println("       " + className + " result;");
+        println("       " + elementTypeName + " head;");
+        Iterator seps = type.separatorFieldIterator();
+        while (seps.hasNext()) {
+            Field sep = (Field) seps.next();
+            String fieldId = AlternativeImplGenerator.getFieldId(sep.getId());
+            String fieldType = TypeGenerator.className(sep.getType());
+            println("        " + fieldType + " " + fieldId + ";");
+        }
+        println(
+            "        java.util.List children = list.match(pattern"
+                + className
+                + "Many);");
+        println("        if (children != null) {");
+        genFromTermSeparatorHeadAssignment(type); 
+        int tailIndex = genFromTermSeparatorFieldAssigments(type);
+        genFromTermSeparatorTailAssignment(tailIndex);
+        println("          result = make" + className + "(head);");
+
+
+        println("          while (children != null) {");
+        println("            children = list.match(pattern" + className + "Many);");
+        println("            if (children != null) {");
+        genFromTermSeparatorHeadAssignment(type); 
+        println("              result = make"
+                + className
+                + "(head,"
+                + actualSeparators
+                + "result);");
+        tailIndex = genFromTermSeparatorFieldAssigments(type);
+        genFromTermSeparatorTailAssignment(tailIndex);
+        println("            }");
+        println("          }");
+        println("          if (list.getLength() == 1) {");
+        println("            return make" + className + "(" + elementTypeName + "FromTerm(list.getFirst()), " +
+        actualSeparators + "result);");
+        println("          }");
+        println("        }");
+        println("      }");
+        println("     throw new RuntimeException(\"This is not a " + className + ": \" + trm);");
         println("  }");
+    }
+
+    private void genFromTermSeparatorHeadAssignment(SeparatedListType type) {
+        println(
+            "            head = "
+                + buildFieldMatchResultRetriever(0, type.getManyField("head") ) + ";");
+    }
+
+    private void genFromTermSeparatorTailAssignment(int tailIndex) {
+        println("              list = (aterm.ATermList) children.get(" + tailIndex + ");");
+    }
+
+    private int genFromTermSeparatorFieldAssigments(SeparatedListType type) {
+        Iterator fields = type.separatorFieldIterator();
+        int i;
+        for (i = 1; fields.hasNext(); i++) {
+            Field field = (Field) fields.next();
+            String fieldId = AlternativeImplGenerator.getFieldId(field.getId());
+            String fieldType = TypeGenerator.className(field.getType());
+            println(
+                "            "
+                    + fieldId
+                    + " = "
+                    + buildFieldMatchResultRetriever(i, field)
+                    + ";");
+        }
+        return i;
     }
 }

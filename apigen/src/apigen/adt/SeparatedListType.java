@@ -39,5 +39,18 @@ public class SeparatedListType extends ListType {
     public Iterator separatorFieldIterator() {
         return new FirstAndLastSkippingIterator(altFieldIterator("many"));
     }
+    
+    public Alternative getManyAlternative() {
+        return getAlternative("many");
+    }
+    
+    public Field getManyField(String fieldId) {
+        return getAltField("many", fieldId);
+    }
+    
+    public Iterator manyFieldIterator() {
+        return altFieldIterator("many");
+    }
+    
 }
 

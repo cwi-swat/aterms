@@ -142,6 +142,34 @@ public class Type {
 	public Iterator alternativeIterator() {
 		return alts.iterator();
 	}
+    
+    public Alternative getAlternative(String altId) {
+        Iterator iter = alts.iterator();
+        
+        while (iter.hasNext()) {
+            Alternative element = (Alternative) iter.next();
+            
+            if (element.getId().equals(altId)) {
+                return element;
+            }
+        }
+        
+        return null;
+    }
+    
+    public Field getAltField(String altId, String fieldId) {
+        Iterator iter = altFieldIterator(altId);
+        
+        while (iter.hasNext()) {
+            Field field = (Field) iter.next();
+            
+            if (field.getId().equals(fieldId)) {
+                return field;
+            }
+        }
+        
+        return null;
+    }
 
 	public Iterator fieldIterator() {
 		return field_list.iterator();
