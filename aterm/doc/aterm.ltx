@@ -65,7 +65,7 @@ applications~\cite{BK98} but are more widely applicable.
 Typically, we want to exchange and process tree-like data structures
 such as parse trees, abstract syntax trees, parse tables, generated
 code, and formatted source texts. The applications involved include
-parsers, typecheckers, compilers, formatters, syntax-directed editors,
+parsers, type checkers, compilers, formatters, syntax-directed editors,
 and user-interfaces written in a variety of languages.  Typically, a
 parser may add annotations to nodes in the tree describing the
 coordinates of their corresponding source text and a formatter may add
@@ -113,12 +113,11 @@ the operations defined on it (Section~\ref{aterm-operations}).
 The data type of \ATerms\ ({\tt ATerm}) is defined as follows:
 
 \begin{itemize}
-\item  {\tt INT}: An integer constant is an \ATerm.
-These integers are 32-bits integers\footnote{The \aterm\ library
-will be upgraded to support 64-bits architectures as well.}.
+\item  {\tt INT}: An integer constant (32-bits integer) is an \ATerm.\footnote{
+We are currently upgrading the \aterm\ library
+to support 64-bits architectures as well.}.
 
-\item {\tt REAL}: A real constant is an \ATerm.
-The reals are 64-bits reals.
+\item {\tt REAL}: A real constant (64-bits real) is an \ATerm.
 
 \item {\tt APPL}: A function application consisting of a function symbol and
       zero or more \ATerms\ (arguments) is an \ATerm.
@@ -153,14 +152,14 @@ operations is independent of the annotations. This makes it easy to
 completely ignore annotations. Typical examples of the use of
 annotations include annotating parse trees with positional or
 typesetting information, and annotating abstract syntax trees with the
-results of typechecking.}.
+results of type checking.}.
 
 Appendix \ref{concrete-syntax} contains a definition of the concrete
 syntax of \ATerms.  The primary reason for having a concrete syntax is
 to be able to exchange \ATerms\ in a human-readable
 form. In Section \ref{implementation} we also discuss a compact binary
 format for the exchange of \ATerms\ in a format that is only suitable
-for processing by machine.  We will only give a number of examples to
+for processing by machine.  We will now give a number of examples to
 show some of the features of the textual representation of \ATerms.
 
 \begin{itemize}
@@ -192,9 +191,9 @@ show some of the features of the textual representation of \ATerms.
 \label{aterm-operations}
 
 The operations on \ATerms\ fall into three categories: making and
-matching (Section~\ref{making}), 
-reading and writing (Section~\ref{reading}) of \ATerms, 
-and annotating (Section~\ref{annotating}). The total
+matching \ATerms\ (Section~\ref{making}), 
+reading and writing  \ATerms\ (Section~\ref{reading}) 
+and annotating \ATerms\ (Section~\ref{annotating}). The total
 of only 13 functions provide enough functionality for most users to
 build simple applications with \ATerms.  We refer to this interface as
 the \emph{level one} interface of the \ATerm\ data type.
@@ -242,13 +241,18 @@ the placeholders in the resulting term with values taken from $a_1$
 through $a_n$.
 If the parse fails, a message is printed and the program is aborted.
 The types of the arguments depend on the specific placeholders used
-in \emph{pattern}. For instance when the placeholder {\tt <int>} is used,
+in \emph{pattern}. For instance, when the placeholder {\tt <int>} is used
 an integer is expected as argument and a new integer ATerm is constructed.
 \end{sloppypar}
 
 \item 
 \begin{sloppypar}
-{\tt ATbool ATmatch(ATerm $t$, String $p$, ATerm $a_1$, ..., ATerm $a_n$)}: 
+{\tt ATbool ATmatch(ATerm $t$, String $p$, ATerm $a_1$, ..., ATerm $a_n$)}:
+XXX Eigenlijk moet dit zijn:
+{\tt ATbool ATmatch(ATerm $t$, String $p$, ref ATerm $a_1$, ..., ref ATerm $a_n$)}:
+om aan te geven dat de $a_i$s variabelen zijn.
+XXX
+
 Match term $t$ against
 pattern $p$, and bind subterms that match with placeholders in
 $p$ with the result variables $a_1$ through $a_n$.
@@ -280,14 +284,14 @@ binary files.  In the first form, files are read and written in a
 format that is identical to the textual representation discussed
 earlier in Section~\ref{aterm-datatype} and Appendix
 \ref{concrete-syntax}.  This format is human-readable,
-space-inefficient, and any implicit sharing in terms is lost since
-this cannot be expressed in a pure textual representation.  The
-unnecessary size explosion could be avoided by extending the textual
-representation with a mechanism for labelling and refering to terms.
-Instead of \texttt{f(g(a),g(a))}, one could then write
-\texttt{f(1:g(a), \#1)}. The first occurrence of \texttt{g(a)}
-is labelled with ``\texttt{1}'', and the second occurrence refers to
-this label (``\texttt{\#1}''). 
+space-inefficient\footnote{ The unnecessary size explosion could be
+avoided by extending the textual representation with a mechanism for
+labeling and referring to terms.  Instead of \texttt{f(g(a),g(a))},
+one could then write \texttt{f(1:g(a), \#1)}. The first occurrence of
+\texttt{g(a)} is labeled with ``\texttt{1}'', and the second
+occurrence refers to this label (``\texttt{\#1}'').},
+and any implicit sharing in terms is lost since
+this cannot be expressed in a pure textual representation.  
 
 In the second form, a dedicated binary format is used (Binary ATerm
 Format, see Section~\ref{baf}). This portable format is
@@ -449,7 +453,7 @@ hash table lookup.
 Fortunately, we get two returns on this investment.  First, the
 considerably reduced memory usage also leads to reduced (real-time)
 execution time.  Second, we gain substantially since the equality
-check on terms ({\tt term\_equal}) becomes very cheap: it reduces from
+check on terms ({\tt ATisEqual}) becomes very cheap: it reduces from
 an operation that is linear in the number of subterms to be compared
 to a constant operation (pointer equality).
 
@@ -457,12 +461,10 @@ Another consequence of our approach is less fortunate.  Because terms
 can be shared without the creator knowing it, terms cannot be modified
 without creating unwanted side-effects.  This means that terms
 effectively become \emph{immutable} after creation.  Destructive
-updates on maximally shared terms are not allowed, except maybe in
-special situations where it is known in advance that a term is not
-shared. Especially in list operations, the fact that \ATerms\ are
-immutable can be expensive. It is often the responsibility of the user
-of the library to choose algorithms that minimize the effect of this
-shortcoming.
+updates on maximally shared terms are not allowed.  Especially in list
+operations, the fact that \ATerms\ are immutable can be expensive. It
+is often the responsibility of the user of the library to choose
+algorithms that minimize the effect of this shortcoming.
 
 \subsubsection{Searching for Shared Subterms}
 
@@ -711,7 +713,7 @@ Figure \ref{header}):
 \item A field consisting of one bit used as a mark flag by the garbage
       collector.
 \item A field consisting of one bit indicating whether or not this term
-      has an annotation or not.
+      has an annotation.
 \item A field consisting of three bits that indicate the type of the term.
 \item A field consisting of three bits representing the arity (number of
       pointers to other terms) of this object. When this field
@@ -917,7 +919,7 @@ position & {\tt mult}               & {\tt s}    		& {\tt z} \\
 We start by writing this symbol information to file. To do this,
 we have to write the following bytes\footnote{When the value of these numbers
 used exceeds 127, two or more bytes are used to encode them. Strings are
-written as strings to improve the readability.}:
+written as strings to improve readability.}:
 
 \begin{tabbing}
 4 {\tt "mult"} \= : \= The length ({\tt 4}) and ASCII representation of {\tt mult}. \\
@@ -975,7 +977,8 @@ is in most cases negligible compared to the actual term data.
 
 How concise is the ATerm representation and how fast can \baf\ files
 be read and written? Since results highly depend on the actual terms being used,
-we will base our measurements on a collection of terms that cover most applications.
+we will base our measurements on a collection of terms that cover most applications
+we have encountered so far.
 
 \subsubsection{Artificial Cases}
 Two artificial cases are used that have been constructed to act
@@ -1014,7 +1017,7 @@ the above parse table.  The parse trees constructed for these COBOL
 programs are represented as \ATerms, see Section \ref{asfix} for more
 details.
 
-\item[Risla library:] a parse tree of the component library for the Risla
+\item[Risla Library:] a parse tree of the component library for the Risla
 language, a domain specific language for describing financial products
 \cite{ADR95}.
 This component library consists of 10832 lines of code.
@@ -1061,7 +1064,7 @@ Random			&  1000000 &	 92246 &   90.81 &  2997120 &  3.00   \\ \hline \hline
 
 COBOL Parse Table 	&   733237 &     81115 &   88.94 &  2174662 &  2.97   \\ \hline
 COBOL System 		& 31332871 &    470872 &   98.50 & 12896609 &  0.41   \\ \hline
-Risla library           &   708838 &     40073 &   94.35 &   960170 &  1.35   \\ \hline
+Risla Library           &   708838 &     40073 &   94.35 &   960170 &  1.35   \\ \hline
 LPO                     &  8894391 &    225229 &   97.47 &  3701438 &  0.42   \\ \hline \hline
 Real Case Averages	&	   &	       &   94.82 &	    &  1.29   \\ \hline    
 \end{tabular}
@@ -1127,7 +1130,7 @@ Random			&6200251 & 6.20	& 15.90	& 15.90	&  3.67	& 3.67	\\ \hline \hline
 \multicolumn{7}{|c|}{Real Cases}\\ \hline
 COBOL Parse Table	&3161908 & 4.31	&  5.83	&  7.95	&  1.89	& 2.58	\\ \hline
 COBOL System	      &135350005 & 4.32	&199.43 &  6.36	& 65.02	& 2.08	\\ \hline
-Risla library           &2955964 & 4.17 &  4.25 &  6.00 &  1.40 & 1.98  \\ \hline
+Risla Library           &2955964 & 4.17 &  4.25 &  6.00 &  1.40 & 1.98  \\ \hline
 LPO                     &41227481& 4.64 & 81.90 &  9.21 & 29.16 & 3.28  \\ \hline \hline
 Real Case Averages	&	 & 4.36 &       &  7.38 &       & 2.48  \\ \hline
 \end{tabular}
@@ -1176,7 +1179,7 @@ Random			&567419 & 0.57	& 2.06	& 2.06	& 2.76	& 2.76  \\ \hline \hline
 \multicolumn{7}{|c|}{Real Cases}\\ \hline
 COBOL Parse Table	&303621 & 0.41	& 0.50	& 0.68	& 1.36	& 1.85  \\ \hline
 COBOL System		&2279066& 0.07  & 4.88	& 0.16  &20.76	& 0.66	\\ \hline
-Risla library           & 141946& 0.20  & 0.22  & 0.31  & 0.75  & 1.06  \\ \hline
+Risla Library           & 141946& 0.20  & 0.22  & 0.31  & 0.75  & 1.06  \\ \hline
 LPO                     &1106661& 0.12  & 1.86  & 0.21  & 9.40  & 1.06  \\ \hline \hline
 Real Case Averages	&       & 0.20  &       & 0.34  &       & 1.16  \\ \hline
 \end{tabular}
@@ -1227,7 +1230,7 @@ Random			& 6199981	& 567419	& 90.9		& 439293	& 92.9	\\ \hline \hline
 \multicolumn{6}{|c|}{Real Cases}\\ \hline
 COBOL Parse Table	& 3161908	& 303621	& 90.4		& 243990	& 92.3	\\ \hline
 COBOL System		&135350005      & 2279066	& 98.3		& 3072774	& 97.7	\\ \hline
-Risla library           & 2955964       & 141946        & 95.2          &  80009        & 97.3  \\ \hline
+Risla Library           & 2955964       & 141946        & 95.2          &  80009        & 97.3  \\ \hline
 LPO                     &41227481       & 1106661       & 97.3          & 804521        & 98.0  \\ \hline \hline
 Real Case Averages	&		&		& 95.3		&               & 96.3  \\ \hline
 \end{tabular}
@@ -1280,7 +1283,7 @@ reading terms in textual form.
 
 \ATerms\ have already been used in applications ranging from
 development tools for domain specific languages \cite{DK98} to
-factories for renovation of COBOL programs \cite{BSV97}.  The \ATerm\
+factories for the renovation of COBOL programs \cite{BSV97}.  The \ATerm\
 data type is also the basic data type to represent the terms
 manipulated by the rewrite engines generated by the \asdf\ compiler
 \cite{BKO99} and they play a central role in the development of the
@@ -1309,7 +1312,7 @@ The development of \asdf\ specifications is supported by
 an integrated programming environment, 
 the \asmetaenv\ \cite{Kli93.meta}.
 
-Each module or term is
+Using \asfix, each module or term is
 represented by its parse tree which contains both the syntax rules
 used and all original layout and comments. In this way, the original
 source text can be reconstructed from the \asfix\ representation, thus
@@ -1383,7 +1386,8 @@ Second, this parse tree is completely self-contained and does not
 depend on a separate grammar definition.  It is clear that this way of
 representing parse trees contains a lot of redundant
 information. Therefore, both maximal sharing and \baf\ are essential
-to reduce their size.
+to reduce their size. In our measurements,
+\asfix\ only plays a role in the cases  COBOL System and Risla Library.
 
 The annotations provided by the \ATerm\ data type can be used to store
 auxiliary information like position information derived by the parser
@@ -1545,13 +1549,19 @@ is necessary to share as many states as possible.
 \paragraph{S-expressions in LISP}
 Many intermediate representations are derived in some form or another
 from the S-expressions in LISP. \ATerms\ are no exception to this
-rule. The main improvements of \ATerms\ over S-expressions are 
-(a) \ATerms\ are language independent;
-(b) \ATerms\ support annotations;
-(c) \ATerms\ support maximal sharing in a systematic way; and
-(d) \ATerms\ support a concise, sharing preserving,
-exchange format.
+rule. The main improvements of \ATerms\ over S-expressions are
 
+\begin{itemize}
+\item \ATerms\ are language independent.
+\item \ATerms\ support arbitrary binary data (Blobs, see Section~\ref{aterm-datatype}).
+\item \ATerms\ support annotations.
+\item \ATerms\ support maximal sharing in a systematic way.
+\item \ATerms\ support a concise, sharing preserving,
+exchange format that exploits the implicit signature
+of terms.
+\item The \ATerm\ library provides a comprehensive collection of
+access functions based on the\emph{ match-and-make} paradigm.
+\end{itemize}
 
 
 \begin{sloppypar}
@@ -1596,45 +1606,25 @@ each different intermediate format. In the case of \ATerms, a dynamic
 check may be necessary on the intermediate data but only a single,
 generic, set of access functions is needed.
 
-\paragraph{XML}
-The Extensible Markup Language~\cite{XML1.0} is a recently
-standardized format for Web documents. Unlike HTML, XML makes a strict
-distinction between \emph{content} and \emph{presentation}.  XML can
-be \emph{extended} by adding user-defined \emph{tags} to parts of a
-document and by defining the overall structure of the document thus
-enabling well-formedness checks on documents.  Although the original
-objectives are completely different, there are striking similarities
-between \ATerms\ and XML: both serve the representation of
-hierarchically structured data and both allow arbitrary extensions
-(adding tags \emph{versus} adding function symbols).  There is also a
-straightforward translation possible between \ATerms\ and XML.
 
-The main difference between the two is that XML is more verbose and
-does not provide a simple mechanism to represent sharing.  This may
-not be a problem for Web documents like catalogues and database
-records, but is does present a major obstacle in our case when we need
-to exchange huge terms between tools. We are currently considering
-whether some link between \ATerms\ and XML may be advantageous.
 
 \paragraph{ASDL}
 
-The abstract syntax definition language (ASDL) \cite{Wan97} is a 
-language for describing
-tree data structures and is used as intermediate representation language
-between the various phases of a compiler \cite{Han99}. 
-The goals of ASDL and \aterms\
-are in fact quite similar, exchanging syntax trees between tools,
-although that \aterms\ are more general in the sense that other 
-types of information, such as parse tables,
-can also be represented as an \aterm.
-The ASDL pickles and the \aterms\ BAF format are comparable
-with respect to functionality, both are binary representations
-of among others syntax trees. But before a tool can process a tree
+The abstract syntax definition language (ASDL) \cite{Wan97} is a
+language for describing tree data structures and is used as
+intermediate representation language between the various phases of a
+compiler \cite{Han99}.  The goals of ASDL and \aterms\ are in fact
+quite similar, exchanging syntax trees between tools, although
+\aterms\ are more general in the sense that other types of
+information, such as parse tables, can also be represented as an
+\aterm.  ASDL pickles and the BAF format for \aterms\ are comparable
+with respect to functionality, both are binary representations of
+(among others) syntax trees. But before a tool can process a tree
 obtained as an ASDL pickle, it has to unpickle it, which may take
 quite some memory. Tools processing \aterms\ can process \aterms\ in
-BAF format with preserving the sharing internally.
-Furthermore, the pickle and unpickle functions are generated from
-the ASDL description and are thus application specific whereas
+BAF format with preserving the sharing internally.  Furthermore, the
+pickle and unpickle functions are generated from the ASDL description
+and are thus application specific (this may be more efficient) whereas
 the reading and writing of BAF is entirely generic.
 
 In fact there are three different levels of comparison:
@@ -1682,6 +1672,26 @@ whereas ASDL typical represents the abstract syntax tree.
 In the \asfix\ representation much more information is coded than
 in ASDL.
 
+\paragraph{XML}
+The Extensible Markup Language~\cite{XML1.0} is a recently
+standardized format for Web documents. Unlike HTML, XML makes a strict
+distinction between \emph{content} and \emph{presentation}.  XML can
+be \emph{extended} by adding user-defined \emph{tags} to parts of a
+document and by defining the overall structure of the document thus
+enabling well-formedness checks on documents.  Although the original
+objectives are completely different, there are striking similarities
+between \ATerms\ and XML: both serve the representation of
+hierarchically structured data and both allow arbitrary extensions
+(adding tags \emph{versus} adding function symbols).  There is also a
+straightforward translation possible between \ATerms\ and XML.
+
+The main difference between the two is that XML is more verbose and
+does not provide a simple mechanism to represent sharing.  This may
+not be a problem for Web documents like catalogues and database
+records, but is does present a major obstacle in our case when we need
+to exchange huge terms between tools. We are currently considering
+whether some link between \ATerms\ and XML may be advantageous.
+
 \paragraph{Data encodings}
 
 As described in Section~\ref{baf}, we use a form of data encoding to
@@ -1693,7 +1703,7 @@ rules for data encoding~\cite{ASN.1.PER}.
 \begin{sloppypar}
 In an earlier project in our group, the Graph Exchange Language 
 (GEL)~\cite{Kam94}
-has been developed.  Its is similar in goals as \baf, but \baf\ can
+has been developed.  It is similar in goals as \baf, but \baf\ can
 only represent acyclic directed graph, while GEL can represent
 arbitrary (potentially cyclic) graphs.  The technical approaches are
 different as well.  GEL uses a binary-encoded postfix format to
@@ -1704,7 +1714,7 @@ format augmented with generated symbol tables.
 
 A final difference is in the \emph{usage} of both approaches.  GEL was
 used as a separate library that could be used in applications and the
-graph encoding was therefore visible to the programmer's using
+graph encoding was therefore visible to the programmer using
 it. \baf\ is, on the other hand, completely integrated in the \ATerm\
 implementation and is only used by the standard read and write
 functions for \ATerms. The \baf\ format is therefore never visible to
@@ -1768,9 +1778,9 @@ http://www.wins.uva.nl/pub/programming-research/software/aterm/
 }
 \end{quote}
 
-\noindent The current version of the library is available for Unix and Linux.
-The current implementation of the library is also available under Windows/NT.
-We are currently working on a 64-bits implementation of the library.
+\noindent The current version of the library is available for Unix (including Linux)
+and Windows/NT.  We are currently working on a 64-bits implementation
+of the library.
 
 
 \section*{Acknowledgments}
