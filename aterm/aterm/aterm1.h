@@ -63,11 +63,14 @@ ATerm ATreadFromBinaryString(char *s, int size);
 
 /* ATbool ATisEqual(ATerm t1, ATerm t2); */
 extern ATbool AT_isEqual(ATerm t1, ATerm t2);
-#if defined(NO_SHARING) || defined(DEEP_EQUALITY) || defined(SEMI_DEEP_EQUALITY)
+extern ATbool AT_isDeepEqual(ATerm t1, ATerm t2);
+#if defined(NO_SHARING) || defined(SEMI_DEEP_EQUALITY)
 #define ATisEqual(t1,t2) (AT_isEqual((ATerm)(t1), (ATerm)(t2)))
 /* The casts are needed because we want to allow the user
    to easily check the equality of other ATerm types like 
 	 ATermList, ATermAppl, etc. */
+#elif defined(DEEP_EQUALITY)
+#define ATisEqual(t1,t2) (AT_isDeepEqual((ATerm)(t1), (ATerm)(t2)))
 #else
 #define ATisEqual(t1,t2) ((ATbool)((ATerm)(t1) == (ATerm)(t2)))
 #endif

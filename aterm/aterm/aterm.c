@@ -2983,6 +2983,91 @@ ATbool ATdiff(ATerm t1, ATerm t2, ATerm *template, ATerm *diffs)
 /*}}}  */
 
 
+/*{{{  ATbool AT_isDeepEqual(ATerm t1, ATerm t2) */
+
+/**
+ * Check for deep ATerm equality (even identical terms are traversed completely)
+ */
+
+ATbool AT_isDeepEqual(ATerm t1, ATerm t2)
+{
+  int type;
+  ATbool result = ATtrue;
+
+  type = ATgetType(t1);
+  if(type != ATgetType(t2))
+    return ATfalse;
+
+  switch(type) {
+    case AT_APPL:
+      {
+	ATermAppl appl1 = (ATermAppl)t1, appl2 = (ATermAppl)t2;
+	AFun sym = ATgetAFun(appl1);
+	int i, arity = ATgetArity(sym);
+
+	if(sym != ATgetAFun(appl2))
+	  return ATfalse;
+
+	for(i=0; i<arity; i++)
+	  if(!ATisEqual(ATgetArgument(appl1, i), ATgetArgument(appl2, i)))
+	    return ATfalse;
+      }
+      break;
+
+    case AT_LIST:
+      {
+	ATermList list1 = (ATermList)t1, list2 = (ATermList)t2;
+	if(ATgetLength(list1) != ATgetLength(list2))
+	  return ATfalse;
+
+	while(!ATisEmpty(list1)) {
+	  if(!ATisEqual(ATgetFirst(list1), ATgetFirst(list2)))
+	    return ATfalse;
+
+	  list1 = ATgetNext(list1);
+	  list2 = ATgetNext(list2);
+	}
+      }
+      break;
+
+    case AT_INT:
+      result = ((ATgetInt((ATermInt)t1) == ATgetInt((ATermInt)t2)) ? ATtrue : ATfalse);
+      break;
+
+    case AT_REAL:
+      result = ((ATgetReal((ATermReal)t1) == ATgetReal((ATermReal)t2)) ? ATtrue : ATfalse);
+      break;
+
+    case AT_BLOB:
+      result = ((ATgetBlobData((ATermBlob)t1) == ATgetBlobData((ATermBlob)t2)) &&
+		(ATgetBlobSize((ATermBlob)t1) == ATgetBlobSize((ATermBlob)t2))) ? ATtrue : ATfalse;
+      break;
+
+    case AT_PLACEHOLDER:
+      result = ATisEqual(ATgetPlaceholder((ATermPlaceholder)t1), 
+			 ATgetPlaceholder((ATermPlaceholder)t1));
+      break;
+
+    default:
+      ATerror("illegal term type: %d\n", type);
+  }
+
+  if(result) {
+    if(HAS_ANNO(t1->header)) {
+      if(HAS_ANNO(t2->header)) {
+	result = ATisEqual(AT_getAnnotations(t1), AT_getAnnotations(t2));
+      } else {
+	result = ATfalse;
+      }
+    } else if(HAS_ANNO(t2->header)) {
+      result = ATfalse;
+    }
+  }
+
+  return result;
+}
+
+/*}}}  */
 /*{{{  ATbool AT_isEqual(ATerm t1, ATerm t2) */
 
 /**
