@@ -2,7 +2,7 @@
 
 url=http://www.cwi.nl/projects/MetaEnv/aterm
 
-keywords='library, baf, aterm, term, tree'
+keywords='library, baf, aterm, term, tree, sharing'
 
 desc() {
 cat <<ENDCAT
@@ -26,7 +26,6 @@ ver=`echo $pkg_version | cut -d ' ' -f2`
 # {{{  extract interfaces
 
 iface=`grep -- '--' configure.in \
-     | tr '\t' ' ' \
      | tr -s [:space:] \
      | sed -e "s/[ \t\[]*//" \
            -e "s/--with-//" \
@@ -38,7 +37,7 @@ iface=`grep -- '--' configure.in \
 
 # {{{  create package file
 
-cat <<ENDCAT > ${pkg}.pkg
+cat <<ENDCAT
 package
 identification
   name=$pkg
