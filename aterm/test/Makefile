@@ -6,10 +6,12 @@ CC		= gcc
 CFLAGS		= -g -ansi -pedantic -Wall
 INCLUDES	= -I../aterm
 DEFS		=
+INCLUDES	=
 LFLAGS		= -g
-LIBS		= -L../aterm -lATerm
+LIBS		= -L../aterm -lATerm -L$(EFENCE) -lefence
 AR		= ar
 
+EFENCE		= /home/olivierp/ElectricFence-2.0.5
 TESTS		= tst-alloc
 TESTPRGS	= test-alloc
 TESTSRCS	= test-alloc.c
