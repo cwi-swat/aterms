@@ -1,3 +1,5 @@
+package casestudy;
+
 abstract public class Tree
   implements Visitable
 {

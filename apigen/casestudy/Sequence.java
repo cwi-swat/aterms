@@ -1,3 +1,5 @@
+package casestudy;
+
 import java.util.*;
 
 public class Sequence

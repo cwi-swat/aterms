@@ -1,3 +1,5 @@
+package casestudy;
+
 public interface TreeVisitor
   extends Visitor
 {

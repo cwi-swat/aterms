@@ -1,3 +1,5 @@
+package casestudy;
+
 public class NodeVisitorAdapter
   extends VisitorSupport
   implements NodeVisitor

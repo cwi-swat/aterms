@@ -1,3 +1,5 @@
+package casestudy;
+
 public class Leaf
   extends Node
 {

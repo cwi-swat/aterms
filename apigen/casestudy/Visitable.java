@@ -1,3 +1,4 @@
+package casestudy;
 public interface Visitable
 {
   public Class getVisitorInterface();
