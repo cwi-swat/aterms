@@ -565,21 +565,18 @@ testMake(void)
 		      ATmakeInt(5),ATmakeInt(6),ATmakeInt(7),
 		      ATmakeInt(8),ATmakeInt(9)));
 
-  test_assert("make", 9, ATisEqual(ATmake("f(<int>,<int>,<int>,<int>,<int>,"
-					  "<int>,<int>,<int>,<int>)", 
-					  1, 2, 3, 4, 5, 6, 7, 8, 9), 
-				   ATmakeAppl(ATmakeSymbol("f", 9, ATfalse), ATmakeInt(1),
-					      ATmakeInt(2),ATmakeInt(3),ATmakeInt(4),
-					      ATmakeInt(5),ATmakeInt(6),ATmakeInt(7),
-					      ATmakeInt(8),ATmakeInt(9))));
+  test_assert("make", 9,
+	      ATisEqual(ATmake("f(<int>,<int>,<int>,<int>,<int>,"
+			       "<int>,<int>,<int>,<int>)", 
+			       1, 2, 3, 4, 5, 6, 7, 8, 9),
+			ATmakeAppl(ATmakeSymbol("f", 9, ATfalse),
+				   ATmakeInt(1), ATmakeInt(2), ATmakeInt(3),
+				   ATmakeInt(4), ATmakeInt(5), ATmakeInt(6),
+				   ATmakeInt(7), ATmakeInt(8), ATmakeInt(9))));
 
   test_assert("make", 10, ATisEqual(ATmake("[\"f\"([<list>])]", 
 					   ATparse("[1,2,3]")),
 				    ATparse("[\"f\"([1,2,3])]")));
-
-  test_assert("make", 11, ATisEqual(ATmakeAppl2(ATmakeSymbol("", 2, ATfalse),
-						ATparse("a"), ATparse("b")),
-				    ATparse("(a,b)")));
 
   fprintf(stderr, "The following two tests should generate parse errors.\n");
 #ifdef ABORT_ON_PARSE_ERROR
@@ -593,6 +590,21 @@ testMake(void)
   assert(parse_error_encountered);
 #endif
   printf("make tests ok.\n");
+}
+
+/*}}}  */
+/*{{{  void testTuple() */
+
+void testTuple()
+{
+  test_assert("tuple", 1, ATisEqual(ATmakeAppl2(ATmakeSymbol("", 2, ATfalse),
+						ATparse("a"), ATparse("b")),
+				    ATparse("(a,b)")));
+
+  test_assert("tuple", 2, AT_calcTextSize(ATparse("()")) == 2);
+  test_assert("tuple", 3, strcmp(ATwriteToString(ATparse("()")), "()") == 0);
+  test_assert("tuple", 4, AT_calcTextSize(ATparse("f()")) == 1);
+  test_assert("tuple", 5, strcmp(ATwriteToString(ATparse("f()")), "f") == 0);
 }
 
 /*}}}  */
@@ -1234,6 +1246,7 @@ int main(int argc, char *argv[])
   testPrintf();
   testAnno();
   testMake();
+  testTuple();
   testMatch();
   testBaffle();
   testTaf();

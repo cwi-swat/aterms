@@ -719,6 +719,7 @@ writeToTextFile(ATerm t, FILE * f)
   ATermAppl       appl;
   ATermList       list;
   ATermBlob       blob;
+  char            *name;
 
   switch (ATgetType(t))
   {
@@ -736,11 +737,13 @@ writeToTextFile(ATerm t, FILE * f)
       sym = ATgetSymbol(appl);
       AT_printSymbol(sym, f);
       arity = ATgetArity(sym);
-      if (arity > 0) {
+      name = ATgetName(sym);
+      if (arity > 0 || name == NULL || *name == '\0') {
 	fputc('(', f);
 	for (i = 0; i < arity; i++) {
-	  if (i != 0)
+	  if (i != 0) {
 	    fputc(',', f);
+	  }
 	  arg = ATgetArgument(appl, i);
 	  ATwriteToTextFile(arg, f);
 	}
@@ -960,12 +963,13 @@ static char    *topWriteToString(ATerm t, char *buf);
 static char *
 writeToString(ATerm t, char *buf)
 {
-  ATerm           trm;
-  ATermList       list;
-  ATermAppl       appl;
-  ATermBlob       blob;
-  Symbol          sym;
-  int             i, size, arity;
+  ATerm trm;
+  ATermList list;
+  ATermAppl appl;
+  ATermBlob blob;
+  AFun sym;
+  int i, size, arity;
+  char *name;
 
   switch (ATgetType(t))
   {
@@ -993,15 +997,16 @@ writeToString(ATerm t, char *buf)
       appl = (ATermAppl) t;
       sym = ATgetSymbol(appl);
       arity = ATgetArity(sym);
+      name = ATgetName(sym);
       buf = writeSymbolToString(sym, buf);
-      if (arity > 0)
-      {
+      if (arity > 0 || name == NULL || *name == '\0') {
 	*buf++ = '(';
-	buf = topWriteToString(ATgetArgument(appl, 0), buf);
-	for (i = 1; i < arity; i++)
-	{
-	  *buf++ = ',';
-	  buf = topWriteToString(ATgetArgument(appl, i), buf);
+	if (arity > 0) {
+	  buf = topWriteToString(ATgetArgument(appl, 0), buf);
+	  for (i = 1; i < arity; i++) {
+	    *buf++ = ',';
+	    buf = topWriteToString(ATgetArgument(appl, i), buf);
+	  }
 	}
 	*buf++ = ')';
       }
@@ -1090,12 +1095,13 @@ static int      topTextSize(ATerm t);
 static int
 textSize(ATerm t)
 {
-  char            numbuf[32];
-  ATerm           trm;
-  ATermList       list;
-  ATermAppl       appl;
-  Symbol          sym;
-  int             i, size, arity;
+  char numbuf[32];
+  ATerm trm;
+  ATermList list;
+  ATermAppl appl;
+  Symbol sym;
+  int i, size, arity;
+  char *name;
 
   switch (ATgetType(t))
   {
@@ -1113,14 +1119,16 @@ textSize(ATerm t)
       appl = (ATermAppl) t;
       sym = ATgetSymbol(appl);
       arity = ATgetArity(sym);
+      name = ATgetName(sym);
       size = symbolTextSize(sym);
-      for (i = 0; i < arity; i++)
+      for (i = 0; i < arity; i++) {
 	size += topTextSize(ATgetArgument(appl, i));
-      if (arity > 0)
-      {
+      }
+      if (arity > 0 || name == NULL || *name == '\0') {
 	/* Add space for the ',' characters */
-	if (arity > 1)
+	if (arity > 1) {
 	  size += arity - 1;
+	}
 	/* and for the '(' and ')' characters */
 	size += 2;
       }
@@ -1189,8 +1197,8 @@ AT_calcTextSize(ATerm t)
 char *
 ATwriteToString(ATerm t)
 {
-  int             size = topTextSize(t)+1;
-  char           *end;
+  int size = topTextSize(t)+1;
+  char *end;
 
   RESIZE_BUFFER(size);
 
@@ -1421,7 +1429,7 @@ fparse_quoted_appl(int *c, FILE * f)
 
   name = strdup(buffer);
   if (!name)
-    ATerror("fparse_quoted_appl: symbol to long.");
+    ATerror("fparse_quoted_appl: symbol too long.");
 
   fnext_skip_layout(c, f);
 
@@ -1908,7 +1916,7 @@ sparse_quoted_appl(int *c, char **s)
 
   name = strdup(buffer);
   if (!name)
-    ATerror("fparse_quoted_appl: symbol to long.");
+    ATerror("fparse_quoted_appl: symbol too long.");
 
   snext_skip_layout(c, s);
 
@@ -1958,7 +1966,7 @@ sparse_unquoted_appl(int *c, char **s)
     store_char('\0', len);
     name = strdup(buffer);
     if (!name) {
-      ATerror("sparse_unquoted_appl: symbol to long.");
+      ATerror("sparse_unquoted_appl: symbol too long.");
     }
 
     sskip_layout(c, s);
