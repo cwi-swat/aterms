@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-
+#include <unistd.h>
 #include <aterm2.h>
 
 #include <xmlmemory.h>
@@ -12,11 +12,22 @@
 #include "globals.h"
 #include "xml2aterm.h"
 
+static char myname[] = "xml2aterm";
+static char myversion[] = "0.1";
+static char myarguments[] = "hei:o:vV";
+static char* outfile = "-";
+
+/*{{{  void xaMemError(char *var) */
+
 void xaMemError(char *var)
 {
   fprintf(stderr, "Memory error: malloc failed for %s", var);
   return;
 }
+
+/*}}}  */
+
+/*{{{  static xmlEntityPtr xaGetEntity (xmlParserCtxtPtr ctxt, const xmlChar *name) */
 
 static xmlEntityPtr xaGetEntity (xmlParserCtxtPtr ctxt, const xmlChar *name)
 {
@@ -24,12 +35,20 @@ static xmlEntityPtr xaGetEntity (xmlParserCtxtPtr ctxt, const xmlChar *name)
   return(NULL);
 }
 
+/*}}}  */
+
+/*{{{  static void xaEntityDecl (xmlParserCtxtPtr ctxt, const xmlChar *name, int type, const xmlChar *publicID, \ */
+
 static void xaEntityDecl (xmlParserCtxtPtr ctxt, const xmlChar *name, int type, const xmlChar *publicID, \
 			  const xmlChar *systemID, xmlChar *content)
 {
   fprintf(stderr, "xaEntityDecl\n");
   return;
 }
+
+/*}}}  */
+
+/*{{{  static void xaStartDocument (xmlParserCtxtPtr ctxt) */
 
 static void xaStartDocument (xmlParserCtxtPtr ctxt)
 {
@@ -50,6 +69,10 @@ static void xaStartDocument (xmlParserCtxtPtr ctxt)
   return;
 }
 
+/*}}}  */
+
+/*{{{  static void xaEndDocument (xmlParserCtxtPtr ctxt) */
+
 static void xaEndDocument (xmlParserCtxtPtr ctxt)
 {
   if(verbose)
@@ -64,10 +87,14 @@ static void xaEndDocument (xmlParserCtxtPtr ctxt)
       fprintf(stderr, "we created the following ATerm:\n");
     }
   
-  ATprintf("%t\n", atermdata);
+  ATwriteToNamedBinaryFile((ATerm) atermdata, outfile);
   
   return;
 }
+
+/*}}}  */
+
+/*{{{  static void xaStartElement (xmlParserCtxtPtr ctxt, xmlChar *fullname, xmlChar **atts) */
 
 static void xaStartElement (xmlParserCtxtPtr ctxt, xmlChar *fullname, xmlChar **atts)
 {
@@ -127,6 +154,10 @@ static void xaStartElement (xmlParserCtxtPtr ctxt, xmlChar *fullname, xmlChar **
   return;
 }
 
+/*}}}  */
+
+/*{{{  static void xaParseQuotedAFun(int len, int i) */
+
 static void xaParseQuotedAFun(int len, int i)
 {
   ATermAppl appl;
@@ -170,6 +201,10 @@ static void xaParseQuotedAFun(int len, int i)
   return;
 }
 
+/*}}}  */
+
+/*{{{  static void xaParseATermList(int len, int i) */
+
 static void xaParseATermList(int len, int i)
 {
   int j;
@@ -185,6 +220,10 @@ static void xaParseATermList(int len, int i)
 
   return;
 }
+
+/*}}}  */
+
+/*{{{  static void xaEndElement (xmlParserCtxtPtr ctxt, const xmlChar *name) */
 
 static void xaEndElement (xmlParserCtxtPtr ctxt, const xmlChar *name)
 {
@@ -269,6 +308,10 @@ static void xaEndElement (xmlParserCtxtPtr ctxt, const xmlChar *name)
   return;
 }
 
+/*}}}  */
+
+/*{{{  static void xaCharacters (xmlParserCtxtPtr ctxt, const xmlChar *ch, int len) */
+
 static void xaCharacters (xmlParserCtxtPtr ctxt, const xmlChar *ch, int len)
 {
   static char layout[] = "\n\t";
@@ -276,9 +319,6 @@ static void xaCharacters (xmlParserCtxtPtr ctxt, const xmlChar *ch, int len)
   int i,j;
   bool foundSpecialChar = false;
   char c;
-  ATerm at;
-  char *tok;
-  bool foundlist = false;
 
   clean = malloc(sizeof(char)*len);
 
@@ -405,11 +445,19 @@ static void xaCharacters (xmlParserCtxtPtr ctxt, const xmlChar *ch, int len)
   return;
 }
 
+/*}}}  */
+
+/*{{{  static void xaComment (xmlParserCtxtPtr ctxt, const xmlChar *value) */
+
 static void xaComment (xmlParserCtxtPtr ctxt, const xmlChar *value)
 {
   fprintf(stderr, "Comment: %s\n", value);
   return;
 }
+
+/*}}}  */
+
+/*{{{  static void xaWarning (xmlParserCtxtPtr ctxt, const xmlChar *value) */
 
 static void xaWarning (xmlParserCtxtPtr ctxt, const xmlChar *value)
 {
@@ -417,11 +465,19 @@ static void xaWarning (xmlParserCtxtPtr ctxt, const xmlChar *value)
   return;
 }
 
+/*}}}  */
+
+/*{{{  static void xaError (xmlParserCtxtPtr ctxt, const xmlChar *value) */
+
 static void xaError (xmlParserCtxtPtr ctxt, const xmlChar *value)
 {
   fprintf(stderr, "Error: %s\n", value);
   return;
 }
+
+/*}}}  */
+
+/*{{{  static void xaFatalError (xmlParserCtxtPtr ctxt, const xmlChar *value) */
 
 static void xaFatalError (xmlParserCtxtPtr ctxt, const xmlChar *value)
 {
@@ -429,7 +485,9 @@ static void xaFatalError (xmlParserCtxtPtr ctxt, const xmlChar *value)
   return;
 }
 
-/* create the SAX handler */
+/*}}}  */
+
+/*{{{  The SAX handler structure */
 
 static xmlSAXHandler my_handler = {
   0, /* internalSubset */
@@ -461,6 +519,10 @@ static xmlSAXHandler my_handler = {
   0, /* (externalSubsetSAXFunc) xaExternalSubset */ /* externalSubset */
 };
 
+/*}}}  */
+
+/*{{{  int xml2aterm(char *filename) */
+
 int xml2aterm(char *filename)
 {
   xmlParserCtxt my_state;
@@ -468,10 +530,35 @@ int xml2aterm(char *filename)
   return mySAXParseFile(&my_handler, &my_state, filename);
 }
 
+/*}}}  */
+
+/*{{{  void usage(void)  */
+
+void usage(void) 
+{
+  fprintf(stderr,
+          "Usage: %s -[etvV] -i arg -o arg\n"
+          "Options:\n"
+          "\t-e             Enable expand option (default off)\n"
+          "\t-h             Display usage information\n"
+          "\t-i filename    Read ATerm from filename (default stdin)\n"
+          "\t-o filename    Write XML to filename (default stdout)\n"
+          "\t-v             Verbose mode\n"
+          "\t-V             Reveal version (i.e. %s)\n",
+          myname, myversion);
+}
+
+/*}}}  */
+
+/*}}}  */
+
+/*{{{  int main(int argc, char *argv[]) */
+
 int main(int argc, char *argv[])
 {
   int err;
-  char* filename;
+  char* infile = "-";
+  int c;
 
   ATerm bottomOfStack;
 
@@ -482,49 +569,53 @@ int main(int argc, char *argv[])
   ATprotect((ATerm*) &atermdata);
   ATprotect((ATerm*) &entities);
 
-  if(argc > 4 || argc < 2)
-    {
-      printf("Usage: xml2aterm <XMLdocument> [-e(xpand)] [-v(erbose)]\n");
-      return(0);
-    }
-
-  filename = argv[1];
-  
-  if(argc >= 3) {
-    
-    if(!strcmp(argv[2],"-expand") || !strcmp(argv[2],"-e")) {
-      expand = true;
-    }
-    
-    if(!strcmp(argv[2],"-verbose") || !strcmp(argv[2],"-v")) {
-      verbose = true;
-    }
-    
-    if(argc == 4) {
-      if(!strcmp(argv[3],"-expand") || !strcmp(argv[3],"-e")) {
+  while ((c = getopt(argc, argv, myarguments)) != EOF) {
+    switch (c) {
+      case 'h':
+	usage();
+	exit(0);
+      case 'e':
 	expand = true;
-      }
-      
-      if(!strcmp(argv[3],"-verbose") || !strcmp(argv[3],"-v")) {
+	break;
+      case 'i':
+	infile = strdup(optarg);
+	break;
+      case 'o':
+	outfile = strdup(optarg);
+	break;
+      case 'v':
 	verbose = true;
-      }
+	break;
+      case 'V':
+	fprintf(stderr,"%s v%s\n", myname, myversion);
+	exit(0);
+      default:
+	usage();
+	exit(1);
     }
   }
-  
-  err = xml2aterm(filename);
-  
-  if(err == -1) {
-    fprintf(stderr, "there was an error parsing %s\n", filename);
-  }
-  else if (err == 0) {
-    fprintf(stderr, "oke, parsing of %s was successful\n", filename);
-  }
-  else {
-    fprintf(stderr, "unknown error while parsing %s\n", filename);
+
+  err = xml2aterm(infile);
+
+  switch(err) {
+    case 0:
+      break;
+    case -1:
+      fprintf(stderr, "there was an error parsing %s\n", infile);
+      break;
+    case -2:
+      fprintf(stderr, "oke, parsing of %s was successful\n", infile);
+      break;
+    default:
+      fprintf(stderr, "unknown error while parsing %s\n", infile);
   }
 
   return err;
 }
+
+/*}}}  */
+
+/*{{{  int mySAXParseFile(xmlSAXHandlerPtr sax, void *user_data, char *filename) */
 
 int mySAXParseFile(xmlSAXHandlerPtr sax, void *user_data, char *filename)
 {
@@ -550,9 +641,6 @@ int mySAXParseFile(xmlSAXHandlerPtr sax, void *user_data, char *filename)
   return(ret);
 }
 
-
-
-
-
+/*}}}  */
 
 
