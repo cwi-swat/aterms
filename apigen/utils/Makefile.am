@@ -1,6 +1,6 @@
 # $Id$
 
-bin_SCRIPTS = adt-to-c adt-to-java
+bin_SCRIPTS = adt-to-c adt-to-java adt-to-tom
 noinst_SCRIPTS = adt-to-java-test
 
 bin_PROGRAMS = concat-adt upgrade-adt
