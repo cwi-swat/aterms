@@ -14,6 +14,4 @@ ADT_Entries     ADT_substitute     (ADT_Entries    entries,
 				  ADT_SubstFunc  func,
 				  void         *user_data);
 
-ADT_Entries ADT_concatEntries (ADT_Entries l1, ADT_Entries l2);
-
 #endif /* _ADT__UTIL_H */
