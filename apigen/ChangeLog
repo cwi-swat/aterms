@@ -1,6 +1,7 @@
 # $Id$
 
 2003/11/09 <jurgenv@cwi.nl>
+ * Bumped to 1.8
  * Changed Makefile generation to not generate every filename twice.
  * List functions in C could not deal with API prefix well
 
