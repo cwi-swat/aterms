@@ -89,11 +89,11 @@ testAlloc(void)
   int i;
   ATerm test;
 
-  fprintf(stderr, "Allocating 18 nodes of size 3:\n");
+  fprintf(stdout, "Allocating 18 nodes of size 3:\n");
   for(i=0; i<18; i++) {
     test = AT_allocate(3);
     if(test)
-      fprintf(stderr, "Result: %p\n", test);
+      fprintf(stdout, "Result: %p\n", test);
     else
       fprintf(stderr, "allocation failed.\n");
   }
@@ -318,7 +318,7 @@ void testList(void)
   test_assert("list-ops", 20, ATisEqual(list[11], 
 				  ATreadFromString(" [0,0,0,0,0] ")));
 
-	ATfprintf(stderr, "result of ATremoveElement: %t\n", 
+	ATfprintf(stdout, "result of ATremoveElement: %t\n", 
 						ATremoveElement((ATermList)ATparse("[1,2,3,2]"), ATparse("2")));
 	test_assert("list-ops", 21, 
 							ATisEqual(ATremoveElement((ATermList)ATparse("[1,2,3,2]"),
@@ -378,7 +378,7 @@ testRead(void)
 	ATsetAbortHandler(abort_handler);
 	parse_error_encountered = ATfalse;
 #endif
-  fprintf(stdout, "Next term should give a parse error at line 0, col 17\n");
+  fprintf(stderr, "Next term should give a parse error at line 0, col 17\n");
   f = fopen("error.trm", "r");
   t = ATreadFromTextFile(f);
   fclose(f);
@@ -478,7 +478,7 @@ testMake(void)
 																					 ATparse("[1,2,3]")),
 																		ATparse("[\"f\"([1,2,3])]")));
 
-	fprintf(stderr, "The following tests should generate parse errors.\n");
+	fprintf(stderr, "The following two tests should generate parse errors.\n");
 #ifdef ABORT_ON_PARSE_ERROR
 	ATsetAbortHandler(abort_handler);
 	parse_error_encountered = ATfalse;

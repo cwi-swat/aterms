@@ -28,6 +28,8 @@ INSTALL_PRG	= @INSTALL_PRG@
 
 DISTFILES	= configure.in configure Makefile.in install-sh
 
+.PHONY: all test
+
 all:
 	@for dir in ${SUBDIRS}; \
 	do \
@@ -85,3 +87,5 @@ tag:
 		cd ..; \
 	done
 
+test:
+	cd test; ${MAKE} test

@@ -158,4 +158,8 @@ depend: tool2.tif.c tool2.tif.h
 
 tag:
 	ctags *.[ch]
+	
+test: stress-gcc
+	stress-gcc > /dev/null
+		
 include .depend
