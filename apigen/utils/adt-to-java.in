@@ -184,7 +184,7 @@ fi
 
 # {{{  generate Java code from ADT
 java  -classpath ${CLASSES}:${SHARED_OBJECTS}:${JAVA_ATERM} \
-          apigen.gen.java.JavaGen \
+          apigen.gen.java.Main \
 	  -input ${INPUT}	\
 	  -basedir ${OUTPUT}	\
 	  ${OPT_IMPORTS}	\

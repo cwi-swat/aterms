@@ -177,7 +177,7 @@ fi
 
 # {{{  generate C code from ADT
 
-java  -classpath ${CGEN}:${JAVA_ATERM}:${SHARED_OBJECTS} apigen.gen.c.CGen \
+java  -classpath ${CGEN}:${JAVA_ATERM}:${SHARED_OBJECTS} apigen.gen.c.Main \
 	  -input ${INPUT}	\
 	  -output ${OUTPUT}	\
 	  ${OPTIONAL_PROLOGUE}	\
