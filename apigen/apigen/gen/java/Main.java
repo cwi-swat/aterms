@@ -102,6 +102,7 @@ public class Main {
 				jtype = true;
 			}
 			else {
+				System.err.println("Error: Not a valid option "+args[i]);
 				usage();
 				return;
 			}
