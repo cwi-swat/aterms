@@ -1,5 +1,11 @@
 $Id$
 
+2000/03/21 (olivierp@cwi.nl)
+ * Version 1.5
+ * added object locking in java ToolBus support.
+ * fixed tifstojava to generate correct tifs for methods taking complex args
+ * fixed error propagation in java ToolBus support
+
 2000/03/06 ({jong,olivierp@cwi.nl})
  * Version 1.5.3beta
  * deprecated.h is now empty (and deprecated)
