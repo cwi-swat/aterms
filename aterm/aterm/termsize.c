@@ -7,7 +7,7 @@ void termsize(FILE *file)
 {
 	int core_size, text_size;
 
-	ATerm t = ATreadFromTextFile(file);
+	ATerm t = ATreadFromFile(file);
 	core_size = AT_calcCoreSize(t);
 	text_size = AT_calcTextSize(t);
 	printf("internal size: %d bytes, text size: %d bytes\n", 

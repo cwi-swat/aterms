@@ -1976,10 +1976,11 @@ calcCoreSize(ATerm t)
 
     case AT_LIST:
 	size = 16;
-	if (!ATisEmpty((ATermList) t))
+	while (!ATisEmpty((ATermList) t))
 	{
+		size += 16;
 	    size += calcCoreSize(ATgetFirst((ATermList) t));
-	    size += calcCoreSize((ATerm) ATgetNext((ATermList) t));
+		t = (ATerm)ATgetNext((ATermList)t);
 	}
 	break;
 
@@ -2020,12 +2021,12 @@ calcUniqueSubterms(ATerm t)
 {
     int    i, arity, nr_unique = 0;
     Symbol sym;
+	ATermList list;
 
     if (IS_MARKED(t->header))
 		return 0;
 
     SET_MARK(t->header);
-    nr_unique++;
 
     switch (ATgetType(t))
     {
@@ -2033,9 +2034,11 @@ calcUniqueSubterms(ATerm t)
 		case AT_REAL:
 		case AT_BLOB:
 		case AT_PLACEHOLDER:
+			nr_unique = 1;
 			break;
 
 		case AT_APPL:
+			nr_unique = 1;
 			sym = ATgetSymbol((ATermAppl) t);
 			arity = ATgetArity(sym);
 			for (i = 0; i < arity; i++)
@@ -2043,13 +2046,15 @@ calcUniqueSubterms(ATerm t)
 			break;
 
 		case AT_LIST:
-			if (!ATisEmpty((ATermList) t))
-			{
-				ATermList tail = ATgetNext((ATermList)t);
-				nr_unique += calcUniqueSubterms(ATgetFirst((ATermList) t));
-				if (!ATisEmpty(tail))
-					nr_unique += calcUniqueSubterms((ATerm)tail);
+			nr_unique = 0;
+			list = (ATermList)t;
+			while(!ATisEmpty(list) && !IS_MARKED(list->header)) {
+			  nr_unique++;
+			  nr_unique += calcUniqueSubterms(ATgetFirst(list));
+			  list = ATgetNext(list);
 			}
+			if(!IS_MARKED(list->header))
+			  nr_unique++; /* Empty list is unmarked! */
 			break;
     }
 
