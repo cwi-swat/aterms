@@ -108,7 +108,11 @@ model checkers. Apart from its inevitable deployment in the tools of the
 amongst others in: the ELAN system~\cite{BR01}, The implementation of
 the Stratego Language~\cite{Vis01.rta}, The CoFI Algebraic Specification
 Language CASL~\cite{caslsum,CoFI}, and the $\mu$CRL ToolSet for Analysing
-Algebraic Specifications~\cite{mucrl-toolset}.
+Algebraic Specifications~\cite{mucrl-toolset}. \aterms include several
+nice features: they are easy to manipulate yet very efficient; they
+come with a built-in garbage collector (in the \C\ library), and they
+have persistency support in the form of a compact, sharing preserving
+serialization in both textual and binary representations.
 
 As more and more tools in the \metaenv\ were converted to work with
 the \atlib, it became apparent that the tools had become inflexible with
@@ -129,8 +133,16 @@ sprinkling of quoted strings containing backslash-escaped quotes,
 and as they begin to contain lists and annotations, the once so simple
 \emph{make-and-match} paradigm becomes a developer's nightmare.
 
+Shielding \aterm\ representation knowledge in access macros somewhat
+improves the legibility of code that uses them, but it does not in any way
+remove the maintenance issue. It restricts the knowledge to a specific
+set of macros, but these still need manual maintenance. As a result,
+this approach only \emph{looks like} representation hiding, but in fact
+all programmers of different tools still need to know the exact \aterm\
+representation of the data being exchanged.
+
 Motivated by the need to change \asfix\ and to avoid the herculean
-maintenance task this operation would impose on our tools, we decided
+maintenance task this operation would impose on our toolset, we decided
 to remove as much ``\aterm-handicraft'' from the tools as possible
 by developing an \api-generator that creates both an interface and an
 implementation of data structures represented by \aterms.
