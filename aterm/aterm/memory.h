@@ -34,6 +34,9 @@
 
 typedef struct Block
 {
+  /* We need platform alignment for this data block! */
+  header_type data[BLOCK_SIZE];
+
   int size;
   struct Block *next_by_size;
 /*#ifndef PO*/
@@ -47,7 +50,6 @@ typedef struct Block
 #ifndef PO
   header_type *end;
 #endif
-  header_type data[BLOCK_SIZE];
 } Block;
 
 typedef struct BlockBucket

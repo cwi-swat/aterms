@@ -124,9 +124,9 @@ static void mark_memory(ATerm *start, ATerm *stop)
     /* Traverse the stack */
   for(cur=start; cur<stop; cur++) {
     if(AT_isPotentialTerm(*cur)) {
-      if(!IS_MARKED((*cur)->header)) {
-        real_term = AT_isInsideValidTerm(*cur);
-        if (real_term != NULL) {
+      real_term = AT_isInsideValidTerm(*cur);
+      if (real_term != NULL) {
+        if(!IS_MARKED((real_term)->header)) {
           AT_markTerm(real_term);
             /*printf("mark_memory: cur = %x\ttop sym = %s\n",cur,ATgetName(ATgetAFun(real_term)));*/
             /*nb_cell_in_stack++;*/
@@ -166,9 +166,9 @@ static void mark_memory_young(ATerm *start, ATerm *stop) {
     /* Traverse the stack */
   for(cur=start; cur<stop; cur++) {
     if(AT_isPotentialTerm(*cur)) {
-      if(!IS_MARKED((*cur)->header)) {
-        real_term = AT_isInsideValidTerm(*cur);
-        if (real_term != NULL) {
+      real_term = AT_isInsideValidTerm(*cur);
+      if (real_term != NULL) {
+        if(!IS_MARKED(real_term->header)) {
           AT_markTerm_young(real_term);
             /*printf("mark_memory: cur = %x\ttop sym = %s\n",cur,ATgetName(ATgetAFun(real_term)));*/
             /*nb_cell_in_stack++;*/

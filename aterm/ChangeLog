@@ -1,5 +1,13 @@
 $Id$
 
+2002/10/17 <jong,olivierp@cwi.nl>
+* Fixed two alignment bugs that only manifested themselves on sun:
+  - 'data' field in Block was not eight byte aligned, we now moved it
+    to the start of the structure to get the default platform alignment.
+  - mark/mark_young: illegal optimization removed, term header dereference
+    can only be done when you are sure it is a valid term so IS_MARKED must
+    be delayed until after 'isValidTerm' check.
+
 2002/09/12 <jong@cwi.nl>
 * Fixed ~100 compiler errors due to the use of '//' as comment char,
   which (contrary to popular belief) *STILL* is not valid C !!!
