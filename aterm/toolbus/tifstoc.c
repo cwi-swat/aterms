@@ -639,6 +639,8 @@ int main(int argc, char *argv[])
 	char *p, *codename, *headername;
 	FILE *file;
 	char buf[2][BUFSIZ];
+	int  ATargc    = 2;
+	char *ATargv[] = { "", "-silent" };
 
 	prg = argv[0];
 
@@ -659,7 +661,7 @@ int main(int argc, char *argv[])
 			tifname = argv[i];
 		}
 	}
-	ATBinit(argc, argv, &topOfStack);
+	ATBinit(ATargc, ATargv, &topOfStack);
 
 	if(!tifname || !tool)
 		usage(argv[0]);
