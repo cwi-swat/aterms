@@ -19,19 +19,20 @@ exec_prefix=@exec_prefix@
 
 usage() {
 cat << ENDCAT >&2
-Usage: $PRG [options] <SDF2-Module>
+Usage: $PRG [options]
 
 Options:
   
+  -i | --input <IN>      specify input specification
+  -o | --output <OUT>    specify name of generated ADT [default: <IN>.adt]
+  -t | --table <TBL>     explicitly name the APIGEN-table to use
   -e | --expand-cons     put cons-annotations in term patterns  [default]
   -r | --remove-cons     remove cons-annotations from term patterns
-  -m | --module <MOD>    explicitly name the SDF2-module to use
-  -t | --table <TBL>     explicitly name the APIGEN-table to use
   -v | --verbose         be verbose during generation
   -s | --skip-cleanup    skip cleanup fase (useful for debugging)
   -h | --help            display this information
 
-Example: $PRG --remove-cons Booleans.sdf
+Example: $PRG --remove-cons -i Booleans.sdf -o Booleans.adt
 ENDCAT
 }
 
@@ -82,6 +83,8 @@ err() {
 # {{{  default settings
 
 # settings/options
+INPUT=""
+OUTPUT=""
 VERBOSE=0
 CLEANUP=1
 CONSOPT='cons-expand'
@@ -118,8 +121,11 @@ do
     -r | --remove-cons)
       CONSOPT='cons-remove' ;;
 
-    -m | --module)
-      shift; MODULE=$1 ;;
+    -i | --input)
+      shift; INPUT=$1 ;;
+
+    -o | --output)
+      shift; OUTPUT=$1 ;;
 
     -t | --table)
       shift; APITABLE=$1 ;;
@@ -134,7 +140,7 @@ do
       usage; exit 0 ;;
 
     *)
-      MODULE=$1
+      error "Unknown option: $1"
   esac
   shift
 done
@@ -143,16 +149,17 @@ done
 
 # {{{ Sanity checks and variable setup
 
-[ -f ${APITABLE} ] || error "No such file: ${APITABLE}"
-[ -f ${SDFFILE} ] || error "No such file: ${SDFFILE}"
+if [ "a${INPUT}" == "a" ]; then
+  error "${PRG}: please specify an input file"
+fi
 
-[ "a${MODULE}" == "a" ] && error "No module given!"
-SDFFILE=${MODULE}
+[ -f ${INPUT} ] || error "${PRG}: no such file: ${INPUT}"
+[ -f ${APITABLE} ] || error "${PRG}: no such file: ${APITABLE}"
 
-MODULE=`basename $MODULE .sdf`
-MODULE=`basename $MODULE .sdf2`
-
-ADTFILE="${MODULE}.adt"
+MODULE=`basename $INPUT .sdf`
+if [ "a$OUTPUT" == "a" ]; then
+  OUTPUT=${MODULE}.adt
+fi
 
 # }}}
 
@@ -162,18 +169,18 @@ trap cleanup EXIT
 
 #set -x
 
-info "Generating ${ADTFILE} from ${SDFFILE}:"
+info "Generating ${OUTPUT} from ${INPUT}:"
 
-info " - Parsing ${SDFFILE} (${APITABLE})"
-${SGLR} -1 -p ${APITABLE} -s SDF -i ${SDFFILE} -o .api_1_$$ || err
+info " - Parsing ${INPUT} (${APITABLE})"
+${SGLR} -1 -p ${APITABLE} -s SDF -i ${INPUT} -o .api_1_$$ || err
 
-info " - Labeling ${SDFFILE} (parsed)"
+info " - Labeling ${INPUT} (parsed)"
 ${APPLYFUNC} -f add-labels -s SDF -m AddLabels -i .api_1_$$ -o .api_2_$$ || err
 ${EVALUATOR} -w on -e ${ADDLABELS} -i .api_2_$$ -o .api_3_$$ || err
 
 info " - Generating ADT (${SDF2TOADT})"
 func="sdf-to-adt-${CONSOPT}"
 ${APPLYFUNC} -f ${func} -s ATerm -m Sdf2-to-ADT < .api_3_$$ > .api_4_$$ || err
-${SDF2TOADT} < .api_4_$$ | ${ASOURCE} > ${ADTFILE} || err
+${SDF2TOADT} < .api_4_$$ | ${ASOURCE} > ${OUTPUT} || err
 
 # }}}
