@@ -4,7 +4,7 @@ identification
    version=0.1
    location=http://www.cwi.nl/~storm
    info=http://www.cwi.nl/~storm
-   description='Relations with binary balanced trees."
+   description='Relations with binary balanced trees.'
 
    keywords=meta-environment, aterm, relation calculus
 
