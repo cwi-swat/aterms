@@ -53,8 +53,8 @@ public class ListTest {
      * two constructors (they have the same pattern, same alternative name, but a different type)
      * then a ClassCastException will occurr:
      */
-    Modules mempty = factory.makeModulesEmpty();
-    Modules2 mempty2 = factory.makeModules2Empty();
+    Modules mempty = factory.makeModules_Empty();
+    Modules2 mempty2 = factory.makeModules2_Empty();
     
   }
 
