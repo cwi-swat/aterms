@@ -68,8 +68,13 @@ AC_ARG_WITH(java,
 SUBDIR_JAVA=java1.2,
 )
 
+AC_ARG_WITH(shared,
+[  --with-shared  create a shared library version (libATerm.so)],
+LIB_SHARED=libATerm.so,
+)
+
 AC_ARG_WITH(64bit,
-[  --with-64bit   create 64 bit cc version of the library (libAterm-cc64.a)],
+[  --with-64bit   create 64 bit cc version of the library (libATerm-cc64.a)],
 LIB_CC64=libATerm-cc64.a,
 )
 CC_CC64=${CC}
@@ -78,6 +83,7 @@ LFLAGS_CC64="${LFLAGS_CC} -64"
 DEFS_CC64="${DEFS_CC}"
 INCL_CC64="${INCL_CC}",
 
+AC_SUBST(LIB_SHARED)
 AC_SUBST(LIB_CC64)
 AC_SUBST(CC_GCC)
 AC_SUBST(CC_CC)
