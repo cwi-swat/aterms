@@ -1,5 +1,10 @@
 # $Id$
 
+2004-11-22  pem  <pem@becky.local>
+ * added a --traveler option to parameterize the jjtraveler package.
+ * set to 'jjtraveler' by default
+ * this option is not used for the moment
+
 Tue Sep 28 13:41:05 CEST 2004 <{jurgenv,jong}@cwi.nl>
  * Printing of APINAME was commented out in the Main of the Java generator,
    that's why the script adt-to-java was broken.

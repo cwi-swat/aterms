@@ -17,7 +17,8 @@ public class AbstractTypeGenerator extends JavaGenerator {
     private String factoryClassName;
     private Module module;
     private ADT adt;
-
+    private String traveler;
+    
     public AbstractTypeGenerator(ADT adt, JavaGenerationParameters params, Module module) {
         super(params);
         this.adt = adt;
@@ -25,6 +26,7 @@ public class AbstractTypeGenerator extends JavaGenerator {
         this.module = module;
         this.factoryClassName = FactoryGenerator.qualifiedClassName(getJavaGenerationParameters(), module.getModulename().getName());
         this.visitable = params.isVisitable();
+        this.traveler = params.getTravelerName();
     }
 
     public String getClassName() {
@@ -150,7 +152,7 @@ public class AbstractTypeGenerator extends JavaGenerator {
        	    println(
             "  abstract public " + getClassName() + " accept("
                 + visitorPackage
-                + " v) throws jjtraveler.VisitFailure;");
+                + " v) throws " + traveler + ".VisitFailure;");
        	    println();
        	}
     }

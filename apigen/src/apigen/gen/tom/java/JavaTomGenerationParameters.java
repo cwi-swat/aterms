@@ -25,6 +25,12 @@ class JavaTomGenerationParameters extends JavaGenerationParameters {
 		super.parseArguments(args);
 	}
 
+	public JavaTomGenerationParameters() {
+		super();
+		setOutputDirectory(".");
+		setPrefix("");
+	}
+	
 	public String usage() {
 		StringBuffer buf = new StringBuffer(super.usage());
 		buf.append("\t--jtype\t\t\t\t<insert sensible explanation about --jtype here>");

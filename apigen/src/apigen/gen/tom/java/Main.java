@@ -13,7 +13,7 @@ import apigen.adt.api.types.Module;
 public class Main {
 	
 	public static final void main(String[] arguments) {
-		JavaTomGenerationParameters params = buildDefaultParameters();
+		JavaTomGenerationParameters params = new JavaTomGenerationParameters();
 		List args = new LinkedList(Arrays.asList(arguments));
 
 		if (args.size() == 0) {
@@ -52,13 +52,6 @@ public class Main {
 		}
 	}
 	
-	private static JavaTomGenerationParameters buildDefaultParameters() {
-		JavaTomGenerationParameters params = new JavaTomGenerationParameters();
-		params.setOutputDirectory(".");
-		params.setPrefix("");
-		return params;
-	}
-
 	private static void usage(JavaTomGenerationParameters params) {
 		System.err.println("Usage: java apigen.gen.tom.java.Main [options]");
 		System.err.println("options:");

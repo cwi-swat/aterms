@@ -16,12 +16,14 @@ public class VisitorGenerator extends JavaGenerator {
     private ADT adt;
     private String apiName;
     private Module module;
+    private String traveler;
     
     public VisitorGenerator(ADT adt, JavaGenerationParameters params, Module module) {
         super(params);
         this.adt = adt;
         this.module = module;
         this.apiName = params.getApiExtName(module);
+        this.traveler = params.getTravelerName();
     }
 
       public String getClassName() {
@@ -87,7 +89,7 @@ public class VisitorGenerator extends JavaGenerator {
                 + methodName
                 + "("
                 + paramTypeName
-                + " arg) throws jjtraveler.VisitFailure;");
+                + " arg) throws " + traveler + ".VisitFailure;");
     }
 
      public static String qualifiedClassName(

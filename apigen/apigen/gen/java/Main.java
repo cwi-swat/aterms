@@ -21,7 +21,7 @@ import apigen.gen.TypeConverter;
 
 public class Main {
     public static void main(String[] arguments) {
-        JavaGenerationParameters params = buildDefaultParameters();
+        JavaGenerationParameters params = new JavaGenerationParameters();
         ADT adt;
         List args = new LinkedList(Arrays.asList(arguments));
         if (args.size() == 0) {
@@ -52,15 +52,7 @@ public class Main {
         generateAPI(adt, params);
     }
 
-    private static JavaGenerationParameters buildDefaultParameters() {
-        JavaGenerationParameters params = new JavaGenerationParameters();
-        params.setOutputDirectory(".");
-        params.setVerbose(false);
-        params.setVisitable(false);
-        return params;
-    }
-
-    private static void usage(JavaGenerationParameters params) {
+     private static void usage(JavaGenerationParameters params) {
         System.err.println("Usage: apigen.gen.java.Main [parameters]");
         System.err.println("Parameters:");
         System.err.print(params.usage());

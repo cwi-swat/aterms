@@ -17,6 +17,7 @@ public class AlternativeGenerator extends JavaGenerator {
     private String className;
     private String superClassName;
     private ADT adt;
+    private String traveler;
 
     protected AlternativeGenerator(
         ADT adt, 
@@ -29,6 +30,7 @@ public class AlternativeGenerator extends JavaGenerator {
         this.alt = alt;
         this.className = buildClassName(alt.getId());
         this.superClassName = new TypeGenerator(params, type).qualifiedClassName(params, type);
+        this.traveler = params.getTravelerName();
     }
 
     public String getClassName() {
@@ -86,7 +88,7 @@ public class AlternativeGenerator extends JavaGenerator {
         print("public class " + className + " extends " + superClassName);
 
         if (visitable) {
-            print(" implements jjtraveler.Visitable");
+            print(" implements " + traveler + ".Visitable");
         }
         println(" {");
 
@@ -495,7 +497,7 @@ public class AlternativeGenerator extends JavaGenerator {
        	    println(
        	            "  public " + abstractTypePackage + " accept("
        	            + visitorPackage
-       	            + " v) throws jjtraveler.VisitFailure {");
+       	            + " v) throws " + traveler + ".VisitFailure {");
        	    println("    return v.visit_" + altClassName + "(this);");
        	    println("  }");
        	    println();

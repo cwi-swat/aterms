@@ -15,12 +15,14 @@ public class ForwardVoidGenerator extends JavaGenerator {
 	private ADT adt;
 	private String apiName;
     private Module module;
-
+    private String traveler;
+    
 	public ForwardVoidGenerator(ADT adt, JavaGenerationParameters params, Module module) {
 		super(params);
 		this.adt = adt;
 		this.module = module;
 		this.apiName = params.getApiExtName(module);
+		this.traveler = params.getTravelerName();
 	}
 
 	public String getClassName() {
@@ -57,7 +59,7 @@ public class ForwardVoidGenerator extends JavaGenerator {
 	}
 
 	private void genVisitMethod(String methodName, String paramTypeName, String returnType) {
-		println("  public " + returnType + " visit_" + methodName + "(" + paramTypeName + " arg) throws jjtraveler.VisitFailure {");
+		println("  public " + returnType + " visit_" + methodName + "(" + paramTypeName + " arg) throws " + traveler + ".VisitFailure {");
 		println("    return (" + returnType + ") any.visit(arg);");
 		println("  }");
 		println();
@@ -73,7 +75,7 @@ public class ForwardVoidGenerator extends JavaGenerator {
 	protected void generate() {
 		printPackageDecl();
 
-		println("public class " + getClassName() + " extends jjtraveler.VoidVisitor implements " + getVisitorName() + ", jjtraveler.Visitor {");
+		println("public class " + getClassName() + " extends " + traveler + ".VoidVisitor implements " + getVisitorName() + ", " + traveler + ".Visitor {");
 		genConstructor();
 		genVoidVisit();
 		genVisits(adt);
@@ -81,16 +83,16 @@ public class ForwardVoidGenerator extends JavaGenerator {
 	}
 
 	private void genConstructor() {
-		println("  protected jjtraveler.Visitor any;");
+		println("  protected " + traveler + ".Visitor any;");
 		println();
-		println("  public " + getClassName() + "(jjtraveler.Visitor v) {");
+		println("  public " + getClassName() + "(" + traveler + ".Visitor v) {");
 		println("    this.any = v;");
 		println("  }");
 		println();
 	}
 
 	private void genVoidVisit() {
-		println("  public void voidVisit(jjtraveler.Visitable v) throws jjtraveler.VisitFailure {");
+		println("  public void voidVisit(" + traveler + ".Visitable v) throws " + traveler + ".VisitFailure {");
 		String prefixIf = "";
 		Set moduleToGen = adt.getImportsClosureForModule(module.getModulename().getName());
        	Iterator moduleIt = moduleToGen.iterator();

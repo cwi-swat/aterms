@@ -15,12 +15,14 @@ public class ForwardGenerator extends JavaGenerator {
 	private ADT adt;
 	private String apiName;
     private Module module;
-
+    private String traveler;
+    
 	public ForwardGenerator(ADT adt, JavaGenerationParameters params, Module module) {
 		super(params);
 		this.adt = adt;
 		this.module = module;
 		this.apiName = params.getApiExtName(module);
+		this.traveler = params.getTravelerName();
 	}
 
 	public String getClassName() {
@@ -59,7 +61,7 @@ public class ForwardGenerator extends JavaGenerator {
 		String returnType = TypeGenerator.qualifiedClassName(getJavaGenerationParameters(), TypeGenerator.className(type));
 		String typeMethodName = TypeGenerator.className(type);
 		
-		println("  public " + returnType + " visit_" + methodName + "(" + paramType + " arg) throws jjtraveler.VisitFailure {");
+		println("  public " + returnType + " visit_" + methodName + "(" + paramType + " arg) throws " + traveler + ".VisitFailure {");
 		println("    return visit_" + typeMethodName +"(arg);");
 		println("  }");
 		println();
@@ -70,7 +72,7 @@ public class ForwardGenerator extends JavaGenerator {
 		String methodName = TypeGenerator.className(type);
 		String typeName = TypeGenerator.qualifiedClassName(getJavaGenerationParameters(), TypeGenerator.className(type));
 		
-		println("  public " + typeName + " visit_" + methodName + "(" + typeName + " arg) throws jjtraveler.VisitFailure {");
+		println("  public " + typeName + " visit_" + methodName + "(" + typeName + " arg) throws " + traveler + ".VisitFailure {");
 		println("    return (" + typeName + ") any.visit(arg);");
 		println("  }");
 		println();
@@ -80,7 +82,7 @@ public class ForwardGenerator extends JavaGenerator {
 	protected void generate() {
 		printPackageDecl();
 
-		println("public class " + getClassName() + " implements " + getVisitorName() + ", jjtraveler.Visitor {");
+		println("public class " + getClassName() + " implements " + getVisitorName() + ", " + traveler + ".Visitor {");
 		genConstructor();
 		genDefaultVisit();
 		genVisits(adt);
@@ -88,9 +90,9 @@ public class ForwardGenerator extends JavaGenerator {
 	}
 
 	private void genConstructor() {
-		println("  protected jjtraveler.Visitor any;");
+		println("  protected " + traveler + ".Visitor any;");
 		println();
-		println("  public " + getClassName() + "(jjtraveler.Visitor v) {");
+		println("  public " + getClassName() + "(" + traveler + ".Visitor v) {");
 		println("    this.any = v;");
 		println("  }");
 		println();
@@ -98,7 +100,7 @@ public class ForwardGenerator extends JavaGenerator {
 
 	private void genDefaultVisit() {
 		
-		println("  public jjtraveler.Visitable visit(jjtraveler.Visitable v) throws jjtraveler.VisitFailure {");
+		println("  public " + traveler + ".Visitable visit(" + traveler + ".Visitable v) throws " + traveler + ".VisitFailure {");
 		String prefixIf = "";
 		Set moduleToGen = adt.getImportsClosureForModule(module.getModulename().getName());
        	Iterator moduleIt = moduleToGen.iterator();

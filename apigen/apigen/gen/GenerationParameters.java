@@ -41,7 +41,7 @@ public class GenerationParameters {
 				setVerbose(true);
 			}
 			else {
-				throw new IllegalArgumentException("unknown argument: " + arg);
+				throw new IllegalArgumentException("unknown argument: " + arg + " of " + args);
 			}
 		}
 		if (args.size() != 0) {
