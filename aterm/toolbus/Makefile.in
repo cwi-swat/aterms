@@ -47,7 +47,7 @@ PROGS		= tifstoc
 PUBLIC_INCL	= atb-tool.h
 PRIVATE_INCL	=
 ATBINCL		= ${PUBLIC_INCL} ${PRIVATE_INCL}
-DISTFILES	= Makefile.in ${ATBSRCS} ${ATBINCL}
+DISTFILES	= .depend Makefile.in ${ATBSRCS} ${ATBINCL}
 
 OBJ_CC		= $(patsubst %.c,%-cc.o,$(ATBSRCS))
 OBJ_GCC		= $(patsubst %.c,%-gcc.o,$(ATBSRCS))

@@ -8,6 +8,7 @@
 #include <time.h>
 #include <assert.h>
 
+#include "util.h"
 #include "aterm2.h"
 #include "atb-tool.h"
 
@@ -15,9 +16,7 @@
 
 /*{{{  defines */
 
-#define streq(a,b)      (!strcmp((a),(b)))
 #define strprefix(a,b)  (!strncmp((a),(b),strlen(b)))
-#define MAX(a,b)        ((a) > (b) ? (a) : (b))
 /*}}}  */
 /*{{{  globals */
 

@@ -21,15 +21,11 @@
 /*}}}  */
 /*{{{  defines */
 
-#define streq(s,t)	(!(strcmp((s),(t))))
-
 #define TB_HOST			 "-TB_HOST"
 #define TB_PORT			 "-TB_PORT"
 #define TB_TOOL_ID		 "-TB_TOOL_ID"
 #define TB_TOOL_NAME	 "-TB_TOOL_NAME"
 #define TB_HANDSHAKE_LEN 512
-
-#define MAX(a,b)  ((a) > (b) ? (a) : (b))
 
 #define MIN_MSG_SIZE          128
 #define MAX_CONNECT_ATTEMPTS 1024

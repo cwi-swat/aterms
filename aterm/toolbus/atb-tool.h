@@ -3,6 +3,7 @@
 #define ATB_TOOL_H
 
 #include <aterm1.h>
+#include <util.h>
 #include <sys/times.h>
 #include <sys/types.h>
 
