@@ -1,4 +1,25 @@
 equations
+
+  [equ-merge-adts-empty]
+    merge-adts($ADT, []) = $ADT
+
+  [equ-merge-adts-double-ok]
+    merge-adts([$Entry*1, $Entry, $Entry*2], [$Entry, $Entry*3]) =
+	merge-adts([$Entry*1, $Entry, $Entry*2], [$Entry*3])
+
+  [equ-merge-adts-double-collission]
+    $Entry1 = [$TypeId, $AltId, $Pattern1],
+    $Entry2 = [$TypeId, $AltId, $Pattern2],
+    $Pattern1 != $Pattern2,
+    merge-adts([$Entry*1, $Entry1, collission($Entry1, $Entry2),
+	$Entry*2], [$Entry*3]) = $ADT
+    ===>
+    merge-adts([$Entry*1, $Entry1, $Entry*2], [$Entry2, $Entry*3]) = $ADT
+
+  [default-merge-adts-divide]
+    merge-adts([$Entry*1], [$Entry, $Entry*2]) =
+	merge-adts([$Entry*1, $Entry], [$Entry*2])
+
   [equ-get-type-int]  get-type($Int) = #int
   [equ-get-type-list] get-type([$ATerm*]) = #list
   [equ-get-type-int] get-type(<$ATerm>) = #placeholder

@@ -1,5 +1,18 @@
 equations
 
+[equ-sdf-to-adt-definition-empty]
+  sdf-to-adt(definition ) = [ ]
+
+[equ-sdf-to-adt-defintion-divide]
+  sdf-module-to-adt($Module) = $ADT1,
+  sdf-to-adt(definition $Module*) = $ADT2,
+  merge-adts($ADT1, $ADT2) = $ADT3
+  ===>
+  sdf-to-adt(definition $Module $Module*) = $ADT3
+
+[equ-sdf-to-adt-module]
+  sdf-to-adt($Module) = sdf-module-to-adt($Module)
+
 [equ-sdf-module-to-adt-empty]
   sdf-module-to-adt(module $ModName $ImpSection*) = [ ]
 
@@ -289,9 +302,12 @@ equations
 [equ-build-asfix-attr-left]        build-asfix-attr(left)        = l("left")
 [equ-build-asfix-attr-right]       build-asfix-attr(right)       = l("right")
 [equ-build-asfix-attr-assoc]       build-asfix-attr(assoc)       = l("assoc")
+[equ-build-asfix-attr-bracket]     build-asfix-attr(bracket)     = l("bracket")
 [equ-build-asfix-attr-constructor] build-asfix-attr(constructor) = l("constructor")
 [equ-build-asfix-attr-memo]        build-asfix-attr(memo)        = l("memo")
 [equ-build-asfix-attr-traverse]    build-asfix-attr(traverse)    = l("traverse")
+[equ-build-asfix-attr-avoid]       build-asfix-attr(avoid)       = l("avoid")
+[equ-build-asfix-attr-prefer]      build-asfix-attr(prefer)      = l("prefer")
 
 [equ-build-asfix-attr-cons]
   build-asfix-attr(cons(at-literal(""" $Char* """))) = ql(at-literal(""" "c" "o" "n" "s" "(" $Char* ")" """))

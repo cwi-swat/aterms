@@ -3,6 +3,8 @@ module Sdf2-to-ADT
 
 exports
   context-free syntax
+    sdf-to-adt ( SDF )				-> ATerm
+    sdf-to-adt ( Module )			-> ATerm
     sdf-module-to-adt ( Module )		-> ATerm
 
 %%context-free syntax
@@ -38,6 +40,7 @@ hiddens
     build-asfix-attr ( Attribute )			-> ATerm
 
   variables
+    "$ADT"[0-9]*	-> ATerm
     "$AFArg"		-> ATerm
     "$AFArgs"		-> { ATerm "," }*
     "$AFAttr"		-> ATerm
@@ -69,6 +72,8 @@ hiddens
     "$ListType"		-> AFun
     "$Literal"		-> Literal
     "$ModName"		-> ModuleName
+    "$Module"		-> Module
+    "$Module*"		-> Module*
     "$Production"	-> Production
     "$Production*"	-> Production*
     "$Section"		-> Section
