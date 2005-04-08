@@ -1,5 +1,8 @@
 # $Id$
 
+Fri Apr  8 11:50:51 CEST 2005 <kooiker@cwi.nl>
+ * use ant
+
 Tue Feb 10 15:27:49 CET 2004 <m336@cwi.nl>
  * upgrade auto* to: autoconf 2.59, automake 1.7.9, libtool 1.5.2
 

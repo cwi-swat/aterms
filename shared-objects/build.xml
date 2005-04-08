@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="shared-objects" default="build" basedir=".">
+
+  <property environment="env"/>
+  <property name="build" location="build"/>
+  <property name="dist" location="dist"/>
+  <property name="shared" location="shared"/>
+
+  <target name="build">
+    <mkdir dir="build"/>
+    <javac destdir="${build}">
+      <src path="shared"/>
+    </javac>
+  </target>
+
+  <target name="dist" depends="build">
+    <mkdir dir="${dist}/src"/>
+    <copy todir="${dist}/src/shared">
+      <fileset dir="${shared}" includes="**/*.java"/>
+    </copy>
+    <jar destfile="${env.JAR}">
+      <fileset dir="${build}"/>
+      <fileset dir="${dist}"/>
+    </jar>
+  </target>
+
+  <target name="clean">
+    <delete dir="${build}"/>
+    <delete dir="${dist}"/>
+    <delete file="${env.JAR}"/>
+  </target>
+
+</project>

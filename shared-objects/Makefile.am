@@ -1,21 +1,24 @@
-SUBDIRS = shared config .
+SUBDIRS = config .
 
 ACLOCAL_FLAGS = -I .
 
 JARFILE = shared-objects-${VERSION}.jar
+JARFILE_ENV = JAR=${JARFILE}
 
 data_DATA = ${JARFILE}
-CLEANFILES = ${JARFILE} ${PACKAGE}-${VERSION}.pkg
-
-${JARFILE}:
-	jar cf ${JARFILE} \
-	`cd ${top_builddir} && find . -name '*.class'`
-
-EXTRA_DIST=package
-
 noinst_SCRIPTS = ${PACKAGE}-${VERSION}.pkg
+
+EXTRA_DIST = package build.xml ${JARFILE}
 
 ${PACKAGE}-${VERSION}.pkg: package Makefile
 	cp $< $@
 
+CLEANFILES = ${PACKAGE}-${VERSION}.pkg
 
+if MAINTAINER_MODE
+${JARFILE}:
+	${JARFILE_ENV} ant dist
+
+clean-local:
+	${JARFILE_ENV} ant clean
+endif

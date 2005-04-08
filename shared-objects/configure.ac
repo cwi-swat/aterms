@@ -1,14 +1,15 @@
 dnl $Id$
 
 AC_INIT
-AC_CONFIG_SRCDIR([configure.in])
+AC_CONFIG_SRCDIR([configure.ac])
 GLT_INIT_PACKAGE
 AC_PREREQ(2.59)
+
+AM_MAINTAINER_MODE
 
 AC_PROG_MAKE_SET([])
 
 AC_CONFIG_FILES([Makefile
-  shared/Makefile
   config/Makefile
 ])
 AC_OUTPUT
