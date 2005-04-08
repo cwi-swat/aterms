@@ -4,19 +4,19 @@
   <property environment="env"/>
   <property name="build" location="build"/>
   <property name="dist" location="dist"/>
-  <property name="shared" location="shared"/>
+  <property name="package" value="shared"/>
 
   <target name="build">
     <mkdir dir="build"/>
     <javac destdir="${build}">
-      <src path="shared"/>
+      <src path="${package}"/>
     </javac>
   </target>
 
   <target name="dist" depends="build">
     <mkdir dir="${dist}/src"/>
-    <copy todir="${dist}/src/shared">
-      <fileset dir="${shared}" includes="**/*.java"/>
+    <copy todir="${dist}/src/${package}">
+      <fileset dir="${package}" includes="**/*.java"/>
     </copy>
     <jar destfile="${env.JAR}">
       <fileset dir="${build}"/>
