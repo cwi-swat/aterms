@@ -7,7 +7,7 @@
   <property name="package" value="shared"/>
 
   <target name="build">
-    <mkdir dir="build"/>
+    <mkdir dir="${build}"/>
     <javac destdir="${build}">
       <src path="${package}"/>
     </javac>
