@@ -1,5 +1,9 @@
 # $Id$
 
+Mon Apr 11 15:23:52 CEST 2005 <kooiker@cwi.nl>
+ * build.xml:
+   - add debug information to compiled java sources
+
 Fri Apr  8 11:50:51 CEST 2005 <kooiker@cwi.nl>
  * use ant
 
