@@ -92,9 +92,6 @@ public class TomSignatureGenerator extends Generator {
 	private String TypeTermTemplate(
 		String type,
 		String impl,
-		String get_fun_sym,
-		String cmp_fun_sym,
-		String get_subterm,
 		String equals,
     String checkStamp,
     String setStamp,
@@ -106,15 +103,6 @@ public class TomSignatureGenerator extends Generator {
 			+ "  implement { "
 			+ impl
 			+ "}\n"
-			+ "  get_fun_sym(t) {"
-			+ get_fun_sym
-			+ "}\n"
-			+ "  cmp_fun_sym(s1,s2) { "
-			+ cmp_fun_sym
-			+ "}\n"
-			+ "  get_subterm(t,n) {"
-			+ get_subterm
-			+ "}\n"
 			+ "  equals(t1,t2) {"
 			+ equals
 			+ "}\n"
@@ -125,8 +113,6 @@ public class TomSignatureGenerator extends Generator {
 	private String TypeListTemplate(
 		String type,
 		String impl,
-		String get_fun_sym,
-		String cmp_fun_sym,
 		String equals,
 		String get_head,
 		String get_tail,
@@ -140,12 +126,6 @@ public class TomSignatureGenerator extends Generator {
 			+ "{\n"
 			+ "  implement { "
 			+ impl
-			+ "}\n"
-			+ "  get_fun_sym(t) {"
-			+ get_fun_sym
-			+ "}\n"
-			+ "  cmp_fun_sym(s1,s2) { "
-			+ cmp_fun_sym
 			+ "}\n"
 			+ "  equals(t1,t2) {"
 			+ equals
@@ -204,8 +184,6 @@ public class TomSignatureGenerator extends Generator {
 				TypeListTemplate(
 					impl.TypeName(type.getId()),
 					impl.TypeImpl(packagePrefix + prefix + type.getId()),
-					impl.TypeGetFunSym("t"),
-					impl.TypeCmpFunSym("s1", "s2"),
 					impl.TypeEquals(type.getId(), "t1", "t2"),
 					impl.ListHead(type.getId()),
 					impl.ListTail(type.getId()),
@@ -226,9 +204,6 @@ public class TomSignatureGenerator extends Generator {
 				TypeTermTemplate(
 					impl.TypeName(type.getId()),
 					impl.TypeImpl(packagePrefix + prefix + type.getId()),
-					impl.TypeGetFunSym("t"),
-					impl.TypeCmpFunSym("s1", "s2"),
-					impl.TypeGetSubTerm("t", "n"),
 					impl.TypeEquals(type.getId(), "t1", "t2"),
           "if(t.getAnnotation(" + stamp + ") == " + stamp + ")  return; else throw new RuntimeException(\"bad stamp\")",
           "(" + packagePrefix + prefix + type.getId()  + ")t.setAnnotation(" + stamp +"," + stamp + ")",
@@ -245,8 +220,6 @@ public class TomSignatureGenerator extends Generator {
 	private void genTomManyOperator(Type type, String eltType, String class_name) {
 		// many operator
 		println("%op " + type.getId() + " many" + type.getId() + "(head:" + eltType + ", tail:" + type.getId() + ") {");
-		println("  fsym { null }");
-
 		println("  is_fsym(t) { " + prefix + impl.OperatorIsFSym("t", class_name, "many") + "}");
 		println("  get_slot(head,t) { " + impl.OperatorGetSlot("t", class_name, "head") + "}");
 		println("  get_slot(tail,t) { " + impl.OperatorGetSlot("t", class_name, "tail") + "}");
@@ -256,7 +229,6 @@ public class TomSignatureGenerator extends Generator {
 
 	private void genTomEmptyOperator(Type type, String class_name) {
 		println("%op " + type.getId() + " empty" + type.getId() + "{");
-		println("  fsym { null }");
 		println("  is_fsym(t) { " + prefix + impl.OperatorIsFSym("t", class_name, "empty") + "}");
 		println("  make() {" + impl.ListmakeEmpty(type.getId()) + "}");
 		println("}");
@@ -265,7 +237,6 @@ public class TomSignatureGenerator extends Generator {
 	private void genTomConcOperator(Type type, String eltType, String opName) {
 		// conc operator
 		println("%oplist " + type.getId() + " " + opName + "(" + eltType + "*) {");
-		println("  fsym { null }");
 		println("  is_fsym(t) {" + impl.ListIsList("t", type.getId()) + "}");
 		println("  make_empty() {" + impl.ListmakeEmpty(type.getId()) + "}");
 		println("  make_insert(e,l) {" + impl.ListmakeInsert(type.getId(), eltType) + "}");
@@ -314,7 +285,6 @@ public class TomSignatureGenerator extends Generator {
 			print(")");
 		}
 		println(" {");
-		println("  fsym {" + impl.OperatorFSym(class_name, operator_name) + "}");
 		println("  is_fsym(t) { " + prefix + impl.OperatorIsFSym("t", class_name, operator_name) + "}");
 
 		fields = type.altFieldIterator(alt.getId());

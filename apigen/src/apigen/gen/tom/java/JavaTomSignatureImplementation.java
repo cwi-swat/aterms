@@ -28,69 +28,6 @@ public class JavaTomSignatureImplementation implements TomSignatureImplementatio
 
 		return StringConversions.capitalize(type + "_" + StringConversions.capitalize(alt));
 	}
-
-	public String ATermName() {
-		return tomConverter.getTermType();
-	}
-
-	public String ATermImpl() {
-		return javaConverter.getTermType();
-	}
-
-	public String ATermGetFunSym(String arg) {
-		return "((" + arg + " instanceof ATermAppl)?((ATermAppl)" + arg + ").getAFun():null)";
-	}
-
-	public String ATermCmpFunSym(String s1, String s2) {
-		return s1 + "==" + s2;
-	}
-
-	public String ATermGetSubTerm(String term, String n) {
-		return "(((ATermAppl)" + term + ").getArgument(" + n + "))";
-	}
-
-	public String ATermEquals(String s1, String s2) {
-		return s1 + ".equals(" + s2 + ")";
-	}
-
-	public String ATermListName() {
-		return tomConverter.getListType();
-	}
-
-	public String ATermListImpl() {
-		return javaConverter.getListType();
-	}
-
-	public String ATermListGetFunSym(String arg) {
-		return "(("
-			+ arg
-			+ " instanceof ATermList)?get"
-			+ StringConversions.makeCapitalizedIdentifier(apiName)
-			+ "Factory"
-			+ "().get"
-			+ "PureFactory"
-			+ "().makeAFun(\"conc\",1,false):null)";
-	}
-
-	public String ATermListCmpFunSym(String s1, String s2) {
-		return s1 + "==" + s2;
-	}
-
-	public String ATermListEquals(String s1, String s2) {
-		return s1 + ".equals(" + s2 + ")";
-	}
-
-	public String ATermListGetFirst(String arg) {
-		return arg + ".getFirst()";
-	}
-	
-	public String ATermListGetNext(String arg) {
-		return arg + ".getNext()";
-	}
-	
-	public String ATermListIsEmpty(String arg) {
-		return arg + ".isEmpty()";
-	}
 	
 	public String TypeName(String type) {
 		if (tomConverter.isReserved(type)) {
@@ -102,18 +39,6 @@ public class JavaTomSignatureImplementation implements TomSignatureImplementatio
 
 	public String TypeImpl(String type) {
 		return type;
-	}
-
-	public String TypeGetFunSym(String arg) {
-		return "null";
-	}
-
-	public String TypeCmpFunSym(String arg1, String arg2) {
-		return "false";
-	}
-
-	public String TypeGetSubTerm(String term, String n) {
-		return "null";
 	}
 
 	public String TypeEquals(String type, String arg1, String arg2) {
@@ -131,10 +56,6 @@ public class JavaTomSignatureImplementation implements TomSignatureImplementatio
 
 	public String OperatorType(String type, String id) {
 		return buildAltTypeName(type, id);
-	}
-
-	public String OperatorFSym(String type, String alt) {
-		return "";
 	}
 
 	public String OperatorIsFSym(String term, String type, String alt) {

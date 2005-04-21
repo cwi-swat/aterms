@@ -27,152 +27,12 @@ public class CTomSignatureImplementation implements TomSignatureImplementation {
 		return StringConversions.capitalize(type + StringConversions.capitalize(alt));
 	}
 
-	public String StringName() {
-		return "Str";
-	}
-
-	public String StringImpl() {
-		return converter.getStringType();
-	}
-
-	public String StringGetFunSym(String arg1) {
-		return arg1;
-	}
-
-	public String StringGetSubTerm(String term, String n) {
-		return "NULL";
-	}
-
-	public String StringCmpFunSym(String s1, String s2) {
-		return "!strcmp(" + s1 + "," + s2 + ")";
-	}
-
-	public String StringEquals(String s1, String s2) {
-		return StringCmpFunSym(s1, s2);
-	}
-
-	public String IntegerName() {
-		return "Int";
-	}
-
-	public String IntegerImpl() {
-		return converter.getIntegerType();
-	}
-
-	public String IntegerGetFunSym(String arg1) {
-		return "(void*)"+ arg1;
-	}
-
-	public String IntegerGetSubTerm(String term, String n) {
-		return "0";
-	}
-
-	public String IntegerCmpFunSym(String s1, String s2) {
-		return "(" + s1 + "==" + s2 + ")";
-	}
-
-	public String IntegerEquals(String s1, String s2) {
-		return IntegerCmpFunSym(s1, s2);
-	}
-
-	public String DoubleName() {
-		return "Double";
-	}
-
-	public String DoubleImpl() {
-		return converter.getRealType();
-	}
-
-	public String DoubleGetFunSym(String arg1) {
-		return arg1;
-	}
-
-	public String DoubleCmpFunSym(String s1, String s2) {
-		return "(" + s1 + "==" + s2 + ")";
-	}
-
-	public String DoubleGetSubTerm(String term, String n) {
-		return "0.0";
-	}
-
-	public String DoubleEquals(String s1, String s2) {
-		return DoubleCmpFunSym(s1, s2);
-	}
-
-	public String ATermName() {
-		return "ATerm";
-	}
-
-	public String ATermImpl() {
-		return converter.getTermType();
-	}
-
-	public String ATermGetFunSym(String arg) {
-		return "(void*)((ATgetType(" + arg + ") == AT_APPL)?ATgetAFun((ATermAppl)" + arg + "):NULL)";
-	}
-
-	public String ATermCmpFunSym(String s1, String s2) {
-		return "ATisEqualAFun(" + s1 + "," + s2 + ")";
-	}
-
-	public String ATermGetSubTerm(String term, String n) {
-		return "ATgetArgument(((ATermAppl)" + term + ")," + n + ")";
-	}
-
-	public String ATermEquals(String s1, String s2) {
-		return "ATisEqual(" + s1 + "," + s2 + ")";
-	}
-
-	public String ATermListName() {
-		return "ATermList";
-	}
-
-	public String ATermListImpl() {
-		return converter.getTermType();
-	}
-
-	public String ATermListGetFunSym(String arg) {
-		return "(void*) ((ATgetType(" + arg + ") == AT_LIST)?ATmakeAFun(\"conc\",1,ATfalse):NULL)";
-	}
-
-	public String ATermListCmpFunSym(String s1, String s2) {
-		return "ATisEqualAFun(" + s1 + "," + s2 + ")";
-	}
-
-	public String ATermListEquals(String s1, String s2) {
-		return "ATisEqual(" + s1 + "," + s2 + ")";
-	}
-
-	public String ATermListGetFirst(String arg) {
-		return "(void*) ATgetFirst((ATermList)" + arg + ")";
-	}
-	
-	public String ATermListGetNext(String arg) {
-		return "(void*) ATgetNext((ATermList)" + arg + ")";
-	}
-	
-	public String ATermListIsEmpty(String arg) {
-		return "ATisEmpty((ATermList)" + arg + ")";
-	}
-	
 	public String TypeName(String type) {
 		return buildTypeName(type);
 	}
 
 	public String TypeImpl(String type) {
 		return type;
-	}
-
-	public String TypeGetFunSym(String arg) {
-		return "NULL";
-	}
-
-	public String TypeCmpFunSym(String arg1, String arg2) {
-		return "!(0==0)";
-	}
-
-	public String TypeGetSubTerm(String term, String n) {
-		return "NULL";
 	}
 
 	public String TypeEquals(String type, String arg1, String arg2) {
@@ -190,10 +50,6 @@ public class CTomSignatureImplementation implements TomSignatureImplementation {
 
 	public String OperatorType(String type, String id) {
 		return buildAltTypeName(type, id);
-	}
-
-	public String OperatorFSym(String type, String alt) {
-		return "";
 	}
 
 	public String OperatorIsFSym(String term, String type, String alt) {

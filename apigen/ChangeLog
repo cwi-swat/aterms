@@ -1,5 +1,8 @@
 # $Id$
 
+2005-04-21  pem  <pem@polly.loria.fr>
+  * generate simplified Tom mapping 
+
 Wed Mar 16 11:38:09 CET 2005 <jong@cwi.nl>
 	* README: fix missing parenthesis in example ADT
 
