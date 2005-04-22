@@ -1,5 +1,10 @@
 # $Id$
 
+2005-04-22  pem  <pem@polly.loria.fr>
+  * make list visitable
+  * introduced AbstractListGenerator
+  * generate accept method for list (not yet for separated-list)
+
 2005-04-21  pem  <pem@polly.loria.fr>
   * generate simplified Tom mapping 
 

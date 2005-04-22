@@ -118,15 +118,15 @@ public class Main {
     	}	
     }
     
-    private static void generateAbstractTypes(
-    		ADT adt,
-				JavaGenerationParameters params,
-				GenerationObserver observer) {
-    	Iterator moduleIterator = adt.moduleIterator();
-    	while(moduleIterator.hasNext()) {
-    		Module module = (Module) moduleIterator.next();
-    		run(new AbstractTypeGenerator(adt, params, module), observer);
-    	}	
+    private static void generateAbstractTypes(ADT adt,
+											JavaGenerationParameters params,
+											GenerationObserver observer) {
+    		Iterator moduleIterator = adt.moduleIterator();
+    		while(moduleIterator.hasNext()) {
+    			Module module = (Module) moduleIterator.next();
+    			run(new AbstractTypeGenerator(adt, params, module), observer);
+    			run(new AbstractListGenerator(adt, params, module), observer);
+    		}	
     }
  
     private static void generateTypeClasses(

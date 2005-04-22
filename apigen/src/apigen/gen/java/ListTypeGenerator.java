@@ -10,7 +10,10 @@ public class ListTypeGenerator extends TypeGenerator {
 	private String elementTypeName;
 	private String factory;
 	private String elementType;
+	private String abstractListPackage;
+	private String traveler;
 
+	
 	public ListTypeGenerator(JavaGenerationParameters params, ListType type) {
 		super(params, type);
 		this.type = type;
@@ -18,6 +21,8 @@ public class ListTypeGenerator extends TypeGenerator {
 		this.elementType = type.getElementType();
 		this.elementTypeName = TypeGenerator.qualifiedClassName(params, elementType);
 		this.factory = FactoryGenerator.qualifiedClassName(params,type.getModuleName());
+		this.abstractListPackage = AbstractListGenerator.qualifiedClassName(getJavaGenerationParameters(),type.getModuleName());
+		this.traveler = params.getTravelerName(); 
 	}
 
 	public String getTypeName() {
@@ -39,37 +44,159 @@ public class ListTypeGenerator extends TypeGenerator {
 	}
 
 	private void genListTypeClass() {
-		println("public class " + typeName + " extends aterm.pure.ATermListImpl {");
-
-		genFactoryField();
-		genInitMethod();
-		genInitHashcodeMethod();
+		boolean visitable = getJavaGenerationParameters().isVisitable();
+        print("public class " + typeName + " extends " + abstractListPackage);
+        if (visitable) {
+            print(" implements " + traveler + ".Visitable");
+        }
+        println(" {");
+        
+        genTermField();
 		genConstructor(className(type));
-		genGetFactoryMethod();
-		genTermField();
-		genToTerm();
-		genToString();
-		genGetters();
-		genPredicates();
 		genSharedObjectInterface();
-		genGetEmptyMethod();
+		genToTerm();
+		genIsTypeMethod(type);
+		genGetters();
 		genInsertMethods();
 		genReverseMethods();
 		genConcatMethods();
 		genAppendMethods();
 		genElementAtMethod();
+		genVisitableInterface();
 		println("}");
 	}
 
-	private void genElementAtMethod() {
-		String elementName = StringConversions.capitalize(elementType);
-		String converted = getConverter().makeATermToBuiltinConversion(elementType, "elementAt(index)");
-		println("  public " + elementTypeName + " get" + elementName + "At(int index) {");
-		println("    return (" + elementTypeName + ") " + converted + ";");
+	private void genTermField() {
+		println("  private aterm.ATerm term = null;");
+	}
+
+	protected void genConstructor(String className) {
+		println("  public " + className + "(" + factory + " factory) {");
+		println("     super(factory);");
 		println("  }");
 		println();
 	}
 
+	private void genSharedObjectInterface() {
+		genEquivalentMethod();
+		genDuplicateMethod();
+	}
+	
+	private void genEquivalentMethod() {
+		String className = TypeGenerator.className(type);
+
+		println("  public boolean equivalent(shared.SharedObject peer) {");
+		println("    if (peer instanceof " + className + ") {");
+		println("      return super.equivalent(peer);");
+		println("    } else {");
+		println("      return false;");
+		println("    }");
+		println("  }");
+		println();
+	}
+
+	private void genDuplicateMethod() {
+		String className = TypeGenerator.className(type);
+		println("  public shared.SharedObject duplicate() {");
+		println("    " + className + " clone = new " + className + "(" + buildFactoryGetter() + ");");
+		println("    clone.init(hashCode(), getAnnotations(), getFirst(), getNext());");
+		println("    return clone;");
+		println("  }");
+		println();
+	}
+
+	private void genToTerm() {
+		String getFactoryMethodName = buildFactoryGetter();
+		String className = TypeGenerator.className(type);
+
+		println("  public aterm.ATerm toTerm() {");
+		println("    aterm.ATermFactory atermFactory = " + getFactoryMethodName + ".getPureFactory();");
+		println("    if (this.term == null) {");
+		println("      " + className + " reversed = (" + className + ")this.reverse();");
+		println("      aterm.ATermList tmp = atermFactory.makeList();");
+		println("      for (; !reversed.isEmpty(); reversed = reversed.getTail()) {");
+
+		String head = "reversed.getHead()";
+		String termHead;
+		if (!getConverter().isReserved(elementType)) {
+			termHead = head + ".toTerm()";
+		}
+		else {
+			termHead = getConverter().makeBuiltinToATermConversion(elementType, head);
+		}
+		println("        aterm.ATerm elem = " + termHead + ";");
+
+		println("        tmp = atermFactory.makeList(elem, tmp);");
+		println("      }");
+		println("      this.term = tmp;");
+		println("    }");
+		println("    return this.term;");
+		println("  }");
+		println();
+	}
+
+
+	private void genGetters() {
+		genGetHead();
+		genGetTail();
+		genGetEmptyMethod();
+	}
+
+	private void genGetHead() {
+		println("  public " + elementTypeName + " getHead() {");
+		String convertedValue = getConverter().makeATermToBuiltinConversion(elementType, "getFirst()");
+		println("    return (" + elementTypeName + ")" + convertedValue + ";");
+		println("  }");
+		println();
+	}
+
+	private void genGetTail() {
+		String className = TypeGenerator.className(type);
+
+		println("  public " + className + " getTail() {");
+		println("    return (" + className + ") getNext();");
+		println("  }");
+		println();
+	}
+
+	private void genGetEmptyMethod() {
+		String className = TypeGenerator.className(type);
+		println("  public aterm.ATermList getEmpty() {");
+		println("    return (aterm.ATermList)" + buildFactoryGetter() + ".make" + className + "();");
+		println("  }");
+		println();
+	}
+
+	private void genInsertMethods() {
+		if (!type.getElementType().equals("term")) {
+			genInsertMethod();
+		}
+		genOverrideInsertMethod();
+	}
+
+	private void genInsertMethod() {
+		println("  public " + typeName + " insert(" + elementTypeName + " head) {");
+		println("    return " + buildFactoryGetter() + ".make" + typeName + "(head, (" + typeName + ") this);");
+		println("  }");
+		println();
+	}
+
+	private void genOverrideInsertMethod() {
+		String head = getConverter().makeATermToBuiltinConversion(elementType, "head");
+		println("  public aterm.ATermList make(aterm.ATerm head, aterm.ATermList tail, aterm.ATermList annos) {");
+		println("    return " + buildFactoryGetter() + ".make" + typeName + "(head, tail, annos);");
+		println("  }");
+		println();
+		println("  public aterm.ATermList make(aterm.ATerm head, aterm.ATermList tail) {");
+		println("    return make(head, tail, " + buildFactoryGetter() + ".getPureFactory().getEmpty());");
+		println("  }");
+		println();
+		println("  public aterm.ATermList insert(aterm.ATerm head) {");
+		println("    return make(head, this);");
+		println("  }");
+		println();
+	}
+	
 	private void genAppendMethods() {
 		if (!type.getElementType().equals("term")) {
 			genAppendMethod();
@@ -130,224 +257,31 @@ public class ListTypeGenerator extends TypeGenerator {
 		println("  }");
 		println();
 	}
-
-	private void genInsertMethods() {
-		if (!type.getElementType().equals("term")) {
-			genInsertMethod();
-		}
-		genOverrideInsertMethod();
-	}
-
-	protected void genInitMethod() {
-		println("  public void init(int hashCode, aterm.ATermList annos, aterm.ATerm first, aterm.ATermList next) {");
-		println("    super.init(hashCode, annos, first, next);");
+	
+	private void genElementAtMethod() {
+		String elementName = StringConversions.capitalize(elementType);
+		String converted = getConverter().makeATermToBuiltinConversion(elementType, "elementAt(index)");
+		println("  public " + elementTypeName + " get" + elementName + "At(int index) {");
+		println("    return (" + elementTypeName + ") " + converted + ";");
 		println("  }");
 		println();
 	}
 
-	protected void genInitHashcodeMethod() {
-		println("  public void initHashCode(aterm.ATermList annos, aterm.ATerm first, aterm.ATermList next) {");
-		println("    super.initHashCode(annos, first, next);");
-		println("  }");
-		println();
-	}
-
-	private void genGetFactoryMethod() {
-		println("  public " + factory + " " + buildFactoryGetter() + " {");
-		println("    return localFactory;");
-		println("}");
-		println();
-	}
-
-	protected void genConstructor(String className) {
-		println("  public " + className + "(" + factory + " localFactory) {");
-		println("     super(localFactory.getPureFactory());");
-		println("     this.localFactory = localFactory;");
-		println("  }");
-		println();
-	}
-
-	private void genFactoryField() {
-		println("  private " + factory + " localFactory = null;");
-	}
-
-	private void genInsertMethod() {
-		println("  public " + typeName + " insert(" + elementTypeName + " head) {");
-		println("    return " + buildFactoryGetter() + ".make" + typeName + "(head, (" + typeName + ") this);");
-		println("  }");
-		println();
-	}
-
-	private void genOverrideInsertMethod() {
-		String head = getConverter().makeATermToBuiltinConversion(elementType, "head");
-		println("  public aterm.ATermList make(aterm.ATerm head, aterm.ATermList tail, aterm.ATermList annos) {");
-		println("    return " + buildFactoryGetter() + ".make" + typeName + "(head, tail, annos);");
-		println("  }");
-		println();
-		println("  public aterm.ATermList make(aterm.ATerm head, aterm.ATermList tail) {");
-		println("    return make(head, tail, " + buildFactoryGetter() + ".getPureFactory().getEmpty());");
-		println("  }");
-		println();
-		println("  public aterm.ATermList insert(aterm.ATerm head) {");
-		println("    return make(head, this);");
-		println("  }");
-		println();
-	}
-
-	private void genGetEmptyMethod() {
+	private void genVisitableInterface() {
 		String className = TypeGenerator.className(type);
-		println("  public aterm.ATermList getEmpty() {");
-		println("    return (aterm.ATermList)" + buildFactoryGetter() + ".make" + className + "();");
-		println("  }");
-		println();
+		String visitorPackage = VisitorGenerator.qualifiedClassName(getJavaGenerationParameters(),type.getModuleName());
+		
+		println(
+   	            "  public " + abstractListPackage + " accept("
+   	            + visitorPackage
+   	            + " v) throws " + traveler + ".VisitFailure {");
+   	    println("    return v.visit_" + className + "(this);");
+   	    println("  }");
+   	    println();
 	}
-
-	private void genPredicates() {
-		genIsTypeMethod(type);
-		genIsAlternativeMethods();
-		genHasPredicates();
-	}
-
-	private void genHasPredicates() {
-		genHasHeadMethod();
-		genHasTailMethod();
-	}
-
-	private void genHasTailMethod() {
-		println("  public boolean hasTail() {");
-		println("    return !isEmpty();");
-		println("  }");
-		println();
-	}
-
-	private void genHasHeadMethod() {
-		println("  public boolean hasHead() {");
-		println("    return !isEmpty();");
-		println("  }");
-		println();
-	}
-
-	private void genSharedObjectInterface() {
-		genEquivalentMethod();
-		genDuplicateMethod();
-	}
-
-	private void genDuplicateMethod() {
-		String className = TypeGenerator.className(type);
-		println("  public shared.SharedObject duplicate() {");
-		println("    " + className + " clone = new " + className + "(localFactory);");
-		println("    clone.init(hashCode(), getAnnotations(), getFirst(), getNext());");
-		println("    return clone;");
-		println("  }");
-		println();
-	}
-
-	private void genEquivalentMethod() {
-		String className = TypeGenerator.className(type);
-
-		println("  public boolean equivalent(shared.SharedObject peer) {");
-		println("    if (peer instanceof " + className + ") {");
-		println("      return super.equivalent(peer);");
-		println("    }");
-		println("    else {");
-		println("      return false;");
-		println("    }");
-		println("  }");
-		println();
-	}
-
+	
 	private String buildFactoryGetter() {
-		return AbstractTypeGenerator.getFactoryMethodName(getGenerationParameters(),type.getModuleName()) + "()";
+		return AbstractListGenerator.getFactoryMethodName(getGenerationParameters(),type.getModuleName()) + "()";
 	}
-
-	private void genGetters() {
-		genGetHead();
-		genGetTail();
-	}
-
-	private void genGetTail() {
-		String className = TypeGenerator.className(type);
-
-		println("  public " + className + " getTail() {");
-		println("    return (" + className + ") getNext();");
-		println("  }");
-		println();
-	}
-
-	private void genGetHead() {
-		println("  public " + elementTypeName + " getHead() {");
-		String convertedValue = getConverter().makeATermToBuiltinConversion(elementType, "getFirst()");
-		println("    return (" + elementTypeName + ")" + convertedValue + ";");
-		println("  }");
-		println();
-	}
-
-	private void genIsAlternativeMethods() {
-		String className = TypeGenerator.className(type);
-		genIsEmpty(className);
-		genIsMany();
-		genIsSingle();
-	}
-
-	private void genIsMany() {
-		println("  public boolean isMany() {");
-		println("    return !isEmpty();");
-		println("  }");
-		println();
-	}
-
-	private void genIsEmpty(String className) {
-		println("  public boolean isEmpty() {");
-		println("    return getFirst()==getEmpty().getFirst() && getNext()==getEmpty().getNext();");
-		println("  }");
-		println();
-	}
-
-	private void genIsSingle() {
-		println("  public boolean isSingle() {");
-		println("    return !isEmpty() && getNext().isEmpty();");
-		println("  }");
-		println();
-	}
-
-	private void genToTerm() {
-		String getFactoryMethodName = buildFactoryGetter();
-		String className = TypeGenerator.className(type);
-
-		println("  public aterm.ATerm toTerm() {");
-		println("    aterm.ATermFactory atermFactory = " + getFactoryMethodName + ".getPureFactory();");
-		println("    if (this.term == null) {");
-		println("      " + className + " reversed = (" + className + ")this.reverse();");
-		println("      aterm.ATermList tmp = atermFactory.makeList();");
-		println("      for (; !reversed.isEmpty(); reversed = reversed.getTail()) {");
-
-		String head = "reversed.getHead()";
-		String termHead;
-		if (!getConverter().isReserved(elementType)) {
-			termHead = head + ".toTerm()";
-		}
-		else {
-			termHead = getConverter().makeBuiltinToATermConversion(elementType, head);
-		}
-		println("        aterm.ATerm elem = " + termHead + ";");
-
-		println("        tmp = atermFactory.makeList(elem, tmp);");
-		println("      }");
-		println("      this.term = tmp;");
-		println("    }");
-		println("    return this.term;");
-		println("  }");
-		println();
-	}
-
-	private void genTermField() {
-		println("  protected aterm.ATerm term = null;");
-	}
-
-	private void genToString() {
-		println("  public String toString() {");
-		println("    return toTerm().toString();");
-		println("  }");
-		println();
-	}
+	
 }

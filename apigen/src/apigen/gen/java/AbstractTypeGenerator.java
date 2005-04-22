@@ -1,6 +1,5 @@
 package apigen.gen.java;
 
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -44,7 +43,7 @@ public class AbstractTypeGenerator extends JavaGenerator {
     }
 
     public String qualifiedClassName(JavaGenerationParameters params) {
-    	return AbstractTypeGenerator.qualifiedClassName(params,module.getModulename().getName());
+    		return AbstractTypeGenerator.qualifiedClassName(params,module.getModulename().getName());
     }
     
     public static String qualifiedClassName(JavaGenerationParameters params, String moduleName) {

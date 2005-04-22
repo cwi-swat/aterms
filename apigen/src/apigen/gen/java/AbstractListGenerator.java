@@ -10,7 +10,7 @@ import apigen.gen.GenerationParameters;
 import apigen.gen.StringConversions;
 import apigen.gen.java.FactoryGenerator;
 
-public class AbstractTypeGenerator extends JavaGenerator {
+public class AbstractListGenerator extends JavaGenerator {
   private boolean visitable;
   private String apiName;
   private String factoryClassName;
@@ -19,7 +19,7 @@ public class AbstractTypeGenerator extends JavaGenerator {
   private ADT adt;
   private String traveler;
     
-    public AbstractTypeGenerator(ADT adt, JavaGenerationParameters params, Module module) {
+    public AbstractListGenerator(ADT adt, JavaGenerationParameters params, Module module) {
         super(params);
         this.adt = adt;
         this.apiName = params.getApiExtName(module);
@@ -35,15 +35,15 @@ public class AbstractTypeGenerator extends JavaGenerator {
     }
 
     public String className() {
-    	return AbstractTypeGenerator.className(module.getModulename().getName());
+    		return AbstractListGenerator.className(module.getModulename().getName());
     }
     
     public static String className(String moduleName) {
-        return moduleName + "AbstractType";
+        return moduleName + "AbstractList";
     }
 
     public String qualifiedClassName(JavaGenerationParameters params) {
-    		return AbstractTypeGenerator.qualifiedClassName(params,module.getModulename().getName());
+    		return AbstractListGenerator.qualifiedClassName(params,module.getModulename().getName());
     }
     
     public static String qualifiedClassName(JavaGenerationParameters params, String moduleName) {
@@ -56,7 +56,7 @@ public class AbstractTypeGenerator extends JavaGenerator {
         }
         buf.append(params.getApiExtName(moduleName).toLowerCase());
         buf.append('.');
-        buf.append(AbstractTypeGenerator.className(moduleName));
+        buf.append(AbstractListGenerator.className(moduleName));
         return buf.toString();
     }
 
@@ -69,16 +69,16 @@ public class AbstractTypeGenerator extends JavaGenerator {
         println(
             "abstract public class "
                 + getClassName()
-                + " extends aterm.pure.ATermApplImpl {");
+                + " extends aterm.pure.ATermListImpl {");
         genClassVariables();
         genConstructor();
         genInitMethod();
         genInitHashcodeMethod();
         genToTermMethod();
         genToStringMethod();
-        genSetTermMethod();
         genGetFactoryMethod();
         genDefaultTypePredicates();
+        genPredicates();
 
         if (visitable) {
             genAccept();
@@ -87,8 +87,6 @@ public class AbstractTypeGenerator extends JavaGenerator {
     }
 
     private void genClassVariables() {
-        println("  protected aterm.ATerm term;");
-        println();
         println("  private " + factoryClassName + " abstractTypeFactory;");
         println();
     }
@@ -102,15 +100,15 @@ public class AbstractTypeGenerator extends JavaGenerator {
     }
 
     private void genInitMethod() {
-        println("  public void init(int hashCode, aterm.ATermList annos, aterm.AFun fun, aterm.ATerm[] args) {");
-        println("    super.init(hashCode, annos, fun, args);");
+        println("  public void init(int hashCode, aterm.ATermList annos, aterm.ATerm first, aterm.ATermList next) {");
+        println("    super.init(hashCode, annos, first, next);");
         println("  }");
         println();
     }
 
     private void genInitHashcodeMethod() {
-        println("  public void initHashCode(aterm.ATermList annos, aterm.AFun fun, aterm.ATerm[] args) {");
-        println("    super.initHashCode(annos, fun, args);");
+        println("  public void initHashCode(aterm.ATermList annos, aterm.ATerm first, aterm.ATermList next) {");
+        println("    super.initHashCode(annos, first, next);");
         println("  }");
         println();
     }
@@ -120,13 +118,6 @@ public class AbstractTypeGenerator extends JavaGenerator {
         println(
             "  public " + factoryClassName + ' ' + getFactoryMethodName(params,module.getModulename().getName()) + "() {");
         println("    return abstractTypeFactory;");
-        println("  }");
-        println();
-    }
-
-    private void genSetTermMethod() {
-        println("  protected void setTerm(aterm.ATerm term) {");
-        println("    this.term = term;");
         println("  }");
         println();
     }
@@ -178,6 +169,57 @@ public class AbstractTypeGenerator extends JavaGenerator {
         println();
     }
 
+	private void genPredicates() {
+		genIsAlternativeMethods();
+		genHasPredicates();
+	}
+
+	private void genIsAlternativeMethods() {
+		genIsEmpty();
+		genIsMany();
+		genIsSingle();
+	}
+
+	private void genIsEmpty() {
+		println("  public boolean isEmpty() {");
+		println("    return getFirst()==getEmpty().getFirst() && getNext()==getEmpty().getNext();");
+		println("  }");
+		println();
+	}
+
+	private void genIsMany() {
+		println("  public boolean isMany() {");
+		println("    return !isEmpty();");
+		println("  }");
+		println();
+	}
+
+	private void genIsSingle() {
+		println("  public boolean isSingle() {");
+		println("    return !isEmpty() && getNext().isEmpty();");
+		println("  }");
+		println();
+	}
+
+	private void genHasPredicates() {
+		genHasHeadMethod();
+		genHasTailMethod();
+	}
+
+	private void genHasTailMethod() {
+		println("  public boolean hasTail() {");
+		println("    return !isEmpty();");
+		println("  }");
+		println();
+	}
+
+	private void genHasHeadMethod() {
+		println("  public boolean hasHead() {");
+		println("    return !isEmpty();");
+		println("  }");
+		println();
+	}
+    
     public String getPackageName() {
         return apiName.toLowerCase();
     }

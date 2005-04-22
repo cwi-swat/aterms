@@ -99,12 +99,14 @@ public class ForwardVoidGenerator extends JavaGenerator {
        	while(moduleIt.hasNext()) {
        	    String moduleName = (String) moduleIt.next();
        	    String abstractTypePackage = AbstractTypeGenerator.qualifiedClassName(getJavaGenerationParameters(),moduleName);
-       	
-		println("    " + prefixIf + "if (v instanceof " + abstractTypePackage + ") {");
-		println("      ((" + abstractTypePackage + ") v).accept(this);");
-			prefixIf = "} else ";
-		}
-		println("    } else {");
+       	    String abstractListPackage = AbstractListGenerator.qualifiedClassName(getJavaGenerationParameters(),moduleName);	
+       	    println("    " + prefixIf + "if (v instanceof " + abstractTypePackage + ") {");
+       	    println("      ((" + abstractTypePackage + ") v).accept(this);");
+      	    prefixIf = "} else ";
+      	    println("    " + prefixIf + "if (v instanceof " + abstractListPackage + ") {");
+       	    println("      ((" + abstractListPackage + ") v).accept(this);");
+ 		}
+ 		println("    } else {");
 		println("      any.visit(v);");
 		println("    }");
 		println("  }");
