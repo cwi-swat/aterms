@@ -145,7 +145,7 @@ public class Main {
                         observer);
 
                 } else {
-                    run(new ListTypeGenerator(params, (ListType) type), observer);
+                    run(new ListTypeGenerator(adt,params, (ListType) type), observer);
                 }
             } else if (!typeConverter.isReserved(type.getId())) {
                     run(new TypeGenerator(params, type), observer);

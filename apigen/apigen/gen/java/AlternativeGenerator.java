@@ -19,11 +19,8 @@ public class AlternativeGenerator extends JavaGenerator {
   private ADT adt;
   private String traveler;
 
-    protected AlternativeGenerator(
-        ADT adt, 
-        JavaGenerationParameters params,
-        Type type,
-        Alternative alt) {
+    protected AlternativeGenerator(ADT adt,JavaGenerationParameters params,
+    								Type type, Alternative alt) {
         super(params);
         this.adt = adt;
         this.type = type;

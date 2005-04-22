@@ -1,10 +1,16 @@
 package apigen.gen.java;
 
+import java.util.Iterator;
+import java.util.Set;
+
+import apigen.adt.ADT;
+import apigen.adt.Alternative;
 import apigen.adt.ListType;
 import apigen.adt.Type;
 import apigen.gen.StringConversions;
 
 public class ListTypeGenerator extends TypeGenerator {
+	private ADT adt;
 	private ListType type;
 	private String typeName;
 	private String elementTypeName;
@@ -12,10 +18,11 @@ public class ListTypeGenerator extends TypeGenerator {
 	private String elementType;
 	private String abstractListPackage;
 	private String traveler;
-
+	private boolean hasGlobalName;
 	
-	public ListTypeGenerator(JavaGenerationParameters params, ListType type) {
+	public ListTypeGenerator(ADT adt, JavaGenerationParameters params, ListType type) {
 		super(params, type);
+		this.adt = adt;
 		this.type = type;
 		this.typeName = TypeGenerator.className(type);
 		this.elementType = type.getElementType();
@@ -23,6 +30,7 @@ public class ListTypeGenerator extends TypeGenerator {
 		this.factory = FactoryGenerator.qualifiedClassName(params,type.getModuleName());
 		this.abstractListPackage = AbstractListGenerator.qualifiedClassName(getJavaGenerationParameters(),type.getModuleName());
 		this.traveler = params.getTravelerName(); 
+		this.hasGlobalName = !(params.getApiName()).equals("");
 	}
 
 	public String getTypeName() {
@@ -268,16 +276,29 @@ public class ListTypeGenerator extends TypeGenerator {
 	}
 
 	private void genVisitableInterface() {
-		String className = TypeGenerator.className(type);
-		String visitorPackage = VisitorGenerator.qualifiedClassName(getJavaGenerationParameters(),type.getModuleName());
-		
-		println(
-   	            "  public " + abstractListPackage + " accept("
-   	            + visitorPackage
-   	            + " v) throws " + traveler + ".VisitFailure {");
-   	    println("    return v.visit_" + className + "(this);");
-   	    println("  }");
-   	    println();
+		Iterator moduleIt;
+        if (hasGlobalName) {
+          moduleIt = adt.getModuleNameSet().iterator();
+        } else {
+          Set moduleToGen = adt.getImportsClosureForModule(type.getModuleName());
+          moduleIt = moduleToGen.iterator();
+        }
+
+      	while(moduleIt.hasNext()) {
+       	    String moduleName = (String) moduleIt.next();
+       	    String visitorPackage = VisitorGenerator.qualifiedClassName(getJavaGenerationParameters(),moduleName);
+       	    String className = TypeGenerator.className(type);
+       	    String abstractListPackage = AbstractListGenerator.qualifiedClassName(getJavaGenerationParameters(),type.getModuleName());
+       	 	
+       	    println("  public " + abstractListPackage + " accept("
+       	            + visitorPackage + " v) throws " + traveler + ".VisitFailure {");
+       	    println("    return v.visit_" + className + "(this);");
+       	    println("  }");
+ 		
+       	    //String className = TypeGenerator.className(type);
+       	    //String visitorPackage = VisitorGenerator.qualifiedClassName(getJavaGenerationParameters(),type.getModuleName());
+       	    println();
+      	}
 	}
 	
 	private String buildFactoryGetter() {
