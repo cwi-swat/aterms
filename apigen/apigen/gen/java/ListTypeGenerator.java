@@ -70,7 +70,9 @@ public class ListTypeGenerator extends TypeGenerator {
 		genConcatMethods();
 		genAppendMethods();
 		genElementAtMethod();
-		genVisitableInterface();
+    if (visitable) {
+      genVisitableInterface();
+    }
 		println("}");
 	}
 
