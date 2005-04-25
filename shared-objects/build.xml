@@ -1,25 +1,40 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="shared-objects" default="build" basedir=".">
 
+<project>
   <property environment="env"/>
   <property name="build" location="build"/>
   <property name="dist" location="dist"/>
-  <property name="package" value="shared"/>
+  <property name="srcdir" value="src"/>
+  <property name="resources" value="resources"/>
+
+  <path id="project.classpath">
+    <pathelement path="${env.LOCAL_JARS}"/>
+    <pathelement path="${env.EXTERNAL_JARS}"/>
+  </path>
 
   <target name="build">
     <mkdir dir="${build}"/>
     <javac destdir="${build}" debug="true">
-      <src path="${package}"/>
+      <src path="${srcdir}"/>
+      <classpath refid="project.classpath"/>
     </javac>
   </target>
 
   <target name="dist" depends="build">
     <mkdir dir="${dist}/src"/>
-    <copy todir="${dist}/src/${package}">
-      <fileset dir="${package}" includes="**/*.java"/>
+    <copy todir="${dist}/resources" failonerror="false">
+      <fileset dir="${resources}"/>
+    </copy>
+    <copy todir="${dist}">
+      <fileset dir="${build}"/>
+    </copy>
+    <copy todir="${dist}/src">
+      <fileset dir="${srcdir}" includes="**/*.java"/>
     </copy>
     <jar destfile="${env.JAR}">
-      <fileset dir="${build}"/>
+      <manifest>
+	<attribute name="Main-Class" value="${env.MAIN_CLASS}"/>
+      </manifest>
       <fileset dir="${dist}"/>
     </jar>
   </target>

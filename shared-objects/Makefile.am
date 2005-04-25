@@ -1,24 +1,21 @@
+# $Id$
+
+include $(top_srcdir)/java_make_rules
+
 SUBDIRS = config .
 
 ACLOCAL_FLAGS = -I .
 
-JARFILE = shared-objects-${VERSION}.jar
-JARFILE_ENV = JAR=${JARFILE}
+TOOLNAME = shared-objects
+PACKAGE = shared
+JARFILE = $(TOOLNAME)-$(VERSION).jar
 
-data_DATA = ${JARFILE}
-noinst_SCRIPTS = ${PACKAGE}-${VERSION}.pkg
+pkgdata_DATA = ${JARFILE}
+noinst_SCRIPTS = ${TOOLNAME}-${VERSION}.pkg
 
 EXTRA_DIST = package build.xml ${JARFILE}
 
-${PACKAGE}-${VERSION}.pkg: package Makefile
+${TOOLNAME}-${VERSION}.pkg: package Makefile
 	cp $< $@
 
 CLEANFILES = ${PACKAGE}-${VERSION}.pkg
-
-if MAINTAINER_MODE
-${JARFILE}:
-	${JARFILE_ENV} ant dist
-
-clean-local:
-	${JARFILE_ENV} ant clean
-endif

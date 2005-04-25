@@ -1,5 +1,8 @@
 # $Id$
 
+Mon Apr 25 11:13:09 CEST 2005 <kooiker@cwi.nl>
+ * Change ant build to match general build pattern
+
 Mon Apr 11 15:23:52 CEST 2005 <kooiker@cwi.nl>
  * build.xml:
    - add debug information to compiled java sources
