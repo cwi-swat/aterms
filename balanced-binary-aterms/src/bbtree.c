@@ -12,7 +12,7 @@ static AFun empty_fun;
 
 #define elt_compare(a1,a2) (comparator((ATerm)a1,(ATerm)a2))
 
-void ATbbtreeInit() {
+oid ATbbtreeInit() {
   empty_fun = ATmakeAFun("empty", 0, ATfalse);
   ATprotectAFun(empty_fun);
   ATemptyBBTree = (ATermBBTree)ATmakeAppl0(empty_fun);
