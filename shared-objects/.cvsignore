@@ -17,3 +17,5 @@ install-sh
 missing
 mkinstalldirs
 shared-objects-*.pkg
+shared-objects-config
+autom4te.cache
