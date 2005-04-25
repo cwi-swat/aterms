@@ -2,20 +2,26 @@
 
 include $(top_srcdir)/java_make_rules
 
-SUBDIRS = config .
-
 ACLOCAL_FLAGS = -I .
 
 TOOLNAME = shared-objects
 PACKAGE = shared
 JARFILE = $(TOOLNAME)-$(VERSION).jar
 
-pkgdata_DATA = ${JARFILE}
-noinst_SCRIPTS = ${TOOLNAME}-${VERSION}.pkg
+bin_SCRIPTS = $(TOOLNAME)-config
+pkgdata_DATA = $(JARFILE)
+noinst_SCRIPTS = $(TOOLNAME)-$(VERSION).pkg
 
-EXTRA_DIST = package build.xml ${JARFILE}
+EXTRA_DIST = package build.xml $(JARFILE)
 
-${TOOLNAME}-${VERSION}.pkg: package Makefile
+CLEANFILES = \
+	$(PACKAGE)-$(VERSION).pkg \
+	$(TOOLNAME)-config
+
+$(TOOLNAME)-$(VERSION).pkg: package Makefile
 	cp $< $@
 
-CLEANFILES = ${PACKAGE}-${VERSION}.pkg
+$(TOOLNAME)-config: Makefile
+	echo "#! /bin/sh" > $@
+	echo "echo $(pkgdatadir)/$(JARFILE)" >> $@
+	chmod +x $@

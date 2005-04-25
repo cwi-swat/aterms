@@ -9,7 +9,7 @@ AM_MAINTAINER_MODE
 
 AC_PROG_MAKE_SET([])
 
-AC_CONFIG_FILES([Makefile
-  config/Makefile
+AC_CONFIG_FILES([
+  Makefile
 ])
 AC_OUTPUT

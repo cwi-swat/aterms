@@ -1,5 +1,8 @@
 # $Id$
 
+Mon Apr 25 13:25:03 CEST 2005 <{jon,kooiker}@cwi.nl>
+ * generate shared-objects-config using JARFILE and ${pkgdatadir}
+
 Mon Apr 25 11:13:09 CEST 2005 <kooiker@cwi.nl>
  * Change ant build to match general build pattern
 
