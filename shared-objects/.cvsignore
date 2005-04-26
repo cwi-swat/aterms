@@ -9,6 +9,8 @@ Makefile
 Makefile.in
 aclocal.m4
 autom4te-2.53.cache
+autom4te.cache
+bin
 build
 config.*
 configure
@@ -18,4 +20,3 @@ missing
 mkinstalldirs
 shared-objects-*.pkg
 shared-objects-config
-autom4te.cache
