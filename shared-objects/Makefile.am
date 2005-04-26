@@ -15,7 +15,7 @@ noinst_SCRIPTS = $(TOOLNAME)-$(VERSION).pkg
 EXTRA_DIST = package build.xml $(JARFILE)
 
 CLEANFILES = \
-	$(PACKAGE)-$(VERSION).pkg \
+	$(TOOLNAME)-$(VERSION).pkg \
 	$(TOOLNAME)-config
 
 $(TOOLNAME)-$(VERSION).pkg: package Makefile
