@@ -1,5 +1,8 @@
 # $Id$
 
+Wed Apr 27 10:24:47 CEST 2005 <kooiker@cwi.nl>
+ * Create JDK 1.4 compatible jars
+
 Mon Apr 25 13:25:03 CEST 2005 <{jon,kooiker}@cwi.nl>
  * generate shared-objects-config using JARFILE and ${pkgdatadir}
 
