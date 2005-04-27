@@ -110,39 +110,6 @@ public class TomSignatureGenerator extends Generator {
 			+ "}";
 	}
 
-	private String TypeListTemplate(
-		String type,
-		String impl,
-		String equals,
-		String get_head,
-		String get_tail,
-		String is_empty,
-    String checkStamp,
-    String setStamp,
-    String getImplementation) {
-
-		return "%typelist "
-			+ type
-			+ "{\n"
-			+ "  implement { "
-			+ impl
-			+ "}\n"
-			+ "  equals(t1,t2) {"
-			+ equals
-			+ "}\n"
-			+ "  get_head(l) {"
-			+ get_head
-			+ "}\n"
-			+ "  get_tail(l) {"
-			+ get_tail
-			+ "}\n"
-			+ "  is_empty(l) {"
-			+ is_empty
-			+ "}\n"
-      + CheckStampTemplate(checkStamp, setStamp, getImplementation)
-			+ "}";
-	}
-
 	private void genTomBuiltinTypes() {
 		println("%include { string.tom }");
 		println("%include { int.tom }");
@@ -173,6 +140,18 @@ public class TomSignatureGenerator extends Generator {
     String stamp = "get" 
       + StringConversions.makeCapitalizedIdentifier(apiName)
 			+ "Factory().getPureFactory().makeList()";
+
+    println(
+				TypeTermTemplate(
+					impl.TypeName(type.getId()),
+					impl.TypeImpl(packagePrefix + prefix + type.getId()),
+					impl.TypeEquals(type.getId(), "t1", "t2"),
+          "if(t.getAnnotation(" + stamp + ") == " + stamp + ")  return; else throw new RuntimeException(\"bad stamp\")",
+          "(" + packagePrefix + prefix + type.getId()  + ")t.setAnnotation(" + stamp +"," + stamp + ")",
+          "t"
+          ));
+    println();
+
 		if ((type instanceof ListType) || (type instanceof NamedListType)) {
 			String eltType = ((ListType) type).getElementType();
 			String opName = "conc" + type.getId();
@@ -180,38 +159,12 @@ public class TomSignatureGenerator extends Generator {
 				eltType = ((NamedListType) type).getElementType();
 				opName  = ((NamedListType) type).getOpName();
 			}
-			println(
-				TypeListTemplate(
-					impl.TypeName(type.getId()),
-					impl.TypeImpl(packagePrefix + prefix + type.getId()),
-					impl.TypeEquals(type.getId(), "t1", "t2"),
-					impl.ListHead(type.getId()),
-					impl.ListTail(type.getId()),
-					impl.ListEmpty(type.getId()),
-          "if(t.getAnnotation(" + stamp + ") == " + stamp + ")  return; else throw new RuntimeException(\"bad stamp\")",
-          "(" + packagePrefix + prefix + type.getId()  + ")t.setAnnotation(" + stamp +"," + stamp + ")",
-          "t"
-          ));
-			println();
 			genTomConcOperator(type, eltType, opName);
 			String class_name = "class_name";
 			genTomEmptyOperator(type, class_name);
 			genTomManyOperator(type, eltType, class_name);
 			genListTypeTomAltOperators(type);
-		}
-		else {
-			println(
-				TypeTermTemplate(
-					impl.TypeName(type.getId()),
-					impl.TypeImpl(packagePrefix + prefix + type.getId()),
-					impl.TypeEquals(type.getId(), "t1", "t2"),
-          "if(t.getAnnotation(" + stamp + ") == " + stamp + ")  return; else throw new RuntimeException(\"bad stamp\")",
-          "(" + packagePrefix + prefix + type.getId()  + ")t.setAnnotation(" + stamp +"," + stamp + ")",
-          //"(" + impl.TypeName(type.getId())  + ")t.setAnnotation(" + stamp +"," + stamp + ")",
-          "t"
-          ));
-
-			println();
+		} else {
 			genTomAltOperators(type);
 		}
 
@@ -240,6 +193,9 @@ public class TomSignatureGenerator extends Generator {
 		println("  is_fsym(t) {" + impl.ListIsList("t", type.getId()) + "}");
 		println("  make_empty() {" + impl.ListmakeEmpty(type.getId()) + "}");
 		println("  make_insert(e,l) {" + impl.ListmakeInsert(type.getId(), eltType) + "}");
+		println("  get_head(l) {" + impl.ListHead(type.getId()) + "}");
+		println("  get_tail(l) {" + impl.ListTail(type.getId()) + "}");
+		println("  is_empty(l) {" + impl.ListEmpty(type.getId()) + "}");
 		println("}");
 	}
 
