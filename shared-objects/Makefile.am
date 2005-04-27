@@ -5,7 +5,6 @@ include $(top_srcdir)/java_make_rules
 ACLOCAL_FLAGS = -I .
 
 TOOLNAME = shared-objects
-PACKAGE = shared
 JARFILE = $(TOOLNAME)-$(VERSION).jar
 
 bin_SCRIPTS = $(TOOLNAME)-config
