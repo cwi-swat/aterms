@@ -17,7 +17,7 @@ class CTomGenerationParameters extends CGenerationParameters {
 			if (arg.startsWith("--jtype")) {
 				shift(iter);
 				setJtype(true);
-			} else if (arg.startsWith("--javagen")){
+			} else if (arg.startsWith("--cgen")){
 				shift(iter);
 				setCGen(true);
 			}

@@ -1,4 +1,7 @@
 # $Id$
+	
+2005-05-11  Antoine Reilles  <tonio@bonzai>
+	* apigen/gen/tom/c/Main.java: allow -cgen to generate C api
 
 2005-04-22  pem  <pem@polly.loria.fr>
   * make list visitable

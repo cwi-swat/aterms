@@ -55,7 +55,7 @@ public class Main {
 		return params;
 	}
 
-	private static void generateAPI(CGenerationParameters params, ADT adt) {
+	public static void generateAPI(CGenerationParameters params, ADT adt) {
 		Factory factory = Factory.getInstance(SingletonFactory.getInstance());
 		APIGenerator apigen = new APIGenerator(params, adt);
 		apigen.run();

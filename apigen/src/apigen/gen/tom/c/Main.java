@@ -36,6 +36,10 @@ public class Main {
 		ADT adt = ADTReader.readADT(params);
 		CTomSignatureImplementation signature = new CTomSignatureImplementation(params);
 		generateSignature(adt, signature, params);
+
+    if (params.isCGen()) { // generate C Stuff
+			apigen.gen.c.Main.generateAPI(params, adt);
+		}
 	}
 
 	private static void generateSignature(ADT adt, CTomSignatureImplementation signature, CTomGenerationParameters params) {
