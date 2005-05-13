@@ -37,12 +37,34 @@ public class JavaTomSignatureImplementation implements TomSignatureImplementatio
 		return StringConversions.makeCapitalizedIdentifier(tomConverter.getType(type));
 	}
 
+	public String IncludePrefix() {
+		return "";
+	}
+	
 	public String TypeImpl(String type) {
 		return type;
 	}
 
 	public String TypeEquals(String type, String arg1, String arg2) {
 		return arg1 + ".equals(" + arg2 + ")";
+	}
+
+	public String TypeGetStamp() {
+		String stamp = "get" 
+    			+ StringConversions.makeCapitalizedIdentifier(apiName)
+			+ "Factory().getPureFactory().makeList()";
+		return "if(t.getAnnotation(" + stamp + ") == " + stamp + ")  return; else throw new RuntimeException(\"bad stamp\")";
+	}
+	
+	public String TypeSetStamp(String type) {
+		String stamp = "get" 
+    			+ StringConversions.makeCapitalizedIdentifier(apiName)
+			+ "Factory().getPureFactory().makeList()";
+		return "(" + type + ")t.setAnnotation(" + stamp +"," + stamp + ")";
+	}
+	
+	public String TypeGetImplementation(String arg) {
+		return arg;
 	}
 
 	public String OperatorName(String type, String id) {

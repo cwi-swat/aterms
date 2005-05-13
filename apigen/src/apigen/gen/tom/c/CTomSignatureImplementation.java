@@ -27,6 +27,10 @@ public class CTomSignatureImplementation implements TomSignatureImplementation {
 		return StringConversions.capitalize(type + StringConversions.capitalize(alt));
 	}
 
+	public String IncludePrefix() {
+		return "c/";
+	}
+	
 	public String TypeName(String type) {
 		return buildTypeName(type);
 	}
@@ -39,6 +43,20 @@ public class CTomSignatureImplementation implements TomSignatureImplementation {
 		return prefix + "isEqual" + buildTypeName(type) + "(" + arg1 + "," + arg2 + ")";
 	}
 
+	public String TypeGetStamp() {
+		return "";
+	}
+	
+	public String TypeSetStamp(String type) {
+		return "";
+	}
+	
+	public String TypeGetImplementation(String arg) {
+		return arg;
+	}
+
+	
+	
 	public String OperatorName(String type, String id) {
 		if (jtype) {
 			return StringConversions.makeIdentifier(type) + "_" + StringConversions.makeIdentifier(id);

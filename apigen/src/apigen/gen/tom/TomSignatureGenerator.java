@@ -32,16 +32,6 @@ public class TomSignatureGenerator extends Generator {
 		setExtension(".tom");
 		String moduleName = module.getModulename().getName();
 		this.apiName = (moduleName.equals("")?params.getApiName():moduleName);
-		
-		//System.out.println("outputDir = " + params.getOutputDirectory());
-		//System.out.println("apiname   = " + this.apiName);
-		
-		//setDirectory(params.getOutputDirectory());
-		
-		//System.out.println("getDirectory   = " + getDirectory());
-		
-		
-		
 		setFileName(StringConversions.makeIdentifier((moduleName.equals(""))?params.getApiName():moduleName));
 		this.adt = adt;
 		this.impl = impl;
@@ -78,8 +68,7 @@ public class TomSignatureGenerator extends Generator {
 		genTomTypes(adt);
 	}
 
-  private String CheckStampTemplate(
-                                    String checkStamp,
+  private String CheckStampTemplate(String checkStamp,
                                     String setStamp,
                                     String getImplementation) {
 		return 
@@ -93,29 +82,23 @@ public class TomSignatureGenerator extends Generator {
 		String type,
 		String impl,
 		String equals,
-    String checkStamp,
-    String setStamp,
-    String getImplementation) {
+		String checkStamp,
+		String setStamp,
+		String getImplementation) {
 
-		return "%typeterm "
-			+ type
-			+ "{\n"
-			+ "  implement { "
-			+ impl
-			+ "}\n"
-			+ "  equals(t1,t2) {"
-			+ equals
-			+ "}\n"
-      + CheckStampTemplate(checkStamp, setStamp, getImplementation)
+		return "%typeterm " + type + "{\n"
+			+ "  implement { " + impl + "}\n"
+			+ "  equals(t1,t2) {" + equals + "}\n"
+			+ CheckStampTemplate(checkStamp, setStamp, getImplementation)
 			+ "}";
 	}
 
 	private void genTomBuiltinTypes() {
-		println("%include { string.tom }");
-		println("%include { int.tom }");
-		println("%include { double.tom }");
-		println("%include { aterm.tom }");
-		println("%include { atermlist.tom }");
+		println("%include { " + impl.IncludePrefix() + "string.tom }");
+		println("%include { " + impl.IncludePrefix() + "int.tom }");
+		println("%include { " + impl.IncludePrefix() + "double.tom }");
+		println("%include { " + impl.IncludePrefix() + "aterm.tom }");
+		println("%include { " + impl.IncludePrefix() + "atermlist.tom }");
 	}
 
 	private void genTomTypes(ADT api) {
@@ -137,19 +120,15 @@ public class TomSignatureGenerator extends Generator {
 	}
 
 	private void genTomType(Type type) {
-    String stamp = "get" 
-      + StringConversions.makeCapitalizedIdentifier(apiName)
-			+ "Factory().getPureFactory().makeList()";
-
-    println(
-				TypeTermTemplate(
-					impl.TypeName(type.getId()),
-					impl.TypeImpl(packagePrefix + prefix + type.getId()),
-					impl.TypeEquals(type.getId(), "t1", "t2"),
-          "if(t.getAnnotation(" + stamp + ") == " + stamp + ")  return; else throw new RuntimeException(\"bad stamp\")",
-          "(" + packagePrefix + prefix + type.getId()  + ")t.setAnnotation(" + stamp +"," + stamp + ")",
-          "t"
-          ));
+ 
+    println(TypeTermTemplate(
+		impl.TypeName(type.getId()),
+		impl.TypeImpl(packagePrefix + prefix + type.getId()),
+		impl.TypeEquals(type.getId(), "t1", "t2"),
+		impl.TypeGetStamp(),
+		impl.TypeSetStamp(packagePrefix + prefix + type.getId()),
+		impl.TypeGetImplementation("t")
+         ));
     println();
 
 		if ((type instanceof ListType) || (type instanceof NamedListType)) {
