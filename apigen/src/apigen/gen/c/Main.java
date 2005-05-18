@@ -1,5 +1,6 @@
 package apigen.gen.c;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
@@ -61,7 +62,7 @@ public class Main {
 		apigen.run();
 		new CDictionaryGenerator(adt, params, factory.getPureFactory(), apigen.getAFunRegister()).run();
 		try {
-			PrintStream out = new PrintStream(new FileOutputStream("apigen.env"));
+			PrintStream out = new PrintStream(new FileOutputStream(params.getOutputDirectory() + File.separatorChar + "apigen.env"));
 			out.println("APINAME=" + params.getApiName());
 			out.println("DIRECTORY=" + params.getOutputDirectory());
 			out.close();

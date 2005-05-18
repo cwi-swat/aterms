@@ -1,5 +1,9 @@
 # $Id$
 	
+2005-05-18  Antoine Reilles  <tonio@arcelot.loria.fr>
+
+	* apigen/gen/c/Main.java: generates apigen.env file in the output directory
+
 2005-05-11  Antoine Reilles  <tonio@bonzai>
 	* apigen/gen/tom/c/Main.java: allow -cgen to generate C api
 
