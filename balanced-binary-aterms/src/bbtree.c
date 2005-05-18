@@ -1,5 +1,5 @@
 
-/* A new comment. */
+/* Bla, bla.A new comment. */
 
 #include "bbtree.h"
 #include <assert.h>
