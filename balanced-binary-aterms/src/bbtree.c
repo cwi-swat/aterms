@@ -1,6 +1,4 @@
 
-/* Implementation of Binary Balanced Trees on top of ATerms */
-
 #include "bbtree.h"
 #include <assert.h>
 
