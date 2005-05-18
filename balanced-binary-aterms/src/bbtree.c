@@ -1,4 +1,6 @@
 
+/* A new commnet. */
+
 #include "bbtree.h"
 #include <assert.h>
 
