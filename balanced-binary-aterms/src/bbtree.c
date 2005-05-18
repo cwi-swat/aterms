@@ -1,6 +1,4 @@
 
-/* Test */
- 
 #include "bbtree.h"
 #include <assert.h>
 
