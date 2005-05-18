@@ -1,6 +1,4 @@
 
-/* Bla, bla.A new comment. */
-
 #include "bbtree.h"
 #include <assert.h>
 
