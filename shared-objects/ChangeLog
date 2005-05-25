@@ -1,5 +1,9 @@
 # $Id$
 
+Wed May 25 15:58:27 CEST 2005 <kooiker@cwi.nl>
+ * src/shared/SharedObjectFactory.java:
+   - Solved Eclipse warnings about unnecessary else en throws
+
 Wed Apr 27 10:24:47 CEST 2005 <kooiker@cwi.nl>
  * Create JDK 1.4 compatible jars
 

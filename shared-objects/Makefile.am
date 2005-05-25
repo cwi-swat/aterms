@@ -11,7 +11,7 @@ bin_SCRIPTS = $(TOOLNAME)-config
 pkgdata_DATA = $(JARFILE)
 noinst_SCRIPTS = $(TOOLNAME)-$(VERSION).pkg
 
-EXTRA_DIST = package build.xml $(JARFILE)
+EXTRA_DIST = build.xml package $(JARFILE)
 
 CLEANFILES = \
 	$(TOOLNAME)-$(VERSION).pkg \
