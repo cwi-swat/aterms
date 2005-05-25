@@ -88,26 +88,26 @@ public class Test1 {
     symmies[3] = factory.makeAFun("f10", 10, false);
 
     apples[0] = factory.makeAppl(symmies[0]);
-    apples[1] = factory.makeAppl(symmies[1], (ATerm)apples[0]);
-    apples[2] = factory.makeAppl(symmies[1], (ATerm)apples[1]);
-    apples[3] = factory.makeAppl(symmies[1], (ATerm)apples[0]);
-    apples[4] = factory.makeAppl(symmies[2], new ATerm[] {(ATerm)apples[0],
-                                                          (ATerm)apples[0], 
-                                                          (ATerm)apples[1],
-                                                          (ATerm)apples[0], 
-                                                          (ATerm)apples[0],
-                                                          (ATerm)apples[1]});
-    apples[5] = factory.makeAppl(symmies[3], new ATerm[] {(ATerm)apples[0],
-                                                          (ATerm)apples[1],
-                                                          (ATerm)apples[0],
-                                                          (ATerm)apples[1],
-                                                          (ATerm)apples[0],
-                                                          (ATerm)apples[1],
-                                                          (ATerm)apples[0],
-                                                          (ATerm)apples[1],
-                                                          (ATerm)apples[0],
-                                                          (ATerm)apples[1]});
-    apples[6] = (ATermAppl)apples[2].setArgument((ATerm)apples[0], 0);
+    apples[1] = factory.makeAppl(symmies[1], apples[0]);
+    apples[2] = factory.makeAppl(symmies[1], apples[1]);
+    apples[3] = factory.makeAppl(symmies[1], apples[0]);
+    apples[4] = factory.makeAppl(symmies[2], new ATerm[] {apples[0],
+                                                          apples[0], 
+                                                          apples[1],
+                                                          apples[0], 
+                                                          apples[0],
+                                                          apples[1]});
+    apples[5] = factory.makeAppl(symmies[3], new ATerm[] {apples[0],
+                                                          apples[1],
+                                                          apples[0],
+                                                          apples[1],
+                                                          apples[0],
+                                                          apples[1],
+                                                          apples[0],
+                                                          apples[1],
+                                                          apples[0],
+                                                          apples[1]});
+    apples[6] = apples[2].setArgument(apples[0], 0);
 
     assertTrue(apples[6].isEqual(apples[1]));
     assertTrue(apples[1].isEqual(apples[3]));
@@ -301,7 +301,7 @@ public class Test1 {
     result = T[1].match("[<int>,<list>]"); 
     test(result != null && result.size() == 2 &&  
          result.get(0).equals(new Integer(1)), "match-6b"); 
-    test(result.get(1).equals((ATermList)factory.parse("[2,3]")), 
+    test(result.get(1).equals(factory.parse("[2,3]")), 
          "match-6c");
 
     result = empty.match("[]");
@@ -310,21 +310,21 @@ public class Test1 {
 
     result = empty.match("[<list>]");
       //System.out.println("result = " + result);
-    test(result.get(0).equals((ATermList)factory.parse("[]")), 
+    test(result.get(0).equals(factory.parse("[]")), 
          "match-6e");
     
     result = T[0].match("<fun(<int>,<list>)>");
     test(result != null && result.size() == 3, "match-7a"); 
     test(result.get(0).equals("f"), "match-7b"); 
     test(result.get(1).equals(new Integer(1)), "match-7c"); 
-    test(result.get(2).equals((ATermList)factory.parse("[2,3]")), 
+    test(result.get(2).equals(factory.parse("[2,3]")), 
          "match-7d"); 
 
     result = T[3].match("f(<term>,[<list>])");
     test(result != null && result.size() == 2, "match-8a"); 
-    test(result.get(0).equals((ATerm)factory.parse("a")), "match-8b"); 
+    test(result.get(0).equals(factory.parse("a")), "match-8b"); 
     test(result.get(1) != null, "match-8c"); 
-    test(((ATermList)((List)result).get(1)).getLength()==0, "match-8d"); 
+    test(((ATermList)result.get(1)).getLength()==0, "match-8d"); 
 
       /*
     result = T[0].match("<f>"); 

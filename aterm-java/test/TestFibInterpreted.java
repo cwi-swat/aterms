@@ -128,11 +128,10 @@ public class TestFibInterpreted {
 			ATerm Xp = oneStep(X);
 			if (Xp.equals(fail)) {
 				return fail;
-			} else {
-				list.clear();
-				list.add(Xp);
-				return factory.make(rhs[ruleNumber], list);
 			}
+            list.clear();
+            list.add(Xp);
+            return factory.make(rhs[ruleNumber], list);
 		}
 		ruleNumber++;
 
@@ -147,19 +146,17 @@ public class TestFibInterpreted {
 				ATerm Yp = oneStep(Y);
 				if (Yp.equals(fail)) {
 					return fail;
-				} else {
-					list.clear();
-					list.add(X);
-					list.add(Yp);
-					return factory.make(rhs[ruleNumber], list);
 				}
-			} else {
-				ATerm Y = (ATerm) list.get(1);
-				list.clear();
-				list.add(Xp);
-				list.add(Y);
-				return factory.make(rhs[ruleNumber], list);
+                list.clear();
+                list.add(X);
+                list.add(Yp);
+                return factory.make(rhs[ruleNumber], list);
 			}
+            ATerm Y = (ATerm) list.get(1);
+            list.clear();
+            list.add(Xp);
+            list.add(Y);
+            return factory.make(rhs[ruleNumber], list);
 		}
 		ruleNumber++;
 

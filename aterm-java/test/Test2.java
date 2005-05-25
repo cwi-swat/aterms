@@ -86,24 +86,24 @@ public class Test2 {
     apples[0] = factory.makeAppl(symmies[0]);
     test_assert(factory.makeAppl(symmies[0]) == apples[0]);
     
-    apples[1] = factory.makeAppl(symmies[1], (ATerm) apples[0]);
-    test_assert(factory.makeAppl(symmies[1], (ATerm) apples[0]) == apples[1]);
+    apples[1] = factory.makeAppl(symmies[1], apples[0]);
+    test_assert(factory.makeAppl(symmies[1], apples[0]) == apples[1]);
     
-    apples[2] = factory.makeAppl(symmies[1], (ATerm) apples[1]);
-    apples[3] = factory.makeAppl(symmies[1], (ATerm) apples[0]);
+    apples[2] = factory.makeAppl(symmies[1], apples[1]);
+    apples[3] = factory.makeAppl(symmies[1], apples[0]);
     apples[4] =
       factory.makeAppl(
         symmies[2],
-        (ATerm) apples[0],
-        (ATerm) apples[0],
-        (ATerm) apples[1],
-        (ATerm) apples[0],
-        (ATerm) apples[0],
-        (ATerm) apples[1]);
+        apples[0],
+        apples[0],
+        apples[1],
+        apples[0],
+        apples[0],
+        apples[1]);
     ATerm[] args =
       { apples[0], apples[1], apples[0], apples[1], apples[0], apples[1], apples[0], apples[1], apples[0], apples[1] };
     apples[5] = factory.makeAppl(symmies[3], args);
-    apples[6] = apples[2].setArgument((ATerm) apples[0], 0);
+    apples[6] = apples[2].setArgument(apples[0], 0);
 
     test_assert(apples[6].equals(apples[1]));
     test_assert(apples[1].equals(apples[3]));

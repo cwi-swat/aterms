@@ -1,5 +1,9 @@
-2004-12-17  pem
 
+Wed May 25 16:06:13 CEST 2005 <kooiker@cwi.nl>
+ * aterm/pure/*java,test/*.java:
+   - Solved Eclipse warnings: unnecessary else and throws
+
+2004-12-17  pem
 	* improved isEmpty() implementation
 	* maintain annotations when tranforming an ATerm
 
