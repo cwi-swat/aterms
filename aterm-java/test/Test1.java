@@ -127,6 +127,8 @@ public class Test1 {
     T[index++] = factory.parse("g");
     T[index++] = factory.parse("f()");
     T[index++] = factory.parse("f(1)");
+    T[index++] = factory.parse("\"f\"(1)");
+    T[index++] = factory.parse("\"subject\"(<str>)");
     T[index++] = factory.parse("f(1,2,<int>)");
     T[index++] = factory.parse("[]");
     T[index++] = factory.parse("[1]");

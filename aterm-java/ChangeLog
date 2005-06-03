@@ -1,4 +1,8 @@
 
+
+Fri Jun  3 16:09:40 CEST 2005 <{jong,jurgenv@cwi.nl}>
+ * test/Test1.java: Added some more parsing tests
+
 Wed May 25 16:06:13 CEST 2005 <kooiker@cwi.nl>
  * aterm/pure/*java,test/*.java:
    - Solved Eclipse warnings: unnecessary else and throws
