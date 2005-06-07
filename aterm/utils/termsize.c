@@ -11,7 +11,7 @@ extern void AT_statistics();
 void termsize(FILE *file)
 {
   unsigned long core_size, text_size, term_depth, unique_syms;
-  unsigned long unique_terms, allocated_bytes, allocated_terms;
+  unsigned long unique_terms, allocated_bytes;
 
   ATerm t = ATreadFromFile(file);
 
@@ -20,7 +20,6 @@ void termsize(FILE *file)
   term_depth = AT_calcTermDepth(t);
   unique_syms = ATcalcUniqueSymbols(t);
   unique_terms = ATcalcUniqueSubterms(t);
-  allocated_terms = AT_getAllocatedCount();
   allocated_bytes = AT_calcAllocatedSize();
 
   printf("internal size   : %ld bytes\n"
@@ -28,10 +27,9 @@ void termsize(FILE *file)
 	 "depth           : %ld\n"
 	 "unique symbols  : %ld\n"
 	 "unique terms    : %ld\n"
-	 "allocated terms : %ld\n"
 	 "allocated bytes : %ld\n",
 	 core_size, text_size, term_depth, unique_syms,
-	 unique_terms, allocated_terms, allocated_bytes);
+	 unique_terms, allocated_bytes);
 }
 
 /*}}}  */
