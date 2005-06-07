@@ -1,5 +1,9 @@
 $Id$
 
+Tue Jun  7 10:12:34 CEST 2005 <jurgenv@cwi.nl>
+ * aterm/aterm.c: extended data types of several statistics functions from
+   returning 'int' to returning 'unsigned long'. 
+
 Tue Feb  8 10:48:21 CET 2005 <jong@cwi.nl>
  * doc/manual.ltx:
    - remove double definition of ATerror

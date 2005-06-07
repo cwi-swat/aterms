@@ -1092,23 +1092,23 @@ topWriteToString(ATerm t, char *buf)
 }
 
 /*}}}  */
-/*{{{  static int textSize(ATerm t) */
-
 /**
  * Calculate the size of a term in text format
  */
 
-static int      topTextSize(ATerm t);
+static unsigned long  topTextSize(ATerm t);
 
-static int
-textSize(ATerm t)
+/*{{{  static unsigned long textSize(ATerm t) */
+
+static unsigned long textSize(ATerm t)
 {
   char numbuf[32];
   ATerm trm;
   ATermList list;
   ATermAppl appl;
   Symbol sym;
-  int i, size, arity;
+  unsigned long size;
+  int i, arity;
   char *name;
 
   switch (ATgetType(t))
@@ -1174,11 +1174,13 @@ textSize(ATerm t)
   return size;
 }
 
-static int
+/*}}}  */
+
+static unsigned long
 topTextSize(ATerm t)
 {
   ATerm annos = AT_getAnnotations(t);
-  int size = textSize(t);
+  unsigned long size = textSize(t);
 
   if (ATgetType(t) == AT_LIST || ATgetType(t) == AT_PLACEHOLDER) {
     size += 2; /* For markers on both sides of the term */
@@ -1192,13 +1194,11 @@ topTextSize(ATerm t)
   return size;
 }
 
-int
+unsigned long
 AT_calcTextSize(ATerm t)
 {
   return topTextSize(t);
 }
-
-/*}}}  */
 
 /**
  * Write a term into its text representation.
@@ -1207,7 +1207,7 @@ AT_calcTextSize(ATerm t)
 char *
 ATwriteToString(ATerm t)
 {
-  int size = topTextSize(t)+1;
+  unsigned long size = topTextSize(t)+1;
   char *end;
 
   RESIZE_BUFFER(size);
@@ -1234,7 +1234,7 @@ AT_writeToStringBuffer(ATerm t, char *buffer)
 /*}}}  */
 /*{{{  int ATcalcTextSize(ATerm t) */
 
-int ATcalcTextSize(ATerm t)
+unsigned long ATcalcTextSize(ATerm t)
 {
   return AT_calcTextSize(t);
 }
@@ -2615,10 +2615,11 @@ void AT_unmarkAll()
  * Calculate the term size in bytes.
  */
 
-static int
+static unsigned long
 calcCoreSize(ATerm t)
 {
-  int             i, arity, size = 0;
+  unsigned long size = 0;
+  int i, arity;
   Symbol          sym;
 
   if (IS_MARKED(t->header))
@@ -2677,25 +2678,26 @@ calcCoreSize(ATerm t)
  * Calculate the term size in bytes.
  */
 
-int
+unsigned long
 AT_calcCoreSize(ATerm t)
 {
-  int result = calcCoreSize(t);
+  unsigned long result = calcCoreSize(t);
   AT_unmarkTerm(t);
   return result;
 }
 
 
 /*}}}  */
-/*{{{  int AT_calcSubterms(ATerm t) */
-
 /**
  * Calculate the number of subterms of a term.
  */
 
-int AT_calcSubterms(ATerm t)
+/*{{{  unsigned long AT_calcSubterms(ATerm t) */
+
+unsigned long AT_calcSubterms(ATerm t)
 {
-  int    i, arity, nr_subterms = 0;
+  unsigned long nr_subterms = 0;
+  int    i, arity;
   Symbol sym;
   ATermList list;
 
@@ -2732,16 +2734,17 @@ int AT_calcSubterms(ATerm t)
 
 /*}}}  */
 
-/*{{{  static int calcUniqueSubterms(ATerm t) */
-
 /**
  * Calculate the number of unique subterms.
  */
 
-static int
+/*{{{  calcUniqueSubterms(ATerm t) */
+
+static unsigned long
 calcUniqueSubterms(ATerm t)
 {
-  int    i, arity, nr_unique = 0;
+  unsigned long nr_unique = 0;
+  int    i, arity;
   Symbol sym;
   ATermList list;
 
@@ -2787,39 +2790,39 @@ calcUniqueSubterms(ATerm t)
 }
 
 /*}}}  */
-/*{{{  int AT_calcUniqueSubterms(ATerm t) */
-
 /**
  * Calculate the number of unique subterms.
  */
 
-int
-AT_calcUniqueSubterms(ATerm t)
+/*{{{  unsigned long AT_calcUniqueSubterms(ATerm t) */
+
+unsigned long AT_calcUniqueSubterms(ATerm t)
 {
-  int result = calcUniqueSubterms(t);
+  unsigned long result = calcUniqueSubterms(t);
   AT_unmarkIfAllMarked(t);
   return result;
 }
 
 /*}}}  */
-/*{{{  int ATcalcUniqueSubterms(ATerm t) */
+/*{{{  unsigned long ATcalcUniqueSubterms(ATerm t) */
 
-int ATcalcUniqueSubterms(ATerm t)
+unsigned long ATcalcUniqueSubterms(ATerm t)
 {
   return AT_calcUniqueSubterms(t);
 }
 
 /*}}}  */
 
-/*{{{  static int calcUniqueSymbols(ATerm t) */
-
 /**
  * Calculate the number of unique symbols.
  */
 
-static int calcUniqueSymbols(ATerm t)
+/*{{{  static unsigned long calcUniqueSymbols(ATerm t) */
+
+static unsigned long calcUniqueSymbols(ATerm t)
 {
-  int    i, arity, nr_unique = 0;
+  unsigned long nr_unique = 0;
+  int    i, arity;
   Symbol sym;
   ATermList list;
 
@@ -2886,27 +2889,26 @@ static int calcUniqueSymbols(ATerm t)
 }
 
 /*}}}  */
-/*{{{  int AT_calcUniqueSymbols(ATerm t) */
-
 /**
  * Calculate the number of unique symbols
  */
 
-int
-AT_calcUniqueSymbols(ATerm t)
+/*{{{  unsigned long AT_calcUniqueSymbols(ATerm t) */
+
+unsigned long AT_calcUniqueSymbols(ATerm t)
 {
-  int result = calcUniqueSymbols(t);
+  unsigned long result = calcUniqueSymbols(t);
   AT_unmarkIfAllMarked(t);
   /*AT_assertUnmarked(t);*/
 
   return result;
 }
 
-
 /*}}}  */
+
 /*{{{  int ATcalcUniqueSymbols(ATerm t) */
 
-int ATcalcUniqueSymbols(ATerm t)
+unsigned long ATcalcUniqueSymbols(ATerm t)
 {
   return AT_calcUniqueSymbols(t);
 }
@@ -2985,15 +2987,16 @@ void AT_assertMarked(ATerm t)
 
 /*}}}  */
 
-/*{{{  int AT_calcTermDepth(ATerm t) */
-
 /**
  * Calculate the maximum depth of a term.
  */
 
-int AT_calcTermDepth(ATerm t)
+/*{{{  unsigned long AT_calcTermDepth(ATerm t) */
+
+unsigned long AT_calcTermDepth(ATerm t)
 {
-  int arity, i, maxdepth = 0, depth = 0;
+  unsigned long depth = 0;
+  int arity, i, maxdepth = 0;
   ATermAppl appl;
   ATermList list;
 

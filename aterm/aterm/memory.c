@@ -2561,10 +2561,10 @@ void AT_printAllAFunCounts(FILE *file)
  * Calculate all allocated bytes containing ATerms.
  */
 
-int AT_calcAllocatedSize()
+unsigned long AT_calcAllocatedSize()
 {
   int i;
-  int total = 0;
+  unsigned long total = 0;
 
   for(i=0; i<MAX_TERM_SIZE; i++)
     total += at_nrblocks[i]*sizeof(Block);
