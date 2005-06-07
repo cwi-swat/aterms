@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "_aterm.h"
+#include "memory.h"
 
 extern void AT_statistics();
 
@@ -10,8 +11,7 @@ extern void AT_statistics();
 void termsize(FILE *file)
 {
   unsigned long core_size, text_size, term_depth, unique_syms;
-  unsigned long unique_terms, allocated_bytes;
-  const unsigned char* checksum = NULL;
+  unsigned long unique_terms, allocated_bytes, allocated_terms;
 
   ATerm t = ATreadFromFile(file);
 
@@ -20,18 +20,18 @@ void termsize(FILE *file)
   term_depth = AT_calcTermDepth(t);
   unique_syms = ATcalcUniqueSymbols(t);
   unique_terms = ATcalcUniqueSubterms(t);
+  allocated_terms = AT_getAllocatedCount();
   allocated_bytes = AT_calcAllocatedSize();
-  checksum = ATchecksum(t);
 
   printf("internal size   : %ld bytes\n"
 	 "text size       : %ld bytes\n"
 	 "depth           : %ld\n"
 	 "unique symbols  : %ld\n"
 	 "unique terms    : %ld\n"
-	 "checksum        : %s\n"
+	 "allocated terms : %ld\n"
 	 "allocated bytes : %ld\n",
 	 core_size, text_size, term_depth, unique_syms,
-	 unique_terms, checksum, allocated_bytes);
+	 unique_terms, allocated_terms, allocated_bytes);
 }
 
 /*}}}  */

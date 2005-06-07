@@ -769,7 +769,17 @@ static void allocate_block(int size)
 
 /*}}}  */
 
-static int nb_at_allocate=0;
+static unsigned long nb_at_allocate=0;
+
+/*{{{  unsigned_long AT_getAllocatedCount() */
+
+unsigned long AT_getAllocatedCount()
+{
+  return nb_at_allocate;
+}
+
+/*}}}  */
+
 /*{{{  void AT_statistics()  */
 
 void AT_statistics() 
