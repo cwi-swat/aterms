@@ -1,5 +1,13 @@
 $Id$
 
+Fri Jun 24 08:39:36 CEST 2005 <jong@cwi.nl>
+ * package:
+   - bump version to 2.3.2
+ * aterm/aterm.c, ATcompare:
+   - fix asymmetry in order of arguments comparison. (Closes: #477)
+ * test/stress.c:
+   - add unit tests asserting the symmetry.
+
 Tue Jun  7 10:12:34 CEST 2005 <jurgenv@cwi.nl>
  * aterm/aterm.c: extended data types of several statistics functions from
    returning 'int' to returning 'unsigned long'. 

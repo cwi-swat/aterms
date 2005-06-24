@@ -3725,7 +3725,7 @@ int ATcompare(ATerm t1, ATerm t2)
   if (type1 < type2) {
     return -1;
   }
-  else if (type2 > type1) {
+  else if (type1 > type2) {
     return 1;
   }
 

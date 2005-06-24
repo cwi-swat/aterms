@@ -1332,12 +1332,17 @@ void testCompare()
   test_assert("modulo", 3,  
 	      ATisEqualModuloAnnotations(atreal, atanno) == ATfalse);
 
-  test_assert("type-cmp", 0,  ATcompare(atappl, atint) < 0);
-  test_assert("type-cmp", 1,  ATcompare(atint, atreal) < 0);
-  test_assert("type-cmp", 2,  ATcompare(atreal, atlist) < 0);
-  test_assert("type-cmp", 3,  ATcompare(atlist, atplaceholder) < 0);
-  test_assert("type-cmp", 4,  ATcompare(atplaceholder, atblob) < 0);
+  test_assert("compare-type-lt", 0,  ATcompare(atappl, atint) < 0);
+  test_assert("compare-type-lt", 1,  ATcompare(atint, atreal) < 0);
+  test_assert("compare-type-lt", 2,  ATcompare(atreal, atlist) < 0);
+  test_assert("compare-type-lt", 3,  ATcompare(atlist, atplaceholder) < 0);
+  test_assert("compare-type-lt", 4,  ATcompare(atplaceholder, atblob) < 0);
 
+  test_assert("compare-type-gt", 0,  ATcompare(atint, atappl) > 0);
+  test_assert("compare-type-gt", 1,  ATcompare(atreal, atint) > 0);
+  test_assert("compare-type-gt", 2,  ATcompare(atlist, atreal) > 0);
+  test_assert("compare-type-gt", 3,  ATcompare(atplaceholder, atlist) > 0);
+  test_assert("compare-type-gt", 4,  ATcompare(atblob, atplaceholder) > 0);
 
   test_assert("appl-cmp", 0, ATcompare(atappl,atappl) == 0);
   test_assert("appl-cmp", 1, ATcompare(atappl0,atappl) > 0);
