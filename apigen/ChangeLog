@@ -1,11 +1,26 @@
 # $Id$
-	
-2005-05-18  Antoine Reilles  <tonio@arcelot.loria.fr>
 
-	* apigen/gen/c/Main.java: generates apigen.env file in the output directory
+Mon Jul  4 15:59:57 CEST 2005 <jurgenv@cwi.nl>
+  * {build.xml,Makefile.am,configure.in}: automake now uses 'ant'
+    to compile apigen. The skeleton is still run by automake, but 
+    ant is used to compile the Java code. 
+  * apigen/**,src/**: moved the apigen package directory to src for
+    consistency. The src directory does not need to contain Makefile.am
+    files any more containing lists of Java files. So, refactoring apigen
+    has become much easier.
+  * apigen/**/Makefileam: The above also fixes some bugs in the Makefile.am 
+    files that made the daily build fail.
+  * ./configure: You have to run './configure --enable-maintainer-mode' to 
+    make ant active.
+  * test/Makefile.am: added escape \ before --no-jar option.
+  * ./Makefile.am: we no longer install class files, just the jar 'apigen.jar'
+    is installed in ${prefix}/share. 
+
+2005-05-18  Antoine Reilles  <tonio@arcelot.loria.fr>
+  * apigen/gen/c/Main.java: generates apigen.env file in the output directory
 
 2005-05-11  Antoine Reilles  <tonio@bonzai>
-	* apigen/gen/tom/c/Main.java: allow -cgen to generate C api
+  * apigen/gen/tom/c/Main.java: allow -cgen to generate C api
 
 2005-04-22  pem  <pem@polly.loria.fr>
   * make list visitable
@@ -16,19 +31,17 @@
   * generate simplified Tom mapping 
 
 Wed Mar 16 11:38:09 CET 2005 <jong@cwi.nl>
-	* README: fix missing parenthesis in example ADT
+  * README: fix missing parenthesis in example ADT
 
 2005-02-15  pem  <pem@polly.loria.fr>
-
   * lib-3.0/ADT.adt: 
     renamed 'Name' and 'Type' into 'name' and 'type'
     renamed 'NamedList' into 'Named-List'
     updated the generated java api accordingly
 
 2005-01-22  Antoine Reilles  <tonio@arcelot.loria.fr>
-
-	* apigen/adt/NamedListType.java: added NamedList, allow to specify
-	the list operator name for tom generation.
+  * apigen/adt/NamedListType.java: added NamedList, allow to specify
+    the list operator name for tom generation.
 
 2005-01-20 pem
   * fix a naming convention problem: only operator whose sort is reserved are
@@ -36,8 +49,7 @@ Wed Mar 16 11:38:09 CET 2005 <jong@cwi.nl>
   reserved was not capitalized
 
 2004-12-17  pem
-
-	* improved isEmpty() implementation
+  * improved isEmpty() implementation
 
 Thu Dec 16 10:59:44 CET 2004 <jurgenv@cwi.nl>
  * Added new builtin type 'char', which leads to arguments of type

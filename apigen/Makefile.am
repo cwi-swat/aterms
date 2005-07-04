@@ -1,28 +1,24 @@
-SUBDIRS = apigen scripts lib-1.0 lib-2.0 lib-3.0 utils test doc config
+
+include $(top_srcdir)/java_make_rules
+
+SUBDIRS = . scripts lib-1.0 lib-2.0 lib-3.0 utils test doc config
 
 ACLOCAL_FLAGS = -I .
 
-JARFILE    = apigen-${VERSION}.jar
-DISTFILE = ${distdir}.tar.gz
+JARFILE    = apigen.jar
 data_DATA  = ${JARFILE}
-CLEANFILES = ${JARFILE} ${PACKAGE}-*.pkg
 
-${JARFILE}:
-	find ${top_builddir}/apigen \
-		-name '*.class' \
-		-o -name '*.java' \
-	| xargs jar cf ${JARFILE}
+CLEANFILES = \
+	     ${JARFILE} \
+	     ${PACKAGE}-*.pkg
 
-WWWDIR = /hosts/www/projects/MetaEnv/apigen
+EXTRA_DIST = \
+	     ${JARFILE} \
+	     java_make_rules \
+	     build.xml \
+	     package
 
-www-dist: ${DISTFILE}
-	cp ${DISTFILE} ${WWWDIR}
-	chgrp sen ${WWWDIR}/${DISTFILE}
-	chmod g+w ${WWWDIR}/${DISTFILE}
-
-EXTRA_DIST = package
-
-noinst_SCRIPTS = ${PACKAGE}-${VERSION}.pkg
+noinst_SCRIPTS = ${PACKAGE}-${VERSION}.pkg 
 
 ${PACKAGE}-${VERSION}.pkg: package Makefile
 	cp $< $@

@@ -1,0 +1,14 @@
+ANT_ENV = \
+  BUILDFILE=${top_srcdir}/build.xml \
+  JAR=${JARFILE} \
+  MAIN_CLASS=${MAIN_CLASS} \
+  LOCAL_JARS=${LOCAL_JARS} \
+  EXTERNAL_JARS=${EXTERNAL_JARS}
+
+if MAINTAINER_MODE
+${JARFILE}:
+	${ANT_ENV} ant dist
+
+clean-local:
+	${ANT_ENV} ant clean
+endif

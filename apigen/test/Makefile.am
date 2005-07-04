@@ -91,7 +91,7 @@ builtins.c builtins.h: builtins.adt
 		--output ${top_builddir} \
 		--package test \
 		--version 0.1 \
-		--visitable
+		--visitable \
 		--nojar
 	$(JAVAC) \
 		-classpath ${top_srcdir}:${top_builddir}:${JAVA_ATERM} \

@@ -6,6 +6,8 @@ AC_CONFIG_SRCDIR([configure.in])
 GLT_INIT_PACKAGE
 AC_PREREQ(2.59)
 
+AM_MAINTAINER_MODE
+
 dnl Our own version of libdir whose value is set dynamically
 AC_SUBST(INSTLIBDIR)
 INSTLIBDIR="$libdir"
@@ -70,22 +72,6 @@ scripts/Makefile
 lib-1.0/Makefile
 lib-2.0/Makefile
 lib-3.0/Makefile
-apigen/Makefile
-apigen/util/Makefile
-apigen/adt/Makefile
-apigen/adt/api/Makefile
-apigen/adt/api/types/Makefile
-apigen/adt/api/types/entry/Makefile
-apigen/adt/api/types/separator/Makefile
-apigen/adt/api/types/module/Makefile
-apigen/adt/api/types/modulename/Makefile
-apigen/adt/api/types/type/Makefile
-apigen/gen/Makefile
-apigen/gen/c/Makefile
-apigen/gen/java/Makefile
-apigen/gen/tom/Makefile
-apigen/gen/tom/c/Makefile
-apigen/gen/tom/java/Makefile
 test/Makefile
 doc/Makefile
 config/Makefile
