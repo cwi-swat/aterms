@@ -9,7 +9,6 @@ JARFILE    = apigen.jar
 data_DATA  = ${JARFILE}
 
 CLEANFILES = \
-	     ${JARFILE} \
 	     ${PACKAGE}-*.pkg
 
 EXTRA_DIST = \
