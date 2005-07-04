@@ -1,5 +1,5 @@
 ANT_ENV = \
-  BUILDFILE=${top_srcdir}/gui/build.xml \
+  BUILDFILE=${top_srcdir}/build.xml \
   JAR=${JARFILE} \
   MAIN_CLASS=${MAIN_CLASS} \
   LOCAL_JARS=${LOCAL_JARS} \

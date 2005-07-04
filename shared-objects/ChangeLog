@@ -1,5 +1,10 @@
 # $Id$
 
+Mon Jul  4 08:51:22 CEST 2005 <jurgenv@cwi.nl>
+ * Fixed java_make_rule, had wrong reference to top_srcdir
+ * Note that building in Java only works if configured with
+   --enable-maintainer-mode.
+
 Wed May 25 15:58:27 CEST 2005 <kooiker@cwi.nl>
  * src/shared/SharedObjectFactory.java:
    - Solved Eclipse warnings about unnecessary else en throws
