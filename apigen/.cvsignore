@@ -1,4 +1,6 @@
 *.tar.gz
+build
+dist
 INSTALL
 Makefile
 Makefile.in
