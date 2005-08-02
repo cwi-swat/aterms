@@ -1,26 +1,14 @@
 SUBDIRS = aterm utils test doc
+DIST_SUBDIRS = $(SUBDIRS)
 
-ACLOCAL_FLAGS = -I .
+EXTRA_DIST  = aterm.m4 init-package.m4 package aterm.spec.in aterm.pc.in
+noinst_DATA = $(PACKAGE)-$(VERSION).pkg
+CLEANFILES  = $(PACKAGE)-$(VERSION).pkg
 
-CLEANFILES = ${PACKAGE}-${VERSION}.pkg
-
-DIST_SUBDIRS = aterm utils test doc
-
-EXTRA_DIST = make_rules LICENSE package aterm.spec
-
-DISTFILE = ${distdir}.tar.gz
-WWWDIR = /hosts/www/projects/MetaEnv/aterm
-
-noinst_SCRIPTS = ${PACKAGE}-${VERSION}.pkg
+pkgconfigdir=$(libdir)/pkgconfig
+pkgconfig_DATA = aterm.pc
 
 ${PACKAGE}-${VERSION}.pkg: package Makefile
-	cp $< $@
+	cp $(top_srcdir)/package $@
 
-
-www-dist: distcheck
-	install --mode=0664 --group=sen ${DISTFILE} ${WWWDIR}
-	gzip --best < doc/at.ps > doc/at.ps.gz
-	install --mode=0664 --group=sen doc/at.ps.gz ${WWWDIR}/doc
-	gzip --best < doc/manual.ps > doc/manual.ps.gz
-	install --mode=0664 --group=sen doc/manual.ps.gz ${WWWDIR}/doc
-	cd ${WWWDIR}; make
+ACLOCAL_AMFLAGS = -I .

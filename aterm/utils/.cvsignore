@@ -1,9 +1,10 @@
 Makefile
 Makefile.in
+.deps
+.libs
 termsize
 baffle
 dicttoc
-.deps
 atsum
 atdiff
 atrmannos

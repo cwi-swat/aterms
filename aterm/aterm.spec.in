@@ -38,7 +38,7 @@ ApiGen to generate typed interfaces to the same ATerms.
 %setup -q
 
 %build
-CFLAGS="-D__NO_CTYPE" ./configure --prefix=%{_prefix} --with-gcc
+CFLAGS="-D__NO_CTYPE" ./configure --prefix=%{_prefix}
 #--includedir=%{_includedir}/%{name} 
 make
 

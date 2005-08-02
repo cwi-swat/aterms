@@ -1,7 +1,7 @@
 package
 identification
   name=aterm
-  version=2.3.2
+  version=2.4
   location=http://www.cwi.nl/projects/MetaEnv/aterm
   info=http://www.cwi.nl/projects/MetaEnv/aterm
   description='ATerm (short for Annotated Term) is an abstract data type
@@ -12,16 +12,7 @@ between distributed applications.'
 
 configuration interface
 
-gcc	'create gcc version (libATerm-gcc.a)'
-cc	'create cc version (libATerm-cc.a)'
-dbg	'create debug version (libATerm-dbg.a)'
-prof	'create profiling version (libATerm-prof.a)'
-all	'convenience alias for --with-{gcc,cc,dbg,prof}'
-nosharing	'generate a library that does no term sharing'
-64bit	'create 64 bit cc version (libATerm-cc64.a)'
-
 requires
 
 configuration
-  dbg=on
 

@@ -8,7 +8,7 @@ EXTRA_DIST	= append.ltx at.ltx aterm.ltx corrections.ltx \
 		speauth.cls spedoc.tex general-make at.ps manual.ps \
 		appl-enc.fig 
 
-CLEANFILES	= *~ encoding.eps header.eps hierarchy.eps \
+CLEANFILES	= encoding.eps header.eps hierarchy.eps \
 		at.{aux,bbl,blg,dvi,log,ps} \
 		manual.{aux,bbl,blg,dvi,idx,ps,ilg,ind,log,toc} \
 		sigplan.{aux,bbl,blg,log,dvi,ps} \
@@ -24,32 +24,21 @@ EXAMPLEDIR	= examples
 EXAMPLEFILES	= init.c make.c match.c prot.c app1.c app2.c app3.c plac.c
 EXAMPLES	= $(patsubst %,$(EXAMPLEDIR)/%,$(EXAMPLEFILES))
 
-all:
-
-doc: xootic.ps sigplan.ps at.ps manual.ps 
-
-xootic.ps: xootic.dvi $(XO_PICS)
-xootic.dvi: xootic.ltx $(XO_PICS)
-
-sigplan.ps: sigplan.dvi $(SP_PICS)
-sigplan.dvi: sigplan.ltx asm-diff.ltx $(SP_PICS)
-
-at.ps: at.dvi $(AT_PICS)
-at.dvi: at.ltx aterm.ltx spec/ATerm.mtx $(CHAPS) $(AT_PICS)
-
-manual.dvi: manual.ltx $(EXAMPLES)
+at.ps:
+	$(MAKE) at.dvi
+	$(MAKE) $(AT_PICS)
+	dvips -o $@ at.dvi
 
 # when manual.dvi is up-to-date, the file manual.idx will have been
 # generated, and we need to run makeindex on this file, then re-latex and
 # convert the dvi to postscript
 
-manual.ps: manual.dvi
+manual.ps:
+	$(MAKE) manual.dvi
 	TEXINPUTS=$$TEXINPUTS:${srcdir};\
 	makeindex manual.idx ;\
 	latex ${srcdir}/manual.ltx ;\
-	dvips -o $@ $<
+	dvips -o $@ manual.dvi
 
-dist: at.ps manual.ps
-	cp at.ps manual.ps ${DISTDIR}
-
-install:
+at.dvi: at.ltx aterm.ltx spec/ATerm.mtx $(CHAPS) $(AT_PICS)
+manual.dvi: manual.ltx $(EXAMPLES)

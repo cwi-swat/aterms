@@ -1,5 +1,172 @@
 $Id$
 
+Tue Aug  2 14:42:35 CEST 2005 <{jong,jurgenv}@cwi.nl>
+ * package: Bumped version to 2.4
+   Incorporated changed of Martin Bravenboer to create dynamic
+   libraries, and other small improvements in the package structure
+
+2005-07-20  Martin Bravenboer <martin@cs.uu.nl>
+
+	* aterm/Makefile.am: for some platforms, libraries need to be
+	self-contained: it references only symbols that are in the .lo
+	files or specified by -l libraries. Libtool will not build shared
+	libraries on these platforms, unless you declare that your library
+	is self contained. Cygwin is one of these platforms and the ATerm
+	library is indeed self-contained, so we use the -no-undefined
+	flag.
+
+	However, this does not work for a profiled library, since these
+	typically use external symbols. So, -no-undefined is only used for
+	the default library and -dbg.
+
+	The ATerm library will now create a .dll at Cygwin!
+
+	* aterm.m4: optimization at -O3 should not affect all variants, so
+	a more specific variable should be used (OPTIMIZECFLAGS). This
+	variable can be used in the Makefile.am.
+
+	* aterm.m4: CFLAGS is no longer set to an actual value: it is
+	set to the empty string to avoid AC_PROG_CC setting its default
+	values to CFLAGS.
+
+	* configure.ac: invoke AC_LIBTOOL_WIN32_DLL to create a real
+	cygwin dll (cygATerm.dll), besides a shared library. This
+	succeeds, and baffle.exe uses cygATerm.dll according to objdump!!
+
+2005-07-20  Martin Bravenboer <martin@cs.uu.nl>
+
+	* aterm/Makefile.am: cc on SunOS does not support -Wall, so -Wall
+	should only be used for GCC. Configure.ac now invokes the macro
+	"ATERM_WARNINGCFLAGS", which checks if the compiler is GCC (based
+	on $GCC, set by AC_PROG_CC) and sets the WARNINGCFLAGS variable to
+	-Wall if the compiler gcc.
+
+	* aterm/Makefile.am: the -O3 argument was not effective if no
+	CFLAGS are set by the user, since AC_PROG_CC initializes CFLAGS to
+	-O2 -g in that case. We don't want both for the default ATerm
+	library, so we initialize CFLAGS in our way (-O3), but only if
+	CFLAGS is not set.
+
+2005-07-19  Martin Bravenboer <martin@cs.uu.nl>
+
+	* Applied Eelco Dolsta's patch that fixes a pointer aliasing bug
+	in the aterm library. This allows compilation at -O3.
+
+	See:
+	http://sjofar.sen.cwi.nl:8080/bugzilla/show_bug.cgi?id=470
+
+2005-07-19  Martin Bravenboer <martin@cs.uu.nl>
+
+	* test/Makefile.am: terms.c and terms.h are nodist_SOURCES of
+	stress.
+
+2005-07-19  Martin Bravenboer <martin@cs.uu.nl>
+
+	* configure.ac, aterm.pc.in: added support for pkgconfig. The nice
+	thing about pkgconfig is that the package itself can instruct the
+	dependent packages on the cflags and ldflags that should be used.
+
+2005-07-19  Martin Bravenboer <martin@cs.uu.nl>
+
+	* aterm.spec.in: dropped the --with-gcc configuration option from
+	the configure invocation.
+
+2005-07-19  Martin Bravenboer <martin@cs.uu.nl>
+
+	* configure.in: renamed to configure.ac. .in is deprecated.
+
+2005-07-19  Martin Bravenboer <martin@cs.uu.nl>
+
+	* configure.in: don't touch any CFLAGS variable.
+
+	* configure.in: dumped the 64 bits configuration. We cannot
+	possibly cater for all platform specific issues. The most
+	important thing is that the influential environment variable for
+	automake/libtool compilation are respected by the build
+	system. This will allow users to tweak the package for their
+	specific system.
+
+	* configure.in: dumped AC_SUBST(XDEFS). Doesn't seem to be used.
+
+	* configure.in: CURDATE was not substituted. now it is.	
+
+	* aterm.m4: AC_DEFINE WITH_STATS if NO_SHARING is used.
+
+	* aterm/Makefile.am: dumped the optimized variant. The default
+	library is now optimized at level -O3.
+
+	* aterm/Makefile.am: tweaked the variants a bit:
+	
+	- libATerm is compilerd with -03 (this requires the patch by
+	Dolstra for the aliasing bug)
+
+	- libATerm is compiled with -DNDEBUG to disable code generation by
+	asserts.
+
+	- all libraries are compiled -Wall (AM_CFLAGS is not used if a
+	specific _CFLAGS is specified).
+
+	Note that all compilation flags can be overridden by the user,
+	since $(CFLAGS) as appended after _CFLAGS
+
+2005-07-19  Martin Bravenboer <martin@cs.uu.nl>
+
+	* aterm/Makefile.am: don't use pkglib but lib.
+
+2005-07-19  Martin Bravenboer <martin@cs.uu.nl>
+
+	* configure.in: dropped the --with-cflags option. CFLAGS,
+	CPPFLAGS, etc are user variables that should never be overridden
+	in Makefile.am or configure.ac. User defined cflags are already
+	supported by the environment variable CFLAGS, which should not be
+	manipulated or extended (see Automake manual 26.5.1: Compile Flag
+	Variables)
+
+2005-07-19  Martin Bravenboer <martin@cs.uu.nl>
+
+	* configure.in: AC_PROG_MAKE_SET: removed, not necessary.
+	
+	* configure.in: introduced a macro ATERM_WITH_SHARING that adds a
+	--with-sharing argument. No sharing can be specified with
+	--without-sharing or --with-sharing=no. Obviously, the default is
+	yes. This macro uses AC_DEFINE to define NO_SHARING.
+
+2005-07-19  Martin Bravenboer <martin@cs.uu.nl>
+
+	* test/Makefile.am:
+	- don't include make_rules: use automake to compile the test
+	programs.
+	- use check_PROGRAMS instead of noinst_PROGRAMS.
+	- BUILTSOURCES -> BUILT_SOURCES
+	- INCLUDES -> AM_CPPFLAGS
+	- TESTS: run all check_PROGRAMS?
+
+	* make_rules: no longer used: let automake invokes the compiler.
+
+2005-07-19  Martin Bravenboer <martin@cs.uu.nl>
+
+	* utils/Makefile.am: Use AM_CPPFLAGS for including the ATerm
+	headers. Use LDADD to link the ATerm library with all
+	programs. Use automake for compilation (no includes of
+	make_rules).
+
+2005-07-19  Martin Bravenboer <martin@cs.uu.nl>
+
+	* configure.in: invoke AC_PROG_LIBTOOL.
+
+	* aterm/Makefile.am: library creation refactored to libtool.
+
+	* doc/Makefile.am: avoid recreation of *.ps if they already exists
+	(avoids dependency on fig2dev, which isn't very common)
+	
+2005-07-19  Martin Bravenboer <martin@cs.uu.nl>
+
+	* aterm.m4: temporary location for macros (GLT_INIT_PACKAGE,
+	XT_PRE_RELEASE, XT_SVN_REVISION). The XT_ macros are used for our
+	buildfarm and will be removed later.
+
+	* Makefile.am: define ACLOCAL_AMFLAGS, not ACLOCAL_FLAGS.
+
 Fri Jun 24 08:39:36 CEST 2005 <jong@cwi.nl>
  * package:
    - bump version to 2.3.2

@@ -1,27 +1,4 @@
 
-***NOTE on COMPILER OPTIMIZATIONS:
-
-  (added Wed, 16 Jan 2002, <jong@cwi.nl>)
-
-Due to several pending issues with the optimizer in the GNU C Compiler
-(most noticable to everyone using gcc version over 2.95), we strongly
-advise AGAINST passing gcc any of its '-O' optimization flags.
-
-More information on GCC optimization bugs can be found at:
-  http://gcc.gnu.org/cgi-bin/gnatsweb.pl?database=gcc&cmd=query
-
-and subsequently selecting the Category:
-  "optimization -- Issues related to optimization"
-
-As a result, the default configuration of the ATerm Library does not
-pass any optimizer flags to gcc anymore. Should you wish to experiment
-with specific compiler flags anyway, you can use the "--with-cflags"
-configure option. Your mileage may vary from the stress-test failing,
-to coredumps and spontaneous aborts in your program.
-
-
-
-
 README with this version of the aterm library.
 ==============================================
 
