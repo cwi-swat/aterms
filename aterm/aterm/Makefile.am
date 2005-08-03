@@ -1,22 +1,20 @@
-lib_LTLIBRARIES = libATerm.la libATerm-dbg.la libATerm-prof.la
+lib_LTLIBRARIES = libATerm.la libATerm-dbg.la
+lib_LIBRARIES = libATerm-prof.a
 include_HEADERS = $(PUBLIC_INCL)
 noinst_HEADERS  = $(PRIVATE_INCL)
 
 AM_CPPFLAGS = -I$(srcdir) 
 
-libATerm_la_SOURCES      = $(ALLSRCS)
-libATerm_dbg_la_SOURCES  = $(ALLSRCS)
-libATerm_prof_la_SOURCES = $(ALLSRCS)
+libATerm_la_SOURCES = $(ALLSRCS)
+libATerm_la_CFLAGS = $(WARNINGCFLAGS) $(OPTIMIZECFLAGS) -DNDEBUG
+libATerm_la_LDFLAGS = -avoid-version -no-undefined
 
-libATerm_la_CFLAGS      = $(OPTIMIZECFLAGS) $(WARNINGCFLAGS) -DNDEBUG
-libATerm_dbg_la_CFLAGS  = $(WARNINGCFLAGS) -g
-libATerm_prof_la_CFLAGS = $(WARNINGCFLAGS) -pg
+libATerm_dbg_la_SOURCES = $(ALLSRCS)
+libATerm_dbg_la_CFLAGS = $(WARNINGCFLAGS) -g
+libATerm_dbg_la_LDFLAGS = -avoid-version -no-undefined
 
-# prof library uses external symbols (-no-undefined is not valid)
-
-libATerm_la_LDFLAGS      = -avoid-version -no-undefined
-libATerm_dbg_la_LDFLAGS  = -avoid-version -no-undefined
-libATerm_prof_la_LDFLAGS = -avoid-version
+libATerm_prof_a_SOURCES = $(ALLSRCS)
+libATerm_prof_a_CFLAGS = $(WARNINGCFLAGS) -pg
 
 ALLSRCS = \
   afun.c \

@@ -48,6 +48,9 @@ AC_DEFUN([ATERM_WARNING_CFLAGS], [
 
   if test "$GCC" = "yes"; then
     WARNINGCFLAGS=-Wall
+    if test "$USE_MAINTAINER_MODE" = "yes"; then
+      WARNINGCFLAGS="$WARNINGCFLAGS -Werror"
+    fi
   else
     WARNINGCFLAGS=
   fi

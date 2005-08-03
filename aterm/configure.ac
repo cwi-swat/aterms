@@ -7,6 +7,8 @@ AC_CANONICAL_TARGET([])
 
 GLT_INIT_PACKAGE
 
+AM_MAINTAINER_MODE
+
 # ATERM_ left in configure is the sign a macro was not defined, or
 # there was a typo in a macro invocation.
 m4_pattern_forbid([^ATERM_])

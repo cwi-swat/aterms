@@ -1,9 +1,14 @@
 $Id$
 
+Wed Aug  3 11:38:08 CEST 2005 <{jong,jurgenv}@cwi.nl>
+	* configure.ac: restored AM_MAINTAINER_MODE
+	* aterm.m4: pass -Werror IFF gcc is used and in MAINTAINER_MODE
+	* aterm/Makefile.am: do not build a shared/dynamic profiling library
+
 Tue Aug  2 14:42:35 CEST 2005 <{jong,jurgenv}@cwi.nl>
- * package: Bumped version to 2.4
-   Incorporated changed of Martin Bravenboer to create dynamic
-   libraries, and other small improvements in the package structure
+	* package: Bumped version to 2.4
+	Incorporated changed of Martin Bravenboer to create dynamic
+	libraries, and other small improvements in the package structure
 
 2005-07-20  Martin Bravenboer <martin@cs.uu.nl>
 
