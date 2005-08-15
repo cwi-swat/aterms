@@ -1,5 +1,8 @@
 $Id$
 
+Mon Aug 15 15:33:29 CEST 2005 <kooiker@cwi.nl>
+ * init-package.m4: fix underquoted GLT_INIT_PACKAGE macro
+
 Wed Aug  3 16:34:38 CEST 2005 <jurgenv@cwi.nl>
 	* Makefile.am: added aterm.spec to EXTRA_DIST
 
