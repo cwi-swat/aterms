@@ -1,5 +1,8 @@
 # $Id$
 
+Mon Aug 15 15:33:29 CEST 2005 <kooiker@cwi.nl>
+ * init-package.m4: fix underquoted GLT_INIT_PACKAGE macro
+
 Mon Jul  4 08:51:22 CEST 2005 <jurgenv@cwi.nl>
  * Fixed java_make_rule, had wrong reference to top_srcdir
  * Note that building in Java only works if configured with
