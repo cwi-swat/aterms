@@ -1,5 +1,9 @@
 # $Id$
 
+Wed Aug 17 10:06:07 CEST 2005 <jong@cwi.nl>
+ * configure.in:
+   - add libtool support
+
 Mon Jul  4 15:59:57 CEST 2005 <jurgenv@cwi.nl>
   * {build.xml,Makefile.am,configure.in}: automake now uses 'ant'
     to compile apigen. The skeleton is still run by automake, but 

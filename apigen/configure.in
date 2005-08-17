@@ -1,4 +1,4 @@
-`dnl $Id$
+dnl $Id$
 
 dnl Process this file with autoconf to produce a configure script.
 AC_INIT
@@ -12,18 +12,12 @@ dnl Our own version of libdir whose value is set dynamically
 AC_SUBST(INSTLIBDIR)
 INSTLIBDIR="$libdir"
 
+AC_AIX
 AC_PROG_CC
+AC_PROG_LIBTOOL
 
 dnl What commands are needed to set the variable MAKE in Makefiles?
 AC_PROG_MAKE_SET([])
-
-dnl {{{ Ranlib stuff
-
-AC_PROG_RANLIB
-AR=ar
-AC_SUBST(AR)
-
-dnl }}}
 
 dnl {{{ Handle --with-aterm
 
