@@ -551,10 +551,11 @@ ATermList ATsort(ATermList list, int (*compare)(const ATerm t1, const ATerm t2))
   ATerm *buffer;
 
   len = ATgetLength(list);
-  buffer = malloc(len*sizeof(ATerm));
+  buffer = calloc(len, sizeof(ATerm));
   if (buffer == NULL) {
-    ATerror("out of memory in ATsort (%d)\n", len);
+    ATerror("ATsort: cannot allocate array for %d terms.\n", len);
   }
+  ATprotectArray(buffer, len);
 
   idx = 0;
   while (!ATisEmpty(list)) {
@@ -571,6 +572,7 @@ ATermList ATsort(ATermList list, int (*compare)(const ATerm t1, const ATerm t2))
     list = ATinsert(list, buffer[idx]);
   }
 
+  ATunprotectArray(buffer);
   free(buffer);
 
   return list;

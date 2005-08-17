@@ -3,6 +3,7 @@ $Id$
 Wed Aug 17 11:53:13 CEST 2005 <jong@cwi.nl>
 	* package: version bump to 2.4.1
 	* aterm/tafio.c: fix memory leak in ATwriteToSharedString
+	* aterm/list.c: fix unprotected list members in ATsort
 
 Mon Aug 15 15:33:29 CEST 2005 <kooiker@cwi.nl>
 	* init-package.m4: fix underquoted GLT_INIT_PACKAGE macro
