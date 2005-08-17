@@ -10,6 +10,6 @@ identification
 configuration interface
   
 requires
-  aterm 2.4
+  aterm 2.4.1
 
 libxml2 2.4.22
