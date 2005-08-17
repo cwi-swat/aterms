@@ -377,6 +377,7 @@ char *ATwriteToSharedString(ATerm t, int *len)
 
   length = topWriteToSharedTextFile(t, &writer, abbrevs);
   if (length < 0) {
+    ATindexedSetDestroy(abbrevs);
     return NULL;
   }
 
@@ -389,6 +390,8 @@ char *ATwriteToSharedString(ATerm t, int *len)
   if (len != NULL) {
     *len = length;
   }
+
+  ATindexedSetDestroy(abbrevs);
 
   return writer.u.string_data.buf;
 }
