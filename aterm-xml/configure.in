@@ -6,8 +6,9 @@ AC_CONFIG_SRCDIR([configure.in])
 GLT_INIT_PACKAGE
 AC_PREREQ(2.59)
 
-dnl Which compiler to use?
+AC_AIX
 AC_PROG_CC
+AC_PROG_LIBTOOL
 
 dnl Handle --with-cflags option
 AC_ARG_WITH(cflags,
@@ -41,10 +42,6 @@ AC_SUBST(XML)
 AC_SUBST(XMLLIB)
 AC_SUBST(XMLCFG)
 AC_SUBST(XMLINCLUDE)
-
-dnl Is ranlib needed on this system?
-AC_PROG_RANLIB
-AC_PATH_PROG(AR,ar,/usr/bin/ar)
 
 dnl What commands are needed to set the variable MAKE in Makefiles?
 AC_PROG_MAKE_SET([])

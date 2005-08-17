@@ -1,5 +1,9 @@
 $Id$
 
+Wed Aug 17 10:06:07 CEST 2005 <jong@cwi.nl>
+ * configure.in:
+   - add libtool support
+
 Tue Sep 28 13:50:23 CEST 2004 <jurgenv@cwi.nl>
  * Brought up-to-date with new glt package layout.
 
