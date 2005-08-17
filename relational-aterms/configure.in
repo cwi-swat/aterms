@@ -5,10 +5,10 @@ AC_CONFIG_SRCDIR([configure.in])
 GLT_INIT_PACKAGE
 AC_PREREQ(2.59)
 
-dnl {{{  Which compiler to use?
+AC_AIX
 AC_PROG_CC
+AC_PROG_LIBTOOL
 
-dnl }}}
 dnl {{{  Handle --with-cflags option
 AC_ARG_WITH(cflags,
    [  --with-cflags=CFLAGS    standard options of c compiler],
@@ -27,18 +27,10 @@ AC_PACKAGE_REQUIRE(aterm, baffle,
 AC_SUBST(ATERM)
 
 dnl }}}
-
 dnl {{{  Require BBTree library
 AC_PACKAGE_REQUIRE(balanced-binary-aterms, balanced-binary-aterms-config,
    [  --with-balanced-binary-aterms=DIR        Binary balanced aterms library is in DIR])
 AC_SUBST(BALANCED_BINARY_ATERMS)
-
-dnl }}}
-
-dnl }}}
-dnl {{{  Is ranlib needed on this system?
-AC_PROG_RANLIB
-AC_PATH_PROG(AR,ar,/usr/bin/ar)
 
 dnl }}}
 
