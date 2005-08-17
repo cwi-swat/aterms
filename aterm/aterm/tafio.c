@@ -946,6 +946,10 @@ ATerm ATreadFromSharedTextFile(FILE *f)
 
   result = AT_readFromSharedTextFile(&c, f);
 
+  if (c != EOF) {
+    ungetc(c, f);
+  }
+
   return result;
 }
 

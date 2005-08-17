@@ -1191,7 +1191,12 @@ void testTaf()
     ATerror("could not open file: test.taf for writing\n");
   }
 
+  /* Write two taf terms in succession to assert that reading
+   * back does not eagerly consume too many characters.
+   */
   test_assert("taf", 4, ATwriteToSharedTextFile(t[6], file) >= 0);
+
+  test_assert("taf", 5, ATwriteToSharedTextFile(t[6], file) >= 0);
 
   fclose(file);
 
@@ -1200,8 +1205,11 @@ void testTaf()
     ATerror("could not open file: test.taf for reading\n");
   }
 
-  t[7] = ATreadFromSharedTextFile(file);
-  test_assert("taf", 5, ATisEqual(t[6], t[7]));
+  test_assert("taf", 6,
+	      ATisEqual(t[6], ATreadFromSharedTextFile(file)));
+
+  test_assert("taf", 7,
+	      ATisEqual(t[6], ATreadFromSharedTextFile(file)));
 
   fclose(file);
   /*unlink("test.taf");*/

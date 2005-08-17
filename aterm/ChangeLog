@@ -1,5 +1,10 @@
 $Id$
 
+Wed Aug 17 13:42:54 CEST 2005 <jong@cwi.nl>
+	* aterm/tafio.c: fix ATreadFromSharedTextFile is too eager. When two
+	terms are in the same file, checking if the first term has an
+	annotation consumed the first character of the following term.
+
 Wed Aug 17 11:53:13 CEST 2005 <jong@cwi.nl>
 	* package: version bump to 2.4.1
 	* aterm/tafio.c: fix memory leak in ATwriteToSharedString
