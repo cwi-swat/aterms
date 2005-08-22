@@ -1,23 +1,4 @@
-dnl Copyright (C) 2000 Merijn de Jonge <mdejonge@cwi.nl>
-dnl
-dnl This program is free software; you can redistribute it and/or modify
-dnl it under the terms of the GNU General Public License as published by
-dnl the Free Software Foundation; either version 2, or (at your option)
-dnl any later version.
-dnl
-dnl This program is distributed in the hope that it will be useful,
-dnl but WITHOUT ANY WARRANTY; without even the implied warranty of
-dnl MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-dnl GNU General Public License for more details.
-dnl
-dnl You should have received a copy of the GNU General Public License
-dnl along with this program; if not, write to the Free Software
-dnl Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
-dnl 02111-1307, USA.
-
 dnl $Id$
-
-dnl Author Merijn de Jonge (mdejonge@cwi.nl)
 
 dnl AC_PACKAGE_REQUIRE
 dnl Add --with-<pkg> switch. If this switch was not specified try to locate
@@ -41,7 +22,7 @@ dnl                             [ --with-wish   location of wish program])
 dnl
 dnl This would set the variable WISH to the location of the first program
 dnl found or to the program as specified with the --with-wish switch.
-AC_DEFUN(AC_PACKAGE_REQUIRE,
+AC_DEFUN([AC_PACKAGE_REQUIRE],
 [AC_PACKAGE_OPTIONAL([$1],[$2],[$3],[AC_PACKAGE_NOT_FOUND([$1])])
 ])
 
@@ -52,7 +33,7 @@ dnl as specified in actions-of-not-found.
 dnl
 dnl Usage:
 dnl    AC_PACKAGE_OPTIONAL(package, programs, usage, actions-if-not-found )
-AC_DEFUN(AC_PACKAGE_OPTIONAL,
+AC_DEFUN([AC_PACKAGE_OPTIONAL],
 [AC_PACKAGE_REQUIRE1([$1],[$2],[$3],
     dnl Program found; assign result to upper($1)
     [translit($1,-a-z,_A-Z)=`dirname \`dirname $translit($1,a-z-,A-Z_)\``],
@@ -81,7 +62,7 @@ dnl                             [ --with-wish   location of wish program])
 dnl
 dnl This would set the variable WISH to the location of the first program
 dnl found or to the program as specified with the --with-wish switch.
-AC_DEFUN(AC_PROGRAM_REQUIRE,
+AC_DEFUN([AC_PROGRAM_REQUIRE],
    [AC_PACKAGE_REQUIRE1([$1],[$2],[$3],,AC_PACKAGE_NOT_FOUND([$1]))])
 
 dnl AC_PACKAGE_REQUIRE1 
@@ -90,7 +71,7 @@ dnl AC_PROGRAM_REQUIRE. The commands in the fourht argument are evaluated
 dnl after a successful search for a package program and is used to obtain 
 dnl the installation directory from a full path to a program. For example 
 dnl to obtain /usr/local from /usr/local/bin/wish
-AC_DEFUN(AC_PACKAGE_REQUIRE1,
+AC_DEFUN([AC_PACKAGE_REQUIRE1],
 [
    dnl Add configuration switch
    AC_ARG_WITH($1, [$3],
@@ -109,7 +90,7 @@ AC_DEFUN(AC_PACKAGE_REQUIRE1,
       ])
 ])
 
-AC_DEFUN(AC_PACKAGE_NOT_FOUND,
+AC_DEFUN([AC_PACKAGE_NOT_FOUND],
 [
    AC_MSG_ERROR(Required package or program \"$1\" not found.)
 ])
