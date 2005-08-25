@@ -5,9 +5,12 @@ ANT_ENV = \
   LOCAL_JARS=${LOCAL_JARS} \
   EXTERNAL_JARS=${EXTERNAL_JARS}
 
+
 if MAINTAINER_MODE
-${JARFILE}:
+${JARFILE}: dummy
 	${ANT_ENV} ant dist
+
+dummy:
 
 clean-local:
 	${ANT_ENV} ant clean

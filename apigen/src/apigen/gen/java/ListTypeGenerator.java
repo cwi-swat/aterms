@@ -269,7 +269,7 @@ public class ListTypeGenerator extends TypeGenerator {
 	}
 	
 	private void genElementAtMethod() {
-		String elementName = StringConversions.capitalize(elementType);
+		String elementName = StringConversions.makeCapitalizedIdentifier(elementType);
 		String converted = getConverter().makeATermToBuiltinConversion(elementType, "elementAt(index)");
 		println("  public " + elementTypeName + " get" + elementName + "At(int index) {");
 		println("    return (" + elementTypeName + ") " + converted + ";");
