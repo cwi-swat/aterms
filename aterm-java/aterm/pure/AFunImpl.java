@@ -60,7 +60,7 @@ class AFunImpl extends ATermImpl implements AFun {
     public boolean equivalent(SharedObject obj) {
         try {
             AFun peer = (AFun) obj;
-            return peer.getName() == name && peer.getArity() == arity
+            return peer.getName().equals(name) && peer.getArity() == arity
                     && peer.isQuoted() == isQuoted;
         } catch (ClassCastException e) {
             return false;
