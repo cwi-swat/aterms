@@ -315,11 +315,11 @@ public class SharedObjectFactory {
 
     private int getFreshId() {
         // System.out.println("CurrentId: "+currentId+" vs "+usedId[indexId]);
-        if (currentId < usedId[indexId]) {
-            if (currentId == -(1 << 31)) {
-                // System.out.println("First ID"+currentId);
-            }
-            return currentId++;
+        if(currentId < usedId[indexId]) {
+          //if(currentId == -(1 << 31)) {
+          // System.out.println("First ID"+currentId);
+          //}
+          return currentId++;
         }
         // We try the next index in the usedId array
         do {
@@ -353,12 +353,11 @@ public class SharedObjectFactory {
         }
         list.add(new Integer(maxId));
         int newSize = list.size();
-        if (newSize >= (maxId - minId)) {
-            // System.out.println("No more unique identifier");
-            System.exit(1);
+        if(newSize >= (maxId - minId)) {
+          throw new RuntimeException("No more unique identifier");
         }
         usedId = new int[newSize];
-        for (int i = 0; i < newSize; i++) {
+        for(int i = 0; i < newSize; i++) {
             usedId[i] = ((Integer) list.get(i)).intValue();
         }
         // Sort array and reinitialize every thing
