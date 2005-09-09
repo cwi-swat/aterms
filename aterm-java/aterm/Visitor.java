@@ -3,45 +3,21 @@ package aterm;
 import jjtraveler.VisitFailure;
 import jjtraveler.VoidVisitor;
 
-public class Visitor extends VoidVisitor implements jjtraveler.Visitor {
-	public void voidVisit(jjtraveler.Visitable any) throws VisitFailure {
-		if (any instanceof Visitable) {
-			((Visitable) any).accept(this);
-		}
-		else {
-			throw new VisitFailure();
-		}
-	}
+public interface Visitor extends jjtraveler.Visitor {
 
-	public void visitATerm(ATerm arg) throws VisitFailure {
-		// do nothing
-	}
+	public aterm.Visitable visitATerm(ATerm arg) throws VisitFailure;
 
-	public void visitInt(ATermInt arg) throws VisitFailure {
-		visitATerm(arg);
-	}
+	public aterm.Visitable visitInt(ATermInt arg) throws VisitFailure;
 
-	public void visitReal(ATermReal arg) throws VisitFailure {
-		visitATerm(arg);
-	}
+	public aterm.Visitable visitReal(ATermReal arg) throws VisitFailure;
 
-	public void visitAppl(ATermAppl arg) throws VisitFailure {
-		visitATerm(arg);
-	}
+	public aterm.Visitable visitAppl(ATermAppl arg) throws VisitFailure;
 
-	public void visitList(ATermList arg) throws VisitFailure {
-		visitATerm(arg);
-	}
+	public aterm.Visitable visitList(ATermList arg) throws VisitFailure;
 
-	public void visitPlaceholder(ATermPlaceholder arg) throws VisitFailure {
-		visitATerm(arg);
-	}
+	public aterm.Visitable visitPlaceholder(ATermPlaceholder arg) throws VisitFailure;
 
-	public void visitBlob(ATermBlob arg) throws VisitFailure {
-		visitATerm(arg);
-	}
+	public aterm.Visitable visitBlob(ATermBlob arg) throws VisitFailure;
 
-	public void visitAFun(AFun fun) throws VisitFailure {
-		// do nothing
-	}
+	public aterm.Visitable visitAFun(AFun fun) throws VisitFailure;
 }

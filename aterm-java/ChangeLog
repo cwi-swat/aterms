@@ -1,4 +1,7 @@
-
+Fri Sep  9 16:09:40 CEST 2005 <{jong,jurgenv@cwi.nl}>
+ * new implementation of Visitor
+ * Fwd has been replaced by ATermFwd and ATermFwdVoid
+ * This allows to define non-void visitors. The counter part is that old code that is using Fwd has to be rewritten to use ATermFwdVoid
 
 Fri Jun  3 16:09:40 CEST 2005 <{jong,jurgenv@cwi.nl}>
  * test/Test1.java: Added some more parsing tests

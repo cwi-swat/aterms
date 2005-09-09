@@ -1,6 +1,6 @@
 package aterm;
-
+import jjtraveler.VisitFailure;
 
 public interface Visitable extends jjtraveler.Visitable {
-	public void accept(Visitor visitor) throws jjtraveler.VisitFailure;
+	public aterm.Visitable accept(aterm.Visitor visitor) throws jjtraveler.VisitFailure;
 }

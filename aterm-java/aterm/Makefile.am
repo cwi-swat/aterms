@@ -16,7 +16,8 @@ JAVASOURCES = \
 	ATermList.java \
 	ATermPlaceholder.java \
 	ATermReal.java \
-	Fwd.java \
+	ATermFwd.java \
+	ATermFwdVoid.java \
 	Visitable.java \
 	Identifiable.java \
 	Visitor.java \

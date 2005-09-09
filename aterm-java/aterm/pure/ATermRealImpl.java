@@ -33,66 +33,66 @@ import aterm.ATermReal;
 import aterm.Visitor;
 
 class ATermRealImpl extends ATermImpl implements ATermReal {
-	double value;
+  double value;
 
-	protected ATermRealImpl(PureFactory factory) {
-		super(factory);
-	}
+  protected ATermRealImpl(PureFactory factory) {
+    super(factory);
+  }
 
-	public int getType() {
-		return ATerm.REAL;
-	}
+  public int getType() {
+    return ATerm.REAL;
+  }
 
-	protected void init(int hashCode, ATermList annos, double value) {
-		super.init(hashCode, annos);
-		this.value = value;
-	}
+  protected void init(int hashCode, ATermList annos, double value) {
+    super.init(hashCode, annos);
+    this.value = value;
+  }
 
-	public SharedObject duplicate() {
-		ATermRealImpl clone = new ATermRealImpl(factory);
-		clone.init(hashCode(), getAnnotations(), value);
-		return clone;
-	}
+  public SharedObject duplicate() {
+    ATermRealImpl clone = new ATermRealImpl(factory);
+    clone.init(hashCode(), getAnnotations(), value);
+    return clone;
+  }
 
-	public boolean equivalent(SharedObject obj) {
-		if (super.equivalent(obj)) {
-			ATermReal peer = (ATermReal) obj;
-			return peer.getReal() == value;
-		}
+  public boolean equivalent(SharedObject obj) {
+    if (super.equivalent(obj)) {
+      ATermReal peer = (ATermReal) obj;
+      return peer.getReal() == value;
+    }
 
-		return false;
-	}
+    return false;
+  }
 
-	protected boolean match(ATerm pattern, List list) {
-		if (this.equals(pattern)) {
-			return true;
-		}
+  protected boolean match(ATerm pattern, List list) {
+    if (this.equals(pattern)) {
+      return true;
+    }
 
-		if (pattern.getType() == ATerm.PLACEHOLDER) {
-			ATerm type = ((ATermPlaceholder) pattern).getPlaceholder();
-			if (type.getType() == ATerm.APPL) {
-				ATermAppl appl = (ATermAppl) type;
-				AFun afun = appl.getAFun();
-				if (afun.getName().equals("real") && afun.getArity() == 0 && !afun.isQuoted()) {
-					list.add(new Double(value));
-					return true;
-				}
-			}
-		}
+    if (pattern.getType() == ATerm.PLACEHOLDER) {
+      ATerm type = ((ATermPlaceholder) pattern).getPlaceholder();
+      if (type.getType() == ATerm.APPL) {
+        ATermAppl appl = (ATermAppl) type;
+        AFun afun = appl.getAFun();
+        if (afun.getName().equals("real") && afun.getArity() == 0 && !afun.isQuoted()) {
+          list.add(new Double(value));
+          return true;
+        }
+      }
+    }
 
-		return super.match(pattern, list);
-	}
+    return super.match(pattern, list);
+  }
 
-	public double getReal() {
-		return value;
-	}
+  public double getReal() {
+    return value;
+  }
 
-	public ATerm setAnnotations(ATermList annos) {
-		return getPureFactory().makeReal(value, annos);
-	}
+  public ATerm setAnnotations(ATermList annos) {
+    return getPureFactory().makeReal(value, annos);
+  }
 
-	public void accept(Visitor v) throws VisitFailure {
-		v.visitReal(this);
+	public aterm.Visitable accept(Visitor v) throws VisitFailure {
+		return v.visitReal(this);
 	}
 
 }

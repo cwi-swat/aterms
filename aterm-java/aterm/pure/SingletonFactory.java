@@ -24,15 +24,15 @@ import aterm.pure.PureFactory;
 
 public class SingletonFactory {
 
-	private SingletonFactory() {}
+  private SingletonFactory() {}
 
-	private static PureFactory instance = null;
+  private static PureFactory instance = null;
 
-	public static PureFactory getInstance() {
-		if (instance == null) {
-			instance = new PureFactory();
-		}
-		return instance;
-	}
+  public static PureFactory getInstance() {
+    if (instance == null) {
+      instance = new PureFactory();
+    }
+    return instance;
+  }
 
 }
