@@ -98,9 +98,22 @@ public class PureFactory extends SharedObjectFactory implements ATermFactory {
     protoPlaceholder = new ATermPlaceholderImpl(this);
     protoAFun = new AFunImpl(this);
 
+    /*
+     * we create a strange empty list, which will be used only for empty-annotation
+     * this object has itself as annotation
+     * this object has a custom hascode and can never be built by the factory
+     */
     protoList.init(42, null, null, null);
+    ATermList emptyAnnotation = (ATermList) build(protoList);
+    ((ATermListImpl) emptyAnnotation).init(42, emptyAnnotation, null, null);
+    /*
+     * we use initHashCode() instead of init() to ensure that the 
+     * empty list has the same hashcode as an empty list create make makeList()
+     * this is useful when doing empty.setAnnotation(empty.getAnnotation()) == empty?
+     */
+    protoList.initHashCode(emptyAnnotation, null, null);
     empty = (ATermList) build(protoList);
-    ((ATermListImpl) empty).init(42, empty, null, null);
+
   }
 
   public ATermInt makeInt(int val) {

@@ -52,8 +52,7 @@ public class ATermListImpl extends ATermImpl implements ATermList {
    * an ATermList without using the new operator all the time
    * 
    */
-  protected void init(int hashCode, ATermList annos, ATerm first,
-      ATermList next) {
+  protected void init(int hashCode, ATermList annos, ATerm first, ATermList next) {
     super.init(hashCode, annos);
     this.first = first;
     this.next = next;

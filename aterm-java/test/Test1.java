@@ -222,6 +222,12 @@ public class Test1 {
     test(Ts[5].getPrefix().equals(Ts[4]), "prefix-1");
     test(Ts[5].getLast().equals(factory.parse("7")), "last-1");
 
+    Ts[8] = factory.makeList();
+    Ts[9] = (ATermList) Ts[8].setAnnotations(Ts[8].getAnnotations());
+
+    System.out.println("Ts[8].hash = " + Ts[8].hashCode());
+    System.out.println("Ts[9].hash = " + Ts[9].hashCode());
+    test(factory.makeList().equals(factory.makeList().setAnnotations(factory.makeList().getAnnotations())), "empty-1");
     System.out.println("pass: testMakeList");
   }
   
@@ -533,7 +539,7 @@ public class Test1 {
   
 
   public void testAll() {
-/*
+
     testMakeInt();
     testMakeReal();
     testMakeAppl();
@@ -541,7 +547,6 @@ public class Test1 {
     testMakeList();
     testPatternMatch();
     testPatternMake();
-  */  
       testFib();
       testPrimes(2000);
       //testFibInterpreted();
