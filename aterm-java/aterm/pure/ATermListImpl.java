@@ -516,9 +516,8 @@ public class ATermListImpl extends ATermImpl implements ATermList {
   }
 
   protected int findEmptyHashCode() {
-
-    int x = 0;
-    while(true) {
+    int magic = 0;
+    for(int x = Integer.MIN_VALUE ; x < Integer.MAX_VALUE ; x++) {
       /* Set up the internal state */
       int a = 0x9e3779b9; /* the golden ratio; an arbitrary value */
       int b = 0x9e3779b9; /* the golden ratio; an arbitrary value */
@@ -557,14 +556,16 @@ public class ATermListImpl extends ATermImpl implements ATermList {
 
       if(c==x) {
         System.out.println("magic x = " + x);
-        return x;
+        magic = x;
+        //return x;
       }
-      x++;
 
       if(x%100000000 ==0) {
         System.out.println("x = " + x);
       }
     }
+
+    return magic;
   }
 
   

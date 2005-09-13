@@ -101,11 +101,11 @@ public class PureFactory extends SharedObjectFactory implements ATermFactory {
     /*
      * 240146486 is a fix-point hashcode such that
      * empty.hashcode = empty.getAnnotations().hashCode
-     * this magic value can be found using: 
-     * ((ATermListImpl) emptyAnnotation).findEmptyHashCode();
+     * this magic value can be found using: findEmptyHashCode()
      */
     protoList.init(240146486, null, null, null);
     empty = (ATermList) build(protoList);
+    //int magicHash = ((ATermListImpl) empty).findEmptyHashCode();
     ((ATermListImpl) empty).init(240146486, empty, null, null);
 
   }
