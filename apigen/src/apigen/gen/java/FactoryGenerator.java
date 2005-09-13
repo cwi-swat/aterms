@@ -1276,10 +1276,8 @@ public class FactoryGenerator extends JavaGenerator {
         println(
             "    "
                 + protoName
-                + ".init("
-                + emptyHashCode
-                + ", "
-                + "null"
+                + ".initHashCode("
+                + pureEmptyName
                 + ", null, "
                 + buildAmountOfSeparatorsNullExpressions(type)
                 + "null);");
@@ -1291,16 +1289,6 @@ public class FactoryGenerator extends JavaGenerator {
                 + ") factory.build("
                 + protoName
                 + ");");
-        println(
-            "    "
-                + emptyName
-                + ".init("
-                + emptyHashCode
-                + ", "
-                + pureEmptyName
-                + ", null, "
-                + buildAmountOfSeparatorsNullExpressions(type)
-                + "null);");
     }
 
     private String buildAmountOfSeparatorsNullExpressions(SeparatedListType type) {
@@ -1320,7 +1308,7 @@ public class FactoryGenerator extends JavaGenerator {
         String emptyName = emptyListVariable(type);
         String emptyHashCode = buildInitialEmptyListHashcode(listTypeCount).toString();
         String pureEmptyName = "factory.getEmpty()";
-        println("    " + protoName + ".init(" + emptyHashCode + ", " + "null" + ", null, null);");
+        println("    " + protoName + ".initHashCode(" + pureEmptyName + ", null, null);");
         println(
             "    "
                 + emptyName
@@ -1329,14 +1317,6 @@ public class FactoryGenerator extends JavaGenerator {
                 + ") factory.build("
                 + protoName
                 + ");");
-        println(
-            "    "
-                + emptyName
-                + ".init("
-                + emptyHashCode
-                + ", "
-                + pureEmptyName
-                + ", null, null);");
     }
 
     private void genInitializePrototype(Type type) {

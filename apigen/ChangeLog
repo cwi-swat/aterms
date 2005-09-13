@@ -1,5 +1,12 @@
 # $Id$
 
+Tue Sep 13 14:44:57 CEST 2005 <reilles@loria.fr>
+ * test/ListTest.java:
+ Add a test for empty.setAnnotations(empty.getAnnotations()) == empty
+ * src/apigen/gen/java/FactoryGenerator.java:
+ Use initHashCode() instead of init() with a dummy hashCode, to let the
+ test success
+
 Wed Aug 17 10:06:07 CEST 2005 <jong@cwi.nl>
  * configure.in:
    - add libtool support

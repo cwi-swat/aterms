@@ -226,6 +226,10 @@ public class ListTest {
 		for (int i = 0; i < 7; i++) {
 			testAssert(list[i].getLength() == i, "" + i + " element list");
 		}
+
+    // test empty annotation
+    testAssert(list[0] == list[0].setAnnotations(list[0].getAnnotations()),"empty-1");
+
 	}
 
 	private void testMakeSeparatedLists() {
