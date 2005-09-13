@@ -1,3 +1,14 @@
+Tue Sep 13 10:11:40 CEST 2005 <pem>
+ * we have a better solution: find a fix-point hashcode such that
+ * empty.hashcode = empty.getAnnotations().hashCode
+ * this magic value can be found using findEmptyHashCode()
+
+  Tue Sep 13 10:11:40 CEST 2005 <pem>
+ * fix a problem related to the emptyList
+ * we now have: empty == empty.setAnnotations(empty.getAnnotations())
+ * but, note that empty.getAnnotations() is not the real empty list (otherwise there would be a loop!)
+ * therefore, empty.getAnnotations() != empty.getAnnotations().setAnnotations(empty.getAnnotations().getAnnotations())
+ 
 Fri Sep  9 16:09:40 CEST 2005 <{jong,jurgenv@cwi.nl}>
  * new implementation of Visitor
  * Fwd has been replaced by ATermFwd and ATermFwdVoid

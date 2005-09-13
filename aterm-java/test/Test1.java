@@ -224,10 +224,15 @@ public class Test1 {
 
     Ts[8] = factory.makeList();
     Ts[9] = (ATermList) Ts[8].setAnnotations(Ts[8].getAnnotations());
-
     System.out.println("Ts[8].hash = " + Ts[8].hashCode());
     System.out.println("Ts[9].hash = " + Ts[9].hashCode());
-    test(factory.makeList().equals(factory.makeList().setAnnotations(factory.makeList().getAnnotations())), "empty-1");
+    test(Ts[8].equals(Ts[9]), "empty-1");
+
+    Ts[8] = factory.makeList().getAnnotations();
+    Ts[9] = (ATermList) Ts[8].setAnnotations(Ts[8].getAnnotations());
+    System.out.println("Ts[8].hash = " + Ts[8].hashCode());
+    System.out.println("Ts[9].hash = " + Ts[9].hashCode());
+    test(Ts[8].equals(Ts[9]), "empty-2");
     System.out.println("pass: testMakeList");
   }
   
