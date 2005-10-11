@@ -13,4 +13,4 @@ configuration interface
 requires
   balanced-binary-aterms 0.1
 
-aterm 2.4.1
+aterm 2.4.2
