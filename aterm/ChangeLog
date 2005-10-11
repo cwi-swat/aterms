@@ -1,5 +1,11 @@
 $Id$
 
+Fri Oct  7 12:47:51 CEST 2005 <{gerco,jong}@cwi.nl>
+	* package: version bump to 2.4.2
+	* aterm/memory.c:
+	  - fix aliasing problem related to protoTerm and arg_buffer
+	  variables. (Closes: #495)
+
 Wed Aug 17 13:42:54 CEST 2005 <jong@cwi.nl>
 	* aterm/tafio.c: fix ATreadFromSharedTextFile is too eager. When two
 	terms are in the same file, checking if the first term has an
