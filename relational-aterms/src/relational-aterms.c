@@ -3,6 +3,7 @@
 
 #include "relational-aterms.h"
 
+asdasd
 
 #define COMPARATOR ATR_compare
 
