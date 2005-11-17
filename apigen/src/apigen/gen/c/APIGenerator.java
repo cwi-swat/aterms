@@ -62,26 +62,43 @@ public class APIGenerator extends CGenerator {
 	}
 
 	private void genProtectFunctions(ADT adt) {
-        bothPrintFoldOpen("protect functions");
+        bothPrintFoldOpen("(un)protect functions");
         Iterator types = adt.typeIterator();
         
         while (types.hasNext()) {
             Type type = (Type) types.next();
             String id = StringConversions.makeIdentifier(type.getId());
-            String functionName = prefix + "protect" + id;
             String typeName = buildTypeName(type.getId());
-            bothPrint("void " + functionName + "(" + typeName + " *arg)");
-            hprintln(";");
-            println();
-            println("{");
-            println("  ATprotect((ATerm*)((void*) arg));");
-            println("}");  
-            println();
+            
+            genProtect(id, typeName);
+            genUnprotect(id, typeName);
         }
         
         bothPrintFoldClose();
     }
 
+	private void genProtect(String id, String typeName) {
+		String functionName = prefix + "protect" + id;
+		bothPrint("void " + functionName + "(" + typeName + " *arg)");
+		hprintln(";");
+		println();
+		println("{");
+		println("  ATprotect((ATerm*)((void*) arg));");
+		println("}");  
+		println();
+	}
+
+	private void genUnprotect(String id, String typeName) {
+		String functionName = prefix + "unprotect" + id;
+		bothPrint("void " + functionName + "(" + typeName + " *arg)");
+		hprintln(";");
+		println();
+		println("{");
+		println("  ATunprotect((ATerm*)((void*) arg));");
+		println("}");  
+		println();
+	}
+	
     private void genStaticConversions() {
 		printFoldOpen("conversion functions");
 		genStaticStringToChars();

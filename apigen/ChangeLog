@@ -1,5 +1,8 @@
 # $Id$
 
+Thu Nov 17 14:04:01 CET 2005 <{jurgenv,kooiker}@cwi.nl>
+ * Added unprotect functions to C generator
+
 Tue Sep 13 14:44:57 CEST 2005 <reilles@loria.fr>
  * test/ListTest.java:
  Add a test for empty.setAnnotations(empty.getAnnotations()) == empty
