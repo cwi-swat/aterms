@@ -13,12 +13,14 @@ import apigen.adt.Type;
 import apigen.adt.api.types.Module;
 import apigen.adt.api.types.Separators;
 import apigen.gen.StringConversions;
+import apigen.gen.TypeConverter;
 
 public class FactoryGenerator extends JavaGenerator {
-	private static final String CLASS_NAME = "Factory";
+    private static final String CLASS_NAME = "Factory";
     private ADT adt;
     private String apiName;
     private Module module;
+    private TypeConverter typeConverter = new TypeConverter(new JavaTypeConversions("factory"));
     
     public FactoryGenerator(ADT adt, JavaGenerationParameters params, Module module) {
         super(params);
@@ -176,7 +178,7 @@ public class FactoryGenerator extends JavaGenerator {
                 } else {
                     genListFromTerm((ListType) type, forwarding, moduleName);
                 }
-            } else {
+            } else if (!typeConverter.isReserved(type.getId())) {
                 genTypeFromTermMethod(type, forwarding, moduleName);
             }
         }
@@ -199,9 +201,10 @@ public class FactoryGenerator extends JavaGenerator {
 
         while (types.hasNext()) {
             Type type = (Type) types.next();
-
-            genTypeFromStringMethod(type);
-            genTypeFromFileMethod(type);
+            if (!typeConverter.isReserved(type.getId())) {
+              genTypeFromStringMethod(type);
+              genTypeFromFileMethod(type);
+            }
         }
     	}
     }
@@ -986,7 +989,7 @@ public class FactoryGenerator extends JavaGenerator {
     private void genTypeMembers(Type type, JavaGenerationParameters params) {
         if (type instanceof ListType) {
             genListTypeMembers(type, params);
-        } else {
+        } else if (!typeConverter.isReserved(type.getId())) {
             genConstructorTypeMembers(type, params);
         }
     }
@@ -1040,7 +1043,8 @@ public class FactoryGenerator extends JavaGenerator {
                if (type instanceof SeparatedListType) {
                    genSeparatedListToTerm((SeparatedListType) type, forwarding, moduleName);
                }
-           } else {
+           } else if (!typeConverter.isReserved(type.getId())) {
+             /* no make method for operators with builtin codomain */
                Iterator alts = type.alternativeIterator();
                while (alts.hasNext()) {
                    Alternative alt = (Alternative) alts.next();
@@ -1175,7 +1179,8 @@ public class FactoryGenerator extends JavaGenerator {
                     genNormalListTypeInitialization(type, listTypeCount);
                 }
                 listTypeCount++;
-            } else {
+            } else if (!typeConverter.isReserved(type.getId())) {
+              /* do not generate prototypes for the builtin sorts */
                 JavaGenerationParameters params = getJavaGenerationParameters();
                 Iterator alts = type.alternativeIterator();
                 while (alts.hasNext()) {

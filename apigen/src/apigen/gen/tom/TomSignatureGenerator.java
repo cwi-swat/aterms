@@ -16,6 +16,7 @@ import apigen.gen.Generator;
 import apigen.gen.StringConversions;
 import apigen.gen.java.JavaGenerationParameters;
 import apigen.gen.java.TypeGenerator;
+import apigen.gen.TypeConverter;
 
 public class TomSignatureGenerator extends Generator {
 	private TomSignatureImplementation impl;
@@ -24,6 +25,7 @@ public class TomSignatureGenerator extends Generator {
 	private String packagePrefix;
 	private Module module;
   private String apiName = "";
+	private static TypeConverter tomConverter = new TypeConverter(new TomTypeConversions());
 
 	public TomSignatureGenerator(ADT adt, TomSignatureImplementation impl, GenerationParameters params, Module module) {
 		super(params);
@@ -111,25 +113,28 @@ public class TomSignatureGenerator extends Generator {
 		while(moduleIt.hasNext()) {
 			Iterator types = api.typeIterator((String)moduleIt.next());
 
-			while (types.hasNext()) {
-				Type type = (Type) types.next();
-				genTomType(type);
-			}
+      while (types.hasNext()) {
+        Type type = (Type) types.next();
+        genTomType(type);
+      }
 		}
 		
 	}
 
 	private void genTomType(Type type) {
  
-    println(TypeTermTemplate(
-		impl.TypeName(type.getId()),
-		impl.TypeImpl(packagePrefix + prefix + type.getId()),
-		impl.TypeEquals(type.getId(), "t1", "t2"),
-		impl.TypeGetStamp(),
-		impl.TypeSetStamp(packagePrefix + prefix + type.getId()),
-		impl.TypeGetImplementation("t")
-         ));
-    println();
+    if (!tomConverter.isReserved(type.getId())) {
+      /* do not generate typeterm for builtin types */
+      println(TypeTermTemplate(
+            impl.TypeName(type.getId()),
+            impl.TypeImpl(packagePrefix + prefix + type.getId()),
+            impl.TypeEquals(type.getId(), "t1", "t2"),
+            impl.TypeGetStamp(),
+            impl.TypeSetStamp(packagePrefix + prefix + type.getId()),
+            impl.TypeGetImplementation("t")
+            ));
+      println();
+    }
 
 		if ((type instanceof ListType) || (type instanceof NamedListType)) {
 			String eltType = ((ListType) type).getElementType();
@@ -220,14 +225,20 @@ public class TomSignatureGenerator extends Generator {
 			print(")");
 		}
 		println(" {");
-		println("  is_fsym(t) { " + prefix + impl.OperatorIsFSym("t", class_name, operator_name) + "}");
+    String isfsymimpl = "false";
+    if (!tomConverter.isReserved(type.getId())) {
+      isfsymimpl = prefix + impl.OperatorIsFSym("t", class_name, operator_name);
+    }
+		println("  is_fsym(t) { " + isfsymimpl + "}");
 
-		fields = type.altFieldIterator(alt.getId());
-		while (fields.hasNext()) {
-			Field field = (Field) fields.next();
-			String field_id = StringConversions.makeIdentifier(field.getId());
-			println("  get_slot(" + field_id + ",t) { " + impl.OperatorGetSlot("t", class_name, field_id) + "}");
-		}
+    if (!tomConverter.isReserved(type.getId())) {
+      fields = type.altFieldIterator(alt.getId());
+      while (fields.hasNext()) {
+        Field field = (Field) fields.next();
+        String field_id = StringConversions.makeIdentifier(field.getId());
+        println("  get_slot(" + field_id + ",t) { " + impl.OperatorGetSlot("t", class_name, field_id) + "}");
+      }
+    }
 
 		String arg = "(";
 		int arity = type.getAltArity(alt);
@@ -238,8 +249,14 @@ public class TomSignatureGenerator extends Generator {
 			}
 		}
 		arg += ")";
-
-		println("  make" + arg + " { " + impl.OperatorMake(class_name, operator_name, arg) + "}");
+    String makeimpl = "";
+    if (!tomConverter.isReserved(type.getId())) {
+      makeimpl = impl.OperatorMake(class_name, operator_name, arg);
+    } else {
+      makeimpl = operator_name+arg ;
+    }
+   
+		println("  make" + arg + " { " + makeimpl + "}");
 
 		println("}");
 		println();

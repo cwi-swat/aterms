@@ -8,6 +8,7 @@ import apigen.adt.Alternative;
 import apigen.adt.ListType;
 import apigen.adt.Type;
 import apigen.adt.api.types.Module;
+import apigen.gen.TypeConverter;
 
 public class ForwardGenerator extends JavaGenerator {
 	private static final String CLASS_NAME = "Fwd";
@@ -34,6 +35,7 @@ public class ForwardGenerator extends JavaGenerator {
 	}
 
 	protected void genVisits(ADT adt) {
+    TypeConverter typeConverter = new TypeConverter(new JavaTypeConversions("factory"));
 		Iterator types = adt.typeIterator();
 		while (types.hasNext()) {
 			Type type = (Type) types.next();
@@ -41,7 +43,8 @@ public class ForwardGenerator extends JavaGenerator {
 
 			if (type instanceof ListType) {
 				genListVisit(type);
-			} else {
+			} else if (!typeConverter.isReserved(type.getId())) {
+        /* builtin childs are not visitable */
 				genTypeVisit(type);
 				while (alts.hasNext()) {
 					Alternative alt = (Alternative) alts.next();

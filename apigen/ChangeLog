@@ -1,5 +1,12 @@
 # $Id$
 
+Tue Dec  6 18:37:33 CET 2005 <reilles@loria.fr>
+ * Handle operators with builtin codomain : 
+	do not generate classes for those operators and
+	do not generate make, visitor and forward functions for those operators
+	The Tom mapping defines if_fsym=false and use an external function for make.
+	Intend to fix Tom bug 359
+
 Thu Nov 17 14:04:01 CET 2005 <{jurgenv,kooiker}@cwi.nl>
  * Added unprotect functions to C generator
 
