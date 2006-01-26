@@ -4,6 +4,7 @@ import apigen.adt.api.types.Module;
 import apigen.gen.StringConversions;
 import apigen.gen.TypeConverter;
 import apigen.gen.java.JavaTypeConversions;
+import apigen.gen.java.FactoryGenerator;
 import apigen.gen.tom.TomSignatureImplementation;
 import apigen.gen.tom.TomTypeConversions;
 
@@ -13,12 +14,19 @@ public class JavaTomSignatureImplementation implements TomSignatureImplementatio
 	private boolean jtype = false;
 
 	private String apiName;
+	private String packagePrefix;
+  private String fullFactoryName;
 
 	public JavaTomSignatureImplementation(JavaTomGenerationParameters params, Module module) {
-		//this.apiName = params.getApiName();
 		String moduleName = module.getModulename().getName();
 		this.apiName = (moduleName.equals("")?params.getApiName():moduleName);
 		this.jtype = params.isJtype();
+		this.fullFactoryName = "";
+    if(params.getPackageName() != null) {
+      this.fullFactoryName += params.getPackageName() + ".";
+    }
+    this.fullFactoryName += params.getApiExtName(module).toLowerCase() + ".";
+    this.fullFactoryName += FactoryGenerator.className(moduleName);
 	}
 
 	private String buildAltTypeName(String type, String alt) {
@@ -50,16 +58,12 @@ public class JavaTomSignatureImplementation implements TomSignatureImplementatio
 	}
 
 	public String TypeGetStamp() {
-		String stamp = "get" 
-    			+ StringConversions.makeCapitalizedIdentifier(apiName)
-			+ "Factory().getPureFactory().makeList()";
+		String stamp = "aterm.pure.SingletonFactory.getInstance().makeList()";
 		return "if(t.getAnnotation(" + stamp + ") == " + stamp + ")  return; else throw new RuntimeException(\"bad stamp\")";
 	}
 	
 	public String TypeSetStamp(String type) {
-		String stamp = "get" 
-    			+ StringConversions.makeCapitalizedIdentifier(apiName)
-			+ "Factory().getPureFactory().makeList()";
+		String stamp = "aterm.pure.SingletonFactory.getInstance().makeList()";
 		return "(" + type + ")t.setAnnotation(" + stamp +"," + stamp + ")";
 	}
 	
@@ -89,10 +93,9 @@ public class JavaTomSignatureImplementation implements TomSignatureImplementatio
 	}
 
 	public String OperatorMake(String type, String alt, String arguments) {
-		return "get"
-			+ StringConversions.makeCapitalizedIdentifier(apiName)
-			+ "Factory"
-			+ "().make"
+		return this.fullFactoryName
+			+ ".getInstance(aterm.pure.SingletonFactory.getInstance())"
+			+ ".make"
 			+ buildAltTypeName(type, alt)
 			+ arguments;
 	}
@@ -128,17 +131,17 @@ public class JavaTomSignatureImplementation implements TomSignatureImplementatio
 	}
 
 	public String ListmakeEmpty(String type) {
-		return "get"
-			+ StringConversions.makeCapitalizedIdentifier(apiName)
-			+ "Factory().make"
+		return this.fullFactoryName
+			+ ".getInstance(aterm.pure.SingletonFactory.getInstance())"
+			+ ".make"
 			+ StringConversions.makeCapitalizedIdentifier(type)
 			+ "()";
 	}
 
 	public String ListmakeInsert(String type, String eltType) {
-		return "get"
-			+ StringConversions.makeCapitalizedIdentifier(apiName)
-			+ "Factory().make"
+		return this.fullFactoryName
+			+ ".getInstance(aterm.pure.SingletonFactory.getInstance())"
+			+ ".make"
 			+ StringConversions.makeCapitalizedIdentifier(type)
 			+ "(e,l)";
 	}

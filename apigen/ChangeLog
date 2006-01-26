@@ -1,5 +1,9 @@
 # $Id$
 
+2006-01-26 Antoine Reilles   <Antoine.Reilles@loria.fr>
+  * src/apigen/gen/tom/java/*:
+  Use the "getInstance" method of singleton factories in tom signatures
+
 Tue Dec  6 18:37:33 CET 2005 <reilles@loria.fr>
  * Handle operators with builtin codomain : 
 	do not generate classes for those operators and
