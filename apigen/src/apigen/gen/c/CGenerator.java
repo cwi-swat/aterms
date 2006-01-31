@@ -10,12 +10,14 @@ abstract public class CGenerator extends Generator {
 	private static final String HEADER_FILE_EXTENSION = ".h";
 
 	private PrintStream headerStream;
-
+	private boolean folding;
+	
 	public CGenerator(CGenerationParameters params) {
 		super(params);
 		setDirectory(params.getOutputDirectory());
 		setExtension(SOURCE_FILE_EXTENSION);
 		setFileName(params.getApiName());
+		folding = params.isFolding();
 	}
 
 	public CGenerationParameters getCGenerationParameters() {
@@ -81,16 +83,20 @@ abstract public class CGenerator extends Generator {
 	 * @param comment
 	 */
 	protected void printFoldOpen(PrintStream out, String comment) {
-		out.println("/*{{" + "{  " + comment + " */");
-		out.println();
+		if (folding) {
+			out.println("/*{{" + "{  " + comment + " */");
+			out.println();
+		}
 	}
 
 	/**
 	 * Print a close fold comment to a stream
 	 */
 	protected void printFoldClose(PrintStream out) {
-		out.println();
-		out.println("/*}}" + "}  */");
+		if (folding) {
+			out.println();
+			out.println("/*}}" + "}  */");
+		}
 	}
 
 	/**
@@ -133,8 +139,8 @@ abstract public class CGenerator extends Generator {
 	 * @param comment
 	 */
 	protected void bothPrintFoldOpen(String comment) {
-		printFoldOpen(comment);
-		hprintFoldOpen(comment);
+                  printFoldOpen(comment);
+       		  hprintFoldOpen(comment);
 	}
 
 	/**
@@ -142,8 +148,8 @@ abstract public class CGenerator extends Generator {
 	 *  
 	 */
 	protected void bothPrintFoldClose() {
-		printFoldClose();
-		hprintFoldClose();
+		  printFoldClose();
+		  hprintFoldClose();
 	}
 
 	/**

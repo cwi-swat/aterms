@@ -1,5 +1,8 @@
 # $Id$
 
+Tue Jan 31 14:47:31 CET 2006 <{economop,kooiker}@cwi.nl>
+  * Implemented the --folding option for C correctly :-)
+
 2006-01-26 Antoine Reilles   <Antoine.Reilles@loria.fr>
   * src/apigen/gen/tom/java/*:
   Use the "getInstance" method of singleton factories in tom signatures
