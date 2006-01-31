@@ -1,5 +1,8 @@
 # $Id$
 
+Tue Jan 31 17:17:42 CET 2006 <economop@cwi.nl>
+  * Added newlines after generated function definitions.
+
 Tue Jan 31 14:47:31 CET 2006 <{economop,kooiker}@cwi.nl>
   * Implemented the --folding option for C correctly :-)
 

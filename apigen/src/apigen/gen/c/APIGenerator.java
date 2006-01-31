@@ -296,6 +296,7 @@ public class APIGenerator extends CGenerator {
 		println();
 		println("  return (" + typeName + ") result;");
 		println("}");
+		println();
 
 	}
 
@@ -333,6 +334,7 @@ public class APIGenerator extends CGenerator {
 		conversion = genBuiltinToATerm(type.getElementType(), "elem" + arity);
 		println("(ATerm) " + conversion + ");");
 		println("}");
+		println();
 	}
 
 	private void genSeparatedListMake(SeparatedListType type, int arity,
@@ -367,6 +369,7 @@ public class APIGenerator extends CGenerator {
 			println("elem" + arity + "));");
 		}
 		println("}");
+		println();
 	}
 
 	private void genGetElementAt(ListType type, String typeId, String typeName,
@@ -380,6 +383,7 @@ public class APIGenerator extends CGenerator {
 		println(decl + " {");
 		println(" return (" + elementTypeName + ")" + conversion + ";");
 		println("}");
+		println();
 	}
 
 	private void genReplaceElementAt(ListType type, String typeId,
@@ -395,6 +399,7 @@ public class APIGenerator extends CGenerator {
 				+ ") ATreplace((ATermList) arg, (ATerm) " + conversion + ", "
 				+ index + ");");
 		println("}");
+		println();
 	}
 
 	private void genReverse(String typeId, String typeName) {
@@ -404,6 +409,7 @@ public class APIGenerator extends CGenerator {
 		println(decl + " {");
 		println("  return (" + typeName + ") ATreverse((ATermList) arg);");
 		println("}");
+		println();
 	}
 
 	private void genAppend(ListType type, String typeId, String typeName,
@@ -418,6 +424,7 @@ public class APIGenerator extends CGenerator {
 		println("  return (" + typeName
 				+ ") ATappend((ATermList) arg, (ATerm) " + conversion + ");");
 		println("}");
+		println();
 	}
 
 	private void genConcat(String typeId, String typeName) {
@@ -428,6 +435,7 @@ public class APIGenerator extends CGenerator {
 		println("  return (" + typeName
 				+ ") ATconcat((ATermList) arg0, (ATermList) arg1);");
 		println("}");
+		println();
 	}
 
 	private void genSeparatedConcat(SeparatedListType type, String typeId,
@@ -455,6 +463,7 @@ public class APIGenerator extends CGenerator {
 		println("  return (" + typeName
 				+ ") ATconcat((ATermList) arg0, (ATermList) arg1);");
 		println("}");
+		println();
 	}
 
 	private void genSeparatedAppend(SeparatedListType type, String typeId,
@@ -468,6 +477,7 @@ public class APIGenerator extends CGenerator {
 				+ buildActualSeparatorArgsForMakeMany(type) + prefix + "make"
 				+ typeId + "Single(arg1));");
 		println("}");
+		println();
 	}
 
 	private void genSlice(String typeId, String typeName, String startIndex,
@@ -479,6 +489,7 @@ public class APIGenerator extends CGenerator {
 		println("  return (" + typeName + ") ATgetSlice((ATermList) arg, "
 				+ startIndex + ", " + endIndex + ");");
 		println("}");
+		println();
 	}
 
 	private String genConvertSeparatedIndex(String varname, int countSeps) {
@@ -498,6 +509,7 @@ public class APIGenerator extends CGenerator {
 		println("  return (ATgetLength((ATermList) arg) / "
 				+ (seps.getLength() + 1) + ") + 1;");
 		println("}");
+		println();
 	}
 
 	private void genPrologue() {
@@ -641,6 +653,7 @@ public class APIGenerator extends CGenerator {
 		//		println("{");
 		println("  return (ATerm)arg;");
 		println("}");
+		println();
 		printFoldClose();
 	}
 
@@ -657,6 +670,7 @@ public class APIGenerator extends CGenerator {
 		//		println("{");
 		println("  return (" + type_name + ")t;");
 		println("}");
+		println();
 		printFoldClose();
 	}
 
@@ -683,6 +697,7 @@ public class APIGenerator extends CGenerator {
 			}
 		}
 
+		println();
 		bothPrintFoldClose();
 	}
 
@@ -814,6 +829,7 @@ public class APIGenerator extends CGenerator {
 				printFoldClose();
 			}
 		}
+		println();
 		bothPrintFoldClose();
 	}
 
@@ -934,6 +950,7 @@ public class APIGenerator extends CGenerator {
 		}
 
 		bothPrintFoldClose();
+		println();
 	}
 
 	private String genAcceptor(Field field) {
@@ -1028,6 +1045,7 @@ public class APIGenerator extends CGenerator {
 		genGetFieldBody(type, tail, buildTypeName(tail.getType()));
 		println("  }");
 		println("}");
+		println();
 		printFoldClose();
 	}
 
@@ -1045,6 +1063,7 @@ public class APIGenerator extends CGenerator {
 		genGetFieldBody(type, field, field_type_name);
 
 		println("}");
+		println();
 		printFoldClose();
 	}
 
@@ -1134,6 +1153,7 @@ public class APIGenerator extends CGenerator {
 		println("  return (" + typeName + ")NULL;");
 
 		println("}");
+		println();
 		printFoldClose();
 	}
 
@@ -1225,6 +1245,7 @@ public class APIGenerator extends CGenerator {
 		}
 		println("  return ATfalse;");
 		println("}");
+		println();
 		printFoldClose();
 	}
 
@@ -1340,6 +1361,7 @@ public class APIGenerator extends CGenerator {
 		}
 		println("  return ATfalse;");
 		println("}");
+		println();
 
 		printFoldClose();
 	}
@@ -1443,6 +1465,7 @@ public class APIGenerator extends CGenerator {
 			}
 		}
 		println("}");
+		println();
 
 		printFoldClose();
 	}
@@ -1527,6 +1550,7 @@ public class APIGenerator extends CGenerator {
 
 		println("  return ATgetLength((ATermList) arg);");
 		println("}");
+		println();
 	}
 
 	private String buildFormalSeparatorArgs(SeparatedListType type) {
