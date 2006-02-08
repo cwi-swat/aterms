@@ -1,5 +1,8 @@
 $Id$
 
+Wed Feb  8 11:33:24 CET 2006 <economop@cwi.nl>
+	* Added ATisInitialized() to level 1 interface.
+
 Fri Oct  7 12:47:51 CEST 2005 <{gerco,jong}@cwi.nl>
 	* package: version bump to 2.4.2
 	* aterm/memory.c:

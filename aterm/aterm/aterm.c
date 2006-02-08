@@ -65,6 +65,9 @@ static void     (*error_handler) (const char *format, va_list args) = NULL;
    warrants a core being dumped. */
 static void     (*abort_handler) (const char *format, va_list args) = NULL;
 
+/* Flag set when ATinit is called. */
+static ATbool initialized = ATfalse;
+
 /* We need a buffer for printing and parsing */
 static int      buffer_size = 0;
 static char    *buffer = NULL;
@@ -138,7 +141,6 @@ void
 ATinit(int argc, char *argv[], ATerm * bottomOfStack)
 {
   int lcv;
-  static ATbool initialized = ATfalse;
   ATbool help = ATfalse;
 
   if (initialized)
@@ -241,6 +243,10 @@ ATinit(int argc, char *argv[], ATerm * bottomOfStack)
     fprintf(stderr, "\n");
     exit(0);
   }
+}
+
+ATbool ATisInitialized() {
+  return initialized;
 }
 
 /*}}}  */
