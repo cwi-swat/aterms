@@ -165,7 +165,7 @@ public class TomSignatureGenerator extends Generator {
 	}
 
 	private void genTomEmptyOperator(Type type, String class_name) {
-		println("%op " + type.getId() + " empty" + type.getId() + "{");
+		println("%op " + type.getId() + " empty" + type.getId() + "() {");
 		println("  is_fsym(t) { " + prefix + impl.OperatorIsFSym("t", class_name, "empty") + "}");
 		println("  make() {" + impl.ListmakeEmpty(type.getId()) + "}");
 		println("}");
