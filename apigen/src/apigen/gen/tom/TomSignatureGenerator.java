@@ -209,8 +209,8 @@ public class TomSignatureGenerator extends Generator {
 		print("%op " + impl.TypeName(type.getId()) + " " + operator_name);
 
 		Iterator fields = type.altFieldIterator(alt.getId());
+    print("(");
 		if (fields.hasNext()) {
-			print("(");
 			while (fields.hasNext()) {
 				Field field = (Field) fields.next();
 				String field_id = impl.FieldName(field.getId());
@@ -222,8 +222,8 @@ public class TomSignatureGenerator extends Generator {
 					print(", ");
 				}
 			}
-			print(")");
 		}
+    print(")");
 		println(" {");
     String isfsymimpl = "false";
     if (!tomConverter.isReserved(type.getId())) {

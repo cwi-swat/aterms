@@ -1,5 +1,9 @@
 # $Id$
 
+Mon Feb 13 14:01:34 CET 2006 <reilles@loria.fr>
+  * generate %op a() for 0-ary symbols in Tom mapping
+    (note the "()") to be compatible with newer versions of Tom
+
 Tue Jan 31 17:17:42 CET 2006 <economop@cwi.nl>
   * Added newlines after generated function definitions.
 
