@@ -37,7 +37,7 @@ public class StringConversions {
 			"/Slash",
 			"\\Backslash",
 			"*Star",
-			"_Underscore",
+			"_-",
 			"$Dollar",
 			"'SingleQuote",
 			};
