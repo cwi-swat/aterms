@@ -1,6 +1,8 @@
+if MAINTAINER_MODE
+
 javadir         = ${top_builddir}/test/classfiles
 JAVAROOT        = ${top_builddir}
-CLASSPATH_ENV   = CLASSPATH=${top_builddir}:$(JAVAROOT):$(srcdir)/$(JAVAROOT):${EXTERNAL_JARS}
+CLASSPATH_ENV   = CLASSPATH=${top_builddir}/aterm-${VERSION}.jar:${EXTERNAL_JARS}
 
 EXTRA_DIST = test.trm test.taf $(JAVASOURCES)
 
@@ -19,10 +21,12 @@ TESTS = $(foreach t, ${check_JAVA}, $t.test)
 %.java.test : %.java Makefile
 	@(echo '#! /bin/sh';\
 	 echo 'set -e';\
-	 echo 'CLASSPATH=${top_builddir}:..:${EXTERNAL_JARS}:${CLASSPATH}';\
+	 echo 'CLASSPATH=${top_builddir}:${top_builddir}/aterm-${VERSION}.jar:${EXTERNAL_JARS}:${CLASSPATH}';\
 	 echo 'export CLASSPATH';\
 	 echo "java test.$* ${srcdir}";\
 	 echo "rm $*.java.test";\
 	) > $@ && chmod +x $@
 
 CLEANFILES = *.test test.taf2 test.trm2
+
+endif

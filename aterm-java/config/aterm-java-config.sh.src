@@ -1,1 +1,1 @@
-echo "__PREFIX__/share/aterm-__VERSION__.jar:__EXTERNAL_JARS__"
+echo "__PREFIX__/share/aterm-java/aterm-__VERSION__.jar:__EXTERNAL_JARS__"
