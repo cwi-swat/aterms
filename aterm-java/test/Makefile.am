@@ -1,30 +1,23 @@
 if MAINTAINER_MODE
 
-javadir         = ${top_builddir}/test/classfiles
-JAVAROOT        = ${top_builddir}
-CLASSPATH_ENV   = CLASSPATH=${top_builddir}/aterm-${VERSION}.jar:${EXTERNAL_JARS}
-
-EXTRA_DIST = test.trm test.taf $(JAVASOURCES)
+EXTRA_DIST = test.trm test.taf 
 
 
-JAVASOURCES     = Test1.java \
-		  Test2.java \
-		  TestFib.java \
-		  TestFibInterpreted.java \
-		  TestPrimes.java \
-		  VisitorBenchmark.java
+JAVASOURCES     = Test1 \
+		  Test2 \
+		  TestFib \
+		  TestFibInterpreted \
+		  TestPrimes \
+		  VisitorBenchmark
 
-check_JAVA = $(JAVASOURCES)
+TESTS = $(foreach t, ${JAVASOURCES}, $t.test)
 
-TESTS = $(foreach t, ${check_JAVA}, $t.test)
-
-%.java.test : %.java Makefile
+%.test : Makefile
 	@(echo '#! /bin/sh';\
 	 echo 'set -e';\
-	 echo 'CLASSPATH=${top_builddir}:${top_builddir}/aterm-${VERSION}.jar:${EXTERNAL_JARS}:${CLASSPATH}';\
+	 echo 'CLASSPATH=${top_builddir}/aterm-${VERSION}.jar:${EXTERNAL_JARS}';\
 	 echo 'export CLASSPATH';\
-	 echo "java test.$* ${srcdir}";\
-	 echo "rm $*.java.test";\
+	 echo "java aterm.test.$* ${srcdir}"; \
 	) > $@ && chmod +x $@
 
 CLEANFILES = *.test test.taf2 test.trm2
