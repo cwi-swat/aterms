@@ -37,9 +37,9 @@ builtinstest_SOURCES = builtinstest.c
 builtinstest_LDADD = -L. -lbuiltins -lATerm
 builtinstest_DEPENDENCIES = libbuiltins.a
 
-distclean: clean
+distclean-local: clean-local
 
-clean:
+clean-local: 
 	rm -rf $(JAVATESTS)
 
 CLEANFILES = \

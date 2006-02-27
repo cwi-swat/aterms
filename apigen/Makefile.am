@@ -1,7 +1,7 @@
 
 include $(top_srcdir)/java_make_rules
 
-SUBDIRS = . scripts lib-1.0 lib-2.0 lib-3.0 utils test doc config
+SUBDIRS = . scripts lib-1.0 lib-2.0 lib-3.0 utils test config
 
 ACLOCAL_FLAGS = -I .
 

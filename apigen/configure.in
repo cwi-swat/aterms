@@ -67,7 +67,6 @@ lib-1.0/Makefile
 lib-2.0/Makefile
 lib-3.0/Makefile
 test/Makefile
-doc/Makefile
 config/Makefile
 ])
 AC_OUTPUT

@@ -1,5 +1,13 @@
 # $Id$
 
+Mon Feb 27 15:32:59 CET 2006 <kooiker@cwi.nl>
+ * test/Makefile.am:
+   - Changed clean and distclean targets to clean-local and distclean-local.
+     This fixes buildfiles being left because a normal make clean was overrided
+     by the given clean target, not extended by the given clean target.
+ * {configure.in,doc/Makefile.am}:
+   - Removed building of documentation until ant has been configured correctly
+
 Mon Feb 13 14:01:34 CET 2006 <reilles@loria.fr>
   * generate %op a() for 0-ary symbols in Tom mapping
     (note the "()") to be compatible with newer versions of Tom
