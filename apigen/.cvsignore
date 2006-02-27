@@ -22,3 +22,8 @@ stamp-h
 stamp-h.in
 .classpath
 .project
+config.guess
+config.sub
+depcomp
+libtool
+ltmain.sh
