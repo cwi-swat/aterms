@@ -1,5 +1,9 @@
 $Id$
 
+Tue Mar  7 14:01:14 CET 2006 <kooiker@cwi.nl>
+ * doc/manual.ltx:
+   - Fixed typos in manual (closes #397)
+
 Wed Feb  8 11:33:24 CET 2006 <economop@cwi.nl>
 	* Added ATisInitialized() to level 1 interface.
 

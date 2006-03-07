@@ -568,14 +568,14 @@ are completely equal, inclusive any annotations they might have!}
 	This term can later be read again by {\tt ATreadFromBinaryFile}.
 }
 
-\Function{ATWriteToNamedTextFile}{\ATerm}{\aterm\ t, char *filename}
+\Function{ATwriteToNamedTextFile}{\ATbool}{\aterm\ t, char *filename}
 {Writes term {\tt t} to file named {\tt filename} in textual format}
 \Describe{
 	This function writes \aterm\ {\tt t} in textual representation
         to file  {\tt filename}.  "-" is standard output's filename.
 }
 
-\Function{ATWriteToNamedBinaryFile}{\ATerm}{\aterm\ t, char *filename}
+\Function{ATwriteToNamedBinaryFile}{\ATbool}{\aterm\ t, char *filename}
 {Writes term {\tt t} to file named {\tt filename} in Binary ATerm Format ({\sc baf})}
 \Describe{
 	This function writes \aterm\ {\tt t} in textual representation
