@@ -1,5 +1,9 @@
 $Id$
 
+Thu Mar  9 15:02:23 CET 2006 <{jong,kooiker}@cwi.nl>
+ * aterm/memory.c:
+   - Also check on NULL pointer when using CHECK_TERM
+
 Tue Mar  7 14:01:14 CET 2006 <kooiker@cwi.nl>
  * doc/manual.ltx:
    - Fixed typos in manual (closes #397)

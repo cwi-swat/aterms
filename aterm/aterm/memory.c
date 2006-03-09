@@ -140,8 +140,9 @@ FINISH(COMBINE(START( (AT_INT<<SHIFT_TYPE) ), val))
 #define GET_PROTO_APPL_ARG(i) \
   (PROTO_APPL_ARGS[(i)])
 
-#define CHECK_TERM(t) assert(!at_check || \
-			     (AT_isValidTerm(t) && "term is invalid"))
+#define CHECK_TERM(t) \
+  assert((t) != NULL \
+	 && (!at_check || (AT_isValidTerm(t) && "term is invalid")))
 
 /*}}}  */
 /*{{{  globals */
@@ -2132,6 +2133,8 @@ ATermAppl ATsetArgument(ATermAppl appl, ATerm arg, int n)
   Symbol sym = ATgetSymbol(appl);
   ATermAppl result;
   ATerm annos;
+
+  CHECK_TERM(arg);
 
   arity = ATgetArity(sym);
   assert(n >= 0 && n < arity);
