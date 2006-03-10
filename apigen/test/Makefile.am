@@ -29,12 +29,18 @@ check_LIBRARIES	= liblist.a libbuiltins.a
 liblist_a_SOURCES = list.c list_dict.c
 libbuiltins_a_SOURCES = builtins.c builtins_dict.c
 
+if MAINTAINER_MODE
+ATERM_LIB = ATerm-dbg
+else
+ATERM_LIB = ATerm
+endif
+
 listtest_SOURCES = listtest.c
-listtest_LDADD = -L. -llist -lATerm
+listtest_LDADD = -L. -llist -l$(ATERM_LIB)
 listtest_DEPENDENCIES = liblist.a
 
 builtinstest_SOURCES = builtinstest.c
-builtinstest_LDADD = -L. -lbuiltins -lATerm
+builtinstest_LDADD = -L. -lbuiltins -l$(ATERM_LIB)
 builtinstest_DEPENDENCIES = libbuiltins.a
 
 distclean-local: clean-local

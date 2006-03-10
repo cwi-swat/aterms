@@ -1,6 +1,7 @@
+concat-adt
 .deps
+.libs
 Makefile
 Makefile.in
-concat-adt
-upgrade-adt
 *.o
+upgrade-adt
