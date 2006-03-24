@@ -203,9 +203,8 @@ public class SharedObjectFactory {
         s += "#lookup/build         = "
                 + ((double) (nbFoundReference + nbAdd) / (double) nbCall)
                 + "\n";
-        // ((double)(nbFoundReference) / (double)nbCall) + "\n";
         s += "projectionCollision   = " + nbProjectionCollision + "\n";
-        s += "hashingCollision      = " + nbHashingCollision + "\n";
+        //s += "hashingCollision      = " + nbHashingCollision + "\n";
         s += "swapEntry             = " + nbSwapEntry + "\n";
 
         // STAT
@@ -270,9 +269,9 @@ public class SharedObjectFactory {
                 }
                 // create or lookup collision
                 nbProjectionCollision++;
-                if (foundObj.hashCode() == hash) {
-                    nbHashingCollision++;
-                }
+                //if (foundObj.hashCode() == hash) {
+                //    nbHashingCollision++;
+                //}
 
                 prev = e;
             }
