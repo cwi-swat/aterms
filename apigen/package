@@ -13,10 +13,10 @@ identification
 configuration interface
 
 requires
-  aterm 2.4.2
+  aterm 0.0
 
-aterm-java 1.6
+aterm-java 0.0
 
-shared-objects 1.4
+shared-objects 0.0
 
-JJTraveler 0.4.3
+JJTraveler 0.0
