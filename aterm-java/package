@@ -1,7 +1,7 @@
 package
 identification
   name=aterm-java
-  version= 1.6
+  version= 1.6.3
   location=http://www.cwi.nl/projects/MetaEnv/aterm-java
   info=http://www.cwi.nl/projects/MetaEnv/aterm-java
   description='ATerm (short for Annotated Term) is an abstract data type
@@ -13,6 +13,6 @@ between distributed applications.'
 configuration interface
 
 requires
-  shared-objects 1.4
+  shared-objects 0.0
 
-JJTraveler 0.4.3
+JJTraveler 0.0

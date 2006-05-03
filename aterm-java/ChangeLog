@@ -1,5 +1,8 @@
 $Id$
 
+Wed May  3 13:50:13 CEST 2006 <jurgenv@cwi.nl>
+ * Bumped to 1.6.3
+
 Fri Mar 10 15:48:13 CET 2006 <kooiker@cwi.nl>
  * aterm-1.6.jar:
    - Add to cvs so users can build the package without
@@ -29,18 +32,15 @@ Wed May 25 16:06:13 CEST 2005 <kooiker@cwi.nl>
    - Solved Eclipse warnings: unnecessary else and throws
 
 2004-12-17  pem
-	* improved isEmpty() implementation
-	* maintain annotations when tranforming an ATerm
+ * improved isEmpty() implementation
+ * maintain annotations when tranforming an ATerm
 
 2004-08-06  Antoine Reilles  <tonio@bonzai>
-
-	* aterm/pure/SingletonFactory.java: if you need a singleton PureFactory...
+ * aterm/pure/SingletonFactory.java: if you need a singleton PureFactory...
 
 2004-04-08  pem  <pem@polly.loria.fr>
-
- * aterm/pure/PureFactory.java: make the parseId function compatible with the C version of the ATerm library
-
-$Id$
+ * aterm/pure/PureFactory.java: make the parseId function compatible 
+   with the C version of the ATerm library
 
 Tue Feb 10 15:27:49 CET 2004 <m336@cwi.nl>
  * upgrade auto* to: autoconf 2.59, automake 1.7.9, libtool 1.5.2
