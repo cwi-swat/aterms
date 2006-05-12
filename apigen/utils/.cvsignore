@@ -1,7 +1,0 @@
-concat-adt
-.deps
-.libs
-Makefile
-Makefile.in
-*.o
-upgrade-adt
