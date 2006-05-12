@@ -1,8 +1,0 @@
-*.class
-*.taf2
-*.test
-*.trm2
-Makefile
-Makefile.in
-classcheck.stamp
-classjava.stamp
