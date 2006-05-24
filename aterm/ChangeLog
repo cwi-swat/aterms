@@ -9,13 +9,13 @@ Tue Mar  7 14:01:14 CET 2006 <kooiker@cwi.nl>
    - Fixed typos in manual (closes #397)
 
 Wed Feb  8 11:33:24 CET 2006 <economop@cwi.nl>
-	* Added ATisInitialized() to level 1 interface.
+ * Added ATisInitialized() to level 1 interface.
 
 Fri Oct  7 12:47:51 CEST 2005 <{gerco,jong}@cwi.nl>
-	* package: version bump to 2.4.2
-	* aterm/memory.c:
-	  - fix aliasing problem related to protoTerm and arg_buffer
-	  variables. (Closes: #495)
+ * package: version bump to 2.4.2
+ * aterm/memory.c:
+   - fix aliasing problem related to protoTerm and arg_buffer
+   variables. (Closes: #495)
 
 Wed Aug 17 13:42:54 CEST 2005 <jong@cwi.nl>
 	* aterm/tafio.c: fix ATreadFromSharedTextFile is too eager. When two
