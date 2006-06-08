@@ -1,5 +1,10 @@
 # $Id$
 
+Thu Jun  8 13:33:30 CEST 2006 <gerco@cwi.nl>
+ * src/sharedSharedObjectFactory.java:
+   - Comment out the declaration of nbHashingCollision since
+     all its uses are also commented out (removes warning).
+
 Thu Mar  2 16:10:25 CET 2006 <Antoine.Reilles@loria.fr>
  * src/shared/HashFunctions: add stringHashFunction
 

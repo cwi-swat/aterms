@@ -49,7 +49,7 @@ public class SharedObjectFactory {
 
     private int nbProjectionCollision = 0;
 
-    private int nbHashingCollision = 0;
+    // private int nbHashingCollision = 0;
 
     private int nbSwapEntry = 0;
 
