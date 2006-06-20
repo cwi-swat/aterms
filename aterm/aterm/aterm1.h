@@ -87,6 +87,7 @@ ATbool ATwriteToTextFile(ATerm t, FILE *file);
 long   ATwriteToSharedTextFile(ATerm t, FILE *f);
 ATbool ATwriteToBinaryFile(ATerm t, FILE *file);
 ATbool ATwriteToNamedTextFile(ATerm t, const char *name);
+ATbool ATwriteToNamedSharedTextFile(ATerm t, const char *name);
 ATbool ATwriteToNamedBinaryFile(ATerm t, const char *name);
 char  *ATwriteToString(ATerm t);
 char  *ATwriteToSharedString(ATerm t, int *len);

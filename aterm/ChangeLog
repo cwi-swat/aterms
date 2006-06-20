@@ -1,5 +1,8 @@
 $Id$
 
+Tue Jun 20 15:36:40 CEST 2006 <jurgenv@cwi.nl>
+ * aterm/aterm.c: added ATwriteToNamedSharedTextFile function.
+
 Thu Mar  9 15:02:23 CET 2006 <{jong,kooiker}@cwi.nl>
  * aterm/memory.c:
    - Also check on NULL pointer when using CHECK_TERM

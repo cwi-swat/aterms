@@ -869,6 +869,32 @@ ATbool ATwriteToNamedTextFile(ATerm t, const char *name)
 }
 
 /*}}}  */
+/*{{{  ATerm ATwriteToNamedSharedTextFile(char *name) */
+
+/**
+ * Write an ATerm to a named plaintext file
+ */
+
+ATbool ATwriteToNamedSharedTextFile(ATerm t, const char *name)
+{  
+  FILE  *f;
+  ATbool result;
+
+  if(!strcmp(name, "-")) {
+    return ATwriteToSharedTextFile(t, stdout);
+  }
+
+  if(!(f = fopen(name, "wb"))) {
+    return ATfalse;
+  }
+
+  result = ATwriteToSharedTextFile(t, f);
+  fclose(f);
+
+  return result;
+}
+
+/*}}}  */
 
 /*{{{  char *ATwriteToString(ATerm t) */
 
