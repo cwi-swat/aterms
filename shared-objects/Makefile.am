@@ -1,5 +1,7 @@
 # $Id$
 
+SUBDIRS=doc
+
 include $(top_srcdir)/java_make_rules
 
 ACLOCAL_FLAGS = -I .
