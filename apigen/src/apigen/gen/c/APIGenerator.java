@@ -82,9 +82,13 @@ public class APIGenerator extends CGenerator {
 
 	private void genProtect(String id, String typeName) {
 		String functionName = prefix + "protect" + id;
+		printDocHead("Protect a " + typeName + " from the ATerm garbage collector", "Every " + typeName + " that is not rooted somewhere on the C call stack must be protected. Examples are global variables");
+		printDocArg("arg", "pointer to a " + typeName );
+		printDocTail();
+		
 		bothPrint("void " + functionName + "(" + typeName + " *arg)");
+		
 		hprintln(";");
-		//println();
 		println(" {");
 		println("  ATprotect((ATerm*)((void*) arg));");
 		println("}");
@@ -93,9 +97,13 @@ public class APIGenerator extends CGenerator {
 
 	private void genUnprotect(String id, String typeName) {
 		String functionName = prefix + "unprotect" + id;
+		printDocHead("Unprotect a " + typeName + " from the ATerm garbage collector", "This improves the efficiency of the garbage collector, as well as provide opportunity for reclaiming space");
+		printDocArg("arg", "pointer to a " + typeName );
+		printDocTail();
+		
 		bothPrint("void " + functionName + "(" + typeName + " *arg)");
 		hprintln(";");
-		//println();
+		
 		println(" {");
 		println("  ATunprotect((ATerm*)((void*) arg));");
 		println("}");
@@ -121,8 +129,11 @@ public class APIGenerator extends CGenerator {
 	}
 
 	private void genStaticCharsToString() {
+		printDocHead("Converts a list of integers (ASCII values) to a C string","");
+		printDocArg("arg","An ATermList with ATermInts, such as [32,32,10]");
+		printDocReturn("String containing the characters from |arg| as characters");
+		printDocTail();
 		println("char *" + prefix + "charsToString(ATerm arg) {");
-		//		println("{");
 		println("  ATermList list = (ATermList) arg;");
 		println("  int len = ATgetLength(list);");
 		println("  int i;");
@@ -144,8 +155,11 @@ public class APIGenerator extends CGenerator {
 	}
 
 	private void genStaticStringToChars() {
+		printDocHead("Converts a string to an ATermList of integers (ASCII values)","");
+		printDocArg("arg","An ASCII string");
+		printDocReturn("An ATermList containing the ASCII values of |arg| as ATermInts");
+		printDocTail();
 		println("ATerm " + prefix + "stringToChars(const char *str) {");
-		//		println("{");
 		println("  int len = strlen(str);");
 		println("  int i;");
 		println("  ATermList result = ATempty;");
@@ -160,34 +174,15 @@ public class APIGenerator extends CGenerator {
 	}
 
 	private void genStaticByteToChar() {
+		printDocHead("Converts an ASCII char to an ATermInt","");
+		printDocArg("arg","an ASCII character");
+		printDocReturn("An ATerm representing the ASCII value of |arg|");
+		printDocTail();
 		println("ATerm " + prefix + "byteToChar(char ch) {");
 		//		println("{");
 		println("    return (ATerm) ATmakeInt(ch);");
 		println("}");
 		println();
-	}
-
-	private void genBottomSorts() {
-		// disabled because it clashes (rather than generating a default
-		// implementation) with prologue.
-		Iterator types = adt.bottomTypeIterator();
-		TypeConverter conv = new TypeConverter(new CTypeConversions(prefix));
-
-		if (types.hasNext()) {
-			hprintFoldOpen("definition of bottom types");
-			while (types.hasNext()) {
-				String type = (String) types.next();
-
-				if (!conv.isReserved(type)) {
-					System.err.println("Warning: undefined (bottom) type "
-							+ type + " defaults to ATerm");
-					hprintln("typedef ATerm " + buildTypeName(type) + ";");
-				}
-			}
-
-			hprintFoldClose();
-			hprintln();
-		}
 	}
 
 	private void genListsApi(ADT adt) {
@@ -249,13 +244,17 @@ public class APIGenerator extends CGenerator {
 
 	private void genSeparatedReverse(SeparatedListType type, String typeId,
 			String typeName) {
-
 		String decl = typeName + " " + prefix + "reverse" + typeId + "("
 				+ typeName + " arg)";
 		String listNext = "      list = ATgetNext(list);";
 		int sepCount = type.getSeparators().getLength();
 
 		hprintln(decl + ";");
+		
+		printDocHead("Reverses the elements of a " + typeName, "Note that separators are reversed with the list, but the order in which each set of separators inbetween two elements occurs does not change");
+		printDocArg("arg", typeName + " to be reversed");
+		printDocReturn("|arg| reversed");
+		printDocTail();
 		println(decl + " {");
 		println("  ATermList list = (ATermList) arg;");
 		println("  ATerm head;");
@@ -317,10 +316,17 @@ public class APIGenerator extends CGenerator {
 	private void genListMake(ListType type, int arity, String typeId,
 			String typeName, String elementTypeName) {
 		String decl = typeName + " " + prefix + "make" + typeId + arity + "(";
+		
+		printDocHead("Builds a " + typeName + " of " + arity + " consecutive elements","");
 		for (int i = 1; i < arity; i++) {
 			decl = decl + elementTypeName + " elem" + i + ", ";
+			printDocArg("elem" + i, "One " + elementTypeName + " element of the new " + typeName);
 		}
+	
 		decl = decl + elementTypeName + " elem" + arity + ")";
+		printDocArg("elem" + arity, "One " + elementTypeName + " element of the new " + typeName);
+		printDocReturn("A new " + typeName + " consisting of " + arity + " " + elementTypeName + "s");
+		printDocTail();
 		hprintln(decl + ";");
 		println(decl + " {");
 		print("  return (" + typeName + ") ATmakeList" + arity + "(");
@@ -341,13 +347,18 @@ public class APIGenerator extends CGenerator {
 			String typeId, String typeName, String elementTypeName) {
 
 		String decl = typeName + " " + prefix + "make" + typeId + arity + "(";
-
+		printDocHead("Builds a " + typeName + " of " + arity + " consecutive elements","The elements are separated.");
+		
 		decl += buildFormalSeparatorArgs(type);
 
 		for (int i = 1; i < arity; i++) {
 			decl = decl + elementTypeName + " elem" + i + ", ";
+			printDocArg("elem" + i, "One " + elementTypeName + " element of the new " + typeName);
 		}
 		decl = decl + elementTypeName + " elem" + arity + ")";
+		printDocArg("elem" + arity, "One " + elementTypeName + " element of the new " + typeName);
+		printDocReturn("A new " + typeName + " consisting of " + arity + " " + elementTypeName + "s");
+		printDocTail();
 		hprintln(decl + ";");
 		println(decl + " {");
 
@@ -380,6 +391,11 @@ public class APIGenerator extends CGenerator {
 		String decl = elementTypeName + " " + prefix + "get" + typeId
 				+ elementTypeId + "At(" + typeName + " arg, int index)";
 		hprintln(decl + ";");
+		printDocHead("Retrieve the " + elementTypeName + " at |index| from a " + typeName, "");
+		printDocArg("arg", typeName + " to retrieve the " + elementTypeName + " from");
+		printDocArg("index", "index to use to point in the " + typeName);
+		printDocReturn(elementTypeName + " at position |index| in |arg|");
+		printDocTail();
 		println(decl + " {");
 		println(" return (" + elementTypeName + ")" + conversion + ";");
 		println("}");
@@ -393,6 +409,12 @@ public class APIGenerator extends CGenerator {
 		String decl = typeName + " " + prefix + "replace" + typeId
 				+ elementTypeId + "At(" + typeName + " arg, " + elementTypeName
 				+ " elem, int index)";
+		printDocHead("Replace the " + elementTypeName + " at |index| from a " + typeName + " by a new one", "");
+		printDocArg("arg", typeName + " to retrieve the " + elementTypeName + " from");
+		printDocArg("elem", "new " + elementTypeName + " to replace another");
+		printDocArg("index", "index to use to point in the " + typeName);
+		printDocReturn("A new " + typeName + "with |elem| replaced in |arg| at position |index|");
+		printDocTail();
 		hprintln(decl + ";");
 		println(decl + " {");
 		println(" return (" + typeName
@@ -405,6 +427,10 @@ public class APIGenerator extends CGenerator {
 	private void genReverse(String typeId, String typeName) {
 		String decl = typeName + " " + prefix + "reverse" + typeId + "("
 				+ typeName + " arg)";
+		printDocHead("Reverse a " + typeName,"");
+		printDocArg("arg", typeName + " to be reversed");
+		printDocReturn("a reversed |arg|");
+		printDocTail();
 		hprintln(decl + ";");
 		println(decl + " {");
 		println("  return (" + typeName + ") ATreverse((ATermList) arg);");
@@ -419,6 +445,11 @@ public class APIGenerator extends CGenerator {
 
 		String decl = typeName + " " + prefix + "append" + typeId + "("
 				+ typeName + " arg, " + elementTypeName + " elem)";
+		printDocHead("Append a " + elementTypeName + " to the end of a " + typeName, "");
+		printDocArg("arg", typeName + " to append the " + elementTypeName + " to");
+		printDocArg("elem", elementTypeName + " to be appended");
+		printDocReturn("new " + typeName + " with |elem| appended");
+		printDocTail();
 		hprintln(decl + ";");
 		println(decl + " {");
 		println("  return (" + typeName
@@ -431,6 +462,11 @@ public class APIGenerator extends CGenerator {
 		String decl = typeName + " " + prefix + "concat" + typeId + "("
 				+ typeName + " arg0, " + typeName + " arg1)";
 		hprintln(decl + ";");
+		printDocHead("Concatenate two " + typeName + "s","");
+		printDocArg("arg0","first " + typeName);
+		printDocArg("arg1","second " + typeName);
+		printDocReturn(typeName + " with the elements of |arg0| before the elements of |arg1|");
+		printDocTail();
 		println(decl + " {");
 		println("  return (" + typeName
 				+ ") ATconcat((ATermList) arg0, (ATermList) arg1);");
@@ -444,6 +480,12 @@ public class APIGenerator extends CGenerator {
 				+ typeName + " arg0, " + buildFormalSeparatorArgs(type)
 				+ typeName + " arg1)";
 		hprintln(decl + ";");
+		printDocHead("Concatenate two " + typeName + "s","");
+		printDocArg("arg0","first " + typeName);
+		printDocArg("arg1","second " + typeName);
+		printDocReturn(typeName + " with the elements of |arg0| before the elements of |arg1|, with the separators in between.");
+		printDocTail();
+		
 		println(decl + " {");
 		println("  if (ATisEmpty((ATermList) arg0)) {");
 		println("    return arg1;");
@@ -472,6 +514,12 @@ public class APIGenerator extends CGenerator {
 				+ typeName + " arg0, " + buildFormalSeparatorArgs(type)
 				+ elementTypeName + " arg1)";
 		hprintln(decl + ";");
+		printDocHead("Append a " + elementTypeName + " to the end of a " + typeName, "");
+		printDocArg("arg", typeName + " to append the " + elementTypeName + " to");
+		printDocArg("elem", elementTypeName + " to be appended");
+		printDocReturn("new " + typeName + " with |elem| appended after the separators");
+		printDocTail();
+		
 		println(decl + " {");
 		println("  return " + prefix + "concat" + typeId + "(arg0, "
 				+ buildActualSeparatorArgsForMakeMany(type) + prefix + "make"
@@ -485,6 +533,13 @@ public class APIGenerator extends CGenerator {
 		String decl = typeName + " " + prefix + "slice" + typeId + "("
 				+ typeName + " arg, int start, int end)";
 		hprintln(decl + ";");
+		printDocHead("Extract a sublist from a " +  typeName, "");
+		printDocArg("arg", typeName + " to extract a slice from");
+		printDocArg("start", "inclusive start index of the sublist");
+		printDocArg("end", "exclusive end index of the sublist");
+		printDocReturn("new " + typeName + " with a first element the element at index |start| from |arg|, and as last element the element at index (|end| - 1).");
+		printDocTail();
+		
 		println(decl + " {");
 		println("  return (" + typeName + ") ATgetSlice((ATermList) arg, "
 				+ startIndex + ", " + endIndex + ");");
@@ -502,6 +557,10 @@ public class APIGenerator extends CGenerator {
 				+ " arg)";
 
 		hprintln(decl + ";");
+		printDocHead("Retrieve the number of elements in a " + typeName,"");
+		printDocArg("arg","input " + typeName);
+		printDocReturn("The number of elements in |arg|, excluding any separators");
+		printDocTail();
 		println(decl + " {");
 		println("  if (ATisEmpty((ATermList) arg)) {");
 		println("    return 0;");
@@ -600,6 +659,8 @@ public class APIGenerator extends CGenerator {
 				+ "Api(void)";
 		hprintln(decl + ";");
 
+		printDocHead("Initializes the full API", "Forgetting to call this function before using the API will lead to strange behaviour. |ATinit| needs to be called before this function.");
+		printDocTail();
 		printFoldOpen(decl);
 		println(decl + " {");
 		//		println("{");
@@ -648,6 +709,10 @@ public class APIGenerator extends CGenerator {
 		}
 		decl = "ATerm " + prefix + type_id + "ToTerm(" + type_name + " arg)";
 		hprintln(decl + ";");
+		printDocHead("Transforms a " + type_name + "to an ATerm","This is just a wrapper for a cast.");
+		printDocArg("arg", type_name + " to be converted");
+		printDocReturn("ATerm that represents the " + type_name);
+		printDocTail();
 		printFoldOpen(decl);
 		println(decl + " {");
 		//		println("{");
@@ -665,6 +730,10 @@ public class APIGenerator extends CGenerator {
 		}
 		String decl = type_name + " " + prefix + type_id + "FromTerm(ATerm t)";
 		hprintln(decl + ";");
+		printDocHead("Transforms an ATerm " + "to a " + type_name,"This is just a wrapper for a cast, so no structural validation is done!");
+		printDocArg("arg", "ATerm to be converted");
+		printDocReturn(type_name + " that was encoded by \\arg");
+		printDocTail();
 		printFoldOpen(decl);
 		println(decl + " {");
 		//		println("{");
@@ -688,8 +757,12 @@ public class APIGenerator extends CGenerator {
 
 			hprintln(decl + ";");
 
+			printDocHead("Tests equality of two " + type_name + "s","A constant time operation.");
+			printDocArg("arg0", "first " + type_name + " to be compared");
+			printDocArg("arg1", "second " + type_name + " to be compared");
+			printDocReturn("ATtrue if \\first was equal to \\second, ATfalse otherwise");
+			printDocTail();
 			println(decl + " {");
-			//			println("{");
 			println("  return ATisEqual((ATerm)arg0, (ATerm)arg1);");
 			println("}");
 			if (types.hasNext()) {
@@ -817,9 +890,12 @@ public class APIGenerator extends CGenerator {
 				String decl = buildConstructorDecl(type, alt);
 				hprintln(decl + ";");
 
+				printDocHead("Constructs a " + alt.getId() + " of type " + type_name, "Like all ATerm types, " + type_name + "s are maximally shared.");
+				printDocReturn("A pointer to a " + alt.getId() + ", either newly constructed or shared");
+				printDocArgs("arg", "a child of the new " + alt.getId(), type, alt);
+				printDocTail();
 				printFoldOpen(decl.toString());
 				println(decl + " {");
-				//				println("{");
 
 				genDealWithSeparatedListException(type, StringConversions
 						.makeCapitalizedIdentifier(type.getId()), alt);
@@ -932,9 +1008,11 @@ public class APIGenerator extends CGenerator {
 
 			hprintln(decl + ";");
 
+			printDocHead("Apply functions to the children of a " + type_name, "");
+			printDocReturn("A new " + type_name + " with new children where the argument functions might have applied");
+			printDocTail();
 			printFoldOpen(decl);
 			println(decl + " {");
-			//			println("{");
 
 			Iterator alts = type.alternativeIterator();
 			while (alts.hasNext()) {
@@ -1016,10 +1094,8 @@ public class APIGenerator extends CGenerator {
 	}
 
 	private void genSeparatedListGetTail(SeparatedListType type) {
-		Alternative alt = type.getManyAlternative();
 		String type_name = buildTypeName(type);
 		String isSingle = buildIsAltName(type, type.getSingleAlternative());
-		String isMany = buildIsAltName(type, type.getManyAlternative());
 		String isEmpty = buildIsAltName(type, type.getEmptyAlternative());
 
 		String decl = type_name
@@ -1028,11 +1104,14 @@ public class APIGenerator extends CGenerator {
 						.getManyField(type.getTailFieldId())) + "(" + type_name
 				+ " arg)";
 
+		printDocHead("Returns a list of all but the first element of a " + type_name, "");
+		printDocArg("arg", "input " + type_name);
+		printDocReturn("A new " + type_name + ", without the first element and the separator(s) just after it.)");
+		printDocTail();
 		hprintln(decl + ";");
 
 		printFoldOpen(decl);
 		println(decl + " {");
-		//		println("{");
 		println("  assert(!" + isEmpty
 				+ "(arg) && \"getTail on an empty list\");");
 		println("  if (" + isSingle + "(arg)) {");
@@ -1057,9 +1136,12 @@ public class APIGenerator extends CGenerator {
 
 		hprintln(decl + ";");
 
+		printDocHead("Get the " + field.getId() + " " + field_type_name + " of a " + type_name, "Note that the precondition is that this " + type_name + " actually has a " + field.getId());
+		printDocArg("arg","input " + type_name);
+		printDocReturn("the " + field.getId() + " of |arg|, if it exist or an undefined value if it does not");
+		printDocTail();
 		printFoldOpen(decl);
 		println(decl + " {");
-		//		println("{");
 		genGetFieldBody(type, field, field_type_name);
 
 		println("}");
@@ -1067,11 +1149,6 @@ public class APIGenerator extends CGenerator {
 		printFoldClose();
 	}
 
-	/**
-	 * @param type
-	 * @param field
-	 * @param field_type_name
-	 */
 	private void genGetFieldBody(Type type, Field field, String field_type_name) {
 		Iterator locs = field.locationIterator();
 		boolean first = true;
@@ -1125,9 +1202,13 @@ public class APIGenerator extends CGenerator {
 
 		hprintln(decl + ";");
 
+		printDocHead("Set the " + field.getId() + " of a " + typeName, "The precondition being that this " + typeName + " actually has a " + field.getId());
+		printDocArg("arg", "input " + typeName);
+		printDocArg(fieldId, "new " + fieldTypeName + " to set in |arg|");
+		printDocReturn("A new " + typeName + " with " + fieldId + " at the right place, or a core dump if |arg| did not have a " + fieldId);
+		printDocTail();
 		printFoldOpen(decl);
 		println(decl + " {");
-		//		println("{");
 		Iterator locs = field.locationIterator();
 		boolean first = true;
 		while (locs.hasNext()) {
@@ -1226,6 +1307,10 @@ public class APIGenerator extends CGenerator {
 
 		hprintln(decl + ";");
 
+		printDocHead("Assert whether a " + type_name + " has a " + field.getId(),"");
+		printDocArg("arg", "input " + type_name);
+		printDocReturn("ATtrue if the " + type_name + " had a " + field.getId() + ", or ATfalse otherwise");
+		printDocTail();
 		printFoldOpen(decl);
 		println(decl + " {");
 		//		println("{");
@@ -1272,6 +1357,15 @@ public class APIGenerator extends CGenerator {
 		return decl.toString();
 	}
 
+	private void printDocArgs(String argName, String msg, Type type, Alternative alt) {
+		Iterator fields = type.altFieldIterator(alt.getId());
+		int i = 0;
+		while (fields.hasNext()) {
+			Field field = (Field) fields.next();
+			printDocArg(field.getId(), msg);
+		}
+	}
+	
 	private String buildFieldArgumentList(Type type, Alternative alt) {
 		String args = "";
 		Iterator fields = type.altFieldIterator(alt.getId());
@@ -1343,8 +1437,11 @@ public class APIGenerator extends CGenerator {
 		printFoldOpen(decl);
 
 		hprintln(decl + ";");
+		printDocHead("Assert whether a " + type_name + " is any of the valid alternatives, or not","This analysis does not go any deeper than the top level");
+		printDocArg("arg", "input " + type_name);
+		printDocReturn("ATtrue if |arg| corresponds to the expected signature, or ATfalse otherwise");
+		printDocTail();
 		println(decl + " {");
-		//		println("{");
 		Iterator alts = type.alternativeIterator();
 		boolean first = true;
 		while (alts.hasNext()) {
@@ -1391,9 +1488,12 @@ public class APIGenerator extends CGenerator {
 
 		hprintln(decl + ";");
 
+		printDocHead("Assert whether a " + type_name + " is a " + alt.getId(), alt_count == 1 ? "Always returns ATtrue" : "" + ". May not be used to assert correctness of the " + type_name);
+		printDocArg("arg", "input " + type_name);
+		printDocReturn("ATtrue if |arg| corresponds to the signature of a " + alt.getId() + ", or ATfalse otherwise");
+		printDocTail();
 		printFoldOpen(decl);
 		println(decl + " {");
-		//		println("{");
 		if (false && inverted) {
 			println("  return !(" + match_code + ");");
 		} else if (false && alt_count != 1 && !contains_placeholder) {
@@ -1546,6 +1646,10 @@ public class APIGenerator extends CGenerator {
 				+ " arg)";
 
 		hprintln(decl + ";");
+		printDocHead("Retrieve the length of a " + typeName,"");
+		printDocArg("arg", "input " + typeName);
+		printDocReturn("The number of elements in the " + typeName);
+		printDocTail();
 		println(decl + " {");
 
 		println("  return ATgetLength((ATermList) arg);");

@@ -180,5 +180,26 @@ abstract public class CGenerator extends Generator {
 		print(msg);
 		hprint(msg);
 	}
+	
+	protected void printDocHead(String title, String message) {
+		println("/**");
+		println(" * " + title + ". " + message);
+	}
+	
+	protected void printlnDoc(String msg) {
+		println(" * " + msg);
+	}
+	
+	protected void printDocArg(String name, String message) {
+		printlnDoc("\\param[in] " + name + " " + message);
+	}
+	
+	protected void printDocReturn(String message) {
+		printlnDoc("\\return " + message);
+	}
+	
+	protected void printDocTail() {
+		println(" */");
+	}
 
 }

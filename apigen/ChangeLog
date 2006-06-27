@@ -1,5 +1,9 @@
 # $Id$
 
+Tue Jun 27 22:25:02 CEST 2006 <jurgenv@cwi.nl>
+ * **/APIGenerator.java: added to the C generator, the generation
+   of doxygen markup for each generator function.
+
 Tue Jun 27 16:04:18 CEST 2006 <jurgenv@cwi.nl>
  * **/APIGenerator.java: fixed a serious bug in genMakeLists. 
    For example: makeList2 would generate a tuple of two times the seconf
