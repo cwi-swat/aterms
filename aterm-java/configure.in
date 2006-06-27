@@ -24,6 +24,7 @@ AC_SUBST(EXTERNAL_JARS)
 AC_CONFIG_FILES([
   Makefile
   test/Makefile
+  doc/Makefile
   config/Makefile
 ])
 AC_OUTPUT

@@ -1,5 +1,9 @@
 $Id$
 
+Tue Jun 27 12:08:20 CEST 2006 <jurgenv@cwi.nl>
+ * doc: Added doc directory which uses doxygen, in MAINTAINER_MODE,
+   to generate a website.
+
 Wed May  3 13:50:13 CEST 2006 <jurgenv@cwi.nl>
  * Bumped to 1.6.3
 
