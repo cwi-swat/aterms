@@ -328,7 +328,7 @@ public class APIGenerator extends CGenerator {
 		String conversion;
 		for (int i = 1; i < arity; i++) {
 			conversion = genBuiltinToATerm(type.getElementType(), "elem"
-					+ arity);
+					+ i);
 			print("(ATerm) " + conversion + ", ");
 		}
 		conversion = genBuiltinToATerm(type.getElementType(), "elem" + arity);

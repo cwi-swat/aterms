@@ -1,5 +1,10 @@
 # $Id$
 
+Tue Jun 27 16:04:18 CEST 2006 <jurgenv@cwi.nl>
+ * **/APIGenerator.java: fixed a serious bug in genMakeLists. 
+   For example: makeList2 would generate a tuple of two times the seconf
+   argument, instead of the first and second argument consecutive in a list.
+
 Fri Mar 10 11:44:02 CET 2006 <kooiker@cwi.nl>
  * **/Makefile.am:
    - Maintainters use ATerm-dbg library
