@@ -1,4 +1,17 @@
+Tue Jun 27 12:08:20 CEST 2006 <jurgenv@cwi.nl>
+ * doc: Added doc directory which uses doxygen, in MAINTAINER_MODE,
+   to generate a website. 
+ * doc/Doxyfile: turned on every available option of doxygen.
+ * ChangeLog: restored truncated part of ChangeLog
+ * doc/DoxyFile: enabled java output optimization
+ 
+Wed May  3 13:50:13 CEST 2006 <jurgenv@cwi.nl>
+ * Bumped to 1.6.3
 
+Fri Mar 10 15:48:13 CET 2006 <kooiker@cwi.nl>
+ * aterm-1.6.jar:
+   - Add to cvs so users can build the package without
+     --enable-maintainer-mode
 
 Tue Sep 13 10:11:40 CEST 2005 <pem>
  * we have a better solution: find a fix-point hashcode such that
