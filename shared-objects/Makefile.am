@@ -24,3 +24,8 @@ $(TOOLNAME)-config: Makefile
 	echo "#! /bin/sh" > $@
 	echo "echo $(pkgdatadir)/$(JARFILE)" >> $@
 	chmod +x $@
+
+.PHONY: doc
+
+doc:
+	cd doc && $(MAKE) $(AM_MAKE_FLAGS) doc

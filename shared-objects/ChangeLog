@@ -1,5 +1,8 @@
 # $Id$
 
+Tue Jun 27 14:24:05 CEST 2006 <jurgenv@cwi.nl>
+ * doc: added generation of documentation site using doxygen
+
 Thu Jun  8 13:33:30 CEST 2006 <gerco@cwi.nl>
  * src/sharedSharedObjectFactory.java:
    - Comment out the declaration of nbHashingCollision since
