@@ -1,34 +1,7 @@
-De nieuwe regel
+2006-06-28    <storm@cwi.nl>
+
+	* Removed cruft from ChangeLog that was used to test Sisyphus
+
+	* Enabled doxygen documentation generation
 	
-Deze allebei
-Dit moet in de diff
-Dit moet in de diff
-Dit moet in de diff
-
-	
-asdasdas
-
-	
-* And again.
-
-* And another.
-	
-* Another new line in ChangeLog (storm)
-
-* A new line in ChangeLog (storm)
-
-* Added support for comprehensions.
-	<storm@cwi.nl>
-bla 
-bla 
-bla 
-bla 
-bla 
-
-
-
-
-
-
-
 

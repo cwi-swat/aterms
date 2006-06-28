@@ -5,6 +5,8 @@ AC_CONFIG_SRCDIR([configure.in])
 GLT_INIT_PACKAGE
 AC_PREREQ(2.59)
 
+AM_MAINTAINER_MODE
+
 dnl {{{  Which compiler to use?
 AC_PROG_CC
 
@@ -49,6 +51,7 @@ dnl }}}
 dnl {{{  Which files need updating?
 AC_CONFIG_FILES([Makefile
   src/Makefile
+  doc/Makefile
   utils/Makefile
 ])
 AC_OUTPUT
