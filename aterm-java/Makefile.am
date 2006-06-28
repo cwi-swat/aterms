@@ -20,7 +20,13 @@ noinst_SCRIPTS = ${PACKAGE}-${VERSION}.pkg
 ${PACKAGE}-${VERSION}.pkg: package Makefile
 	cp $< $@
 
+if MAINTAINER_MODE
+
 .PHONY: doc
 
 doc:
-	cd doc && $(MAKE) $(AM_MAKE_FLAGS) doc
+	${ANT_ENV} ant doc; \
+		cd doc && $(MAKE) $(AM_MAKE_FLAGS) doc
+
+
+endif

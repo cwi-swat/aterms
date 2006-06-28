@@ -4,8 +4,10 @@
   <property environment="env"/>
   <property name="build" location="build"/>
   <property name="dist" location="dist"/>
-  <property name="srcdir" value="src"/>
+  <property name="src" value="src"/>
   <property name="resources" value="resources"/>
+  <property name="doc" location="doc/html"/> 
+  <property environment="env"/>
 
   <path id="project.classpath">
     <pathelement path="${env.LOCAL_JARS}"/>
@@ -15,7 +17,7 @@
   <target name="build">
     <mkdir dir="${build}"/>
     <javac destdir="${build}" debug="true" source="1.4" target="1.4">
-      <src path="${srcdir}"/>
+      <src path="${src}"/>
       <classpath refid="project.classpath"/>
     </javac>
   </target>
@@ -29,7 +31,7 @@
       <fileset dir="${build}"/>
     </copy>
     <copy todir="${dist}/src">
-      <fileset dir="${srcdir}" includes="**/*.java"/>
+      <fileset dir="${src}" includes="**/*.java"/>
     </copy>
     <jar destfile="${env.JAR}">
       <manifest>
@@ -39,9 +41,29 @@
     </jar>
   </target>
 
+
+  <target name="doc">
+    <mkdir dir="${doc}"/>
+    <javadoc 
+      sourcepath="${src}"
+      destdir="${doc}"
+      author="true"
+      overview="${src}/overview.html"
+      packagenames="aterm,aterm.pure,aterm.test"
+      private="true"
+      use="true"
+      version="true"
+      windowtitle="ATerm-Java Documentation">
+      <classpath refid="project.classpath"/>
+    </javadoc>
+    <replace file="${doc}/overview-summary.html" token="__VERSION__" value="${env.PKG_VERSION}"/>	
+  </target> 
+
+
   <target name="clean">
     <delete dir="${build}"/>
     <delete dir="${dist}"/>
+    <delete dir="${doc}"/>
     <delete file="${env.JAR}"/>
   </target>
 
