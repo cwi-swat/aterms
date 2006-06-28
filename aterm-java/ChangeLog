@@ -1,5 +1,7 @@
 2006-06-28    <storm@cwi.nl>
 
+	* doc: latex generation is now followed by pdf generation.
+
 	* doc, build.xml: added Javadoc documentation generation to build.xml and 
 	disabled html generation by doxygen.
 
