@@ -7,6 +7,6 @@ if MAINTAINER_MODE
 .PHONY: doc
 
 doc: 
-	doxygen
+	doxygen && cd latex && make 
 
 endif
