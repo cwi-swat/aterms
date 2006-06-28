@@ -5,6 +5,8 @@ AC_CONFIG_SRCDIR([configure.in])
 GLT_INIT_PACKAGE
 AC_PREREQ(2.59)
 
+AM_MAINTAINER_MODE
+
 AC_AIX
 AC_PROG_CC
 AC_PROG_LIBTOOL
@@ -47,6 +49,7 @@ dnl }}}
 dnl {{{  Which files need updating?
 AC_CONFIG_FILES([Makefile
   src/Makefile
+  doc/Makefile
   test/Makefile
   utils/Makefile
 ])

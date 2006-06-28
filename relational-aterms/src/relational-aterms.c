@@ -3,8 +3,6 @@
 
 #include "relational-aterms.h"
 
-asdasd
-
 #define COMPARATOR ATR_compare
 
 #define RELATION_STORE_SIZE 100

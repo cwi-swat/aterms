@@ -1,6 +1,6 @@
 # $Id$
 
-SUBDIRS = src test utils
+SUBDIRS = src test utils doc
 
 ACLOCAL_FLAGS = -I .
 
@@ -12,4 +12,14 @@ noinst_SCRIPTS = ${PACKAGE}-${VERSION}.pkg
 
 ${PACKAGE}-${VERSION}.pkg: package Makefile
 	cp $< $@
+
+
+if MAINTAINER_MODE 
+
+.PHONY: doc
+doc:
+	(cd doc && ${MAKE} ${AM_MAKE_FLAGS} doc)
+
+endif
+
 
