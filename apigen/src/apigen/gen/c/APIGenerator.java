@@ -131,7 +131,7 @@ public class APIGenerator extends CGenerator {
 	private void genStaticCharsToString() {
 		printDocHead("Converts a list of integers (ASCII values) to a C string","");
 		printDocArg("arg","An ATermList with ATermInts, such as [32,32,10]");
-		printDocReturn("String containing the characters from |arg| as characters");
+		printDocReturn("String containing the characters from #arg as characters");
 		printDocTail();
 		println("char *" + prefix + "charsToString(ATerm arg) {");
 		println("  ATermList list = (ATermList) arg;");
@@ -156,8 +156,8 @@ public class APIGenerator extends CGenerator {
 
 	private void genStaticStringToChars() {
 		printDocHead("Converts a string to an ATermList of integers (ASCII values)","");
-		printDocArg("arg","An ASCII string");
-		printDocReturn("An ATermList containing the ASCII values of |arg| as ATermInts");
+		printDocArg("str","An ASCII string");
+		printDocReturn("An ATermList containing the ASCII values of #arg as ATermInts");
 		printDocTail();
 		println("ATerm " + prefix + "stringToChars(const char *str) {");
 		println("  int len = strlen(str);");
@@ -175,8 +175,8 @@ public class APIGenerator extends CGenerator {
 
 	private void genStaticByteToChar() {
 		printDocHead("Converts an ASCII char to an ATermInt","");
-		printDocArg("arg","an ASCII character");
-		printDocReturn("An ATerm representing the ASCII value of |arg|");
+		printDocArg("ch","an ASCII character");
+		printDocReturn("An ATerm representing the ASCII value of #arg");
 		printDocTail();
 		println("ATerm " + prefix + "byteToChar(char ch) {");
 		//		println("{");
@@ -253,7 +253,7 @@ public class APIGenerator extends CGenerator {
 		
 		printDocHead("Reverses the elements of a " + typeName, "Note that separators are reversed with the list, but the order in which each set of separators inbetween two elements occurs does not change");
 		printDocArg("arg", typeName + " to be reversed");
-		printDocReturn("|arg| reversed");
+		printDocReturn("#arg reversed");
 		printDocTail();
 		println(decl + " {");
 		println("  ATermList list = (ATermList) arg;");
@@ -391,10 +391,10 @@ public class APIGenerator extends CGenerator {
 		String decl = elementTypeName + " " + prefix + "get" + typeId
 				+ elementTypeId + "At(" + typeName + " arg, int index)";
 		hprintln(decl + ";");
-		printDocHead("Retrieve the " + elementTypeName + " at |index| from a " + typeName, "");
+		printDocHead("Retrieve the " + elementTypeName + " at #index from a " + typeName, "");
 		printDocArg("arg", typeName + " to retrieve the " + elementTypeName + " from");
 		printDocArg("index", "index to use to point in the " + typeName);
-		printDocReturn(elementTypeName + " at position |index| in |arg|");
+		printDocReturn(elementTypeName + " at position #index in #arg");
 		printDocTail();
 		println(decl + " {");
 		println(" return (" + elementTypeName + ")" + conversion + ";");
@@ -409,11 +409,11 @@ public class APIGenerator extends CGenerator {
 		String decl = typeName + " " + prefix + "replace" + typeId
 				+ elementTypeId + "At(" + typeName + " arg, " + elementTypeName
 				+ " elem, int index)";
-		printDocHead("Replace the " + elementTypeName + " at |index| from a " + typeName + " by a new one", "");
+		printDocHead("Replace the " + elementTypeName + " at #index from a " + typeName + " by a new one", "");
 		printDocArg("arg", typeName + " to retrieve the " + elementTypeName + " from");
 		printDocArg("elem", "new " + elementTypeName + " to replace another");
 		printDocArg("index", "index to use to point in the " + typeName);
-		printDocReturn("A new " + typeName + "with |elem| replaced in |arg| at position |index|");
+		printDocReturn("A new " + typeName + "with #elem replaced in #arg at position #index");
 		printDocTail();
 		hprintln(decl + ";");
 		println(decl + " {");
@@ -429,7 +429,7 @@ public class APIGenerator extends CGenerator {
 				+ typeName + " arg)";
 		printDocHead("Reverse a " + typeName,"");
 		printDocArg("arg", typeName + " to be reversed");
-		printDocReturn("a reversed |arg|");
+		printDocReturn("a reversed #arg");
 		printDocTail();
 		hprintln(decl + ";");
 		println(decl + " {");
@@ -448,7 +448,7 @@ public class APIGenerator extends CGenerator {
 		printDocHead("Append a " + elementTypeName + " to the end of a " + typeName, "");
 		printDocArg("arg", typeName + " to append the " + elementTypeName + " to");
 		printDocArg("elem", elementTypeName + " to be appended");
-		printDocReturn("new " + typeName + " with |elem| appended");
+		printDocReturn("new " + typeName + " with #elem appended");
 		printDocTail();
 		hprintln(decl + ";");
 		println(decl + " {");
@@ -465,7 +465,7 @@ public class APIGenerator extends CGenerator {
 		printDocHead("Concatenate two " + typeName + "s","");
 		printDocArg("arg0","first " + typeName);
 		printDocArg("arg1","second " + typeName);
-		printDocReturn(typeName + " with the elements of |arg0| before the elements of |arg1|");
+		printDocReturn(typeName + " with the elements of #arg0 before the elements of #arg1");
 		printDocTail();
 		println(decl + " {");
 		println("  return (" + typeName
@@ -483,7 +483,7 @@ public class APIGenerator extends CGenerator {
 		printDocHead("Concatenate two " + typeName + "s","");
 		printDocArg("arg0","first " + typeName);
 		printDocArg("arg1","second " + typeName);
-		printDocReturn(typeName + " with the elements of |arg0| before the elements of |arg1|, with the separators in between.");
+		printDocReturn(typeName + " with the elements of #arg0 before the elements of #arg1, with the separators in between.");
 		printDocTail();
 		
 		println(decl + " {");
@@ -517,7 +517,7 @@ public class APIGenerator extends CGenerator {
 		printDocHead("Append a " + elementTypeName + " to the end of a " + typeName, "");
 		printDocArg("arg", typeName + " to append the " + elementTypeName + " to");
 		printDocArg("elem", elementTypeName + " to be appended");
-		printDocReturn("new " + typeName + " with |elem| appended after the separators");
+		printDocReturn("new " + typeName + " with #elem appended after the separators");
 		printDocTail();
 		
 		println(decl + " {");
@@ -537,7 +537,7 @@ public class APIGenerator extends CGenerator {
 		printDocArg("arg", typeName + " to extract a slice from");
 		printDocArg("start", "inclusive start index of the sublist");
 		printDocArg("end", "exclusive end index of the sublist");
-		printDocReturn("new " + typeName + " with a first element the element at index |start| from |arg|, and as last element the element at index (|end| - 1).");
+		printDocReturn("new " + typeName + " with a first element the element at index #start from #arg, and as last element the element at index (#end - 1).");
 		printDocTail();
 		
 		println(decl + " {");
@@ -559,7 +559,7 @@ public class APIGenerator extends CGenerator {
 		hprintln(decl + ";");
 		printDocHead("Retrieve the number of elements in a " + typeName,"");
 		printDocArg("arg","input " + typeName);
-		printDocReturn("The number of elements in |arg|, excluding any separators");
+		printDocReturn("The number of elements in #arg, excluding any separators");
 		printDocTail();
 		println(decl + " {");
 		println("  if (ATisEmpty((ATermList) arg)) {");
@@ -659,7 +659,7 @@ public class APIGenerator extends CGenerator {
 				+ "Api(void)";
 		hprintln(decl + ";");
 
-		printDocHead("Initializes the full API", "Forgetting to call this function before using the API will lead to strange behaviour. |ATinit| needs to be called before this function.");
+		printDocHead("Initializes the full API", "Forgetting to call this function before using the API will lead to strange behaviour. ATinit() needs to be called before this function.");
 		printDocTail();
 		printFoldOpen(decl);
 		println(decl + " {");
@@ -731,7 +731,7 @@ public class APIGenerator extends CGenerator {
 		String decl = type_name + " " + prefix + type_id + "FromTerm(ATerm t)";
 		hprintln(decl + ";");
 		printDocHead("Transforms an ATerm " + "to a " + type_name,"This is just a wrapper for a cast, so no structural validation is done!");
-		printDocArg("arg", "ATerm to be converted");
+		printDocArg("t", "ATerm to be converted");
 		printDocReturn(type_name + " that was encoded by \\arg");
 		printDocTail();
 		printFoldOpen(decl);
@@ -760,7 +760,7 @@ public class APIGenerator extends CGenerator {
 			printDocHead("Tests equality of two " + type_name + "s","A constant time operation.");
 			printDocArg("arg0", "first " + type_name + " to be compared");
 			printDocArg("arg1", "second " + type_name + " to be compared");
-			printDocReturn("ATtrue if \\first was equal to \\second, ATfalse otherwise");
+			printDocReturn("ATtrue if #arg0 was equal to #arg1, ATfalse otherwise");
 			printDocTail();
 			println(decl + " {");
 			println("  return ATisEqual((ATerm)arg0, (ATerm)arg1);");
@@ -891,8 +891,8 @@ public class APIGenerator extends CGenerator {
 				hprintln(decl + ";");
 
 				printDocHead("Constructs a " + alt.getId() + " of type " + type_name, "Like all ATerm types, " + type_name + "s are maximally shared.");
-				printDocReturn("A pointer to a " + alt.getId() + ", either newly constructed or shared");
 				printDocArgs("arg", "a child of the new " + alt.getId(), type, alt);
+				printDocReturn("A pointer to a " + alt.getId() + ", either newly constructed or shared");
 				printDocTail();
 				printFoldOpen(decl.toString());
 				println(decl + " {");
@@ -1138,7 +1138,7 @@ public class APIGenerator extends CGenerator {
 
 		printDocHead("Get the " + field.getId() + " " + field_type_name + " of a " + type_name, "Note that the precondition is that this " + type_name + " actually has a " + field.getId());
 		printDocArg("arg","input " + type_name);
-		printDocReturn("the " + field.getId() + " of |arg|, if it exist or an undefined value if it does not");
+		printDocReturn("the " + field.getId() + " of #arg, if it exist or an undefined value if it does not");
 		printDocTail();
 		printFoldOpen(decl);
 		println(decl + " {");
@@ -1204,8 +1204,8 @@ public class APIGenerator extends CGenerator {
 
 		printDocHead("Set the " + field.getId() + " of a " + typeName, "The precondition being that this " + typeName + " actually has a " + field.getId());
 		printDocArg("arg", "input " + typeName);
-		printDocArg(fieldId, "new " + fieldTypeName + " to set in |arg|");
-		printDocReturn("A new " + typeName + " with " + fieldId + " at the right place, or a core dump if |arg| did not have a " + fieldId);
+		printDocArg(fieldId, "new " + fieldTypeName + " to set in #arg");
+		printDocReturn("A new " + typeName + " with " + fieldId + " at the right place, or a core dump if #arg did not have a " + fieldId);
 		printDocTail();
 		printFoldOpen(decl);
 		println(decl + " {");
@@ -1362,7 +1362,7 @@ public class APIGenerator extends CGenerator {
 		int i = 0;
 		while (fields.hasNext()) {
 			Field field = (Field) fields.next();
-			printDocArg(field.getId(), msg);
+			printDocArg(StringConversions.makeIdentifier(field.getId()), msg);
 		}
 	}
 	
@@ -1439,7 +1439,7 @@ public class APIGenerator extends CGenerator {
 		hprintln(decl + ";");
 		printDocHead("Assert whether a " + type_name + " is any of the valid alternatives, or not","This analysis does not go any deeper than the top level");
 		printDocArg("arg", "input " + type_name);
-		printDocReturn("ATtrue if |arg| corresponds to the expected signature, or ATfalse otherwise");
+		printDocReturn("ATtrue if #arg corresponds to the expected signature, or ATfalse otherwise");
 		printDocTail();
 		println(decl + " {");
 		Iterator alts = type.alternativeIterator();
@@ -1490,7 +1490,7 @@ public class APIGenerator extends CGenerator {
 
 		printDocHead("Assert whether a " + type_name + " is a " + alt.getId(), alt_count == 1 ? "Always returns ATtrue" : "" + ". May not be used to assert correctness of the " + type_name);
 		printDocArg("arg", "input " + type_name);
-		printDocReturn("ATtrue if |arg| corresponds to the signature of a " + alt.getId() + ", or ATfalse otherwise");
+		printDocReturn("ATtrue if #arg corresponds to the signature of a " + alt.getId() + ", or ATfalse otherwise");
 		printDocTail();
 		printFoldOpen(decl);
 		println(decl + " {");

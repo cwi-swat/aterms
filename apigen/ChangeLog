@@ -1,5 +1,9 @@
 # $Id$
 
+Wed Jun 28 10:35:57 CEST 2006 <jurgenv@cwi.nl>
+ * **/APIGenerator.java: fixed the names of parameters (proper
+   capitalization in the doxygen markup.
+
 Tue Jun 27 22:25:02 CEST 2006 <jurgenv@cwi.nl>
  * **/APIGenerator.java: added to the C generator, the generation
    of doxygen markup for each generator function.
