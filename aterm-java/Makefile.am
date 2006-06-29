@@ -2,7 +2,7 @@
 
 include $(top_srcdir)/java_make_rules
 
-SUBDIRS = . test config doc
+SUBDIRS = . test config 
 
 ACLOCAL_FLAGS = -I .
 
