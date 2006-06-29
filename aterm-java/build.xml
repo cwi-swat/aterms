@@ -53,6 +53,7 @@
       private="true"
       use="true"
       version="true"
+      linksource="yes"
       windowtitle="ATerm-Java Documentation">
       <classpath refid="project.classpath"/>
     </javadoc>

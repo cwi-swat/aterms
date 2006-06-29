@@ -1,3 +1,7 @@
+2006-06-29    <storm@cwi.nl>
+
+	* build.xml: enabled source in generated documentation.
+
 2006-06-28    <storm@cwi.nl>
 
 	* doc: latex generation is now followed by pdf generation.
