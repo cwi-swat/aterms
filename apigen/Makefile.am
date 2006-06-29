@@ -22,18 +22,4 @@ noinst_SCRIPTS = ${PACKAGE}-${VERSION}.pkg
 ${PACKAGE}-${VERSION}.pkg: package Makefile
 	cp $< $@
 
-EXTRA_DIST+=Doxyfile.src  
-
-if MAINTAINER_MODE
-
-CLEANFILES+=Doxyfile
-
-.PHONY: doc
-
-doc: Doxyfile 
-	doxygen
-
-Doxyfile: Doxyfile.src
-	sed 's@__PACKAGE__@${PACKAGE}@g' < $< > $@
-
-endif
+JAVA_PACKAGES=apigen,apigen.adt,apigen.adt.api,apigen.adt.api.types,apigen.adt.api.types.type,apigen.adt.api.types.module,apigen.adt.api.types.modulename,apigen.adt.api.types.separator,apigen.adt.api.types.entry,apigen.gen,apigen.gen.tom,apigen.gen.tom.java,apigen.gen.tom.c,apigen.gen.java,apigen.gen.c,apigen.util
