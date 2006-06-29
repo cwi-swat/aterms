@@ -49,12 +49,13 @@
       destdir="${doc}"
       author="true"
       overview="${src}/overview.html"
-      packagenames="aterm,aterm.pure,aterm.test"
+      packagenames="${env.JAVA_PACKAGES}"
       private="true"
       use="true"
-      version="true"
       linksource="yes"
-      windowtitle="ATerm-Java Documentation">
+      version="true"
+      windowtitle="${env.PACKAGE}"
+    >
       <classpath refid="project.classpath"/>
     </javadoc>
     <replace file="${doc}/overview-summary.html" token="__VERSION__" value="${env.PKG_VERSION}"/>	

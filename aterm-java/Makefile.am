@@ -7,6 +7,7 @@ SUBDIRS = . test config doc
 ACLOCAL_FLAGS = -I .
 
 JARFILE = aterm-${VERSION}.jar
+JAVA_PACKAGES=aterm,aterm.pure,aterm.test
 
 EXTRA_DIST = package build.xml ${JARFILE}
 
@@ -19,14 +20,3 @@ noinst_SCRIPTS = ${PACKAGE}-${VERSION}.pkg
 
 ${PACKAGE}-${VERSION}.pkg: package Makefile
 	cp $< $@
-
-if MAINTAINER_MODE
-
-.PHONY: doc
-
-doc:
-	${ANT_ENV} ant doc; \
-		cd doc && $(MAKE) $(AM_MAKE_FLAGS) doc
-
-
-endif
