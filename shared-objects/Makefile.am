@@ -1,13 +1,12 @@
 # $Id$
 
-SUBDIRS=doc
-
 include $(top_srcdir)/java_make_rules
 
 ACLOCAL_FLAGS = -I .
 
 TOOLNAME = shared-objects
 JARFILE = $(TOOLNAME)-$(VERSION).jar
+JAVA_PACKAGES=shared
 
 bin_SCRIPTS = $(TOOLNAME)-config
 pkgdata_DATA = $(JARFILE)
@@ -26,8 +25,3 @@ $(TOOLNAME)-config: Makefile
 	echo "#! /bin/sh" > $@
 	echo "echo $(pkgdatadir)/$(JARFILE)" >> $@
 	chmod +x $@
-
-.PHONY: doc
-
-doc:
-	cd doc && $(MAKE) $(AM_MAKE_FLAGS) doc

@@ -3,7 +3,9 @@ ANT_ENV = \
   JAR=${JARFILE} \
   MAIN_CLASS=${MAIN_CLASS} \
   LOCAL_JARS=${LOCAL_JARS} \
-  EXTERNAL_JARS=${EXTERNAL_JARS}
+  EXTERNAL_JARS=${EXTERNAL_JARS} \
+  JAVA_PACKAGES=${JAVA_PACKAGES} \
+  PACKAGE=${PACKAGE}
 
 if MAINTAINER_MODE
 ${JARFILE}: dummy
@@ -13,4 +15,8 @@ dummy:
 
 clean-local:
 	${ANT_ENV} ant clean
+
+doc: dummy
+	${ANT_ENV} ant doc
+
 endif
