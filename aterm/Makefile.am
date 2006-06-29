@@ -1,4 +1,4 @@
-SUBDIRS = aterm utils test doc
+SUBDIRS = aterm utils test  doc
 DIST_SUBDIRS = $(SUBDIRS)
 
 EXTRA_DIST = \
@@ -19,3 +19,18 @@ ${PACKAGE}-${VERSION}.pkg: package Makefile
 	cp $(top_srcdir)/package $@
 
 ACLOCAL_AMFLAGS = -I .
+EXTRA_DIST+=Doxyfile.src  
+
+if MAINTAINER_MODE
+
+CLEANFILES+=Doxyfile
+
+.PHONY: doc
+
+doc: Doxyfile 
+	doxygen
+
+Doxyfile: Doxyfile.src
+	sed 's@__PACKAGE__@${PACKAGE}@g' < $< > $@
+
+endif
