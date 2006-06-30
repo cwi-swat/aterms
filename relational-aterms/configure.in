@@ -49,7 +49,6 @@ dnl }}}
 dnl {{{  Which files need updating?
 AC_CONFIG_FILES([Makefile
   src/Makefile
-  doc/Makefile
   test/Makefile
   utils/Makefile
 ])

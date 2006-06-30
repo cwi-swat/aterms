@@ -1,6 +1,6 @@
 # $Id$
 
-SUBDIRS = src test utils doc
+SUBDIRS = src test utils
 
 ACLOCAL_FLAGS = -I .
 
@@ -13,13 +13,18 @@ noinst_SCRIPTS = ${PACKAGE}-${VERSION}.pkg
 ${PACKAGE}-${VERSION}.pkg: package Makefile
 	cp $< $@
 
+EXTRA_DIST+=Doxyfile.src  
 
-if MAINTAINER_MODE 
+if MAINTAINER_MODE
+
+CLEANFILES+=Doxyfile
 
 .PHONY: doc
-doc:
-	(cd doc && ${MAKE} ${AM_MAKE_FLAGS} doc)
+
+doc: Doxyfile 
+	doxygen
+
+Doxyfile: Doxyfile.src
+	sed 's@__PACKAGE__@${PACKAGE}@g' < $< > $@
 
 endif
-
-
