@@ -14,4 +14,6 @@ AC_SUBST([CURDATE])
 AC_CHECK_FUNCS([strdup])
 AC_CHECK_FUNCS([lrand48 srand48])
 
+AC_CONFIG_FILES([aterm.spec])
+
 AC_OUTPUT
