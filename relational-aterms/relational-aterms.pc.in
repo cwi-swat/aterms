@@ -4,3 +4,5 @@ Name: relational-aterms
 Version: 0.1
 Description:
 Requires: aterm,balanced-binary-aterms
+Cflags: -I${prefix}/include
+Libs: -L${prefix}/lib -lrelational-aterms
