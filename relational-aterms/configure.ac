@@ -1,57 +1,6 @@
 dnl $Id$
 
 AC_INIT
-AC_CONFIG_SRCDIR([configure.in])
-GLT_INIT_PACKAGE
-AC_PREREQ(2.59)
-
-AM_MAINTAINER_MODE
-
-AC_AIX
-AC_PROG_CC
-AC_PROG_LIBTOOL
-
-dnl {{{  Handle --with-cflags option
-AC_ARG_WITH(cflags,
-   [  --with-cflags=CFLAGS    standard options of c compiler],
-   CFLAGS=${withval},
-   if test "a${GCC}" = "ayes"; then
-     CFLAGS="-Wall -g -O2"
-   fi;
-)
-AC_SUBST(CFLAGS)
-
-dnl }}}
-
-dnl {{{  Require ATerm library
-AC_PACKAGE_REQUIRE(aterm, baffle,
-   [  --with-aterm=DIR        ATerm-library is in DIR])
-AC_SUBST(ATERM)
-
-dnl }}}
-dnl {{{  Require BBTree library
-AC_PACKAGE_REQUIRE(balanced-binary-aterms, balanced-binary-aterms-config,
-   [  --with-balanced-binary-aterms=DIR        Binary balanced aterms library is in DIR])
-AC_SUBST(BALANCED_BINARY_ATERMS)
-
-dnl }}}
-
-dnl {{{  Our own version of libdir whose value is set dynamically
-AC_SUBST(INSTLIBDIR)
-INSTLIBDIR="$libdir"
-
-dnl }}}
-dnl {{{  What commands are needed to set the variable MAKE in Makefiles?
-AC_PROG_MAKE_SET([])
-
-dnl }}}
-
-dnl {{{  Which files need updating?
-AC_CONFIG_FILES([Makefile
-  src/Makefile
-  test/Makefile
-  utils/Makefile
-])
+META_SETUP
+META_C_SETUP
 AC_OUTPUT
-
-dnl }}}

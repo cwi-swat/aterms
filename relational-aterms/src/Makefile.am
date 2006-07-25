@@ -1,3 +1,4 @@
+include $(top_srcdir)/Makefile.meta
 
 lib_LIBRARIES = librelational-aterms.a
 
@@ -7,13 +8,11 @@ include_HEADERS = \
 librelational_aterms_a_SOURCES = \
 	relational-aterms.c
 
-AM_CFLAGS = -Wall -pedantic -g -O2
-
 AM_LDFLAGS = \
-	-L${ATERM}/lib \
-	-L${BALANCED_BINARY_ATERMS}/lib
+	$(ATERM_LIBS) \
+	$(BALANCED_BINARY_ATERMS_LIBS) 
 
 INCLUDES = \
-        -I${ATERM}/include \
-        -I${BALANCED_BINARY_ATERMS}/include 
+        ${ATERM_CFLAGS} \
+        ${BALANCED_BINARY_ATERMS_CFLAGS} 
 

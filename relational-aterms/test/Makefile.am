@@ -1,5 +1,5 @@
 
-AM_CFLAGS = -Wall -pedantic -g -O2 -DSRCDIR=\"$(srcdir)\"
+include $(top_srcdir)/Makefile.meta
 
 TESTS = test pico
 
@@ -7,21 +7,19 @@ EXTRA_DIST = fac.ast
 
 INCLUDES = \
         -I$(top_srcdir)/src \
-	-I$(ATERM)/include \
-	-I$(BALANCED_BINARY_ATERMS)/include
+	$(ATERM_CFLAGS) \
+	$(BALANCED_BINARY_ATERMS_CFLAGS) 
 
 AM_LDFLAGS = \
-	-L$(ATERM)/lib \
-	-L$(BALANCED_BINARY_ATERMS)/lib \
-	-L$(top_builddir)/src
-
-LDLIBS = -lATerm -lrelational-aterms -lbbtree 
+	$(ATERM_LIBS) \
+	$(BALANCED_BINARY_ATERMS_LIBS) \
+	-L$(top_builddir)/src -lrelational-aterms
 
 noinst_PROGRAMS = test pico
 
 test_SOURCES = test.c
-test_LDADD = $(LDLIBS)
+test_LDADD = $(AM_LDFLAGS)
 
 pico_SOURCES = pico.c
-pico_LDADD = $(LDLIBS)
+pico_LDADD = $(AM_LDFLAGS)
 
