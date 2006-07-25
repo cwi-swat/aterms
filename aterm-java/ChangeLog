@@ -1,12 +1,15 @@
-2006-06-29    <storm@cwi.nl>
+# $Id$
 
-	* build.xml: enabled source in generated documentation.
+Tue Jul 25 09:16:05 CEST 2006 <{kooiker,jurgenv}@cwi.nl,martin.bravenboer@gmail.com>
+ * **: adapted package to use the standard meta-build-env.
+ * *.jar: removed jar file from version control
+
+2006-06-29    <storm@cwi.nl>
+  * build.xml: enabled source in generated documentation.
 
 2006-06-28    <storm@cwi.nl>
-
-	* doc: latex generation is now followed by pdf generation.
-
-	* doc, build.xml: added Javadoc documentation generation to build.xml and 
+  * doc: latex generation is now followed by pdf generation.
+  * doc, build.xml: added Javadoc documentation generation to build.xml and 
 	disabled html generation by doxygen.
 
 Tue Jun 27 12:08:20 CEST 2006 <jurgenv@cwi.nl>

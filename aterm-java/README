@@ -1,8 +1,0 @@
-ATERM-JAVA
-
-Requirements:
-  *shared-objects
-  *JJTraveler
-
-Installation:
-./reconf
