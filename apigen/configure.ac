@@ -1,74 +1,7 @@
 dnl $Id$
 
-dnl Process this file with autoconf to produce a configure script.
 AC_INIT
-AC_CONFIG_SRCDIR([configure.in])
-GLT_INIT_PACKAGE
-AC_PREREQ(2.59)
-
-AM_MAINTAINER_MODE
-
-dnl Our own version of libdir whose value is set dynamically
-AC_SUBST(INSTLIBDIR)
-INSTLIBDIR="$libdir"
-
-AC_AIX
-AC_PROG_CC
-AC_PROG_LIBTOOL
-
-dnl What commands are needed to set the variable MAKE in Makefiles?
-AC_PROG_MAKE_SET([])
-
-dnl {{{ Handle --with-aterm
-
-AC_PACKAGE_REQUIRE(aterm, baffle,
-	[  --with-aterm=DIR        ATerm-library is in DIR])
-AC_SUBST(ATERM)
-
-ATERMINC="${ATERM}/include"
-AC_SUBST(ATERMINC)
-ATERMLIB="${ATERM}/lib"
-AC_SUBST(ATERMLIB)
-ATERMBIN="${ATERM}/bin"
-AC_SUBST(ATERMBIN)
-
-dnl }}}
-dnl {{{ Handle --with-aterm-java
-
-AC_PACKAGE_REQUIRE(aterm-java, aterm-java-config,
-	[  --with-aterm-java=DIR  ATerm-Java-library is in DIR])
-JAVA_ATERM=\`${ATERM_JAVA}/bin/aterm-java-config\`
-AC_SUBST(JAVA_ATERM)
-dnl }}}
-dnl {{{ Handle --with-cflags
-
-AC_ARG_WITH(cflags,
-   [  --with-cflags=CFLAGS    standard options of c compiler],
-   CFLAGS=${withval},
-   if test "a${GCC}" = "ayes"; then
-     CFLAGS="-Wall -g -O2"
-   fi;
-)
-AC_SUBST(CFLAGS)
-
-
-dnl }}}
-
-EXTERNAL_JARS=${JAVA_ATERM}
-AC_SUBST(EXTERNAL_JARS)
-
-dnl {{{ Output files
-
-dnl Which files need updating?
-AC_CONFIG_FILES([Makefile
-utils/Makefile
-scripts/Makefile
-lib-1.0/Makefile
-lib-2.0/Makefile
-lib-3.0/Makefile
-test/Makefile
-config/Makefile
-])
+META_SETUP
+META_JAVA_SETUP
+META_C_SETUP
 AC_OUTPUT
-
-dnl }}}

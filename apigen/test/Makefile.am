@@ -1,5 +1,7 @@
 # $Id$
 
+include $(top_srcdir)/Makefile.meta
+
 ADTTOC = ${top_builddir}/scripts/adt-to-c-test
 
 ADTTOJAVA = ${top_builddir}/scripts/adt-to-java-test
@@ -17,10 +19,10 @@ builtins_Main = BuiltinsTest
 cyclic_Main = CyclicTest
 
 INCLUDES = \
-	-I$(ATERM)/include 
+	$(ATERM_CFLAGS) 
 
 AM_LDFLAGS = \
-	-L$(ATERM)/lib 
+	$(ATERM_LIBS) 
 
 # Build the C programs that are to be run during testing:
 check_PROGRAMS	= listtest builtinstest
@@ -29,18 +31,12 @@ check_LIBRARIES	= liblist.a libbuiltins.a
 liblist_a_SOURCES = list.c list_dict.c
 libbuiltins_a_SOURCES = builtins.c builtins_dict.c
 
-if MAINTAINER_MODE
-ATERM_LIB = ATerm-dbg
-else
-ATERM_LIB = ATerm
-endif
-
 listtest_SOURCES = listtest.c
-listtest_LDADD = -L. -llist -l$(ATERM_LIB)
+listtest_LDADD = -L. -llist 
 listtest_DEPENDENCIES = liblist.a
 
 builtinstest_SOURCES = builtinstest.c
-builtinstest_LDADD = -L. -lbuiltins -l$(ATERM_LIB)
+builtinstest_LDADD = -L. -lbuiltins 
 builtinstest_DEPENDENCIES = libbuiltins.a
 
 distclean-local: clean-local
