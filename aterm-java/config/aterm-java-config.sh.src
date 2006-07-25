@@ -1,1 +1,0 @@
-echo "__PREFIX__/share/aterm-java/aterm-__VERSION__.jar:__EXTERNAL_JARS__"

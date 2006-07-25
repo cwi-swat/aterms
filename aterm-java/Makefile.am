@@ -2,6 +2,6 @@
 
 include $(top_srcdir)/Makefile.java.meta
 
-SUBDIRS = . test config 
+SUBDIRS = . test 
 
 ACLOCAL_FLAGS = -I .
