@@ -1,0 +1,6 @@
+prefix=@prefix@
+
+Name: relational-aterms
+Version: 0.1
+Description:
+Requires: aterm,balanced-binary-aterms
