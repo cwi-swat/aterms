@@ -1,0 +1,7 @@
+prefix=@prefix@
+JarFile=shared-objects-1.4.3.jar
+Packages=shared
+
+Name: shared-objects
+Description: A factory for maximal sharing of object instances
+Version: 1.4.3
