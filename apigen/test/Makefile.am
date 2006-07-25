@@ -44,7 +44,7 @@ distclean-local: clean-local
 clean-local: 
 	rm -rf $(JAVATESTS)
 
-CLEANFILES = \
+CLEANFILES += \
 	${check_PROGRAMS} ${check_LIBRARIES} \
 	list.[ch] list_dict.[ch] \
 	builtins.[ch] builtins_dict.[ch] \
