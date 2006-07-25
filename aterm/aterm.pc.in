@@ -1,7 +1,9 @@
 prefix=@prefix@
 
-Name: ATerm Library
+Name: aterm
 Description: Abstract data type for exchanging tree-like data structures
-Version: @VERSION@
+Version: 2.4.2
 Libs: -L${prefix}/lib -lATerm
 Cflags: -I${prefix}/include
+#uninstalled Libs: -L@abs_top_builddir@/aterm -lATerm
+#uninstalled Cflags: -I@abs_top_builddir@/aterm

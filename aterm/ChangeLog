@@ -1,5 +1,9 @@
 $Id$
 
+Tue Jul 25 09:16:05 CEST 2006 <{kooiker,jurgenv}@cwi.nl,martin.bravenboer@gmail.com>
+ * **: adapted package to use the standard meta-build-env.
+ * README: removed all contents
+
 Tue Jun 20 15:36:40 CEST 2006 <jurgenv@cwi.nl>
  * aterm/aterm.c: added ATwriteToNamedSharedTextFile function.
 

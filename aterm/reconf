@@ -1,13 +1,3 @@
 #! /bin/sh
 
-if [ -f /etc/gentoo-release ] ; then
-	# Environment variables for our Gentoo friends.
-	export WANT_AUTOMAKE="1.8"
-	export WANT_AUTOCONF="2.59"
-elif [ -f /etc/debian_version ] ; then
-	# Environment variables for our Debian friends.
-	export ACLOCAL=/usr/bin/aclocal
-	export AUTOMAKE=/usr/bin/automake
-fi
-
-autoreconf -ifv || exit 1
+meta-build || (echo "Please install meta-build-env first" && false)
