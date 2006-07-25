@@ -1,0 +1,6 @@
+prefix=@prefix@
+
+Name: balanced-binary-aterms
+Version: 0.1
+Description:
+Requires: aterm
