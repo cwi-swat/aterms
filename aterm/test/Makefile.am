@@ -14,12 +14,12 @@ EXTRA_DIST = \
   vararg2.c \
   vararg3.c
 
-CLEANFILES = test.taf test.blob terms.c terms.h
+CLEANFILES += test.taf test.blob terms.c terms.h
 BUILT_SOURCES = terms.c terms.h
 
-AM_LDFLAGS  = -L$(top_builddir)/aterm
-LDADD       = -lATerm
-AM_CPPFLAGS = \
+AM_LDFLAGS  = -L$(top_builddir)/aterm 
+LDADD       += -lATerm
+AM_CPPFLAGS += \
   -I$(top_srcdir) \
   -I$(top_srcdir)/aterm \
   -DSRCDIR="\"$(top_srcdir)/test/\""
