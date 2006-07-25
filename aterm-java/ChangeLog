@@ -1,5 +1,19 @@
 # $Id$
 
+Tue Jul 25 20:32:30 CEST 2006 <martin.bravenboer@gmail.com>
+  * aterm-java.pc.in: The VERSION part of the file name of a jar
+    cannot be variable: it is read by configure by substition takes
+    place, so it needs to be literal.
+
+    This might actually have worked in old autoconfs, since the
+    @VERSION@ might be substited by its value in the
+    Makefile (yuk). However, in recent autoconf's the value is
+    'correctly' quoted, so we end up with a filename
+    foo-@VERSION@.jar.
+
+    Maybe it's a better idea not to use version in the file names of
+    jars.
+
 Tue Jul 25 09:16:05 CEST 2006 <{kooiker,jurgenv}@cwi.nl,martin.bravenboer@gmail.com>
  * **: adapted package to use the standard meta-build-env.
  * *.jar: removed jar file from version control
