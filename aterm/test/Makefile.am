@@ -1,5 +1,7 @@
 # $Id$
 
+include $(top_srcdir)/Makefile.meta
+
 TESTS = stress primes randgen fib
 check_PROGRAMS = stress primes randgen termstats fib
 
