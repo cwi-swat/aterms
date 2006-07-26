@@ -6,15 +6,15 @@ noinst_HEADERS  = $(PRIVATE_INCL)
 AM_CPPFLAGS = -I$(srcdir) 
 
 libATerm_la_SOURCES = $(ALLSRCS)
-libATerm_la_CFLAGS = $(WARNINGCFLAGS) $(OPTIMIZECFLAGS) -DNDEBUG
+libATerm_la_CFLAGS = -DNDEBUG
 libATerm_la_LDFLAGS = -avoid-version -no-undefined
 
 libATerm_dbg_la_SOURCES = $(ALLSRCS)
-libATerm_dbg_la_CFLAGS = $(WARNINGCFLAGS) -g
+libATerm_dbg_la_CFLAGS = -g
 libATerm_dbg_la_LDFLAGS = -avoid-version -no-undefined
 
 libATerm_prof_a_SOURCES = $(ALLSRCS)
-libATerm_prof_a_CFLAGS = $(WARNINGCFLAGS) -pg
+libATerm_prof_a_CFLAGS = -pg
 
 ALLSRCS = \
   afun.c \
