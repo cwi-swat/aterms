@@ -3,7 +3,7 @@
 #include <unistd.h>
 #include <string.h>
 
-#include <ADT-utils.h>
+#include <ADT.h>
 #include <aterm2.h>
 
 static char myname[]    = "concat-adt";
