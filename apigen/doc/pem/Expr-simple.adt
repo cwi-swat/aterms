@@ -1,7 +1,0 @@
-[Expr, minus, minus(<left(Expr)>,<right(Expr)>)],
-[Expr, plus,  minus(<left(Expr)>,<right(Expr)>)],
-[Expr, neg,   neg(<oper(Expr)>)],
-[Expr, num,   num(<num(Num)>)],
-
-[Num, nat,  nat(<chars(string)>)],
-[Num, real, real(<chars(string)>)]
