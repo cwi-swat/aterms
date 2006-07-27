@@ -18,11 +18,8 @@ list_Main  = ListTest
 builtins_Main = BuiltinsTest
 cyclic_Main = CyclicTest
 
-INCLUDES = \
-	$(ATERM_CFLAGS) 
-
-AM_LDFLAGS = \
-	$(ATERM_LIBS) 
+AM_CPPFLAGS = $(ATERM_CFLAGS) 
+AM_LDFLAGS  = $(ATERM_LIBS) 
 
 # Build the C programs that are to be run during testing:
 check_PROGRAMS	= listtest builtinstest
@@ -45,7 +42,7 @@ clean-local:
 	rm -rf $(JAVATESTS)
 
 CLEANFILES += \
-	${check_PROGRAMS} ${check_LIBRARIES} \
+	$(check_PROGRAMS) $(check_LIBRARIES) \
 	list.[ch] list_dict.[ch] \
 	builtins.[ch] builtins_dict.[ch] \
 	*.java.sh *.class *.jar *.dict
@@ -96,11 +93,11 @@ builtins.c builtins.h: builtins.adt
 		--visitable \
 		--nojar
 	$(JAVAC) \
-		-classpath ${top_srcdir}:${top_builddir}:${JAVA_ATERM} \
+		-classpath ${top_srcdir}:${top_builddir}:${ATERM_JAVA_JARS} \
 		${top_srcdir}/test/$($*_Main).java \
 		-d ${top_builddir}
 	@(echo "#! /bin/sh"; \
-	  echo "CLASSPATH=.:${top_builddir}:${JAVA_ATERM}"; \
+	  echo "CLASSPATH=.:${top_builddir}:${ATERM_JAVA_JARS}"; \
 	  echo "export CLASSPATH"; \
 	  echo "java test.$($*_Main) ${top_srcdir}/test") \
 	> $@ \
