@@ -1,5 +1,4 @@
-lib_LTLIBRARIES = libATerm.la libATerm-dbg.la
-lib_LIBRARIES = libATerm-prof.a
+lib_LTLIBRARIES = libATerm.la 
 include_HEADERS = $(PUBLIC_INCL)
 noinst_HEADERS  = $(PRIVATE_INCL)
 
@@ -8,13 +7,6 @@ AM_CPPFLAGS = -I$(srcdir)
 libATerm_la_SOURCES = $(ALLSRCS)
 libATerm_la_CFLAGS = -DNDEBUG
 libATerm_la_LDFLAGS = -avoid-version -no-undefined
-
-libATerm_dbg_la_SOURCES = $(ALLSRCS)
-libATerm_dbg_la_CFLAGS = -g
-libATerm_dbg_la_LDFLAGS = -avoid-version -no-undefined
-
-libATerm_prof_a_SOURCES = $(ALLSRCS)
-libATerm_prof_a_CFLAGS = -pg
 
 ALLSRCS = \
   afun.c \
