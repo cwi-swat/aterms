@@ -1,4 +1,5 @@
 prefix=@prefix@
+Maintainers=moreau@loria.fr,jurgenv@cwi.nl
 JarFile=shared-objects-1.4.3.jar
 Packages=shared
 
