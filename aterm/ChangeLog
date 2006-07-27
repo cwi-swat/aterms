@@ -1,5 +1,12 @@
 $Id$
 
+Thu Jul 27 16:03:37 CEST 2006 <jurgenv@cwi.nl>
+ * aterm/Makefile.am: removed compilation of -profs and -dbg libraries.
+   Reason: now we fully support the value of CFLAGS, so anybody can recompile
+   the library with different CFLAGS. Furthermore, because we install a
+   dynamically linked library, all binaries are updated at once (as long
+   as they link the dynamic version of course.
+
 Tue Jul 25 09:16:05 CEST 2006 <{kooiker,jurgenv}@cwi.nl,martin.bravenboer@gmail.com>
  * **: adapted package to use the standard meta-build-env.
  * README: removed all contents
