@@ -22,8 +22,8 @@ cyclic_Main = CyclicTest
 check_PROGRAMS	= listtest builtinstest
 check_LIBRARIES	= liblist.a libbuiltins.a
 
-liblist_a_SOURCES = list.c list_dict.c
-libbuiltins_a_SOURCES = builtins.c builtins_dict.c
+nodist_liblist_a_SOURCES = list.c list_dict.c
+nodist_libbuiltins_a_SOURCES = builtins.c builtins_dict.c
 
 listtest_SOURCES = listtest.c
 listtest_CPPFLAGS = $(ATERM_CFLAGS)

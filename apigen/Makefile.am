@@ -2,6 +2,7 @@
 include $(top_srcdir)/Makefile.java.meta
 
 SUBDIRS = . scripts lib utils test
+EXTRA_DIST += $(JAVA_LOCAL_JARS)
 
 ACLOCAL_AMFLAGS = -I .
 
