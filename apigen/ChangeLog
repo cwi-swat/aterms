@@ -1,5 +1,18 @@
 # $Id$
 
+Thu Jul 27 15:51:53 CEST 2006 <martin.bravenboer@gmail.com>
+
+ * lib-1.0: removed
+	
+ * lib-2.0: removed (library was installed with same name as
+   lib-3.0!)
+	
+ * lib-3.0: renamed to lib.
+
+ * lib/Makefile.am: build libtool library
+	
+ * utils/upgrade-adt.c: removed
+
 Wed Jun 28 10:35:57 CEST 2006 <jurgenv@cwi.nl>
  * **/APIGenerator.java: fixed the names of parameters (proper
    capitalization in the doxygen markup.
