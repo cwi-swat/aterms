@@ -1,6 +1,7 @@
 prefix=@prefix@
 Maintainers=moreau@loria.fr,jurgenv@cwi.nl
 JarFile=shared-objects-1.4.3.jar
+Jars=${prefix}/share/${JarFile}
 Packages=shared
 
 Name: shared-objects
