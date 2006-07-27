@@ -8,15 +8,15 @@ EXTRA_DIST = $(wildcard *.src)
 ABS_TOP_SRCDIR=$(shell cd ${top_srcdir}; pwd)
 
 %: %.src Makefile
-	sed -e 's#__JAVA_ATERM__#${JAVA_ATERM}#g' \
+	sed -e 's#__JAVA_ATERM__#$(EXTERNAL_JARS)#g' \
 		-e 's#__APIGEN_CLASSES__#${prefix}/share/apigen/apigen.jar#g' \
-		-e 's#__DICT_TO_C__#${ATERM}/bin/dicttoc#g' < $< > $@ \
+		-e 's#__DICT_TO_C__#$(ATERM_PREFIX)/bin/dicttoc#g' < $< > $@ \
 	&& chmod +x $@
 
 %-test: %.src Makefile
-	sed -e 's#__JAVA_ATERM__#${JAVA_ATERM}#g' \
-		-e 's#__APIGEN_CLASSES__#${ABS_TOP_SRCDIR}/apigen.jar#g' \
-		-e 's#__DICT_TO_C__#${ATERM}/bin/dicttoc#g' < $< > $@ \
+	sed -e 's#__JAVA_ATERM__#$(EXTERNAL_JARS)#g' \
+		-e 's#__APIGEN_CLASSES__#$(ABS_TOP_SRCDIR)/apigen.jar#g' \
+		-e 's#__DICT_TO_C__#$(ATERM_PREFIX)/bin/dicttoc#g' < $< > $@ \
 	&& chmod +x $@
 
-CLEANFILES = ${bin_SCRIPTS} ${noinst_SCRIPTS}
+CLEANFILES = $(bin_SCRIPTS) $(noinst_SCRIPTS)
