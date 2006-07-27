@@ -18,9 +18,6 @@ list_Main  = ListTest
 builtins_Main = BuiltinsTest
 cyclic_Main = CyclicTest
 
-AM_CPPFLAGS = $(ATERM_CFLAGS) 
-AM_LDFLAGS  = $(ATERM_LIBS) 
-
 # Build the C programs that are to be run during testing:
 check_PROGRAMS	= listtest builtinstest
 check_LIBRARIES	= liblist.a libbuiltins.a
@@ -29,11 +26,13 @@ liblist_a_SOURCES = list.c list_dict.c
 libbuiltins_a_SOURCES = builtins.c builtins_dict.c
 
 listtest_SOURCES = listtest.c
-listtest_LDADD = -L. -llist 
+listtest_CPPFLAGS = $(ATERM_CFLAGS)
+listtest_LDADD = -L. -llist $(ATERM_LIBS)
 listtest_DEPENDENCIES = liblist.a
 
 builtinstest_SOURCES = builtinstest.c
-builtinstest_LDADD = -L. -lbuiltins 
+builtinstest_CPPFLAGS = $(ATERM_CFLAGS)
+builtinstest_LDADD = -L. -lbuiltins $(ATERM_LIBS)
 builtinstest_DEPENDENCIES = libbuiltins.a
 
 distclean-local: clean-local
