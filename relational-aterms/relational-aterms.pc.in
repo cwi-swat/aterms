@@ -1,5 +1,5 @@
 prefix=@prefix@
-
+Maintainers=storm@cwi.nl,jurgenv@cwi.nl,paulk@cwi.nl
 Name: relational-aterms
 Version: 0.1
 Description:
