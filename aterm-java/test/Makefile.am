@@ -15,7 +15,7 @@ TESTS = $(foreach t, ${JAVASOURCES}, $t.test)
 %.test : Makefile
 	@(echo '#! /bin/sh';\
 	 echo 'set -e';\
-	 echo 'CLASSPATH=${top_builddir}/aterm-${VERSION}.jar:${EXTERNAL_JARS}';\
+	 echo 'CLASSPATH=${top_builddir}/${JAVA_JAR}:${EXTERNAL_JARS}';\
 	 echo 'export CLASSPATH';\
 	 echo "java aterm.test.$* ${srcdir}"; \
 	) > $@ && chmod +x $@
