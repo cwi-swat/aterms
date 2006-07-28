@@ -2,6 +2,7 @@ prefix=@prefix@
 Maintainers=jurgenv@cwi.nl,moreau@loria.fr
 
 Name: apigen
+Description: 
 Version: 2.1
 Requires: aterm,aterm-java
 JarFile=apigen.jar
