@@ -2,6 +2,7 @@ prefix=@prefix@
 Maintainers=moreau@loria.fr,jurgenv@cwi.nl
 JarFile=shared-objects.jar
 Jars=${prefix}/share/${JarFile}
+#uninstalled UninstalledJars=@abs_top_srcdir@/${JarFile}
 Packages=shared
 
 Name: shared-objects
