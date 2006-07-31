@@ -8,5 +8,5 @@ include_HEADERS = \
 librelational_aterms_la_CPPFLAGS = $(ATERM_CFLAGS) $(BALANCED_BINARY_ATERMS_LIBS)
 librelational_aterms_la_LDFLAGS  = -avoid-version -no-undefined $(AM_LDFLAGS)
 librelational_aterms_la_LIBADD = $(ATERM_LIBS) $(BALANCED_BINARY_ATERMS_LIBS)
-librelational_aterms_a_SOURCES = \
+librelational_aterms_la_SOURCES = \
 	relational-aterms.c
