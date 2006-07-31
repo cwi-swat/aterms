@@ -20,20 +20,14 @@ cyclic_Main = CyclicTest
 
 # Build the C programs that are to be run during testing:
 check_PROGRAMS	= listtest builtinstest
-check_LIBRARIES	= liblist.a libbuiltins.a
 
-nodist_liblist_a_SOURCES = list.c list_dict.c
-nodist_libbuiltins_a_SOURCES = builtins.c builtins_dict.c
-
-listtest_SOURCES = listtest.c
+listtest_SOURCES = listtest.c list.c list_dict.c
 listtest_CPPFLAGS = $(ATERM_CFLAGS)
-listtest_LDADD = -L. -llist $(ATERM_LIBS)
-listtest_DEPENDENCIES = liblist.a
+listtest_LDADD = $(ATERM_LIBS)
 
-builtinstest_SOURCES = builtinstest.c
+builtinstest_SOURCES = builtinstest.c builtins.c builtins_dict.c
 builtinstest_CPPFLAGS = $(ATERM_CFLAGS)
-builtinstest_LDADD = -L. -lbuiltins $(ATERM_LIBS)
-builtinstest_DEPENDENCIES = libbuiltins.a
+builtinstest_LDADD = $(ATERM_LIBS)
 
 distclean-local: clean-local
 
