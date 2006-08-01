@@ -56,10 +56,10 @@ int main(int argc, char *argv[])
   printf("  bytes p/node  : %8.2f\n", ((double)incore)/((double)subterms));
   printf("text size       : %8d\n",textsize);
   printf("  bytes p/node  : %8.2f\n", ((double)textsize)/((double)subterms));
-  printf("text read time  : %8.2fs\n", ((double)textread)/((double)CLK_TCK));
-  printf("  per node      : %8.2fus\n", ((double)textread*1000000.0/subterms)/((double)CLK_TCK));
-  printf("text write time : %8.2fs\n", ((double)textwrite)/((double)CLK_TCK));
-  printf("  per node      : %8.2fus\n", ((double)textwrite*1000000.0/subterms)/((double)CLK_TCK));
+  printf("text read time  : %8.2fs\n", ((double)textread)/((double)CLOCKS_PER_SEC));
+  printf("  per node      : %8.2fus\n", ((double)textread*1000000.0/subterms)/((double)CLOCKS_PER_SEC));
+  printf("text write time : %8.2fs\n", ((double)textwrite)/((double)CLOCKS_PER_SEC));
+  printf("  per node      : %8.2fus\n", ((double)textwrite*1000000.0/subterms)/((double)CLOCKS_PER_SEC));
 
   if(dobafsize) {
     struct stat stats;
@@ -83,10 +83,10 @@ int main(int argc, char *argv[])
     printf("  bytes p/node  : %8.2f\n", ((double)bafsize)/((double)subterms));
     printf("  bits p/node   : %8.2f\n", ((double)bafsize*8)/((double)subterms));
     printf("  comp.wrs.text : %8.2f%%\n", 100.0-((double)bafsize*100)/((textsize)));
-    printf("baf write time  : %8.2fs\n", ((double)bafwrite)/((double)CLK_TCK));
-    printf("  per node      : %8.2fus\n", ((double)bafwrite*1000000.0/subterms)/((double)CLK_TCK));
-    printf("baf read time   : %8.2fs\n", ((double)bafread)/((double)CLK_TCK));
-    printf("  per node      : %8.2fus\n", ((double)bafread*1000000.0/subterms)/((double)CLK_TCK));
+    printf("baf write time  : %8.2fs\n", ((double)bafwrite)/((double)CLOCKS_PER_SEC));
+    printf("  per node      : %8.2fus\n", ((double)bafwrite*1000000.0/subterms)/((double)CLOCKS_PER_SEC));
+    printf("baf read time   : %8.2fs\n", ((double)bafread)/((double)CLOCKS_PER_SEC));
+    printf("  per node      : %8.2fus\n", ((double)bafread*1000000.0/subterms)/((double)CLOCKS_PER_SEC));
     fclose(file);
   }
 

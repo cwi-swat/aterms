@@ -1,5 +1,9 @@
 $Id$
 
+Tue Aug  1 13:12:41 CEST 2006 <kooiker@cwi.nl>
+ * test/termstats.c: changed CLK_TCK into CLOCKS_PER_SEC since CLK_TCK appears 
+   to be obsolote.
+
 Thu Jul 27 16:03:37 CEST 2006 <jurgenv@cwi.nl>
  * aterm/Makefile.am: removed compilation of -profs and -dbg libraries.
    Reason: now we fully support the value of CFLAGS, so anybody can recompile
