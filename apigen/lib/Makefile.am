@@ -16,6 +16,6 @@ EXTRA_DIST = ADT.adt
 
 ADT.c ADT.h ADT.dict ADT_dict.c ADT_dict.h: ADT.adt 
 	$(ADT_TO_C) \
-		--input ADT.adt \
+		--input $(top_srcdir)/lib/ADT.adt \
 		--name ADT \
 		--prefix ADT_
