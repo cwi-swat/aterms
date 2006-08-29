@@ -340,7 +340,7 @@ public class SharedObjectFactory {
     private void regenerate() {
         nbIdRegeneration++;
         // System.out.println("Regeneration of fresh unique IDs");
-        ArrayList list = new ArrayList();
+        ArrayList<Integer> list = new ArrayList<Integer>();
         // Collect all used Ids
         for (int i = 0; i < table.length; i++) {
             for (Entry e = table[i]; e != null; e = e.next) {
@@ -357,7 +357,7 @@ public class SharedObjectFactory {
         }
         usedId = new int[newSize];
         for(int i = 0; i < newSize; i++) {
-            usedId[i] = ((Integer) list.get(i)).intValue();
+            usedId[i] = (list.get(i)).intValue();
         }
         // Sort array and reinitialize every thing
         Arrays.sort(usedId);
@@ -367,7 +367,7 @@ public class SharedObjectFactory {
         currentId = minId;
     }
 
-    private static class Entry extends WeakReference {
+    private static class Entry extends WeakReference<Object> {
         protected Entry next;
 
         protected int value = 0;
