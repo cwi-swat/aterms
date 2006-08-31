@@ -162,5 +162,45 @@ void ATbbtreeAccumulateFlattened(ATermBBTree source, ATermBBTree *dest, ATermFun
 ATermBBTree ATbbtreeAccumulateFunctional(ATermBBTree source, ATermFunction func, 
 				   ATerm extraArg, ATermComparator comparator);
 
+/* ============================================================
+ * ATBBTreeIterator support
+ *
+ * Interface to walk in-order of the data values of a ATBBTree term
+ */
+
+typedef ATermList ATermBBTreeIterator;
+
+/*
+ * name   : ATbbtreeIteratorInit
+ * pre    : t is a valid ATermBBTree
+ * action : construction of an iterator for an in-order walk over the tree
+ * post   : the iterator is returned
+ */
+ATermBBTreeIterator ATbbtreeIteratorInit(ATermBBTree t);
+
+/*
+ * name   : ATbbtreeIteratorAtEnd
+ * pre    : iter is a valid ATermBBTreeIterator
+ * action : tests whether the iterator has reached the end of the walk
+ * post   : true is returned when the iterator has reached the end
+ */
+ATbool ATbbtreeIteratorAtEnd(ATermBBTreeIterator);
+
+/*
+ * name   : ATbbtreeIteratorValue
+ * pre    : iter is a valid ATermBBTreeIterator
+ * action : get the 'current' element
+ * post   : the element is returned to the caller
+ */
+ATerm ATbbtreeIteratorValue(ATermBBTreeIterator);
+
+/*
+ * name   : ATbbtreeIteratorAdvance
+ * pre    : iter is a valid ATermBBTreeIterator
+ * action : advance the iterator to the next element
+ * post   : the new advanced iterator is returned
+ */
+ATermBBTreeIterator ATbbtreeIteratorAdvance(ATermBBTreeIterator);
+
 
 #endif

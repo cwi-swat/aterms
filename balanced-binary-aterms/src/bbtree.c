@@ -527,3 +527,76 @@ ATermBBTree ATbbtreeAccumulateFunctional(ATermBBTree source, ATermFunction func,
 
 }
 
+
+/* ============================================================
+ * ATBBTreeIterator support
+ *
+ * Interface to walk in-order of the data values of a ATBBTree term
+ */
+
+/* Push (the value and the right part) of t onto the iterator stack while
+ * walking to the left
+ */
+static ATermBBTreeIterator pushTree(ATermBBTree t, ATermBBTreeIterator stack)
+{
+  ATermBBTree left, other;
+
+  while(!is_empty(t)) {
+    /* split the tree t in left-child and 'other' parts. The latter is pushed
+     * on the stack for later processing, the left is re-split in the next
+     * iteration, until we reach the left-most (minimal) child */
+    other = make_tree(get_elt(t), 0, ATemptyBBTree, get_right(t));
+    stack = ATinsert(stack, other);
+    t = get_left(t);
+  }
+  return stack;
+}
+
+/*
+ * name   : ATbbtreeIteratorInit
+ * pre    : t is a valid ATermBBTree
+ * action : construction of an iterator for an in-order walk over the tree
+ * post   : the iterator is returned
+ */
+ATermBBTreeIterator ATbbtreeIteratorInit(ATermBBTree t) {
+  return pushTree(t, ATmakeList0());
+}
+
+/*
+ * name   : ATbbtreeIteratorAtEnd
+ * pre    : iter is a valid ATermBBTreeIterator
+ * action : tests whether the iterator has reached the end of the walk
+ * post   : true is returned when the iterator has reached the end
+ */
+ATbool ATbbtreeIteratorAtEnd(ATermBBTreeIterator aIter) {
+  return ATisEmpty(aIter);
+}
+
+/*
+ * name   : ATbbtreeIteratorValue
+ * pre    : iter is a valid ATermBBTreeIterator
+ * action : get the 'current' element
+ * post   : the element is returned to the caller
+ */
+ATerm ATbbtreeIteratorValue(ATermBBTreeIterator aIter) {
+  assert(!ATbbtreeIteratorAtEnd(aIter));
+
+  return get_elt(ATgetFirst(aIter));
+}
+
+/*
+ * name   : ATbbtreeIteratorAdvance
+ * pre    : iter is a valid ATermBBTreeIterator
+ * action : advance the iterator to the next element
+ * post   : the new advanced iterator is returned
+ */
+ATermBBTreeIterator ATbbtreeIteratorAdvance(ATermBBTreeIterator aIter)
+{
+  ATermBBTree right;
+
+  assert(!ATbbtreeIteratorAtEnd(aIter));
+
+  right = get_right(ATgetFirst(aIter));
+  return pushTree(right, ATgetNext(aIter));
+}
+
