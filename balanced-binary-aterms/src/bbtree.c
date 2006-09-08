@@ -539,7 +539,7 @@ ATermBBTree ATbbtreeAccumulateFunctional(ATermBBTree source, ATermFunction func,
  */
 static ATermBBTreeIterator pushTree(ATermBBTree t, ATermBBTreeIterator stack)
 {
-  ATermBBTree left, other;
+  ATermBBTree other;
 
   while(!is_empty(t)) {
     /* split the tree t in left-child and 'other' parts. The latter is pushed
