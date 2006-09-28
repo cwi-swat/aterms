@@ -10,6 +10,12 @@ static AFun empty_fun;
 
 #define elt_compare(a1,a2) (comparator((ATerm)a1,(ATerm)a2))
 
+/*
+ * name   : ATbbtreeInit
+ * pre    : true
+ * action : initialize tree routines
+ * post   : the tree routines are ready to use!
+ */
 void ATbbtreeInit() {
   empty_fun = ATmakeAFun("empty", 0, ATfalse);
   ATprotectAFun(empty_fun);
@@ -32,34 +38,118 @@ void ATbbtreeInit() {
 #define get_right(tree) ((ATermBBTree)ATgetArgument(tree, 3))
 #define new_tree(elt,l,r) (make_tree(elt,1+get_count(l)+get_count(r),l,r))
 
+static ATerm get_elt(ATerm tree) {
+  assert(ATbbtreeIsTree(tree));
+  return (ATgetArgument(tree, 0));
+}
+
+/*
+ * name   : ATbbtreeCompare
+ * pre    : tree1 and tree2 are valid ATermBBTree's, comparator
+ *          is a compare-function for the elements of the tree.
+ * action : compares tree1 with tree2, and returns an ATermComparator
+ *          result
+ * post   : returns a -1, 0, or +1 ATermComparator value
+ */
+int ATbbtreeCompare(ATermBBTree tree1, ATermBBTree tree2, ATermComparator comparator)
+{
+  int i, j;
+  ATermBBTreeIterator iter1, iter2;
+
+  i = get_count(tree1); j = get_count(tree2);
+  if(i < j) return -1;
+  if(i > j) return 1;
+
+  /* equal sizes, compare contents */
+  iter1 = ATbbtreeIteratorInit(tree1); iter2 = ATbbtreeIteratorInit(tree2);
+  while(!ATbbtreeIteratorAtEnd(iter1)) {
+    assert(!ATbbtreeIteratorAtEnd(iter2));  /* paranoia check */
+
+    i = elt_compare(ATbbtreeIteratorValue(iter1), ATbbtreeIteratorValue(iter2));
+    if(i != 0) return i;
+
+    iter1 = ATbbtreeIteratorAdvance(iter1); iter2 = ATbbtreeIteratorAdvance(iter2);
+  }
+    assert(ATbbtreeIteratorAtEnd(iter2));  /* paranoia check */
+    return 0;
+}
+
+
+/* name   : ATbbtreeIsEmpty
+ * pre    : t is a valid ATermBBTree
+ * action : test whether t is the empty tree
+ * post   : returns true if t is the empty tree, false otherwise
+ */
+ATbool ATbbtreeIsEmpty(ATermBBTree t) {
+  if(is_empty(t))
+    return ATtrue;
+  return ATfalse;
+}
+
+/*
+ * name   : ATbbtreeSize
+ * pre    : t must be a valid ATermBBTree
+ * action : compute the size (# of elements) of t
+ * post   : the number of elements in t is returned.
+ */
 int ATbbtreeSize(ATermBBTree t) {
   return get_count(t);
 }
 
-static ATbool is_tree(ATerm tree) {
+/*
+ * name   : ATbbtreeIsTree
+ * pre    : bbtree has been initialized (by calling ATbbtreeInit())
+ * action : test whether tree is a ATermBBTree
+ * post   : returns true if tree is a valid ATermBBTree, false otherwise
+ */
+ATbool ATbbtreeIsTree(ATerm tree) {
   if ((ATgetType(tree) == AT_APPL && ATisEqualAFun(ATgetAFun(tree), tree_fun)) || is_empty(tree))
     return ATtrue;
   return ATfalse;
 }
 
-static ATerm get_elt(ATerm tree) {
-  assert(is_tree(tree));
-  return (ATgetArgument(tree, 0));
-}
-
+/*
+ * name   : ATbbtreeGet
+ * pre    : tree is a valid ATermBBTree elt is an element
+ * action : find an element in tree that is equal to elt
+ *          as defined by ATbbtreeSetComparator.
+ * post   : if an element is found this element is returned
+ *          otherwise, NULL is returned
+ * note   : ATisEqual(ATbbtreeGet(t, e), e) need not hold.
+ */
 
 ATerm ATbbtreeGet(ATermBBTree tree, ATerm elt, ATermComparator comparator) {
+  int i;
+
   assert(comparator);
   if (is_empty(tree))
     return NULL;
-  if (elt_compare(elt, get_elt(tree)) == 0) 
+
+  i = elt_compare(elt, get_elt(tree));
+
+  if (i == 0) 
     return get_elt(tree);
-  if (elt_compare(elt, get_elt(tree)) < 0) 
+  if (i < 0) 
     return ATbbtreeGet(get_left(tree), elt,comparator);
-  if (elt_compare(elt, get_elt(tree)) > 0) 
+  if (i > 0) 
     return ATbbtreeGet(get_right(tree), elt,comparator);
+
   ATerror("ATbbtreeGet reached end of function!");
   return ATfalse;
+}
+
+/*
+ * name   : ATbbtreeGetAny
+ * pre    : t must be a non-empty ATermBBTree
+ * action : gets a 'random' element from the set
+ * post   : returns an element from the set
+ * note   : Currently, we get the top-element. If we get an element from a
+ *          'heavy' sub-tree instead, it is much cheaper to remove it later
+ */
+ATerm ATbbtreeGetAny(ATermBBTree tree) {
+  if (is_empty(tree))
+    return NULL;
+  return get_elt(tree);
 }
  
 static ATerm min(ATermBBTree tree) {
@@ -344,7 +434,13 @@ ATermBBTree ATbbtreeHUnion(ATermBBTree t1, ATermBBTree t2, ATermComparator compa
 		 comparator);
 }
 
-  
+
+/*
+ * name   : ATftreeToDot
+ * pre    : f and open filehandle, t a valid ATermBBTree
+ * action : print a tree representation of t to f to be processed by dot(1).
+ * post   : the dot representation of t is written to f.
+ */
 
 static void ftree_to_dot_statements(FILE *f, ATermBBTree t) {
   if (is_empty(t))
@@ -390,7 +486,7 @@ ATermList ATbbtreeToNestedList(ATermBBTree t) {
     return ATempty;
 
   elt = get_elt(t);
-  if (is_tree(elt)) {
+  if (ATbbtreeIsTree(elt)) {
     elt = (ATerm)ATbbtreeToNestedList(elt);
   }
   return ATinsert(ATconcat(ATbbtreeToNestedList(get_left(t)), 
@@ -428,7 +524,7 @@ ATbool ATbbtreeIsEqual(ATermBBTree set1, ATermBBTree set2, ATermComparator compa
     return ATtrue;
   }
 
-  if (is_tree(set1) && is_tree(set2)) {
+  if (ATbbtreeIsTree(set1) && ATbbtreeIsTree(set2)) {
     if (ATbbtreeSize(set1) != ATbbtreeSize(set2)) {
       return ATfalse;
     }
@@ -438,6 +534,12 @@ ATbool ATbbtreeIsEqual(ATermBBTree set1, ATermBBTree set2, ATermComparator compa
   return ATfalse;
 }
 
+/*
+ * name   : ATbbtreeSubSetOf
+ * pre    : set1 and set2 are valid ATermBBTree's.
+ * action : test whether set1 is a subset of set 2
+ * post   : returns true if all elements of set1 are a member of set2
+ */
 ATbool ATbbtreeSubSetOf(ATermBBTree set1, ATermBBTree set2, ATermComparator comparator) {
   ATermList iter = ATbbtreeToList(set1);
   while (!ATisEmpty(iter)) {
@@ -450,15 +552,11 @@ ATbool ATbbtreeSubSetOf(ATermBBTree set1, ATermBBTree set2, ATermComparator comp
 }
 
 
-ATbool ATbbtreeIsTree(ATerm t) {
-  return is_tree(t);
-}
-
 
 void ATbbtreeAccumulate(ATermBBTree source, ATermBBTree *dest, ATermFunction func, 
 			ATerm extraArg, ATermComparator comparator) {
   ATerm result;
-  assert(is_tree(source) && is_tree(*dest));
+  assert(ATbbtreeIsTree(source) && ATbbtreeIsTree(*dest));
 
   if (is_empty(source)) {
     return;
@@ -478,7 +576,7 @@ void ATbbtreeAccumulate(ATermBBTree source, ATermBBTree *dest, ATermFunction fun
 void ATbbtreeAccumulateFlattened(ATermBBTree source, ATermBBTree *dest, ATermFunction func, 
 			ATerm extraArg, ATermComparator comparator) {
   ATerm result;
-  assert(is_tree(source) && is_tree(*dest));
+  assert(ATbbtreeIsTree(source) && ATbbtreeIsTree(*dest));
 
   if (is_empty(source)) {
     return;
@@ -487,7 +585,7 @@ void ATbbtreeAccumulateFlattened(ATermBBTree source, ATermBBTree *dest, ATermFun
   result = func(get_elt(source), extraArg);
  
   if (result) {
-    if (is_tree(result)) {
+    if (ATbbtreeIsTree(result)) {
       *dest = ATbbtreeUnion(*dest, result, comparator);
     }
     else {
@@ -505,7 +603,7 @@ ATermBBTree ATbbtreeAccumulateFunctional(ATermBBTree source, ATermFunction func,
 				  ATerm extraArg, ATermComparator comparator) {
   ATerm result;
   ATermBBTree resultSet;
-  assert(is_tree(source));
+  assert(ATbbtreeIsTree(source));
 
   if (is_empty(source)) {
     return source;

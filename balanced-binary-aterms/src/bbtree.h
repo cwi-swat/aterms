@@ -18,9 +18,21 @@ typedef ATerm ATermBBTree;
  */
 typedef int (*ATermComparator)(const ATerm,const ATerm);
 
+/*
+ * name   : ATbbtreeCompare
+ * pre    : tree1 and tree2 are valid ATermBBTree's, elmCompare
+ *          is a compare function for the elements of the set
+ * action : compares tree1 with tree2, and returns an ATermComparator
+ *          result
+ * post   : returns a -1, 0, or +1 ATermComparator value
+ */
+int ATbbtreeCompare(ATermBBTree tree1, ATermBBTree tree, ATermComparator comparator);
+
+
 
 /* A function type used in accumulators. */
 typedef ATerm (*ATermFunction)(const ATerm, const ATerm);
+
 
 
 /* The empty tree */
@@ -32,8 +44,22 @@ extern ATermBBTree ATemptyBBTree;
  * action : initialize tree routines
  * post   : the tree routines are ready to use!
  */
-void ATbbtreeInit();
+void ATbbtreeInit(void);
 
+/*
+ * name   : ATbbtreeIsTree
+ * pre    : bbtree has been initialized (by calling ATbbtreeInit())
+ * action : test whether tree is a ATermBBTree
+ * post   : returns true if tree is a valid ATermBBTree, false otherwise
+ */
+ATbool ATbbtreeIsTree(ATerm tree);
+
+/* name   : ATbbtreeIsEmpty
+ * pre    : t is a valid ATermBBTree
+ * action : test whether t is the empty tree
+ * post   : returns true if t is the empty tree, false otherwise
+ */
+ATbool ATbbtreeIsEmpty(ATermBBTree t);
 
 /*
  * name   : ATbbtreeSize
@@ -60,6 +86,14 @@ ATbool ATbbtreeMember(ATermBBTree t, ATerm elt, ATermComparator comparator);
  * note   : ATisEqual(ATbbtreeGet(t, e), e) need not hold.
  */
 ATerm ATbbtreeGet(ATermBBTree tree, ATerm elt, ATermComparator comparator);
+
+/*
+ * name   : ATbbtreeGetAny
+ * pre    : tree must be a valid ATermBBTree
+ * action : gets a 'random' element from the set
+ * post   : returns an element from the set or NULL if the set is empty
+ */
+ATerm ATbbtreeGetAny(ATermBBTree tree);
 
 /*
  * name   : ATmakeTree
@@ -147,6 +181,13 @@ void ATftreeToDot(FILE *f, ATermBBTree t);
 
 
 ATbool ATbbtreeIsEqual(ATermBBTree set1, ATermBBTree set2, ATermComparator comparator);
+
+/*
+ * name   : ATbbtreeSubSetOf
+ * pre    : set1 and set2 are valid ATermBBTree's.
+ * action : test whether set1 is a subset of set 2
+ * post   : returns true if all elements of set1 are a member of set2
+ */
 ATbool ATbbtreeSubSetOf(ATermBBTree set1, ATermBBTree set2, ATermComparator comparator);
 
 ATermList ATbbtreeToNestedList(ATermBBTree t);

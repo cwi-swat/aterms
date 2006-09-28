@@ -1,7 +1,32 @@
+2006-09-28     <a.t.hofkamp@tue.nl, storm@cwi.nl>	
+
+	* moved "static ATerm get_elt(ATerm tree)" to a more logical
+	position in the file
+
+	* added "int ATbbtreeCompare(ATermBBTree tree1, ATermBBTree tree2,
+	ATermComparator comparator)", which implements a ATermComparator
+	function for trees (making it easy to have sets of sets of ...)
+
+	* added "ATbool ATbbtreeIsEmpty(ATermBBTree t)" for test on
+	emptiness
+
+	* added "int ATbbtreeSize(ATermBBTree t)", a wrapper around the
+	internal get_count() function.
+
+	* moved "ATbool ATbbtreeIsTree(ATerm tree)" to a more logical
+	place in the file
+
+	* eliminated a few elt_compare() calls in ATbbtreeGet() for
+	possibly increased performance
+	(this should be done at a few other places as well)
+
+	* Added a "ATerm ATbbtreeGetAny(ATermBBTree tree)" function for
+	retrieving a 'non-deterministically chosen' element from a set
+
 
 Fri Sep  8 14:29:46 CEST 2006 <kooiker@cwi.nl>
  * src/bbtree.c:
-   - Remove unused variable |left|
+   * Removed unused variable |left|
 
 2006-08-31    <a.t.hofkamp@tue.nl, storm@cwi.nl>
 
