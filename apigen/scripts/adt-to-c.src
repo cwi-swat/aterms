@@ -6,8 +6,12 @@ APIGEN=apigen.gen.c.Main
 CLASSPATH=__APIGEN_CLASSES__:__JAVA_ATERM__
 DICTTOC=__DICT_TO_C__
 
-PARAMS=./apigen.env
 java -classpath ${CLASSPATH} ${APIGEN} $*
-. ${PARAMS}
-${DICTTOC} -no-date -dict ${APINAME}.dict
-rm -f ${PARAMS}
+
+PARAMS=./apigen.env
+if [ -f ${PARAMS}]; then
+  . ${PARAMS}
+  ${DICTTOC} -no-date -dict ${APINAME}.dict
+
+  rm -f ${PARAMS}
+fi

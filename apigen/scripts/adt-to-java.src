@@ -18,15 +18,18 @@ done
 
 if [ "a${JAR}" = "atrue" ]; then
   PARAMS=./apigen.env
-  . ${PARAMS}
-  if [ "a${APINAME}" = "a" ]; then
-    echo "No APINAME defined in ${PARAMS}"
-    exit 1
-  fi
+  if [ -f ${PARAMS} ]; then
+    . ${PARAMS}
+    if [ "a${APINAME}" = "a" ]; then
+      echo "No APINAME defined in ${PARAMS}"
+      exit 1
+    fi
         
-  CLASSES=`echo ${FILES} | sed -e 's/.java/.class/g'`
-  JARFILE=${APINAME}-${VERSION}.jar
-  javac -classpath ${DIRECTORY}:${CLASSPATH} ${FILES}
-  jar cf ${JARFILE} ${CLASSES}
-  rm -f ${PARAMS}
+    CLASSES=`echo ${FILES} | sed -e 's/.java/.class/g'`
+    JARFILE=${APINAME}-${VERSION}.jar
+    javac -classpath ${DIRECTORY}:${CLASSPATH} ${FILES}
+    jar cf ${JARFILE} ${CLASSES}
+
+    rm -f ${PARAMS}
+  fi
 fi

@@ -1,5 +1,9 @@
 # $Id$
 
+Mon Oct  2 14:29:48 CEST 2006 <kooiker@cwi.nl>
+ * scripts/adt-to-{c,java}.src:
+   - If apigen.env does not exist do nothing (closes #429)
+
 Mon Oct  2 13:33:48 CEST 2006 <kooiker@cwi.nl>
  * src/apigen/gen/java/SeparatedListTypeGenerator.java:
    - Use TypeGenerator to compute classname from type (closes #400)
