@@ -322,7 +322,7 @@ public class SeparatedListTypeGenerator extends TypeGenerator {
 	}
 
 	protected void genPredicates() {
-		genIsEmpty(type.getId());
+		genIsEmpty(TypeGenerator.className(type));
 		genIsMany();
 		genIsSingle();
 	}

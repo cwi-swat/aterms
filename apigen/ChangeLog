@@ -1,5 +1,9 @@
 # $Id$
 
+Mon Oct  2 13:33:48 CEST 2006 <kooiker@cwi.nl>
+ * src/apigen/gen/java/SeparatedListTypeGenerator.java:
+   - Use TypeGenerator to compute classname from type (closes #400)
+
 Thu Jul 27 15:51:53 CEST 2006 <martin.bravenboer@gmail.com>
 
  * lib-1.0: removed
