@@ -25,6 +25,7 @@ if [ $? -eq 0 ]
 	
 	if [ "a${JAR}" = "atrue" ]; then	
 	  PARAMS=./apigen.env
+	  if [ -f ${PARAMS} ]; then
 		if [ "a${JAVAGEN}" = "atrue" ]; then
 	  	. ${PARAMS}
 			CLASSES=`echo ${FILES} | sed -e 's/.java/.class/g'`
@@ -33,6 +34,7 @@ if [ $? -eq 0 ]
 		  jar cf ${JARFILE} ${CLASSES}
 		fi
 		rm -f ${PARAMS}
+	  fi
 	fi
 
 fi

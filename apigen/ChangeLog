@@ -1,5 +1,11 @@
 # $Id$
 
+Tue Oct  3 11:36:50 CEST 2006 <kooiker@cwi.nl>
+ * scripts/adt-to-c.src:
+   - Missing space before ] in if expression
+ * scripts/adt-to-tom.src:
+   - If apigen.env does not exist do nothing
+
 Mon Oct  2 14:29:48 CEST 2006 <kooiker@cwi.nl>
  * scripts/adt-to-{c,java}.src:
    - If apigen.env does not exist do nothing (closes #429)

@@ -9,7 +9,7 @@ DICTTOC=__DICT_TO_C__
 java -classpath ${CLASSPATH} ${APIGEN} $*
 
 PARAMS=./apigen.env
-if [ -f ${PARAMS}]; then
+if [ -f ${PARAMS} ]; then
   . ${PARAMS}
   ${DICTTOC} -no-date -dict ${APINAME}.dict
 
