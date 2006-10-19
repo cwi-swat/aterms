@@ -1,7 +1,6 @@
 package aterm;
 
 import jjtraveler.VisitFailure;
-import jjtraveler.VoidVisitor;
 
 public interface Visitor extends jjtraveler.Visitor {
 

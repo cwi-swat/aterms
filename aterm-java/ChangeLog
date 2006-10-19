@@ -1,5 +1,11 @@
 # $Id$
 
+Thu Oct 19 10:39:46 CEST 2006 <lankamp@cwi.nl>
+  * *.java:
+     - Made all streams buffered.
+     - Replaced StringBuffers with StringBuilders where possible
+     - Added NIO streaming support.
+
 Tue Jul 25 20:32:30 CEST 2006 <martin.bravenboer@gmail.com>
   * aterm-java.pc.in: The VERSION part of the file name of a jar
     cannot be variable: it is read by configure by substition takes

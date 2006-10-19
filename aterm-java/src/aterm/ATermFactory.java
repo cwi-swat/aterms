@@ -379,6 +379,7 @@ public interface ATermFactory
    * @param stream the inputstream to read the ATerm from.
    *
    * @return the parsed ATerm.
+   * @throws IOException
    */
   ATerm readFromTextFile(InputStream stream) throws IOException;
 
@@ -388,6 +389,7 @@ public interface ATermFactory
    * @param stream the inputstream to read the ATerm from.
    *
    * @return the parsed ATerm.
+   * @throws IOException
    */
   ATerm readFromSharedTextFile(InputStream stream) throws IOException;
 
@@ -397,6 +399,7 @@ public interface ATermFactory
    * @param stream the inputstream to read the ATerm from.
    *
    * @return the parsed ATerm.
+   * @throws IOException
    */
   ATerm readFromBinaryFile(InputStream stream) throws IOException;
 
@@ -408,6 +411,7 @@ public interface ATermFactory
    * @param stream the inputstream to read the ATerm from.
    *
    * @return the parsed ATerm.
+   * @throws IOException
    */
   ATerm readFromFile(InputStream stream) throws IOException;
 
@@ -417,6 +421,7 @@ public interface ATermFactory
    * @param file the filename to read the ATerm from.
    *
    * @return the parsed ATerm.
+   * @throws IOException
    */
   ATerm readFromFile(String file) throws IOException;
 

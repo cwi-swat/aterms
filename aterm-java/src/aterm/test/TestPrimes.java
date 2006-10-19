@@ -31,6 +31,8 @@ public class TestPrimes {
   
     /**
      * Compute the list of primes.
+     * 
+     * @param max
      */
   public ATermList getPrimes(int max) {
     ATermList primes;
@@ -41,6 +43,8 @@ public class TestPrimes {
 
     /**
      * Generate a list of consecutive numbers.
+     * 
+     * @param max
      */
   private ATermList generateNumbers(int max) {
     ATermList numbers = factory.makeList();
@@ -51,6 +55,8 @@ public class TestPrimes {
 
     /**
      * Filter non-primes
+     * 
+     * @param numbers
      */
    private ATermList filterNonPrimes(ATermList numbers) {
     ATermList primes = factory.makeList();
@@ -65,6 +71,9 @@ public class TestPrimes {
 
     /**
      * Filter multiples of n.
+     * 
+     * @param n
+     * @param numbers
      */
   private ATermList filterMultiples(int n, ATermList numbers) {
     int nr, len = numbers.getLength();

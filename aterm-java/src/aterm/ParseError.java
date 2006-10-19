@@ -31,6 +31,7 @@ package aterm;
  * @author Pieter Olivier (olivierp@cwi.nl)
  */
 public class ParseError extends RuntimeException {
+	static final long serialVersionUID = 3638731523325353017L;
 
   /**
    * Constructs a ParseError given a description of the error

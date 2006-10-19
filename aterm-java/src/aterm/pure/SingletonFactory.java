@@ -22,17 +22,15 @@ package aterm.pure;
 
 import aterm.pure.PureFactory;
 
-public class SingletonFactory {
+public class SingletonFactory{
 
-  private SingletonFactory() {}
+	private SingletonFactory(){}
 
-  private static PureFactory instance = null;
-
-  public static PureFactory getInstance() {
-    if (instance == null) {
-      instance = new PureFactory();
-    }
-    return instance;
-  }
-
+	public static PureFactory getInstance(){
+		return InstanceKeeper.instance;
+	}
+	
+	private static class InstanceKeeper{
+		private final static PureFactory instance = new PureFactory();
+	}
 }

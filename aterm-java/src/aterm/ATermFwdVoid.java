@@ -8,12 +8,10 @@ public class ATermFwdVoid implements aterm.Visitor {
 
     public jjtraveler.Visitable visit(jjtraveler.Visitable v) 
     throws jjtraveler.VisitFailure {
-        jjtraveler.Visitable result;
 	if (v instanceof aterm.Visitable) {
 	    return ((aterm.Visitable) v).accept(this);
-	} else {
-	    throw new jjtraveler.VisitFailure();
 	}
+	    throw new jjtraveler.VisitFailure();
     }
 
     public aterm.Visitable visitATerm(ATerm arg) throws VisitFailure {

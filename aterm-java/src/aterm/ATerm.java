@@ -226,6 +226,7 @@ public interface ATerm
       * Write a term to a text file/stream.
       *
       * @param stream the stream to write to
+      * @throws IOException
       */
     public void writeToTextFile(OutputStream stream)
       throws IOException;
@@ -236,6 +237,7 @@ public interface ATerm
       * the stream.
       *
       * @param stream the stream to write this term to
+      * @throws IOException
       */
     public void writeToSharedTextFile(OutputStream stream)
       throws IOException;
@@ -244,7 +246,8 @@ public interface ATerm
       * Create a new term based on this term as a pattern and a list of arguments.
       *
       * @param args the list of arguments used to fill up holes in the pattern
-      *
+      *	
+      *	@return the constructed aterm
       */
     public ATerm make(List args);
 

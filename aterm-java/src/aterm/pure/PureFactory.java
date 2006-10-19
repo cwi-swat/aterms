@@ -20,6 +20,7 @@
 
 package aterm.pure;
 
+import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,10 +28,10 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.Vector;
 
 import shared.SharedObjectFactory;
 import aterm.AFun;
@@ -65,7 +66,7 @@ public class PureFactory extends SharedObjectFactory implements ATermFactory {
   private ATermList empty;
 
   static boolean isBase64(int c) {
-    return Character.isLetterOrDigit((char) c) || c == '+' || c == '/';
+    return Character.isLetterOrDigit(c) || c == '+' || c == '/';
   }
 
   static public int abbrevSize(int abbrev) {
@@ -302,12 +303,12 @@ public class PureFactory extends SharedObjectFactory implements ATermFactory {
   }
 
   private ATerm parseNumber(ATermReader reader) throws IOException {
-    StringBuffer str = new StringBuffer();
+	StringBuilder str = new StringBuilder();
     ATerm result;
 
     do {
       str.append((char) reader.getLastChar());
-    } while (Character.isDigit((char) reader.read()));
+    } while (Character.isDigit(reader.read()));
 
     if (reader.getLastChar() != '.' && reader.getLastChar() != 'e'
         && reader.getLastChar() != 'E') {
@@ -322,11 +323,11 @@ public class PureFactory extends SharedObjectFactory implements ATermFactory {
       if (reader.getLastChar() == '.') {
         str.append('.');
         reader.read();
-        if (!Character.isDigit((char) reader.getLastChar()))
+        if (!Character.isDigit(reader.getLastChar()))
           throw new ParseError("digit expected");
         do {
           str.append((char) reader.getLastChar());
-        } while (Character.isDigit((char) reader.read()));
+        } while (Character.isDigit(reader.read()));
       }
       if (reader.getLastChar() == 'e' || reader.getLastChar() == 'E') {
         str.append((char) reader.getLastChar());
@@ -335,11 +336,11 @@ public class PureFactory extends SharedObjectFactory implements ATermFactory {
           str.append((char) reader.getLastChar());
           reader.read();
         }
-        if (!Character.isDigit((char) reader.getLastChar()))
+        if (!Character.isDigit(reader.getLastChar()))
           throw new ParseError("digit expected!");
         do {
           str.append((char) reader.getLastChar());
-        } while (Character.isDigit((char) reader.read()));
+        } while (Character.isDigit(reader.read()));
       }
       double val;
       try {
@@ -354,12 +355,12 @@ public class PureFactory extends SharedObjectFactory implements ATermFactory {
 
   private String parseId(ATermReader reader) throws IOException {
     int c = reader.getLastChar();
-    StringBuffer buf = new StringBuffer(32);
+    StringBuilder buf = new StringBuilder(32);
 
     do {
       buf.append((char) c);
       c = reader.read();
-    } while (Character.isLetterOrDigit((char) c) || c == '_' || c == '-'
+    } while (Character.isLetterOrDigit(c) || c == '_' || c == '-'
         || c == '+' || c == '*' || c == '$');
 
     return buf.toString();
@@ -367,7 +368,7 @@ public class PureFactory extends SharedObjectFactory implements ATermFactory {
 
   private String parseString(ATermReader reader) throws IOException {
     boolean escaped;
-    StringBuffer str = new StringBuffer();
+    StringBuilder str = new StringBuilder();
 
     do {
       escaped = false;
@@ -433,7 +434,7 @@ public class PureFactory extends SharedObjectFactory implements ATermFactory {
   }
 
   private ATerm[] parseATermsArray(ATermReader reader) throws IOException {
-    List list = new Vector();
+    List list = new ArrayList();
     ATerm term;
 
     term = parseFromReader(reader);
@@ -549,7 +550,7 @@ public class PureFactory extends SharedObjectFactory implements ATermFactory {
 
           if (reader.getLastChar() != ')') {
             throw new ParseError("expected ')' but got '"
-                + reader.getLastChar() + "'");
+                + (char)reader.getLastChar() + "'");
           }
           result = makeAppl(makeAFun("", list.length, false), list);
         }
@@ -577,7 +578,7 @@ public class PureFactory extends SharedObjectFactory implements ATermFactory {
 
       default:
         c = reader.getLastChar();
-        if (Character.isLetter((char) c)) {
+        if (Character.isLetter(c)) {
 
           funname = parseId(reader);
           c = reader.skipWS();
@@ -593,7 +594,7 @@ public class PureFactory extends SharedObjectFactory implements ATermFactory {
 
               if (reader.getLastChar() != ')') {
                 throw new ParseError("expected ')' but got '"
-                    + reader.getLastChar() + "'");
+                    + (char)reader.getLastChar() + "'");
               }
               result = makeAppl(
                   makeAFun(funname, list.length, false), list);
@@ -605,7 +606,7 @@ public class PureFactory extends SharedObjectFactory implements ATermFactory {
 
         } else {
           throw new ParseError("illegal character: "
-              + reader.getLastChar());
+              + (char)reader.getLastChar());
         }
     }
 
@@ -646,7 +647,7 @@ public class PureFactory extends SharedObjectFactory implements ATermFactory {
 
   public ATerm parse(String trm) {
     try {
-      ATermReader reader = new ATermReader(new StringReader(trm));
+      ATermReader reader = new ATermReader(new StringReader(trm), trm.length());
       reader.readSkippingWS();
       ATerm result = parseFromReader(reader);
       return result;
@@ -752,14 +753,14 @@ public class PureFactory extends SharedObjectFactory implements ATermFactory {
   }
 
   public ATerm readFromTextFile(InputStream stream) throws IOException {
-    ATermReader reader = new ATermReader(new InputStreamReader(stream));
+    ATermReader reader = new ATermReader(new BufferedReader(new InputStreamReader(stream)));
     reader.readSkippingWS();
 
     return readFromTextFile(reader);
   }
 
   public ATerm readFromSharedTextFile(InputStream stream) throws IOException {
-    ATermReader reader = new ATermReader(new InputStreamReader(stream));
+    ATermReader reader = new ATermReader(new BufferedReader(new InputStreamReader(stream)));
     reader.readSkippingWS();
 
     if (reader.getLastChar() != '!') {
@@ -776,14 +777,14 @@ public class PureFactory extends SharedObjectFactory implements ATermFactory {
   }
 
   public ATerm readFromFile(InputStream stream) throws IOException {
-    ATermReader reader = new ATermReader(new InputStreamReader(stream));
+    ATermReader reader = new ATermReader(new BufferedReader(new InputStreamReader(stream)));
     reader.readSkippingWS();
 
     int last_char = reader.getLastChar();
     if (last_char == '!') {
       reader.readSkippingWS();
       return readFromSharedTextFile(reader);
-    } else if (Character.isLetterOrDigit((char) last_char)
+    } else if (Character.isLetterOrDigit(last_char)
         || last_char == '_' || last_char == '[' || last_char == '-') {
       return readFromTextFile(reader);
     } else {
@@ -813,23 +814,37 @@ class HashedWeakRef extends WeakReference {
 
 class ATermReader {
   private static final int INITIAL_TABLE_SIZE = 2048;
-
   private static final int TABLE_INCREMENT = 4096;
+  
+  private static final int INITIAL_BUFFER_SIZE = 1024;
 
   private Reader reader;
 
   private int last_char;
-
   private int pos;
 
   private int nr_terms;
-
   private ATerm[] table;
-
+  
+  private char[] buffer;
+  private int limit;
+  private int bufferPos;
+  
   public ATermReader(Reader reader) {
+	this(reader, INITIAL_BUFFER_SIZE);
+  }
+
+  public ATermReader(Reader reader, int bufferSize) {
     this.reader = reader;
     last_char = -1;
     pos = 0;
+    
+    if(bufferSize < INITIAL_BUFFER_SIZE)
+    	buffer = new char[bufferSize];
+    else
+    	buffer = new char[INITIAL_BUFFER_SIZE];
+    limit = -1;
+    bufferPos = -1;
   }
 
   public void initializeSharing() {
@@ -863,39 +878,47 @@ class ATermReader {
   }
 
   public int read() throws IOException {
-    last_char = reader.read();
-    pos++;
-    return last_char;
+	  if(bufferPos == limit){
+		  limit = reader.read(buffer);
+		  bufferPos = 0;
+	  }
+	  
+	  if(limit == -1){
+		  last_char = -1;
+	  }else{
+		  last_char = buffer[bufferPos++];
+		  pos++;
+	  }
+	  
+	  return last_char;
   }
 
   public int readSkippingWS() throws IOException {
     do {
-      last_char = reader.read();
-      pos++;
-    } while (Character.isWhitespace((char) last_char));
+      last_char = read();
+    } while (Character.isWhitespace(last_char));
 
     return last_char;
 
   }
 
   public int skipWS() throws IOException {
-    while (Character.isWhitespace((char) last_char)) {
-      last_char = reader.read();
-      pos++;
+    while (Character.isWhitespace(last_char)) {
+      last_char = read();
     }
 
     return last_char;
   }
 
   public int readOct() throws IOException {
-    int val = Character.digit((char) last_char, 8);
-    val += Character.digit((char) read(), 8);
+    int val = Character.digit(last_char, 8);
+    val += Character.digit(read(), 8);
 
     if (val < 0) {
       throw new ParseError("octal must have 3 octdigits.");
     }
 
-    val += Character.digit((char) read(), 8);
+    val += Character.digit(read(), 8);
 
     if (val < 0) {
       throw new ParseError("octal must have 3 octdigits");
@@ -911,5 +934,4 @@ class ATermReader {
   public int getPosition() {
     return pos;
   }
-
 }

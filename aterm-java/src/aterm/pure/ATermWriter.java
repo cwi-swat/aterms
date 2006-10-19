@@ -1,7 +1,7 @@
 package aterm.pure;
 
 import java.io.OutputStream;
-import java.io.PrintStream;
+import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -10,11 +10,12 @@ import aterm.AFun;
 import aterm.ATerm;
 import aterm.ATermAppl;
 import aterm.ATermBlob;
+import aterm.ATermFwdVoid;
 import aterm.ATermInt;
 import aterm.ATermList;
 import aterm.ATermPlaceholder;
 import aterm.ATermReal;
-import aterm.ATermFwdVoid;
+import aterm.stream.BufferedOutputStreamWriter;
 
 class ATermWriter extends ATermFwdVoid {
 
@@ -25,27 +26,27 @@ class ATermWriter extends ATermFwdVoid {
     'v', 'w', 'x', 'y', 'z', '0', '1', '2', '3', '4', '5', '6', '7',
     '8', '9', '+', '/' };
 
-  PrintStream stream;
+  private BufferedOutputStreamWriter stream;
 
-  int position;
+  private int position;
 
-  Map table;
+  private Map table;
 
-  int next_abbrev;
+  private int next_abbrev;
 
   ATermWriter(OutputStream stream) {
-    this.stream = new PrintStream(stream);
+    this.stream = new BufferedOutputStreamWriter(stream);
   }
-
-  public OutputStream getStream() {
+  
+  public Writer getStream() {
     return stream;
   }
 
   private void emitAbbrev(int abbrev) {
-    stream.print('#');
+    stream.write('#');
     position++;
 
-    StringBuffer buf = new StringBuffer();
+    StringBuilder buf = new StringBuilder();
 
       if (abbrev == 0) {
         buf.append(TOBASE64[0]);
@@ -56,11 +57,11 @@ class ATermWriter extends ATermFwdVoid {
         abbrev /= 64;
       }
       String txt = buf.reverse().toString();
-      stream.print(txt);
+      stream.write(txt);
       position += txt.length();
     }
 
-    public void voidVisitChild(ATerm child) throws  VisitFailure {
+    public void voidVisitChild(ATerm child) throws VisitFailure {
       if (table != null) {
         Integer abbrev = (Integer) table.get(child);
         if (abbrev != null) {
@@ -71,21 +72,21 @@ class ATermWriter extends ATermFwdVoid {
 
       int start = position;
       if (child.getType() == ATerm.LIST) {
-        stream.print('[');
+        stream.write('[');
         position++;
       }
       visit(child);
       if (child.getType() == ATerm.LIST) {
-        stream.print(']');
+        stream.write(']');
         position++;
       }
 
       ATermList annos = child.getAnnotations();
       if (!annos.isEmpty()) {
-        stream.print('{');
+        stream.write('{');
         position++;
         visit(annos);
-        stream.print('}');
+        stream.write('}');
         position++;
       }
 
@@ -101,19 +102,19 @@ class ATermWriter extends ATermFwdVoid {
     public void voidVisitAppl(ATermAppl appl) throws VisitFailure {
       AFun fun = appl.getAFun();
       String name = fun.toString();
-      stream.print(name);
+      stream.write(name);
       position += name.length();
-      if (fun.getArity() > 0 || name.equals("")) {
-        stream.print('(');
+      if (fun.getArity() > 0 || name.length() == 0) {
+        stream.write('(');
         position++;
         for (int i = 0; i < fun.getArity(); i++) {
           if (i != 0) {
-            stream.print(',');
+            stream.write(',');
             position++;
           }
           voidVisitChild(appl.getArgument(i));
         }
-        stream.print(')');
+        stream.write(')');
         position++;
       }
     }
@@ -123,38 +124,37 @@ class ATermWriter extends ATermFwdVoid {
         voidVisitChild(list.getFirst());
         list = list.getNext();
         if (!list.isEmpty()) {
-          stream.print(',');
+          stream.write(',');
           position++;
         }
       }
     }
 
     public void voidVisitPlaceholder(ATermPlaceholder ph) throws VisitFailure {
-      stream.print('<');
+      stream.write('<');
       position++;
       voidVisitChild(ph.getPlaceholder());
-      stream.print('>');
+      stream.write('>');
       position++;
     }
 
     public void voidVisitInt(ATermInt i) throws VisitFailure {
       String txt = String.valueOf(i.getInt());
-      stream.print(txt);
+      stream.write(txt);
       position += txt.length();
     }
 
     public void voidVisitReal(ATermReal r) throws VisitFailure {
       String txt = String.valueOf(r.getReal());
-      stream.print(txt);
+      stream.write(txt);
       position += txt.length();
     }
 
     public void voidVisitBlob(ATermBlob blob) throws VisitFailure {
-      String txt = String.valueOf(blob.getBlobSize()) + "#" + String.valueOf(blob.hashCode());
-      stream.print(txt);
+      String txt = String.valueOf(blob.getBlobSize()) + '#' + String.valueOf(blob.hashCode());
+      stream.write(txt);
       position += txt.length();
-
-  }
+    }
 
   public void initializeSharing() {
     table = new HashMap();

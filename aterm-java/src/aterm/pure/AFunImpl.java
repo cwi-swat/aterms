@@ -96,12 +96,12 @@ class AFunImpl extends ATermImpl implements AFun {
   }
 
   public String toString() {
-    StringBuffer result = new StringBuffer(name.length());
+    StringBuilder result = new StringBuilder(name.length());
 
     if (isQuoted) {
       result.append('"');
     }
-
+    
     for (int i = 0; i < name.length(); i++) {
       char c = name.charAt(i);
       switch (c) {
@@ -183,7 +183,7 @@ class AFunImpl extends ATermImpl implements AFun {
           }
       }
     }
-
+    
     if (isQuoted) {
       result.append('"');
     }

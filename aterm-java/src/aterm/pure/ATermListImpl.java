@@ -20,6 +20,7 @@
 
 package aterm.pure;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
@@ -51,6 +52,10 @@ public class ATermListImpl extends ATermImpl implements ATermList {
    * init is used internally by the PureFactory to initialize a prototype of
    * an ATermList without using the new operator all the time
    * 
+   * @param hashCode
+   * @param annos
+   * @param first
+   * @param next
    */
   protected void init(int hashCode, ATermList annos, ATerm first, ATermList next) {
     super.init(hashCode, annos);
@@ -363,7 +368,7 @@ public class ATermListImpl extends ATermImpl implements ATermList {
     }
 
     cur = this;
-    elems = new Vector();
+    elems = new ArrayList();
 
     while (true) {
       next = cur.getNext();
@@ -384,7 +389,7 @@ public class ATermListImpl extends ATermImpl implements ATermList {
     ATermList result = ((PureFactory) getFactory()).getEmpty();
     ATermList list;
 
-    List buffer = new Vector(size);
+    List buffer = new ArrayList(size);
 
     list = this;
     for (i = 0; i < start; i++) {
