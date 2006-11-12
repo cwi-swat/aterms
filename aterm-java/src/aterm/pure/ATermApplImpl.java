@@ -162,7 +162,10 @@ public class ATermApplImpl extends ATermImpl implements ATermAppl {
   }
 
   public ATerm[] getArgumentArray() {
-    return args;
+    int length = args.length;
+    ATerm[] res = new ATerm[length];
+    System.arraycopy(args, 0, res, 0, length);
+    return res;
   }
 
   public AFun getAFun() {
