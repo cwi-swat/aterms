@@ -1,4 +1,4 @@
-This document will briefly discuss the Fast ATerm Format (FAF).
+This document will briefly discuss the Streamble ATerm Format (SAF).
 
 
 Goal:
