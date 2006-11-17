@@ -1,0 +1,148 @@
+This document will briefly discuss the Fast ATerm Format (FAF).
+
+
+Goal:
+	The format was designed for exchanging ATerms across network connections.
+	The four most important requirements for this format are:
+		-Compactness.
+		-Transformation / parsing speed.
+		-Streamability (meaning the ability to send a term in chunks; making it possible to suspend the (de-)serialization process when required, without the need of assigning a dedicated thread to the process).
+		-Low memory usage and no recursive calls (idealy we don't want to create any garbage, nor do we want to be limited by the size of the stack; for example (de-)serializing deep trees will cause problems in the current java implementation of the ASCII and TAF ATerm format).
+	Compactness and speed are somewhat conflicting requirements. We need the format to be compact, because network bandwidth is one of the major bottlenecks. To much compression may however introduce to much computational overhead, so there is a trade-off between the two we need to consider.
+
+
+Representation:
+	The format itself is fairly simple.
+	Every term has a header containing general information about the term.
+	This header can optionally contain type specific data.
+	
+	This is what the header looks like:
+	    Bit value:  |  128/sign |    64     |    32     |    16     |     8     |     4     |     2     |     1     |
+	    Bit number: |   bit 1   |   bit 2   |   bit 3   |   bit 4   |   bit 5   |   bit 6   |   bit 7   |   bit 8   |
+	    Meaning:    | IsShared? |  Free / Type specific | HasAnnos? |                  Type field                   |
+		
+		-IsShared? is a boolean value (0 or 1) that indicates if the term has been encountered earlier. If this is the case it will emit the index that corresponds with the first occurence of the term (the term itself and it's children naturally won't be serialized if this happens).
+		-Bit 2 and 3 are free and may be used for type specific data.
+		-HasAnnos? is a boolean value (0 or 1) that indicates if the term has annotations or not.
+		-The type field contains a 4 bit value that represents the type id of the term. Note that bit 5 isn't being used at the moment, since we only have 7 different term types; it leaves a little room for extension.
+		
+		Bit 2 and 3 are currently only used by ATermAppl.
+		Bit 2 represents IsSigShared? and bit 3 IsQuoted?.
+		-IsSigShared? indicates if an appl with the same signature has been encountered earlier.
+		 This signature contains the arity, the function symbol and if it is quoted or not.
+		 If the signature is shared the index of the signature will be emitted, the term itself won't be serialized; it's children however will be serialized.
+		-IsQuoted? indicates if the function symbol associated with this appl is quoted or not.
+	
+	Every term type has a different encoding.
+	These are the binary representations of the content of the different term types:
+		
+		INT
+			header		1 byte
+			value		1-5 bytes
+			
+			Since we are mostly encoding fairly small numbers it enabled us to save some space by only using the minimal amount of bytes to represent the integer's value.
+			The last bit of every byte is used as 'sign' to indicate if there are more bytes coming (1) or not (0).
+			Because of this we lose one bit per byte, causing large integers to occupy 5 (instead of the regular 4) bytes.
+		
+		REAL
+			header		1 byte
+			value		8 bytes
+			
+			We are always using 8 bytes to encode a double. Since floating point numbers just about always occupy a couple of bits in the high order bytes, it restricts us from using the same trick as with the integers.
+		
+		BLOB
+			header		1 byte
+			length		1-5 bytes (for an explaination, see INT)
+			data		0-2^32 bytes (depends on length)
+			
+		APPL
+			header		1 byte
+			arity		1-5 bytes (for an explaination, see INT)
+			fun-length	1-5 bytes (for an explaination, see INT)
+			fun-bytes	0-2^32 bytes (depends on fun-length)
+			
+		LIST
+			header		1 byte
+			size		1-5 bytes (for an explaination, see INT)
+		
+		PLACEHOLDER
+			header		1 byte
+			
+	The terms and annotations will be serialized in the order in which they are present in the tree.
+	Which is:	|term|children|annotations|.
+	This is similair to the structure of the ASCII and TAF ATerm formats.
+	So if we have a term with 2 children of which the first child has tree children, the order will look like this: |term|child1|child1.1|child1.2|child1.3|child2|.
+
+
+Limitation:
+	There is one intentional limitation present in the Java implementation of this format: only function symbols and BLOBs can be (de-)serialized in chunks.
+	This is done to reduce the complexity of the implementation.
+	Additionally function symbols and BLOBs are the only types that can occupy more then 9 bytes (in this format), thus are the only types for which it is interesting to split them.
+
+
+Performance:
+	In the Java implementation of the ATerm library this is both the fastest (both with serialization as with deserialization) and the most compact format.
+	If we compare the Java implementation of this binary format with the TAF and BAF implementation in C, it's in the middle both in speed as in size (C TAF is faster but bigger and C BAF is smaller but slower). A C implementation of this format will (most likely) eliminate the speed 'disadvantage'.
+	However the main strength of this format is it's low memory usage and streamability support.
+
+
+Example:
+
+	The following term: line(box(rect(2), square(4, 3)), circle(10))
+	Will look like this in the binary format: lineboxrectsquarecircle (when viewing this line, keep in mind that some characters might be missing / garbled, depending on the viewer you're using).
+	Which in bits looks like this (the indent and lines show the child-parent relationship):
+	
+	|00000011	appl
+	|00000010	arity = 2
+	|00000100	fun-length = 4
+	|01101100	fun-bytes = line
+	|01101001
+	|01101110
+	|01100101
+	|---|
+	    |00000011	appl
+	    |00000010	arity = 2
+	    |00000011	fun-length = 3
+	    |01100010	fun-bytes = box
+	    |01101111
+	    |01111000
+	    |---|
+	    |   |00000011	appl
+	    |   |00000001	arity = 1
+	    |   |00000100	fun-length = 4
+	    |   |01110010	fun-bytes = rect
+	    |   |01100101
+	    |   |01100011
+	    |   |01110100
+	    |   |---|
+	    |   |   |00000001	int
+	    |   |   |00000010	value = 2
+	    |   |	
+	    |   |00000011	appl
+	    |   |00000010	arity = 2
+	    |   |00000110	fun-length = 6
+	    |   |01110011	fun-bytes = square
+	    |   |01110001
+	    |   |01110101
+	    |   |01100001
+	    |   |01110010
+	    |   |01100101
+	    |   |---|
+	    |       |00000001	int
+	    |       |00000100	value = 4
+	    |       |	
+	    |       |00000001	int
+	    |       |00000011	value = 3
+	    |		
+	    |00000011	appl
+	    |00000001	arity = 1
+	    |00000110	fun-length = 6
+	    |01100011	fun-bytes = circle
+	    |01101001
+	    |01110010
+	    |01100011
+	    |01101100
+	    |01100101
+	    |---|
+	        |00000001	int
+	        |00000110	6

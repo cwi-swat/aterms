@@ -44,11 +44,9 @@ public class ATermApplImpl extends ATermImpl implements ATermAppl {
   protected void init(int hashCode, ATermList annos, AFun fun, ATerm[] i_args) {
     super.init(hashCode, annos);
     this.fun = fun;
-    this.args = new ATerm[fun.getArity()];
+    this.args = new ATerm[i_args.length];
 
-    for (int i = 0; i < fun.getArity(); i++) {
-      this.args[i] = i_args[i];
-    }
+    System.arraycopy(i_args, 0, args, 0, args.length);
   }
 
   protected void initHashCode(ATermList annos, AFun fun, ATerm[] i_args) {
@@ -162,10 +160,7 @@ public class ATermApplImpl extends ATermImpl implements ATermAppl {
   }
 
   public ATerm[] getArgumentArray() {
-    int length = args.length;
-    ATerm[] res = new ATerm[length];
-    System.arraycopy(args, 0, res, 0, length);
-    return res;
+    return args;
   }
 
   public AFun getAFun() {

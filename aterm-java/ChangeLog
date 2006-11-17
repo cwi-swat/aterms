@@ -1,13 +1,8 @@
 # $Id$
 
-2006-11-12 <pem>
-  * fix a potential bug: getArgumentArray now makes a defensive copy
-
-Thu Oct 19 10:39:46 CEST 2006 <lankamp@cwi.nl>
-  * *.java:
-     - Made all streams buffered.
-     - Replaced StringBuffers with StringBuilders where possible
-     - Added NIO streaming support.
+Fri Nov 17 1:40:00 CEST 2006 <lankamp@cwi.nl>
+  * Added a streamable binary format.
+  * Added documentation for the streamable binary format.
 
 Tue Jul 25 20:32:30 CEST 2006 <martin.bravenboer@gmail.com>
   * aterm-java.pc.in: The VERSION part of the file name of a jar

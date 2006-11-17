@@ -86,6 +86,10 @@ public abstract class ATermImpl extends ATermVisitableImpl implements ATerm, Sha
 	protected PureFactory getPureFactory(){
 		return (PureFactory) getFactory();
 	}
+	
+	public boolean hasAnnotations(){
+		return (annotations != null && !annotations.isEmpty());
+	}
 
 	public ATerm setAnnotation(ATerm label, ATerm anno){
 		ATermList new_annos = annotations.dictPut(label, anno);

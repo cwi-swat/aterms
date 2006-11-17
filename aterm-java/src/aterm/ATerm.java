@@ -120,6 +120,8 @@ public interface ATerm
      *
      */
     public List match(ATerm pattern);
+    
+    public boolean hasAnnotations();
 
     /**
      * Gets a annotation associated with specific label from this term.
