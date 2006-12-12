@@ -68,7 +68,7 @@ void test_term(char *cat, int id, ATerm t, int type)
     test_failed(cat, id);
   /*ATverify(t);*/
   if(type != -1) {
-    if(ATgetType(t) != type)
+    if(ATgetType(t) != (unsigned int)type)
       test_failed(cat, id);
   }
 }
@@ -91,7 +91,7 @@ testAlloc(void)
   for(i=0; i<18; i++) {
     test = AT_allocate(3);
     if(test)
-      fprintf(stdout, "Result: %p\n", test);
+      fprintf(stdout, "Result: %p\n", (void*)test);
     else
       fprintf(stderr, "allocation failed.\n");
   }
@@ -149,6 +149,7 @@ static ATbool destructor_true_count = 0;
 
 static ATbool blob_destructor_false(ATermBlob blob)
 {
+  (void) blob;
   destructor_false_count++;
   return ATfalse;
 }
@@ -310,7 +311,7 @@ ATbool lower3(ATerm t)
 
 void testList(void)
 {
-  int i;
+  unsigned int i;
   ATermList list[16];
 
   list[0] = ATmakeList0();
@@ -423,6 +424,13 @@ void testList(void)
 	      ATisEqual(ATsort((ATermList)ATparse("[c,f(b,1),a,b,f(b),1.3,1.2]"),
 			       ATcompare),
 			ATparse("[a,b,c,f(b),f(b,1),1.2,1.3]")));
+
+  /* Test extremly long lists */
+  list[0] = ATmakeList0();
+  for (i=1; i<MAX_LENGTH+16; i++) {
+    list[0] = ATinsert(list[0], (ATerm)ATmakeInt(1));
+    test_assert("long-list", i, ATgetLength(list[0]) == i);
+  }
 
   printf("list tests ok.\n");
 }
@@ -731,29 +739,30 @@ void testAnno(void)
   value2= ATreadFromString("value2");
   t[0]  = ATsetAnnotation(term, label, value);
   t[1]  = ATsetAnnotation(term, label, value);
+  test_assert("anno", 1, ATisEqual(t[0], t[1]));
   t[2]  = ATsetAnnotation(term, label, value2);
   t[3]  = ATgetAnnotation(t[1], label);
-  test_assert("anno", 1, ATisEqual(t[3], value));
+  test_assert("anno", 2, ATisEqual(t[3], value));
   t[4] = ATsetAnnotation(t[1], label, value2);
 
-  test_assert("anno", 2, ATisEqual(t[4], t[2]));
+  test_assert("anno", 3, ATisEqual(t[4], t[2]));
 
-  test_assert("anno", 3, ATisEqual(ATgetAnnotation(t[4], label), value2));
+  test_assert("anno", 4, ATisEqual(ATgetAnnotation(t[4], label), value2));
 
-  test_assert("anno", 4, ATisEqual(t[0], t[1]));
-  test_assert("anno", 5, !ATisEqual(t[0], t[2]));
+  test_assert("anno", 5, ATisEqual(t[0], t[1]));
+  test_assert("anno", 6, !ATisEqual(t[0], t[2]));
 
   t[4] = ATremoveAnnotation(t[4], label);
-  test_assert("anno", 6, ATgetAnnotation(t[4], label) == NULL);
+  test_assert("anno", 7, ATgetAnnotation(t[4], label) == NULL);
 
-  test_assert("anno", 7, ATisEqual(ATremoveAnnotation(t[0], label), term));
+  test_assert("anno", 8, ATisEqual(ATremoveAnnotation(t[0], label), term));
 
   t[5] = ATparse("test-anno{[label,unique_anno(42)]}");
-  test_assert("anno", 8, ATgetAnnotation(t[5], ATparse("label")) != NULL);
+  test_assert("anno", 9, ATgetAnnotation(t[5], ATparse("label")) != NULL);
   AT_collect(2);
-  test_assert("anno", 9, ATisEqual(ATgetAnnotation(t[5],ATparse("label")),
+  test_assert("anno", 10, ATisEqual(ATgetAnnotation(t[5],ATparse("label")),
 				   ATparse("unique_anno(42)")));
-  test_assert("anno", 10, ATisEqual(ATremoveAllAnnotations(t[0]), term));
+  test_assert("anno", 11, ATisEqual(ATremoveAllAnnotations(t[0]), term));
 
 
   printf("annotation tests ok.\n");
@@ -1181,7 +1190,7 @@ void testTaf()
 
 #ifndef NO_SHARING
   test_assert("taf", 0, strcmp(ptr, expected) == 0);
-  test_assert("taf", 1, len == strlen(expected));
+  test_assert("taf", 1, len == (int)strlen(expected));
 #endif
   test_assert("taf", 2, ATisEqual(t[0], t[2]));
   test_assert("taf", 3, ATisEqual(t[3], t[0]));
@@ -1223,7 +1232,7 @@ void testTaf()
 void testChecksum()
 {
   ATerm t = ATparse("f(a,b,1,2,[])");
-  char expected_digest[16] = { 0xf0, 0xbb, 0xaf, 0x3d, 0x93, 0xfa, 0x08, 0x2c,
+  unsigned char expected_digest[16] = { 0xf0, 0xbb, 0xaf, 0x3d, 0x93, 0xfa, 0x08, 0x2c,
     0xb7, 0xfe, 0xa9, 0x79, 0x6c, 0xd5, 0xdd, 0xdd };
 
     test_assert("checksum", 0, memcmp(expected_digest, ATchecksum(t), 16) == 0);

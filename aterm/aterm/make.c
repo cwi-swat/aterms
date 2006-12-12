@@ -46,7 +46,10 @@ static va_list *args = (va_list *) &theargs;
 /*}}}  */
 /*{{{  function declarations */
 
-/* extern char *strdup(const char *s); */
+#if !(defined __USE_SVID || defined __USE_BSD || defined __USE_XOPEN_EXTENDED || defined __APPLE__ || defined _MSC_VER)
+extern char *strdup(const char *s);
+#endif
+
 static ATerm makePlaceholder(ATermPlaceholder pat);
 static ATermAppl makeArguments(ATermAppl appl, Symbol name);
 static ATerm AT_vmakeTerm(ATerm pat);
@@ -110,7 +113,12 @@ ATerm AT_getPattern(const char *pat)
 /*{{{  void AT_initMake(int argc, char *argv[]) */
 void AT_initMake(int argc, char *argv[])
 {
-  int	lcv;
+  int lcv;
+
+  /* Suppress unused arguments warning */  
+  (void) argc;
+  (void) argv;
+  
   for (lcv=0; lcv < PATTERN_CACHE_SIZE; lcv++)
   {
     pattern_table[lcv].pat  = NULL;
@@ -279,8 +287,7 @@ static ATermAppl
 makeArguments(ATermAppl appl, Symbol name)
 {
   Symbol sym = ATgetSymbol(appl);
-  int nr_args = ATgetArity(sym);
-  int cur = -1;
+  unsigned int cur, nr_args = ATgetArity(sym);
   ATerm terms[NR_INLINE_TERMS];
   ATerm term = NULL;
   ATerm type = NULL;
@@ -302,8 +309,10 @@ makeArguments(ATermAppl appl, Symbol name)
       if (ATgetType(type) == AT_APPL &&
 	  ATgetSymbol((ATermAppl)type) == symbol_list) {
 	list = va_arg(*args, ATermList);
-	for (--cur; cur >= 0; cur--)
+        do {
+          cur--;
 	  list = ATinsert(list, terms[cur]);
+        } while (cur>0);
 	if(ATgetArity(name) == ATgetLength(list))
 	  sym = name;
 	else
@@ -548,8 +557,8 @@ static ATbool matchArguments(ATermAppl appl, ATermAppl applpat)
 {
   Symbol sym = ATgetSymbol(appl);
   Symbol psym = ATgetSymbol(applpat);
-  int i, arity = ATgetArity(sym);
-  int parity = ATgetArity(psym)-1; /* -1, because last arg can be <list> */
+  int i, arity = (int)ATgetArity(sym);
+  int parity = (int)ATgetArity(psym)-1; /* -1, because last arg can be <list> */
   ATerm pat;
 
   if(parity == -1)

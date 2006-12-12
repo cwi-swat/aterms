@@ -69,8 +69,8 @@ static void     (*abort_handler) (const char *format, va_list args) = NULL;
 static ATbool initialized = ATfalse;
 
 /* We need a buffer for printing and parsing */
-static int      buffer_size = 0;
-static char    *buffer = NULL;
+static unsigned int buffer_size = 0;
+static char         *buffer = NULL;
 
 /* Parse error description */
 static int      line = 0;
@@ -92,6 +92,10 @@ int             nr_marks = 0;
 
 /*}}}  */
 /*{{{  function declarations */
+
+#if !(defined __USE_SVID || defined __USE_BSD || defined __USE_XOPEN_EXTENDED || defined __APPLE__ || defined _MSC_VER)
+extern char *strdup(const char *s);
+#endif
 
 static ATerm    fparse_term(int *c, FILE * f);
 static ATerm    sparse_term(int *c, char **s);
@@ -725,7 +729,7 @@ writeToTextFile(ATerm t, FILE * f)
 {
   Symbol          sym;
   ATerm           arg;
-  int             i, arity, size;
+  unsigned int    i, arity, size;
   ATermAppl       appl;
   ATermList       list;
   ATermBlob       blob;
@@ -734,10 +738,10 @@ writeToTextFile(ATerm t, FILE * f)
   switch (ATgetType(t))
   {
     case AT_INT:
-      fprintf(f, "%d", ((ATermInt) t)->value);
+      fprintf(f, "%d", ATgetInt(t));
       break;
     case AT_REAL:
-      fprintf(f, "%.15e", ((ATermReal) t)->value);
+      fprintf(f, "%.15e", ATgetReal(t));
       break;
     case AT_APPL:
       /*{{{  Print application */
@@ -1004,7 +1008,7 @@ writeToString(ATerm t, char *buf)
   ATermAppl appl;
   ATermBlob blob;
   AFun sym;
-  int i, size, arity;
+  unsigned int i, size, arity;
   char *name;
 
   switch (ATgetType(t))
@@ -1140,7 +1144,7 @@ static unsigned long textSize(ATerm t)
   ATermAppl appl;
   Symbol sym;
   unsigned long size;
-  int i, arity;
+  unsigned int i, arity;
   char *name;
 
   switch (ATgetType(t))
@@ -1247,7 +1251,7 @@ ATwriteToString(ATerm t)
   end = topWriteToString(t, buffer);
   *end++ = '\0';
 
-  assert(end - buffer == size);
+  assert(((unsigned long)(end - buffer)) == size);
 
   return buffer;
 }
@@ -1280,7 +1284,7 @@ unsigned long ATcalcTextSize(ATerm t)
  */
 
 static void
-store_char(int c, int pos)
+store_char(int c, unsigned int pos)
 {
   if (pos >= buffer_size)
     resize_buffer(buffer_size * 2);	/* Double the space */
@@ -1382,7 +1386,7 @@ fparse_terms(int *c, FILE * f)
 static ATerm fparse_blob(int *c, FILE *f)
 {
   char lenspec[LENSPEC+2];
-  int len;
+  size_t len;
   char *data;
 
   if (fread(lenspec, 1, LENSPEC+1, f) != LENSPEC+1) {
@@ -1395,7 +1399,7 @@ static ATerm fparse_blob(int *c, FILE *f)
 
   lenspec[LENSPEC] = '\0';
 
-  len = atoi(lenspec);
+  len = (size_t)strtoul(lenspec, (char**)NULL, 10);
 
   data = (char *)malloc(len);
   if (!data) {
@@ -1412,7 +1416,7 @@ static ATerm fparse_blob(int *c, FILE *f)
 
   fnext_skip_layout(c, f);
 
-  return (ATerm)ATmakeBlob(len, data);
+  return (ATerm)ATmakeBlob((unsigned int)len, data);
 }
 
 /*}}}  */
@@ -1863,12 +1867,12 @@ sparse_terms(int *c, char **s)
 static ATerm sparse_blob(int *c, char **s)
 {
   char *lenspec;
-  int len;
+  size_t len;
   char *data;
   ATermBlob blob;
 
   lenspec = *s;
-  len = atoi(lenspec);
+  len = (size_t)strtoul(lenspec, (char**)NULL, 10);
   if (lenspec[LENSPEC] != (char)STRING_MARK) {
     return NULL;
   }
@@ -1881,7 +1885,7 @@ static ATerm sparse_blob(int *c, char **s)
   }
   memcpy(data, *s, len);
 
-  blob = ATmakeBlob(len, data);
+  blob = ATmakeBlob((unsigned int)len, data);
 
   *s += len;
 
@@ -2243,7 +2247,7 @@ ATreadFromString(const char *string)
  */
 void AT_markTerm(ATerm t)
 {
-  int             i, arity;
+  unsigned int    i, arity;
   Symbol          sym;
   ATerm          *current = mark_stack + 1;
   ATerm          *limit = mark_stack + mark_stack_size - MARK_STACK_MARGE;
@@ -2359,7 +2363,7 @@ void AT_markTerm(ATerm t)
 /* Jurgen asks: why is this function not in gc.c ? */
 void AT_markTerm_young(ATerm t) 
 {
-  int             i, arity;
+  unsigned int    i, arity;
   Symbol          sym;
   ATerm          *current = mark_stack + 1;
   ATerm          *limit = mark_stack + mark_stack_size - MARK_STACK_MARGE;
@@ -2482,7 +2486,7 @@ void AT_markTerm_young(ATerm t)
 void
 AT_unmarkTerm(ATerm t)
 {
-  int             i, arity;
+  unsigned int    i, arity;
   Symbol          sym;
   ATerm          *current = mark_stack + 1;
   ATerm          *limit = mark_stack + mark_stack_size - MARK_STACK_MARGE;
@@ -2590,7 +2594,7 @@ void AT_unmarkIfAllMarked(ATerm t)
       case AT_APPL:
 	{
 	  ATermAppl appl = (ATermAppl)t;
-	  int cur_arity, cur_arg;
+	  unsigned int cur_arity, cur_arg;
 	  AFun sym;
 
 	  sym = ATgetAFun(appl);
@@ -2621,7 +2625,7 @@ void AT_unmarkIfAllMarked(ATerm t)
 
 void AT_unmarkAll()
 {
-  int size;
+  unsigned int size;
 
   for (size=1; size<MAX_TERM_SIZE; size++) {
     int last = BLOCK_SIZE - (BLOCK_SIZE % size) - size;
@@ -2651,7 +2655,7 @@ static unsigned long
 calcCoreSize(ATerm t)
 {
   unsigned long size = 0;
-  int i, arity;
+  unsigned int i, arity;
   Symbol          sym;
 
   if (IS_MARKED(t->header))
@@ -2729,7 +2733,7 @@ AT_calcCoreSize(ATerm t)
 unsigned long AT_calcSubterms(ATerm t)
 {
   unsigned long nr_subterms = 0;
-  int    i, arity;
+  unsigned int  i, arity;
   Symbol sym;
   ATermList list;
 
@@ -2776,7 +2780,7 @@ static unsigned long
 calcUniqueSubterms(ATerm t)
 {
   unsigned long nr_unique = 0;
-  int    i, arity;
+  unsigned int  i, arity;
   Symbol sym;
   ATermList list;
 
@@ -2854,7 +2858,7 @@ unsigned long ATcalcUniqueSubterms(ATerm t)
 static unsigned long calcUniqueSymbols(ATerm t)
 {
   unsigned long nr_unique = 0;
-  int    i, arity;
+  unsigned int  i, arity;
   Symbol sym;
   ATermList list;
 
@@ -2953,7 +2957,7 @@ void AT_assertUnmarked(ATerm t)
 {
   ATermAppl appl;
   Symbol sym;
-  int i;
+  unsigned int i;
 
   assert(!IS_MARKED(t->header));
   switch(ATgetType(t)) {
@@ -2988,7 +2992,7 @@ void AT_assertMarked(ATerm t)
 {
   ATermAppl appl;
   Symbol sym;
-  int i;
+  unsigned int i;
 
   assert(IS_MARKED(t->header));
   switch(ATgetType(t)) {
@@ -3027,8 +3031,8 @@ void AT_assertMarked(ATerm t)
 
 unsigned long AT_calcTermDepth(ATerm t)
 {
-  unsigned long depth = 0;
-  int arity, i, maxdepth = 0;
+  unsigned long depth = 0, maxdepth = 0;
+  unsigned int  arity, i;
   ATermAppl appl;
   ATermList list;
 
@@ -3226,7 +3230,7 @@ ATbool ATdiff(ATerm t1, ATerm t2, ATerm *template, ATerm *diffs)
 
 ATbool AT_isDeepEqual(ATerm t1, ATerm t2)
 {
-  int type;
+  header_type type;
   ATbool result = ATtrue;
 
   if (t1 == NULL && t2 == NULL) {
@@ -3247,7 +3251,7 @@ ATbool AT_isDeepEqual(ATerm t1, ATerm t2)
       {
 	ATermAppl appl1 = (ATermAppl)t1, appl2 = (ATermAppl)t2;
 	AFun sym = ATgetAFun(appl1);
-	int i, arity = ATgetArity(sym);
+	unsigned int i, arity = ATgetArity(sym);
 
 	if(sym != ATgetAFun(appl2))
 	  return ATfalse;
@@ -3321,7 +3325,7 @@ ATbool AT_isDeepEqual(ATerm t1, ATerm t2)
 
 ATbool AT_isEqual(ATerm t1, ATerm t2)
 {
-  int type;
+  header_type type;
   ATbool result = ATtrue;
 
   if(t1 == t2)
@@ -3340,7 +3344,7 @@ ATbool AT_isEqual(ATerm t1, ATerm t2)
       {
 	ATermAppl appl1 = (ATermAppl)t1, appl2 = (ATermAppl)t2;
 	AFun sym = ATgetAFun(appl1);
-	int i, arity = ATgetArity(sym);
+	unsigned int i, arity = ATgetArity(sym);
 
 	if(sym != ATgetAFun(appl2))
 	  return ATfalse;
@@ -3409,7 +3413,7 @@ ATbool AT_isEqual(ATerm t1, ATerm t2)
 
 ATbool ATisEqualModuloAnnotations(ATerm t1, ATerm t2)
 {
-  int type;
+  header_type type;
   ATbool result = ATtrue;
 
   if(t1 == t2)
@@ -3429,7 +3433,7 @@ ATbool ATisEqualModuloAnnotations(ATerm t1, ATerm t2)
       {
 	ATermAppl appl1 = (ATermAppl)t1, appl2 = (ATermAppl)t2;
 	AFun sym = ATgetAFun(appl1);
-	int i, arity = ATgetArity(sym);
+	unsigned int i, arity = ATgetArity(sym);
 
 	if (sym != ATgetAFun(appl2)) {
 	  return ATfalse;
@@ -3521,10 +3525,10 @@ ATerm ATremoveAllAnnotations(ATerm t)
       {
 	ATermAppl appl = (ATermAppl)t;
 	AFun fun = ATgetAFun(appl);
-	int arity = ATgetArity(fun);
+	unsigned int arity = ATgetArity(fun);
 	if (arity <= MAX_INLINE_ARITY) {
 	  ATerm arg, args[MAX_INLINE_ARITY];
-	  int i;
+	  unsigned int i;
 	  ATbool changed = ATfalse;
 	  for (i=0; i<arity; i++) {
 	    arg = ATgetArgument(appl, i);
@@ -3565,9 +3569,9 @@ ATerm ATremoveAllAnnotations(ATerm t)
 
 static int AT_compareArguments(ATermAppl t1, ATermAppl t2) 
 {
-  int arity1;
-  int arity2;
-  int i;
+  unsigned int arity1;
+  unsigned int arity2;
+  unsigned int i;
   ATerm arg1;
   ATerm arg2;
   int result = 0;

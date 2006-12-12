@@ -1,5 +1,24 @@
 $Id$
 
+Tue Dec 12 09:43:24 CET 2006 <jurgenv@cwi.nl,kooiker@cwi.nl>
+ * Merged code-tuning-tue branch with trunk.
+ * Bumped version to 2.5
+
+Tue Dec 12 09:36:17 CET 2006 <{kooiker,jurgenv}@cwi.nl>
+ * Merged in all changes from the trunk, to prepare for merging
+   this branch back to the trunk.
+
+Mon Aug 21 11:10:00 CEST 2006 <eriks@win.tue.nl>
+  * Clarified the Changelog in some areas
+  * Removed the NO_GLOBAL_BUFFERS experiment from this branch
+  * Removed unused arguments from test/fib.c mmain()
+
+Mon Aug 7 17:00:00 CEST 2006 <eriks@win.tue.nl>
+    Lists containing more than 2^22 elements have an invalid length
+    stored in the header. This is fixed by limiting the value stored
+    in the header to a maximum of 2^22-1 and counting the length of 
+    the list in these cases.
+
 Tue Aug  1 13:12:41 CEST 2006 <kooiker@cwi.nl>
  * test/termstats.c: changed CLK_TCK into CLOCKS_PER_SEC since CLK_TCK appears 
    to be obsolote.
@@ -15,8 +34,48 @@ Tue Jul 25 09:16:05 CEST 2006 <{kooiker,jurgenv}@cwi.nl,martin.bravenboer@gmail.
  * **: adapted package to use the standard meta-build-env.
  * README: removed all contents
 
+Tue Jun 27 15:38:20 CEST 2006 <jurgenv@cwi.nl>
+ * doc: added doc target for generating doxygen sites in MAINTAINER_MODE
+
 Tue Jun 20 15:36:40 CEST 2006 <jurgenv@cwi.nl>
  * aterm/aterm.c: added ATwriteToNamedSharedTextFile function.
+
+Mon Jun 12 14:13:00 CEST 2006 <eriks@win.tue.nl>
+    Fixed the aliasing problem with GCC 4.1 by introducing a union.
+    The effect of the union is that accessing internal properties
+    of an ATerm now requires an additional reference, eg. if "at" is
+    an aterm, "at->next" now becomes "at->aterm->next".
+    Other elements of the new union are arrays of MachineWords to access
+    ATerm as an array. "((MachineWord*)at)[1]" can now be written
+    as with "at->word[1]". The first version is invalid according to 
+    the C99 standard.
+    Experimental: added #ifdefs to disable the use of global buffers
+    to allow multi-threading.
+
+Mon May 29 13:04:00 CEST 2006 <eriks@win.tue.nl>
+  * aterm/hash.c
+    Hash table re-alloc bug in hashResizeSet fix by Jan Friso Grootte
+
+Mon May  1 10:23:27 CEST 2006 <eriks@win.tue.nl>
+  * aterm/afun.c
+    Fixed a problem that occures with the GCC 4.0 compiler where fib would fail the
+    check. The problem is not related to GCC but because of a slightly different
+    code generation it manifested itself there.
+
+    The problem occured because of a race condition in gc.c where aterms on the
+    stack were marked in mark_phase(_young). Sometimes an item on the stack was
+    detected as being an aterm, immediatly after that, the stack item was
+    overwritten and right after that the (overwritten) aterm would be marked.
+
+    This was solved by defining AT_isValidSymbol as a macro instead of a
+    function.
+
+Mon Apr  3 14:41:04 CEST 2006 <eriks@win.tue.nl>
+  * Reduced compiler warnings
+  * All statistics gathering code wrapped in an #ifdef
+  * Merged some changes made by Muck van Weerdenburg in a local version of the
+    ATerm library
+
 
 Thu Mar  9 15:02:23 CET 2006 <{jong,kooiker}@cwi.nl>
  * aterm/memory.c:

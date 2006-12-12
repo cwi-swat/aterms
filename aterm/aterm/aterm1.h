@@ -10,6 +10,7 @@
 #include <stdarg.h>
 #include "encoding.h"
 #include "abool.h"
+#include "atypes.h"
 
 #ifdef __cplusplus
 extern "C"
@@ -26,10 +27,20 @@ extern "C"
 
 #define AT_SYMBOL       7
 
-typedef struct _ATerm
+#define MAX_ARITY            256
+
+struct __ATerm
 {
-	header_type   header;
-	struct _ATerm *next;
+  header_type   header;
+  union _ATerm *next;
+};
+
+typedef union _ATerm
+{
+  header_type     header;
+  struct __ATerm  aterm;
+  union _ATerm*   subaterm[MAX_ARITY+3];
+  MachineWord     word[MAX_ARITY+3];
 } *ATerm;
 
 /** The following functions implement the operations of

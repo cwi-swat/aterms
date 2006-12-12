@@ -227,11 +227,11 @@ int nfib(int n) {
   else return(nfib(n-1)+nfib(n-2));
 }
 
-int mmain(int argc, char **argv) {
+int mmain() {
   ATerm res;
   ATerm query ;
   int i,n;
-
+  
   f_zero = ATmakeAFun("zero", 0, ATfalse);
   f_suc  = ATmakeAFun("suc", 1, ATfalse);
   f_fib  = ATmakeAFun("fib", 1, ATfalse);
@@ -268,6 +268,6 @@ int main(int argc, char **argv)
   ATerm     bottomOfStack;
   /*  Initialise the ATerm bits & pieces  */
   ATinit(argc, argv, &bottomOfStack);
-  mmain(argc,argv);
+  mmain();
   return(0);
 }

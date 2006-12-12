@@ -126,7 +126,7 @@ static sym_entry *sym_entries = NULL;
 static sym_entry *first_topsym = NULL;
 
 static char *text_buffer = NULL;
-static int   text_buffer_size = 0;
+static unsigned int text_buffer_size = 0;
 
 static unsigned char bit_buffer = '\0';
 static int  bits_in_buffer = 0; /* how many bits in bit_buffer are used */
@@ -140,7 +140,10 @@ static int  bits_in_buffer = 0; /* how many bits in bit_buffer are used */
 	*/
 
 void AT_initBafIO(int argc, char *argv[])
-{
+{ 
+  /* Suppress unused arguments warning */
+  (void) argc;
+  (void) argv;
 }
 
 /*}}}  */
@@ -280,6 +283,7 @@ static
 int
 flushBitsFromReader(byte_reader *reader)
 {
+  (void) reader; /* Suppress unused variable warning */
   bits_in_buffer = 0;
   return 0;
 }
@@ -291,10 +295,10 @@ static
 int
 writeInt(unsigned int val, byte_writer *writer)
 {
-  int nr_items;
+  unsigned int nr_items;
   unsigned char buf[8];
 
-  nr_items = writeIntToBuf(val, buf);
+  nr_items = (unsigned int)writeIntToBuf(val, buf);
   if(write_bytes((char *)buf, nr_items, writer) != nr_items)
     return -1;
 
@@ -366,11 +370,11 @@ readInt(unsigned int *val, byte_reader *reader)
 }
 
 /*}}}  */
-/*{{{  static int writeString(const char *str, int len, byte_writer *writer) */
+/*{{{  static int writeString(const char *str, unsigned int len, byte_writer *writer) */
 
 static
 int
-writeString(const char *str, int len, byte_writer *writer)
+writeString(const char *str, unsigned int len, byte_writer *writer)
 {
   /* Write length. */
   if (writeInt(len, writer) < 0)
@@ -589,12 +593,13 @@ void gather_top_symbols(sym_entry *cur_entry, int cur_arg,
 
 static void build_arg_tables()
 {
-  int cur_sym, cur_arg, cur_trm;
+  int cur_sym, cur_trm;
+  unsigned int cur_arg;
   sym_entry *topsym;
 	
   for(cur_sym=0; cur_sym<nr_unique_symbols; cur_sym++) {
     sym_entry *cur_entry = &sym_entries[cur_sym];
-    int arity = cur_entry->arity;
+    unsigned int arity = cur_entry->arity;
 
     assert(arity == ATgetArity(cur_entry->id));
 		
