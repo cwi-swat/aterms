@@ -104,10 +104,12 @@ ATermList ATreplaceTail(ATermList list, ATermList newtail, int startpos)
 {
   unsigned int i, size, start;
 
-  if (startpos < 0)
+  if (startpos < 0) {
     start = ATgetLength(list) + startpos;
-  else
+  }
+  else {
     start = startpos;
+  }
 
   size = start;
   RESIZE_BUFFER(size);
@@ -365,15 +367,17 @@ int ATlastIndexOf(ATermList list, ATerm el, int startpos)
 
   RESIZE_BUFFER(len);
 
-  for(i=0; i<len; i++) {
+  for (i=0; i<len; i++) {
     buffer[i] = ATgetFirst(list);
     list = ATgetNext(list);
   }
-  for(i=len; i>0; i--) {
-    if(ATisEqual(buffer[i-1], el)) {
+  for (i=len; i>0; i--) {
+    if (ATisEqual(buffer[i-1], el)) {
       int result = i-1;
-      while(i>0)
+      while (i>0) {
 	buffer[--i] = NULL;
+      }
+      assert(buffer[0] == NULL);
       return result;
     }
     buffer[i-1] = NULL;

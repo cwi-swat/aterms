@@ -1,5 +1,9 @@
 $Id$
 
+Wed Dec 13 14:41:47 CET 2006 <{kooiker,jurgenv}@cwi.nl>
+ * aterm/aterm.c: fixed a bug in AT_unmarkAll, it did not unmark
+   the terms in the old generation. This fixes Bug #668.
+
 Wed Dec 13 10:31:52 CET 2006 <{lankamp,jurgenv}@cwi.nl>
  * aterm/make.c: fixed an off by one error in makeArguments that
    was probably introduced after changing the type of a local variable

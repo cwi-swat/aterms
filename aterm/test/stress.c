@@ -819,8 +819,10 @@ void testGC()
 
   AT_markTerm(t[12]);
   AT_unmarkAll();
+
   test_assert("gc-mark", 5, !IS_MARKED(t[1]->header));
   test_assert("gc-mark", 6, !AT_isMarkedSymbol(ATgetSymbol((ATermAppl)t[0])));
+  test_assert("gc-mark", 7, !IS_MARKED(((ATerm) ATempty)->header));
 #endif
 
 

@@ -2525,7 +2525,7 @@ AT_unmarkTerm(ATerm t)
       break;
 
     CLR_MARK(t->header);
-
+    
     if(HAS_ANNO(t->header))
       *current++ = AT_getAnnotations(t);
 
@@ -2628,10 +2628,22 @@ void AT_unmarkAll()
   unsigned int size;
 
   for (size=1; size<MAX_TERM_SIZE; size++) {
-    int last = BLOCK_SIZE - (BLOCK_SIZE % size) - size;
+    unsigned int last = BLOCK_SIZE - (BLOCK_SIZE % size) - size;
     Block *block = at_blocks[size];
+    
     while (block) {
-      int idx;
+      unsigned int idx;
+      ATerm data = (ATerm)block->data;
+      for (idx=0; idx <= last; idx += size) {
+	CLR_MARK(((ATerm)(((header_type *)data)+idx))->header);
+      }
+      block = block->next_by_size;
+    }
+
+    /* and we also unmark all blocks in the old generation */
+    block = at_old_blocks[size];
+    while (block) {
+      unsigned int idx;
       ATerm data = (ATerm)block->data;
       for (idx=0; idx <= last; idx += size) {
 	CLR_MARK(((ATerm)(((header_type *)data)+idx))->header);

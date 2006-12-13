@@ -1800,10 +1800,12 @@ ATermList ATinsert(ATermList tail, ATerm el)
      store MAX_LENGTH-1 in the header. ATgetLength will then count the length of the
      list instead of rely on the header
   */
-  if (curLength >= MAX_LENGTH-1)
+  if (curLength >= MAX_LENGTH-1) {
     newLength = MAX_LENGTH-1;
-  else
+  }
+  else {
     newLength = curLength+1;
+  }
   
   header_type header = LIST_HEADER(0, newLength);
   HashNumber hnr;
@@ -2054,8 +2056,9 @@ ATerm AT_removeAnnotations(ATerm t)
         }
       }
     }
-    if (!found)
+    if (!found) {
       cur = cur->aterm.next;
+    }
   }
 
   if (!found) {
