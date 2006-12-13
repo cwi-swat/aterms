@@ -287,7 +287,8 @@ static ATermAppl
 makeArguments(ATermAppl appl, Symbol name)
 {
   Symbol sym = ATgetSymbol(appl);
-  unsigned int cur, nr_args = ATgetArity(sym);
+  unsigned int cur;
+  unsigned int nr_args = ATgetArity(sym);
   ATerm terms[NR_INLINE_TERMS];
   ATerm term = NULL;
   ATerm type = NULL;
@@ -295,57 +296,72 @@ makeArguments(ATermAppl appl, Symbol name)
   ATermList arglist = NULL;
 
   if(nr_args == 0) {
-    if(ATgetArity(name) == 0)
+    if(ATgetArity(name) == 0) {
       sym = name;
-    else
+    }
+    else {
       sym = ATmakeSymbol(ATgetName(name), 0, ATisQuoted(name));
+    }
     return ATmakeAppl0(sym);
-  } else if (nr_args-- <= NR_INLINE_TERMS) {
-    for (cur = 0; cur < nr_args; cur++)
-      terms[cur] = AT_vmakeTerm(ATgetArgument(appl, cur));
+  } 
+  else if (nr_args-- <= NR_INLINE_TERMS) {
+    for (cur = 0; cur < nr_args; cur++) {
+      terms[cur] = AT_vmakeTerm(ATgetArgument(appl, cur)); 
+    }
+
     terms[nr_args] = ATgetArgument(appl, nr_args);
+
     if (ATgetType(terms[nr_args]) == AT_PLACEHOLDER) {
       type = ATgetPlaceholder((ATermPlaceholder)terms[nr_args]);
-      if (ATgetType(type) == AT_APPL &&
-	  ATgetSymbol((ATermAppl)type) == symbol_list) {
+
+      if (ATgetType(type) == AT_APPL 
+	  && ATgetSymbol((ATermAppl)type) == symbol_list) {
 	list = va_arg(*args, ATermList);
-        do {
-          cur--;
-	  list = ATinsert(list, terms[cur]);
-        } while (cur>0);
-	if(ATgetArity(name) == ATgetLength(list))
+
+	while (cur > 0) {
+	  list = ATinsert(list, terms[cur - 1]);
+	  cur--;
+	}
+
+	if (ATgetArity(name) == ATgetLength(list)) {
 	  sym = name;
-	else
+	}
+	else {
 	  sym = ATmakeSymbol(ATgetName(name), ATgetLength(list), 
 			     ATisQuoted(name));
+	}
 	return ATmakeApplList(sym, list);
       }
     }
     terms[nr_args] = AT_vmakeTerm(terms[nr_args]);
-    if(ATgetArity(name) == ATgetArity(sym))
+
+    if (ATgetArity(name) == ATgetArity(sym)) {
       sym = name;
-    else
+    }
+    else {
       sym = ATmakeSymbol(ATgetName(name), ATgetArity(sym), ATisQuoted(name));
+    }
+
     return ATmakeApplArray(sym, terms);
   }
 
   arglist = ATmakeList0();
-  for (cur = 0; cur < nr_args; cur++)
+  for (cur = 0; cur < nr_args; cur++) {
     arglist = ATinsert(arglist, AT_vmakeTerm(ATgetArgument(appl,cur)));
+  }
 
   term = ATgetArgument(appl, nr_args);
-  if (ATgetType(term) == AT_PLACEHOLDER)
-  {
+  if (ATgetType(term) == AT_PLACEHOLDER) {
     type = ATgetPlaceholder((ATermPlaceholder)term);
     if (ATgetType(type) == AT_APPL &&
-	ATgetSymbol((ATermAppl)type) == symbol_list)
-    {
+	ATgetSymbol((ATermAppl)type) == symbol_list) {
       list = va_arg(*args, ATermList);
     }
   }
-  if (list == NULL)
-    list = ATmakeList1(AT_vmakeTerm(term));
 
+  if (list == NULL) {
+    list = ATmakeList1(AT_vmakeTerm(term));
+  }
 
   while (!ATisEmpty(arglist))
   {
@@ -353,10 +369,13 @@ makeArguments(ATermAppl appl, Symbol name)
     arglist = ATgetNext(arglist);
   }
 
-  if(ATgetArity(name) == ATgetLength(list))
+  if(ATgetArity(name) == ATgetLength(list)) {
     sym = name;
-  else
+  }
+  else {
     sym = ATmakeSymbol(ATgetName(name), ATgetLength(list), ATisQuoted(name));
+  }
+
   return ATmakeApplList(sym, list);
 }
 

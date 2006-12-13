@@ -1,5 +1,12 @@
 $Id$
 
+Wed Dec 13 10:31:52 CET 2006 <{lankamp,jurgenv}@cwi.nl>
+ * aterm/make.c: fixed an off by one error in makeArguments that
+   was probably introduced after changing the type of a local variable
+   from int to unsigned int.
+ * aterm/make.c: added curly braces and whitespace
+ * test/stress.c: added a test that triggers the off-by-one error
+
 Tue Dec 12 09:43:24 CET 2006 <jurgenv@cwi.nl,kooiker@cwi.nl>
  * Merged code-tuning-tue branch with trunk.
  * Bumped version to 2.5

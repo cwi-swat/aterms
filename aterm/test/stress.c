@@ -595,6 +595,10 @@ testMake(void)
   test_assert("make", 13, ATisEqual(ATparse("[1]{[a,a]}"),
 				    ATmake("[1]{[a,a]}")));
 
+  test_assert("make", 14, ATisEqual(ATparse("aap(noot,mies)"),
+				    ATmake("aap(<list>)", 
+					   ATparse("[noot,mies]"))));
+
   fprintf(stderr, "The following two tests should generate parse errors.\n");
 #ifdef ABORT_ON_PARSE_ERROR
   ATsetAbortHandler(abort_handler);
