@@ -40,6 +40,10 @@ public class TestBinaryFormat{
 		input = pureFactory.parse("line(10, 11{childAnno}){termAnno{annoOfAnno}}");
 		expectedResult = new byte[]{19, 2, 4, 108, 105, 110, 101, 1, 10, 17, 11, 4, 1, 3, 0, 9, 99, 104, 105, 108, 100, 65, 110, 110, 111, 4, 1, 19, 0, 8, 116, 101, 114, 109, 65, 110, 110, 111, 4, 1, 3, 0, 10, 97, 110, 110, 111, 79, 102, 65, 110, 110, 111};
 		write(input, expectedResult);
+		
+		input = pureFactory.parse("integer(-1)");
+		expectedResult = new byte[]{3, 1, 7, 105, 110, 116, 101, 103, 101, 114, 1, -1, -1, -1, -1, 15};
+		write(input, expectedResult);
 	}
 	
 	public void write(ATerm input, byte[] expectedResult) throws Exception{

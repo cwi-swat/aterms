@@ -393,7 +393,7 @@ public class BinaryWriter extends ATermFwdVoid{
 		int intValue = value;
 		do{
 			byte x = (byte) (intValue & SEVENBITS);
-			intValue >>= 7;
+			intValue >>>= 7;
 
 			if(intValue != 0) x |= SIGNBYTE;
 
