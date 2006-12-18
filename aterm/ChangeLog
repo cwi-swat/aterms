@@ -1,5 +1,22 @@
 $Id$
 
+Mon Dec 18 11:53:00 CET 2006 <eriks@win.tue.nl>
+ * Merged patches supplied by Martin Bravenboer:
+   * test/randgen.c: random and srandom are optional POSIX extensions (aka XSI) and
+     not available on all systems, for example not at Win32 when using MinGW for
+     compilation of the aterm library. There are portable alternatives: srand and
+     rand, which are required by ANSI C.
+
+     The attached patch uses srand and rand for generating random numbers on
+     Win32.
+   * The test termstats.c uses sys/times.h (times function, tms struct, clock_t
+     struct), which is not available on ANSI C systems.
+
+     To make the test work on Win32 when compiling using MinGW, the attached patch
+     disables the times-specific parts of the tests if WIN32 is defined.
+
+   Closes bugs #672 and #673
+
 Wed Dec 13 14:41:47 CET 2006 <{kooiker,jurgenv}@cwi.nl>
  * aterm/aterm.c: fixed a bug in AT_unmarkAll, it did not unmark
    the terms in the old generation. This fixes Bug #668.

@@ -14,8 +14,13 @@
 #if HAVE_LRAND48 && HAVE_SRAND48
   /* Use the rand48() suite */
 #else
-#define lrand48()   random()
-#define srand48(s)  srandom(s)
+#  ifdef WIN32
+#  define lrand48()   rand()
+#  define srand48(s)  srand(s)
+#  else
+#  define lrand48()   random()
+#  define srand48(s)  srandom(s)
+#  endif
 #endif
 
 /*}}}  */
