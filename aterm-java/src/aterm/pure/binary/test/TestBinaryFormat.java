@@ -41,8 +41,14 @@ public class TestBinaryFormat{
 		expectedResult = new byte[]{19, 2, 4, 108, 105, 110, 101, 1, 10, 17, 11, 4, 1, 3, 0, 9, 99, 104, 105, 108, 100, 65, 110, 110, 111, 4, 1, 19, 0, 8, 116, 101, 114, 109, 65, 110, 110, 111, 4, 1, 3, 0, 10, 97, 110, 110, 111, 79, 102, 65, 110, 110, 111};
 		write(input, expectedResult);
 		
+		// Signed integer
 		input = pureFactory.parse("integer(-1)");
 		expectedResult = new byte[]{3, 1, 7, 105, 110, 116, 101, 103, 101, 114, 1, -1, -1, -1, -1, 15};
+		write(input, expectedResult);
+		
+		// Signed double
+		input = pureFactory.parse("real(-1.0)");
+		expectedResult = new byte[]{3, 1, 4, 114, 101, 97, 108, 2, 0, 0, 0, 0, 0, 0, -16, -65};
 		write(input, expectedResult);
 	}
 	
@@ -88,6 +94,16 @@ public class TestBinaryFormat{
 		// A term with annotations
 		input = new byte[]{19, 2, 4, 108, 105, 110, 101, 1, 10, 17, 11, 4, 1, 3, 0, 9, 99, 104, 105, 108, 100, 65, 110, 110, 111, 4, 1, 19, 0, 8, 116, 101, 114, 109, 65, 110, 110, 111, 4, 1, 3, 0, 10, 97, 110, 110, 111, 79, 102, 65, 110, 110, 111};
 		expectedResult = pureFactory.parse("line(10, 11{childAnno}){termAnno{annoOfAnno}}");
+		read(input, expectedResult);
+		
+		// Signed integer
+		input = new byte[]{3, 1, 7, 105, 110, 116, 101, 103, 101, 114, 1, -1, -1, -1, -1, 15};
+		expectedResult = pureFactory.parse("integer(-1)");
+		read(input, expectedResult);
+		
+		// Signed double
+		input = new byte[]{3, 1, 4, 114, 101, 97, 108, 2, 0, 0, 0, 0, 0, 0, -16, -65};
+		expectedResult = pureFactory.parse("real(-1.0)");
 		read(input, expectedResult);
 	}
 	

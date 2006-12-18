@@ -412,7 +412,7 @@ public class BinaryWriter extends ATermFwdVoid{
 	private void writeDouble(double value){
 		long longValue = Double.doubleToLongBits(value);
 		for(int i = 0; i < LONGBITS; i++){
-			currentBuffer.put((byte) (longValue >> (i * 8)));
+			currentBuffer.put((byte) (longValue >>> (i * 8)));
 		}
 	}
 }
