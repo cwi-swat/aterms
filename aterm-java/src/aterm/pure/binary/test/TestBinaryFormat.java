@@ -2,6 +2,8 @@ package aterm.pure.binary.test;
 
 import java.nio.ByteBuffer;
 
+import jjtraveler.VisitFailure;
+
 import aterm.ATerm;
 import aterm.pure.PureFactory;
 import aterm.pure.binary.BinaryReader;
@@ -124,6 +126,39 @@ public class TestBinaryFormat{
 		log("Reading OK for: "+expectedResult);
 	}
 	
+	public void testChunkification() throws VisitFailure{
+		ATerm in = makeBigDummyTerm(2500);
+		ByteBuffer buffer = ByteBuffer.allocate(1000);
+		BinaryWriter bw = new BinaryWriter(in);
+		BinaryReader binaryReader = new BinaryReader(pureFactory);
+		
+		while(!binaryReader.isDone()){
+			buffer.clear();
+			bw.serialize(buffer);
+			binaryReader.deserialize(buffer);
+		}
+		
+		ATerm result = binaryReader.getRoot();
+		
+		if(result == in) log("Chunkification OK");
+		else log("Chunkification FAILED");
+	}
+	
+	private ATerm makeBigDummyTerm(int x){
+		byte[] b = new byte[x];
+		
+		for(int i = 2; i < b.length - 1; i++){
+			b[i] = 'x';
+		}
+		b[0] = 'a';
+		b[1] = '(';
+		b[b.length - 1] = ')';
+		
+		String s = new String(b);
+		
+		return pureFactory.parse(s);
+	}
+	
 	private static void log(String message){
 		System.out.println(message);
 	}
@@ -133,5 +168,7 @@ public class TestBinaryFormat{
 		tbf.testWriting();
 		log("");
 		tbf.testReading();
+		log("");
+		tbf.testChunkification();
 	}
 }

@@ -285,7 +285,7 @@ public class BinaryWriter extends ATermFwdVoid{
 
 			int endIndex = length;
 			int remaining = currentBuffer.remaining();
-			if(remaining < endIndex) endIndex = (indexInTerm + remaining);
+			if((indexInTerm + remaining) < endIndex) endIndex = (indexInTerm + remaining);
 
 			byte[] nameBytes = name.substring(indexInTerm, endIndex).getBytes();
 			currentBuffer.put(nameBytes);
@@ -314,7 +314,7 @@ public class BinaryWriter extends ATermFwdVoid{
 
 		int bytesToWrite = size;
 		int remaining = currentBuffer.remaining();
-		if(remaining < size) bytesToWrite = remaining;
+		if((indexInTerm + remaining) < size) bytesToWrite = remaining;
 
 		currentBuffer.put(blobBytes, indexInTerm, bytesToWrite);
 		indexInTerm += bytesToWrite;
