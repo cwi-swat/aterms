@@ -112,7 +112,7 @@ typedef unsigned int header_type;
 				   ((MachineWord)(len) << SHIFT_LENGTH))
 				   */
 #define BLOB_HEADER(anno)	  ((anno) | (AT_BLOB << SHIFT_TYPE) | \
-				   (1 << SHIFT_ARITY))
+				   (2 << SHIFT_ARITY))
 
 #define SYMBOL_HEADER(arity,quoted) \
 	(((quoted) ? MASK_QUOTED : 0) | \

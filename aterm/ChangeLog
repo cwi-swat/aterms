@@ -1,5 +1,8 @@
 $Id$
 
+Tue Dec 19 15:50:27 CET 2006 <eriks@win.tue.nl>
+ * ATermBlob header arity value changed from 1 to 2
+
 Mon Dec 18 11:53:00 CET 2006 <eriks@win.tue.nl>
  * Merged patches supplied by Martin Bravenboer:
    * test/randgen.c: random and srandom are optional POSIX extensions (aka XSI) and
