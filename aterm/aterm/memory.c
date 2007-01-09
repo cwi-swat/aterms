@@ -665,7 +665,7 @@ static void allocate_block(unsigned int size)
   at_blocks[size] = newblock;
   top_at_blocks[size] = newblock->data;
   assert(at_blocks[size] != NULL);
-  assert(((intptr_t)top_at_blocks[size] % MAX(sizeof(double), sizeof(void *))) == 0);
+  assert((((unsigned int) top_at_blocks[size]) % MAX(sizeof(double), sizeof(void *))) == 0);
   
     /* [pem: Feb 14 02] TODO: fast allocation */
   assert(at_freelist[size] == NULL);
