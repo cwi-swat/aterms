@@ -70,6 +70,11 @@ public interface ATerm
     public static final int AFUN = 7;
 
     /**
+     * A term of type LONG
+     */
+    public static final int LONG = 8;
+
+    /**
      * Gets the type of this term.
      * 
      * 
@@ -82,6 +87,7 @@ public interface ATerm
      * @see #PLACEHOLDER
      * @see #BLOB
      * @see #AFUN
+     * @see #LONG
      */
     public int getType();
 

@@ -12,6 +12,7 @@ import aterm.ATermAppl;
 import aterm.ATermBlob;
 import aterm.ATermFwdVoid;
 import aterm.ATermInt;
+import aterm.ATermLong;
 import aterm.ATermList;
 import aterm.ATermPlaceholder;
 import aterm.ATermReal;
@@ -140,6 +141,12 @@ class ATermWriter extends ATermFwdVoid {
 
     public void voidVisitInt(ATermInt i) throws VisitFailure {
       String txt = String.valueOf(i.getInt());
+      stream.write(txt);
+      position += txt.length();
+    }
+
+    public void voidVisitLong(ATermLong i) throws VisitFailure {
+      String txt = String.valueOf(i.getLong());
       stream.write(txt);
       position += txt.length();
     }

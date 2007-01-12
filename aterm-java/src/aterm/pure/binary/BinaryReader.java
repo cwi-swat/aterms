@@ -119,6 +119,9 @@ public class BinaryReader{
 					case ATerm.REAL:
 						touchReal();
 						break TYPECHECK;
+					case ATerm.LONG:
+						touchLong();
+						break TYPECHECK;
 					case ATerm.BLOB:
 						touchBlob();
 						break TYPECHECK;
@@ -313,6 +316,19 @@ public class BinaryReader{
 	}
 	
 	/**
+	 * Deserialializes a long.
+	 */
+	private void touchLong(){
+		long value = readLong();
+
+		ATermConstruct ac = stack[stackPosition];
+		ATerm term = factory.makeLong(value);
+		ac.term = term;
+
+		if(!ac.hasAnnos) linkTerm(term);
+	}
+	
+	/**
 	 * Starts the deserialization process for a BLOB.
 	 */
 	private void touchBlob(){
@@ -449,11 +465,15 @@ public class BinaryReader{
 	 * @return The reconstructed double.
 	 */
 	private double readDouble(){
+		long result = readLong();
+		return Double.longBitsToDouble(result);
+	}
+
+	private long readLong(){
 		long result = 0;
 		for(int i = 0; i < LONGBITS; i++){
 			result |= ((((long) currentBuffer.get()) & BYTEMASK) << (i * BYTEBITS));
 		}
-
-		return Double.longBitsToDouble(result);
+		return result;
 	}
 }

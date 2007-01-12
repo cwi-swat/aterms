@@ -203,6 +203,15 @@ public interface ATermFactory
   ATermInt makeInt(int val);
 
   /**
+   * Creates a new ATermLong object
+   *
+   * @param val the long value to be stored.
+   *
+   * @return the constructed ATermLong object.
+   */
+  ATermLong makeLong(long val);
+
+  /**
    * Creates a new ATermReal object
    *
    * @param val the double value to be stored.

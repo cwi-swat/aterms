@@ -26,6 +26,10 @@ public class ATermFwd implements aterm.Visitor {
         return visitATerm(arg);
     }
 
+    public aterm.Visitable visitLong(ATermLong arg) throws VisitFailure {
+        return visitATerm(arg);
+    }
+
     public aterm.Visitable visitReal(ATermReal arg) throws VisitFailure {
         return visitATerm(arg);
     }

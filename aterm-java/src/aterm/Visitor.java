@@ -8,6 +8,8 @@ public interface Visitor extends jjtraveler.Visitor {
 
 	public aterm.Visitable visitInt(ATermInt arg) throws VisitFailure;
 
+	public aterm.Visitable visitLong(ATermLong arg) throws VisitFailure;
+
 	public aterm.Visitable visitReal(ATermReal arg) throws VisitFailure;
 
 	public aterm.Visitable visitAppl(ATermAppl arg) throws VisitFailure;

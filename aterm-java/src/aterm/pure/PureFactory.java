@@ -40,6 +40,7 @@ import aterm.ATermAppl;
 import aterm.ATermBlob;
 import aterm.ATermFactory;
 import aterm.ATermInt;
+import aterm.ATermLong;
 import aterm.ATermList;
 import aterm.ATermPlaceholder;
 import aterm.ATermReal;
@@ -54,6 +55,8 @@ public class PureFactory extends SharedObjectFactory implements ATermFactory {
   private ATermApplImpl protoAppl;
 
   private ATermIntImpl protoInt;
+
+  private ATermLongImpl protoLong;
 
   private ATermRealImpl protoReal;
 
@@ -94,6 +97,7 @@ public class PureFactory extends SharedObjectFactory implements ATermFactory {
     protoList = new ATermListImpl(this);
     protoAppl = new ATermApplImpl(this);
     protoInt = new ATermIntImpl(this);
+    protoLong = new ATermLongImpl(this);
     protoReal = new ATermRealImpl(this);
     protoBlob = new ATermBlobImpl(this);
     protoPlaceholder = new ATermPlaceholderImpl(this);
@@ -113,6 +117,10 @@ public class PureFactory extends SharedObjectFactory implements ATermFactory {
 
   public ATermInt makeInt(int val) {
     return makeInt(val, empty);
+  }
+
+  public ATermLong makeLong(long val) {
+    return makeLong(val, empty);
   }
 
   public ATermReal makeReal(double val) {
@@ -150,6 +158,13 @@ public class PureFactory extends SharedObjectFactory implements ATermFactory {
     synchronized (protoInt) {
       protoInt.initHashCode(annos, value);
       return (ATermInt) build(protoInt);
+    }
+  }
+
+  public ATermLong makeLong(long value, ATermList annos) {
+    synchronized (protoInt) {
+      protoLong.initHashCode(annos, value);
+      return (ATermLong) build(protoLong);
     }
   }
 
@@ -311,7 +326,8 @@ public class PureFactory extends SharedObjectFactory implements ATermFactory {
     } while (Character.isDigit(reader.read()));
 
     if (reader.getLastChar() != '.' && reader.getLastChar() != 'e'
-        && reader.getLastChar() != 'E') {
+        && reader.getLastChar() != 'E' && reader.getLastChar() != 'l'
+        && reader.getLastChar() != 'L') {
       int val;
       try {
         val = Integer.parseInt(str.toString());
@@ -319,6 +335,14 @@ public class PureFactory extends SharedObjectFactory implements ATermFactory {
         throw new ParseError("malformed int");
       }
       result = makeInt(val);
+    } else if (reader.getLastChar() == 'l' || reader.getLastChar() == 'L') {
+      long val;
+      try {
+        val = Long.parseLong(str.toString());
+      } catch (NumberFormatException e) {
+        throw new ParseError("malformed long");
+      }
+      result = makeLong(val);
     } else {
       if (reader.getLastChar() == '.') {
         str.append('.');

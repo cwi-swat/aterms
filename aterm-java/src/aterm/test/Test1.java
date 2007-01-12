@@ -57,6 +57,32 @@ public class Test1 {
     
     System.out.println("pass: testMakeInt");
   }
+  
+  public void testMakeLong() {
+    ATermLong[] term = new ATermLong[2];
+
+    term[0] = factory.makeLong(3);
+    term[1] = factory.makeLong(3);
+
+    assertTrue(term[0].getType() == ATerm.LONG);
+    assertTrue(term[0].getLong() == 3);
+    assertTrue(term[0] == term[1]);
+
+    assertTrue(term[0].toString().equals("3"));
+
+    List result;
+
+    result = term[0].match("3L");
+    assertTrue(result != null);
+    assertTrue(result.size() == 0);
+
+    result = term[0].match("<long>");
+    assertTrue(result != null);
+    assertTrue(result.size() == 1);
+    assertTrue(result.get(0).equals(new Long(3)));
+    
+    System.out.println("pass: testMakeLong");
+  }
 
   public void testMakeReal() {
     ATermReal[] term = new ATermReal[2];
@@ -546,6 +572,7 @@ public class Test1 {
   public void testAll() {
 
     testMakeInt();
+    testMakeLong();
     testMakeReal();
     testMakeAppl();
       //testParser();

@@ -1,5 +1,10 @@
 # $Id$
 
+2007-01-12 <moreau,reilles@loria.fr>
+  * added the ATermLong type
+  * added a test for ATermLong
+  * added the constant LONG=8
+
 Thu Dec 14 3:25:00 CEST 2006 <lankamp@cwi.nl>
   * Fixed a bug in the BinaryWriter that caused problems with negative integers.
   * Added a test for the BinaryWriter that checks if negative integers are serialized correctly.

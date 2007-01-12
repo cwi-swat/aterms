@@ -11,6 +11,7 @@ import aterm.ATermAppl;
 import aterm.ATermBlob;
 import aterm.ATermFwdVoid;
 import aterm.ATermInt;
+import aterm.ATermLong;
 import aterm.ATermList;
 import aterm.ATermPlaceholder;
 import aterm.ATermReal;
@@ -336,6 +337,19 @@ public class BinaryWriter extends ATermFwdVoid{
 	}
 
 	/**
+	 * Serializes the given long.
+	 * 
+	 * @see aterm.ATermFwdVoid#voidVisitLong(ATermLong)
+	 * @throws VisitFailure
+	 *             Never thrown.
+	 */
+	public void voidVisitLong(ATermLong arg) throws VisitFailure {
+		currentBuffer.put(getHeader(arg));
+
+		writeLong(arg.getLong());
+	}
+
+	/**
 	 * Serializes the given list. List information will always be serialized in one piece.
 	 * 
 	 * @see aterm.ATermFwdVoid#voidVisitList(ATermList)
@@ -411,8 +425,12 @@ public class BinaryWriter extends ATermFwdVoid{
 	 */
 	private void writeDouble(double value){
 		long longValue = Double.doubleToLongBits(value);
+		writeLong(longValue);
+	}
+
+	private void writeLong(long value){
 		for(int i = 0; i < LONGBITS; i++){
-			currentBuffer.put((byte) (longValue >>> (i * 8)));
+			currentBuffer.put((byte) (value >>> (i * 8)));
 		}
 	}
 }

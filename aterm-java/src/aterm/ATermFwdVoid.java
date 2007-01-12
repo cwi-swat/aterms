@@ -24,6 +24,11 @@ public class ATermFwdVoid implements aterm.Visitor {
         return arg;
     }
 
+    public aterm.Visitable visitLong(ATermLong arg) throws VisitFailure {
+        voidVisitLong(arg);
+        return arg;
+    }
+
     public aterm.Visitable visitReal(ATermReal arg) throws VisitFailure {
         voidVisitReal(arg);
         return arg;
@@ -60,6 +65,10 @@ public class ATermFwdVoid implements aterm.Visitor {
     }
 
     public void voidVisitInt(ATermInt arg) throws VisitFailure {
+        voidVisitATerm(arg);
+    }
+
+    public void voidVisitLong(ATermLong arg) throws VisitFailure {
         voidVisitATerm(arg);
     }
 
