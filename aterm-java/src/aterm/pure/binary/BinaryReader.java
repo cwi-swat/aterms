@@ -19,9 +19,9 @@ import aterm.pure.binary.BinaryWriter.ApplSignature;
  * For example (yes I know this code is crappy, but it's simple):<blockquote><pre>
  * ByteBuffer buffer = ByteBuffer.allocate(8192);
  BinaryWriter bw = new BinaryWriter(aterm);
- while(!bw.isDone()){
+ while(!bw.isDone()) {
    int bytesRead = channel.read(buffer); // Read the next chunk of data from the stream.
-   if(!buffer.hasRemaining() || bytesRead == -1){
+   if(!buffer.hasRemaining() || bytesRead == -1) {
      bw.serialize(buffer);
      buffer.clear();
    }
@@ -30,7 +30,7 @@ import aterm.pure.binary.BinaryWriter.ApplSignature;
  * 
  * @author Arnold Lankamp
  */
-public class BinaryReader{
+public class BinaryReader {
 	private final static byte ISSHAREDFLAG = -128;
 	private final static byte TYPEMASK = 15;
 	private final static byte ANNOSFLAG = 16;
@@ -62,7 +62,7 @@ public class BinaryReader{
 	 * @param factory
 	 *            The factory to use for reconstruction of the ATerm.
 	 */
-	public BinaryReader(PureFactory factory){
+	public BinaryReader(PureFactory factory) {
 		super();
 
 		this.factory = factory;
@@ -81,21 +81,21 @@ public class BinaryReader{
 	 * @param buffer
 	 *            The buffer that contains (a part of) the binary representation of the ATerm.
 	 */
-	public void deserialize(ByteBuffer buffer){
+	public void deserialize(ByteBuffer buffer) {
 		currentBuffer = buffer;
 		
 		if(tempType != -1) readData();
 
-		while(buffer.hasRemaining()){
+		while(buffer.hasRemaining()) {
 			byte header = buffer.get();
 
-			if((header & ISSHAREDFLAG) == ISSHAREDFLAG){
+			if((header & ISSHAREDFLAG) == ISSHAREDFLAG) {
 				ATermConstruct ac = sharedTerms.get(readInt());
 				stack[++stackPosition] = ac;
 				ATerm term = ac.term;
 
 				linkTerm(term);
-			}else{
+			} else {
 				int type = (header & TYPEMASK);
 
 				ATermConstruct ac = new ATermConstruct();
@@ -106,7 +106,7 @@ public class BinaryReader{
 
 				stack[++stackPosition] = ac;
 
-				TYPECHECK: switch(type){
+				TYPECHECK: switch(type) {
 					case ATerm.APPL:
 						touchAppl(header);
 						break TYPECHECK;
@@ -142,9 +142,9 @@ public class BinaryReader{
 	 * Resizes the stack when needed. When we're running low on stack space the capacity will be
 	 * doubled.
 	 */
-	private void ensureStackCapacity(){
+	private void ensureStackCapacity() {
 		int stackSize = stack.length;
-		if(stackPosition + 1 == stackSize){
+		if(stackPosition + 1 == stackSize) {
 			ATermConstruct[] newStack = new ATermConstruct[(stackSize << 1)];
 			System.arraycopy(stack, 0, newStack, 0, stack.length);
 			stack = newStack;
@@ -156,7 +156,7 @@ public class BinaryReader{
 	 * 
 	 * @return True if we are done; false otherwise.
 	 */
-	public boolean isDone(){
+	public boolean isDone() {
 		return isDone;
 	}
 
@@ -166,7 +166,7 @@ public class BinaryReader{
 	 * 
 	 * @return The reconstructed ATerm.
 	 */
-	public ATerm getRoot(){
+	public ATerm getRoot() {
 		if(!isDone) throw new RuntimeException("Can't retrieve the root of the tree while it's still being constructed.");
 
 		return sharedTerms.get(0).term;
@@ -175,7 +175,7 @@ public class BinaryReader{
 	/**
 	 * Resets the temporary data. We don't want to hold it if it's not nessecarry.
 	 */
-	private void resetTemp(){
+	private void resetTemp() {
 		tempType = -1;
 		tempBytes = null;
 		tempBytesIndex = 0;
@@ -185,7 +185,7 @@ public class BinaryReader{
 	 * Reads a series of bytes from the buffer. When the nessecary amount of bytes is read a term
 	 * of the corresponding type will be constructed and (if possible) linked with it's parent.
 	 */
-	private void readData(){
+	private void readData() {
 		int length = tempBytes.length;
 		int bytesToRead = (length - tempBytesIndex);
 		int remaining = currentBuffer.remaining();
@@ -194,8 +194,8 @@ public class BinaryReader{
 		currentBuffer.get(tempBytes, tempBytesIndex, bytesToRead);
 		tempBytesIndex += bytesToRead;
 		
-		if(tempBytesIndex == length){
-			if(tempType == ATerm.APPL){
+		if(tempBytesIndex == length) {
+			if(tempType == ATerm.APPL) {
 				ATermConstruct ac = stack[stackPosition];
 				AFun fun = ((ATermAppl) ac.term).getAFun();
 				
@@ -214,13 +214,13 @@ public class BinaryReader{
 				applSignatures.add(as);
 				
 				if(arity == 0 && !ac.hasAnnos) linkTerm(term);
-			}else if(tempType == ATerm.BLOB){
+			}else if(tempType == ATerm.BLOB) {
 				ATermConstruct ac = stack[stackPosition];
 				ATerm term = factory.makeBlob(tempBytes);
 				ac.term = term;
 
 				if(!ac.hasAnnos) linkTerm(term);
-			}else{
+			} else {
 				throw new RuntimeException("Unsupported chunkified type: "+tempType);
 			}
 			
@@ -234,11 +234,11 @@ public class BinaryReader{
 	 * @param header
 	 *            The header of the appl.
 	 */
-	private void touchAppl(byte header){
+	private void touchAppl(byte header) {
 		int arity = 0;
 		boolean isQuoted = false;
 		String name = "";
-		if((header & APPLSIGNATURESHARED) == APPLSIGNATURESHARED){
+		if((header & APPLSIGNATURESHARED) == APPLSIGNATURESHARED) {
 			int key = readInt();
 
 			ApplSignature as = applSignatures.get(key);
@@ -251,10 +251,10 @@ public class BinaryReader{
 			ATerm term = factory.makeAppl(factory.makeAFun(name, arity, isQuoted));
 			ac.term = term;
 			
-			if(arity == 0 && !ac.hasAnnos){
+			if(arity == 0 && !ac.hasAnnos) {
 				linkTerm(term);
 			}
-		}else{
+		} else {
 			isQuoted = ((header & APPLQUOTED) == APPLQUOTED);
 			arity = readInt();
 			int nameLength = readInt();
@@ -275,13 +275,13 @@ public class BinaryReader{
 	/**
 	 * Deserialializes a list.
 	 */
-	private void touchList(){
+	private void touchList() {
 		int size = readInt();
 
 		ATermConstruct ac = stack[stackPosition];
 		ac.subTerms = new ATerm[size];
 
-		if(size == 0){
+		if(size == 0) {
 			ATerm term = factory.makeList();
 			ac.term = term;
 
@@ -292,7 +292,7 @@ public class BinaryReader{
 	/**
 	 * Deserialializes an int.
 	 */
-	private void touchInt(){
+	private void touchInt() {
 		int value = readInt();
 
 		ATermConstruct ac = stack[stackPosition];
@@ -305,7 +305,7 @@ public class BinaryReader{
 	/**
 	 * Deserialializes a real.
 	 */
-	private void touchReal(){
+	private void touchReal() {
 		double value = readDouble();
 
 		ATermConstruct ac = stack[stackPosition];
@@ -318,7 +318,7 @@ public class BinaryReader{
 	/**
 	 * Deserialializes a long.
 	 */
-	private void touchLong(){
+	private void touchLong() {
 		long value = readLong();
 
 		ATermConstruct ac = stack[stackPosition];
@@ -331,7 +331,7 @@ public class BinaryReader{
 	/**
 	 * Starts the deserialization process for a BLOB.
 	 */
-	private void touchBlob(){
+	private void touchBlob() {
 		int length = readInt();
 		
 		tempType = ATerm.BLOB;
@@ -344,7 +344,7 @@ public class BinaryReader{
 	/**
 	 * Deserialializes a placeholder.
 	 */
-	private void touchPlaceholder(){
+	private void touchPlaceholder() {
 		// A placeholder doesn't have content
 
 		ATermConstruct ac = stack[stackPosition];
@@ -357,8 +357,8 @@ public class BinaryReader{
 	 * @param term
 	 *            The term that needs to be linked.
 	 */
-	private void linkTerm(ATerm term){
-		if(stackPosition == 0){
+	private void linkTerm(ATerm term) {
+		if(stackPosition == 0) {
 			isDone = true;
 			return;
 		}
@@ -369,38 +369,38 @@ public class BinaryReader{
 
 		ATerm[] subTerms = ac.subTerms;
 		boolean hasAnnos = ac.hasAnnos;
-		if(subTerms != null && subTerms.length > ac.subTermIndex){
+		if(subTerms != null && subTerms.length > ac.subTermIndex) {
 			subTerms[ac.subTermIndex++] = term;
 
-			if(subTerms.length == ac.subTermIndex && !hasAnnos){
+			if(subTerms.length == ac.subTermIndex && !hasAnnos) {
 				ac.annos = factory.makeList();
 
 				fullyConstructed = true;
 			}
-		}else if(hasAnnos && (term instanceof ATermList)){
+		}else if(hasAnnos && (term instanceof ATermList)) {
 			ac.annos = (ATermList) term;
 			ac.term = ac.term.setAnnotations(ac.annos);
 
 			fullyConstructed = true;
-		}else{
+		} else {
 			throw new RuntimeException("Encountered a term that didn't fit anywhere. Type: " + term.getType());
 		}
 
-		if(fullyConstructed){
+		if(fullyConstructed) {
 			int type = ac.type;
-			if(type == ATerm.APPL){
+			if(type == ATerm.APPL) {
 				ATermApplImpl appl = (ATermApplImpl) ac.term;
 				ac.term = factory.makeAppl(appl.getAFun(), subTerms, ac.annos);
-			}else if(type == ATerm.LIST){
+			}else if(type == ATerm.LIST) {
 				ATermList list = factory.makeList();
-				for(int i = subTerms.length -1; i >= 0; i--){
+				for(int i = subTerms.length -1; i >= 0; i--) {
 					list = factory.makeList(subTerms[i], list);
 				}
 
 				if(hasAnnos) list = (ATermList) list.setAnnotations(ac.annos);
 
 				ac.term = list;
-			}else if(type == ATerm.PLACEHOLDER){
+			}else if(type == ATerm.PLACEHOLDER) {
 				ATerm placeholder = factory.makePlaceholder(subTerms[0]);
 
 				ac.term = placeholder;
@@ -416,7 +416,7 @@ public class BinaryReader{
 	 * 
 	 * @author Arnold Lankamp
 	 */
-	private static class ATermConstruct{
+	private static class ATermConstruct {
 		public int type;
 
 		public ATerm term = null;
@@ -441,12 +441,12 @@ public class BinaryReader{
 	 * 
 	 * @return The reconstructed integer.
 	 */
-	private int readInt(){
+	private int readInt() {
 		int result = 0;
 
 		boolean signed = false;
 		int i = 0;
-		do{
+		do {
 			byte part = currentBuffer.get();
 
 			result |= ((part & SEVENBITS) << i);
@@ -454,7 +454,7 @@ public class BinaryReader{
 			signed = ((part & SIGNBYTE) == SIGNBYTE);
 
 			i += 7;
-		}while(signed);
+		} while(signed);
 
 		return result;
 	}
@@ -464,14 +464,14 @@ public class BinaryReader{
 	 * 
 	 * @return The reconstructed double.
 	 */
-	private double readDouble(){
+	private double readDouble() {
 		long result = readLong();
 		return Double.longBitsToDouble(result);
 	}
 
-	private long readLong(){
+	private long readLong() {
 		long result = 0;
-		for(int i = 0; i < LONGBITS; i++){
+		for(int i = 0; i < LONGBITS; i++) {
 			result |= ((((long) currentBuffer.get()) & BYTEMASK) << (i * BYTEBITS));
 		}
 		return result;
