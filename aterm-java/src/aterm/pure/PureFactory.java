@@ -336,6 +336,7 @@ public class PureFactory extends SharedObjectFactory implements ATermFactory {
       }
       result = makeInt(val);
     } else if (reader.getLastChar() == 'l' || reader.getLastChar() == 'L') {
+      reader.read();
       long val;
       try {
         val = Long.parseLong(str.toString());
