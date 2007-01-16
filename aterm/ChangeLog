@@ -4,6 +4,7 @@ Tue Jan 16 13:52:13 CET 2007 <kooiker@cwi.nl>
  * aterm/aterm1.h:
    - Add convenience macro ATprotectTerm to circumvent gcc's (correct) warning: 
      "dereferencing type-punned pointer will break strict-aliasing rules"
+   - Add macro's for ATunprotectXXX
 
 Tue Dec 19 15:50:27 CET 2006 <eriks@win.tue.nl>
  * ATermBlob header arity value changed from 1 to 2
