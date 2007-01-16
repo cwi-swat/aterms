@@ -124,13 +124,6 @@ void ATunprotectArray(ATerm *start);
 #define ATprotectInt(p) ATprotect((ATerm *)(void *)(p))
 #define ATprotectReal(p) ATprotect((ATerm *)(void *)(p))
 
-#define ATprotectArrayTerm(p, size) ATprotectArray((ATerm *)(void *)(p), size)
-#define ATprotectArrayList(p, size) ATprotectArray((ATerm *)(void *)(p), size)
-#define ATprotectArrayAppl(p, size) ATprotectArray((ATerm *)(void *)(p), size)
-#define ATprotectArrayPlaceholder(p, size) ATprotectArray((ATerm *)(void *)(p), size)
-#define ATprotectArrayInt(p, size) ATprotectArray((ATerm *)(void *)(p), size)
-#define ATprotectArrayReal(p, size) ATprotectArray((ATerm *)(void *)(p), size)
-
 /**
   * We also define some functions that are specific
   * for the C implementation of ATerms, but are part
