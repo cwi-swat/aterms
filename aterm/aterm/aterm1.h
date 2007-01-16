@@ -117,6 +117,7 @@ void ATunprotectArray(ATerm *start);
  *   "dereferencing type-punned pointer will break strict-aliasing rules"
  * example usage: ATprotectList(&ATempty);
  */
+#define ATprotectTerm(p) ATprotect((ATerm *)(void *)(p))
 #define ATprotectList(p) ATprotect((ATerm *)(void *)(p))
 #define ATprotectAppl(p) ATprotect((ATerm *)(void *)(p))
 #define ATprotectPlaceholder(p) ATprotect((ATerm *)(void *)(p))
