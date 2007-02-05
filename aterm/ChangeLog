@@ -1,5 +1,12 @@
 $Id$
 
+Mon Feb 5 11:34:12 CET 2007 <eriks@win.tue.nl>
+ * aterm/tafio.c: 
+     When writing an APPL with empty symbol and arity 0, write "()" instead 
+     of nothing. Also fixed an off by 1 error in counting the file size
+     when writing.
+   Closes bug #677
+
 Tue Jan 16 13:52:13 CET 2007 <kooiker@cwi.nl>
  * aterm/aterm1.h:
    - Add convenience macro ATprotectTerm to circumvent gcc's (correct) warning: 
