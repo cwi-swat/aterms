@@ -28,7 +28,15 @@ if [ "a${JAR}" = "atrue" ]; then
     CLASSES=`echo ${FILES} | sed -e 's/.java/.class/g'`
     JARFILE=${APINAME}-${VERSION}.jar
     javac -source 1.4 -target 1.5 -classpath ${DIRECTORY}:${CLASSPATH} ${FILES}
-    jar cf ${JARFILE} ${CLASSES}
+
+    SOURCES=""
+    for f in ${FILES}; do
+      mkdir -p src/`dirname $f`
+      cp $f src/`dirname $f`
+      SOURCES="src/$f ${SOURCES}"
+    done
+
+    jar cf ${JARFILE} ${CLASSES} ${SOURCES}
 
     rm -f ${PARAMS}
   fi
