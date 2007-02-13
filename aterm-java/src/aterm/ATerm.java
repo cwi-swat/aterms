@@ -37,17 +37,17 @@ public interface ATerm
     /**
      * A term of type INT
      */
-    public static final int INT = 1;
+    public static final int INT = 2;
 
     /**
      * A term of type REAL
      */
-    public static final int REAL = 2;
+    public static final int REAL = 3;
 
     /**
      * A term of type APPL (function application)
      */
-    public static final int APPL = 3;
+    public static final int APPL = 1;
 
     /**
      * A term of type LIST
