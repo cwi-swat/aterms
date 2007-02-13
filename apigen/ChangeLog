@@ -1,5 +1,10 @@
 # $Id$
 
+Tue Feb 13 14:03:33 CET 2007 <jurgenv@cwi.nl>
+ * scripts/adt-to-java.src: adding source files to jar, such that browsing
+   of the API in Eclipse is easier. TODO: generate javadoc for the Java
+   generated code.
+
 2006-12-14    <storm@cwi.nl>
  * scripts/adt-to-java.src: added "-source 1.4 -target 1.5" options to
  javac invocation to be able to actually compile java apis. (Although
