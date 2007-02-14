@@ -39,5 +39,6 @@ if [ "a${JAR}" = "atrue" ]; then
     jar cf ${JARFILE} ${CLASSES} ${SOURCES}
 
     rm -f ${PARAMS}
+    rm -rf ${SOURCES}
   fi
 fi
