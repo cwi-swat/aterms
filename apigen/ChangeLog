@@ -10,7 +10,6 @@ Tue Feb 13 14:03:33 CET 2007 <jurgenv@cwi.nl>
  javac invocation to be able to actually compile java apis. (Although
  javac shows only warnings, I get no classes.)
 
-
 Tue Oct  3 11:36:50 CEST 2006 <kooiker@cwi.nl>
  * scripts/adt-to-c.src:
    - Missing space before ] in if expression
