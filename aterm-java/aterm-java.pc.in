@@ -3,7 +3,7 @@ Maintainers=moreau@loria.fr,jurgenv@cwi.nl
 
 Name: aterm-java
 Description: Java version of the ATerm library
-Version: 1.6.3
+Version: 1.6.4
 Requires: shared-objects,JJTraveler
 JarFile=aterm-java.jar
 Jars=${prefix}/share/${JarFile}
