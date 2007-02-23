@@ -7,4 +7,4 @@ Packages=shared
 
 Name: shared-objects
 Description: A factory for maximal sharing of object instances
-Version: 1.4.3
+Version: 1.4.4
