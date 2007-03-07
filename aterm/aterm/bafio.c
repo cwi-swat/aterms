@@ -1511,6 +1511,8 @@ static void free_read_space()
       free(entry->topsyms[j]);
     if(entry->topsyms)
       free(entry->topsyms);
+    
+    ATunprotectSymbol(entry->sym);
   }
   free(read_symbols);
 }
