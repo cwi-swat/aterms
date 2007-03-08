@@ -2,11 +2,14 @@ package apigen.gen.c;
 
 import java.io.IOException;
 import java.util.Iterator;
-import apigen.adt.*;
+
+import apigen.adt.ADT;
 import apigen.gen.GenerationParameters;
 import apigen.gen.Generator;
-import apigen.gen.StringConversions;
-import aterm.*;
+import aterm.AFun;
+import aterm.ATerm;
+import aterm.ATermFactory;
+import aterm.ATermList;
 
 public class CDictionaryGenerator extends Generator {
 	private ADT adt;
@@ -39,36 +42,9 @@ public class CDictionaryGenerator extends Generator {
 
 	private ATerm buildDictionary(ADT adt) {
 		ATermList afun_list = makeAFunList();
-		ATermList term_list = makeTermList(adt);
-
-		return factory.make("[afuns(<term>),terms(<term>)]", afun_list, term_list);
-	}
-
-	private ATermList makeTermList(ADT adt) {
 		ATermList term_list = factory.makeList();
 
-		Iterator types = adt.typeIterator();
-		while (types.hasNext()) {
-			Type type = (Type) types.next();
-			Iterator alts = type.alternativeIterator();
-			while (alts.hasNext()) {
-				Alternative alt = (Alternative) alts.next();
-				ATerm entry = makeDictEntry(type, alt);
-				term_list = factory.makeList(entry, term_list);
-			}
-		}
-		return term_list;
-	}
-
-	private ATerm makeDictEntry(Type type, Alternative alt) {
-		String prefix = getGenerationParameters().getPrefix();
-		return factory.make(
-			"[<appl>,<term>]",
-			prefix
-				+ "pattern"
-				+ StringConversions.makeIdentifier(type.getId())
-				+ StringConversions.makeCapitalizedIdentifier(alt.getId()),
-			alt.buildMatchPattern());
+		return factory.make("[afuns(<term>),terms(<term>)]", afun_list, term_list);
 	}
 
 	private ATermList makeAFunList() {

@@ -20,7 +20,7 @@ public class Alternative {
 		this.pattern = pattern;
 	}
 
-	protected static boolean containsPlaceholder(ATerm term) {
+	public static boolean containsPlaceholder(ATerm term) {
 		switch (term.getType()) {
 			case ATerm.PLACEHOLDER :
 				return true;

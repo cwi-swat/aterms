@@ -1,5 +1,49 @@
 # $Id$
 
+Thu Mar  8 15:48:59 CET 2007 <{kooiker,economop,jurgenv}@cwi.nl>
+ * src/apigen/gen/src/CDictionaryGenerator.java: fixed a small
+   bug with generating code for matching builtin data-types
+ * refactored the code again
+ * removed superfluous generation of aterm patterns again
+ *  src/apigen/gen/src/CDictionaryGenerator.java: added constant detection,
+    but it does not work if there are annotations on the terms that are
+    matched.
+
+Thu Mar  8 11:15:59 CET 2007 <jurgenv@cwi.nl>
+ * src/apigen/gen/src/CDictionaryGenerator.java: removed superfluous
+   generation of aterm patterns.
+ * src/apigen/gen/src/APIGenerator.java: fixed small bug in
+     getSeparatedListLength generator.
+
+Thu Mar  8 10:46:19 CET 2007 <jurgenv@cwi.nl>
+ * src/apigen/gen/src/APIGenerator.java: fixed a number of small bugs in the
+   isAlt generator concerning lists.
+
+Thu Mar  1 18:38:59 CET 2007 <economop@cwi.nl>
+ * src/apigen/gen/c/APIGenerator.java: generated macros for the isEqualsApi.
+
+Thu Mar  1 18:00:49 CET 2007 <economop@cwi.nl>
+ * src/apigen/gen/c/APIGenerator.java: generated more macros for the
+   genListApi.
+
+Thu Mar  1 12:06:31 CET 2007 <economop@cwi.nl>
+ * src/apigen/gen/c/APIGenerator.java: in the process of generating macros.
+
+Fri Feb 16 14:22:11 CET 2007 <economop@cwi.nl>
+ * src/apigen/gen/c/APIGenerator.java: Removed debug code and only generate
+   the optimized inspector functions. This accounts for about a 28%
+   improvement in the performance of the sglr-refactored branch.
+
+Fri Feb 16 14:09:43 CET 2007 <economop@cwi.nl>
+ * src/apigen/gen/c/APIGenerator.java: Added new implementation of the
+   inspector function generator that calls both the original and the optimized
+   versions of the code. This can be used to ensure that the optimized code
+   returns the same result as the original.
+
+Fri Feb 16 13:35:56 CET 2007 <economop@cwi.nl>
+ * Created and added this ChangeLog to make the merge with trunk easier.
+ * Initialized merge tracking via "svnmerge" with revisions "1-21366" from 
+   svn+ssh://economop@svn.cwi.nl/apigen/trunk
 Tue Feb 13 14:03:33 CET 2007 <jurgenv@cwi.nl>
  * scripts/adt-to-java.src: adding source files to jar, such that browsing
    of the API in Eclipse is easier. TODO: generate javadoc for the Java
@@ -25,16 +69,11 @@ Mon Oct  2 13:33:48 CEST 2006 <kooiker@cwi.nl>
    - Use TypeGenerator to compute classname from type (closes #400)
 
 Thu Jul 27 15:51:53 CEST 2006 <martin.bravenboer@gmail.com>
-
  * lib-1.0: removed
-	
  * lib-2.0: removed (library was installed with same name as
    lib-3.0!)
-	
  * lib-3.0: renamed to lib.
-
  * lib/Makefile.am: build libtool library
-	
  * utils/upgrade-adt.c: removed
 
 Wed Jun 28 10:35:57 CEST 2006 <jurgenv@cwi.nl>

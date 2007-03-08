@@ -48,6 +48,20 @@ abstract public class CGenerator extends Generator {
 	public void hprintln() {
 		headerStream.println();
 	}
+	
+	/**
+	 * Print a line to the header file
+	 * 
+	 * @param msg
+	 */
+	public void hprintFunDecl(String returnType, String funName, String funArgs, String macroReplacementStr, String macroArgs) {
+		headerStream.println("#ifdef FAST_API");
+		headerStream.println("#define " + funName + macroArgs + " (" + macroReplacementStr + ")");
+		headerStream.println("#else");
+		headerStream.println(returnType + " _" + funName + funArgs + ";");
+		headerStream.println("#define " + funName + macroArgs + " (_" + funName + macroArgs + ")");
+		headerStream.println("#endif");
+	}
 
 	/**
 	 * Print a line to the header file
@@ -57,7 +71,7 @@ abstract public class CGenerator extends Generator {
 	public void hprintln(String msg) {
 		headerStream.println(msg);
 	}
-
+	
 	/**
 	 * Print a message to the header file
 	 * 
