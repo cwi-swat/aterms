@@ -16,8 +16,35 @@ Tue Jan 16 13:52:13 CET 2007 <kooiker@cwi.nl>
      "dereferencing type-punned pointer will break strict-aliasing rules"
    - Add macro's for ATunprotectXXX
 
+Thu Dec 21 11:07:21 CET 2006 <eriks@win.tue.nl>
+ * All dynamic arrays that depend on the maximum arity have been combined into a single
+   structure.
+
 Tue Dec 19 15:50:27 CET 2006 <eriks@win.tue.nl>
  * ATermBlob header arity value changed from 1 to 2
+
+Tue Dec 19 12:41:38 CET 2006 <eriks@win.tue.nl>
+ * MAX_ARITY redefined as the absolute maximum arity possible (that fits in the header)
+ * Administrative arrays will not grow more than needed in low_memory situation.
+ * MARK_STACK_MARGE uses dynamic maximum arity
+ * Removed use of MAX_ARITY from test/randgen.c
+
+Mon Dec 18 23:17:00 CET 2006 <eriks@win.tue.nl>
+ * Replaced static arrays in memory.c with dynamically growing arrays
+ * Added option -at-termsize to set initial maximum term size
+
+Mon Dec 18 12:02:00 CET 2006 <eriks@win.tue.nl>
+ * Removed static protoTerm array
+    This array had a fixed size, based on MAX_ARITY. Ultimately, we want to remove MAX_ARITY altogether. 
+    Removal of this static array is the first step.
+ * Moved hashvalue calculation into functions that can quicly calculate the hash instead of calling hash_number()
+ * Removed HASHPEM
+    Since we now use inline hashing in most functions, HASHPEM cannot be used anymore.
+ * Added a temporary ATerm array used by ATmakeAppl() and ATmakeList() that automatically grows when needed 
+   and is destroyed in low memory situations
+    In ATmakeAppl() this replaces the use of the protoTerm array, in ATmakeList() it replaces a local temporary
+    array.
+ * Converted tabs to whitespace
 
 Mon Dec 18 11:53:00 CET 2006 <eriks@win.tue.nl>
  * Merged patches supplied by Martin Bravenboer:

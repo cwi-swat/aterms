@@ -46,7 +46,7 @@ static AFun  *symbols;
 
 ATerm genterm(ATerm t)
 {
-  ATerm args[MAX_ARITY];
+  ATerm *args;
   int i, arity, index, maxarity, todo;
   static int next_leave = 0;
 
@@ -70,9 +70,9 @@ ATerm genterm(ATerm t)
   arity = 1+(lrand48() % (maxarity-1));
 
   /*arity = lrand48() % nr_symbols;*/
-
-  for(i=0; i<arity; i++)
-    args[i] = NULL;
+  
+  args = (ATerm*)calloc(arity, sizeof(ATerm));
+  ATprotectArray(args, arity);
 
   /* Place the input term */
   args[lrand48() % arity] = t;
@@ -90,7 +90,8 @@ ATerm genterm(ATerm t)
 
     if((term_count+open+1) < nr_terms && ((lrand48()%100) < magic_perc)) {
       args[index] = genterm(NULL);
-    } else {
+    } 
+    else {
       if(unique_leaves)
 	args[index] = (ATerm)ATmakeInt(next_leave++);
       else
@@ -100,7 +101,13 @@ ATerm genterm(ATerm t)
     open--;
   }
   term_count++;
-  return (ATerm)ATmakeApplArray(symbols[arity], args);
+  
+  ATerm result = (ATerm)ATmakeApplArray(symbols[arity], args);
+  
+  ATunprotectArray(args);
+  free(args);
+  
+  return result;
 }
 
 /*}}}  */

@@ -451,7 +451,7 @@ void AT_freeSymbol(SymEntry sym)
 {
   ShortHashNumber hnr;
 
-  nb_reclaimed_cells_during_last_gc[TERM_SIZE_SYMBOL]++;
+  terminfo[TERM_SIZE_SYMBOL].nb_reclaimed_cells_during_last_gc++;
   
   assert(sym->name);
 
