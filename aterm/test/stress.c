@@ -23,7 +23,7 @@
 #  include "config.h"
 #endif
 
-#if __STDC_VERSION__ >= 199901L || !HAVE_STRDUP
+#if !HAVE_STRDUP
 static char* strdup(char* str)
 {
   size_t size = strlen(str)+1;
