@@ -24,6 +24,7 @@
 #endif
 
 #if !HAVE_STRDUP
+# ifndef strdup
 static char* strdup(char* str)
 {
   size_t size = strlen(str)+1;
@@ -31,6 +32,7 @@ static char* strdup(char* str)
   memcpy(buf, str, size);
   return buf;
 }
+# endif
 #endif
 
 /*{{{  defines */

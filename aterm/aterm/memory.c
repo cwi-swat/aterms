@@ -51,8 +51,6 @@
 #define COMBINE(hnr,w) ((hnr)<<1 ^ (hnr)>>1 ^ HN(FOLD(w)))
 #define FINISH(hnr)    (hnr)
 
-//#define HASHINT(val)   FINISH(COMBINE(START( (AT_INT<<SHIFT_TYPE) ), val))
-
 #define CHECK_TERM(t) \
   assert((t) != NULL \
          && (!at_check || (AT_isValidTerm(t) && "term is invalid")))
