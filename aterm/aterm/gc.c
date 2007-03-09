@@ -291,13 +291,13 @@ VOIDCDECL mark_phase()
   r_ebp = 0;
 
 #else
-  sigjmp_buf env;
+  jmp_buf env;
 
   /* Traverse possible register variables */
-  sigsetjmp(env,0);
+  setjmp(env);
 
   start = (ATerm *)((char *)env);
-  stop  = ((ATerm *)(((char *)env) + sizeof(sigjmp_buf)));
+  stop  = ((ATerm *)(((char *)env) + sizeof(jmp_buf)));
   mark_memory(start, stop);
 #endif
 
@@ -404,13 +404,13 @@ VOIDCDECL mark_phase_young()
   r_ebp = 0;
 
 #else
-  sigjmp_buf env;
+  jmp_buf env;
 
     /* Traverse possible register variables */
-  sigsetjmp(env,0);
+  setjmp(env);
 
   start = (ATerm *)((char *)env);
-  stop  = ((ATerm *)(((char *)env) + sizeof(sigjmp_buf)));
+  stop  = ((ATerm *)(((char *)env) + sizeof(jmp_buf)));
   mark_memory_young(start, stop);
 #endif
 

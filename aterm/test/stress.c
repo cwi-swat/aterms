@@ -18,6 +18,21 @@
 #include "terms.h"
 
 /*}}}  */
+
+#if HAVE_CONFIG_H
+#  include "config.h"
+#endif
+
+#if __STDC_VERSION__ >= 199901L || !HAVE_STRDUP
+static char* strdup(char* str)
+{
+  size_t size = strlen(str)+1;
+  char* buf = malloc(size);
+  memcpy(buf, str, size);
+  return buf;
+}
+#endif
+
 /*{{{  defines */
 
 #define test_assert(cat,id,cond) if(!(cond)) test_failed(cat, id)
@@ -787,7 +802,7 @@ void testGC()
   t[5] = (ATerm) ((char *) t[1] + 1);
   t[6] = (ATerm)NULL;
   t[7] = (ATerm)((MachineWord)testGC);
-  t[8] = (ATerm)t;
+  t[8] = (ATerm)(void*)t;
   t[9] = (ATerm)"Just a test!";
   t[10] = (ATerm)((char *)t[2]-1);
   t[11] = ATsetAnnotation(t[1], t[0], t[3]);

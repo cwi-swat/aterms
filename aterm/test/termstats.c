@@ -82,7 +82,6 @@ int main(int argc, char *argv[])
     clock_t bafread, bafwrite;
 #endif
     FILE *file = fopen("/tmp/test.baf", "wb+");
-    int fd = fileno(file);
 
 #ifndef WIN32
     times(&start);
@@ -93,7 +92,7 @@ int main(int argc, char *argv[])
     bafwrite = end.tms_utime-start.tms_utime;
 #endif
     fflush(file);
-    fstat(fd, &stats);
+    stat("/tmp/test.baf", &stats);
     bafsize = (int)stats.st_size;
     fseek(file, 0, SEEK_SET);
 #ifndef WIN32

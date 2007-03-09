@@ -11,15 +11,16 @@
 #  include "config.h"
 #endif
 
-#if HAVE_LRAND48 && HAVE_SRAND48
-  /* Use the rand48() suite */
-#else
-#  ifdef WIN32
+#if __STDC_VERSION__ >= 199901L 
 #  define lrand48()   rand()
 #  define srand48(s)  srand(s)
+#else
+#  if !HAVE_LRAND48 || !HAVE_SRAND48
+#    define lrand48()   rand()
+#    define srand48(s)  srand(s)
 #  else
-#  define lrand48()   random()
-#  define srand48(s)  srandom(s)
+#    define lrand48()   random()
+#    define srand48(s)  srandom(s)
 #  endif
 #endif
 
