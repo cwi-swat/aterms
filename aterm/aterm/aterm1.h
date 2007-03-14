@@ -127,12 +127,12 @@ void ATunprotectArray(ATerm *start);
 #define ATprotectInt(p) ATprotect((ATerm *)(void *)(p))
 #define ATprotectReal(p) ATprotect((ATerm *)(void *)(p))
 
-#define ATunprotectTerm(p) ATprotect((ATerm *)(void *)(p))
-#define ATunprotectList(p) ATprotect((ATerm *)(void *)(p))
-#define ATunprotectAppl(p) ATprotect((ATerm *)(void *)(p))
-#define ATunprotectPlaceholder(p) ATprotect((ATerm *)(void *)(p))
-#define ATunprotectInt(p) ATprotect((ATerm *)(void *)(p))
-#define ATunprotectReal(p) ATprotect((ATerm *)(void *)(p))
+#define ATunprotectTerm(p) ATunprotect((ATerm *)(void *)(p))
+#define ATunprotectList(p) ATunprotect((ATerm *)(void *)(p))
+#define ATunprotectAppl(p) ATunprotect((ATerm *)(void *)(p))
+#define ATunprotectPlaceholder(p) ATunprotect((ATerm *)(void *)(p))
+#define ATunprotectInt(p) ATunprotect((ATerm *)(void *)(p))
+#define ATunprotectReal(p) ATunprotect((ATerm *)(void *)(p))
 
 /**
   * We also define some functions that are specific
