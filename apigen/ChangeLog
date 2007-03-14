@@ -1,5 +1,8 @@
 # $Id$
 
+Wed Mar 14 16:29:37 CET 2007 <{economop,jurgenv}@cwi.nl>
+ * src/apigen/gen/src/APIGenerator.java: fixed bug -- added brackets around the    macro replacement string's arguments.
+
 Thu Mar  8 15:48:59 CET 2007 <{kooiker,economop,jurgenv}@cwi.nl>
  * src/apigen/gen/src/CDictionaryGenerator.java: fixed a small
    bug with generating code for matching builtin data-types

@@ -90,7 +90,7 @@ public class APIGenerator extends CGenerator {
 		String returnType = "void";
 		String funArgs = "(" + typeName + " *arg)";
 		String macroArgs = "(arg)";
-		String macroDecl = "ATprotect((ATerm*)((void*) arg))";
+		String macroDecl = "ATprotect((ATerm*)((void*) (arg)))";
 		
 		printDocHead("Protect a " + typeName + " from the ATerm garbage collector", "Every " + typeName + " that is not rooted somewhere on the C call stack must be protected. Examples are global variables");
 		printDocArg("arg", "pointer to a " + typeName );
@@ -110,7 +110,7 @@ public class APIGenerator extends CGenerator {
 		String returnType = "void";
 		String funArgs = "(" + typeName + " *arg)";
 		String macroArgs = "(arg)";
-		String macroDecl = "ATunprotect((ATerm*)((void*) arg))";
+		String macroDecl = "ATunprotect((ATerm*)((void*) (arg)))";
 
 		printDocHead("Unprotect a " + typeName + " from the ATerm garbage collector", "This improves the efficiency of the garbage collector, as well as provide opportunity for reclaiming space");
 		printDocArg("arg", "pointer to a " + typeName );
@@ -363,7 +363,7 @@ public class APIGenerator extends CGenerator {
 		}
 		conversion = genBuiltinToATerm(type.getElementType(), "elem" + arity);
 		println("(ATerm) " + conversion + ");");
-		macroReplacementStr = macroReplacementStr + "(ATerm) " + conversion + ")";
+		macroReplacementStr = macroReplacementStr + "(ATerm) (" + conversion + "))";
 		println("}");
 		println();
 		
@@ -419,7 +419,7 @@ public class APIGenerator extends CGenerator {
 		String returnType = elementTypeName;
 		String funName = prefix + "get" + typeId + elementTypeId + "At";
 		String funArgs = "(" + typeName + " arg, int index)";
-		String macroReplacementStr = "(" + elementTypeName + ")" + conversion;
+		String macroReplacementStr = "(" + elementTypeName + ") (" + conversion + ")";
 		String macroArgs = "(arg, index)";
 		
 		printDocHead("Retrieve the " + elementTypeName + " at #index from a " + typeName, "");
@@ -443,7 +443,7 @@ public class APIGenerator extends CGenerator {
 		String returnType = typeName;
 		String funName = prefix + "replace" + typeId + elementTypeId + "At";
 		String funArgs = "(" + typeName + " arg, " + elementTypeName + " elem, int index)";
-		String macroReplacementStr = "(" + typeName	+ ") ATreplace((ATermList) arg, (ATerm) " + conversion + ", "+ index + ")";
+		String macroReplacementStr = "(" + typeName	+ ") ATreplace((ATermList) (arg), (ATerm) (" + conversion + "), ("+ index + "))";
 		String macroArgs = "(arg, elem, index)";
 		
 		printDocHead("Replace the " + elementTypeName + " at #index from a " + typeName + " by a new one", "");
@@ -466,7 +466,7 @@ public class APIGenerator extends CGenerator {
 		String returnType = typeName;
 		String funName = prefix + "reverse" + typeId;
 		String funArgs =  "(" + typeName + " arg)";
-		String macroReplacementStr = "(" + typeName + ") ATreverse((ATermList) arg)";
+		String macroReplacementStr = "(" + typeName + ") ATreverse((ATermList) (arg))";
 		String macroArgs = "(arg)";
 		
 		printDocHead("Reverse a " + typeName,"");
@@ -490,7 +490,7 @@ public class APIGenerator extends CGenerator {
 		String returnType = typeName;
 		String funName = prefix + "append" + typeId;
 		String funArgs = "(" + typeName + " arg, " + elementTypeName + " elem)";
-		String macroReplacementStr = "(" + typeName	+ ") ATappend((ATermList) arg, (ATerm) " + conversion + ")";
+		String macroReplacementStr = "(" + typeName	+ ") ATappend((ATermList) (arg), (ATerm) (" + conversion + "))";
 		String macroArgs = "(arg, elem)";
 		
 		printDocHead("Append a " + elementTypeName + " to the end of a " + typeName, "");
@@ -512,7 +512,7 @@ public class APIGenerator extends CGenerator {
 		String returnType = typeName;
 		String funName = prefix + "concat" + typeId;
 		String funArgs = "(" + typeName + " arg0, " + typeName + " arg1)";
-		String macroReplacementStr = "(" + typeName	+ ") ATconcat((ATermList) arg0, (ATermList) arg1)";
+		String macroReplacementStr = "(" + typeName	+ ") ATconcat((ATermList) (arg0), (ATermList) (arg1))";
 		String macroArgs = "(arg0, arg1)";
 		
 		printDocHead("Concatenate two " + typeName + "s","");
@@ -589,7 +589,7 @@ public class APIGenerator extends CGenerator {
 		String returnType = typeName;
 		String funName = prefix + "slice" + typeId;
 		String funArgs = "(" + typeName + " arg, int start, int end)";
-		String macroReplacementStr = "(" + typeName + ") ATgetSlice((ATermList) arg, " + startIndex + ", " + endIndex + ")";
+		String macroReplacementStr = "(" + typeName + ") ATgetSlice((ATermList) (arg), (" + startIndex + "), (" + endIndex + "))";
 		String macroArgs = "(arg, start, end)";
 		
 		printDocHead("Extract a sublist from a " +  typeName, "");
@@ -616,7 +616,7 @@ public class APIGenerator extends CGenerator {
 		String returnType = "int";
 		String funName = prefix + "get" + typeId + "Length";
 		String funArgs = "(" + typeName + " arg)";
-		String macroReplacementStr = "(ATisEmpty((ATermList) arg) ? 0 : (ATgetLength((ATermList) arg) / " + (seps.getLength() + 1) + ") + 1)";
+		String macroReplacementStr = "(ATisEmpty((ATermList) (arg)) ? 0 : (ATgetLength((ATermList) (arg)) / " + (seps.getLength() + 1) + ") + 1)";
 		String macroArgs = "(arg)";
 
 		printDocHead("Retrieve the number of elements in a " + typeName,"");
@@ -775,7 +775,7 @@ public class APIGenerator extends CGenerator {
 		String funName = prefix + type_id + "ToTerm";
 		String funArgs = "(" + type_name + " arg)";
 		String returnType = "ATerm";
-		String macroReplacementString = "(ATerm)arg";
+		String macroReplacementString = "(ATerm)(arg)";
 		String macroArgs = "(arg)";
 
 		/* \todo Check this works */
@@ -804,7 +804,7 @@ public class APIGenerator extends CGenerator {
 		String funName = prefix + type_id + "FromTerm";
 		String funArgs = "(ATerm t)";
 		String returnType = type_name;
-		String macroReplacementString = "(" + type_name + ")t";
+		String macroReplacementString = "(" + type_name + ")(t)";
 		String macroArgs = "(t)";
 		
 		/*\todo Check this works. */
@@ -841,7 +841,7 @@ public class APIGenerator extends CGenerator {
 			String returnType = "ATbool";
 			String funName = prefix + "isEqual" + type_id;
 			String funArgs = "(" + type_name + " arg0, " + type_name + " arg1)";
-			String macroReplacementStr = "ATisEqual((ATerm)arg0, (ATerm)arg1)";
+			String macroReplacementStr = "ATisEqual((ATerm)(arg0), (ATerm)(arg1))";
 			String macroArgs = "(arg0, arg1)";
 
 			printDocHead("Tests equality of two " + type_name + "s","A constant time operation.");
@@ -1848,7 +1848,7 @@ public class APIGenerator extends CGenerator {
 		String returnType = "int";
 		String funName = prefix + "get" + typeId + "Length";
 		String funArgs = "(" + typeName	+ " arg)";
-		String macroReplacementStr = "ATgetLength((ATermList) arg)";
+		String macroReplacementStr = "ATgetLength((ATermList) (arg))";
 		String macroArgs = "(arg)";
 
 		printDocHead("Retrieve the length of a " + typeName,"");
