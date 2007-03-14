@@ -1157,14 +1157,14 @@ write_baf(ATerm t, byte_writer *writer)
 
 /*{{{  char *ATwriteToBinaryString(ATerm t, int *len) */
 
-char *ATwriteToBinaryString(ATerm t, int *len)
+unsigned char *ATwriteToBinaryString(ATerm t, int *len)
 {
   static byte_writer writer;
   static ATbool initialized = ATfalse;
 
   if (!initialized) {
     writer.type = STRING_WRITER;
-    writer.u.string_data.buf = (char *)calloc(BUFSIZ, 1);
+    writer.u.string_data.buf = (unsigned char *)calloc(BUFSIZ, 1);
     writer.u.string_data.max_size = BUFSIZ;
     initialized = ATtrue;
   }
@@ -1602,9 +1602,9 @@ ATerm read_baf(byte_reader *reader)
 
 /*}}}  */
 
-/*{{{  ATerm ATreadFromBinaryString(char *s, int size) */
+/*{{{  ATerm ATreadFromBinaryString(const unsigned char *s, int size) */
 
-ATerm ATreadFromBinaryString(char *s, int size)
+ATerm ATreadFromBinaryString(const unsigned char *s, int size)
 {
   byte_reader reader;
 

@@ -1,5 +1,20 @@
 $Id$
 
+Wed Mar 14 13:17:23 CET 2007 <eriks@win.tue.nl>
+ * A.Hofkamp reported in bugzilla:
+      The 'char' data type is not specified to be either signed or unsigned in the C
+      language. That implies that a compiler may chose either.
+      For binary data, having a signed char may cause havoc.
+
+      It may be better if the ATreadFromBinaryString function explicitly uses "const
+      unsigned char *" as the type of its first argument instead of the now
+      compiler-dependant "const char *" type.
+
+   This has been changed. ATreadFromSharedString is also changed to use 'const char*'
+   instead of 'char *'
+
+   Closes Bug 411
+
 Wed Feb 21 15:23:06 CET 2007 <{kooiker,jurgenv}@cwi.nl>
  * utils/atreverse.c: added commandline tool for reversing a list.
 

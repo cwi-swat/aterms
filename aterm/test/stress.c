@@ -1150,7 +1150,8 @@ void testTBLegacy()
 
 void testBaffle()
 {
-  char buf[BUFSIZ], *ptr;
+  char buf[BUFSIZ]; 
+  unsigned char *ptr;
   FILE *file;
   ATerm tesatint, tesatappl = ATparse("f(1,a,<abc>,[24,g]{[a,b]})");
   ATermBlob blob;

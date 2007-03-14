@@ -71,8 +71,8 @@ ATerm ATreadFromBinaryFile(FILE *file);
 ATerm ATreadFromFile(FILE *file);
 ATerm ATreadFromNamedFile(const char *name);
 ATerm ATreadFromString(const char *string);
-ATerm ATreadFromSharedString(char *s, int size);
-ATerm ATreadFromBinaryString(char *s, int size);
+ATerm ATreadFromSharedString(const char *s, int size);
+ATerm ATreadFromBinaryString(const unsigned char *s, int size);
 
 /* Abbreviation for ATreadFromString */
 #define ATparse(s)	ATreadFromString((s))
@@ -104,8 +104,8 @@ ATbool ATwriteToNamedTextFile(ATerm t, const char *name);
 ATbool ATwriteToNamedSharedTextFile(ATerm t, const char *name);
 ATbool ATwriteToNamedBinaryFile(ATerm t, const char *name);
 char  *ATwriteToString(ATerm t);
-char  *ATwriteToSharedString(ATerm t, int *len);
-char  *ATwriteToBinaryString(ATerm t, int *len);
+char *ATwriteToSharedString(ATerm t, int *len);
+unsigned char *ATwriteToBinaryString(ATerm t, int *len);
 ATerm  ATsetAnnotation(ATerm t, ATerm label, ATerm anno);
 ATerm  ATgetAnnotation(ATerm t, ATerm label);
 ATerm  ATremoveAnnotation(ATerm t, ATerm label);

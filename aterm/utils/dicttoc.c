@@ -221,7 +221,7 @@ static void generateSource(FILE *file, ATermList terms, ATermList afuns)
   data = (unsigned char *)ATwriteToBinaryString(all, &len);
 
   ATfprintf(file, "#define _%s_LEN %d\n\n", code_prefix, len);
-  ATfprintf(file, "static char _%s_baf[_%s_LEN] = {\n", code_prefix, code_prefix, len);
+  ATfprintf(file, "static unsigned char _%s_baf[_%s_LEN] = {\n", code_prefix, code_prefix, len);
 
   index = 0;
 
