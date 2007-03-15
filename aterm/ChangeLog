@@ -1,5 +1,36 @@
 $Id$
 
+Thu Mar 15 15:54:12 CET 2007 <eriks@win.tue.nl>
+ * Added patch supplied by Muck van Weerdenburg in bug 722:
+    It would be useful to have a way to tell the garbage collector that certain
+    ATerms need to be protected even though they are not protected with
+    ATprotect(Array). The reason being that, for instance, frequent reallocs of
+    ATerm arrays require a call to ATunprotectArray() and ATprotectArray() every
+    time. Also, in the case one uses C++ STL data structures as vectors, there
+    is no way to protect the internal array(s) used by such structures with
+    ATprotectArray().
+
+    In the mCRL2 toolset we have solved this by extending the ATerm library with
+    a way to register special functions. These functions are then called during
+    the mark phase of the garbage collector during which they can mark ATerms
+    themselves (with a new function ATmarkTerm). To illustrate:
+
+      ATerm *ats; // some dynamic array
+      unsigned int size_ats;
+      ATerm *single_term; // a pointer to a single ATerm
+
+      void protect_local_terms()
+        // this function will be called during the mark phase of the GC
+      {
+        ATmarkArray(ats,size_ats);
+        ATmarkTerm(*single_term);
+      }
+
+      // main code
+      ...
+      ATaddProtectFunction(protect_local_terms); // initialisation
+      ...
+
 Wed Mar 14 13:17:23 CET 2007 <eriks@win.tue.nl>
  * aterm/*.c: use const unsigned char* (closes bug #411)
 

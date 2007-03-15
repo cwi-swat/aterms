@@ -60,6 +60,8 @@ int good_gc_ratio;
 int small_allocation_rate_ratio;
 int old_increase_rate_ratio;
 
+ATbool at_mark_young;
+
 /*}}}  */
 
 #ifdef WIN32
@@ -224,6 +226,22 @@ static void mark_memory_young(ATerm *start, ATerm *stop)
 
 /*}}}  */
 
+void ATmarkTerm(ATerm t)
+{
+  ATmarkArray(&t,1);
+}
+
+void ATmarkArray(ATerm *start, int size)
+{
+  if ( at_mark_young == ATtrue )
+  {
+	  mark_memory_young(start,start+size);
+  } else {
+	  mark_memory(start,start+size);
+  }
+}
+
+
 /*{{{  VOIDCDECL mark_phase() */
 
 VOIDCDECL mark_phase()
@@ -326,6 +344,12 @@ VOIDCDECL mark_phase()
 
   for (prot=at_prot_memory; prot != NULL; prot=prot->next) {
     mark_memory((ATerm *)prot->start, (ATerm *)(((char *)prot->start) + prot->size));
+  }
+  
+  at_mark_young = ATfalse;
+  for (i=0; i<at_prot_functions_count; i++)
+  {
+    at_prot_functions[i]();
   }
 
   AT_markProtectedSymbols();
@@ -437,6 +461,12 @@ VOIDCDECL mark_phase_young()
 
   for (prot=at_prot_memory; prot != NULL; prot=prot->next) {
     mark_memory_young((ATerm *)prot->start, (ATerm *)(((char *)prot->start) + prot->size));
+  }
+  
+  at_mark_young = ATtrue;
+  for (i=0; i<at_prot_functions_count; i++)
+  {
+    at_prot_functions[i]();
   }
     
   AT_markProtectedSymbols_young();
