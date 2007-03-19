@@ -5,7 +5,7 @@ noinst_HEADERS  = $(PRIVATE_INCL)
 AM_CPPFLAGS = -I$(srcdir) 
 
 libATerm_la_SOURCES = $(ALLSRCS)
-libATerm_la_CFLAGS = -DNDEBUG
+#libATerm_la_CFLAGS = -DNDEBUG
 libATerm_la_LDFLAGS = -avoid-version -no-undefined
 
 ALLSRCS = \
