@@ -257,6 +257,7 @@ static void generateSource(FILE *file, ATermList terms, ATermList afuns)
     list = ATgetNext(list);
     alias = ATelementAt(pair, 0);
     ATfprintf(file, "  %t = ATgetAFun((ATermAppl)ATgetFirst(afuns));\n", alias);
+    ATfprintf(file, "  ATprotectAFun(%t);\n", alias);
     ATfprintf(file, "  afuns = ATgetNext(afuns);\n");
   }
 

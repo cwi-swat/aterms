@@ -1,5 +1,10 @@
 $Id$
 
+Mon Mar 19 08:52:45 CET 2007 <jurgenv@cwi.nl>
+ * utils/dicttoc.c: added ATprotectAFun for every generated 
+   AFun. This is needed in case the AFun does not occur in any of the
+   terms. 
+
 Thu Mar 15 15:54:12 CET 2007 <eriks@win.tue.nl>
  * Added patch supplied by Muck van Weerdenburg in bug 722:
     It would be useful to have a way to tell the garbage collector that certain
