@@ -24,6 +24,7 @@ EXAMPLEDIR	= examples
 EXAMPLEFILES	= init.c make.c match.c prot.c app1.c app2.c app3.c plac.c
 EXAMPLES	= $(patsubst %,$(EXAMPLEDIR)/%,$(EXAMPLEFILES))
 
+if MAINTAINER_MODE
 at.ps:
 	$(MAKE) at.dvi
 	$(MAKE) $(AT_PICS)
@@ -42,3 +43,5 @@ manual.ps:
 
 at.dvi: at.ltx aterm.ltx spec/ATerm.mtx $(CHAPS) $(AT_PICS)
 manual.dvi: manual.ltx $(EXAMPLES)
+
+endif
