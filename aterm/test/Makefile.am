@@ -5,7 +5,7 @@ include $(top_srcdir)/Makefile.meta
 TESTS = stress primes randgen fib
 check_PROGRAMS = stress primes randgen termstats fib
 
-EXTRA_DIST = \
+EXTRA_DIST += \
   error.trm \
   terms.dict \
   termstats.sh \
