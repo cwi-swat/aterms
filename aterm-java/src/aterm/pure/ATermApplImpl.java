@@ -37,9 +37,9 @@ import shared.SharedObject;
 import aterm.*;
 
 public class ATermApplImpl extends ATermImpl implements ATermAppl {
-  AFun fun;
+  private AFun fun;
 
-  ATerm[] args;
+  private ATerm[] args;
 
   protected ATermApplImpl(PureFactory factory) {
     super(factory);

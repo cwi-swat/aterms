@@ -30,15 +30,17 @@ package aterm.pure;
 
 import aterm.pure.PureFactory;
 
-public class SingletonFactory {
+public class SingletonFactory{
 
-	private SingletonFactory() {}
-
-	public static PureFactory getInstance() {
+	private SingletonFactory(){
+		super();
+	}
+	
+	public static PureFactory getInstance(){
 		return InstanceKeeper.instance;
 	}
 	
-	private static class InstanceKeeper {
+	private static class InstanceKeeper{
 		private final static PureFactory instance = new PureFactory();
 	}
 }

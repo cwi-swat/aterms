@@ -31,14 +31,15 @@ import jjtraveler.VisitFailure;
 
 public class ATermFwdVoid implements aterm.Visitor {
 
-    public ATermFwdVoid() {}
+    public ATermFwdVoid() {
+    	super();
+    }
 
-    public jjtraveler.Visitable visit(jjtraveler.Visitable v) 
-    throws jjtraveler.VisitFailure {
-	if (v instanceof aterm.Visitable) {
-	    return ((aterm.Visitable) v).accept(this);
-	}
-	    throw new jjtraveler.VisitFailure();
+    public jjtraveler.Visitable visit(jjtraveler.Visitable v) throws jjtraveler.VisitFailure {
+		if (v instanceof aterm.Visitable) {
+		    return ((aterm.Visitable) v).accept(this);
+		}
+	   throw new jjtraveler.VisitFailure();
     }
 
     public aterm.Visitable visitATerm(ATerm arg) throws VisitFailure {
@@ -89,6 +90,7 @@ public class ATermFwdVoid implements aterm.Visitor {
     // methods to re-implement for void visitation
 
     public void voidVisitATerm(ATerm arg) throws VisitFailure {
+    	// Left empty intentionally.
     }
 
     public void voidVisitInt(ATermInt arg) throws VisitFailure {

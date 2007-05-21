@@ -168,3 +168,4 @@ public class BufferedOutputStreamWriter extends Writer{
 		return failures;
 	}
 }
+

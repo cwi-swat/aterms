@@ -41,8 +41,8 @@ import aterm.ATermList;
 import aterm.ATermPlaceholder;
 import aterm.Visitor;
 
-class ATermLongImpl extends ATermImpl implements ATermLong {
-  long value;
+public class ATermLongImpl extends ATermImpl implements ATermLong {
+  private long value;
 
   protected ATermLongImpl(PureFactory factory) {
     super(factory);

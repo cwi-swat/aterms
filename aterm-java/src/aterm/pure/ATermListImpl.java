@@ -42,11 +42,11 @@ import aterm.ATermPlaceholder;
 import aterm.Visitor;
 
 public class ATermListImpl extends ATermImpl implements ATermList {
-  ATerm first;
+  private ATerm first;
 
-  ATermList next;
+  private ATermList next;
 
-  int length;
+  private int length;
 
   protected ATermListImpl(PureFactory factory) {
     super(factory);

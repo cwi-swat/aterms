@@ -27,7 +27,13 @@
  */
 
 package aterm.pure.binary;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -38,8 +44,8 @@ import aterm.ATermAppl;
 import aterm.ATermBlob;
 import aterm.ATermFwdVoid;
 import aterm.ATermInt;
-import aterm.ATermLong;
 import aterm.ATermList;
+import aterm.ATermLong;
 import aterm.ATermPlaceholder;
 import aterm.ATermReal;
 
@@ -59,28 +65,28 @@ import aterm.ATermReal;
  * 
  * @author Arnold Lankamp
  */
-public class BinaryWriter extends ATermFwdVoid {
-	private final static byte ISSHAREDFLAG = -128;
-	private final static byte ANNOSFLAG = 16;
+public class BinaryWriter extends ATermFwdVoid{
+	private final static int ISSHAREDFLAG = 0x00000080;
+	private final static int ANNOSFLAG = 0x00000010;
 
-	private final static byte APPLSIGNATURESHARED = 64;
-	private final static byte APPLQUOTED = 32;
+	private final static int ISFUNSHARED = 0x00000040;
+	private final static int APPLQUOTED = 0x00000020;
 
 	private final static int STACKSIZE = 256;
 
 	private final static int MINIMUMFREESPACE = 10;
 
-	private Map<ATerm, Integer> sharedTerms = null;
-	private int currentKey = 0;
-	private Map<ApplSignature, Integer> applSignatures = null;
-	private int sigKey = 0;
+	private final Map<ATerm, Integer> sharedTerms;
+	private int currentKey;
+	private final Map<AFun, Integer> applSignatures;
+	private int sigKey;
 
-	private ATermMapping[] stack = null;
-	private int stackPosition = 0;
-	private ATerm currentTerm = null;
+	private ATermMapping[] stack;
+	private int stackPosition;
+	private ATerm currentTerm;
 	private int indexInTerm = 0;
 
-	private ByteBuffer currentBuffer = null;
+	private ByteBuffer currentBuffer;
 
 	/**
 	 * Constructor.
@@ -88,12 +94,13 @@ public class BinaryWriter extends ATermFwdVoid {
 	 * @param root
 	 *            The ATerm that needs to be serialized.
 	 */
-	public BinaryWriter(ATerm root) {
+	public BinaryWriter(ATerm root){
 		super();
 
 		sharedTerms = new HashMap<ATerm, Integer>();
-
-		applSignatures = new HashMap<ApplSignature, Integer>();
+		currentKey = 0;
+		applSignatures = new HashMap<AFun, Integer>();
+		sigKey = 0;
 
 		stack = new ATermMapping[STACKSIZE];
 		stackPosition = 0;
@@ -114,20 +121,22 @@ public class BinaryWriter extends ATermFwdVoid {
 	 * @throws VisitFailure
 	 *             Never thrown.
 	 */
-	public void serialize(ByteBuffer buffer) throws VisitFailure {
+	public void serialize(ByteBuffer buffer) throws VisitFailure{
 		currentBuffer = buffer;
 
-		while(currentTerm != null) {
+		while(currentTerm != null){
 			if(buffer.remaining() < MINIMUMFREESPACE) break;
 
 			Integer id = sharedTerms.get(currentTerm);
-			if(id != null) {
-				buffer.put(ISSHAREDFLAG);
+			if(id != null){
+				buffer.put((byte) ISSHAREDFLAG);
 				writeInt(id.intValue());
 
 				stackPosition--; // Pop the term from the stack, since it's subtree is shared.
-			} else {
+			}else{
 				visit(currentTerm);
+				
+				if(currentTerm.getType() == ATerm.LIST) stack[stackPosition].nextPartOfList = (ATermList) currentTerm; // <- for ATermList->next optimizaton.
 
 				// Don't add the term to the shared list until we are completely done with it.
 				if(indexInTerm == 0) sharedTerms.put(currentTerm, new Integer(currentKey++));
@@ -145,7 +154,7 @@ public class BinaryWriter extends ATermFwdVoid {
 	 * 
 	 * @return true when we are done serializing; false otherwise.
 	 */
-	public boolean isFinished() {
+	public boolean isFinished(){
 		return (currentTerm == null);
 	}
 
@@ -154,20 +163,31 @@ public class BinaryWriter extends ATermFwdVoid {
 	 * 
 	 * @return The next term we are going to serialize.
 	 */
-	private ATerm getNextTerm() {
+	private ATerm getNextTerm(){
 		ATerm next = null;
+		
+		// Make sure the stack remains large enough
+		ensureStackCapacity();
 
-		while(next == null && stackPosition > -1) {
+		while(next == null && stackPosition > -1){
 			ATermMapping current = stack[stackPosition];
 			ATerm term = current.term;
 
-			if(term.getChildCount() > current.subTerm + 1) {
-				next = (ATerm) term.getChildAt(++current.subTerm);
-
+			if(term.getChildCount() > current.subTermIndex + 1){
+				if(term.getType() != ATerm.LIST){
+					next = (ATerm) term.getChildAt(++current.subTermIndex);
+				}else{
+					ATermList nextList = current.nextPartOfList;
+					next = nextList.getFirst();
+					current.nextPartOfList = nextList.getNext();
+					
+					current.subTermIndex++;
+				}
+				
 				ATermMapping child = new ATermMapping();
 				child.term = next;
 				stack[++stackPosition] = child;
-			}else if(!current.annosDone && term.hasAnnotations()) {
+			}else if(!current.annosDone && term.hasAnnotations()){
 				next = term.getAnnotations();
 
 				ATermMapping annos = new ATermMapping();
@@ -175,13 +195,10 @@ public class BinaryWriter extends ATermFwdVoid {
 				stack[++stackPosition] = annos;
 
 				current.annosDone = true;
-			} else {
+			}else{
 				stackPosition--;
 			}
 		}
-		
-		// Make sure the stack remains large enough
-		ensureStackCapacity();
 		
 		return next;
 	}
@@ -190,9 +207,9 @@ public class BinaryWriter extends ATermFwdVoid {
 	 * Resizes the stack when needed. When we're running low on stack space the capacity will be
 	 * doubled.
 	 */
-	private void ensureStackCapacity() {
+	private void ensureStackCapacity(){
 		int stackSize = stack.length;
-		if(stackPosition + 1 == stackSize) {
+		if(stackPosition + 1 == stackSize){
 			ATermMapping[] newStack = new ATermMapping[(stackSize << 1)];
 			System.arraycopy(stack, 0, newStack, 0, stack.length);
 			stack = newStack;
@@ -206,7 +223,7 @@ public class BinaryWriter extends ATermFwdVoid {
 	 *            The term we are requesting a header for.
 	 * @return The constructed header.
 	 */
-	private byte getHeader(ATerm term) {
+	private byte getHeader(ATerm term){
 		byte header = (byte) term.getType();
 		if(term.hasAnnotations()) header = (byte) (header | ANNOSFLAG);
 
@@ -218,45 +235,12 @@ public class BinaryWriter extends ATermFwdVoid {
 	 * 
 	 * @author Arnold Lankamp
 	 */
-	private static class ATermMapping {
+	private static class ATermMapping{
 		public ATerm term;
-		public int subTerm = -1;
+		public int subTermIndex = -1;
 		public boolean annosDone = false;
-	}
-
-	/**
-	 * Class that contains the signature of an appl. This signature consists of the name, the arity
-	 * and the 'quoted' flag.
-	 * 
-	 * @author Arnold Lankamp
-	 */
-	protected static class ApplSignature {
-		public String name;
-		public int arity;
-		public boolean isQuoted;
-
-		/**
-		 * Custom hash function. Needed for matching in a hashmap.
-		 * 
-		 * @see java.lang.Object#hashCode()
-		 */
-		public int hashCode() {
-			return ((name.length() > 0 ? (name.charAt(0) << 8) : 0) | ((name.length() & 15) << 4) | (arity & 15));
-		}
-
-		/**
-		 * Checks for equality of this object against the given object.
-		 * 
-		 * @see java.lang.Object#equals(java.lang.Object)
-		 */
-		public boolean equals(Object obj) {
-			boolean equal = false;
-			if(obj instanceof ApplSignature) {
-				ApplSignature as = (ApplSignature) obj;
-				if(as.arity == arity && as.isQuoted == isQuoted && as.name.equals(name)) equal = true;
-			}
-			return equal;
-		}
+		
+		public ATermList nextPartOfList = null; // This is for a ATermList 'nextTerm' optimalization only.
 	}
 
 	/**
@@ -266,27 +250,19 @@ public class BinaryWriter extends ATermFwdVoid {
 	 * @throws VisitFailure
 	 *             Never thrown.
 	 */
-	public void voidVisitAppl(ATermAppl arg) throws VisitFailure {
-		if(indexInTerm == 0) {
+	public void voidVisitAppl(ATermAppl arg) throws VisitFailure{
+		if(indexInTerm == 0){
 			byte header = getHeader(arg);
 
 			AFun fun = arg.getAFun();
-			String name = fun.getName();
-			int arity = arg.getArity();
-			boolean isQuoted = arg.isQuoted();
-
-			ApplSignature as = new ApplSignature();
-			as.name = name;
-			as.arity = arity;
-			as.isQuoted = isQuoted;
-
-			Integer key = applSignatures.get(as);
-			if(key == null) {
-				if(isQuoted) header = (byte) (header | APPLQUOTED);
+			Integer key = applSignatures.get(fun);
+			if(key == null){
+				if(arg.isQuoted()) header = (byte) (header | APPLQUOTED);
 				currentBuffer.put(header);
 
-				writeInt(arity);
-
+				writeInt(arg.getArity());
+				
+				String name = fun.getName();
 				int length = name.length();
 				writeInt(length);
 
@@ -299,14 +275,14 @@ public class BinaryWriter extends ATermFwdVoid {
 
 				if(endIndex != length) indexInTerm = endIndex;
 
-				applSignatures.put(as, new Integer(sigKey++));
-			} else {
-				header = (byte) (header | APPLSIGNATURESHARED);
+				applSignatures.put(fun, new Integer(sigKey++));
+			}else{
+				header = (byte) (header | ISFUNSHARED);
 				currentBuffer.put(header);
 
 				writeInt(key.intValue());
 			}
-		} else {
+		}else{
 			AFun fun = arg.getAFun();
 			String name = fun.getName();
 			int length = name.length();
@@ -330,7 +306,7 @@ public class BinaryWriter extends ATermFwdVoid {
 	 * @throws VisitFailure
 	 *             Never thrown.
 	 */
-	public void voidVisitBlob(ATermBlob arg) throws VisitFailure {
+	public void voidVisitBlob(ATermBlob arg) throws VisitFailure{
 		int size = arg.getBlobSize();
 		if(indexInTerm == 0) {
 			currentBuffer.put(getHeader(arg));
@@ -357,7 +333,7 @@ public class BinaryWriter extends ATermFwdVoid {
 	 * @throws VisitFailure
 	 *             Never thrown.
 	 */
-	public void voidVisitInt(ATermInt arg) throws VisitFailure {
+	public void voidVisitInt(ATermInt arg) throws VisitFailure{
 		currentBuffer.put(getHeader(arg));
 
 		writeInt(arg.getInt());
@@ -370,7 +346,7 @@ public class BinaryWriter extends ATermFwdVoid {
 	 * @throws VisitFailure
 	 *             Never thrown.
 	 */
-	public void voidVisitLong(ATermLong arg) throws VisitFailure {
+	public void voidVisitLong(ATermLong arg) throws VisitFailure{
 		currentBuffer.put(getHeader(arg));
 
 		writeLong(arg.getLong());
@@ -383,7 +359,7 @@ public class BinaryWriter extends ATermFwdVoid {
 	 * @throws VisitFailure
 	 *             Never thrown.
 	 */
-	public void voidVisitList(ATermList arg) throws VisitFailure {
+	public void voidVisitList(ATermList arg) throws VisitFailure{
 		byte header = getHeader(arg);
 		currentBuffer.put(header);
 
@@ -397,7 +373,7 @@ public class BinaryWriter extends ATermFwdVoid {
 	 * @throws VisitFailure
 	 *             Never thrown.
 	 */
-	public void voidVisitPlaceholder(ATermPlaceholder arg) throws VisitFailure {
+	public void voidVisitPlaceholder(ATermPlaceholder arg) throws VisitFailure{
 		currentBuffer.put(getHeader(arg));
 
 		// Do nothing, serializing its header is enough.
@@ -410,14 +386,14 @@ public class BinaryWriter extends ATermFwdVoid {
 	 * @throws VisitFailure
 	 *             Never thrown.
 	 */
-	public void voidVisitReal(ATermReal arg) throws VisitFailure {
+	public void voidVisitReal(ATermReal arg) throws VisitFailure{
 		currentBuffer.put(getHeader(arg));
 
 		writeDouble(arg.getReal());
 	}
 
-	private final static byte SEVENBITS = 127;
-	private final static int SIGNBYTE = -128;
+	private final static int SEVENBITS = 0x0000007f;
+	private final static int SIGNBIT = 0x00000080;
 	private final static int LONGBITS = 8;
 
 	/**
@@ -430,16 +406,34 @@ public class BinaryWriter extends ATermFwdVoid {
 	 * @param value
 	 *            The integer that needs to be split and written.
 	 */
-	private void writeInt(int value) {
+	private void writeInt(int value){
 		int intValue = value;
-		do {
-			byte x = (byte) (intValue & SEVENBITS);
-			intValue >>>= 7;
-
-			if(intValue != 0) x |= SIGNBYTE;
-
-			currentBuffer.put(x);
-		} while(intValue != 0);
+		
+		if((intValue & 0xffffff80) == 0){
+			currentBuffer.put((byte) (intValue & SEVENBITS));
+			return;
+		}
+		currentBuffer.put((byte) ((intValue & SEVENBITS) | SIGNBIT));
+		
+		if((intValue & 0xffffc000) == 0){
+			currentBuffer.put((byte) ((intValue >>> 7) & SEVENBITS));
+			return;
+		}
+		currentBuffer.put((byte) (((intValue >>> 7) & SEVENBITS) | SIGNBIT));
+		
+		if((intValue & 0xffe00000) == 0){
+			currentBuffer.put((byte) ((intValue >>> 14) & SEVENBITS));
+			return;
+		}
+		currentBuffer.put((byte) (((intValue >>> 14) & SEVENBITS) | SIGNBIT));
+		
+		if((intValue & 0xf0000000) == 0){
+			currentBuffer.put((byte) ((intValue >>> 21) & SEVENBITS));
+			return;
+		}
+		currentBuffer.put((byte) (((intValue >>> 21) & SEVENBITS) | SIGNBIT));
+		
+		currentBuffer.put((byte) ((intValue >>> 28) & SEVENBITS));
 	}
 
 	/**
@@ -450,14 +444,66 @@ public class BinaryWriter extends ATermFwdVoid {
 	 * @param value
 	 *            The integer that needs to be split and written.
 	 */
-	private void writeDouble(double value) {
+	private void writeDouble(double value){
 		long longValue = Double.doubleToLongBits(value);
 		writeLong(longValue);
 	}
 
-	private void writeLong(long value) {
+	private void writeLong(long value){
 		for(int i = 0; i < LONGBITS; i++) {
 			currentBuffer.put((byte) (value >>> (i * 8)));
+		}
+	}
+	
+	/**
+	 * Writes the given aterm to the given file. Blocks of 65536 bytes will be used.
+	 * 
+	 * @param aTerm
+	 *             The ATerm that needs to be writen to file.
+	 * @param file 
+	 *             The file to write to.
+	 * @throws IOException
+	 *             Thrown when an error occurs while attempting to write to the given file.
+	 * @throws VisitFailure
+	 *             This never happens
+	 */
+	public static void writeTermToSAFFile(ATerm aTerm, File file) throws IOException, VisitFailure{
+		BinaryWriter binaryWriter = new BinaryWriter(aTerm);
+		
+		ByteBuffer byteBuffer = ByteBuffer.allocate(65536);
+		ByteBuffer sizeBuffer = ByteBuffer.allocate(2);
+		
+		FileOutputStream fos = null;
+		FileChannel fc = null;
+		try{
+			fos = new FileOutputStream(file);
+			fc = fos.getChannel();
+			
+			byteBuffer.put((byte) '?');
+			byteBuffer.flip();
+			fc.write(byteBuffer);
+			
+			do{
+				byteBuffer.clear();
+				binaryWriter.serialize(byteBuffer);
+				
+				int blockSize = byteBuffer.limit();
+				sizeBuffer.clear();
+				sizeBuffer.put((byte) (blockSize & 0x000000ff));
+				sizeBuffer.put((byte) ((blockSize >>> 8) & 0x000000ff));
+				sizeBuffer.flip();
+				
+				fc.write(sizeBuffer);
+				
+				fc.write(byteBuffer);
+			}while(!binaryWriter.isFinished());
+		}finally{
+			if(fc != null){
+				fc.close();
+			}
+			if(fos != null){
+				fos.close();
+			}
 		}
 	}
 }

@@ -36,8 +36,8 @@ import shared.SharedObject;
 
 import aterm.*;
 
-class ATermBlobImpl extends ATermImpl implements ATermBlob {
-  byte[] data;
+public class ATermBlobImpl extends ATermImpl implements ATermBlob {
+  private byte[] data;
 
   protected ATermBlobImpl(PureFactory factory) {
     super(factory);

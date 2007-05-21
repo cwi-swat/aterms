@@ -1,98 +1,160 @@
-This document will briefly discuss the Streamble ATerm Format (SAF).
+This document will briefly discuss the (Semi-) Streamable ATerm Format (SAF).
 
 
 Goal:
-	The format was designed for exchanging ATerms across network connections.
-	The four most important requirements for this format are:
-		-Compactness.
-		-Transformation / parsing speed.
-		-Streamability (meaning the ability to send a term in chunks; making it possible to suspend the (de-)serialization process when required, without the need of assigning a dedicated thread to the process).
-		-Low memory usage and no recursive calls (idealy we don't want to create any garbage, nor do we want to be limited by the size of the stack; for example (de-)serializing deep trees will cause problems in the current java implementation of the ASCII and TAF ATerm format).
-	Compactness and speed are somewhat conflicting requirements. We need the format to be compact, because network bandwidth is one of the major bottlenecks. To much compression may however introduce to much computational overhead, so there is a trade-off between the two we need to consider.
+	SAF is designed to be a high performance format, mainly intended for exchanging ATerms across network connections or other 'streams' in a platform independant way.
+	
+	The most important requirements for this format and it's implementation(s) are:
+		-Portability. The format should not contain any platform or language specific elements.
+		-Streamability. Meaning the ability to send a term in chunks; making it possible to suspend the (de-)serialization process when required, without the need of assigning a dedicated thread to the process.
+		-Compactness. Network connection speed is generally one of the major bottlenecks, thus we want to compress the serialized representation of the ATerms as much as possible.
+		-Transformation / parsing speed. We want to be able to read and write terms to and from SAF as fast as possible. Current network connections have a throughput of tens or even hunderds of Megabits per second; we want to be able to utilize those to their full effect and thus do not want the transformation / parsing speed to limit the maximal throughput.
+		-Low memory usage. Memory usage during the (de-)serialization process should be as low as possible and predictable; this is inline of what's expected of an implementation for use in a high performance environment. For implementations in a language that uses a garbage collector there is the additional requirement that the amount of temporarily allocated object remains as limited as possible and no 'mid-lived' objects are created; this way there are no (or just very minor) performance penalties for an applications that use the implementation.
+		-No recursive calls. We do not want to be limited by the size of the stack; we do not want the implementation to impair the maximal depth of a tree.
+	The above requirements are somewhat conflicting. The streamability and portability requirements limit the sorts of compression techniques that can be used. Additionally compression, generally speaking, incurs computational overhead, so there is a trade-off between compression and transformation / parsing speed aswell. Low memory usage and performance do not always go hand-in-hand either.
+
+
+Streamability limitation:
+	There is one intentional limitation present in the implementation of this format: only function symbols and BLOBs can be (de-)serialized in chunks.
+	This is done to reduce the complexity of the implementation(s).
+	Additionally function symbols and BLOBs are the only types that can occupy more then 9 bytes (in this format), thus are the only types for which it is interesting to split them.
 
 
 Representation:
 	The format itself is fairly simple.
 	Every term has a header containing general information about the term.
-	This header can optionally contain type specific data.
+	This header can optionally contain type specific data in the two free fields.
 	
 	This is what the header looks like:
-	    Bit value:  |  128/sign |    64     |    32     |    16     |     8     |     4     |     2     |     1     |
-	    Bit number: |   bit 1   |   bit 2   |   bit 3   |   bit 4   |   bit 5   |   bit 6   |   bit 7   |   bit 8   |
-	    Meaning:    | IsShared? |  Free / Type specific | HasAnnos? |                  Type field                   |
+	    Bit mask:   |   0x80    |      0x40 + 0x20      |   0x10    |    0x0f    |
+	    Bit number: |   bit 1   |     bit 2 + bit 3     |   bit 4   |  bit 5-8   |
+	    Meaning:    | IsShared? |  Free / Type specific | HasAnnos? | Type field |
 		
-		-IsShared? is a boolean value (0 or 1) that indicates if the term has been encountered earlier. If this is the case it will emit the index that corresponds with the first occurence of the term (the term itself and it's children naturally won't be serialized if this happens).
+		-IsShared? is a boolean value (0 or 1) that indicates if the term has been encountered earlier. If this is the case it will emit the index that corresponds with the first occurence of the term (the term itself and it's children naturally won't be serialized if this happens). We will explain how this sharing works later on. Note that is this bit is set all the other data in the header is not required and can be safely ignored if it is present.
 		-Bit 2 and 3 are free and may be used for type specific data.
 		-HasAnnos? is a boolean value (0 or 1) that indicates if the term has annotations or not.
-		-The type field contains a 4 bit value that represents the type id of the term. Note that bit 5 isn't being used at the moment, since we only have 7 different term types; it leaves a little room for extension.
-		
-		Bit 2 and 3 are currently only used by ATermAppl.
-		Bit 2 represents IsSigShared? and bit 3 IsQuoted?.
-		-IsSigShared? indicates if an appl with the same signature has been encountered earlier.
-		 This signature contains the arity, the function symbol and if it is quoted or not.
-		 If the signature is shared the index of the signature will be emitted, the term itself won't be serialized; it's children however will be serialized.
-		-IsQuoted? indicates if the function symbol associated with this appl is quoted or not.
+		-The type field contains a 4 bit value that represents the type id of the term. Note that bit 5 isn't being used at the moment, since we only have 7 different term types; this leaves a little room for extension.
 	
 	Every term type has a different encoding.
 	These are the binary representations of the content of the different term types:
 		
 		INT
-			header		1 byte
-			value		1-5 bytes
-			
-			Since we are mostly encoding fairly small numbers it enabled us to save some space by only using the minimal amount of bytes to represent the integer's value.
-			The last bit of every byte is used as 'sign' to indicate if there are more bytes coming (1) or not (0).
-			Because of this we lose one bit per byte, causing large integers to occupy 5 (instead of the regular 4) bytes.
+			header       1 byte
+			value        1-5 bytes (for an explaination on integer encoding, see compression)
 		
 		REAL
-			header		1 byte
-			value		8 bytes
+			header       1 byte
+			value        8 bytes
 			
-			We are always using 8 bytes to encode a double. Since floating point numbers just about always occupy a couple of bits in the high order bytes, it restricts us from using the same trick as with the integers.
+			Reals are encoded as 64 bit IEEE 754 floating point numbers.
+			We are always using 8 bytes to encode a double. This is because IEEE 754 encoded floating point numbers always occupy a couple of bits in the high order bytes, which restricts us from using the same trick as with the encoding of integers.
 		
 		BLOB
-			header		1 byte
-			length		1-5 bytes (for an explaination, see INT)
-			data		0-2^32 bytes (depends on length)
+			header       1 byte
+			length       1-5 bytes (for an explaination on integer encoding, see compression)
+			data         0-2^32 bytes (depends on length)
 			
 		APPL
-			header		1 byte
-			arity		1-5 bytes (for an explaination, see INT)
-			fun-length	1-5 bytes (for an explaination, see INT)
-			fun-bytes	0-2^32 bytes (depends on fun-length)
+			header       1 byte
+			arity        1-5 bytes (for an explaination on integer encoding, see compression)
+			name-length  1-5 bytes (for an explaination on integer encoding, see compression)
+			name-bytes    0-2^32 bytes (depends on fun-length)
+			
+			Appl header:
+			Bit 2 (0x40) represents IsFunShared? and bit 3 (0x20) IsQuoted?.
+			-IsFunShared? indicates if an appl with the same function symbol has been encountered earlier.
+			 If the function symbol is shared the identifier associated with the function symbol will be emitted, the function symbol itself will not be serialized; the children of the appl naturally will be serialized.
+			 If this flag is set the isQuoted? flag is not required and can be savely ignored if it is present.
+			-IsQuoted? indicates if the function symbol associated with this appl is quoted or not.
 			
 		LIST
-			header		1 byte
-			size		1-5 bytes (for an explaination, see INT)
+			header       1 byte
+			size         1-5 bytes (for an explaination on integer encoding, see compression)
 		
 		PLACEHOLDER
-			header		1 byte
-			
+			header       1 byte
+	
 	The terms and annotations will be serialized in the order in which they are present in the tree.
-	Which is:	|term|children|annotations|.
+	Which is: |term|children|annotations|.
 	This is similair to the structure of the ASCII and TAF ATerm formats.
-	So if we have a term with 2 children of which the first child has tree children, the order will look like this: |term|child1|child1.1|child1.2|child1.3|child2|.
+	So if we have a term with 2 children of which the first child has three children, the order will look like this: |term|child1|child1.1|child1.2|child1.3|child2|.
+	A more extended example will be presented later on in this document.
 
 
-Limitation:
-	There is one intentional limitation present in the Java implementation of this format: only function symbols and BLOBs can be (de-)serialized in chunks.
-	This is done to reduce the complexity of the implementation.
-	Additionally function symbols and BLOBs are the only types that can occupy more then 9 bytes (in this format), thus are the only types for which it is interesting to split them.
+Compression:
+	At noted before compression generally incurs computational overhead.
+	In this particular case it's something we want to avoid or at least restrict as much as possible.
+	Also the streamability and portability requirements limit our options.
+	This is the reason we sticked to sharing of 'elements'.
+	With elements we mean terms / sub trees and function symbols.
+	We can achieve fairly good compression rates with this, because it is a type of compression that is specificly meant for ATerms; we know what the data and composition look like and can use that knowledge to our advantage.
+	
+	We use a sort of LZW like compression technique to handle the sharing.
+	What we do is, every time we encounter an element we haven't seen before we add it to a table and assign it the next 'identifier' (which is an unsigned integer; the first identifier is 0, which represents the root of the tree).
+	If we encounter an element that is already present in the table we set the with the element's type corresponding 'shared?' flag in the header and emit the associated identifier.
+	During the deserialization process we do the exact opposite, every unique element that is encountered is added to an array in the order in which we find them in the SAF stream; when we run into a shared element, we read the id and replace it by the value that is present at that index in the array.
+	We use separate tables and arrays for both shared terms / sub trees and shared function symbols.
+	
+	Integer encoding / compression:
+		We also made use of the fact that small unsigned integers are most common.
+		We are saving some space by only using the minimal amount of bytes to represent an integer value.
+		The last bit of every byte is used as a flag to indicate if there are more bytes coming (1) or not (0).
+		In most cases this means we only need one or two bytes to represent an integer value.
+		On the other hand, to represent large and negative integer values we need five instead of the regular four bytes, since we 'lose' on bit per byte.
+		However we expect those cases to be fairly rare.
+		Addionally, all the identifiers that are used for sharing are small unsigned integers, which occupy a large part of the serialized representation, especially in terms with heavy sharing; this was the deciding factor for using this type of integer encoding.
+		The encoding of the value of the integers is two's complement, because this is the standard on most (if not all) of todays personal computers. If the underlaying integer representation of the system you are writing an implementaion for is different, keep in mind that you will need to encode them as two's complement yourself.
+		
+	Here is an overview of the amount of compression that is achieved by the different formats:
+	
+	SDF syntax (a relatively large term, lots of sharing):
+	|                             |  ASCII  |  TAF   |  BAF   |  SAF   | GZIP   |
+	| Size (bytes)                | 3387103 | 73082  | 35308  | 45097  | 65279  |
+	| Compression (%)             | 0       | 97.842 | 98.958 | 98.669 | 98.073 |
+	
+	Pico syntax (a medium size term):
+	|                             | ASCII |  TAF  |  BAF   |  SAF   | GZIP   |
+	| Size (bytes)                | 61488 | 28131 | 13653  | 15903  | 6351   |
+	| Compression (%)             | 0     | 54.25 | 77.796 | 74.136 | 89.671 |
 
+	a(1) (a very small term, illustrating worst case overhead):
+	|                               | ASCII | TAF |  BAF | SAF | GZIP |
+	| Size (bytes)                  | 4     |  5  |  28  |  6  |  31  |
+	| Compression (%)               | 0     | -25 | -600 | -50 | -775 |
 
 Performance:
-	In the Java implementation of the ATerm library this is both the fastest (both with serialization as with deserialization) and the most compact format.
-	If we compare the Java implementation of this binary format with the TAF and BAF implementation in C, it's in the middle both in speed as in size (C TAF is faster but bigger and C BAF is smaller but slower). A C implementation of this format will (most likely) eliminate the speed 'disadvantage'.
-	However the main strength of this format is it's low memory usage and streamability support.
+	First off all, the current implementation in both C and Java is multiple times faster then that of any of the other ATerm formats (ASCII ATerm format, TAF and BAF).
+	Secondly the compression rates are nearly as good as that of BAF.
+	Combined with the low / predicable memory usage and streamability support make this format perfect for usage in a high performance environment.
+	
+	Here are some benchmarks that illustrate the performance difference between the current C and Java implementations of the different formats:
+	(The benchmarks were performed on a AMD 64 3500+ with 1 GB DDR-400 dual-channel RAM. It shows the 'best of five runs' execution time, measured inside the code (user time spend). Keep in mind that these measurements are subject to change and are merely an indication).
+	
+	SDF syntax (a relatively large term, both deep and wide):
+	|                             |  ASCII  |  TAF   |  BAF   |  SAF   ||| Java ASCII | Java TAF | Java SAF |
+	| Serialization x10000 (ms)   | 1744500 | 38376  | 100749 | 25620  ||| 2810000    | 91700    | 65300    |
+	| Deserialization x10000 (ms) | 2623500 | 91494  | 52544  | 22777  ||| 8150000    | 166500   | 83300    |
+	
+	Pico syntax (a medium size term):
+	|                             | ASCII |  TAF  |  BAF   |  SAF   ||| Java ASCII | Java TAF | Java SAF |
+	| Serialization x10000 (ms)   | 49756 | 16742 | 34024  | 7678   ||| 49100      | 31300    | 18830    |
+	| Deserialization x10000 (ms) | 46269 | 34234 | 17114  | 5661   ||| 144600     | 58700    | 26200    |
+
+	a(1) (a very small term, illustrating (de-)serialization overhead):
+	|                               | ASCII | TAF  |  BAF  | SAF  ||| Java ASCII | Java TAF | Java SAF |
+	| Serialization x1000000 (ms)   | 697   | 5468 | 87218 | 2050 ||| 18850      | 18630    | 2000     |
+	| Deserialization x1000000 (ms) | 539   | 5786 | 1790  | 2030 ||| 21530      | 27300    | 5500     |
 
 
 Example:
-
 	The following term: line(box(rect(2), square(4, 3)), circle(10))
-	Will look like this in the binary format: lineboxrectsquarecircle (when viewing this line, keep in mind that some characters might be missing / garbled, depending on the viewer you're using).
-	Which in bits looks like this (the indent and lines show the child-parent relationship):
+	Will look like this in the binary format:
+		lineboxrectsquarecircle
+	Or if the above line looks garbled in your viewer:
+		0x01 0x02 0x04 line 0x01 0x02 0x03 box 0x01 0x01 0x04 rect 0x02 0x02 0x01 0x02 0x06 square 0x02 0x04 0x02 0x03 0x01 0x01 0x06 circle 0x02 0x06
+	Which in bits looks like this (the indent and lines were added to show the child-parent relationship):
 	
-	|00000011	appl
+	|00000001	appl
 	|00000010	arity = 2
 	|00000100	fun-length = 4
 	|01101100	fun-bytes = line
@@ -100,14 +162,14 @@ Example:
 	|01101110
 	|01100101
 	|---|
-	    |00000011	appl
+	    |00000001	appl
 	    |00000010	arity = 2
 	    |00000011	fun-length = 3
 	    |01100010	fun-bytes = box
 	    |01101111
 	    |01111000
 	    |---|
-	    |   |00000011	appl
+	    |   |00000001	appl
 	    |   |00000001	arity = 1
 	    |   |00000100	fun-length = 4
 	    |   |01110010	fun-bytes = rect
@@ -115,10 +177,10 @@ Example:
 	    |   |01100011
 	    |   |01110100
 	    |   |---|
-	    |   |   |00000001	int
+	    |   |   |00000010	int
 	    |   |   |00000010	value = 2
 	    |   |	
-	    |   |00000011	appl
+	    |   |00000001	appl
 	    |   |00000010	arity = 2
 	    |   |00000110	fun-length = 6
 	    |   |01110011	fun-bytes = square
@@ -128,13 +190,13 @@ Example:
 	    |   |01110010
 	    |   |01100101
 	    |   |---|
-	    |       |00000001	int
+	    |       |00000010	int
 	    |       |00000100	value = 4
 	    |       |	
-	    |       |00000001	int
+	    |       |00000010	int
 	    |       |00000011	value = 3
 	    |		
-	    |00000011	appl
+	    |00000001	appl
 	    |00000001	arity = 1
 	    |00000110	fun-length = 6
 	    |01100011	fun-bytes = circle
@@ -144,5 +206,5 @@ Example:
 	    |01101100
 	    |01100101
 	    |---|
-	        |00000001	int
+	        |00000010	int
 	        |00000110	6

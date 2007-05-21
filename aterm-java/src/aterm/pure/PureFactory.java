@@ -35,7 +35,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -48,8 +47,8 @@ import aterm.ATermAppl;
 import aterm.ATermBlob;
 import aterm.ATermFactory;
 import aterm.ATermInt;
-import aterm.ATermLong;
 import aterm.ATermList;
+import aterm.ATermLong;
 import aterm.ATermPlaceholder;
 import aterm.ATermReal;
 import aterm.ParseError;
@@ -834,15 +833,6 @@ public class PureFactory extends SharedObjectFactory implements ATermFactory {
     throw new RuntimeException("not yet implemented!");
   }
 
-}
-
-class HashedWeakRef extends WeakReference {
-  protected HashedWeakRef next;
-
-  public HashedWeakRef(Object object, HashedWeakRef next) {
-    super(object);
-    this.next = next;
-  }
 }
 
 class ATermReader {

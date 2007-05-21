@@ -38,12 +38,12 @@ public class ATermFwd implements aterm.Visitor {
         this.any = any;
     }
 
-    public jjtraveler.Visitable visit(jjtraveler.Visitable v) 
-    throws jjtraveler.VisitFailure {
+    public jjtraveler.Visitable visit(jjtraveler.Visitable v) throws jjtraveler.VisitFailure {
 	if (v instanceof aterm.Visitable) {
 	    return ((aterm.Visitable) v).accept(this);
 	}
-	    throw new jjtraveler.VisitFailure();
+	
+	throw new jjtraveler.VisitFailure();
     }
 
     public aterm.Visitable visitATerm(ATerm arg) throws VisitFailure {

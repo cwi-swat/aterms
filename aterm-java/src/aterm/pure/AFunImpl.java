@@ -33,20 +33,20 @@ import shared.SharedObject;
 
 import aterm.*;
 
-class AFunImpl extends ATermImpl implements AFun {
-
+public class AFunImpl extends ATermImpl implements AFun {
+  private String name;
+  
+  private int arity;
+  
+  private boolean isQuoted;
+  
   protected AFunImpl(PureFactory factory) {
     super(factory);
   }
 
-  String name;
-
-  int arity;
-
-  boolean isQuoted;
-
   protected void init(int hashCode, String name, int arity, boolean isQuoted) {
     super.init(hashCode, null);
+    
     this.name = name.intern();
     this.arity = arity;
     this.isQuoted = isQuoted;

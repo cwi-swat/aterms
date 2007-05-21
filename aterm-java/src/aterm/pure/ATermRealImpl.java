@@ -40,8 +40,8 @@ import aterm.ATermPlaceholder;
 import aterm.ATermReal;
 import aterm.Visitor;
 
-class ATermRealImpl extends ATermImpl implements ATermReal {
-  double value;
+public class ATermRealImpl extends ATermImpl implements ATermReal {
+  private double value;
 
   protected ATermRealImpl(PureFactory factory) {
     super(factory);

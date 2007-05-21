@@ -36,8 +36,8 @@ import shared.SharedObject;
 
 import aterm.*;
 
-class ATermPlaceholderImpl extends ATermImpl implements ATermPlaceholder {
-  ATerm type;
+public class ATermPlaceholderImpl extends ATermImpl implements ATermPlaceholder {
+  private ATerm type;
 
   protected ATermPlaceholderImpl(PureFactory factory) {
     super(factory);
@@ -73,11 +73,10 @@ class ATermPlaceholderImpl extends ATermImpl implements ATermPlaceholder {
       if (type.getType() == ATerm.APPL) {
         ATermAppl appl = (ATermAppl) type;
         AFun afun = appl.getAFun();
-        if (afun.getName().equals("placeholder")
-            && afun.getArity() == 0 && !afun.isQuoted()) {
+        if (afun.getName().equals("placeholder") && afun.getArity() == 0 && !afun.isQuoted()) {
           list.add(type);
           return true;
-            }
+        }
       }
     }
 
@@ -85,7 +84,6 @@ class ATermPlaceholderImpl extends ATermImpl implements ATermPlaceholder {
   }
 
   public ATerm make(List args) {
-    PureFactory factory = getPureFactory();
     ATermAppl appl;
     AFun fun;
     String name;

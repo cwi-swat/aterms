@@ -148,6 +148,7 @@ public class TestBinaryFormat{
 		
 		if(result != expectedResult){
 			log("The result didn't match the expected result.");
+			/*log("Was: "+result+", expected: "+expectedResult);*/
 			return;
 		}
 		
@@ -200,3 +201,4 @@ public class TestBinaryFormat{
 		tbf.testChunkification();
 	}
 }
+

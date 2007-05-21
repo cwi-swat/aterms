@@ -1,5 +1,27 @@
+Mon May 14 10:43 CEST <lankamp@cwi.nl>
+  * Ported SAF I/O optimizations in the C version to Java.
+  * Added SAF file I/O.
+  * Updated documentation.
+
 2007-05-06  Pem  <pem@piano.local>
   * changed license to BSD
+
+2007-01-12 <moreau,reilles@loria.fr>
+  * added the ATermLong type
+  * added a test for ATermLong
+  * added the constant LONG=8
+
+Thu Dec 14 3:25:00 CEST 2006 <lankamp@cwi.nl>
+  * Fixed a bug in the BinaryWriter that caused problems with negative integers.
+  * Added a test for the BinaryWriter that checks if negative integers are serialized correctly.
+
+Fri Nov 17 1:40:00 CEST 2006 <lankamp@cwi.nl>
+  * Added a streamable binary format.
+  * Added documentation for the streamable binary format.
+
+Mon May 14 10:43 CEST <lankamp@cwi.nl>
+  * Ported SAF I/O optimizations in the C version to Java.
+  * Updated documentation.
 
 2007-01-12 <moreau,reilles@loria.fr>
   * added the ATermLong type
