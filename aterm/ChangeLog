@@ -3,6 +3,7 @@ $Id$
 Fri Jun 08 9:28:00 CET 2007 <lankamp@cwi.nl>
  * Merged the improved serialization branch with the trunk.
    This branch offers a new high performance (semi-) streamable ATerm format (aka SAF).
+ * Updated Baffle to support reading and writing SAF.
  * Ninja change: Moved the incrementing of a term's age during garbage collection to the proper location.
    It will no longer try to increment the age of terms that are already in the old generation, since that isn't nessacary.
 
