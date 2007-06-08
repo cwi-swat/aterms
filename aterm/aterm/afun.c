@@ -538,10 +538,9 @@ void ATprotectSymbol(Symbol sym)
 
 void ATunprotectSymbol(Symbol sym)
 {
-  int lcv;
-
-  for(lcv = 0; lcv < nr_protected_symbols; ++lcv) {
-    if(protected_symbols[lcv] == sym) {
+  int lcv = nr_protected_symbols;
+  while(--lcv >= 0){
+  	if(protected_symbols[lcv] == sym) {
       protected_symbols[lcv] = protected_symbols[--nr_protected_symbols];
       protected_symbols[nr_protected_symbols] = -1;
       break;

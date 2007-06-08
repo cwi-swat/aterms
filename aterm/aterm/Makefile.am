@@ -20,7 +20,10 @@ ALLSRCS = \
   md5c.c \
   memory.c \
   tafio.c \
-  version.c
+  version.c \
+  safio.c \
+  hashtable.c \
+  byteencoding.c
 
 PUBLIC_INCL = \
   abool.h \
@@ -29,7 +32,9 @@ PUBLIC_INCL = \
   aterm2.h \
   atypes.h \
   deprecated.h \
-  encoding.h
+  encoding.h \
+  safio.h \
+  hashtable.h
 
 PRIVATE_INCL = \
   _afun.h \
@@ -44,4 +49,5 @@ PRIVATE_INCL = \
   memory.h \
   tafio.h \
   util.h \
-  version.h
+  version.h \
+  byteencoding.h

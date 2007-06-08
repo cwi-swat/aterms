@@ -875,6 +875,7 @@ void major_sweep_phase_young()
             old_in_block++;
           } else {
             young_in_block++;
+            INCREMENT_AGE(t->header);
           }
 	} else {
 	  switch(ATgetType(t)) {
@@ -1024,8 +1025,10 @@ void minor_sweep_phase_young()
 	if(IS_MARKED(t->header) || IS_OLD(t->header)) {
           if(IS_OLD(t->header)) {
             old_in_block++;
+          }else{
+          	INCREMENT_AGE(t->header);
           }
-	  CLR_MARK(t->header);
+          CLR_MARK(t->header);
           alive_in_block++;
           empty = 0;
           assert(!IS_MARKED(t->header));
@@ -1347,11 +1350,7 @@ void AT_collect_minor()
 /*}}}  */
 #endif
 
-#ifdef WIN32
 #define CLOCK_DIVISOR CLOCKS_PER_SEC
-#else
-#define CLOCK_DIVISOR CLK_TCK
-#endif
 
 /*{{{  void AT_cleanupGC() */
 

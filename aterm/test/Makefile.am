@@ -2,8 +2,8 @@
 
 include $(top_srcdir)/Makefile.meta
 
-TESTS = stress primes randgen fib
-check_PROGRAMS = stress primes randgen termstats fib
+TESTS = stress primes randgen fib testsafio
+check_PROGRAMS = stress primes randgen termstats fib testsafio
 
 EXTRA_DIST += \
   error.trm \
@@ -12,7 +12,8 @@ EXTRA_DIST += \
   test.trms \
   vararg1.c \
   vararg2.c \
-  vararg3.c
+  vararg3.c \
+  testsafio.c
 
 CLEANFILES += test.taf test.blob terms.c terms.h
 BUILT_SOURCES = terms.c terms.h
@@ -38,6 +39,8 @@ termstats_SOURCES = termstats.c
 #vararg1_SOURCES = vararg1.c
 #vararg2_SOURCES = vararg2.c
 #vararg3_SOURCES = vararg3.c
+
+testsafio_SOURCES = testsafio.c
 
 
 .dict.c:

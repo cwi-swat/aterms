@@ -45,7 +45,7 @@ typedef unsigned int header_type;
 #define MAX_LENGTH (1 << LENGTH_BITS)
 
 #define GET_AGE(h)     ((unsigned int)(((h) & MASK_AGE) >> SHIFT_AGE))
-#define SET_AGE(h, a)  ((h) = (((h) & ~MASK_AGE) | ((a) << SHIFT_AGE)))
+#define SET_AGE(h, a)  ((h) = (((h) & ~MASK_AGE) | (((a) << SHIFT_AGE) & MASK_AGE)))
 
 #define YOUNG_AGE 0
 #define OLD_AGE   3
@@ -54,7 +54,7 @@ typedef unsigned int header_type;
 #define IS_OLD(h)        (GET_AGE(h) == OLD_AGE)
 
 /* TODO: Optimize */
-#define INCREMENT_AGE(h)    (SET_AGE(h,((GET_AGE(h)<OLD_AGE)?(GET_AGE(h)+1):(GET_AGE(h)))))
+#define INCREMENT_AGE(h)    (SET_AGE(h, ((GET_AGE(h) < OLD_AGE) ? (GET_AGE(h) + 1) : (GET_AGE(h)))))
 
 #define HIDE_AGE_MARK(h)    ((h) & ~MASK_AGE_MARK)
 /* #define EQUAL_HEADER(h1,h2) (HIDE_AGE_MARK(h1)==HIDE_AGE_MARK(h2)) */
@@ -71,7 +71,7 @@ typedef unsigned int header_type;
 #define TERM_SIZE_PLACEHOLDER (sizeof(struct __ATermPlaceholder)/sizeof(header_type))
 #define TERM_SIZE_SYMBOL      (sizeof(struct _SymEntry)/sizeof(header_type))
 
-#define IS_MARKED(h)    (((h) & MASK_MARK) ? ATtrue : ATfalse)
+#define IS_MARKED(h)    ((h) & MASK_MARK)
 #define GET_TYPE(h)     (((h) & MASK_TYPE) >> SHIFT_TYPE)
 #define HAS_ANNO(h)     ((h) & MASK_ANNO)
 #define GET_ARITY(h)	((unsigned int)(((h) & MASK_ARITY) >> SHIFT_ARITY))

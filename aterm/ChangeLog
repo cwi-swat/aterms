@@ -1,5 +1,11 @@
 $Id$
 
+Fri Jun 08 9:28:00 CET 2007 <lankamp@cwi.nl>
+ * Merged the improved serialization branch with the trunk.
+   This branch offers a new high performance (semi-) streamable ATerm format (aka SAF).
+ * Ninja change: Moved the incrementing of a term's age during garbage collection to the proper location.
+   It will no longer try to increment the age of terms that are already in the old generation, since that isn't nessacary.
+
 Mon Mar 19 12:59:56 CET 2007 <{kooiker,lankamp}@cwi.nl>
  * aterm/memory.c: In ATsetArgument hide the age and mark fields in newly
  generated term.

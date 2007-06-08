@@ -17,6 +17,7 @@
 #include "version.h"
 #include "atypes.h"
 #include "tafio.h"
+#include "safio.h"
 #include "md5.h"
 
 #ifdef DMALLOC
@@ -410,17 +411,15 @@ void ATprotectArray(ATerm *start, int size)
 #ifndef NDEBUG
   int i;
   for(i=0; i<size; i++) {
-    assert(start[i] == NULL || 
-	   AT_isValidTerm(start[i])); /* Check the precondition */
+    assert(start[i] == NULL || AT_isValidTerm(start[i])); /* Check the precondition */
   }
 #endif
 
   if(!free_prot_entries) {
     int i;
-    ProtEntry *entries = (ProtEntry *)calloc(PROTECT_EXPAND_SIZE, 
-					     sizeof(ProtEntry));
-    if(!entries)
-      ATerror("out of memory in ATprotect.\n");
+    ProtEntry *entries = (ProtEntry *)calloc(PROTECT_EXPAND_SIZE, sizeof(ProtEntry));
+    if(!entries) ATerror("out of memory in ATprotect.\n");
+    
     for(i=0; i<PROTECT_EXPAND_SIZE; i++) {
       entries[i].next = free_prot_entries;
       free_prot_entries = &entries[i];
@@ -1861,6 +1860,11 @@ ATerm ATreadFromFile(FILE *file)
   } else if (c == START_OF_SHARED_TEXT_FILE) {
     /* Might be a shared text file */
     return AT_readFromSharedTextFile(&c, file);
+  } else if (c == SAF_IDENTIFICATION_TOKEN) {
+  	int token = ungetc(SAF_IDENTIFICATION_TOKEN, file);
+  	if(token != SAF_IDENTIFICATION_TOKEN) ATerror("Unable to unget the SAF identification token.\n");
+  	
+  	return ATreadFromSAFFile(file);
   } else {
     /* Probably a text file */
     line = 0;
@@ -2374,8 +2378,6 @@ void AT_markTerm(ATerm t)
 
     SET_MARK(t->header);
     
-    INCREMENT_AGE(t->header);
-    
     if(HAS_ANNO(t->header))
       *current++ = AT_getAnnotations(t);
 
@@ -2497,8 +2499,6 @@ void AT_markTerm_young(ATerm t)
 
     SET_MARK(t->header);
       /*fprintf(stderr,"MINOR YOUNG MARK(%x)\n",(unsigned int)t);*/
-      /*fprintf(stderr,"YOUNG INCREMENT_AGE(%x,%d)\n",(unsigned int)t,GET_AGE(t->header));*/
-    INCREMENT_AGE(t->header);
 
     if(HAS_ANNO(t->header))
       *current++ = AT_getAnnotations(t);

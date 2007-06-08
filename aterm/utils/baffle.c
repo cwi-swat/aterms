@@ -8,6 +8,7 @@
 #include "bafio.h"
 #include "util.h"
 #include "aterm2.h"
+#include "safio.h"
 
 /*}}}  */
 
@@ -17,6 +18,7 @@
 #define TEXT        1
 #define SHARED_TEXT 2
 #define BINARY      3
+#define SAF         4
 
 /*}}}  */
 
@@ -27,14 +29,14 @@ char baffle_id[] = "$Id$";
 static void usage(char *prg)
 {
   fprintf(stderr,
-	  "Usage: %s [-i <input>] [-o <output> | -c] [-v] [-rb | -rt | -rs] [-wb | -wt | -ws]\n\n"
+	  "Usage: %s [-i <input>] [-o <output> | -c] [-v] [-rb | -rt | -rs | -rS] [-wb | -wt | -ws | -wS]\n\n"
 	  "    -i <input>    - Read input from file <input>        (Default: stdin)\n"
 	  "    -o <output>   - Write output to file <output>       (Default: stdout)\n"
 	  "    -c            - Check validity of input-term\n"
 	  "    -v            - Print version information\n"
 	  "    -h            - Display help\n"
-	  "    -rb, -rt, -rs - Choose between BAF, TEXT, and TAF input   (Default: autodetect)\n"
-	  "    -wb, -wt, -ws - Choose between BAF, TEXT, and TAF output  (Default: -wb)\n", 
+	  "    -rb, -rt, -rs, -rS - Choose between BAF, TEXT, TAF, and SAF input   (Default: autodetect)\n"
+	  "    -wb, -wt, -ws, -wS - Choose between BAF, TEXT, TAF, and SAF output  (Default: -wb)\n", 
 	  prg);
 }
 
@@ -66,12 +68,12 @@ int main(int argc, char *argv[])
     if (streq(argv[lcv], "-i")) {
       input = fopen(argv[++lcv], "rb");
       if (input == NULL)
-	ATerror("%s: unable to open %s for reading.\n", argv[0], argv[lcv]);
+		ATerror("%s: unable to open %s for reading.\n", argv[0], argv[lcv]);
     }
     else if (streq(argv[lcv], "-o")) {
       output = fopen(argv[++lcv], "wb");
       if (output == NULL)
-	ATerror("%s: unable to open %s for writing.\n", argv[0], argv[lcv]);
+		ATerror("%s: unable to open %s for writing.\n", argv[0], argv[lcv]);
     }
     else if (streq(argv[lcv], "-c")) {
       check = ATtrue;
@@ -96,6 +98,9 @@ int main(int argc, char *argv[])
     else if (streq(argv[lcv], "-rs")) {
       input_format = SHARED_TEXT;
     }
+    else if (streq(argv[lcv], "-rS")) {
+      input_format = SAF;
+    }
     else if (streq(argv[lcv], "-wb")) {
       output_format = BINARY;
     }
@@ -104,6 +109,9 @@ int main(int argc, char *argv[])
     }
     else if (streq(argv[lcv], "-ws")) {
       output_format = SHARED_TEXT;
+    }
+    else if (streq(argv[lcv], "-wS")) {
+      output_format = SAF;
     }
   }
 
@@ -120,6 +128,9 @@ int main(int argc, char *argv[])
     case BINARY:
       term = ATreadFromBinaryFile(input);
       break;
+    case SAF:
+      term = ATreadFromSAFFile(input);
+      break;
   }
 
   if (term == NULL) {
@@ -129,15 +140,19 @@ int main(int argc, char *argv[])
   if (!check) {
     switch (output_format) {
       case BINARY:
-	result = ATwriteToBinaryFile(term, output);
-	break;
+		result = ATwriteToBinaryFile(term, output);
+		break;
       case TEXT:
-	result = ATwriteToTextFile(term, output);
-	fprintf(output, "\n");
-	break;
+		result = ATwriteToTextFile(term, output);
+		fprintf(output, "\n");
+		break;
       case SHARED_TEXT:
-	result = ATwriteToSharedTextFile(term, output) > 0;
-	break;
+		result = ATwriteToSharedTextFile(term, output) > 0;
+		break;
+      case SAF:
+        ATwriteToSAFFile(term, output);
+        result = 1;
+        break;
     }
 
     if (!result) {
