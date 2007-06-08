@@ -1,6 +1,11 @@
 #ifndef HASHTABLE_H_
 #define HASHTABLE_H_
 
+#ifdef __cplusplus
+extern "C"
+{
+#endif /* __cplusplus */
+
 struct Entry;
 typedef struct Entry Entry;
 
@@ -41,4 +46,8 @@ void HTdestroyHashTable(HashTable hashTable, int delValue);
 
 int defaultEqCheck(void *a, void *b);
 
-#endif
+#ifdef __cplusplus
+}
+#endif /* __cplusplus */
+
+#endif /* HASHTABLE_H_ */

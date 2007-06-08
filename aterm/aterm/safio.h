@@ -6,6 +6,11 @@
 
 #define SAF_IDENTIFICATION_TOKEN '?'
 
+#ifdef __cplusplus
+extern "C"
+{
+#endif /* __cplusplus */
+
 /* Stores */
 typedef struct _IntegerStore{
 	unsigned int **blocks;
@@ -140,4 +145,8 @@ void ATwriteToSAFFile(ATerm aTerm, FILE *file);
 
 ATerm ATreadFromSAFFile(FILE *file);
 
-#endif
+#ifdef __cplusplus
+}
+#endif /* __cplusplus */
+
+#endif /* SAFIO_H */
