@@ -208,13 +208,24 @@ public class ATermApplImpl extends ATermImpl implements ATermAppl {
     return args.length;
   }
 
-  public ATerm make(List args) {
+  public ATerm make(List arguments) {
     ATerm[] newargs = new ATerm[this.args.length];
-    for (int i = 0; i < this.args.length; i++) {
-      newargs[i] = this.args[i].make(args);
+    for(int i = 0; i < args.length; i++){
+    	newargs[i] = args[i].make(arguments);
     }
-    // return make(fun, newargs);
-    return getPureFactory().makeAppl(fun, newargs, getPureFactory().makeList());
+    
+    PureFactory pf = getPureFactory();
+    ATermList empty = pf.getEmpty();
+    
+    ATermList annos = getAnnotations();
+    ATermList tempAnnos = empty;
+    while(annos != empty){
+    	tempAnnos = pf.makeList(annos.getFirst().make(arguments), tempAnnos);
+    	annos = annos.getNext();
+    }
+    ATermList newAnnos = tempAnnos.reverse();
+    
+    return getPureFactory().makeAppl(fun, newargs, newAnnos);
   }
 
   public ATerm setAnnotations(ATermList annos) {
