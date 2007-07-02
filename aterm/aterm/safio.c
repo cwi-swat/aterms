@@ -52,7 +52,7 @@ static int initialized = 0;
  * Returns a reference to an empty store.
  */
 static IntegerStore createIntegerStore(){
-	IntegerStore integerStore = (IntegerStore) malloc(sizeof(struct _IntegerStore));
+	IntegerStore integerStore = (IntegerStore) AT_malloc(sizeof(struct _IntegerStore));
 	if(integerStore == NULL) ATerror("Unable to allocate integer store.\n");
 	
 	integerStore->blocks = NULL;
@@ -71,11 +71,11 @@ void ATdestroyIntegerStore(){
 		unsigned int i = integerStore->nrOfBlocks;
 		unsigned int **blocks = integerStore->blocks;
 		while(i > 0){
-			free(blocks[--i]);
+			AT_free(blocks[--i]);
 		}
-		free(blocks);
+		AT_free(blocks);
 		
-		free(integerStore);
+		AT_free(integerStore);
 		integerStore = NULL;
 		
 		initialized = 0;
@@ -92,11 +92,11 @@ static void addBlockToIntegerStore(){
 	unsigned int nrOfBlocks = integerStore->nrOfBlocks;
 	
 	if((nrOfBlocks & INTEGERSTOREBLOCKSINCREMENTMASK) == 0){
-		integerStore->blocks = (unsigned int**) realloc(integerStore->blocks, (nrOfBlocks + INTEGERSTOREBLOCKSINCREMENT) * sizeof(unsigned int*));
+		integerStore->blocks = (unsigned int**) AT_realloc(integerStore->blocks, (nrOfBlocks + INTEGERSTOREBLOCKSINCREMENT) * sizeof(unsigned int*));
 		if(integerStore->blocks == NULL) ATerror("Unable to allocate block of integers for the integer store.\n");
 	}
 	
-	block = (unsigned int*) malloc(INTEGERSTOREBLOCKSIZE * sizeof(unsigned int));
+	block = (unsigned int*) AT_malloc(INTEGERSTOREBLOCKSIZE * sizeof(unsigned int));
 	if(block == NULL) ATerror("Unable to allocate additional block of integers for the integer store.\n");
 	
 	integerStore->blocks[nrOfBlocks] = block;
@@ -147,15 +147,13 @@ void ATinitializeIntegerStore(){
 static ProtectedMemoryStack createProtectedMemoryStack(){
 	ATerm *block;
 	
-	ProtectedMemoryStack protectedMemoryStack = (ProtectedMemoryStack) malloc(sizeof(struct _ProtectedMemoryStack));
+	ProtectedMemoryStack protectedMemoryStack = (ProtectedMemoryStack) AT_malloc(sizeof(struct _ProtectedMemoryStack));
 	if(protectedMemoryStack == NULL) ATerror("Unable to allocate protected memory stack.\n");
 	
-	block = (ATerm*) calloc(PROTECTEDMEMORYSTACKBLOCKSIZE, sizeof(ATerm));
+	block = (ATerm*) AT_alloc_protected(PROTECTEDMEMORYSTACKBLOCKSIZE);
 	if(block == NULL) ATerror("Unable to allocate block for the protected memory stack.\n");
 	
-	ATprotectArray(block, PROTECTEDMEMORYSTACKBLOCKSIZE);
-	
-	protectedMemoryStack->blocks = (ATerm**) malloc(PROTECTEDMEMORYSTACKBLOCKSINCREMENT * sizeof(ATerm*));
+	protectedMemoryStack->blocks = (ATerm**) AT_malloc(PROTECTEDMEMORYSTACKBLOCKSINCREMENT * sizeof(ATerm*));
 	if(protectedMemoryStack->blocks == NULL) ATerror("Unable to allocate blocks for the protected memory stack.\n");
 	
 	protectedMemoryStack->blocks[0] = block;
@@ -166,7 +164,7 @@ static ProtectedMemoryStack createProtectedMemoryStack(){
 	protectedMemoryStack->currentIndex = block;
 	protectedMemoryStack->spaceLeft = PROTECTEDMEMORYSTACKBLOCKSIZE;
 	
-	protectedMemoryStack->freeBlockSpaces = (unsigned int*) malloc(PROTECTEDMEMORYSTACKBLOCKSINCREMENT * sizeof(unsigned int));
+	protectedMemoryStack->freeBlockSpaces = (unsigned int*) AT_malloc(PROTECTEDMEMORYSTACKBLOCKSINCREMENT * sizeof(unsigned int));
 	if(protectedMemoryStack->freeBlockSpaces == NULL) ATerror("Unable to allocate array for registering free block spaces of the protected memory stack.\n");
 	
 	return protectedMemoryStack;
@@ -183,15 +181,13 @@ static void destroyProtectedMemoryStack(ProtectedMemoryStack protectedMemoryStac
 	do{
 		ATerm *block = blocks[--i];
 		
-		ATunprotectArray(block);
-		
-		free(block);
+		AT_free_protected(block);
 	}while(i > 0);
-	free(blocks);
+	AT_free(blocks);
 	
-	free(protectedMemoryStack->freeBlockSpaces);
+	AT_free(protectedMemoryStack->freeBlockSpaces);
 	
-	free(protectedMemoryStack);
+	AT_free(protectedMemoryStack);
 }
 
 /**
@@ -207,17 +203,15 @@ static void expandProtectedMemoryStack(ProtectedMemoryStack protectedMemoryStack
 	protectedMemoryStack->freeBlockSpaces[protectedMemoryStack->currentBlockNr++] = protectedMemoryStack->spaceLeft;
 	
 	if(nrOfBlocks == protectedMemoryStack->currentBlockNr){
-		block = (ATerm*) calloc(PROTECTEDMEMORYSTACKBLOCKSIZE, sizeof(ATerm));
+		block = (ATerm*) AT_alloc_protected(PROTECTEDMEMORYSTACKBLOCKSIZE);
 		if(block == NULL) ATerror("Unable to allocate block for the protected memory stack.\n");
-		
-		ATprotectArray(block, PROTECTEDMEMORYSTACKBLOCKSIZE);
 		
 		if((nrOfBlocks & PROTECTEDMEMORYSTACKBLOCKSINCREMENTMASK) == 0){
 			unsigned int newSize = nrOfBlocks + PROTECTEDMEMORYSTACKBLOCKSINCREMENT;
-			protectedMemoryStack->blocks = (ATerm**) realloc(protectedMemoryStack->blocks, newSize * sizeof(ATerm*));
+			protectedMemoryStack->blocks = (ATerm**) AT_realloc(protectedMemoryStack->blocks, newSize * sizeof(ATerm*));
 			if(protectedMemoryStack->blocks == NULL) ATerror("Unable to allocate blocks array for the protected memory stack.\n");
 			
-			protectedMemoryStack->freeBlockSpaces = (unsigned int*) realloc(protectedMemoryStack->freeBlockSpaces, newSize * sizeof(unsigned int));
+			protectedMemoryStack->freeBlockSpaces = (unsigned int*) AT_realloc(protectedMemoryStack->freeBlockSpaces, newSize * sizeof(unsigned int));
 			if(protectedMemoryStack->freeBlockSpaces == NULL) ATerror("Unable to allocate array for registering free block spaces of the protected memory stack.\n");
 		}
 		
@@ -244,9 +238,8 @@ static ATerm* getProtectedMemoryBlock(ProtectedMemoryStack protectedMemoryStack,
 		memoryBlock = protectedMemoryStack->currentIndex;
 		protectedMemoryStack->currentIndex += size;
 	}else{
-		memoryBlock = (ATerm*) calloc(size, sizeof(ATerm));
+		memoryBlock = (ATerm*) AT_alloc_protected(size);
 		if(memoryBlock == NULL) ATerror("Unable to allocated large memoryBlock.\n");
-		ATprotectArray(memoryBlock, size);
 	}
 	
 	return memoryBlock;
@@ -271,8 +264,7 @@ static void releaseProtectedMemoryBlock(ProtectedMemoryStack protectedMemoryStac
 			protectedMemoryStack->currentIndex = protectedMemoryStack->blocks[currentBlockNr] + PROTECTEDMEMORYSTACKBLOCKSIZE - freeBlockSpace;
 		}
 	}else{
-		ATunprotectArray(ptr);
-		free(ptr);
+		AT_free_protected(ptr);
 	}
 }
 
@@ -285,10 +277,10 @@ static void releaseProtectedMemoryBlock(ProtectedMemoryStack protectedMemoryStac
 ByteBuffer ATcreateByteBuffer(unsigned int capacity){
 	char *buffer;
 	
-	ByteBuffer byteBuffer = (ByteBuffer) malloc(sizeof(struct _ByteBuffer));
+	ByteBuffer byteBuffer = (ByteBuffer) AT_malloc(sizeof(struct _ByteBuffer));
 	if(byteBuffer == NULL) ATerror("Failed to allocate byte buffer.\n");
 	
-	buffer = (char*) malloc(capacity * sizeof(char));
+	buffer = (char*) AT_malloc(capacity * sizeof(char));
 	if(buffer == NULL) ATerror("Failed to allocate buffer string for the byte buffer.\n");
 	byteBuffer->buffer = buffer;
 	byteBuffer->currentPos = buffer;
@@ -306,7 +298,7 @@ ByteBuffer ATcreateByteBuffer(unsigned int capacity){
  * Alternatively you could set the buffer field to NULL, before passing this buffer to the ATdestroyByteBuffer function and handle the freeing of the buffer manually.
  */
 ByteBuffer ATwrapBuffer(char *buffer, unsigned int capacity){
-	ByteBuffer byteBuffer = (ByteBuffer) malloc(sizeof(struct _ByteBuffer));
+	ByteBuffer byteBuffer = (ByteBuffer) AT_malloc(sizeof(struct _ByteBuffer));
 	if(byteBuffer == NULL) ATerror("Failed to allocate byte buffer.\n");
 	
 	byteBuffer->buffer = buffer;
@@ -348,9 +340,9 @@ inline void ATresetByteBuffer(ByteBuffer byteBuffer){
  * Frees the memory associated with the given byte buffer.
  */
 void ATdestroyByteBuffer(ByteBuffer byteBuffer){
-	free(byteBuffer->buffer);
+	AT_free(byteBuffer->buffer);
 	
-	free(byteBuffer);
+	AT_free(byteBuffer);
 }
 
 
@@ -394,7 +386,7 @@ inline static unsigned int getNrOfSubTerms(ATerm term){
  */
 static void ensureWriteStackCapacity(BinaryWriter binaryWriter){
 	if(binaryWriter->stackPosition >= binaryWriter->stackSize){
-		binaryWriter->stack = (ATermMapping*) realloc(binaryWriter->stack, (binaryWriter->stackSize += STACKSIZEINCREMENT) * sizeof(struct _ATermMapping));
+		binaryWriter->stack = (ATermMapping*) AT_realloc(binaryWriter->stack, (binaryWriter->stackSize += STACKSIZEINCREMENT) * sizeof(struct _ATermMapping));
 		if(binaryWriter->stack == NULL) ATerror("The binary writer was unable to enlarge the stack.\n");
 	}
 }
@@ -618,10 +610,10 @@ BinaryWriter ATcreateBinaryWriter(ATerm term){
 	ATermMapping *stack;
 	ATermMapping *tm;
 	
-	BinaryWriter binaryWriter = (BinaryWriter) malloc(sizeof(struct _BinaryWriter));
+	BinaryWriter binaryWriter = (BinaryWriter) AT_malloc(sizeof(struct _BinaryWriter));
 	if(binaryWriter == NULL) ATerror("Unable to allocate memory for the binary writer.\n");
 	
-	stack = (ATermMapping*) malloc(DEFAULTSTACKSIZE * sizeof(struct _ATermMapping));
+	stack = (ATermMapping*) AT_malloc(DEFAULTSTACKSIZE * sizeof(struct _ATermMapping));
 	if(stack == NULL) ATerror("Unable to allocate memory for the binaryWriter's stack.\n");
 	binaryWriter->stack = stack;
 	binaryWriter->stackSize = DEFAULTSTACKSIZE;
@@ -660,13 +652,13 @@ int ATisFinishedWriting(BinaryWriter binaryWriter){
  * Frees the memory associated with the given binary writer.
  */
 void ATdestroyBinaryWriter(BinaryWriter binaryWriter){
-	free(binaryWriter->stack);
+	AT_free(binaryWriter->stack);
 	
 	HTdestroyHashTable(binaryWriter->sharedTerms, 0);
 	
 	HTdestroyHashTable(binaryWriter->sharedSymbols, 0);
 	
-	free(binaryWriter);
+	AT_free(binaryWriter);
 }
 
 /**
@@ -757,7 +749,7 @@ inline static double readDouble(ByteBuffer byteBuffer){
  */
 static void ensureReadStackCapacity(BinaryReader binaryReader){
 	if(binaryReader->stackPosition >= binaryReader->stackSize){
-		binaryReader->stack = (ATermConstruct*) realloc(binaryReader->stack, (binaryReader->stackSize += STACKSIZEINCREMENT) * sizeof(struct _ATermConstruct));
+		binaryReader->stack = (ATermConstruct*) AT_realloc(binaryReader->stack, (binaryReader->stackSize += STACKSIZEINCREMENT) * sizeof(struct _ATermConstruct));
 		if(binaryReader->stack == NULL) ATerror("Unable to allocate memory for expanding the binaryReader's stack.\n");
 	}
 }
@@ -767,7 +759,7 @@ static void ensureReadStackCapacity(BinaryReader binaryReader){
  */
 static void ensureReadSharedTermCapacity(BinaryReader binaryReader){
 	if(binaryReader->sharedTermsIndex >= binaryReader->sharedTermsSize){
-		binaryReader->sharedTerms = (ATerm*) realloc(binaryReader->sharedTerms, (binaryReader->sharedTermsSize += SHAREDTERMARRAYINCREMENT) * sizeof(ATerm));
+		binaryReader->sharedTerms = (ATerm*) AT_realloc(binaryReader->sharedTerms, (binaryReader->sharedTermsSize += SHAREDTERMARRAYINCREMENT) * sizeof(ATerm));
 		if(binaryReader->sharedTerms == NULL) ATerror("Unable to allocate memory for expanding the binaryReader's shared terms array.\n");
 	}
 }
@@ -781,7 +773,7 @@ static void ensureReadSharedSymbolCapacity(BinaryReader binaryReader){
 		unsigned int sharedSymbolsSize = binaryReader->sharedSymbolsSize;
 		unsigned int newSharedSymbolsSize = (sharedSymbolsSize + SHAREDSYMBOLARRAYINCREMENT);
 		
-		SymEntry *newSharedSymbols = (SymEntry*) calloc(newSharedSymbolsSize, sizeof(SymEntry));
+		SymEntry *newSharedSymbols = (SymEntry*) AT_calloc(newSharedSymbolsSize, sizeof(SymEntry));
 		if(newSharedSymbols == NULL) ATerror("Unable to allocate memory for expanding the binaryReader's shared signatures array.\n");
 		memcpy(newSharedSymbols, sharedSymbols, sharedSymbolsSize * sizeof(SymEntry));
 		
@@ -790,7 +782,7 @@ static void ensureReadSharedSymbolCapacity(BinaryReader binaryReader){
 		binaryReader->sharedSymbolsSize = newSharedSymbolsSize;
 		
 		ATunprotectArray((ATerm*) sharedSymbols);
-		free(sharedSymbols);
+		AT_free(sharedSymbols);
 	}
 }
 
@@ -803,7 +795,7 @@ inline static void resetTempReaderData(BinaryReader binaryReader){
 		binaryReader->tempType = 0;
 		
 		/* It doesn't matter if tempBytes is NULL, since free(NULL) does nothing */
-		free(binaryReader->tempBytes);
+		AT_free(binaryReader->tempBytes);
 		binaryReader->tempBytes = NULL;
 		
 		binaryReader->tempBytesSize = 0;
@@ -1029,7 +1021,7 @@ static void touchAppl(BinaryReader binaryReader, ByteBuffer byteBuffer, unsigned
 		binaryReader->tempBytes = binaryReader->tempNamePage;
 		/* Only allocate a new block of memory if we're dealing with a very large name. */
 		if(nameLength >= TEMPNAMEPAGESIZE){
-			binaryReader->tempBytes = (char*) malloc((nameLength + 1) * sizeof(char));
+			binaryReader->tempBytes = (char*) AT_malloc((nameLength + 1) * sizeof(char));
 			if(binaryReader->tempBytes == NULL) ATerror("The binary reader was unable to allocate memory for temporary function symbol data.\n");
 		}
 		binaryReader->tempBytes[nameLength] = '\0'; /* CStrings are \0 terminated. */
@@ -1110,7 +1102,7 @@ static void touchBlob(BinaryReader binaryReader, ByteBuffer byteBuffer){
 	unsigned int length = readInt(byteBuffer);
 	
 	binaryReader->tempBytesSize = length;
-	binaryReader->tempBytes = (char*) malloc(length);
+	binaryReader->tempBytes = (char*) AT_malloc(length);
 	if(binaryReader->tempBytes == NULL) ATerror("The binary reader was unable to allocate memory for temporary blob data.\n");
 	binaryReader->tempBytesIndex = 0;
 	binaryReader->tempType = AT_BLOB;
@@ -1205,31 +1197,31 @@ BinaryReader ATcreateBinaryReader(){
 	ATerm *sharedTerms;
 	SymEntry *sharedSymbols;
 	
-	BinaryReader binaryReader = (BinaryReader) malloc(sizeof(struct _BinaryReader));
+	BinaryReader binaryReader = (BinaryReader) AT_malloc(sizeof(struct _BinaryReader));
 	if(binaryReader == NULL) ATerror("Unable to allocate memory for the binary reader.\n");
 	
 	binaryReader->protectedMemoryStack = createProtectedMemoryStack();
 	
-	stack = (ATermConstruct*) malloc(DEFAULTSTACKSIZE * sizeof(struct _ATermConstruct));
+	stack = (ATermConstruct*) AT_malloc(DEFAULTSTACKSIZE * sizeof(struct _ATermConstruct));
 	if(stack == NULL) ATerror("Unable to allocate memory for the binaryReader's stack.\n");
 	binaryReader->stack = stack;
 	binaryReader->stackSize = DEFAULTSTACKSIZE;
 	binaryReader->stackPosition = -1;
 	
-	sharedTerms = (ATerm*) malloc(DEFAULTSHAREDTERMARRAYSIZE * sizeof(ATerm));
+	sharedTerms = (ATerm*) AT_malloc(DEFAULTSHAREDTERMARRAYSIZE * sizeof(ATerm));
 	if(sharedTerms == NULL) ATerror("Unable to allocate memory for the binaryReader's shared terms array.\n");
 	binaryReader->sharedTerms = sharedTerms;
 	binaryReader->sharedTermsSize = DEFAULTSHAREDTERMARRAYSIZE;
 	binaryReader->sharedTermsIndex = 0;
 	
-	sharedSymbols = (SymEntry*) calloc(DEFAULTSHAREDSYMBOLARRAYSIZE, sizeof(SymEntry));
+	sharedSymbols = (SymEntry*) AT_calloc(DEFAULTSHAREDSYMBOLARRAYSIZE, sizeof(SymEntry));
 	if(sharedSymbols == NULL) ATerror("Unable to allocate memory for the binaryReader's shared symbols array.\n");
 	ATprotectArray((ATerm*) sharedSymbols, DEFAULTSHAREDSYMBOLARRAYSIZE);
 	binaryReader->sharedSymbols = sharedSymbols;
 	binaryReader->sharedSymbolsSize = DEFAULTSHAREDSYMBOLARRAYSIZE;
 	binaryReader->sharedSymbolsIndex = 0;
 	
-	binaryReader->tempNamePage = (char*) malloc(TEMPNAMEPAGESIZE * sizeof(char));
+	binaryReader->tempNamePage = (char*) AT_malloc(TEMPNAMEPAGESIZE * sizeof(char));
 	if(binaryReader->tempNamePage == NULL) ATerror("Unable to allocate temporary name page.\n");
 	
 	binaryReader->tempType = 0;
@@ -1273,18 +1265,18 @@ void ATdestroyBinaryReader(BinaryReader binaryReader){
 	destroyProtectedMemoryStack(binaryReader->protectedMemoryStack);
 	
 	/* We can just free the shared terms, shared signatures and the stack, since they're all present in the memory block store. */
-	free(binaryReader->sharedTerms);
+	AT_free(binaryReader->sharedTerms);
 	
-	free(binaryReader->stack);
+	AT_free(binaryReader->stack);
 	
 	ATunprotectArray((ATerm*) binaryReader->sharedSymbols);
-	free(binaryReader->sharedSymbols);
+	AT_free(binaryReader->sharedSymbols);
 	
-	free(binaryReader->tempNamePage);
+	AT_free(binaryReader->tempNamePage);
 	
 	resetTempReaderData(binaryReader);
 	
-	free(binaryReader);
+	AT_free(binaryReader);
 }
 
 
