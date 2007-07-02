@@ -7,6 +7,7 @@
 #include "make.h"
 #include "deprecated.h"
 #include "util.h"
+#include "memory.h"
 
 #include <assert.h>
 
@@ -92,7 +93,7 @@ ATerm AT_getPattern(const char *pat)
       return bucket->term;
     }
     else {
-      free(bucket->pat);
+      AT_free(bucket->pat);
     }
   }
   else {

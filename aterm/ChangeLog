@@ -1,5 +1,17 @@
 $Id$
 
+Mon Jul 02 11:36:00 CET 2007 <eriks@win.tue.nl>
+ * Merged the protected-memory-management branch with the trunk.
+   This branch offers faster memory management functions for blocks of protected
+   terms. All calls to malloc, alloc, realloc and free in the ATerm library
+   should be replaced with calls to AT_malloc, AT_alloc, AT_realloc and AT_free.
+   Calls like "terms = AT_alloc(size, sizeof(ATerm*)); ATprotectArray(terms)"
+   can be replaced with the much faster call "terms = AT_alloc_protected(size)".
+   The full list of new functions is defined in memory.h
+ * Used the new protected memory allocation routines to speed up the ATtable
+   and ATindexedSet implementations. The result is that some programs that
+   rely heavily on ATindexdSets are up to 20 times faster.
+
 Fri Jun 08 9:28:00 CET 2007 <lankamp@cwi.nl>
  * Merged the improved serialization branch with the trunk.
    This branch offers a new high performance (semi-) streamable ATerm format (aka SAF).

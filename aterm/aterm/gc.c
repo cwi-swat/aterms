@@ -51,6 +51,8 @@ extern int     nr_marks;
 #endif
 static FILE *gc_f = NULL;
 
+extern ATprotected_block protected_blocks;
+
 AFun at_parked_symbol = -1;
 
 int gc_min_number_of_blocks;
@@ -251,6 +253,7 @@ VOIDCDECL mark_phase()
   ATerm *stackTop;
   ATerm *start, *stop;
   ProtEntry *prot;
+  ATprotected_block pblock;
 
 #ifdef AT_64BIT
   ATerm oddTerm;
@@ -343,7 +346,12 @@ VOIDCDECL mark_phase()
   }
 
   for (prot=at_prot_memory; prot != NULL; prot=prot->next) {
-    mark_memory((ATerm *)prot->start, (ATerm *)(((char *)prot->start) + prot->size));
+    mark_memory((ATerm *)prot->start, (ATerm *)(((void *)prot->start) + prot->size));
+  }
+  
+  for (pblock=protected_blocks; pblock != NULL; pblock=pblock->next) {
+    if (pblock->protsize>0)
+      mark_memory(pblock->term, &pblock->term[pblock->protsize]);
   }
   
   at_mark_young = ATfalse;
@@ -370,6 +378,7 @@ VOIDCDECL mark_phase_young()
   ATerm *stackTop;
   ATerm *start, *stop;
   ProtEntry *prot;
+  ATprotected_block pblock;
 
 #ifdef AT_64BIT
   ATerm oddTerm;
@@ -460,7 +469,12 @@ VOIDCDECL mark_phase_young()
   }
 
   for (prot=at_prot_memory; prot != NULL; prot=prot->next) {
-    mark_memory_young((ATerm *)prot->start, (ATerm *)(((char *)prot->start) + prot->size));
+    mark_memory_young((ATerm *)prot->start, (ATerm *)(((void *)prot->start) + prot->size));
+  }
+  
+  for (pblock=protected_blocks; pblock != NULL; pblock=pblock->next) {
+    if (pblock->protsize>0)
+      mark_memory_young(pblock->term, &pblock->term[pblock->protsize]);
   }
   
   at_mark_young = ATtrue;
@@ -617,7 +631,7 @@ static void reclaim_empty_block(unsigned int blocks, int size, Block *removed_bl
 #ifdef GC_VERBOSE
     fprintf(stderr,"free block %d\n",(int)removed_block);
 #endif
-    free(removed_block);
+    AT_free(removed_block);
   }
 }
 

@@ -19,6 +19,7 @@ ALLSRCS = \
   make.c \
   md5c.c \
   memory.c \
+  memmgnt.c \
   tafio.c \
   version.c \
   safio.c \
