@@ -1,3 +1,6 @@
+Tue Jul 10 10:28 CEST <lankamp@cwi.nl>
+  * Fixed an incompatibility with Java's UTF-8 strings in the SAF binary writer.
+
 Mon May 14 10:43 CEST <lankamp@cwi.nl>
   * Ported SAF I/O optimizations in the C version to Java.
   * Added SAF file I/O.

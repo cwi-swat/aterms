@@ -84,7 +84,8 @@ public class BinaryWriter extends ATermFwdVoid{
 	private ATermMapping[] stack;
 	private int stackPosition;
 	private ATerm currentTerm;
-	private int indexInTerm = 0;
+	private int indexInTerm;
+	private byte[] tempNameWriteBuffer;
 
 	private ByteBuffer currentBuffer;
 
@@ -110,6 +111,9 @@ public class BinaryWriter extends ATermFwdVoid{
 
 		stack[stackPosition] = tm;
 		currentTerm = root;
+		
+		indexInTerm = 0;
+		tempNameWriteBuffer = null;
 	}
 
 	/**
@@ -263,17 +267,20 @@ public class BinaryWriter extends ATermFwdVoid{
 				writeInt(arg.getArity());
 				
 				String name = fun.getName();
-				int length = name.length();
+				byte[] nameBytes = name.getBytes();
+				int length = nameBytes.length;
 				writeInt(length);
 
 				int endIndex = length;
 				int remaining = currentBuffer.remaining();
 				if(remaining < endIndex) endIndex = remaining;
+				
+				currentBuffer.put(nameBytes, 0, endIndex);
 
-				byte[] nameBytes = name.substring(0, endIndex).getBytes();
-				currentBuffer.put(nameBytes);
-
-				if(endIndex != length) indexInTerm = endIndex;
+				if(endIndex != length){
+					indexInTerm = endIndex;
+					tempNameWriteBuffer = nameBytes;
+				}
 
 				applSignatures.put(fun, new Integer(sigKey++));
 			}else{
@@ -283,19 +290,19 @@ public class BinaryWriter extends ATermFwdVoid{
 				writeInt(key.intValue());
 			}
 		}else{
-			AFun fun = arg.getAFun();
-			String name = fun.getName();
-			int length = name.length();
-
+			int length = tempNameWriteBuffer.length;
+			
 			int endIndex = length;
 			int remaining = currentBuffer.remaining();
 			if((indexInTerm + remaining) < endIndex) endIndex = (indexInTerm + remaining);
-
-			byte[] nameBytes = name.substring(indexInTerm, endIndex).getBytes();
-			currentBuffer.put(nameBytes);
+			
+			currentBuffer.put(tempNameWriteBuffer, indexInTerm, (endIndex - indexInTerm));
 			indexInTerm = endIndex;
 
-			if(indexInTerm == length) indexInTerm = 0;
+			if(indexInTerm == length){
+				indexInTerm = 0;
+				tempNameWriteBuffer = null;
+			}
 		}
 	}
 
