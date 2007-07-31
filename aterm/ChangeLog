@@ -1,5 +1,15 @@
 $Id$
 
+Mon Jul 23 11:33:58 CET 2007 <lankamp@cwi.nl>
+ * aterm/byteencoding.c: We no longer need to rely on certain header files for
+encoding doubles in ieee754 format. Those were not available on all platforms.
+For portability, we have our own implementation now which also
+takes care of endianness.
+ * configure.ac: Autoconf now checks the endianness of the system, so we don't have to do it in code.
+ * float-order.m4: Created an autoconf script that is able to determain the float word order.
+   (All of the above changes are needed for SAF I/O's byte encoding).
+ * aterm/memory.c,test/testsafio.c: Fixed some 'signedness' warnings that popped up while compiling on MacOS.
+
 Mon Jul 02 11:36:00 CET 2007 <eriks@win.tue.nl>
  * Merged the protected-memory-management branch with the trunk.
    This branch offers faster memory management functions for blocks of protected
@@ -16,7 +26,7 @@ Fri Jun 08 9:28:00 CET 2007 <lankamp@cwi.nl>
  * Merged the improved serialization branch with the trunk.
    This branch offers a new high performance (semi-) streamable ATerm format (aka SAF).
  * Updated Baffle to support reading and writing SAF.
- * Ninja change: Moved the incrementing of a term's age during garbage collection to the proper location.
+ * Moved the incrementing of a term's age during garbage collection to the proper location.
    It will no longer try to increment the age of terms that are already in the old generation, since that isn't nessacary.
 
 Mon Mar 19 12:59:56 CET 2007 <{kooiker,lankamp}@cwi.nl>

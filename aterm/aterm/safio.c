@@ -474,7 +474,7 @@ static void visitAppl(BinaryWriter binaryWriter, ATermAppl arg, ByteBuffer byteB
 	
 	if(binaryWriter->indexInTerm == 0){
 		SymEntry symEntry = at_lookup_table[fun];
-		int funHash = (unsigned int) symEntry;
+		unsigned int funHash = (unsigned int) symEntry;
 		
 		HashTable hashTable = binaryWriter->sharedSymbols;
 		unsigned int *id = (unsigned int*) HTgetElement(hashTable, symEntry, funHash);
@@ -1018,9 +1018,10 @@ static void touchAppl(BinaryReader binaryReader, ByteBuffer byteBuffer, unsigned
 		binaryReader->tempIsQuoted = ((header & APPLQUOTED) == APPLQUOTED);
 		
 		binaryReader->tempBytesSize = nameLength;
-		binaryReader->tempBytes = binaryReader->tempNamePage;
 		/* Only allocate a new block of memory if we're dealing with a very large name. */
-		if(nameLength >= TEMPNAMEPAGESIZE){
+		if(nameLength < TEMPNAMEPAGESIZE){
+			binaryReader->tempBytes = binaryReader->tempNamePage;
+		}else{
 			binaryReader->tempBytes = (char*) AT_malloc((nameLength + 1) * sizeof(char));
 			if(binaryReader->tempBytes == NULL) ATerror("The binary reader was unable to allocate memory for temporary function symbol data.\n");
 		}

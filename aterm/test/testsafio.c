@@ -7,7 +7,7 @@
 
 static void testIntegerEncoding(){
 	char *buffer = (char*) malloc(8 * sizeof(char));
-	int count = 0;
+	unsigned int count = 0;
 	
 	/* Test a lot of integers between -2^32 and 2^32-1 at PRIME intervals */
 	int i = -2147483647;
