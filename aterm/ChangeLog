@@ -1,10 +1,13 @@
 $Id$
 
+Wed Aug 01 9:09:07 CET 2007 <lankamp@cwi.nl>
+ * test/stress.c: The strdup function was defined incorrectly (the const modifier was missing).
+   This caused the compilation of the tests to fail on certain systems.
+
 Mon Jul 23 11:33:58 CET 2007 <lankamp@cwi.nl>
- * aterm/byteencoding.c: We no longer need to rely on certain header files for
-encoding doubles in ieee754 format. Those were not available on all platforms.
-For portability, we have our own implementation now which also
-takes care of endianness.
+ * aterm/byteencoding.c: We no longer need to rely on certain header files for encoding doubles in ieee754 format.
+   Those were not available on all platforms.
+   For portability, we have our own implementation now which also takes care of endianness.
  * configure.ac: Autoconf now checks the endianness of the system, so we don't have to do it in code.
  * float-order.m4: Created an autoconf script that is able to determain the float word order.
    (All of the above changes are needed for SAF I/O's byte encoding).

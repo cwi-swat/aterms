@@ -25,7 +25,7 @@
 
 #if !HAVE_STRDUP
 # ifndef strdup
-static char* strdup(char* str)
+static char* strdup(const char* str)
 {
   size_t size = strlen(str)+1;
   char* buf = malloc(size);
