@@ -1,7 +1,7 @@
 $Id$
 
 Wed Aug 01 9:09:07 CET 2007 <lankamp@cwi.nl>
- * test/stress.c: The strdup function was defined incorrectly (the const modifier was missing).
+ * test/stress.c: The strdup function was defined incorrectly (the const modifier was missing and it was wrongfully declared static).
    This caused the compilation of the tests to fail on certain systems.
 
 Mon Jul 23 11:33:58 CET 2007 <lankamp@cwi.nl>
