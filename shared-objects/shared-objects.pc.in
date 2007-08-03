@@ -4,7 +4,7 @@ JarFile=shared-objects.jar
 Jars=${prefix}/share/${JarFile}
 #uninstalled UninstalledJars=@abs_top_srcdir@/${JarFile}
 Packages=shared
-
+LocalJars=jars/junit.jar
 Name: shared-objects
 Description: A factory for maximal sharing of object instances
 Version: 1.4.4
