@@ -7,6 +7,7 @@ Version: 1.6.4
 Requires: shared-objects,JJTraveler
 JarFile=aterm-java.jar
 Jars=${prefix}/share/${JarFile}
+LocalJars=jars/junit.jar
 #uninstalled UninstalledJars=@abs_top_srcdir@/${JarFile}
 Packages=aterm,aterm.pure,aterm.test
 TestClass=
