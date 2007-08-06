@@ -1,17 +1,19 @@
 $Id$
 
-Wed Aug 01 9:09:07 CET 2007 <lankamp@cwi.nl>
- * test/stress.c: The strdup function was defined incorrectly (the const modifier was missing and it was wrongfully declared static).
-   This caused the compilation of the tests to fail on certain systems.
+Fri Aug 03 4:12:30 CET 2007 <lankamp@cwi.nl>
+ * aterm/safio.c: Fixed a problem related to the protection of symbols.
+   ATprotectArray doesn't support protecting symbols (the garbage collector can't handle it), 
+   so now they are being protected and unprotected induvidually.
 
 Mon Jul 23 11:33:58 CET 2007 <lankamp@cwi.nl>
- * aterm/byteencoding.c: We no longer need to rely on certain header files for encoding doubles in ieee754 format.
-   Those were not available on all platforms.
-   For portability, we have our own implementation now which also takes care of endianness.
+ * aterm/byteencoding.c: We no longer need to rely on certain header files for
+encoding doubles in ieee754 format. Those were not available on all platforms.
+For portability, we have our own implementation now which also
+takes care of endianness.
  * configure.ac: Autoconf now checks the endianness of the system, so we don't have to do it in code.
  * float-order.m4: Created an autoconf script that is able to determain the float word order.
    (All of the above changes are needed for SAF I/O's byte encoding).
- * aterm/memory.c,test/testsafio.c: Fixed some 'signedness' warnings that popped up while compiling on MacOS.
+ * aterm/memory.c,test/saftest.c: Fixed some 'signedness' warnings that popped up while compiling on MacOS.
 
 Mon Jul 02 11:36:00 CET 2007 <eriks@win.tue.nl>
  * Merged the protected-memory-management branch with the trunk.

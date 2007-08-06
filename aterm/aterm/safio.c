@@ -769,20 +769,8 @@ static void ensureReadSharedTermCapacity(BinaryReader binaryReader){
  */
 static void ensureReadSharedSymbolCapacity(BinaryReader binaryReader){
 	if(binaryReader->sharedSymbolsIndex >= binaryReader->sharedSymbolsSize){
-		SymEntry *sharedSymbols = binaryReader->sharedSymbols;
-		unsigned int sharedSymbolsSize = binaryReader->sharedSymbolsSize;
-		unsigned int newSharedSymbolsSize = (sharedSymbolsSize + SHAREDSYMBOLARRAYINCREMENT);
-		
-		SymEntry *newSharedSymbols = (SymEntry*) AT_calloc(newSharedSymbolsSize, sizeof(SymEntry));
-		if(newSharedSymbols == NULL) ATerror("Unable to allocate memory for expanding the binaryReader's shared signatures array.\n");
-		memcpy(newSharedSymbols, sharedSymbols, sharedSymbolsSize * sizeof(SymEntry));
-		
-		ATprotectArray((ATerm*) newSharedSymbols, newSharedSymbolsSize);
-		binaryReader->sharedSymbols = newSharedSymbols;
-		binaryReader->sharedSymbolsSize = newSharedSymbolsSize;
-		
-		ATunprotectArray((ATerm*) sharedSymbols);
-		AT_free(sharedSymbols);
+		binaryReader->sharedSymbols = (SymEntry*) AT_realloc(binaryReader->sharedSymbols, (binaryReader->sharedSymbolsSize += SHAREDSYMBOLARRAYINCREMENT) * sizeof(SymEntry));
+		if(binaryReader->sharedSymbols == NULL) ATerror("Unable to allocate memory for expanding the binaryReader's shared signatures array.\n");
 	}
 }
 
@@ -931,6 +919,7 @@ static void readData(BinaryReader binaryReader, ByteBuffer byteBuffer){
 			
 			AFun fun = ATmakeAFun(name, arity, isQuoted);
 			SymEntry symEntry = at_lookup_table[fun];
+			ATprotectAFun(fun);
 			
 			ensureReadSharedSymbolCapacity(binaryReader); /* Make sure we have enough space in the array */
 			binaryReader->sharedSymbols[binaryReader->sharedSymbolsIndex++] = symEntry;
@@ -1215,9 +1204,8 @@ BinaryReader ATcreateBinaryReader(){
 	binaryReader->sharedTermsSize = DEFAULTSHAREDTERMARRAYSIZE;
 	binaryReader->sharedTermsIndex = 0;
 	
-	sharedSymbols = (SymEntry*) AT_calloc(DEFAULTSHAREDSYMBOLARRAYSIZE, sizeof(SymEntry));
+	sharedSymbols = (SymEntry*) AT_malloc(DEFAULTSHAREDSYMBOLARRAYSIZE * sizeof(SymEntry));
 	if(sharedSymbols == NULL) ATerror("Unable to allocate memory for the binaryReader's shared symbols array.\n");
-	ATprotectArray((ATerm*) sharedSymbols, DEFAULTSHAREDSYMBOLARRAYSIZE);
 	binaryReader->sharedSymbols = sharedSymbols;
 	binaryReader->sharedSymbolsSize = DEFAULTSHAREDSYMBOLARRAYSIZE;
 	binaryReader->sharedSymbolsIndex = 0;
@@ -1263,6 +1251,9 @@ ATerm ATgetRoot(BinaryReader binaryReader){
  * NOTE: Calling this function with a binary reader that has started, but not completed, a deserialization process as argument has undefined behavior (protected zones will not be unprotected or freed).
  */
 void ATdestroyBinaryReader(BinaryReader binaryReader){
+	SymEntry *sharedSymbols = binaryReader->sharedSymbols;
+	int sharedSymbolsIndex = binaryReader->sharedSymbolsIndex;
+	
 	destroyProtectedMemoryStack(binaryReader->protectedMemoryStack);
 	
 	/* We can just free the shared terms, shared signatures and the stack, since they're all present in the memory block store. */
@@ -1270,7 +1261,9 @@ void ATdestroyBinaryReader(BinaryReader binaryReader){
 	
 	AT_free(binaryReader->stack);
 	
-	ATunprotectArray((ATerm*) binaryReader->sharedSymbols);
+	while(--sharedSymbolsIndex >= 0){
+		ATunprotectAFun(sharedSymbols[sharedSymbolsIndex]->id);
+	}
 	AT_free(binaryReader->sharedSymbols);
 	
 	AT_free(binaryReader->tempNamePage);
