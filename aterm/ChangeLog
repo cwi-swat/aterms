@@ -1,9 +1,18 @@
 $Id$
 
+Mon Aug  6 11:44:07 CEST 2007 <jurgenv@cwi.nl>
+ * doc/Makefile.am: this makefile did not work correctly on SunOs. Also,
+   it depends on the availability of latex and related tools. Also, we
+   are converting all documentation to docbook files in the meta-doc package.
+   As an intermediate step, I've renamed the automatic targets for at.ps
+   (ATerm paper) and manual.ps (ATerm manual) to 'paper' and 'manual', such
+   that automake targets such as 'make distcheck' and 'make doc' do not
+   automatically trigger calls to latex anymore. This should fix our
+   continuous builds on Mac OS X and and Solaris 10 in the build farm.
+
 Fri Aug 03 4:12:30 CET 2007 <lankamp@cwi.nl>
  * aterm/safio.c: Fixed a problem related to the protection of symbols.
-   ATprotectArray doesn't support protecting symbols (the garbage collector can't handle it), 
-   so now they are being protected and unprotected induvidually.
+   ATprotectArray doesn't support protecting symbols (the garbage collector can't handle it), so now they are being protected and unprotected induvidually.
 
 Mon Jul 23 11:33:58 CET 2007 <lankamp@cwi.nl>
  * aterm/byteencoding.c: We no longer need to rely on certain header files for

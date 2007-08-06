@@ -25,7 +25,7 @@ EXAMPLEFILES	= init.c make.c match.c prot.c app1.c app2.c app3.c plac.c
 EXAMPLES	= $(patsubst %,$(EXAMPLEDIR)/%,$(EXAMPLEFILES))
 
 if MAINTAINER_MODE
-at.ps:
+paper:
 	$(MAKE) at.dvi
 	$(MAKE) $(AT_PICS)
 	dvips -o $@ at.dvi
@@ -34,7 +34,7 @@ at.ps:
 # generated, and we need to run makeindex on this file, then re-latex and
 # convert the dvi to postscript
 
-manual.ps:
+manual:
 	$(MAKE) manual.dvi
 	TEXINPUTS=$$TEXINPUTS:${srcdir};\
 	makeindex manual.idx ;\
@@ -43,5 +43,10 @@ manual.ps:
 
 at.dvi: at.ltx aterm.ltx spec/ATerm.mtx $(CHAPS) $(AT_PICS)
 manual.dvi: manual.ltx $(EXAMPLES)
+
+else
+
+manual.ps:
+	if [ -e manual.ps ]; then touch manual.ps; else false fi
 
 endif
