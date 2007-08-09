@@ -2,11 +2,7 @@ include ${srcdir}/general-make
 
 SUBDIRS		= examples spec
 
-EXTRA_DIST	= append.ltx at.ltx aterm.ltx corrections.ltx \
-		corrections2.ltx gtld-at.ltx manual.ltx thesis.bib \
-		encoding.fig header.fig hierarchy.fig sharing.eps \
-		speauth.cls spedoc.tex general-make at.ps manual.ps \
-		appl-enc.fig 
+EXTRA_DIST	= at.ps manual.ps  
 
 CLEANFILES	= encoding.eps header.eps hierarchy.eps \
 		at.{aux,bbl,blg,dvi,log,ps} \
