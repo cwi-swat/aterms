@@ -1,3 +1,7 @@
+Mon Aug 13 14:49 CEST <lankamp@cwi.nl>
+  * Removed synchronization from the 'parseFromReader' method in the PureFactory.
+    This method doesn't require synchronization.
+
 Tue Jul 10 10:28 CEST <lankamp@cwi.nl>
   * Fixed an incompatibility with Java's UTF-8 strings in the SAF binary writer.
 

@@ -486,8 +486,7 @@ public class PureFactory extends SharedObjectFactory implements ATermFactory {
     return array;
   }
 
-  synchronized private ATerm parseFromReader(ATermReader reader)
-    throws IOException {
+  private ATerm parseFromReader(ATermReader reader) throws IOException {
     ATerm result;
     int c, start, end;
     String funname;
