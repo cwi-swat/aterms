@@ -1,5 +1,9 @@
 $Id$
 
+Mon Aug 13 13:15:48 CEST 2007 <jurgenv@cwi.nl>
+ * doc: removed this directory in its entirety. It is now in meta-doc/
+   sandbox/to-be-converted. 
+
 Mon Aug  6 11:44:07 CEST 2007 <jurgenv@cwi.nl>
  * doc/Makefile.am: this makefile did not work correctly on SunOs. Also,
    it depends on the availability of latex and related tools. Also, we
