@@ -323,9 +323,11 @@ public class BinaryWriter extends ATermFwdVoid{
 
 		byte[] blobBytes = arg.getBlobData();
 
-		int bytesToWrite = size;
+		int bytesToWrite = size - indexInTerm;
 		int remaining = currentBuffer.remaining();
-		if((indexInTerm + remaining) < size) bytesToWrite = remaining;
+		if(remaining < bytesToWrite){
+			bytesToWrite = remaining;
+		}
 
 		currentBuffer.put(blobBytes, indexInTerm, bytesToWrite);
 		indexInTerm += bytesToWrite;
