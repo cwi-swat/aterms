@@ -547,8 +547,8 @@ static void visitBlob(BinaryWriter binaryWriter, ATermBlob arg, ByteBuffer byteB
 	unsigned int bytesToWrite = size - binaryWriter->indexInTerm;
 	
 	if(binaryWriter->indexInTerm == 0){
-		*(byteBuffer->buffer) = (char) getHeader((ATerm) arg);
-		byteBuffer->buffer++;
+		*(byteBuffer->currentPos) = (char) getHeader((ATerm) arg);
+		byteBuffer->currentPos++;
 		
 		writeInt(size, byteBuffer);
 	}
