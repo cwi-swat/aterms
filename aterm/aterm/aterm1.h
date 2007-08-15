@@ -351,6 +351,7 @@ void ATunprotectArray(ATerm *start);
  * \arg f function to register
  *
  * \todo Should this functionality be in the level one interface?
+ */
 void ATaddProtectFunction(ATermProtFunc f);
 
 /**
