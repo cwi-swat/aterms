@@ -1,8 +1,12 @@
 $Id$
 
+Tue Aug 14 16:31:18 CEST 2007 <jurgenv@cwi.nl>
+ * aterm/aterm1.h: moved struct definitions to aterm/encoding.h such that
+   aterm1.h contains only API stuff and not hidden implementation details.
+ * aterm/aterm1.h: doxygen'd aterm1.h
+
 Tue Aug 14 11:48:54 CET 2007 <lankamp@cwi.nl>
- * aterm/safio.c: Fixed a bug related to writing blobs using SAF I/O that caused the result to be corrupt
-   and could possibly trigger a coredump.
+ * aterm/safio.c: Fixed a bug related to writing blobs using SAF I/O that caused the result to be corrupt and could possibly trigger a coredump.
 
 Mon Aug 13 13:15:48 CEST 2007 <jurgenv@cwi.nl>
  * doc: removed this directory in its entirety. It is now in meta-doc/
