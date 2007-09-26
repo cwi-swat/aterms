@@ -50,7 +50,7 @@ BUILT_SOURCES = \
 	builtins_dict.c \
 	builtins_dict.h 
 
-EXTRA_DIST = \
+EXTRA_DIST += \
 	BuiltinsTest.java \
 	GenericTraversal.java \
 	ListTest.java \
