@@ -1,3 +1,4 @@
+include $(top_srcdir)/Makefile.meta
 
 lib_LTLIBRARIES = libbbtree.la
 
