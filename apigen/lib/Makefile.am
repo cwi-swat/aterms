@@ -3,6 +3,7 @@
 include $(top_srcdir)/Makefile.meta
 
 ADT_TO_C = $(top_builddir)/scripts/adt-to-c-test
+
 lib_LTLIBRARIES = libADT.la
 nodist_include_HEADERS = ADT.h ADT_dict.h
 
