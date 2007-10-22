@@ -224,7 +224,7 @@ public class FactoryGenerator extends JavaGenerator {
         println();
         println("  private static " + getClassName() + " instance = null;");
         println();
-        println("  public static " + getClassName() + " getInstance(aterm.pure.PureFactory factory) {");
+        println("  public synchronized static " + getClassName() + " getInstance(aterm.pure.PureFactory factory) {");
         println("    if (instance == null) {");
         println("        instance = new " + getClassName() + "(factory);");
         println("        instance.initialize();");
@@ -271,18 +271,17 @@ public class FactoryGenerator extends JavaGenerator {
             if (type instanceof ListType) {
                 ListType listType = (ListType) type;
                 JavaGenerationParameters params = getJavaGenerationParameters();
-                String returnTypeName = TypeGenerator.qualifiedClassName(params, type.getId());
+                String typeName = TypeGenerator.qualifiedClassName(params, type.getId());
                 String methodName = "make" + TypeGenerator.className(type);
                 String paramTypeName =
                 		TypeGenerator.qualifiedClassName(params, listType.getElementType());
                 String empty = emptyListVariable(type);
-                String proto = protoListVariable(type);
 
                 if (type instanceof SeparatedListType) {
                     SeparatedListType sepListType = (SeparatedListType) type;
-                    genMakeEmptyList(returnTypeName, methodName, empty, forwarding, moduleName);
+                    genMakeEmptyList(typeName, methodName, empty, forwarding, moduleName);
                     genMakeSingletonSeparatedList(
-                        returnTypeName,
+                    		typeName,
                         methodName,
                         paramTypeName,
                         sepListType,
@@ -290,20 +289,19 @@ public class FactoryGenerator extends JavaGenerator {
 												forwarding, moduleName);
                     genMakeManySeparatedList(
                         sepListType.getElementType(),
-                        returnTypeName,
+                        typeName,
                         methodName,
                         paramTypeName,
                         sepListType,
 												forwarding, moduleName);
                     if(!forwarding) {
                     	genMakeManySeparatedTermList(
-                        returnTypeName,
+                    	typeName,
                         methodName,
-                        proto,
                         sepListType);
                     }
                     genMakeFixedSizedSeparatedList(
-                        returnTypeName,
+                    		typeName,
                         methodName,
                         sepListType,
 												forwarding, moduleName);
@@ -311,23 +309,23 @@ public class FactoryGenerator extends JavaGenerator {
                     genConcatSeparatedLists(sepListType, methodName, forwarding, moduleName);
                     genAppendSeparatedLists(sepListType, methodName, forwarding, moduleName);
                 } else {
-                    genMakeEmptyList(returnTypeName, methodName, empty, forwarding, moduleName);
+                    genMakeEmptyList(typeName, methodName, empty, forwarding, moduleName);
                     genMakeSingletonList(
-                        returnTypeName,
+                    		typeName,
                         methodName,
                         paramTypeName,
                         empty,
 												forwarding, moduleName);
                     genMakeManyList(
                         listType.getElementType(),
-                        returnTypeName,
+                        typeName,
                         methodName,
                         paramTypeName,
 												forwarding, moduleName);
                     if (!forwarding) {
-                    	genMakeManyTermList(returnTypeName, methodName, proto);
+                    	genMakeManyTermList(typeName, methodName);
                     }
-                    genMakeFixedSizedList(returnTypeName, methodName, listType,
+                    genMakeFixedSizedList(typeName, methodName, listType,
                     		forwarding, moduleName);
                     genReverseLists(listType, methodName,
                     		forwarding, moduleName);
@@ -717,19 +715,14 @@ public class FactoryGenerator extends JavaGenerator {
 
     private void genMakeManyTermList(
         String returnTypeName,
-        String methodName,
-        String protoName) {
+        String methodName) {
         println(
             "  public "
                 + returnTypeName
                 + ' '
                 + methodName
                 + "(aterm.ATerm head, aterm.ATermList tail, aterm.ATermList annos) {");
-        println("    synchronized (" + protoName + ") {");
-        println("      " + protoName + ".initHashCode(annos, head, tail);");
-        println(
-            "      return (" + returnTypeName + ") factory.build(" + protoName + ");");
-        println("    }");
+        println("      return (" + returnTypeName + ") factory.build(new "+returnTypeName+"(this, annos, head, tail));");
         println("  }");
         println();
     }
@@ -842,7 +835,6 @@ public class FactoryGenerator extends JavaGenerator {
     private void genMakeManySeparatedTermList(
         String returnTypeName,
         String methodName,
-        String proto,
         SeparatedListType type) {
         String formalSeps = buildFormalSeparatorArguments(type);
         String actualSeps =
@@ -861,11 +853,7 @@ public class FactoryGenerator extends JavaGenerator {
                 + "(aterm.ATerm head, "
                 + formalSeps
                 + "aterm.ATermList tail, aterm.ATermList annos) {");
-        
-        println("    synchronized (" + proto + ") {");
-        println("      " + proto + ".initHashCode(annos, head, " + actualSeps + "tail);");
-        println("      return (" + returnTypeName + ") factory.build(" + proto + ");");
-        println("    }");
+        println("    return (" + returnTypeName + ") factory.build(new "+returnTypeName+"(this, annos, head, " + actualSeps + "tail));");
         println("  }");
         println();
     }
@@ -1006,19 +994,13 @@ public class FactoryGenerator extends JavaGenerator {
     private void genAlternativeMembers(Type type, Alternative alt, JavaGenerationParameters params) {
         String typeClassName = TypeGenerator.qualifiedClassName(params, type.getId());            
         String funVar = funVariable(type, alt);
-        String protoVar = prototypeVariable(type, alt);
         String patternVar = patternVariable(type, alt);
 
         println("  private aterm.AFun " + funVar + ';');
-        println("  private " + typeClassName + " " + protoVar + ';');
         println("  private aterm.ATerm " + patternVar + ';');
     }
 
     private void genListTypeMembers(Type type, JavaGenerationParameters params) {
-        String typeClassName = TypeGenerator.qualifiedClassName(params, type.getId());
-        String protoVar = protoListVariable(type);
-        println("  private " + typeClassName + ' ' + protoVar + ';');
-        
         if (type instanceof SeparatedListType) {
           println("  private aterm.ATerm " + patternListVariable(type) + ';');
         }
@@ -1093,16 +1075,12 @@ public class FactoryGenerator extends JavaGenerator {
     private void genInternalMakeMethod(Type type, Alternative alt, boolean forwarding, String moduleName) {
         JavaGenerationParameters params = getJavaGenerationParameters();
         String altClassName = AlternativeGenerator.qualifiedClassName(params, type, alt);
-        String protoVar = prototypeVariable(type, alt);
         String methodName = "make" + concatTypeAlt(type, alt);
         
         print("  public " + altClassName + " "+methodName);
         println("(aterm.AFun fun, aterm.ATerm[] args, aterm.ATermList annos) {");
         if(!forwarding) {
-        	println("    synchronized (" + protoVar + ") {");
-        	println("      " + protoVar + ".initHashCode(annos, fun, args);");
-        	println("      return (" + altClassName + ") factory.build(" + protoVar + ");");
-        	println("    }");
+        	println("    return (" + altClassName + ") factory.build( new "+altClassName+"(this, annos, fun, args));");
         } else { //forwarding
         	println("    return "+FactoryGenerator.className(moduleName).toLowerCase()+"."+methodName+"(fun, args, annos);");
         }
@@ -1180,12 +1158,9 @@ public class FactoryGenerator extends JavaGenerator {
                 }
                 listTypeCount++;
             } else if (!typeConverter.isReserved(type.getId())) {
-              /* do not generate prototypes for the builtin sorts */
-                JavaGenerationParameters params = getJavaGenerationParameters();
                 Iterator alts = type.alternativeIterator();
                 while (alts.hasNext()) {
                     Alternative alt = (Alternative) alts.next();
-                    String protoVar = prototypeVariable(type, alt);
                     String funVar = funVariable(type, alt);
                     String afunName = type.getId() + "_" + alt.getId();
 
@@ -1205,12 +1180,6 @@ public class FactoryGenerator extends JavaGenerator {
                             + "\", "
                             + type.getAltArity(alt)
                             + ", false);");
-                    println(
-                        "    "
-                            + protoVar
-                            + " = new "
-                            + AlternativeGenerator.qualifiedClassName(params, type, alt)
-                            + "(this);");
                     println();
                 }
             }
@@ -1247,14 +1216,12 @@ public class FactoryGenerator extends JavaGenerator {
     }
     
     private void genNormalListTypeInitialization(Type type, int listTypeCount) {
-        genInitializePrototype(type);
         genInitializeEmptyList(type, listTypeCount);
     }
 
     private void genSeparatedListInitialization(
         int listTypeCount,
         SeparatedListType type) {
-        genInitializePrototype(type);
         genInitializeEmptySeparatedList(type, listTypeCount);
         genInitializeManyPattern(type);
     }
@@ -1274,26 +1241,17 @@ public class FactoryGenerator extends JavaGenerator {
         int listTypeCount) {
         JavaGenerationParameters params = getJavaGenerationParameters();
         String className = TypeGenerator.qualifiedClassName(params, type.getId());
-        String protoName = protoListVariable(type);
         String emptyName = emptyListVariable(type);
-        String emptyHashCode = buildInitialEmptyListHashcode(listTypeCount).toString();
-        String pureEmptyName = "factory.getEmpty()";
-        println(
-            "    "
-                + protoName
-                + ".initHashCode("
-                + pureEmptyName
-                + ", null, "
-                + buildAmountOfSeparatorsNullExpressions(type)
-                + "null);");
         println(
             "    "
                 + emptyName
                 + " = ("
                 + className
-                + ") factory.build("
-                + protoName
-                + ");");
+                + ") factory.build(new "
+                + className
+                + "(factory.getEmpty(), null, "
+                + buildAmountOfSeparatorsNullExpressions(type)
+                + "null));");
     }
 
     private String buildAmountOfSeparatorsNullExpressions(SeparatedListType type) {
@@ -1309,30 +1267,16 @@ public class FactoryGenerator extends JavaGenerator {
     private void genInitializeEmptyList(Type type, int listTypeCount) {
         JavaGenerationParameters params = getJavaGenerationParameters();
         String className = TypeGenerator.qualifiedClassName(params, type.getId());
-        String protoName = protoListVariable(type);
         String emptyName = emptyListVariable(type);
-        String emptyHashCode = buildInitialEmptyListHashcode(listTypeCount).toString();
-        String pureEmptyName = "factory.getEmpty()";
-        println("    " + protoName + ".initHashCode(" + pureEmptyName + ", null, null);");
         println(
             "    "
                 + emptyName
                 + " = ("
                 + className
-                + ") factory.build("
-                + protoName
+                + ") factory.build(new "
+                + className
+                + "(this, factory.getEmpty(), null, null)"
                 + ");");
-    }
-
-    private void genInitializePrototype(Type type) {
-        JavaGenerationParameters params = getJavaGenerationParameters();
-        String protoName = protoListVariable(type);
-        String className = TypeGenerator.qualifiedClassName(params, type.getId());
-        println("    " + protoName + " = new " + className + "(this);");
-    }
-
-    private Integer buildInitialEmptyListHashcode(int listTypeCount) {
-        return new Integer(42 * (2 + listTypeCount));
     }
 
     private void genAltFromTerm(Type type, Alternative alt) {
@@ -1746,10 +1690,6 @@ public class FactoryGenerator extends JavaGenerator {
         return alternativeVariable("pattern", type, alt);
     }
 
-    private static String prototypeVariable(Type type, Alternative alt) {
-        return alternativeVariable("proto", type, alt);
-    }
-
     private static String funVariable(Type type, Alternative alt) {
         return alternativeVariable("fun", type, alt);
     }
@@ -1760,10 +1700,6 @@ public class FactoryGenerator extends JavaGenerator {
 
     private static String emptyListVariable(Type type) {
         return listVariable("empty", type);
-    }
-
-    private static String protoListVariable(Type type) {
-        return listVariable("proto", type);
     }
 
     private static String patternListVariable(Type type) {

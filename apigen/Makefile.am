@@ -12,4 +12,5 @@ api:
 		--package apigen.adt \
 		--name api \
 		--verbose \
-		--output ./src
+		--output ./src \
+		--version 2.2

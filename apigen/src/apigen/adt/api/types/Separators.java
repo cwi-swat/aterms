@@ -1,136 +1,137 @@
 package apigen.adt.api.types;
 
 public class Separators extends aterm.pure.ATermListImpl {
-  private apigen.adt.api.Factory localFactory = null;
-  public void init(int hashCode, aterm.ATermList annos, aterm.ATerm first, aterm.ATermList next) {
-    super.init(hashCode, annos, first, next);
-  }
+	private apigen.adt.api.Factory localFactory = null;
 
-  public void initHashCode(aterm.ATermList annos, aterm.ATerm first, aterm.ATermList next) {
-    super.initHashCode(annos, first, next);
-  }
+	public Separators(apigen.adt.api.Factory localFactory) {
+		super(localFactory.getPureFactory());
 
-  public Separators(apigen.adt.api.Factory localFactory) {
-     super(localFactory.getPureFactory());
-     this.localFactory = localFactory;
-  }
+		this.localFactory = localFactory;
+		internSetAnnotations(factory.getEmpty());
+		setHashCode(126);
+	}
 
-  public apigen.adt.api.Factory getApiFactory() {
-    return localFactory;
-}
+	public Separators(apigen.adt.api.Factory localFactory,
+			aterm.ATermList annos, aterm.ATerm first, aterm.ATermList next) {
+		super(localFactory.getPureFactory(), annos, first, next);
+		this.localFactory = localFactory;
+	}
 
-  protected aterm.ATerm term = null;
-  public aterm.ATerm toTerm() {
-    aterm.ATermFactory atermFactory = getApiFactory().getPureFactory();
-    if (this.term == null) {
-      Separators reversed = (Separators)this.reverse();
-      aterm.ATermList tmp = atermFactory.makeList();
-      for (; !reversed.isEmpty(); reversed = reversed.getTail()) {
-        aterm.ATerm elem = reversed.getHead().toTerm();
-        tmp = atermFactory.makeList(elem, tmp);
-      }
-      this.term = tmp;
-    }
-    return this.term;
-  }
+	public apigen.adt.api.Factory getApiFactory() {
+		return localFactory;
+	}
 
-  public String toString() {
-    return toTerm().toString();
-  }
+	protected aterm.ATerm term = null;
 
-  public apigen.adt.api.types.Separator getHead() {
-    return (apigen.adt.api.types.Separator)getFirst();
-  }
+	public aterm.ATerm toTerm() {
+		aterm.ATermFactory atermFactory = getApiFactory().getPureFactory();
+		if (this.term == null) {
+			Separators reversed = (Separators) this.reverse();
+			aterm.ATermList tmp = atermFactory.makeList();
+			for (; !reversed.isEmpty(); reversed = reversed.getTail()) {
+				aterm.ATerm elem = reversed.getHead().toTerm();
+				tmp = atermFactory.makeList(elem, tmp);
+			}
+			this.term = tmp;
+		}
+		return this.term;
+	}
 
-  public Separators getTail() {
-    return (Separators) getNext();
-  }
+	public String toString() {
+		return toTerm().toString();
+	}
 
-  public boolean isSortSeparators()  {
-    return true;
-  }
+	public apigen.adt.api.types.Separator getHead() {
+		return (apigen.adt.api.types.Separator) getFirst();
+	}
 
-  public boolean isEmpty() {
-    return getFirst()==getEmpty().getFirst() && getNext()==getEmpty().getNext();
-  }
+	public Separators getTail() {
+		return (Separators) getNext();
+	}
 
-  public boolean isMany() {
-    return !isEmpty();
-  }
+	public boolean isSortSeparators() {
+		return true;
+	}
 
-  public boolean isSingle() {
-    return !isEmpty() && getNext().isEmpty();
-  }
+	public boolean isEmpty() {
+		return getFirst() == getEmpty().getFirst()
+				&& getNext() == getEmpty().getNext();
+	}
 
-  public boolean hasHead() {
-    return !isEmpty();
-  }
+	public boolean isMany() {
+		return !isEmpty();
+	}
 
-  public boolean hasTail() {
-    return !isEmpty();
-  }
+	public boolean isSingle() {
+		return !isEmpty() && getNext().isEmpty();
+	}
 
-  public boolean equivalent(shared.SharedObject peer) {
-    if (peer instanceof Separators) {
-      return super.equivalent(peer);
-    }
-    else {
-      return false;
-    }
-  }
+	public boolean hasHead() {
+		return !isEmpty();
+	}
 
-  public shared.SharedObject duplicate() {
-    Separators clone = new Separators(localFactory);
-    clone.init(hashCode(), getAnnotations(), getFirst(), getNext());
-    return clone;
-  }
+	public boolean hasTail() {
+		return !isEmpty();
+	}
 
-  public aterm.ATermList getEmpty() {
-    return (aterm.ATermList)getApiFactory().makeSeparators();
-  }
+	public boolean equivalent(shared.SharedObject peer) {
+		if (peer instanceof Separators) {
+			return super.equivalent(peer);
+		}
+		return false;
+	}
 
-  public Separators insert(apigen.adt.api.types.Separator head) {
-    return getApiFactory().makeSeparators(head, (Separators) this);
-  }
+	public shared.SharedObject duplicate() {
+		return this;
+	}
 
-  public aterm.ATermList make(aterm.ATerm head, aterm.ATermList tail, aterm.ATermList annos) {
-    return getApiFactory().makeSeparators(head, tail, annos);
-  }
+	public aterm.ATermList getEmpty() {
+		return getApiFactory().makeSeparators();
+	}
 
-  public aterm.ATermList make(aterm.ATerm head, aterm.ATermList tail) {
-    return make(head, tail, getApiFactory().getPureFactory().getEmpty());
-  }
+	public Separators insert(apigen.adt.api.types.Separator head) {
+		return getApiFactory().makeSeparators(head, (Separators) this);
+	}
 
-  public aterm.ATermList insert(aterm.ATerm head) {
-    return make(head, this);
-  }
+	public aterm.ATermList make(aterm.ATerm head, aterm.ATermList tail,
+			aterm.ATermList annos) {
+		return getApiFactory().makeSeparators(head, tail, annos);
+	}
 
-  public Separators reverseSeparators() {
-    return getApiFactory().reverse(this);
-  }
+	public aterm.ATermList make(aterm.ATerm head, aterm.ATermList tail) {
+		return make(head, tail, getApiFactory().getPureFactory().getEmpty());
+	}
 
-  public aterm.ATermList reverse() {
-    return reverseSeparators();
-  }
+	public aterm.ATermList insert(aterm.ATerm head) {
+		return make(head, this);
+	}
 
-  public Separators concat(Separators peer) {
-    return getApiFactory().concat(this, peer);
-  }
+	public Separators reverseSeparators() {
+		return getApiFactory().reverse(this);
+	}
 
-  public aterm.ATermList concat(aterm.ATermList peer) {
-    return concat((Separators) peer);
-  }
+	public aterm.ATermList reverse() {
+		return reverseSeparators();
+	}
 
-  public Separators append(apigen.adt.api.types.Separator elem) {
-    return getApiFactory().append(this, elem);
-  }
+	public Separators concat(Separators peer) {
+		return getApiFactory().concat(this, peer);
+	}
 
-  public aterm.ATermList append(aterm.ATerm elem) {
-    return append((apigen.adt.api.types.Separator) elem);
-  }
+	public aterm.ATermList concat(aterm.ATermList peer) {
+		return concat((Separators) peer);
+	}
 
-  public apigen.adt.api.types.Separator getSeparatorAt(int index) {
-    return (apigen.adt.api.types.Separator) elementAt(index);
-  }
+	public Separators append(apigen.adt.api.types.Separator elem) {
+		return getApiFactory().append(this, elem);
+	}
+
+	public aterm.ATermList append(aterm.ATerm elem) {
+		return append((apigen.adt.api.types.Separator) elem);
+	}
+
+	public apigen.adt.api.types.Separator getSeparatorAt(int index) {
+		return (apigen.adt.api.types.Separator) elementAt(index);
+	}
 
 }

@@ -1,25 +1,17 @@
 package apigen.adt.api.types.entry;
 
 public class Constructor extends apigen.adt.api.types.Entry {
-  public Constructor(apigen.adt.api.Factory factory) {
-    super(factory);
-  }
-
-  public void init(int hashCode, aterm.ATermList annos, aterm.AFun fun,	aterm.ATerm[] args) {
-    super.init(hashCode, annos, fun, args);
-  }
-
-  public void initHashCode(aterm.ATermList annos, aterm.AFun fun, aterm.ATerm[] args) {
-  	super.initHashCode(annos, fun, args);
+	
+  public Constructor(apigen.adt.api.Factory factory, aterm.ATermList annos, aterm.AFun fun,	aterm.ATerm[] args) {
+    super(factory, annos, fun, args);
   }
 
   private static int index_sort = 0;
   private static int index_alternative = 1;
   private static int index_termPattern = 2;
+  
   public shared.SharedObject duplicate() {
-    Constructor clone = new Constructor(getApiFactory());
-    clone.init(hashCode(), getAnnotations(), getAFun(), getArgumentArray());
-    return clone;
+    return this;
   }
 
   public boolean equivalent(shared.SharedObject peer) {
@@ -90,19 +82,8 @@ public class Constructor extends apigen.adt.api.types.Entry {
   public aterm.ATermAppl setArgument(aterm.ATerm arg, int i) {
     switch(i) {
       case 0:
-        if (! (arg instanceof aterm.ATerm)) { 
-          throw new RuntimeException("Argument 0 of a Constructor should have type term");
-        }
-        break;
       case 1:
-        if (! (arg instanceof aterm.ATerm)) { 
-          throw new RuntimeException("Argument 1 of a Constructor should have type term");
-        }
-        break;
       case 2:
-        if (! (arg instanceof aterm.ATerm)) { 
-          throw new RuntimeException("Argument 2 of a Constructor should have type term");
-        }
         break;
       default: throw new RuntimeException("Constructor does not have an argument at " + i );
     }

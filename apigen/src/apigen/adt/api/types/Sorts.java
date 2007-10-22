@@ -2,16 +2,17 @@ package apigen.adt.api.types;
 
 public class Sorts extends aterm.pure.ATermListImpl {
   private apigen.adt.api.Factory localFactory = null;
-  public void init(int hashCode, aterm.ATermList annos, aterm.ATerm first, aterm.ATermList next) {
-    super.init(hashCode, annos, first, next);
-  }
-
-  public void initHashCode(aterm.ATermList annos, aterm.ATerm first, aterm.ATermList next) {
-    super.initHashCode(annos, first, next);
-  }
 
   public Sorts(apigen.adt.api.Factory localFactory) {
-     super(localFactory.getPureFactory());
+	    super(localFactory.getPureFactory());
+	    
+		this.localFactory = localFactory;
+	    internSetAnnotations(factory.getEmpty());
+	    setHashCode(252);
+  }
+  
+  public Sorts(apigen.adt.api.Factory localFactory, aterm.ATermList annos, aterm.ATerm first, aterm.ATermList next) {
+     super(localFactory.getPureFactory(), annos, first, next);
      this.localFactory = localFactory;
   }
 
@@ -74,23 +75,15 @@ public class Sorts extends aterm.pure.ATermListImpl {
     if (peer instanceof Sorts) {
       return super.equivalent(peer);
     }
-    else {
-      return false;
-    }
+    return false;
   }
 
   public shared.SharedObject duplicate() {
-    Sorts clone = new Sorts(localFactory);
-    clone.init(hashCode(), getAnnotations(), getFirst(), getNext());
-    return clone;
-  }
-
-  public aterm.ATermList getEmpty() {
-    return (aterm.ATermList)getApiFactory().makeSorts();
+    return this;
   }
 
   public Sorts insert(apigen.adt.api.types.Type head) {
-    return getApiFactory().makeSorts(head, (Sorts) this);
+    return getApiFactory().makeSorts(head, this);
   }
 
   public aterm.ATermList make(aterm.ATerm head, aterm.ATermList tail, aterm.ATermList annos) {

@@ -2,16 +2,17 @@ package apigen.adt.api.types;
 
 public class Modules extends aterm.pure.ATermListImpl {
   private apigen.adt.api.Factory localFactory = null;
-  public void init(int hashCode, aterm.ATermList annos, aterm.ATerm first, aterm.ATermList next) {
-    super.init(hashCode, annos, first, next);
-  }
-
-  public void initHashCode(aterm.ATermList annos, aterm.ATerm first, aterm.ATermList next) {
-    super.initHashCode(annos, first, next);
-  }
 
   public Modules(apigen.adt.api.Factory localFactory) {
-     super(localFactory.getPureFactory());
+	    super(localFactory.getPureFactory());
+	    
+		this.localFactory = localFactory;
+	    internSetAnnotations(factory.getEmpty());
+	    setHashCode(168);
+  }
+  
+  public Modules(apigen.adt.api.Factory localFactory, aterm.ATermList annos, aterm.ATerm first, aterm.ATermList next) {
+     super(localFactory.getPureFactory(), annos, first, next);
      this.localFactory = localFactory;
   }
 
@@ -74,23 +75,19 @@ public class Modules extends aterm.pure.ATermListImpl {
     if (peer instanceof Modules) {
       return super.equivalent(peer);
     }
-    else {
-      return false;
-    }
+    return false;
   }
 
   public shared.SharedObject duplicate() {
-    Modules clone = new Modules(localFactory);
-    clone.init(hashCode(), getAnnotations(), getFirst(), getNext());
-    return clone;
+    return this;
   }
 
   public aterm.ATermList getEmpty() {
-    return (aterm.ATermList)getApiFactory().makeModules();
+    return getApiFactory().makeModules();
   }
 
   public Modules insert(apigen.adt.api.types.Module head) {
-    return getApiFactory().makeModules(head, (Modules) this);
+    return getApiFactory().makeModules(head, this);
   }
 
   public aterm.ATermList make(aterm.ATerm head, aterm.ATermList tail, aterm.ATermList annos) {

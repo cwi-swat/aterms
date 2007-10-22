@@ -51,9 +51,8 @@ public class TypeConverter implements TypeConversions {
     public String getType(String t) {
         if (isReserved(t)) {
             return (String) reservedTypes.get(t);
-        } else {
-            return t;
         }
+        return t;
     }
 
     /**

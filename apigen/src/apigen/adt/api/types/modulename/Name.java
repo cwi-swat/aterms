@@ -1,23 +1,15 @@
 package apigen.adt.api.types.modulename;
 
 public class Name extends apigen.adt.api.types.ModuleName {
-  public Name(apigen.adt.api.Factory factory) {
-    super(factory);
-  }
-
-  public void init(int hashCode, aterm.ATermList annos, aterm.AFun fun,	aterm.ATerm[] args) {
-    super.init(hashCode, annos, fun, args);
-  }
-
-  public void initHashCode(aterm.ATermList annos, aterm.AFun fun, aterm.ATerm[] args) {
-  	super.initHashCode(annos, fun, args);
+	
+  public Name(apigen.adt.api.Factory factory, aterm.ATermList annos, aterm.AFun fun,	aterm.ATerm[] args) {
+    super(factory, annos, fun, args);
   }
 
   private static int index_name = 0;
+  
   public shared.SharedObject duplicate() {
-    Name clone = new Name(getApiFactory());
-    clone.init(hashCode(), getAnnotations(), getAFun(), getArgumentArray());
-    return clone;
+    return this;
   }
 
   public boolean equivalent(shared.SharedObject peer) {

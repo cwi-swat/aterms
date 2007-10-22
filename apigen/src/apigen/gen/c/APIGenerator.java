@@ -22,7 +22,6 @@ import apigen.gen.StringConversions;
 import apigen.gen.TypeConverter;
 import aterm.ATerm;
 import aterm.ATermAppl;
-import aterm.ATermBlob;
 import aterm.ATermInt;
 import aterm.ATermList;
 import aterm.ATermPlaceholder;
@@ -1368,10 +1367,8 @@ public class APIGenerator extends CGenerator {
 				if (index == 0) {
 					return genGetterSteps(steps, "ATgetFirst((ATermList)" + arg
 							+ ")");
-				} else {
-					return genGetterSteps(steps, "ATelementAt((ATermList)"
-							+ arg + ", " + step.getIndex() + ")");
 				}
+				return genGetterSteps(steps, "ATelementAt((ATermList)"+ arg + ", " + step.getIndex() + ")");
 			case Step.TAIL:
 				if (index == 0) {
 					return genGetterSteps(steps, arg);
@@ -1835,9 +1832,8 @@ public class APIGenerator extends CGenerator {
 
 		if (conv.isReserved(typeId)) {
 			return name;
-		} else {
-			return prefix + StringConversions.makeCapitalizedIdentifier(name);
 		}
+		return prefix + StringConversions.makeCapitalizedIdentifier(name);
 	}
 
 	public AFunRegister getAFunRegister() {

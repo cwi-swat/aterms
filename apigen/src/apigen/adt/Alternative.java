@@ -89,9 +89,7 @@ public class Alternative {
 				throw new RuntimeException("strange root pattern: " + match_pattern);
 			}
 		}
-		else {
-			return match_pattern.getType();
-		}
+		return match_pattern.getType();
 	}
 
 	public boolean containsPlaceholder() {
@@ -129,22 +127,17 @@ public class Alternative {
 				if (ph.getType() == ATerm.LIST) {
 					return pattern.getFactory().parse("<list>");
 				}
-				else {
-					ATerm type = ((ATermAppl) ph).getArgument(0);
-					String typeName = type.toString();
+				ATerm type = ((ATermAppl) ph).getArgument(0);
+				String typeName = type.toString();
 
-					if (typeName.equals("chars")) {
-						return pattern.getFactory().parse("[<list>]");
-					}
-					else if (typeName.equals("char")) {
-						return pattern.getFactory().parse("<int>");
-					}
-					else if (isBasicATermType(typeName)) {
-						return pattern.getFactory().makePlaceholder(type);
-					}
-					else {
-						return pattern.getFactory().parse("<term>");
-					}
+				if (typeName.equals("chars")) {
+					return pattern.getFactory().parse("[<list>]");
+				}else if (typeName.equals("char")) {
+					return pattern.getFactory().parse("<int>");
+				}else if (isBasicATermType(typeName)) {
+					return pattern.getFactory().makePlaceholder(type);
+				}else {
+					return pattern.getFactory().parse("<term>");
 				}
 			default :
 				return t;

@@ -5,19 +5,10 @@ abstract public class AbstractType extends aterm.pure.ATermApplImpl {
 
   private apigen.adt.api.Factory abstractTypeFactory;
 
-  public AbstractType(apigen.adt.api.Factory abstractTypeFactory) {
-    super(abstractTypeFactory.getPureFactory());
+  public AbstractType(apigen.adt.api.Factory abstractTypeFactory, aterm.ATermList annos, aterm.AFun fun, aterm.ATerm[] args) {
+    super(abstractTypeFactory.getPureFactory(), annos, fun, args);
     this.abstractTypeFactory = abstractTypeFactory;
   }
-
-  public void init(int hashCode, aterm.ATermList annos, aterm.AFun fun, aterm.ATerm[] args) {
-    super.init(hashCode, annos, fun, args);
-  }
-
-  public void initHashCode(aterm.ATermList annos, aterm.AFun fun, aterm.ATerm[] args) {
-    super.initHashCode(annos, fun, args);
-  }
-
   abstract public aterm.ATerm toTerm();
 
   public String toString() {

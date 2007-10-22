@@ -72,8 +72,6 @@ public class AbstractListGenerator extends JavaGenerator {
                 + " extends aterm.pure.ATermListImpl {");
         genClassVariables();
         genConstructor();
-        genInitMethod();
-        genInitHashcodeMethod();
         genToTermMethod();
         genToStringMethod();
         genGetFactoryMethod();
@@ -92,27 +90,13 @@ public class AbstractListGenerator extends JavaGenerator {
     }
 
     private void genConstructor() {
-        println("  public " + getClassName() + "(" + factoryClassName + " abstractTypeFactory) {");
-        println("    super(abstractTypeFactory.getPureFactory());");
+        println("  public " + getClassName() + "(" + factoryClassName + " abstractTypeFactory, aterm.ATermList annos, aterm.ATerm first, aterm.ATermList next) {");
+        println("    super(abstractTypeFactory.getPureFactory(), annos, first, next);");
         println("    this.abstractTypeFactory = abstractTypeFactory;");
         println("  }");
         println();
     }
-
-    private void genInitMethod() {
-        println("  public void init(int hashCode, aterm.ATermList annos, aterm.ATerm first, aterm.ATermList next) {");
-        println("    super.init(hashCode, annos, first, next);");
-        println("  }");
-        println();
-    }
-
-    private void genInitHashcodeMethod() {
-        println("  public void initHashCode(aterm.ATermList annos, aterm.ATerm first, aterm.ATermList next) {");
-        println("    super.initHashCode(annos, first, next);");
-        println("  }");
-        println();
-    }
-
+    
     private void genGetFactoryMethod() {
         GenerationParameters params = getGenerationParameters();
         println(

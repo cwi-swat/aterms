@@ -72,8 +72,6 @@ public class AbstractTypeGenerator extends JavaGenerator {
                 + " extends aterm.pure.ATermApplImpl {");
         genClassVariables();
         genConstructor();
-        genInitMethod();
-        genInitHashcodeMethod();
         genToTermMethod();
         genToStringMethod();
         genSetTermMethod();
@@ -94,23 +92,9 @@ public class AbstractTypeGenerator extends JavaGenerator {
     }
 
     private void genConstructor() {
-        println("  public " + getClassName() + "(" + factoryClassName + " abstractTypeFactory) {");
-        println("    super(abstractTypeFactory.getPureFactory());");
+        println("  public " + getClassName() + "(" + factoryClassName + " abstractTypeFactory, aterm.ATermList annos, aterm.AFun fun, aterm.ATerm[] args) {");
+        println("    super(abstractTypeFactory.getPureFactory(), annos, fun, args);");
         println("    this.abstractTypeFactory = abstractTypeFactory;");
-        println("  }");
-        println();
-    }
-
-    private void genInitMethod() {
-        println("  public void init(int hashCode, aterm.ATermList annos, aterm.AFun fun, aterm.ATerm[] args) {");
-        println("    super.init(hashCode, annos, fun, args);");
-        println("  }");
-        println();
-    }
-
-    private void genInitHashcodeMethod() {
-        println("  public void initHashCode(aterm.ATermList annos, aterm.AFun fun, aterm.ATerm[] args) {");
-        println("    super.initHashCode(annos, fun, args);");
         println("  }");
         println();
     }

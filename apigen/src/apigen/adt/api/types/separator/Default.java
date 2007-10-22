@@ -1,23 +1,14 @@
 package apigen.adt.api.types.separator;
 
 public class Default extends apigen.adt.api.types.Separator {
-  public Default(apigen.adt.api.Factory factory) {
-    super(factory);
-  }
-
-  public void init(int hashCode, aterm.ATermList annos, aterm.AFun fun,	aterm.ATerm[] args) {
-    super.init(hashCode, annos, fun, args);
-  }
-
-  public void initHashCode(aterm.ATermList annos, aterm.AFun fun, aterm.ATerm[] args) {
-  	super.initHashCode(annos, fun, args);
+  public Default(apigen.adt.api.Factory factory, aterm.ATermList annos, aterm.AFun fun,	aterm.ATerm[] args) {
+    super(factory, annos, fun, args);
   }
 
   private static int index_termPattern = 0;
+  
   public shared.SharedObject duplicate() {
-    Default clone = new Default(getApiFactory());
-    clone.init(hashCode(), getAnnotations(), getAFun(), getArgumentArray());
-    return clone;
+    return this;
   }
 
   public boolean equivalent(shared.SharedObject peer) {
@@ -60,9 +51,6 @@ public class Default extends apigen.adt.api.types.Separator {
   public aterm.ATermAppl setArgument(aterm.ATerm arg, int i) {
     switch(i) {
       case 0:
-        if (! (arg instanceof aterm.ATerm)) { 
-          throw new RuntimeException("Argument 0 of a Default should have type term");
-        }
         break;
       default: throw new RuntimeException("Default does not have an argument at " + i );
     }

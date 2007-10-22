@@ -1,23 +1,14 @@
 package apigen.adt.api.types.type;
 
 public class Type extends apigen.adt.api.types.Type {
-  public Type(apigen.adt.api.Factory factory) {
-    super(factory);
-  }
-
-  public void init(int hashCode, aterm.ATermList annos, aterm.AFun fun,	aterm.ATerm[] args) {
-    super.init(hashCode, annos, fun, args);
-  }
-
-  public void initHashCode(aterm.ATermList annos, aterm.AFun fun, aterm.ATerm[] args) {
-  	super.initHashCode(annos, fun, args);
+  public Type(apigen.adt.api.Factory factory, aterm.ATermList annos, aterm.AFun fun,	aterm.ATerm[] args) {
+    super(factory, annos, fun, args);
   }
 
   private static int index_name = 0;
+  
   public shared.SharedObject duplicate() {
-    Type clone = new Type(getApiFactory());
-    clone.init(hashCode(), getAnnotations(), getAFun(), getArgumentArray());
-    return clone;
+	  return this;
   }
 
   public boolean equivalent(shared.SharedObject peer) {

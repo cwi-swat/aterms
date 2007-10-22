@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class StringConversions {
-	static private Map specialChars;
+	static private Map<Character, String> specialChars;
 
     /**
      * A translation table from non-alphanumerics to acronyms.
@@ -46,7 +46,7 @@ public class StringConversions {
      * Load the translation table into a hash table
      */
 	static {
-		specialChars = new HashMap();
+		specialChars = new HashMap<Character, String>();
 
 		for (int i = 0; i < SPECIAL_CHAR_WORDS.length; i++) {
 			String word = SPECIAL_CHAR_WORDS[i];
@@ -114,7 +114,7 @@ public class StringConversions {
 	}
 
 	static private String getSpecialCharWord(char c) {
-		return (String) specialChars.get(new Character(c));
+		return specialChars.get(new Character(c));
 	}
 
     /**

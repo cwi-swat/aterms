@@ -22,10 +22,10 @@ import aterm.ATerm;
 import aterm.ATermAppl;
 
 public class ADT {
-	List modules;
-  List types;
-    List bottomTypes;
-    Map modulesTypes;
+	List<Modulentry> modules;
+	List<Type> types;
+    List<String> bottomTypes;
+    Map<String, List<Type>> modulesTypes;
     Factory factory;
     private static ADT instance;
     
@@ -37,17 +37,17 @@ public class ADT {
     }
     
     private ADT(Modules adt) throws ADTException {
-    	types = new LinkedList();
-      modules = new LinkedList();
-      modulesTypes = new HashMap();
+    	types = new LinkedList<Type>();
+      modules = new LinkedList<Modulentry>();
+      modulesTypes = new HashMap<String, List<Type>>();
       factory = adt.getApiFactory();
 
-      List entries = new LinkedList();
+      List<Entry> entries = new LinkedList<Entry>();
 
       Modulentry currentModule;
       String moduleName;
       while (!adt.isEmpty()) { //For each module
-      		List listModuleType = new LinkedList();
+      		List<Type> listModuleType = new LinkedList<Type>();
       		currentModule = (Modulentry)adt.getHead();
       		moduleName = currentModule.getModulename().getName();
       		//System.out.println("Processing module "+moduleName);
@@ -60,16 +60,16 @@ public class ADT {
       		
       		
       		while (!entries.isEmpty()) { //For each entry in the module
-            List alts = new LinkedList();
-            ListIterator iter = entries.listIterator();
-            Entry first = (Entry) iter.next();
+            List<Entry> alts = new LinkedList<Entry>();
+            ListIterator<Entry> iter = entries.listIterator();
+            Entry first = iter.next();
             alts.add(first);
             String typeId = ((ATermAppl) first.getSort()).getAFun().getName();
 
             iter.remove();
             while (iter.hasNext()) {
                 try {
-                    Entry entry = (Entry) iter.next();
+                    Entry entry = iter.next();
                     if (((ATermAppl) entry.getSort())
                         .getAFun()
                         .getName()
@@ -120,8 +120,8 @@ public class ADT {
     }
 
 	  private void computeBottomTypes() {
-        bottomTypes = new LinkedList();
-        Iterator types = typeIterator();
+        bottomTypes = new LinkedList<String>();
+        Iterator<Type> types = typeIterator();
 
         // TODO: do not include builtin types as bottomTypes
         while (types.hasNext()) {
@@ -166,9 +166,8 @@ public class ADT {
             } else {
                 return processList(typeId, moduleName, first);
             }
-        } else {
-            return processConstructors(typeId, moduleName, alts);
         }
+        return processConstructors(typeId, moduleName, alts);
     }
 
     private Type processSeparatedList(String typeId, String moduleName, Entry entry) {
@@ -233,23 +232,23 @@ public class ADT {
         }
     }
 
-    public Iterator typeIterator() {
+    public Iterator<Type> typeIterator() {
         return types.iterator();
     }
 
-    public Iterator typeIterator(Module module) {
-    	return ((List)modulesTypes.get(module.getModulename().getName())).iterator();
+    public Iterator<Type> typeIterator(Module module) {
+    	return (modulesTypes.get(module.getModulename().getName())).iterator();
     }
 
-    public Iterator typeIterator(String moduleName) {
-    	return ((List)modulesTypes.get(moduleName)).iterator();
+    public Iterator<Type> typeIterator(String moduleName) {
+    	return (modulesTypes.get(moduleName)).iterator();
     }
 
-    public Iterator bottomTypeIterator() {
+    public Iterator<String> bottomTypeIterator() {
         return bottomTypes.iterator();
     }
     
-    public Iterator moduleIterator() {
+    public Iterator<Modulentry> moduleIterator() {
       return modules.iterator();
     }
     
@@ -259,19 +258,19 @@ public class ADT {
     		if (conv.isReserved(typename)) {
     			return modulename;
     		}
-    		Iterator it = typeIterator();
+    		Iterator<Type> it = typeIterator();
     		while (it.hasNext()) {
-    			Type current = (Type) it.next();
+    			Type current = it.next();
     			if (current.getId().equals(typename)) {
     				return current.getModuleName();
     			}
     		}
     		it = typeIterator();
     		while (it.hasNext()) {
-    			Type current = (Type) it.next();
-    			Iterator altit = current.alternativeIterator();
+    			Type current = it.next();
+    			Iterator<Alternative> altit = current.alternativeIterator();
     			while (altit.hasNext()) {
-    			    Alternative alt = (Alternative) altit.next();
+    			    Alternative alt = altit.next();
     			    	if (alt.getId().equals(typename)) {
     				return current.getModuleName();
     			}
@@ -280,13 +279,13 @@ public class ADT {
     		throw new RuntimeException("The type " + typename + " is unknown");
     }
     
-    public Set getImportsClosureForModule(String moduleName) {
-    		Set result = new HashSet();
-    	    	computeImportsClosureForModule(result,moduleName);
+    public Set<String> getImportsClosureForModule(String moduleName) {
+    		Set<String> result = new HashSet<String>();
+    	    computeImportsClosureForModule(result,moduleName);
     		return result;
     }
     
-    private void computeImportsClosureForModule(Set result,String moduleName) {
+    private void computeImportsClosureForModule(Set<String> result,String moduleName) {
     	    //	System.out.println("moduleName = " + moduleName);
     	    Module currentModule = getModuleFromName(moduleName);
     	    if(currentModule==null) {
@@ -295,8 +294,7 @@ public class ADT {
     	
     	    String currentModuleName = currentModule.getModulename().getName();
     	    result.add(currentModuleName);
-    	
-    	
+    	    
     	    Imports imported = currentModule.getImports();
     	    while(!imported.isEmpty()) {
     	    		String name = imported.getHead().getName();
@@ -310,9 +308,9 @@ public class ADT {
     }
     
     private Module getModuleFromName(String moduleName) {
-        	Iterator modulesIt = moduleIterator();
+        	Iterator<Modulentry> modulesIt = moduleIterator();
     	    	while(modulesIt.hasNext()) {
-    	    		Module currentModule = (Module)modulesIt.next();
+    	    		Module currentModule = modulesIt.next();
     	    		String currentModuleName = currentModule.getModulename().getName();
     	    		if(moduleName.equals(currentModuleName)) {
     	    			return currentModule;
@@ -321,11 +319,11 @@ public class ADT {
     	    	return null;
     	}
   
-  public Set getModuleNameSet() {
-    Set modulenames = new HashSet();
-    Iterator it = moduleIterator();
+  public Set<String> getModuleNameSet() {
+    Set<String> modulenames = new HashSet<String>();
+    Iterator<Modulentry> it = moduleIterator();
     while (it.hasNext()) {
-      Module mod = (Module) it.next();
+      Module mod = it.next();
       String modname = mod.getModulename().getName();
       modulenames.add(modname);
     }

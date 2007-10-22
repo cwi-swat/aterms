@@ -61,9 +61,7 @@ public class CTomSignatureImplementation implements TomSignatureImplementation {
 		if (jtype) {
 			return StringConversions.makeIdentifier(type) + "_" + StringConversions.makeIdentifier(id);
 		}
-		else {
-			return StringConversions.makeIdentifier(id);
-		}
+		return StringConversions.makeIdentifier(id);
 	}
 
 	public String OperatorType(String type, String id) {

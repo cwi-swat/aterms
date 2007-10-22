@@ -16,7 +16,7 @@ public abstract class JavaGenerator extends Generator {
         new TypeConverter(new JavaTypeConversions("factory"));
 
     private String basePackageName;
-    private List imports;
+    private List<String> imports;
 
     public static TypeConverter getConverter() {
         return converter;
@@ -70,9 +70,9 @@ public abstract class JavaGenerator extends Generator {
 
     protected void printImports() {
         if (imports.size() > 0) {
-            Iterator iter = imports.iterator();
+            Iterator<String> iter = imports.iterator();
             while (iter.hasNext()) {
-                println("import " + (String) iter.next() + ";");
+                println("import " + iter.next() + ";");
             }
             println();
         }

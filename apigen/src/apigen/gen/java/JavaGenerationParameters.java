@@ -11,12 +11,12 @@ public class JavaGenerationParameters extends GenerationParameters {
 	private boolean generateJar;
 	private String packageName;
 	private String travelerName;
-	private List imports;
+	private List<String> imports;
 	private String version;
 
 	public JavaGenerationParameters() {
 		super();
-		imports = new LinkedList();
+		imports = new LinkedList<String>();
 		setGenerateJar(true);
 		setOutputDirectory(".");
 	    setVerbose(false);
@@ -74,7 +74,7 @@ public class JavaGenerationParameters extends GenerationParameters {
 		imports.add(importName);
 	}
 
-	public List getImports() {
+	public List<String> getImports() {
 		return imports;
 	}
 

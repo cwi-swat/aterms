@@ -1,26 +1,17 @@
 package apigen.adt.api.types.module;
 
 public class Modulentry extends apigen.adt.api.types.Module {
-  public Modulentry(apigen.adt.api.Factory factory) {
-    super(factory);
-  }
-
-  public void init(int hashCode, aterm.ATermList annos, aterm.AFun fun,	aterm.ATerm[] args) {
-    super.init(hashCode, annos, fun, args);
-  }
-
-  public void initHashCode(aterm.ATermList annos, aterm.AFun fun, aterm.ATerm[] args) {
-  	super.initHashCode(annos, fun, args);
+  public Modulentry(apigen.adt.api.Factory factory, aterm.ATermList annos, aterm.AFun fun,	aterm.ATerm[] args) {
+    super(factory, annos, fun, args);
   }
 
   private static int index_modulename = 0;
   private static int index_imports = 1;
   private static int index_sorts = 2;
   private static int index_entries = 3;
+  
   public shared.SharedObject duplicate() {
-    Modulentry clone = new Modulentry(getApiFactory());
-    clone.init(hashCode(), getAnnotations(), getAFun(), getArgumentArray());
-    return clone;
+    return this;
   }
 
   public boolean equivalent(shared.SharedObject peer) {

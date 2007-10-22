@@ -6,7 +6,7 @@ public class Location
   implements Cloneable
 {
   String altId;
-  List path;
+  List<Step> path;
 
   //{{{ public Location(String altId)
 
@@ -14,7 +14,7 @@ public class Location
   {
     this.altId = altId;
 
-    path = new LinkedList();
+    path = new LinkedList<Step>();
   }
 
   //}}}
@@ -44,14 +44,14 @@ public class Location
   {
     Step step;
 
-    step = (Step)path.get(path.size()-1);
+    step = path.get(path.size()-1);
     step.makeTail();
   }
 
   //}}}
   //{{{ public Iterator stepIterator()
 
-  public Iterator stepIterator()
+  public Iterator<Step> stepIterator()
   {
     return path.iterator();
   }
@@ -63,7 +63,7 @@ public class Location
   public Object clone()
   {
     Location copy = new Location(altId);
-    copy.path = (List)((LinkedList)path).clone();
+    copy.path = (List<Step>)((LinkedList<Step>)path).clone();
 
     return copy;
   }

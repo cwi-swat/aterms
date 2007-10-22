@@ -1,5 +1,6 @@
 package apigen.adt;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -7,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
-import java.util.Vector;
 
 import aterm.AFun;
 import aterm.ATerm;
@@ -19,15 +19,15 @@ public class Type {
 	private String moduleName;
     private String id;
     private AlternativeList alts;
-    private Map fields;
-    private List field_list;
+    private Map<String, Field> fields;
+    private List<Field> field_list;
 
     public Type(String id, String moduleName) {
         this.id = id;
         this.moduleName = moduleName;
         alts = new AlternativeList();
-        fields = new HashMap();
-        field_list = new Vector();
+        fields = new HashMap<String, Field>();
+        field_list = new ArrayList<Field>();
     }
 
     public String getId() {
@@ -110,10 +110,10 @@ public class Type {
     }
 
     public boolean hasAlternative(String id) {
-        Iterator alts = alternativeIterator();
+        Iterator<Alternative> alts = alternativeIterator();
 
         while (alts.hasNext()) {
-            Alternative alt = (Alternative) alts.next();
+            Alternative alt = alts.next();
 
             if (alt.getId().equals(id)) {
                 return true;
@@ -124,8 +124,6 @@ public class Type {
     }
 
     private void addField(String id, String type, Location location) {
-        Field field;
-
         if (id.equals("int")) {
             throw new RuntimeException(
                 "Illegal use of reserved name \""
@@ -134,7 +132,7 @@ public class Type {
                     + this.id);
         }
 
-        field = (Field) fields.get(id);
+        Field field = fields.get(id);
 
         if (field == null) {
             field = new Field(id, type);
@@ -162,15 +160,15 @@ public class Type {
         return (AlternativeList) alts.clone();
     }
 
-    public Iterator alternativeIterator() {
+    public Iterator<Alternative> alternativeIterator() {
         return alts.iterator();
     }
 
     public Alternative getAlternative(String altId) {
-        Iterator iter = alts.iterator();
+        Iterator<Alternative> iter = alts.iterator();
 
         while (iter.hasNext()) {
-            Alternative element = (Alternative) iter.next();
+            Alternative element = iter.next();
 
             if (element.getId().equals(altId)) {
                 return element;
@@ -181,10 +179,10 @@ public class Type {
     }
 
     public Field getAltField(String altId, String fieldId) {
-        Iterator iter = altFieldIterator(altId);
+        Iterator<Field> iter = altFieldIterator(altId);
 
         while (iter.hasNext()) {
-            Field field = (Field) iter.next();
+            Field field = iter.next();
 
             if (field.getId().equals(fieldId)) {
                 return field;
@@ -194,30 +192,26 @@ public class Type {
         return null;
     }
 
-    public Iterator fieldIterator() {
+    public Iterator<Field> fieldIterator() {
         return field_list.iterator();
     }
 
-    public Iterator altFieldIterator(final String altId) {
-        Comparator comp;
+    public Iterator<Field> altFieldIterator(final String altId) {
+        Comparator<Field> comp = new Comparator<Field>() {
+            public int compare(Field o1, Field o2) {
+                Field field1 = o1;
+                Field field2 = o2;
 
-        //{{{ comp = new Comparator() { ... }
-
-        comp = new Comparator() {
-            public int compare(Object o1, Object o2) {
-                Field field1 = (Field) o1;
-                Field field2 = (Field) o2;
-
-                Iterator path1 = field1.getLocation(altId).stepIterator();
-                Iterator path2 = field2.getLocation(altId).stepIterator();
+                Iterator<Step> path1 = field1.getLocation(altId).stepIterator();
+                Iterator<Step> path2 = field2.getLocation(altId).stepIterator();
 
                 while (path1.hasNext()) {
                     if (!path2.hasNext()) {
                         throw new RuntimeException(
                             "incompatible paths: " + field1 + "," + field2);
                     }
-                    Step step1 = (Step) path1.next();
-                    Step step2 = (Step) path2.next();
+                    Step step1 = path1.next();
+                    Step step2 = path2.next();
                     int type1 = step1.getType();
                     int type2 = step2.getType();
 
@@ -253,11 +247,11 @@ public class Type {
             }
         };
 
-        SortedSet sortedAltFields = new TreeSet(comp);
+        SortedSet<Field> sortedAltFields = new TreeSet<Field>(comp);
 
-        Iterator iter = fields.values().iterator();
+        Iterator<Field> iter = fields.values().iterator();
         while (iter.hasNext()) {
-            Field field = (Field) iter.next();
+            Field field = iter.next();
             if (field.hasAltId(altId)) {
                 sortedAltFields.add(field);
             }
@@ -275,7 +269,7 @@ public class Type {
     }
 
     public int getAltArity(Alternative alt) {
-        Iterator fields = altFieldIterator(alt.getId());
+        Iterator<Field> fields = altFieldIterator(alt.getId());
         int arity = 0;
 
         for (arity = 0; fields.hasNext(); fields.next()) {

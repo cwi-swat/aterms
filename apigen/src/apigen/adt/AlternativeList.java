@@ -4,11 +4,11 @@ import java.util.*;
 
 import aterm.*;
 
-public class AlternativeList extends LinkedList {
+public class AlternativeList extends LinkedList<Alternative> {
 	public void keepByType(int type) {
-		Iterator iter = iterator();
+		Iterator<Alternative> iter = iterator();
 		while (iter.hasNext()) {
-			Alternative alt = (Alternative) iter.next();
+			Alternative alt = iter.next();
 			if (alt.getPattern().getType() != type) {
 				iter.remove();
 			}
@@ -16,9 +16,9 @@ public class AlternativeList extends LinkedList {
 	}
 
 	public void keepByAFun(AFun afun) {
-		Iterator iter = iterator();
+		Iterator<Alternative> iter = iterator();
 		while (iter.hasNext()) {
-			Alternative alt = (Alternative) iter.next();
+			Alternative alt = iter.next();
 			ATerm pattern = alt.getPattern();
 			if (pattern.getType() == ATerm.APPL) {
 				AFun pat_fun = ((ATermAppl) pattern).getAFun();
@@ -33,9 +33,9 @@ public class AlternativeList extends LinkedList {
 	}
 
 	public void removeEmptyList() {
-		Iterator iter = iterator();
+		Iterator<Alternative> iter = iterator();
 		while (iter.hasNext()) {
-			Alternative alt = (Alternative) iter.next();
+			Alternative alt = iter.next();
 			ATerm pattern = alt.getPattern();
 			if (pattern.getType() == ATerm.LIST && ((ATermList) pattern).isEmpty()) {
 				iter.remove();

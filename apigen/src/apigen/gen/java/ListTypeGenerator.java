@@ -4,7 +4,6 @@ import java.util.Iterator;
 import java.util.Set;
 
 import apigen.adt.ADT;
-import apigen.adt.Alternative;
 import apigen.adt.ListType;
 import apigen.adt.Type;
 import apigen.gen.StringConversions;
@@ -81,8 +80,10 @@ public class ListTypeGenerator extends TypeGenerator {
 	}
 
 	protected void genConstructor(String className) {
-		println("  public " + className + "(" + factory + " factory) {");
-		println("     super(factory);");
+		println("  public " + className + "(" + factory
+				+ " factory, aterm.ATermList annos, aterm.ATerm first, "
+				+ "aterm.ATermList next) {");
+		println("     super(factory, annos, first, next);");
 		println("  }");
 		println();
 	}
@@ -106,11 +107,8 @@ public class ListTypeGenerator extends TypeGenerator {
 	}
 
 	private void genDuplicateMethod() {
-		String className = TypeGenerator.className(type);
 		println("  public shared.SharedObject duplicate() {");
-		println("    " + className + " clone = new " + className + "(" + buildFactoryGetter() + ");");
-		println("    clone.init(hashCode(), getAnnotations(), getFirst(), getNext());");
-		println("    return clone;");
+		println("    return this;");
 		println("  }");
 		println();
 	}
@@ -206,7 +204,7 @@ public class ListTypeGenerator extends TypeGenerator {
 		println("  }");
 		println();
 	}
-	
+
 	private void genAppendMethods() {
 		if (!type.getElementType().equals("term")) {
 			genAppendMethod();
