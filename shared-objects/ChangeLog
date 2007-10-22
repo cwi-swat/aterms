@@ -1,3 +1,7 @@
+Mon Aug 13 14:53:40 <lankamp@cwi.nl>
+  * Made the SharedObjectFactory and SingletonSharedObjectFactory thread-safe.
+  * The performance should also be noticably better then that of the 'current' version.
+
 2007-05-06  Pem  <pem@piano.local>
   * Changed license to BSD
 
