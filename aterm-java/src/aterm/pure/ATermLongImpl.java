@@ -31,32 +31,55 @@ package aterm.pure;
 import java.util.List;
 
 import jjtraveler.VisitFailure;
-
 import shared.SharedObject;
 import aterm.AFun;
 import aterm.ATerm;
 import aterm.ATermAppl;
-import aterm.ATermLong;
 import aterm.ATermList;
+import aterm.ATermLong;
 import aterm.ATermPlaceholder;
+import aterm.Visitable;
 import aterm.Visitor;
 
 public class ATermLongImpl extends ATermImpl implements ATermLong {
   private long value;
 
+  /**
+   * @depricated Use the new constructor instead.
+   * @param factory
+   */
   protected ATermLongImpl(PureFactory factory) {
     super(factory);
+  }
+  
+  protected ATermLongImpl(PureFactory factory, ATermList annos, long value) {
+    super(factory, annos);
+    
+    this.value = value;
+    
+    setHashCode(hashFunction());
   }
 
   public int getType() {
     return ATerm.LONG;
   }
 
+  /**
+   * @depricated Use the new constructor instead.
+   * @param hashCode
+   * @param annos
+   * @param value
+   */
   protected void init(int hashCode, ATermList annos, long value) {
     super.init(hashCode, annos);
     this.value = value;
   }
 
+  /**
+   * @depricated Use the new constructor instead.
+   * @param annos
+   * @param value
+   */
   protected void initHashCode(ATermList annos, long value) {
     this.value = value;
     this.internSetAnnotations(annos);
@@ -64,9 +87,7 @@ public class ATermLongImpl extends ATermImpl implements ATermLong {
   }
 
   public SharedObject duplicate() {
-    ATermLongImpl clone = new ATermLongImpl(factory);
-    clone.init(hashCode(), getAnnotations(), value);
-    return clone;
+	  return this;
   }
 
   public boolean equivalent(SharedObject obj) {
@@ -78,8 +99,8 @@ public class ATermLongImpl extends ATermImpl implements ATermLong {
     return false;
   }
 
-  protected boolean match(ATerm pattern, List list) {
-    if (this.equals(pattern)) {
+  protected boolean match(ATerm pattern, List<Object> list) {
+    if (equals(pattern)) {
       return true;
     }
 
@@ -106,7 +127,7 @@ public class ATermLongImpl extends ATermImpl implements ATermLong {
     return getPureFactory().makeLong(value, annos);
   }
 
-  public aterm.Visitable accept(Visitor v) throws VisitFailure {
+  public Visitable accept(Visitor v) throws VisitFailure {
     return v.visitLong(this);
   }
 

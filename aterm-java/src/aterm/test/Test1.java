@@ -51,7 +51,7 @@ public class Test1 {
     }
   }
 
-  protected  void test(boolean cond, String id) {
+  private  void test(boolean cond, String id) {
     if(cond) {
       System.out.println("\ttest " + id + " ok!");
     } else {
@@ -70,17 +70,12 @@ public class Test1 {
     assertTrue(term[0] == term[1]);
 
     assertTrue(term[0].toString().equals("3"));
-
-    List result;
-
-    result = term[0].match("3");
-    assertTrue(result != null);
-    assertTrue(result.size() == 0);
+    
+    List<Object> result = term[0].match("3");
+    assertTrue(result != null && result.size() == 0);
 
     result = term[0].match("<int>");
-    assertTrue(result != null);
-    assertTrue(result.size() == 1);
-    assertTrue(result.get(0).equals(new Integer(3)));
+    assertTrue(result != null && result.size() == 1 && result.get(0).equals(new Integer(3)));
     
     System.out.println("pass: testMakeInt");
   }
@@ -96,17 +91,12 @@ public class Test1 {
     assertTrue(term[0] == term[1]);
 
     assertTrue(term[0].toString().equals("3"));
-
-    List result;
-
-    result = term[0].match("3L");
-    assertTrue(result != null);
-    assertTrue(result.size() == 0);
+    
+    List<Object> result = term[0].match("3L");
+    assertTrue(result != null && result.size() == 0);
 
     result = term[0].match("<long>");
-    assertTrue(result != null);
-    assertTrue(result.size() == 1);
-    assertTrue(result.get(0).equals(new Long(3)));
+    assertTrue(result != null && result.size() == 1 && result.get(0).equals(new Long(3)));
     
     System.out.println("pass: testMakeLong");
   }
@@ -120,13 +110,9 @@ public class Test1 {
     assertTrue(term[0].getType() == ATerm.REAL);
     assertTrue(term[0].getReal() == Math.PI);
     assertTrue(term[0] == term[1]);
-
-    List result;
-
-    result = term[0].match("<real>");
-    assertTrue(result != null);
-    assertTrue(result.size() == 1);
-    assertTrue(result.get(0).equals(new Double(Math.PI)));
+    
+    List<Object> result = term[0].match("<real>");
+    assertTrue(result != null && result.size() == 1 && result.get(0).equals(new Double(Math.PI)));
 
     System.out.println("pass: testMakeReal");
   }
@@ -291,9 +277,6 @@ public class Test1 {
   
   protected  void testPatternMatch() {
     ATerm[] T = new ATerm[10];
-    List result;
-    ATerm empty = factory.makeList();
-    
     T[0] = factory.parse("f(1,2,3)"); 
     T[1] = factory.parse("[1,2,3]"); 
     T[2] = factory.parse("f(a,\"abc\",2.3,<abc>)"); 
@@ -301,7 +284,7 @@ public class Test1 {
 
     test(T[0].match("f(1,2,3)") != null, "match-1a");
 
-    result = T[1].match("<term>");
+    List<Object> result = T[1].match("<term>");
       //System.out.println("result = " + result);
     test(result != null && result.get(0).equals(T[1]), "match-1b");
 
@@ -355,9 +338,9 @@ public class Test1 {
       //System.out.println("result = " + result); 
     test(result != null && result.size() == 4, "match-4a");
 
-    test(result.get(0).equals(factory.parse("a")), "match-4b");
-    test(result.get(1).equals(factory.parse("\"abc\"")), "match-4c"); 
-    test(result.get(2).equals(new Double(2.3)), "match-4d"); 
+    test(result != null && result.get(0).equals(factory.parse("a")), "match-4b");
+    test(result != null && result.get(1).equals(factory.parse("\"abc\"")), "match-4c"); 
+    test(result != null && result.get(2).equals(new Double(2.3)), "match-4d"); 
       //test(result.get(3).equals(factory.parse("<abc>")), "match-4e"); 
 
     result = T[1].match("[<list>]") ;
@@ -365,11 +348,11 @@ public class Test1 {
          result.get(0).equals(T[1]), "match-6a"); 
     
     result = T[1].match("[<int>,<list>]"); 
-    test(result != null && result.size() == 2 &&  
-         result.get(0).equals(new Integer(1)), "match-6b"); 
-    test(result.get(1).equals(factory.parse("[2,3]")), 
+    test(result != null && result.size() == 2 && result.get(0).equals(new Integer(1)), "match-6b"); 
+    test(result != null && result.get(1).equals(factory.parse("[2,3]")), 
          "match-6c");
 
+    ATerm empty = factory.makeList();
     result = empty.match("[]");
       //System.out.println("result = " + result);
     test(result!=null && result.size()==0, "match-6d");
@@ -381,16 +364,15 @@ public class Test1 {
     
     result = T[0].match("<fun(<int>,<list>)>");
     test(result != null && result.size() == 3, "match-7a"); 
-    test(result.get(0).equals("f"), "match-7b"); 
-    test(result.get(1).equals(new Integer(1)), "match-7c"); 
-    test(result.get(2).equals(factory.parse("[2,3]")), 
-         "match-7d"); 
+    test(result != null && result.get(0).equals("f"), "match-7b"); 
+    test(result != null && result.get(1).equals(new Integer(1)), "match-7c"); 
+    test(result != null && result.get(2).equals(factory.parse("[2,3]")), "match-7d"); 
 
     result = T[3].match("f(<term>,[<list>])");
     test(result != null && result.size() == 2, "match-8a"); 
-    test(result.get(0).equals(factory.parse("a")), "match-8b"); 
-    test(result.get(1) != null, "match-8c"); 
-    test(((ATermList)result.get(1)).getLength()==0, "match-8d"); 
+    test(result != null && result.get(0).equals(factory.parse("a")), "match-8b"); 
+    test(result != null && result.get(1) != null, "match-8c"); 
+    test(result != null && ((ATermList)result.get(1)).getLength()==0, "match-8d"); 
 
       /*
     result = T[0].match("<f>"); 
@@ -412,7 +394,7 @@ public class Test1 {
   }
   
   protected  void testPatternMake() {
-    List list = new ArrayList();
+    List<Object> list = new ArrayList<Object>();
     ATerm result;
 
     list.clear(); 
@@ -593,9 +575,7 @@ public class Test1 {
     
     System.out.println(factory);
   }
-
   
-
   public void testAll() {
 
     testMakeInt();

@@ -68,16 +68,12 @@ public class Test2 {
 
     System.out.println("toString: " + term[0]);
     test_assert(term[0].toString().equals("3"));
-
-    List result;
-
-    result = term[0].match("3");
-    test_assert(result != null);
-    test_assert(result.size() == 0);
+    
+    List<Object> result = term[0].match("3");
+    test_assert(result != null && result.size() == 0);
 
     result = term[0].match("<int>");
-    test_assert(result != null);
-    test_assert(result.size() == 1);
+    test_assert(result != null && result.size() == 1);
 
     System.out.println("pass: testMakeInt");
   }
@@ -91,13 +87,9 @@ public class Test2 {
     test_assert(term[0].getType() == ATerm.REAL);
     test_assert(term[0].getReal() == Math.PI);
     test_assert(term[0] == term[1]);
-
-    List result;
-
-    result = term[0].match("<real>");
-    test_assert(result != null);
-    test_assert(result.size() == 1);
-    test_assert(result.get(0).equals(new Double(Math.PI)));
+    
+    List<Object> result = term[0].match("<real>");
+    test_assert(result != null && result.size() == 1 && result.get(0).equals(new Double(Math.PI)));
 
     System.out.println("pass: testMakeReal");
   }
@@ -235,7 +227,7 @@ public class Test2 {
 
   public void testMatch() {
     ATerm t = factory.parse("node(\"Pico-eval\",box,182,21,62,26)");
-    List result = t.match("node(<str>,<fun>,<int>,<int>,<int>,<int>)");
+    List<Object> result = t.match("node(<str>,<fun>,<int>,<int>,<int>,<int>)");
     test_assert(result != null);
 
     t = factory.parse("f(1,2,3)"); 

@@ -40,10 +40,31 @@ public class AFunImpl extends ATermImpl implements AFun {
   
   private boolean isQuoted;
   
+  /**
+   * @depricated Use the new constructor instead.
+   * @param factory
+   */
   protected AFunImpl(PureFactory factory) {
     super(factory);
   }
+  
+  protected AFunImpl(PureFactory factory, String name, int arity, boolean isQuoted) {
+    super(factory, null);
+    
+    this.name = name.intern();
+    this.arity = arity;
+    this.isQuoted = isQuoted;
+    
+    setHashCode(hashFunction());
+  }
 
+  /**
+   * @depricated Use the new constructor instead.
+   * @param hashCode
+   * @param name
+   * @param arity
+   * @param isQuoted
+   */
   protected void init(int hashCode, String name, int arity, boolean isQuoted) {
     super.init(hashCode, null);
     
@@ -52,6 +73,12 @@ public class AFunImpl extends ATermImpl implements AFun {
     this.isQuoted = isQuoted;
   }
 
+  /**
+   * @depricated Use the new constructor instead.
+   * @param name
+   * @param arity
+   * @param isQuoted
+   */
   protected void initHashCode(String name, int arity, boolean isQuoted) {
     this.name = name.intern();
     this.arity = arity;
@@ -60,19 +87,15 @@ public class AFunImpl extends ATermImpl implements AFun {
   }
 
   public SharedObject duplicate() {
-    AFunImpl clone = new AFunImpl(factory);
-    clone.init(hashCode(), name, arity, isQuoted);
-    return clone;
+    return this;
   }
 
   public boolean equivalent(SharedObject obj) {
-    try {
-      AFun peer = (AFun) obj;
-      return peer.getName().equals(name) && peer.getArity() == arity
-        && peer.isQuoted() == isQuoted;
-    } catch (ClassCastException e) {
-      return false;
-    }
+	  if(obj instanceof AFun){
+		  AFun peer = (AFun) obj;
+	      return peer.getName().equals(name) && peer.getArity() == arity && peer.isQuoted() == isQuoted;
+	  }
+	  return false;
   }
 
   public int getType() {

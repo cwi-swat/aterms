@@ -31,31 +31,52 @@ package aterm.pure;
 import java.util.List;
 
 import jjtraveler.VisitFailure;
-
+import shared.HashFunctions;
 import shared.SharedObject;
-
-import aterm.*;
+import aterm.AFun;
+import aterm.ATerm;
+import aterm.ATermAppl;
+import aterm.ATermList;
+import aterm.ATermPlaceholder;
+import aterm.Visitable;
+import aterm.Visitor;
 
 public class ATermPlaceholderImpl extends ATermImpl implements ATermPlaceholder {
   private ATerm type;
 
+  /**
+   * @depricated Use the new constructor instead.
+   * @param factory
+   */
   protected ATermPlaceholderImpl(PureFactory factory) {
     super(factory);
+  }
+  
+  protected ATermPlaceholderImpl(PureFactory factory, ATermList annos, ATerm type) {
+    super(factory, annos);
+
+    this.type = type;
+    
+    setHashCode(HashFunctions.doobs(new Object[]{annos, type}));
   }
 
   public int getType() {
     return ATerm.PLACEHOLDER;
   }
 
+  /**
+   * @depricated Use the new constructor instead.
+   * @param hashCode
+   * @param annos
+   * @param type
+   */
   protected void init(int hashCode, ATermList annos, ATerm type) {
     super.init(hashCode, annos);
     this.type = type;
   }
 
   public SharedObject duplicate() {
-    ATermPlaceholderImpl clone = new ATermPlaceholderImpl(factory);
-    clone.init(hashCode(), getAnnotations(), type);
-    return clone;
+	  return this;
   }
 
   public boolean equivalent(SharedObject obj) {
@@ -67,14 +88,14 @@ public class ATermPlaceholderImpl extends ATermImpl implements ATermPlaceholder 
     return false;
   }
 
-  public boolean match(ATerm pattern, List list) {
+  public boolean match(ATerm pattern, List<Object> list) {
     if (pattern.getType() == ATerm.PLACEHOLDER) {
-      ATerm type = ((ATermPlaceholder) pattern).getPlaceholder();
-      if (type.getType() == ATerm.APPL) {
-        ATermAppl appl = (ATermAppl) type;
+      ATerm t = ((ATermPlaceholder) pattern).getPlaceholder();
+      if (t.getType() == ATerm.APPL) {
+        ATermAppl appl = (ATermAppl) t;
         AFun afun = appl.getAFun();
         if (afun.getName().equals("placeholder") && afun.getArity() == 0 && !afun.isQuoted()) {
-          list.add(type);
+          list.add(t);
           return true;
         }
       }
@@ -83,7 +104,7 @@ public class ATermPlaceholderImpl extends ATermImpl implements ATermPlaceholder 
     return super.match(pattern, list);
   }
 
-  public ATerm make(List args) {
+  public ATerm make(List<Object> args) {
     ATermAppl appl;
     AFun fun;
     String name;
@@ -120,9 +141,9 @@ public class ATermPlaceholderImpl extends ATermImpl implements ATermPlaceholder 
 
           return factory.makeReal(d.doubleValue());
         } else if (name.equals("placeholder")) {
-          ATerm type = (ATerm) args.get(0);
+          ATerm t = (ATerm) args.get(0);
           args.remove(0);
-          return factory.makePlaceholder(type);
+          return factory.makePlaceholder(t);
         } else if (name.equals("str")) {
           String str = (String) args.get(0);
           args.remove(0);
@@ -162,9 +183,9 @@ public class ATermPlaceholderImpl extends ATermImpl implements ATermPlaceholder 
     return getPureFactory().makePlaceholder(type, annos);
   }
 
-	public aterm.Visitable accept(Visitor v) throws VisitFailure {
-		return v.visitPlaceholder(this);
-	}
+  public Visitable accept(Visitor v) throws VisitFailure {
+    return v.visitPlaceholder(this);
+  }
 
   public int getNrSubTerms() {
     return 1;

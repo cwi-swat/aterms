@@ -109,7 +109,7 @@ public class TestFibInterpreted {
 
 	public ATerm oneStep(ATerm subject) {
 		int ruleNumber = 0;
-		List list;
+		List<Object> list;
 
 		// fib(zero) -> suc(zero)
 		list = subject.match(lhs[ruleNumber]);
@@ -192,7 +192,7 @@ public class TestFibInterpreted {
 	}
 
 	public ATerm oneStepInnermost(ATerm subject) {
-		List list;
+		List<Object> list;
 
 		// fib(zero) -> suc(zero)
 		list = subject.match(lhs[0]);

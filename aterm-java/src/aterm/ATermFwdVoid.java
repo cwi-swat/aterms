@@ -29,60 +29,60 @@
 package aterm;
 import jjtraveler.VisitFailure;
 
-public class ATermFwdVoid implements aterm.Visitor {
+public class ATermFwdVoid implements Visitor {
 
     public ATermFwdVoid() {
     	super();
     }
 
     public jjtraveler.Visitable visit(jjtraveler.Visitable v) throws jjtraveler.VisitFailure {
-		if (v instanceof aterm.Visitable) {
-		    return ((aterm.Visitable) v).accept(this);
+		if (v instanceof Visitable) {
+		    return ((Visitable) v).accept(this);
 		}
 	   throw new jjtraveler.VisitFailure();
     }
 
-    public aterm.Visitable visitATerm(ATerm arg) throws VisitFailure {
+    public Visitable visitATerm(ATerm arg) throws VisitFailure {
         voidVisitATerm(arg);
         return arg;
     }
 
-    public aterm.Visitable visitInt(ATermInt arg) throws VisitFailure {
+    public Visitable visitInt(ATermInt arg) throws VisitFailure {
         voidVisitInt(arg);
         return arg;
     }
 
-    public aterm.Visitable visitLong(ATermLong arg) throws VisitFailure {
+    public Visitable visitLong(ATermLong arg) throws VisitFailure {
         voidVisitLong(arg);
         return arg;
     }
 
-    public aterm.Visitable visitReal(ATermReal arg) throws VisitFailure {
+    public Visitable visitReal(ATermReal arg) throws VisitFailure {
         voidVisitReal(arg);
         return arg;
     }
 
-    public aterm.Visitable visitAppl(ATermAppl arg) throws VisitFailure {
+    public Visitable visitAppl(ATermAppl arg) throws VisitFailure {
         voidVisitAppl(arg);
         return arg;
     }
 
-    public aterm.Visitable visitList(ATermList arg) throws VisitFailure {
+    public Visitable visitList(ATermList arg) throws VisitFailure {
         voidVisitList(arg);
         return arg;
     }
 
-    public aterm.Visitable visitPlaceholder(ATermPlaceholder arg) throws VisitFailure {
+    public Visitable visitPlaceholder(ATermPlaceholder arg) throws VisitFailure {
         voidVisitPlaceholder(arg);
         return arg;
     }
 
-    public aterm.Visitable visitBlob(ATermBlob arg) throws VisitFailure {
+    public Visitable visitBlob(ATermBlob arg) throws VisitFailure {
         voidVisitBlob(arg);
         return arg;
     }
 
-    public aterm.Visitable visitAFun(AFun fun) throws VisitFailure {
+    public Visitable visitAFun(AFun fun) throws VisitFailure {
         return fun;
     }
 

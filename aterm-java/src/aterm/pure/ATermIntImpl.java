@@ -31,7 +31,6 @@ package aterm.pure;
 import java.util.List;
 
 import jjtraveler.VisitFailure;
-
 import shared.SharedObject;
 import aterm.AFun;
 import aterm.ATerm;
@@ -39,24 +38,48 @@ import aterm.ATermAppl;
 import aterm.ATermInt;
 import aterm.ATermList;
 import aterm.ATermPlaceholder;
+import aterm.Visitable;
 import aterm.Visitor;
 
 public class ATermIntImpl extends ATermImpl implements ATermInt {
   private int value;
 
+  /**
+   * @depricated Use the new constructor instead.
+   * @param factory
+   */
   protected ATermIntImpl(PureFactory factory) {
     super(factory);
+  }
+  
+  protected ATermIntImpl(PureFactory factory, ATermList annos, int value) {
+    super(factory, annos);
+    
+    this.value = value;
+    
+    setHashCode(hashFunction());
   }
 
   public int getType() {
     return ATerm.INT;
   }
 
+  /**
+   * @depricated Use the new constructor instead.
+   * @param hashCode
+   * @param annos
+   * @param value
+   */
   protected void init(int hashCode, ATermList annos, int value) {
     super.init(hashCode, annos);
     this.value = value;
   }
 
+  /**
+   * @depricated Use the new constructor instead.
+   * @param annos
+   * @param value
+   */
   protected void initHashCode(ATermList annos, int value) {
     this.value = value;
     this.internSetAnnotations(annos);
@@ -65,9 +88,7 @@ public class ATermIntImpl extends ATermImpl implements ATermInt {
   }
 
   public SharedObject duplicate() {
-    ATermIntImpl clone = new ATermIntImpl(factory);
-    clone.init(hashCode(), getAnnotations(), value);
-    return clone;
+	  return this;
   }
 
   public boolean equivalent(SharedObject obj) {
@@ -79,7 +100,7 @@ public class ATermIntImpl extends ATermImpl implements ATermInt {
     return false;
   }
 
-  protected boolean match(ATerm pattern, List list) {
+  protected boolean match(ATerm pattern, List<Object> list) {
     if (this.equals(pattern)) {
       return true;
     }
@@ -107,7 +128,7 @@ public class ATermIntImpl extends ATermImpl implements ATermInt {
     return getPureFactory().makeInt(value, annos);
   }
 
-  public aterm.Visitable accept(Visitor v) throws VisitFailure {
+  public Visitable accept(Visitor v) throws VisitFailure {
     return v.visitInt(this);
   }
 

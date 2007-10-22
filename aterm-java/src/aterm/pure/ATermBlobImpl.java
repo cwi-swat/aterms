@@ -31,31 +31,53 @@ package aterm.pure;
 import java.util.List;
 
 import jjtraveler.VisitFailure;
-
+import shared.HashFunctions;
 import shared.SharedObject;
-
-import aterm.*;
+import aterm.AFun;
+import aterm.ATerm;
+import aterm.ATermAppl;
+import aterm.ATermBlob;
+import aterm.ATermList;
+import aterm.ATermPlaceholder;
+import aterm.Visitable;
+import aterm.Visitor;
 
 public class ATermBlobImpl extends ATermImpl implements ATermBlob {
   private byte[] data;
 
+  /**
+   * @depricated Use the new constructor instead.
+   * @param factory
+   */
   protected ATermBlobImpl(PureFactory factory) {
     super(factory);
+  }
+  
+  protected ATermBlobImpl(PureFactory factory, ATermList annos, byte[] data) {
+    super(factory, annos);
+
+    this.data = data;
+    
+    setHashCode(HashFunctions.doobs(new Object[]{annos, data}));
   }
 
   public int getType() {
     return ATerm.BLOB;
   }
 
+  /**
+   * @depricated Use the new constructor instead.
+   * @param hashCode
+   * @param annos
+   * @param data
+   */
   protected void init(int hashCode, ATermList annos, byte[] data) {
     super.init(hashCode, annos);
     this.data = data;
   }
 
   public SharedObject duplicate() {
-    ATermBlobImpl clone = new ATermBlobImpl(factory);
-    clone.init(hashCode(), getAnnotations(), data);
-    return clone;
+	  return this;
   }
 
   public boolean equivalent(SharedObject obj) {
@@ -67,8 +89,8 @@ public class ATermBlobImpl extends ATermImpl implements ATermBlob {
     return false;
   }
 
-  protected boolean match(ATerm pattern, List list) {
-    if (this.equals(pattern)) {
+  protected boolean match(ATerm pattern, List<Object> list) {
+    if (equals(pattern)) {
       return true;
     }
 
@@ -101,7 +123,7 @@ public class ATermBlobImpl extends ATermImpl implements ATermBlob {
     return getPureFactory().makeBlob(data, annos);
   }
 
-  public aterm.Visitable accept(Visitor v) throws VisitFailure {
+  public Visitable accept(Visitor v) throws VisitFailure {
     return v.visitBlob(this);
   }
 

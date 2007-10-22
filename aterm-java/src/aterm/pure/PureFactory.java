@@ -57,23 +57,7 @@ public class PureFactory extends SharedObjectFactory implements ATermFactory {
 
   private static int DEFAULT_TERM_TABLE_SIZE = 16; // means 2^16 entries
 
-  private ATermListImpl protoList;
-
-  private ATermApplImpl protoAppl;
-
-  private ATermIntImpl protoInt;
-
-  private ATermLongImpl protoLong;
-
-  private ATermRealImpl protoReal;
-
-  private ATermBlobImpl protoBlob;
-
-  private ATermPlaceholderImpl protoPlaceholder;
-
-  private AFunImpl protoAFun;
-
-  private ATermList empty;
+  private final ATermList empty;
 
   static boolean isBase64(int c) {
     return Character.isLetterOrDigit(c) || c == '+' || c == '/';
@@ -101,14 +85,7 @@ public class PureFactory extends SharedObjectFactory implements ATermFactory {
   public PureFactory(int termTableSize) {
     super(termTableSize);
 
-    protoList = new ATermListImpl(this);
-    protoAppl = new ATermApplImpl(this);
-    protoInt = new ATermIntImpl(this);
-    protoLong = new ATermLongImpl(this);
-    protoReal = new ATermRealImpl(this);
-    protoBlob = new ATermBlobImpl(this);
-    protoPlaceholder = new ATermPlaceholderImpl(this);
-    protoAFun = new AFunImpl(this);
+    ATermListImpl protoList = new ATermListImpl(this);
 
     /*
      * 240146486 is a fix-point hashcode such that
@@ -155,65 +132,31 @@ public class PureFactory extends SharedObjectFactory implements ATermFactory {
   }
 
   public AFun makeAFun(String name, int arity, boolean isQuoted) {
-    synchronized (protoAFun) {
-      protoAFun.initHashCode(name, arity, isQuoted);
-      return (AFun) build(protoAFun);
-    }
+      return (AFun) build(new AFunImpl(this, name, arity, isQuoted));
   }
 
   public ATermInt makeInt(int value, ATermList annos) {
-    synchronized (protoInt) {
-      protoInt.initHashCode(annos, value);
-      return (ATermInt) build(protoInt);
-    }
+      return (ATermInt) build(new ATermIntImpl(this, annos, value));
   }
 
   public ATermLong makeLong(long value, ATermList annos) {
-    synchronized (protoInt) {
-      protoLong.initHashCode(annos, value);
-      return (ATermLong) build(protoLong);
-    }
+      return (ATermLong) build(new ATermLongImpl(this, annos, value));
   }
 
   public ATermReal makeReal(double value, ATermList annos) {
-    synchronized (protoReal) {
-      protoReal.init(hashReal(annos, value), annos, value);
-      return (ATermReal) build(protoReal);
-    }
-  }
-
-  static private int hashReal(ATermList annos, double value) {
-    return shared.HashFunctions.doobs(new Object[] { annos,
-      new Double(value) });
+      return (ATermReal) build(new ATermRealImpl(this, annos, value));
   }
 
   public ATermPlaceholder makePlaceholder(ATerm type, ATermList annos) {
-    synchronized (protoPlaceholder) {
-      protoPlaceholder.init(hashPlaceholder(annos, type), annos, type);
-      return (ATermPlaceholder) build(protoPlaceholder);
-    }
-  }
-
-  static private int hashPlaceholder(ATermList annos, ATerm type) {
-    return shared.HashFunctions.doobs(new Object[] { annos, type });
+      return (ATermPlaceholder) build(new ATermPlaceholderImpl(this, annos, type));
   }
 
   public ATermBlob makeBlob(byte[] data, ATermList annos) {
-    synchronized (protoBlob) {
-      protoBlob.init(hashBlob(annos, data), annos, data);
-      return (ATermBlob) build(protoBlob);
-    }
-  }
-
-  static private int hashBlob(ATermList annos, byte[] data) {
-    return shared.HashFunctions.doobs(new Object[] { annos, data });
+      return (ATermBlob) build(new ATermBlobImpl(this, annos, data));
   }
 
   public ATermList makeList(ATerm first, ATermList next, ATermList annos) {
-    synchronized (protoList) {
-      protoList.initHashCode(annos, first, next);
-      return (ATermList) build(protoList);
-    }
+      return (ATermList) build(new ATermListImpl(this, annos, first, next));
   }
 
   private static ATerm[] array0 = new ATerm[0];
@@ -223,10 +166,7 @@ public class PureFactory extends SharedObjectFactory implements ATermFactory {
   }
 
   public ATermAppl makeAppl(AFun fun, ATerm[] args, ATermList annos) {
-    synchronized (protoAppl) {
-      protoAppl.initHashCode(annos, fun, args);
-      return (ATermAppl) build(protoAppl);
-    }
+      return (ATermAppl) build(new ATermApplImpl(this, annos, fun, args));
   }
 
   public ATermAppl makeApplList(AFun fun, ATermList list) {
@@ -466,10 +406,9 @@ public class PureFactory extends SharedObjectFactory implements ATermFactory {
   }
 
   private ATerm[] parseATermsArray(ATermReader reader) throws IOException {
-    List list = new ArrayList();
-    ATerm term;
-
-    term = parseFromReader(reader);
+    List<ATerm> list = new ArrayList<ATerm>();
+    
+    ATerm term = parseFromReader(reader);
     list.add(term);
     while (reader.getLastChar() == ',') {
       reader.readSkippingWS();
@@ -478,10 +417,10 @@ public class PureFactory extends SharedObjectFactory implements ATermFactory {
     }
 
     ATerm[] array = new ATerm[list.size()];
-    ListIterator iter = list.listIterator();
+    ListIterator<ATerm> iter = list.listIterator();
     int index = 0;
     while (iter.hasNext()) {
-      array[index++] = (ATerm) iter.next();
+      array[index++] = iter.next();
     }
     return array;
   }
@@ -691,34 +630,33 @@ public class PureFactory extends SharedObjectFactory implements ATermFactory {
     return parse(trm);
   }
 
-  public ATerm make(String pattern, List args) {
+  public ATerm make(String pattern, List<Object> args) {
     return make(parse(pattern), args);
   }
 
   public ATerm make(String pattern, Object arg1) {
-    List args = new LinkedList();
+    List<Object> args = new LinkedList<Object>();
     args.add(arg1);
     return make(pattern, args);
   }
 
   public ATerm make(String pattern, Object arg1, Object arg2) {
-    List args = new LinkedList();
+    List<Object> args = new LinkedList<Object>();
     args.add(arg1);
     args.add(arg2);
     return make(pattern, args);
   }
 
   public ATerm make(String pattern, Object arg1, Object arg2, Object arg3) {
-    List args = new LinkedList();
+    List<Object> args = new LinkedList<Object>();
     args.add(arg1);
     args.add(arg2);
     args.add(arg3);
     return make(pattern, args);
   }
 
-  public ATerm make(String pattern, Object arg1, Object arg2, Object arg3,
-      Object arg4) {
-    List args = new LinkedList();
+  public ATerm make(String pattern, Object arg1, Object arg2, Object arg3, Object arg4) {
+    List<Object> args = new LinkedList<Object>();
     args.add(arg1);
     args.add(arg2);
     args.add(arg3);
@@ -726,9 +664,8 @@ public class PureFactory extends SharedObjectFactory implements ATermFactory {
     return make(pattern, args);
   }
 
-  public ATerm make(String pattern, Object arg1, Object arg2, Object arg3,
-      Object arg4, Object arg5) {
-    List args = new LinkedList();
+  public ATerm make(String pattern, Object arg1, Object arg2, Object arg3, Object arg4, Object arg5) {
+    List<Object> args = new LinkedList<Object>();
     args.add(arg1);
     args.add(arg2);
     args.add(arg3);
@@ -737,9 +674,8 @@ public class PureFactory extends SharedObjectFactory implements ATermFactory {
     return make(pattern, args);
   }
 
-  public ATerm make(String pattern, Object arg1, Object arg2, Object arg3,
-      Object arg4, Object arg5, Object arg6) {
-    List args = new LinkedList();
+  public ATerm make(String pattern, Object arg1, Object arg2, Object arg3, Object arg4, Object arg5, Object arg6) {
+    List<Object> args = new LinkedList<Object>();
     args.add(arg1);
     args.add(arg2);
     args.add(arg3);
@@ -749,9 +685,8 @@ public class PureFactory extends SharedObjectFactory implements ATermFactory {
     return make(pattern, args);
   }
 
-  public ATerm make(String pattern, Object arg1, Object arg2, Object arg3,
-      Object arg4, Object arg5, Object arg6, Object arg7) {
-    List args = new LinkedList();
+  public ATerm make(String pattern, Object arg1, Object arg2, Object arg3, Object arg4, Object arg5, Object arg6, Object arg7) {
+    List<Object> args = new LinkedList<Object>();
     args.add(arg1);
     args.add(arg2);
     args.add(arg3);
@@ -762,7 +697,7 @@ public class PureFactory extends SharedObjectFactory implements ATermFactory {
     return make(pattern, args);
   }
 
-  public ATerm make(ATerm pattern, List args) {
+  public ATerm make(ATerm pattern, List<Object> args) {
     return pattern.make(args);
   }
 

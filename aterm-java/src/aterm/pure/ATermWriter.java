@@ -33,14 +33,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 import jjtraveler.VisitFailure;
+
 import aterm.AFun;
 import aterm.ATerm;
 import aterm.ATermAppl;
 import aterm.ATermBlob;
 import aterm.ATermFwdVoid;
 import aterm.ATermInt;
-import aterm.ATermLong;
 import aterm.ATermList;
+import aterm.ATermLong;
 import aterm.ATermPlaceholder;
 import aterm.ATermReal;
 import aterm.stream.BufferedOutputStreamWriter;
@@ -58,7 +59,7 @@ class ATermWriter extends ATermFwdVoid {
 
   private int position;
 
-  private Map table;
+  private Map<ATerm, Integer> table;
 
   private int next_abbrev;
 
@@ -91,7 +92,7 @@ class ATermWriter extends ATermFwdVoid {
 
     public void voidVisitChild(ATerm child) throws VisitFailure {
       if (table != null) {
-        Integer abbrev = (Integer) table.get(child);
+        Integer abbrev = table.get(child);
         if (abbrev != null) {
           emitAbbrev(abbrev.intValue());
           return;
@@ -166,32 +167,32 @@ class ATermWriter extends ATermFwdVoid {
       position++;
     }
 
-    public void voidVisitInt(ATermInt i) throws VisitFailure {
+    public void voidVisitInt(ATermInt i) {
       String txt = String.valueOf(i.getInt());
       stream.write(txt);
       position += txt.length();
     }
 
-    public void voidVisitLong(ATermLong i) throws VisitFailure {
+    public void voidVisitLong(ATermLong i) {
       String txt = String.valueOf(i.getLong());
       stream.write(txt);
       position += txt.length();
     }
 
-    public void voidVisitReal(ATermReal r) throws VisitFailure {
+    public void voidVisitReal(ATermReal r) {
       String txt = String.valueOf(r.getReal());
       stream.write(txt);
       position += txt.length();
     }
 
-    public void voidVisitBlob(ATermBlob blob) throws VisitFailure {
+    public void voidVisitBlob(ATermBlob blob) {
       String txt = String.valueOf(blob.getBlobSize()) + '#' + String.valueOf(blob.hashCode());
       stream.write(txt);
       position += txt.length();
     }
 
   public void initializeSharing() {
-    table = new HashMap();
+    table = new HashMap<ATerm, Integer>();
   }
 
 }

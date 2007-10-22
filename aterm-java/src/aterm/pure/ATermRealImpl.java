@@ -31,6 +31,7 @@ package aterm.pure;
 import java.util.List;
 
 import jjtraveler.VisitFailure;
+import shared.HashFunctions;
 import shared.SharedObject;
 import aterm.AFun;
 import aterm.ATerm;
@@ -38,28 +39,45 @@ import aterm.ATermAppl;
 import aterm.ATermList;
 import aterm.ATermPlaceholder;
 import aterm.ATermReal;
+import aterm.Visitable;
 import aterm.Visitor;
 
 public class ATermRealImpl extends ATermImpl implements ATermReal {
   private double value;
 
+  /**
+   * @depricated Use the new constructor instead.
+   * @param factory
+   */
   protected ATermRealImpl(PureFactory factory) {
     super(factory);
+  }
+  
+  protected ATermRealImpl(PureFactory factory, ATermList annos, double value) {
+    super(factory, annos);
+
+    this.value = value;
+    
+    setHashCode(HashFunctions.doobs(new Object[]{annos, new Double(value)}));
   }
 
   public int getType() {
     return ATerm.REAL;
   }
 
+  /**
+   * @depricated Use the new constructor instead.
+   * @param hashCode
+   * @param annos
+   * @param value
+   */
   protected void init(int hashCode, ATermList annos, double value) {
     super.init(hashCode, annos);
     this.value = value;
   }
 
   public SharedObject duplicate() {
-    ATermRealImpl clone = new ATermRealImpl(factory);
-    clone.init(hashCode(), getAnnotations(), value);
-    return clone;
+	  return this;
   }
 
   public boolean equivalent(SharedObject obj) {
@@ -71,8 +89,8 @@ public class ATermRealImpl extends ATermImpl implements ATermReal {
     return false;
   }
 
-  protected boolean match(ATerm pattern, List list) {
-    if (this.equals(pattern)) {
+  protected boolean match(ATerm pattern, List<Object> list) {
+    if (equals(pattern)) {
       return true;
     }
 
@@ -99,8 +117,7 @@ public class ATermRealImpl extends ATermImpl implements ATermReal {
     return getPureFactory().makeReal(value, annos);
   }
 
-	public aterm.Visitable accept(Visitor v) throws VisitFailure {
-		return v.visitReal(this);
-	}
-
+  public Visitable accept(Visitor v) throws VisitFailure {
+    return v.visitReal(this);
+  }
 }

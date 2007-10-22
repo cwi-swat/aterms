@@ -33,22 +33,47 @@ import java.util.List;
 import jjtraveler.VisitFailure;
 
 import shared.SharedObject;
-
-import aterm.*;
+import aterm.AFun;
+import aterm.ATerm;
+import aterm.ATermAppl;
+import aterm.ATermList;
+import aterm.ATermPlaceholder;
+import aterm.Visitable;
+import aterm.Visitor;
 
 public class ATermApplImpl extends ATermImpl implements ATermAppl {
   private AFun fun;
 
   private ATerm[] args;
 
+  /**
+   * @depricated Use the new constructor instead.
+   * @param factory
+   */
   protected ATermApplImpl(PureFactory factory) {
     super(factory);
+  }
+  
+  protected ATermApplImpl(PureFactory factory, ATermList annos, AFun fun, ATerm[] i_args) {
+    super(factory, annos);
+    
+    this.fun = fun;
+    this.args = i_args;
+    
+    setHashCode(hashFunction());
   }
 
   public int getType() {
     return ATerm.APPL;
   }
 
+  /**
+   * @depricated Use the new constructor instead.
+   * @param hashCode
+   * @param annos
+   * @param fun
+   * @param i_args
+   */
   protected void init(int hashCode, ATermList annos, AFun fun, ATerm[] i_args) {
     super.init(hashCode, annos);
     this.fun = fun;
@@ -57,6 +82,12 @@ public class ATermApplImpl extends ATermImpl implements ATermAppl {
     System.arraycopy(i_args, 0, args, 0, args.length);
   }
 
+  /**
+   * @depricated Use the new constructor instead.
+   * @param annos
+   * @param fun
+   * @param i_args
+   */
   protected void initHashCode(ATermList annos, AFun fun, ATerm[] i_args) {
     this.fun = fun;
     this.args = i_args;
@@ -65,9 +96,7 @@ public class ATermApplImpl extends ATermImpl implements ATermAppl {
   }
 
   public SharedObject duplicate() {
-    ATermApplImpl clone = new ATermApplImpl(factory);
-    clone.init(hashCode(), getAnnotations(), fun, args);
-    return clone;
+    return this;
   }
 
   protected ATermAppl make(AFun fun, ATerm[] i_args, ATermList annos) {
@@ -93,7 +122,7 @@ public class ATermApplImpl extends ATermImpl implements ATermAppl {
     return false;
   }
 
-  protected boolean match(ATerm pattern, List list) {
+  protected boolean match(ATerm pattern, List<Object> list) {
     if (pattern.getType() == APPL) {
       ATermAppl appl = (ATermAppl) pattern;
       if (fun.equals(appl.getAFun())) {
@@ -132,7 +161,7 @@ public class ATermApplImpl extends ATermImpl implements ATermAppl {
     return super.match(pattern, list);
   }
 
-  boolean matchArguments(ATerm[] pattern_args, List list) {
+  boolean matchArguments(ATerm[] pattern_args, List<Object> list) {
     for (int i = 0; i < args.length; i++) {
       if (i >= pattern_args.length) {
         return false;
@@ -147,7 +176,7 @@ public class ATermApplImpl extends ATermImpl implements ATermAppl {
         if (ph_type.getType() == APPL) {
           ATermAppl appl = (ATermAppl) ph_type;
           if (appl.getName().equals("list") && appl.getArguments().isEmpty()) {
-            ATermList result = ((PureFactory) getFactory()).getEmpty();
+            ATermList result = getPureFactory().getEmpty();
             for (int j = args.length - 1; j >= i; j--) {
               result = result.insert(args[j]);
             }
@@ -157,7 +186,7 @@ public class ATermApplImpl extends ATermImpl implements ATermAppl {
         }
       }
 
-      List submatches = arg.match(pattern_arg);
+      List<Object> submatches = arg.match(pattern_arg);
       if (submatches == null) {
         return false;
       }
@@ -176,7 +205,7 @@ public class ATermApplImpl extends ATermImpl implements ATermAppl {
   }
 
   public ATermList getArguments() {
-    ATermList result = ((PureFactory) getFactory()).getEmpty();
+    ATermList result = getPureFactory().getEmpty();
 
     for (int i = args.length - 1; i >= 0; i--) {
       result = result.insert(args[i]);
@@ -208,7 +237,7 @@ public class ATermApplImpl extends ATermImpl implements ATermAppl {
     return args.length;
   }
 
-  public ATerm make(List arguments) {
+  public ATerm make(List<Object> arguments) {
     ATerm[] newargs = new ATerm[this.args.length];
     for(int i = 0; i < args.length; i++){
     	newargs[i] = args[i].make(arguments);
@@ -229,10 +258,10 @@ public class ATermApplImpl extends ATermImpl implements ATermAppl {
   }
 
   public ATerm setAnnotations(ATermList annos) {
-    return make(fun, args, annos);
+	return getPureFactory().makeAppl(fun, args, annos);
   }
 
-  public aterm.Visitable accept(Visitor v) throws VisitFailure {
+  public Visitable accept(Visitor v) throws VisitFailure {
     return v.visitAppl(this);
   }
 
@@ -248,7 +277,7 @@ public class ATermApplImpl extends ATermImpl implements ATermAppl {
     return setArgument(t, index);
   }
 
-  protected Object[] serialize() {
+  private Object[] serialize() {
     int arity = getArity();
     Object[] o = new Object[arity + 2];
     for (int i = 0; i < arity; i++) {

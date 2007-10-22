@@ -35,6 +35,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import jjtraveler.VisitFailure;
+
 import shared.SharedObject;
 import shared.SharedObjectWithID;
 import aterm.AFun;
@@ -53,9 +54,20 @@ public abstract class ATermImpl extends ATermVisitableImpl implements ATerm, Sha
 
 	private int uniqueId;
 
+	/**
+	 * @depricated Use the new constructor instead.
+	 * @param factory
+	 */
 	protected ATermImpl(PureFactory factory){
 		super();
 		this.factory = factory;
+	}
+	
+	protected ATermImpl(PureFactory factory, ATermList annos){
+		super();
+		
+		this.factory = factory;
+		this.annotations = annos;
 	}
 
 	public final int hashCode(){
@@ -66,25 +78,32 @@ public abstract class ATermImpl extends ATermVisitableImpl implements ATerm, Sha
 		this.hashCode = hashcode;
 	}
 
+	/**
+	 * @deprecated Just here for backwards compatibility.
+	 * @param annos
+	 */
 	protected void internSetAnnotations(ATermList annos){
 		this.annotations = annos;
 	}
 
+	/**
+	 * @depricated Just here for backwards compatibility.
+	 * @param hashCode
+	 * @param annos
+	 */
 	protected void init(int hashCode, ATermList annos){
 		this.hashCode = hashCode;
 		this.annotations = annos;
 	}
 
 	public boolean equivalent(SharedObject obj){
-		try{
-
-			if(((ATerm) obj).getType() == getType()){
-				return ((ATerm) obj).getAnnotations().equals(getAnnotations());
+		if(obj instanceof ATerm){
+			ATerm peer = (ATerm) obj;
+			if(peer.getType() == getType()){
+				return peer.getAnnotations().equals(getAnnotations());
 			}
-			return false;
-		}catch(ClassCastException e){
-			return false;
 		}
+		return false;
 	}
 
 	public ATermFactory getFactory(){
@@ -92,7 +111,7 @@ public abstract class ATermImpl extends ATermVisitableImpl implements ATerm, Sha
 	}
 
 	protected PureFactory getPureFactory(){
-		return (PureFactory) getFactory();
+		return factory;
 	}
 	
 	public boolean hasAnnotations(){
@@ -115,19 +134,19 @@ public abstract class ATermImpl extends ATermVisitableImpl implements ATerm, Sha
 	}
 
 	public ATerm removeAnnotations(){
-		return setAnnotations(((PureFactory) getFactory()).getEmpty());
+		return setAnnotations(getPureFactory().getEmpty());
 	}
 
 	public ATermList getAnnotations(){
 		return annotations;
 	}
 
-	public List match(String pattern){
+	public List<Object> match(String pattern){
 		return match(factory.parsePattern(pattern));
 	}
 
-	public List match(ATerm pattern){
-		List list = new LinkedList();
+	public List<Object> match(ATerm pattern){
+		List<Object> list = new LinkedList<Object>();
 		if(match(pattern, list)){
 			return list;
 		}
@@ -143,18 +162,10 @@ public abstract class ATermImpl extends ATermVisitableImpl implements ATerm, Sha
 	}
 
 	public boolean equals(Object obj){
-		if(obj instanceof ATermImpl){
-			return this == obj;
-		}
-
-		if(obj instanceof ATerm){
-			return factory.isDeepEqual(this, (ATerm) obj);
-		}
-
-		return false;
+		return (this == obj);
 	}
 
-	boolean match(ATerm pattern, List list){
+	boolean match(ATerm pattern, List<Object> list){
 		if(pattern.getType() == PLACEHOLDER){
 			ATerm type = ((ATermPlaceholder) pattern).getPlaceholder();
 			if(type.getType() == ATerm.APPL){
@@ -170,7 +181,7 @@ public abstract class ATermImpl extends ATermVisitableImpl implements ATerm, Sha
 		return false;
 	}
 
-	public ATerm make(List list){
+	public ATerm make(List<Object> list){
 		return this;
 	}
 
