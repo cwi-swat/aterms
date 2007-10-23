@@ -2,12 +2,12 @@ package apigen.util;
 
 import java.util.Iterator;
 
-public class FirstAndLastSkippingIterator implements Iterator {
-    private Iterator delegate;
-    private Object next;
+public class FirstAndLastSkippingIterator<E> implements Iterator<E> {
+    private Iterator<E> delegate;
+    private E next;
     private boolean haveNext;
 
-    public FirstAndLastSkippingIterator(Iterator iter) {
+    public FirstAndLastSkippingIterator(Iterator<E> iter) {
         delegate = iter;
         if (delegate.hasNext()) {
             delegate.next();
@@ -26,8 +26,8 @@ public class FirstAndLastSkippingIterator implements Iterator {
         return haveNext;
     }
 
-    public Object next() {
-        Object result = null;
+    public E next() {
+        E result = null;
         if (haveNext) {
             result = next;
             advance();

@@ -1241,9 +1241,9 @@ public class APIGenerator extends CGenerator {
 		genSeparatedListGetTail(type);
 		genGetField(type, type.getManyField(type.getHeadFieldId()));
 
-		Iterator seps = type.separatorFieldIterator();
+		Iterator<Field> seps = type.separatorFieldIterator();
 		while (seps.hasNext()) {
-			Field sep = (Field) seps.next();
+			Field sep = seps.next();
 			genGetField(type, sep);
 		}
 	}
@@ -2006,11 +2006,11 @@ public class APIGenerator extends CGenerator {
 	}
 
 	private String buildFormalSeparatorArgs(SeparatedListType type) {
-		Iterator fields = type.separatorFieldIterator();
+		Iterator<Field> fields = type.separatorFieldIterator();
 		String result = "";
 
 		while (fields.hasNext()) {
-			Field field = (Field) fields.next();
+			Field field = fields.next();
 
 			result += buildTypeName(field.getType()) + " "
 					+ StringConversions.makeIdentifier(field.getId());

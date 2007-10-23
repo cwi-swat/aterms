@@ -261,9 +261,9 @@ public class SeparatedListTypeGenerator extends TypeGenerator {
 	}
 
 	private void genSeparatorsGettersAndSetters() {
-		Iterator fields = type.separatorFieldIterator();
+		Iterator<Field> fields = type.separatorFieldIterator();
 		while (fields.hasNext()) {
-			Field field = (Field) fields.next();
+			Field field = fields.next();
 			genSeparatorGetterAndSetter(field);
 		}
 	}
@@ -338,10 +338,10 @@ public class SeparatedListTypeGenerator extends TypeGenerator {
 	}
 
 	private void genSeparatorFields() {
-		Iterator fields = type.separatorFieldIterator();
+		Iterator<Field> fields = type.separatorFieldIterator();
 
 		while (fields.hasNext()) {
-			Field field = (Field) fields.next();
+			Field field = fields.next();
 			genSeparatorField(field);
 		}
 		println();
@@ -375,11 +375,11 @@ public class SeparatedListTypeGenerator extends TypeGenerator {
 	}
 
 	private String buildActualSeparatorArguments(SeparatedListType type) {
-		Iterator fields = type.separatorFieldIterator();
+		Iterator<Field> fields = type.separatorFieldIterator();
 		String result = "";
 
 		while (fields.hasNext()) {
-			Field field = (Field) fields.next();
+			Field field = fields.next();
 			String fieldId = JavaGenerator.getFieldId(field.getId());
 			// TODO: remove terminating ", "!
 			result += fieldId + ", ";
@@ -389,9 +389,9 @@ public class SeparatedListTypeGenerator extends TypeGenerator {
 	}
 
 	private void genSeparatorFieldsEquivalentConjunction() {
-		Iterator fields = type.separatorFieldIterator();
+		Iterator<Field> fields = type.separatorFieldIterator();
 		while (fields.hasNext()) {
-			Field field = (Field) fields.next();
+			Field field = fields.next();
 			String fieldId = JavaGenerator.getFieldId(field.getId());
 			String fieldType = field.getType();
 			String fieldGetter = buildSeparatorFieldGetter(field);

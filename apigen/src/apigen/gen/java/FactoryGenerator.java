@@ -585,9 +585,9 @@ public class FactoryGenerator extends JavaGenerator {
 			println("      result = " + makeMethodName + "(list.getHead(), "
 					+ sepArgs + "result);");
 
-			Iterator seps = type.separatorFieldIterator();
+			Iterator<Field> seps = type.separatorFieldIterator();
 			while (seps.hasNext()) {
-				Field sep = (Field) seps.next();
+				Field sep = seps.next();
 				String fieldId = JavaGenerator.getFieldId(sep.getId());
 				String fieldGet = "get"
 						+ StringConversions.makeCapitalizedIdentifier(sep
@@ -638,9 +638,9 @@ public class FactoryGenerator extends JavaGenerator {
 					.getElementType());
 			println("      " + elementType + " _head = nodes[i].getHead();");
 
-			Iterator separators = type.separatorFieldIterator();
+			Iterator<Field> separators = type.separatorFieldIterator();
 			while (separators.hasNext()) {
-				Field separator = (Field) separators.next();
+				Field separator = separators.next();
 				String fieldId = separator.getId();
 				String fieldName = JavaGenerator.getFieldId(fieldId);
 				String fieldType = TypeGenerator.qualifiedClassName(params,
@@ -1136,7 +1136,7 @@ public class FactoryGenerator extends JavaGenerator {
 
 	private String buildAmountOfSeparatorsNullExpressions(SeparatedListType type) {
 		String result = "";
-		Iterator fields = type.separatorFieldIterator();
+		Iterator<Field> fields = type.separatorFieldIterator();
 		while (fields.hasNext()) {
 			fields.next();
 			result += "null, ";
@@ -1430,7 +1430,7 @@ public class FactoryGenerator extends JavaGenerator {
 	}
 
 	private String buildOptionalSeparatorArguments(SeparatedListType type) {
-		Iterator separatorFields = type.separatorFieldIterator();
+		Iterator<Field> separatorFields = type.separatorFieldIterator();
 		String separatorArgs = buildActualTypedAltArgumentList(separatorFields,
 				false);
 		if (separatorArgs.length() > 0) {
@@ -1492,9 +1492,9 @@ public class FactoryGenerator extends JavaGenerator {
 
 			println("      args.add(" + boxedHead + ");");
 
-			Iterator separators = type.separatorFieldIterator();
+			Iterator<Field> separators = type.separatorFieldIterator();
 			while (separators.hasNext()) {
-				Field separator = (Field) separators.next();
+				Field separator = separators.next();
 				String fieldId = separator.getId();
 				String fieldType = separator.getType();
 				String capitalizedFieldId = StringConversions
@@ -1528,10 +1528,10 @@ public class FactoryGenerator extends JavaGenerator {
 
 	private int genFromTermSeparatorFieldAssigments(SeparatedListType type) {
 		JavaGenerationParameters params = getJavaGenerationParameters();
-		Iterator fields = type.separatorFieldIterator();
+		Iterator<Field> fields = type.separatorFieldIterator();
 		int i;
 		for (i = 1; fields.hasNext(); i++) {
-			Field field = (Field) fields.next();
+			Field field = fields.next();
 			String fieldId = JavaGenerator.getFieldId(field.getId());
 			String fieldType = TypeGenerator.qualifiedClassName(params, field
 					.getType());

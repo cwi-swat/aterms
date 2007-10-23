@@ -21,8 +21,8 @@ public class SeparatedListType extends ListType {
 		return separators;
 	}
 
-	public Iterator separatorFieldIterator() {
-		return new FirstAndLastSkippingIterator(
+	public Iterator<Field> separatorFieldIterator() {
+		return new FirstAndLastSkippingIterator<Field>(
 				altFieldIterator(MANY_LIST_ALT_NAME));
 	}
 
@@ -39,7 +39,7 @@ public class SeparatedListType extends ListType {
 	}
 
 	public int countSeparatorFields() {
-		Iterator iter = separatorFieldIterator();
+		Iterator<Field> iter = separatorFieldIterator();
 		int count = 0;
 
 		while (iter.hasNext()) {
