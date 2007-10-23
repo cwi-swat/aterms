@@ -77,11 +77,7 @@ public abstract class ATermImpl extends ATermVisitableImpl implements ATerm, Sha
 	protected void setHashCode(int hashcode){
 		this.hashCode = hashcode;
 	}
-
-	/**
-	 * @deprecated Just here for backwards compatibility.
-	 * @param annos
-	 */
+	
 	protected void internSetAnnotations(ATermList annos){
 		this.annotations = annos;
 	}
