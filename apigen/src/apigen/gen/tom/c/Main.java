@@ -10,47 +10,47 @@ import apigen.adt.ADTReader;
 import apigen.adt.api.types.Module;
 import apigen.gen.tom.TomSignatureGenerator;
 
-
 public class Main {
 	public static final void main(String[] arguments) {
 		CTomGenerationParameters params = buildDefaultParameters();
-		List args = new LinkedList(Arrays.asList(arguments));
+		List<String> args = new LinkedList<String>(Arrays.asList(arguments));
 		if (args.size() == 0) {
 			usage(params);
 			System.exit(1);
-		}
-		else if (args.contains("-h") || args.contains("--help")) {
+		} else if (args.contains("-h") || args.contains("--help")) {
 			usage(params);
 			return;
 		}
 
 		try {
 			params.parseArguments(args);
-		}
-		catch (IllegalArgumentException e) {
+		} catch (IllegalArgumentException e) {
 			System.err.println(e.getMessage());
 			usage(params);
 			System.exit(1);
 		}
 
 		ADT adt = ADTReader.readADT(params);
-		CTomSignatureImplementation signature = new CTomSignatureImplementation(params);
+		CTomSignatureImplementation signature = new CTomSignatureImplementation(
+				params);
 		generateSignature(adt, signature, params);
 
-    if (params.isCGen()) { // generate C Stuff
+		if (params.isCGen()) { // generate C Stuff
 			apigen.gen.c.Main.generateAPI(params, adt);
 		}
 	}
 
-	private static void generateSignature(ADT adt, CTomSignatureImplementation signature, CTomGenerationParameters params) {
-		Iterator it = adt.moduleIterator();
-		while(it.hasNext()) {
-			Module module = (Module) it.next();
-			//TODO: Not a CTomSignatureGenerator???
+	private static void generateSignature(ADT adt,
+			CTomSignatureImplementation signature,
+			CTomGenerationParameters params) {
+		Iterator<Module> it = adt.moduleIterator();
+		while (it.hasNext()) {
+			Module module = it.next();
+			// TODO: Not a CTomSignatureGenerator???
 			new TomSignatureGenerator(adt, signature, params, module).run();
 		}
 	}
-	
+
 	private static CTomGenerationParameters buildDefaultParameters() {
 		CTomGenerationParameters params = new CTomGenerationParameters();
 		params.setOutputDirectory(".");

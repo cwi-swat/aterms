@@ -14,12 +14,20 @@ public class Location implements Cloneable {
 		path = new LinkedList<Step>();
 	}
 
-	public String getAltId() {
-		return altId;
-	}
-
 	public void addStep(Step step) {
 		path.add(step);
+	}
+
+	@Override
+	public Object clone() {
+		Location copy = new Location(altId);
+		copy.path = (List<Step>) ((LinkedList<Step>) path).clone();
+
+		return copy;
+	}
+
+	public String getAltId() {
+		return altId;
 	}
 
 	public void makeTail() {
@@ -33,13 +41,7 @@ public class Location implements Cloneable {
 		return path.iterator();
 	}
 
-	public Object clone() {
-		Location copy = new Location(altId);
-		copy.path = (List<Step>) ((LinkedList<Step>) path).clone();
-
-		return copy;
-	}
-
+	@Override
 	public String toString() {
 		return "loc[" + altId + ", " + path + "]";
 	}

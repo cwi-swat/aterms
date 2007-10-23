@@ -5,19 +5,18 @@ import java.util.List;
 
 import apigen.gen.c.CGenerationParameters;
 
-
 class CTomGenerationParameters extends CGenerationParameters {
 	private boolean jtype;
 	private boolean CGenStuff;
-	
-	public void parseArguments(List args) {
-		Iterator iter = args.iterator();
+
+	public void parseArguments(List<String> args) {
+		Iterator<String> iter = args.iterator();
 		while (iter.hasNext()) {
-			String arg = (String) iter.next();
+			String arg = iter.next();
 			if (arg.startsWith("--jtype")) {
 				shift(iter);
 				setJtype(true);
-			} else if (arg.startsWith("--cgen")){
+			} else if (arg.startsWith("--cgen")) {
 				shift(iter);
 				setCGen(true);
 			}
@@ -27,20 +26,20 @@ class CTomGenerationParameters extends CGenerationParameters {
 
 	public String usage() {
 		StringBuffer buf = new StringBuffer(super.usage());
-		buf.append("\t--jtype\t\t\t\t<insert sensible explanation about --jtype here>");
+		buf
+				.append("\t--jtype\t\t\t\t<insert sensible explanation about --jtype here>");
 		buf.append("\n\t--cgen\t\t\tcall to adt-to-c");
 		return buf.toString();
 	}
-	
+
 	public boolean isCGen() {
 		return CGenStuff;
 	}
-	
-  private void setCGen(boolean cGen) {
-    this.CGenStuff = cGen;
-  }
 
-  
+	private void setCGen(boolean cGen) {
+		this.CGenStuff = cGen;
+	}
+
 	public boolean isJtype() {
 		return jtype;
 	}
@@ -48,5 +47,5 @@ class CTomGenerationParameters extends CGenerationParameters {
 	public void setJtype(boolean jtype) {
 		this.jtype = jtype;
 	}
-	
-} 
+
+}

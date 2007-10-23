@@ -24,75 +24,70 @@ public class TomSignatureGenerator extends Generator {
 	private String prefix;
 	private String packagePrefix;
 	private Module module;
-  private String apiName = "";
-	private static TypeConverter tomConverter = new TypeConverter(new TomTypeConversions());
+	private static TypeConverter tomConverter = new TypeConverter(
+			new TomTypeConversions());
 
-	public TomSignatureGenerator(ADT adt, TomSignatureImplementation impl, GenerationParameters params, Module module) {
+	public TomSignatureGenerator(ADT adt, TomSignatureImplementation impl,
+			GenerationParameters params, Module module) {
 		super(params);
 		this.module = module;
-		
+
 		setExtension(".tom");
 		String moduleName = module.getModulename().getName();
-		this.apiName = (moduleName.equals("")?params.getApiName():moduleName);
-		setFileName(StringConversions.makeIdentifier((moduleName.equals(""))?params.getApiName():moduleName));
+		setFileName(StringConversions
+				.makeIdentifier((moduleName.equals("")) ? params.getApiName()
+						: moduleName));
 		this.adt = adt;
 		this.impl = impl;
 		this.prefix = params.getPrefix();
 		this.packagePrefix = "";
-		if(params instanceof JavaGenerationParameters) {
+		if (params instanceof JavaGenerationParameters) {
 			JavaGenerationParameters javaParams = (JavaGenerationParameters) params;
-			if(javaParams.getPackageName() != null) {
+			if (javaParams.getPackageName() != null) {
 				this.packagePrefix += javaParams.getPackageName() + ".";
 			}
-			this.packagePrefix += javaParams.getApiExtName(module).toLowerCase() + ".";
+			this.packagePrefix += javaParams.getApiExtName(module)
+					.toLowerCase()
+					+ ".";
 			this.packagePrefix += TypeGenerator.packageName() + ".";
-			setDirectory(buildDirectoryName(javaParams.getOutputDirectory(), javaParams.getPackageName()));
+			setDirectory(buildDirectoryName(javaParams.getOutputDirectory(),
+					javaParams.getPackageName()));
 		} else {
 			setDirectory(params.getOutputDirectory());
 		}
 	}
-	
-	  private String buildDirectoryName(String baseDir, String pkgName) {
-        StringBuffer buf = new StringBuffer();
-        buf.append(baseDir);
-        buf.append(File.separatorChar);
 
-        if (pkgName != null) {
-            buf.append(pkgName.replace('.', File.separatorChar));
-        }
+	private String buildDirectoryName(String baseDir, String pkgName) {
+		StringBuffer buf = new StringBuffer();
+		buf.append(baseDir);
+		buf.append(File.separatorChar);
 
-        return buf.toString();
-    }
+		if (pkgName != null) {
+			buf.append(pkgName.replace('.', File.separatorChar));
+		}
 
-	
+		return buf.toString();
+	}
+
 	public void generate() {
 		genTomBuiltinTypes();
 		genTomTypes(adt);
 	}
 
-  private String CheckStampTemplate(String checkStamp,
-                                    String setStamp,
-                                    String getImplementation) {
-		return 
-      "  check_stamp(t) {" + checkStamp + "}\n"
-      + "  set_stamp(t) {" + setStamp + "}\n"
-      + "  get_implementation(t) {" + getImplementation + "}\n"
-      ;
-  }
+	private String CheckStampTemplate(String checkStamp, String setStamp,
+			String getImplementation) {
+		return "  check_stamp(t) {" + checkStamp + "}\n" + "  set_stamp(t) {"
+				+ setStamp + "}\n" + "  get_implementation(t) {"
+				+ getImplementation + "}\n";
+	}
 
-	private String TypeTermTemplate(
-		String type,
-		String impl,
-		String equals,
-		String checkStamp,
-		String setStamp,
-		String getImplementation) {
+	private String TypeTermTemplate(String type, String impl, String equals,
+			String checkStamp, String setStamp, String getImplementation) {
 
-		return "%typeterm " + type + "{\n"
-			+ "  implement { " + impl + "}\n"
-			+ "  equals(t1,t2) {" + equals + "}\n"
-			+ CheckStampTemplate(checkStamp, setStamp, getImplementation)
-			+ "}";
+		return "%typeterm " + type + "{\n" + "  implement { " + impl + "}\n"
+				+ "  equals(t1,t2) {" + equals + "}\n"
+				+ CheckStampTemplate(checkStamp, setStamp, getImplementation)
+				+ "}";
 	}
 
 	private void genTomBuiltinTypes() {
@@ -105,43 +100,40 @@ public class TomSignatureGenerator extends Generator {
 
 	private void genTomTypes(ADT api) {
 		String moduleName = module.getModulename().getName();
-		Set modules = api.getImportsClosureForModule(moduleName);
-		modules.add(module.getModulename().getName()); //do not forget myself
-		
-		//System.out.println("closure for "+moduleName+ " "+modules);
-		Iterator moduleIt = modules.iterator();
-		while(moduleIt.hasNext()) {
-			Iterator types = api.typeIterator((String)moduleIt.next());
+		Set<String> modules = api.getImportsClosureForModule(moduleName);
+		modules.add(module.getModulename().getName()); // do not forget myself
 
-      while (types.hasNext()) {
-        Type type = (Type) types.next();
-        genTomType(type);
-      }
+		// System.out.println("closure for "+moduleName+ " "+modules);
+		Iterator<String> moduleIt = modules.iterator();
+		while (moduleIt.hasNext()) {
+			Iterator<Type> types = api.typeIterator(moduleIt.next());
+
+			while (types.hasNext()) {
+				Type type = types.next();
+				genTomType(type);
+			}
 		}
-		
+
 	}
 
 	private void genTomType(Type type) {
- 
-    if (!tomConverter.isReserved(type.getId())) {
-      /* do not generate typeterm for builtin types */
-      println(TypeTermTemplate(
-            impl.TypeName(type.getId()),
-            impl.TypeImpl(packagePrefix + prefix + type.getId()),
-            impl.TypeEquals(type.getId(), "t1", "t2"),
-            impl.TypeGetStamp(),
-            impl.TypeSetStamp(packagePrefix + prefix + type.getId()),
-            impl.TypeGetImplementation("t")
-            ));
-      println();
-    }
+
+		if (!tomConverter.isReserved(type.getId())) {
+			/* do not generate typeterm for builtin types */
+			println(TypeTermTemplate(impl.TypeName(type.getId()), impl
+					.TypeImpl(packagePrefix + prefix + type.getId()), impl
+					.TypeEquals(type.getId(), "t1", "t2"), impl.TypeGetStamp(),
+					impl.TypeSetStamp(packagePrefix + prefix + type.getId()),
+					impl.TypeGetImplementation("t")));
+			println();
+		}
 
 		if ((type instanceof ListType) || (type instanceof NamedListType)) {
 			String eltType = ((ListType) type).getElementType();
 			String opName = "conc" + type.getId();
 			if (type instanceof NamedListType) {
 				eltType = ((NamedListType) type).getElementType();
-				opName  = ((NamedListType) type).getOpName();
+				opName = ((NamedListType) type).getOpName();
 			}
 			genTomConcOperator(type, eltType, opName);
 			String class_name = "class_name";
@@ -156,27 +148,35 @@ public class TomSignatureGenerator extends Generator {
 
 	private void genTomManyOperator(Type type, String eltType, String class_name) {
 		// many operator
-		println("%op " + type.getId() + " many" + type.getId() + "(head:" + eltType + ", tail:" + type.getId() + ") {");
-		println("  is_fsym(t) { " + prefix + impl.OperatorIsFSym("t", class_name, "many") + "}");
-		println("  get_slot(head,t) { " + impl.OperatorGetSlot("t", class_name, "head") + "}");
-		println("  get_slot(tail,t) { " + impl.OperatorGetSlot("t", class_name, "tail") + "}");
-		println("  make(e,l) {" + impl.ListmakeInsert(type.getId(), eltType) + "}");
+		println("%op " + type.getId() + " many" + type.getId() + "(head:"
+				+ eltType + ", tail:" + type.getId() + ") {");
+		println("  is_fsym(t) { " + prefix
+				+ impl.OperatorIsFSym("t", class_name, "many") + "}");
+		println("  get_slot(head,t) { "
+				+ impl.OperatorGetSlot("t", class_name, "head") + "}");
+		println("  get_slot(tail,t) { "
+				+ impl.OperatorGetSlot("t", class_name, "tail") + "}");
+		println("  make(e,l) {" + impl.ListmakeInsert(type.getId(), eltType)
+				+ "}");
 		println("}");
 	}
 
 	private void genTomEmptyOperator(Type type, String class_name) {
 		println("%op " + type.getId() + " empty" + type.getId() + "() {");
-		println("  is_fsym(t) { " + prefix + impl.OperatorIsFSym("t", class_name, "empty") + "}");
+		println("  is_fsym(t) { " + prefix
+				+ impl.OperatorIsFSym("t", class_name, "empty") + "}");
 		println("  make() {" + impl.ListmakeEmpty(type.getId()) + "}");
 		println("}");
 	}
 
 	private void genTomConcOperator(Type type, String eltType, String opName) {
 		// conc operator
-		println("%oplist " + type.getId() + " " + opName + "(" + eltType + "*) {");
+		println("%oplist " + type.getId() + " " + opName + "(" + eltType
+				+ "*) {");
 		println("  is_fsym(t) {" + impl.ListIsList("t", type.getId()) + "}");
 		println("  make_empty() {" + impl.ListmakeEmpty(type.getId()) + "}");
-		println("  make_insert(e,l) {" + impl.ListmakeInsert(type.getId(), eltType) + "}");
+		println("  make_insert(e,l) {"
+				+ impl.ListmakeInsert(type.getId(), eltType) + "}");
 		println("  get_head(l) {" + impl.ListHead(type.getId()) + "}");
 		println("  get_tail(l) {" + impl.ListTail(type.getId()) + "}");
 		println("  is_empty(l) {" + impl.ListEmpty(type.getId()) + "}");
@@ -184,21 +184,21 @@ public class TomSignatureGenerator extends Generator {
 	}
 
 	private void genListTypeTomAltOperators(Type type) {
-		Iterator alts = type.alternativeIterator();
+		Iterator<Alternative> alts = type.alternativeIterator();
 
 		while (alts.hasNext()) {
-			Alternative alt = (Alternative) alts.next();
-  		    if (!alt.isEmpty() && !alt.isMany() && !alt.isSingle()) {
+			Alternative alt = alts.next();
+			if (!alt.isEmpty() && !alt.isMany() && !alt.isSingle()) {
 				genTomAltOperator(type, alt);
 			}
 		}
 	}
 
 	private void genTomAltOperators(Type type) {
-		Iterator alts = type.alternativeIterator();
+		Iterator<Alternative> alts = type.alternativeIterator();
 
 		while (alts.hasNext()) {
-			Alternative alt = (Alternative) alts.next();
+			Alternative alt = alts.next();
 			genTomAltOperator(type, alt);
 		}
 	}
@@ -208,11 +208,11 @@ public class TomSignatureGenerator extends Generator {
 		String operator_name = impl.OperatorName(type.getId(), alt.getId());
 		print("%op " + impl.TypeName(type.getId()) + " " + operator_name);
 
-		Iterator fields = type.altFieldIterator(alt.getId());
-    print("(");
+		Iterator<Field> fields = type.altFieldIterator(alt.getId());
+		print("(");
 		if (fields.hasNext()) {
 			while (fields.hasNext()) {
-				Field field = (Field) fields.next();
+				Field field = fields.next();
 				String field_id = impl.FieldName(field.getId());
 				String field_class = impl.FieldType(field.getType());
 				String field_type = field_class;
@@ -223,22 +223,25 @@ public class TomSignatureGenerator extends Generator {
 				}
 			}
 		}
-    print(")");
+		print(")");
 		println(" {");
-    String isfsymimpl = "false";
-    if (!tomConverter.isReserved(type.getId())) {
-      isfsymimpl = prefix + impl.OperatorIsFSym("t", class_name, operator_name);
-    }
+		String isfsymimpl = "false";
+		if (!tomConverter.isReserved(type.getId())) {
+			isfsymimpl = prefix
+					+ impl.OperatorIsFSym("t", class_name, operator_name);
+		}
 		println("  is_fsym(t) { " + isfsymimpl + "}");
 
-    if (!tomConverter.isReserved(type.getId())) {
-      fields = type.altFieldIterator(alt.getId());
-      while (fields.hasNext()) {
-        Field field = (Field) fields.next();
-        String field_id = StringConversions.makeIdentifier(field.getId());
-        println("  get_slot(" + field_id + ",t) { " + impl.OperatorGetSlot("t", class_name, field_id) + "}");
-      }
-    }
+		if (!tomConverter.isReserved(type.getId())) {
+			fields = type.altFieldIterator(alt.getId());
+			while (fields.hasNext()) {
+				Field field = fields.next();
+				String field_id = StringConversions.makeIdentifier(field
+						.getId());
+				println("  get_slot(" + field_id + ",t) { "
+						+ impl.OperatorGetSlot("t", class_name, field_id) + "}");
+			}
+		}
 
 		String arg = "(";
 		int arity = type.getAltArity(alt);
@@ -249,13 +252,13 @@ public class TomSignatureGenerator extends Generator {
 			}
 		}
 		arg += ")";
-    String makeimpl = "";
-    if (!tomConverter.isReserved(type.getId())) {
-      makeimpl = impl.OperatorMake(class_name, operator_name, arg);
-    } else {
-      makeimpl = operator_name+arg ;
-    }
-   
+		String makeimpl = "";
+		if (!tomConverter.isReserved(type.getId())) {
+			makeimpl = impl.OperatorMake(class_name, operator_name, arg);
+		} else {
+			makeimpl = operator_name + arg;
+		}
+
 		println("  make" + arg + " { " + makeimpl + "}");
 
 		println("}");

@@ -9,18 +9,27 @@ import apigen.adt.ADT;
 import apigen.adt.ADTReader;
 import apigen.adt.api.types.Module;
 
-
 public class Main {
-	
+
+	private static void generateSignature(ADT adt,
+			JavaTomGenerationParameters params) {
+		Iterator<Module> it = adt.moduleIterator();
+		while (it.hasNext()) {
+			Module module = it.next();
+			JavaTomSignatureImplementation signature = new JavaTomSignatureImplementation(
+					params, module);
+			new JavaTomSignatureGenerator(adt, signature, params, module).run();
+		}
+	}
+
 	public static final void main(String[] arguments) {
 		JavaTomGenerationParameters params = new JavaTomGenerationParameters();
-		List args = new LinkedList(Arrays.asList(arguments));
+		List<String> args = new LinkedList<String>(Arrays.asList(arguments));
 
 		if (args.size() == 0) {
 			usage(params);
 			return;
-		}
-		else if (args.contains("-h") || args.contains("--help")) {
+		} else if (args.contains("-h") || args.contains("--help")) {
 			usage(params);
 			return;
 		}
@@ -28,8 +37,7 @@ public class Main {
 		try {
 			params.parseArguments(args);
 			params.check();
-		}
-		catch (IllegalArgumentException e) {
+		} catch (IllegalArgumentException e) {
 			System.err.println(e.getMessage());
 			usage(params);
 			return;
@@ -43,15 +51,6 @@ public class Main {
 		}
 	}
 
-	private static void generateSignature(ADT adt,  JavaTomGenerationParameters params) {
-		Iterator it = adt.moduleIterator();
-		while(it.hasNext()) {
-			Module module = (Module) it.next();
-			JavaTomSignatureImplementation signature = new JavaTomSignatureImplementation(params, module);
-			new JavaTomSignatureGenerator(adt, signature, params, module).run();
-		}
-	}
-	
 	private static void usage(JavaTomGenerationParameters params) {
 		System.err.println("Usage: java apigen.gen.tom.java.Main [options]");
 		System.err.println("options:");

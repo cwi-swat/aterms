@@ -17,49 +17,6 @@ public class SeparatedListType extends ListType {
 
 	}
 
-	public Separators getSeparators() {
-		return separators;
-	}
-
-	public Iterator<Field> separatorFieldIterator() {
-		return new FirstAndLastSkippingIterator<Field>(
-				altFieldIterator(MANY_LIST_ALT_NAME));
-	}
-
-	public Alternative getManyAlternative() {
-		return getAlternative(MANY_LIST_ALT_NAME);
-	}
-
-	public Field getManyField(String fieldId) {
-		return getAltField(MANY_LIST_ALT_NAME, fieldId);
-	}
-
-	public Iterator<Field> manyFieldIterator() {
-		return altFieldIterator(MANY_LIST_ALT_NAME);
-	}
-
-	public int countSeparatorFields() {
-		Iterator<Field> iter = separatorFieldIterator();
-		int count = 0;
-
-		while (iter.hasNext()) {
-			iter.next();
-			count++;
-		}
-
-		return count;
-	}
-
-	protected Alternative makeManyListConstructor() {
-		String head = buildHeadPattern();
-		String seps = buildSeparatorPattern();
-		String tail = buildTailPattern();
-		String pattern = "[" + head + "," + seps + "," + tail + "]";
-
-		return new Alternative(MANY_LIST_ALT_NAME, getFactory()
-				.getPureFactory().parse(pattern));
-	}
-
 	private String buildSeparatorPattern() {
 		StringBuffer pattern = new StringBuffer();
 		Separators runner = separators;
@@ -75,6 +32,51 @@ public class SeparatedListType extends ListType {
 			}
 		}
 		return pattern.toString();
+	}
+
+	public int countSeparatorFields() {
+		Iterator<Field> iter = separatorFieldIterator();
+		int count = 0;
+
+		while (iter.hasNext()) {
+			iter.next();
+			count++;
+		}
+
+		return count;
+	}
+
+	@Override
+	public Alternative getManyAlternative() {
+		return getAlternative(MANY_LIST_ALT_NAME);
+	}
+
+	public Field getManyField(String fieldId) {
+		return getAltField(MANY_LIST_ALT_NAME, fieldId);
+	}
+
+	public Separators getSeparators() {
+		return separators;
+	}
+
+	@Override
+	protected Alternative makeManyListConstructor() {
+		String head = buildHeadPattern();
+		String seps = buildSeparatorPattern();
+		String tail = buildTailPattern();
+		String pattern = "[" + head + "," + seps + "," + tail + "]";
+
+		return new Alternative(MANY_LIST_ALT_NAME, getFactory()
+				.getPureFactory().parse(pattern));
+	}
+
+	public Iterator<Field> manyFieldIterator() {
+		return altFieldIterator(MANY_LIST_ALT_NAME);
+	}
+
+	public Iterator<Field> separatorFieldIterator() {
+		return new FirstAndLastSkippingIterator<Field>(
+				altFieldIterator(MANY_LIST_ALT_NAME));
 	}
 
 }

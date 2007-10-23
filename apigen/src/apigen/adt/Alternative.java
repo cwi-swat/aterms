@@ -9,17 +9,8 @@ import aterm.ATermList;
 import aterm.ATermPlaceholder;
 
 public class Alternative {
-
 	protected static final String[] BASIC_ATERM_TYPES = { "int", "real", "str",
 			"term" };
-
-	protected String id;
-	protected ATerm pattern;
-
-	public Alternative(String id, ATerm pattern) {
-		this.id = id;
-		this.pattern = pattern;
-	}
 
 	public static boolean containsPlaceholder(ATerm term) {
 		switch (term.getType()) {
@@ -48,43 +39,23 @@ public class Alternative {
 		}
 	}
 
-	public String getId() {
-		return id;
-	}
-
-	public ATerm getPattern() {
-		return pattern;
-	}
-
-	public int getPatternType() {
-		ATerm match_pattern = buildMatchPattern();
-
-		if (match_pattern.getType() == ATerm.PLACEHOLDER) {
-			ATerm ph = ((ATermPlaceholder) match_pattern).getPlaceholder();
-			if (ph.match("int") != null) {
-				return ATerm.INT;
-			} else if (ph.match("real") != null) {
-				return ATerm.REAL;
-			} else if (ph.match("str") != null) {
-				return ATerm.APPL;
-			} else if (ph.match("list") != null) {
-				return ATerm.LIST;
-			} else if (ph.match("term") != null) {
-				return ATerm.APPL;
-			} else if (ph.match("chars") != null) {
-				return ATerm.LIST;
-			} else if (ph.match("char") != null) {
-				return ATerm.INT;
-			} else {
-				throw new RuntimeException("strange root pattern: "
-						+ match_pattern);
+	public static boolean isBasicATermType(String type) {
+		for (String element : BASIC_ATERM_TYPES) {
+			if (element.equals(type)) {
+				return true;
 			}
 		}
-		return match_pattern.getType();
+
+		return false;
 	}
 
-	public boolean containsPlaceholder() {
-		return containsPlaceholder(pattern);
+	protected String id;
+
+	protected ATerm pattern;
+
+	public Alternative(String id, ATerm pattern) {
+		this.id = id;
+		this.pattern = pattern;
 	}
 
 	public ATerm buildMatchPattern() {
@@ -135,34 +106,48 @@ public class Alternative {
 		}
 	}
 
+	public boolean containsPlaceholder() {
+		return containsPlaceholder(pattern);
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public ATerm getPattern() {
+		return pattern;
+	}
+
+	public int getPatternType() {
+		ATerm match_pattern = buildMatchPattern();
+
+		if (match_pattern.getType() == ATerm.PLACEHOLDER) {
+			ATerm ph = ((ATermPlaceholder) match_pattern).getPlaceholder();
+			if (ph.match("int") != null) {
+				return ATerm.INT;
+			} else if (ph.match("real") != null) {
+				return ATerm.REAL;
+			} else if (ph.match("str") != null) {
+				return ATerm.APPL;
+			} else if (ph.match("list") != null) {
+				return ATerm.LIST;
+			} else if (ph.match("term") != null) {
+				return ATerm.APPL;
+			} else if (ph.match("chars") != null) {
+				return ATerm.LIST;
+			} else if (ph.match("char") != null) {
+				return ATerm.INT;
+			} else {
+				throw new RuntimeException("strange root pattern: "
+						+ match_pattern);
+			}
+		}
+		return match_pattern.getType();
+	}
+
 	public boolean isEmpty() {
 		List<Object> subst = getPattern().match("[]");
 		return getId().equals(ListType.EMPTY_LIST_ALT_NAME) && (subst != null);
-	}
-
-	public boolean isSingle() {
-		if (getPattern().getType() == ATerm.LIST) {
-			ATermList l = (ATermList) getPattern();
-			ATerm headPh = l.getFirst();
-			ATerm tailList = l.getNext();
-
-			if (headPh != null && headPh.getType() == ATerm.PLACEHOLDER
-					&& tailList.getType() == ATerm.LIST) {
-				ATerm head = ((ATermPlaceholder) headPh).getPlaceholder();
-				ATermList tail = ((ATermList) tailList);
-				if (tail.isEmpty()) {
-					ATerm headPattern = getPattern().getFactory().parse(
-							"head(<term>)");
-					List<Object> subst1 = head.match(headPattern);
-					if (getId().equals(ListType.SINGLE_LIST_ALT_NAME)
-							&& (subst1 != null)) {
-						return true;
-					}
-
-				}
-			}
-		}
-		return false;
 	}
 
 	public boolean isMany() {
@@ -202,16 +187,32 @@ public class Alternative {
 		return false;
 	}
 
-	public static boolean isBasicATermType(String type) {
-		for (int i = 0; i < BASIC_ATERM_TYPES.length; i++) {
-			if (BASIC_ATERM_TYPES[i].equals(type)) {
-				return true;
+	public boolean isSingle() {
+		if (getPattern().getType() == ATerm.LIST) {
+			ATermList l = (ATermList) getPattern();
+			ATerm headPh = l.getFirst();
+			ATerm tailList = l.getNext();
+
+			if (headPh != null && headPh.getType() == ATerm.PLACEHOLDER
+					&& tailList.getType() == ATerm.LIST) {
+				ATerm head = ((ATermPlaceholder) headPh).getPlaceholder();
+				ATermList tail = ((ATermList) tailList);
+				if (tail.isEmpty()) {
+					ATerm headPattern = getPattern().getFactory().parse(
+							"head(<term>)");
+					List<Object> subst1 = head.match(headPattern);
+					if (getId().equals(ListType.SINGLE_LIST_ALT_NAME)
+							&& (subst1 != null)) {
+						return true;
+					}
+
+				}
 			}
 		}
-
 		return false;
 	}
 
+	@Override
 	public String toString() {
 		return "alt[" + id + ", " + pattern + "]";
 	}
