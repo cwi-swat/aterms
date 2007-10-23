@@ -99,9 +99,8 @@ public class ListTypeGenerator extends TypeGenerator {
 		println("  public boolean equivalent(shared.SharedObject peer) {");
 		println("    if (peer instanceof " + className + ") {");
 		println("      return super.equivalent(peer);");
-		println("    } else {");
-		println("      return false;");
 		println("    }");
+		println("    return false;");
 		println("  }");
 		println();
 	}
@@ -170,7 +169,7 @@ public class ListTypeGenerator extends TypeGenerator {
 	private void genGetEmptyMethod() {
 		String className = TypeGenerator.className(type);
 		println("  public aterm.ATermList getEmpty() {");
-		println("    return (aterm.ATermList)" + buildFactoryGetter() + ".make" + className + "();");
+		println("    return " + buildFactoryGetter() + ".make" + className + "();");
 		println("  }");
 		println();
 	}
@@ -184,13 +183,12 @@ public class ListTypeGenerator extends TypeGenerator {
 
 	private void genInsertMethod() {
 		println("  public " + typeName + " insert(" + elementTypeName + " head) {");
-		println("    return " + buildFactoryGetter() + ".make" + typeName + "(head, (" + typeName + ") this);");
+		println("    return " + buildFactoryGetter() + ".make" + typeName + "(head, this);");
 		println("  }");
 		println();
 	}
 
 	private void genOverrideInsertMethod() {
-		String head = getConverter().makeATermToBuiltinConversion(elementType, "head");
 		println("  public aterm.ATermList make(aterm.ATerm head, aterm.ATermList tail, aterm.ATermList annos) {");
 		println("    return " + buildFactoryGetter() + ".make" + typeName + "(head, tail, annos);");
 		println("  }");
@@ -276,16 +274,16 @@ public class ListTypeGenerator extends TypeGenerator {
 	}
 
 	private void genVisitableInterface() {
-		Iterator moduleIt;
+		Iterator<String> moduleIt;
         if (hasGlobalName) {
           moduleIt = adt.getModuleNameSet().iterator();
         } else {
-          Set moduleToGen = adt.getImportsClosureForModule(type.getModuleName());
+          Set<String> moduleToGen = adt.getImportsClosureForModule(type.getModuleName());
           moduleIt = moduleToGen.iterator();
         }
 
       	while(moduleIt.hasNext()) {
-       	    String moduleName = (String) moduleIt.next();
+       	    String moduleName = moduleIt.next();
        	    String visitorPackage = VisitorGenerator.qualifiedClassName(getJavaGenerationParameters(),moduleName);
        	    String className = TypeGenerator.className(type);
        	    String abstractListPackage = AbstractListGenerator.qualifiedClassName(getJavaGenerationParameters(),type.getModuleName());

@@ -1,12 +1,11 @@
 package apigen.adt.api.types.separator;
 
 public class Default extends apigen.adt.api.types.Separator {
-  public Default(apigen.adt.api.Factory factory, aterm.ATermList annos, aterm.AFun fun,	aterm.ATerm[] args) {
+  public Default(apigen.adt.api.Factory factory, aterm.ATermList annos, aterm.AFun fun, aterm.ATerm[] args) {
     super(factory, annos, fun, args);
   }
 
   private static int index_termPattern = 0;
-  
   public shared.SharedObject duplicate() {
     return this;
   }
@@ -42,18 +41,18 @@ public class Default extends apigen.adt.api.types.Separator {
    return getArgument(index_termPattern);
   }
 
-
   public apigen.adt.api.types.Separator setTermPattern(aterm.ATerm _termPattern) {
     return (apigen.adt.api.types.Separator) super.setArgument(_termPattern, index_termPattern);
   }
 
-
   public aterm.ATermAppl setArgument(aterm.ATerm arg, int i) {
     switch(i) {
       case 0:
+        // arg 0 is always of type aterm.ATerm
         break;
       default: throw new RuntimeException("Default does not have an argument at " + i );
     }
     return super.setArgument(arg, i);
   }
+
 }

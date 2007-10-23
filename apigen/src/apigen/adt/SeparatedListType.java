@@ -8,75 +8,73 @@ import apigen.adt.api.types.Separators;
 import apigen.util.FirstAndLastSkippingIterator;
 
 public class SeparatedListType extends ListType {
-    private Separators separators;
+	private Separators separators;
 
-    public SeparatedListType(
-        String id,
-				String moduleName,
-        String elementType,
-        Separators separators,
-        Factory factory) {
-        super(id, moduleName, elementType, factory);
-        this.separators = separators;
-        
-    }
+	public SeparatedListType(String id, String moduleName, String elementType,
+			Separators separators, Factory factory) {
+		super(id, moduleName, elementType, factory);
+		this.separators = separators;
 
-    public Separators getSeparators() {
-        return separators;
-    }
+	}
 
-    public Iterator separatorFieldIterator() {
-        return new FirstAndLastSkippingIterator(altFieldIterator(MANY_LIST_ALT_NAME));
-    }
+	public Separators getSeparators() {
+		return separators;
+	}
 
-    public Alternative getManyAlternative() {
-        return getAlternative(MANY_LIST_ALT_NAME);
-    }
+	public Iterator separatorFieldIterator() {
+		return new FirstAndLastSkippingIterator(
+				altFieldIterator(MANY_LIST_ALT_NAME));
+	}
 
-    public Field getManyField(String fieldId) {
-        return getAltField(MANY_LIST_ALT_NAME, fieldId);
-    }
+	public Alternative getManyAlternative() {
+		return getAlternative(MANY_LIST_ALT_NAME);
+	}
 
-    public Iterator manyFieldIterator() {
-        return altFieldIterator(MANY_LIST_ALT_NAME);
-    }
+	public Field getManyField(String fieldId) {
+		return getAltField(MANY_LIST_ALT_NAME, fieldId);
+	}
 
-    public int countSeparatorFields() {
-        Iterator iter = separatorFieldIterator();
-        int count = 0;
+	public Iterator<Field> manyFieldIterator() {
+		return altFieldIterator(MANY_LIST_ALT_NAME);
+	}
 
-        while (iter.hasNext()) {
-            iter.next();
-            count++;
-        }
+	public int countSeparatorFields() {
+		Iterator iter = separatorFieldIterator();
+		int count = 0;
 
-        return count;
-    }
+		while (iter.hasNext()) {
+			iter.next();
+			count++;
+		}
 
-    protected Alternative makeManyListConstructor() {
-        String head = buildHeadPattern();
-        String seps = buildSeparatorPattern();
-        String tail = buildTailPattern();
-        String pattern = "[" + head + "," + seps + "," + tail + "]";
+		return count;
+	}
 
-        return new Alternative(MANY_LIST_ALT_NAME, getFactory().getPureFactory().parse(pattern));
-    }
+	protected Alternative makeManyListConstructor() {
+		String head = buildHeadPattern();
+		String seps = buildSeparatorPattern();
+		String tail = buildTailPattern();
+		String pattern = "[" + head + "," + seps + "," + tail + "]";
 
-    private String buildSeparatorPattern() {
-        StringBuffer pattern = new StringBuffer();
-        Separators runner = separators;
+		return new Alternative(MANY_LIST_ALT_NAME, getFactory()
+				.getPureFactory().parse(pattern));
+	}
 
-        while (!runner.isEmpty()) {
-            Separator sep = runner.getHead();
+	private String buildSeparatorPattern() {
+		StringBuffer pattern = new StringBuffer();
+		Separators runner = separators;
 
-            pattern.append(sep.toString());
-            runner = runner.getTail();
+		while (!runner.isEmpty()) {
+			Separator sep = runner.getHead();
 
-            if (!runner.isEmpty()) {
-                pattern.append(',');
-            }
-        }
-        return pattern.toString();
-    }
+			pattern.append(sep.toString());
+			runner = runner.getTail();
+
+			if (!runner.isEmpty()) {
+				pattern.append(',');
+			}
+		}
+		return pattern.toString();
+	}
 
 }

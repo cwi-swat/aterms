@@ -1,7 +1,7 @@
 package apigen.adt.api.types.module;
 
 public class Modulentry extends apigen.adt.api.types.Module {
-  public Modulentry(apigen.adt.api.Factory factory, aterm.ATermList annos, aterm.AFun fun,	aterm.ATerm[] args) {
+  public Modulentry(apigen.adt.api.Factory factory, aterm.ATermList annos, aterm.AFun fun, aterm.ATerm[] args) {
     super(factory, annos, fun, args);
   }
 
@@ -9,7 +9,6 @@ public class Modulentry extends apigen.adt.api.types.Module {
   private static int index_imports = 1;
   private static int index_sorts = 2;
   private static int index_entries = 3;
-  
   public shared.SharedObject duplicate() {
     return this;
   }
@@ -57,61 +56,53 @@ public class Modulentry extends apigen.adt.api.types.Module {
     return (apigen.adt.api.types.ModuleName) getArgument(index_modulename);
   }
 
-
   public apigen.adt.api.types.Module setModulename(apigen.adt.api.types.ModuleName _modulename) {
     return (apigen.adt.api.types.Module) super.setArgument(_modulename, index_modulename);
   }
-
 
   public apigen.adt.api.types.Imports getImports() {
     return (apigen.adt.api.types.Imports) getArgument(index_imports);
   }
 
-
   public apigen.adt.api.types.Module setImports(apigen.adt.api.types.Imports _imports) {
     return (apigen.adt.api.types.Module) super.setArgument(_imports, index_imports);
   }
-
 
   public apigen.adt.api.types.Sorts getSorts() {
     return (apigen.adt.api.types.Sorts) getArgument(index_sorts);
   }
 
-
   public apigen.adt.api.types.Module setSorts(apigen.adt.api.types.Sorts _sorts) {
     return (apigen.adt.api.types.Module) super.setArgument(_sorts, index_sorts);
   }
-
 
   public apigen.adt.api.types.Entries getEntries() {
     return (apigen.adt.api.types.Entries) getArgument(index_entries);
   }
 
-
   public apigen.adt.api.types.Module setEntries(apigen.adt.api.types.Entries _entries) {
     return (apigen.adt.api.types.Module) super.setArgument(_entries, index_entries);
   }
 
-
   public aterm.ATermAppl setArgument(aterm.ATerm arg, int i) {
     switch(i) {
       case 0:
-        if (! (arg instanceof apigen.adt.api.types.ModuleName)) { 
+        if (!(arg instanceof apigen.adt.api.types.ModuleName)) { 
           throw new RuntimeException("Argument 0 of a Modulentry should have type ModuleName");
         }
         break;
       case 1:
-        if (! (arg instanceof apigen.adt.api.types.Imports)) { 
+        if (!(arg instanceof apigen.adt.api.types.Imports)) { 
           throw new RuntimeException("Argument 1 of a Modulentry should have type Imports");
         }
         break;
       case 2:
-        if (! (arg instanceof apigen.adt.api.types.Sorts)) { 
+        if (!(arg instanceof apigen.adt.api.types.Sorts)) { 
           throw new RuntimeException("Argument 2 of a Modulentry should have type Sorts");
         }
         break;
       case 3:
-        if (! (arg instanceof apigen.adt.api.types.Entries)) { 
+        if (!(arg instanceof apigen.adt.api.types.Entries)) { 
           throw new RuntimeException("Argument 3 of a Modulentry should have type Entries");
         }
         break;
@@ -119,6 +110,7 @@ public class Modulentry extends apigen.adt.api.types.Module {
     }
     return super.setArgument(arg, i);
   }
+
   protected int hashFunction() {
     int c = 0 + (getAnnotations().hashCode()<<8);
     int a = 0x9e3779b9;

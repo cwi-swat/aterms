@@ -1,7 +1,7 @@
 package apigen.adt.api.types;
 
 abstract public class ModuleName extends apigen.adt.api.AbstractType {
-  public ModuleName(apigen.adt.api.Factory factory, aterm.ATermList annos, aterm.AFun fun,	aterm.ATerm[] args) {
+  public ModuleName(apigen.adt.api.Factory factory, aterm.ATermList annos, aterm.AFun fun, aterm.ATerm[] args) {
      super(factory, annos, fun, args);
   }
 

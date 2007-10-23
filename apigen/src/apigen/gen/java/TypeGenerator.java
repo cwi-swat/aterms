@@ -118,10 +118,10 @@ public class TypeGenerator extends JavaGenerator {
 	}
 
 	protected void genDefaultGetAndSetMethods(Type type) {
-		Iterator fields = type.fieldIterator();
+		Iterator<Field> fields = type.fieldIterator();
 
 		while (fields.hasNext()) {
-			Field field = (Field) fields.next();
+			Field field = fields.next();
 			genDefaultGetAndSetMethod(type, field);
 		}
 	}
@@ -156,10 +156,10 @@ public class TypeGenerator extends JavaGenerator {
 	}
 
 	protected void genDefaultHasMethods(Type type) {
-		Iterator fields = type.fieldIterator();
+		Iterator<Field> fields = type.fieldIterator();
 
 		while (fields.hasNext()) {
-			Field field = (Field) fields.next();
+			Field field = fields.next();
 			genDefaultHasMethod(field);
 		}
 	}
@@ -191,9 +191,9 @@ public class TypeGenerator extends JavaGenerator {
 	}
 
 	protected void genDefaultIsMethods(Type type) {
-		Iterator alts = type.alternativeIterator();
+		Iterator<Alternative> alts = type.alternativeIterator();
 		while (alts.hasNext()) {
-			Alternative alt = (Alternative) alts.next();
+			Alternative alt = alts.next();
 			genDefaultIsMethod(alt);
 		}
 	}

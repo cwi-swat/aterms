@@ -19,19 +19,19 @@ public class JavaGenerationParameters extends GenerationParameters {
 		imports = new LinkedList<String>();
 		setGenerateJar(true);
 		setOutputDirectory(".");
-	    setVerbose(false);
-	    setVisitable(false);
-	    setTravelerName("jjtraveler");
+		setVerbose(false);
+		setVisitable(false);
+		setTravelerName("jjtraveler");
 	}
 
-	public void parseArguments(List args) {
-		Iterator iter = args.iterator();
+	public void parseArguments(List<String> args) {
+		Iterator<String> iter = args.iterator();
 		while (iter.hasNext()) {
-			String arg = (String) iter.next();
+			String arg = iter.next();
 			if (arg.startsWith("--package") || arg.startsWith("-p")) {
 				shift(iter);
 				setPackageName(shiftArgument(iter));
-			}	else if (arg.startsWith("--import") || arg.startsWith("-m")) {
+			} else if (arg.startsWith("--import") || arg.startsWith("-m")) {
 				shift(iter);
 				addImport(shiftArgument(iter));
 			} else if (arg.startsWith("--visitable") || arg.startsWith("-t")) {
@@ -53,12 +53,17 @@ public class JavaGenerationParameters extends GenerationParameters {
 
 	public String usage() {
 		StringBuffer buf = new StringBuffer(super.usage());
-		buf.append("\t-p | --package <package>       package name (optional)\n");
-		buf.append("\t-m | --import <package>        list of added import package(can be repeated)\n");
+		buf
+				.append("\t-p | --package <package>       package name (optional)\n");
+		buf
+				.append("\t-m | --import <package>        list of added import package(can be repeated)\n");
 		buf.append("\t-t | --visitable               [off]\n");
-		buf.append("\t-V | --version <version>       specify api-version used for generated jar file\n");
-		buf.append("\t--nojar                        Do not generate Jar file [off]\n");
-		buf.append("\t--traveler <package>           package name for JJTraveler (optional)\n");
+		buf
+				.append("\t-V | --version <version>       specify api-version used for generated jar file\n");
+		buf
+				.append("\t--nojar                        Do not generate Jar file [off]\n");
+		buf
+				.append("\t--traveler <package>           package name for JJTraveler (optional)\n");
 		return buf.toString();
 	}
 
@@ -101,15 +106,15 @@ public class JavaGenerationParameters extends GenerationParameters {
 	public void setGenerateJar(boolean generateJar) {
 		this.generateJar = generateJar;
 	}
-	
+
 	public String getVersion() {
-	  return version;
+		return version;
 	}
 
 	public void setVersion(String version) {
 		this.version = version;
 	}
-		
+
 	public void check() {
 		super.check();
 		if (getVersion() == null && isGenerateJar()) {

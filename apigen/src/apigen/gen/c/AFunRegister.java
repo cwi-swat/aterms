@@ -8,23 +8,24 @@ import aterm.AFun;
 
 public class AFunRegister {
 	private int nextAFun;
-	private Map afuns_by_name;
-	private Map afuns_by_afun;
+	private Map<String, AFun> afuns_by_name;
+	private Map<AFun, String> afuns_by_afun;
 
 	public AFunRegister() {
 		nextAFun = 0;
-		afuns_by_name = new HashMap();
-		afuns_by_afun = new HashMap();
+		afuns_by_name = new HashMap<String, AFun>();
+		afuns_by_afun = new HashMap<AFun, String>();
 	}
 
-    /**
-     * Compute the string representation of an AFun, and as a *side-effect*
-     * store this AFun with its strings representation in a local hash table
-     * @param afun
-     * @return String
-     */
+	/**
+	 * Compute the string representation of an AFun, and as a *side-effect*
+	 * store this AFun with its strings representation in a local hash table
+	 * 
+	 * @param afun
+	 * @return String
+	 */
 	public String lookup(AFun afun) {
-		String name = (String) afuns_by_afun.get(afun);
+		String name = afuns_by_afun.get(afun);
 
 		if (name == null) {
 			name = "afun" + nextAFun++;
@@ -34,12 +35,13 @@ public class AFunRegister {
 
 		return name;
 	}
-    
-    /**
-     * Get an iterator over all AFuns that have been processed by lookup
-     * @return Iterator
-     */
-    public Iterator aFunIterator() {
-        return afuns_by_name.values().iterator();
-    }
+
+	/**
+	 * Get an iterator over all AFuns that have been processed by lookup
+	 * 
+	 * @return Iterator
+	 */
+	public Iterator<AFun> aFunIterator() {
+		return afuns_by_name.values().iterator();
+	}
 }

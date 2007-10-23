@@ -27,7 +27,7 @@ if [ "a${JAR}" = "atrue" ]; then
         
     CLASSES=`echo ${FILES} | sed -e 's/.java/.class/g'`
     JARFILE=${APINAME}-${VERSION}.jar
-    javac -source 1.4 -target 1.5 -classpath ${DIRECTORY}:${CLASSPATH} ${FILES}
+    javac -source 1.5 -target 1.5 -classpath ${DIRECTORY}:${CLASSPATH} ${FILES}
 
     SOURCES=""
     for f in ${FILES}; do

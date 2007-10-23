@@ -1,7 +1,7 @@
 package apigen.adt.api.types;
 
 abstract public class Separator extends apigen.adt.api.AbstractType {
-  public Separator(apigen.adt.api.Factory factory, aterm.ATermList annos, aterm.AFun fun,	aterm.ATerm[] args) {
+  public Separator(apigen.adt.api.Factory factory, aterm.ATermList annos, aterm.AFun fun, aterm.ATerm[] args) {
      super(factory, annos, fun, args);
   }
 

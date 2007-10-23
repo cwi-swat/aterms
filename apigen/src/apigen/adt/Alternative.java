@@ -10,7 +10,8 @@ import aterm.ATermPlaceholder;
 
 public class Alternative {
 
-	protected static final String[] BASIC_ATERM_TYPES = { "int", "real", "str", "term" };
+	protected static final String[] BASIC_ATERM_TYPES = { "int", "real", "str",
+			"term" };
 
 	protected String id;
 	protected ATerm pattern;
@@ -22,32 +23,28 @@ public class Alternative {
 
 	public static boolean containsPlaceholder(ATerm term) {
 		switch (term.getType()) {
-			case ATerm.PLACEHOLDER :
-				return true;
-
-			case ATerm.LIST :
-				{
-					ATermList list = (ATermList) term;
-					if (list.isEmpty()) {
-						return false;
-					}
-					return containsPlaceholder(list.getFirst()) || containsPlaceholder(list.getNext());
-				}
-
-			case ATerm.APPL :
-				{
-					ATermAppl appl = (ATermAppl) term;
-					int arity = appl.getArity();
-					for (int i = 0; i < arity; i++) {
-						if (containsPlaceholder(appl.getArgument(i))) {
-							return true;
-						}
-					}
-					return false;
-				}
-
-			default :
+		case ATerm.PLACEHOLDER:
+			return true;
+		case ATerm.LIST: {
+			ATermList list = (ATermList) term;
+			if (list.isEmpty()) {
 				return false;
+			}
+			return containsPlaceholder(list.getFirst())
+					|| containsPlaceholder(list.getNext());
+		}
+		case ATerm.APPL: {
+			ATermAppl appl = (ATermAppl) term;
+			int arity = appl.getArity();
+			for (int i = 0; i < arity; i++) {
+				if (containsPlaceholder(appl.getArgument(i))) {
+					return true;
+				}
+			}
+			return false;
+		}
+		default:
+			return false;
 		}
 	}
 
@@ -59,34 +56,28 @@ public class Alternative {
 		return pattern;
 	}
 
-	public int getPatternType()  {
+	public int getPatternType() {
 		ATerm match_pattern = buildMatchPattern();
 
 		if (match_pattern.getType() == ATerm.PLACEHOLDER) {
 			ATerm ph = ((ATermPlaceholder) match_pattern).getPlaceholder();
 			if (ph.match("int") != null) {
 				return ATerm.INT;
-			}
-			else if (ph.match("real") != null) {
+			} else if (ph.match("real") != null) {
 				return ATerm.REAL;
-			}
-			else if (ph.match("str") != null) {
+			} else if (ph.match("str") != null) {
 				return ATerm.APPL;
-			}
-			else if (ph.match("list") != null) {
+			} else if (ph.match("list") != null) {
 				return ATerm.LIST;
-			}
-			else if (ph.match("term") != null) {
+			} else if (ph.match("term") != null) {
 				return ATerm.APPL;
-			}
-			else if (ph.match("chars") != null) {
+			} else if (ph.match("chars") != null) {
 				return ATerm.LIST;
-			}
-			else if (ph.match("char") != null) {
+			} else if (ph.match("char") != null) {
 				return ATerm.INT;
-			}
-			else {
-				throw new RuntimeException("strange root pattern: " + match_pattern);
+			} else {
+				throw new RuntimeException("strange root pattern: "
+						+ match_pattern);
 			}
 		}
 		return match_pattern.getType();
@@ -102,50 +93,50 @@ public class Alternative {
 
 	protected ATerm buildMatchPattern(ATerm t) {
 		switch (t.getType()) {
-			case ATerm.APPL :
-				ATermAppl appl = (ATermAppl) t;
-				AFun fun = appl.getAFun();
-				ATerm[] newargs = new ATerm[fun.getArity()];
-				for (int i = 0; i < fun.getArity(); i++) {
-					newargs[i] = buildMatchPattern(appl.getArgument(i));
-				}
-				return pattern.getFactory().makeAppl(fun, newargs);
-			case ATerm.LIST :
-				ATermList list = (ATermList) t;
-				ATerm[] elems = new ATerm[list.getLength()];
-				int i = 0;
-				while (!list.isEmpty()) {
-					elems[i++] = buildMatchPattern(list.getFirst());
-					list = list.getNext();
-				}
-				for (i = elems.length - 1; i >= 0; i--) {
-					list = list.insert(elems[i]);
-				}
-				return list;
-			case ATerm.PLACEHOLDER :
-				ATerm ph = ((ATermPlaceholder) t).getPlaceholder();
-				if (ph.getType() == ATerm.LIST) {
-					return pattern.getFactory().parse("<list>");
-				}
-				ATerm type = ((ATermAppl) ph).getArgument(0);
-				String typeName = type.toString();
+		case ATerm.APPL:
+			ATermAppl appl = (ATermAppl) t;
+			AFun fun = appl.getAFun();
+			ATerm[] newargs = new ATerm[fun.getArity()];
+			for (int i = 0; i < fun.getArity(); i++) {
+				newargs[i] = buildMatchPattern(appl.getArgument(i));
+			}
+			return pattern.getFactory().makeAppl(fun, newargs);
+		case ATerm.LIST:
+			ATermList list = (ATermList) t;
+			ATerm[] elems = new ATerm[list.getLength()];
+			int i = 0;
+			while (!list.isEmpty()) {
+				elems[i++] = buildMatchPattern(list.getFirst());
+				list = list.getNext();
+			}
+			for (i = elems.length - 1; i >= 0; i--) {
+				list = list.insert(elems[i]);
+			}
+			return list;
+		case ATerm.PLACEHOLDER:
+			ATerm ph = ((ATermPlaceholder) t).getPlaceholder();
+			if (ph.getType() == ATerm.LIST) {
+				return pattern.getFactory().parse("<list>");
+			}
+			ATerm type = ((ATermAppl) ph).getArgument(0);
+			String typeName = type.toString();
 
-				if (typeName.equals("chars")) {
-					return pattern.getFactory().parse("[<list>]");
-				}else if (typeName.equals("char")) {
-					return pattern.getFactory().parse("<int>");
-				}else if (isBasicATermType(typeName)) {
-					return pattern.getFactory().makePlaceholder(type);
-				}else {
-					return pattern.getFactory().parse("<term>");
-				}
-			default :
-				return t;
+			if (typeName.equals("chars")) {
+				return pattern.getFactory().parse("[<list>]");
+			} else if (typeName.equals("char")) {
+				return pattern.getFactory().parse("<int>");
+			} else if (isBasicATermType(typeName)) {
+				return pattern.getFactory().makePlaceholder(type);
+			} else {
+				return pattern.getFactory().parse("<term>");
+			}
+		default:
+			return t;
 		}
 	}
 
 	public boolean isEmpty() {
-		List subst = getPattern().match("[]");
+		List<Object> subst = getPattern().match("[]");
 		return getId().equals(ListType.EMPTY_LIST_ALT_NAME) && (subst != null);
 	}
 
@@ -155,13 +146,16 @@ public class Alternative {
 			ATerm headPh = l.getFirst();
 			ATerm tailList = l.getNext();
 
-			if (headPh != null && headPh.getType() == ATerm.PLACEHOLDER && tailList.getType() == ATerm.LIST) {
+			if (headPh != null && headPh.getType() == ATerm.PLACEHOLDER
+					&& tailList.getType() == ATerm.LIST) {
 				ATerm head = ((ATermPlaceholder) headPh).getPlaceholder();
 				ATermList tail = ((ATermList) tailList);
 				if (tail.isEmpty()) {
-					ATerm headPattern = getPattern().getFactory().parse("head(<term>)");
-					List subst1 = head.match(headPattern);
-					if (getId().equals(ListType.SINGLE_LIST_ALT_NAME) && (subst1 != null)) {
+					ATerm headPattern = getPattern().getFactory().parse(
+							"head(<term>)");
+					List<Object> subst1 = head.match(headPattern);
+					if (getId().equals(ListType.SINGLE_LIST_ALT_NAME)
+							&& (subst1 != null)) {
 						return true;
 					}
 
@@ -170,30 +164,35 @@ public class Alternative {
 		}
 		return false;
 	}
+
 	public boolean isMany() {
 		if (getPattern().getType() == ATerm.LIST) {
 			ATermList l = (ATermList) getPattern();
 			ATerm headPh = l.getFirst();
 			ATerm tailList = l.getNext();
 
-			if (headPh != null && headPh.getType() == ATerm.PLACEHOLDER && tailList.getType() == ATerm.LIST) {
+			if (headPh != null && headPh.getType() == ATerm.PLACEHOLDER
+					&& tailList.getType() == ATerm.LIST) {
 				ATerm head = ((ATermPlaceholder) headPh).getPlaceholder();
 				ATerm tailPh = ((ATermList) tailList).getFirst();
 				if (tailPh != null && tailPh.getType() == ATerm.PLACEHOLDER) {
 					ATerm tail = ((ATermPlaceholder) tailPh).getPlaceholder();
 
-					ATerm headPattern = getPattern().getFactory().parse("head(<term>)");
-					ATerm tailPattern = getPattern().getFactory().parse("[tail(<term>)]");
+					ATerm headPattern = getPattern().getFactory().parse(
+							"head(<term>)");
+					ATerm tailPattern = getPattern().getFactory().parse(
+							"[tail(<term>)]");
 
-					List subst1 = head.match(headPattern);
-					List subst2 = tail.match(tailPattern);
-					//System.out.println("head = " + head);
-					//System.out.println("tail = " + tail);
+					List<Object> subst1 = head.match(headPattern);
+					List<Object> subst2 = tail.match(tailPattern);
+					// System.out.println("head = " + head);
+					// System.out.println("tail = " + tail);
 
-					//System.out.println("headMatch = "+ subst1);
-					//System.out.println("tailMatch = "+ subst2);
+					// System.out.println("headMatch = "+ subst1);
+					// System.out.println("tailMatch = "+ subst2);
 
-					if (getId().equals(ListType.MANY_LIST_ALT_NAME) && (subst1 != null) && (subst2 != null)) {
+					if (getId().equals(ListType.MANY_LIST_ALT_NAME)
+							&& (subst1 != null) && (subst2 != null)) {
 						return true;
 					}
 

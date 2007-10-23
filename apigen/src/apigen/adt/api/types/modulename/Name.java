@@ -1,13 +1,11 @@
 package apigen.adt.api.types.modulename;
 
 public class Name extends apigen.adt.api.types.ModuleName {
-	
-  public Name(apigen.adt.api.Factory factory, aterm.ATermList annos, aterm.AFun fun,	aterm.ATerm[] args) {
+  public Name(apigen.adt.api.Factory factory, aterm.ATermList annos, aterm.AFun fun, aterm.ATerm[] args) {
     super(factory, annos, fun, args);
   }
 
   private static int index_name = 0;
-  
   public shared.SharedObject duplicate() {
     return this;
   }
@@ -43,16 +41,14 @@ public class Name extends apigen.adt.api.types.ModuleName {
    return ((aterm.ATermAppl) getArgument(index_name)).getAFun().getName();
   }
 
-
   public apigen.adt.api.types.ModuleName setName(String _name) {
     return (apigen.adt.api.types.ModuleName) super.setArgument(getFactory().makeAppl(getFactory().makeAFun(_name, 0, true)), index_name);
   }
 
-
   public aterm.ATermAppl setArgument(aterm.ATerm arg, int i) {
     switch(i) {
       case 0:
-        if (! (arg instanceof aterm.ATermAppl)) { 
+        if (!(arg instanceof aterm.ATermAppl)) { 
           throw new RuntimeException("Argument 0 of a Name should have type str");
         }
         break;
@@ -60,4 +56,5 @@ public class Name extends apigen.adt.api.types.ModuleName {
     }
     return super.setArgument(arg, i);
   }
+
 }

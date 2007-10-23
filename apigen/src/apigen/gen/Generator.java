@@ -10,7 +10,7 @@ import java.util.List;
 
 public abstract class Generator {
 	private GenerationParameters params;
-	private List listeners;
+	private List<GenerationObserver> listeners;
 	private String directory;
 	private String fileName;
 	private String extension;
@@ -28,20 +28,19 @@ public abstract class Generator {
 	}
 
 	public void run() {
-        try {
-		  stream = createStream(getDirectory(), getFileName(), getExtension());
-		  fireFileCreated(getDirectory(), getFileName(), getExtension());
-		  generate();
-		  closeStream(stream);
-        }
-        catch (GenerationException exc) {
-            System.err.println("An error occurred at generation time:");
-            System.err.println(exc);
-            System.exit(1);
-        }
+		try {
+			stream = createStream(getDirectory(), getFileName(), getExtension());
+			fireFileCreated(getDirectory(), getFileName(), getExtension());
+			generate();
+			closeStream(stream);
+		} catch (GenerationException exc) {
+			System.err.println("An error occurred at generation time:");
+			System.err.println(exc);
+			System.exit(1);
+		}
 	}
 
-	abstract protected void generate() throws GenerationException ;
+	abstract protected void generate() throws GenerationException;
 
 	public void println() {
 		stream.println();
@@ -59,12 +58,13 @@ public abstract class Generator {
 		stream.close();
 	}
 
-	private PrintStream createStream(String fileName) throws GenerationException {
+	private PrintStream createStream(String fileName)
+			throws GenerationException {
 		try {
 			return new PrintStream(new FileOutputStream(fileName));
-		}
-		catch (FileNotFoundException exc) {
-			throw new GenerationException("fatal error: Failed to open " + fileName + " for writing.");
+		} catch (FileNotFoundException exc) {
+			throw new GenerationException("fatal error: Failed to open "
+					+ fileName + " for writing.");
 		}
 	}
 
@@ -72,16 +72,16 @@ public abstract class Generator {
 		return directory + File.separatorChar + fileName + ext;
 	}
 
-	protected PrintStream createStream(String directory, String fileName, String extension) 
-    throws GenerationException {
+	protected PrintStream createStream(String directory, String fileName,
+			String extension) throws GenerationException {
 		File base = new File(directory);
 
 		if (!base.exists()) {
 			if (!base.mkdirs()) {
-				throw new GenerationException("could not create output directory " + directory);
+				throw new GenerationException(
+						"could not create output directory " + directory);
 			}
-		}
-		else if (!base.isDirectory()) {
+		} else if (!base.isDirectory()) {
 			throw new GenerationException(directory + " is not a directory");
 		}
 
@@ -119,10 +119,10 @@ public abstract class Generator {
 	public void setFileName(String fileName) {
 		this.fileName = fileName;
 	}
-	
+
 	public void addGenerationObserver(GenerationObserver aListener) {
 		if (listeners == null) {
-			listeners = new LinkedList();
+			listeners = new LinkedList<GenerationObserver>();
 		}
 		listeners.add(aListener);
 	}
@@ -133,11 +133,12 @@ public abstract class Generator {
 		}
 	}
 
-	protected void fireFileCreated(String directory, String fileName, String extension) {
+	protected void fireFileCreated(String directory, String fileName,
+			String extension) {
 		if (listeners != null) {
-			Iterator iter = listeners.iterator();
+			Iterator<GenerationObserver> iter = listeners.iterator();
 			while (iter.hasNext()) {
-				((GenerationObserver) iter.next()).fileCreated(directory, fileName, extension);
+				iter.next().fileCreated(directory, fileName, extension);
 			}
 		}
 	}

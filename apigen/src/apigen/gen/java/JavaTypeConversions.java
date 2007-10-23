@@ -39,17 +39,17 @@ public class JavaTypeConversions implements TypeConversions {
     
     
     public String makeIntegerToATermConversion(String expression) {
-        return "(aterm.ATerm) " + factory + ".makeInt(" + expression + ")";
+        return factory + ".makeInt(" + expression + ")";
     }
 
     
     public String makeRealToATermConversion(String expression) {
-        return "(aterm.ATerm) " + factory + ".makeReal(" + expression + ")";
+        return factory + ".makeReal(" + expression + ")";
     }
 
     
     public String makeStringToATermConversion(String expression) {
-        return "(aterm.ATerm) " + factory + ".makeAppl(factory.makeAFun(" + expression + ", 0, true))";
+        return factory + ".makeAppl(factory.makeAFun(" + expression + ", 0, true))";
     }
 
     public String makeListToATermConversion(String expression) {

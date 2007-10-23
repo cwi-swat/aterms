@@ -17,12 +17,11 @@ public class Main {
 	public final static void main(String[] arguments) {
 		CGenerationParameters params = buildDefaultParameters();
 
-		List args = new LinkedList(Arrays.asList(arguments));
+		List<String> args = new LinkedList<String>(Arrays.asList(arguments));
 		if (args.size() == 0) {
 			usage(params);
 			System.exit(1);
-		}
-		else if (args.contains("-h") || args.contains("--help")) {
+		} else if (args.contains("-h") || args.contains("--help")) {
 			usage(params);
 			return;
 		}
@@ -30,8 +29,7 @@ public class Main {
 		try {
 			params.parseArguments(args);
 			params.check();
-		}
-		catch (IllegalArgumentException e) {
+		} catch (IllegalArgumentException e) {
 			System.err.println(e.getMessage());
 			usage(params);
 			System.exit(1);
@@ -60,14 +58,16 @@ public class Main {
 		Factory factory = Factory.getInstance(SingletonFactory.getInstance());
 		APIGenerator apigen = new APIGenerator(params, adt);
 		apigen.run();
-		new CDictionaryGenerator(adt, params, factory.getPureFactory(), apigen.getAFunRegister()).run();
+		new CDictionaryGenerator(adt, params, factory.getPureFactory(), apigen
+				.getAFunRegister()).run();
 		try {
-			PrintStream out = new PrintStream(new FileOutputStream(params.getOutputDirectory() + File.separatorChar + "apigen.env"));
+			PrintStream out = new PrintStream(new FileOutputStream(params
+					.getOutputDirectory()
+					+ File.separatorChar + "apigen.env"));
 			out.println("APINAME=" + params.getApiName());
 			out.println("DIRECTORY=" + params.getOutputDirectory());
 			out.close();
-		}
-		catch (FileNotFoundException e) {
+		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
 

@@ -2,90 +2,52 @@ package apigen.adt;
 
 import java.util.*;
 
-public class Field
-{
-  String id;
-  String type;
+public class Field {
+	String id;
+	String type;
 
-  List locations;
+	List<Location> locations;
 
-  //{{{ public Field(String id, String type)
+	public Field(String id, String type) {
+		this.id = id;
+		this.type = type;
 
-  public Field(String id, String type)
-  {
-    this.id     = id;
-    this.type   = type;
+		locations = new Vector<Location>();
+	}
 
-    locations = new Vector();
-  }
+	public String getId() {
+		return id;
+	}
 
-  //}}}
+	public String getType() {
+		return type;
+	}
 
-  //{{{ public String getId()
+	public void addLocation(Location loc) {
+		locations.add(loc);
+	}
 
-  public String getId()
-  {
-    return id;
-  }
+	public boolean hasAltId(String altId) {
+		return getLocation(altId) != null;
+	}
 
-  //}}}
-  //{{{ public String getType()
+	public Location getLocation(String altId) {
+		Iterator<Location> locs = locations.iterator();
+		while (locs.hasNext()) {
+			Location loc = locs.next();
+			if (loc.getAltId().equals(altId)) {
+				return loc;
+			}
+		}
 
-  public String getType()
-  {
-    return type;
-  }
+		return null;
+	}
 
-  //}}}
+	public Iterator<Location> locationIterator() {
+		return locations.iterator();
+	}
 
-  //{{{ public void addLocation(Location loc)
-
-  public void addLocation(Location loc)
-  {
-    locations.add(loc);
-  }
-
-  //}}}
-
-  //{{{ public boolean hasAltId(String altId)
-
-  public boolean hasAltId(String altId)
-  {
-    return getLocation(altId) != null;
-  }
-
-  //}}}
-  //{{{ public Location getLocation(String altId)
-
-  public Location getLocation(String altId)
-  {
-    Iterator locs = locations.iterator();
-    while (locs.hasNext()) {
-      Location loc = (Location)locs.next();
-      if (loc.getAltId().equals(altId)) {
-	return loc;
-      }
-    }
-
-    return null;
-  }
-
-  //}}}
-  //{{{ public Iterator locationIterator()
-
-  public Iterator locationIterator()
-  {
-    return locations.iterator();
-  }
-
-  //}}}
-
-  //{{{ public String toString()
-
-  public String toString()
-  {
-    return "field[" + id + ", " + type + "," + locations + "]";
-  }
-  
-  //}}}
+	public String toString() {
+		return "field[" + id + ", " + type + "," + locations + "]";
+	}
 }

@@ -22,7 +22,7 @@ import aterm.ATerm;
 import aterm.ATermAppl;
 
 public class ADT {
-	List<Modulentry> modules;
+	List<Module> modules;
 	List<Type> types;
     List<String> bottomTypes;
     Map<String, List<Type>> modulesTypes;
@@ -38,7 +38,7 @@ public class ADT {
     
     private ADT(Modules adt) throws ADTException {
     	types = new LinkedList<Type>();
-      modules = new LinkedList<Modulentry>();
+      modules = new LinkedList<Module>();
       modulesTypes = new HashMap<String, List<Type>>();
       factory = adt.getApiFactory();
 
@@ -125,16 +125,16 @@ public class ADT {
 
         // TODO: do not include builtin types as bottomTypes
         while (types.hasNext()) {
-            Type type = (Type) types.next();
-            Iterator fields = type.fieldIterator();
+            Type type = types.next();
+            Iterator<Field> fields = type.fieldIterator();
 
             while (fields.hasNext()) {
-                Field field = (Field) fields.next();
-                Iterator definedTypes = typeIterator();
+                Field field = fields.next();
+                Iterator<Type> definedTypes = typeIterator();
                 boolean defined = false;
 
                 while (definedTypes.hasNext()) {
-                    Type definedType = (Type) definedTypes.next();
+                    Type definedType = definedTypes.next();
 
                     if (field.getType().equals(definedType.getId())) {
                         defined = true;
@@ -151,8 +151,8 @@ public class ADT {
         }
     }
 
-    private Type processAlternatives(String typeId, String moduleName, List alts) {
-        Entry first = (Entry) alts.get(0);
+    private Type processAlternatives(String typeId, String moduleName, List<Entry> alts) {
+        Entry first = alts.get(0);
 
         if (first.isList() || first.isSeparatedList() || first.isNamedList()) {
             if (alts.size() > 1) {
@@ -196,12 +196,12 @@ public class ADT {
         return type;
     }
 
-    private Type processConstructors(String typeId, String moduleName, List alts) {
+    private Type processConstructors(String typeId, String moduleName, List<Entry> alts) {
         Type type = new Type(typeId, moduleName);
-        ListIterator iter = alts.listIterator();
+        ListIterator<Entry> iter = alts.listIterator();
 
         while (iter.hasNext()) {
-            Entry entry = (Entry) iter.next();
+            Entry entry = iter.next();
 
             if (entry.isConstructor()) {
                 String altId = ((ATermAppl) entry.getAlternative()).getAFun().getName();
@@ -248,7 +248,7 @@ public class ADT {
         return bottomTypes.iterator();
     }
     
-    public Iterator<Modulentry> moduleIterator() {
+    public Iterator<Module> moduleIterator() {
       return modules.iterator();
     }
     
@@ -308,7 +308,7 @@ public class ADT {
     }
     
     private Module getModuleFromName(String moduleName) {
-        	Iterator<Modulentry> modulesIt = moduleIterator();
+        	Iterator<Module> modulesIt = moduleIterator();
     	    	while(modulesIt.hasNext()) {
     	    		Module currentModule = modulesIt.next();
     	    		String currentModuleName = currentModule.getModulename().getName();
@@ -321,7 +321,7 @@ public class ADT {
   
   public Set<String> getModuleNameSet() {
     Set<String> modulenames = new HashSet<String>();
-    Iterator<Modulentry> it = moduleIterator();
+    Iterator<Module> it = moduleIterator();
     while (it.hasNext()) {
       Module mod = it.next();
       String modname = mod.getModulename().getName();

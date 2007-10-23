@@ -16,11 +16,8 @@ public class CDictionaryGenerator extends Generator {
 	private AFunRegister afunRegister;
 	private ATermFactory factory;
 
-	public CDictionaryGenerator(
-		ADT adt,
-		GenerationParameters params,
-		ATermFactory factory,
-		AFunRegister afunRegister) {
+	public CDictionaryGenerator(ADT adt, GenerationParameters params,
+			ATermFactory factory, AFunRegister afunRegister) {
 		super(params);
 		this.adt = adt;
 		this.factory = factory;
@@ -33,8 +30,7 @@ public class CDictionaryGenerator extends Generator {
 	protected void generate() {
 		try {
 			buildDictionary(adt).writeToTextFile(getStream());
-		}
-		catch (IOException e) {
+		} catch (IOException e) {
 			System.out.println("Could not write to dictionary file.");
 			System.exit(1);
 		}
@@ -44,15 +40,16 @@ public class CDictionaryGenerator extends Generator {
 		ATermList afun_list = makeAFunList();
 		ATermList term_list = factory.makeList();
 
-		return factory.make("[afuns(<term>),terms(<term>)]", afun_list, term_list);
+		return factory.make("[afuns(<term>),terms(<term>)]", afun_list,
+				term_list);
 	}
 
 	private ATermList makeAFunList() {
 		ATermList afun_list = factory.makeList();
-		Iterator afuns = afunRegister.aFunIterator();
+		Iterator<AFun> afuns = afunRegister.aFunIterator();
 
 		while (afuns.hasNext()) {
-			AFun afun = (AFun) afuns.next();
+			AFun afun = afuns.next();
 			ATerm entry = makeDictEntry(afun);
 			afun_list = afun_list.insert(entry);
 		}

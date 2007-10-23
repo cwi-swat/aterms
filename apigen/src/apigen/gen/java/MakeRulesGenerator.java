@@ -23,7 +23,8 @@ public class MakeRulesGenerator extends Generator {
 		super(params);
 		this.params = params;
 		this.adt = adt;
-		this.name = StringConversions.makeCapitalizedIdentifier(params.getApiName());
+		this.name = StringConversions.makeCapitalizedIdentifier(params
+				.getApiName());
 		this.prefix = name + "API";
 		setDirectory(buildOutputDirectory());
 		setFileName(name + "MakeRules");
@@ -32,15 +33,15 @@ public class MakeRulesGenerator extends Generator {
 
 	private String buildOutputDirectory() {
 		StringBuffer buf = new StringBuffer();
-        String pkg = params.getPackageName();
-        
+		String pkg = params.getPackageName();
+
 		buf.append(params.getOutputDirectory());
 		buf.append(File.separatorChar);
-        
-        if (pkg != null) {
-		  buf.append(pkg.replace('.', File.separatorChar));
-        }
-        
+
+		if (pkg != null) {
+			buf.append(pkg.replace('.', File.separatorChar));
+		}
+
 		return buf.toString();
 	}
 
@@ -49,12 +50,12 @@ public class MakeRulesGenerator extends Generator {
 	}
 
 	protected void generate() {
-		Iterator types = adt.typeIterator();
+		Iterator<Type> types = adt.typeIterator();
 		bucket = 0;
 		int i = 0;
 
 		while (types.hasNext()) {
-			Type type = (Type) types.next();
+			Type type = types.next();
 
 			makeNewBucket(i);
 
@@ -72,9 +73,9 @@ public class MakeRulesGenerator extends Generator {
 	}
 
 	private int printAlternativesClassFiles(int i, Type type) {
-		Iterator alts = type.alternativeIterator();
+		Iterator<Alternative> alts = type.alternativeIterator();
 		while (alts.hasNext()) {
-			Alternative alt = (Alternative) alts.next();
+			Alternative alt = alts.next();
 			makeNewBucket(i);
 			printAlternativeClassFiles(type, alt);
 			i++;
@@ -84,13 +85,12 @@ public class MakeRulesGenerator extends Generator {
 	}
 
 	protected void printAccumulatedVariable() {
-		print(
-			prefix
+		print(prefix
 				+ "=\\\n"
-				//+ getClassFileName(FactoryGenerator.className())
+				// + getClassFileName(FactoryGenerator.className())
 				+ getClassFileName(FactoryGenerator.className("BUG_HERE"))
 				+ " "
-				//+ getClassFileName(AbstractTypeGenerator.className())
+				// + getClassFileName(AbstractTypeGenerator.className())
 				+ getClassFileName(AbstractTypeGenerator.className("BUG_HERE"))
 				+ "\\\n");
 
@@ -100,7 +100,8 @@ public class MakeRulesGenerator extends Generator {
 	}
 
 	protected void printAlternativeClassFiles(Type type, Alternative alt) {
-		print("\\\n" + getClassFileName(AlternativeGenerator.className(type,alt)));
+		print("\\\n"
+				+ getClassFileName(AlternativeGenerator.className(type, alt)));
 	}
 
 	protected void printTypeClassFiles(Type type) {

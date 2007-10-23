@@ -9,6 +9,7 @@ abstract public class AbstractType extends aterm.pure.ATermApplImpl {
     super(abstractTypeFactory.getPureFactory(), annos, fun, args);
     this.abstractTypeFactory = abstractTypeFactory;
   }
+
   abstract public aterm.ATerm toTerm();
 
   public String toString() {

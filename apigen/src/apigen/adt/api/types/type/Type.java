@@ -1,14 +1,13 @@
 package apigen.adt.api.types.type;
 
 public class Type extends apigen.adt.api.types.Type {
-  public Type(apigen.adt.api.Factory factory, aterm.ATermList annos, aterm.AFun fun,	aterm.ATerm[] args) {
+  public Type(apigen.adt.api.Factory factory, aterm.ATermList annos, aterm.AFun fun, aterm.ATerm[] args) {
     super(factory, annos, fun, args);
   }
 
   private static int index_name = 0;
-  
   public shared.SharedObject duplicate() {
-	  return this;
+    return this;
   }
 
   public boolean equivalent(shared.SharedObject peer) {
@@ -42,16 +41,14 @@ public class Type extends apigen.adt.api.types.Type {
    return ((aterm.ATermAppl) getArgument(index_name)).getAFun().getName();
   }
 
-
   public apigen.adt.api.types.Type setName(String _name) {
     return (apigen.adt.api.types.Type) super.setArgument(getFactory().makeAppl(getFactory().makeAFun(_name, 0, true)), index_name);
   }
 
-
   public aterm.ATermAppl setArgument(aterm.ATerm arg, int i) {
     switch(i) {
       case 0:
-        if (! (arg instanceof aterm.ATermAppl)) { 
+        if (!(arg instanceof aterm.ATermAppl)) { 
           throw new RuntimeException("Argument 0 of a Type should have type str");
         }
         break;
@@ -59,4 +56,5 @@ public class Type extends apigen.adt.api.types.Type {
     }
     return super.setArgument(arg, i);
   }
+
 }
