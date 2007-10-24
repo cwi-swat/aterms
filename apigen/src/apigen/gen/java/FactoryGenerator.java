@@ -738,9 +738,8 @@ public class FactoryGenerator extends JavaGenerator {
 				+ paramTypeName + " head, " + formalSeps + returnTypeName
 				+ " tail) {");
 		if (!forwarding) {
-			println("    return (" + returnTypeName + ") " + methodName + "("
-					+ head + ", " + actualSeps
-					+ "(aterm.ATermList) tail, factory.getEmpty());");
+			println("    return " + methodName + "(" + head + ", " + actualSeps
+					+ "tail, factory.getEmpty());");
 		} else {// forwarding
 			println("    return "
 					+ FactoryGenerator.className(moduleName).toLowerCase()
@@ -799,8 +798,8 @@ public class FactoryGenerator extends JavaGenerator {
 		println("  public " + returnTypeName + ' ' + methodName + "("
 				+ paramTypeName + " elem ) {");
 		if (!forwarding) {
-			println("    return (" + returnTypeName + ") " + methodName
-					+ "(elem, " + separators + empty + ");");
+			println("    return " + methodName + "(elem, " + separators + empty
+					+ ");");
 		} else { // forwarding
 			println("    return "
 					+ FactoryGenerator.className(moduleName).toLowerCase()
@@ -1020,14 +1019,11 @@ public class FactoryGenerator extends JavaGenerator {
 			} else if (field_type.equals("term")) {
 				println("    args.add(" + getArgumentCall + ");");
 			} else if (field_type.equals("list")) {
-				println("    args.add((aterm.ATermList)" + getArgumentCall
-						+ ");");
+				println("    args.add(" + getArgumentCall + ");");
 			} else if (field_type.equals("chars")) {
-				println("    args.add((aterm.ATerm) stringToChars("
-						+ getArgumentCall + "));");
+				println("    args.add(stringToChars(" + getArgumentCall + "));");
 			} else if (field_type.equals("char")) {
-				println("    args.add(new Integer((char) " + getArgumentCall
-						+ "));");
+				println("    args.add(new Integer(" + getArgumentCall + "));");
 			} else {
 				println("    args.add(" + getArgumentCall + ".toTerm());");
 			}
@@ -1204,11 +1200,9 @@ public class FactoryGenerator extends JavaGenerator {
 		} else if (fieldType.equals("list")) {
 			result = "(aterm.ATermList) children.get(" + argnr + ")";
 		} else if (fieldType.equals("chars")) {
-			result = "(String) charsToString((aterm.ATerm) children.get("
-					+ argnr + "))";
+			result = "charsToString((aterm.ATerm) children.get(" + argnr + "))";
 		} else if (fieldType.equals("char")) {
-			result = "(char) charToByte((aterm.ATerm) children.get(" + argnr
-					+ "))";
+			result = "charToByte((aterm.ATerm) children.get(" + argnr + "))";
 		} else {
 			result = fieldClass + "FromTerm((aterm.ATerm) children.get("
 					+ argnr + "))";
@@ -1369,7 +1363,7 @@ public class FactoryGenerator extends JavaGenerator {
 			println();
 			println("    int length = (list.getLength() / " + headLength
 					+ ") + 1;");
-			println("    java.util.List[] nodes = new java.util.List[length-1];");
+			println("    java.util.List<Object>[] nodes = new java.util.List[length-1];");
 			println();
 			println("    for (int i = 0; i < length - 1; i++) {");
 			println("      java.util.List<Object> args = list.match("
