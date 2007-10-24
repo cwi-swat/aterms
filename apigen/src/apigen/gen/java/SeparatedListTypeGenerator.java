@@ -17,11 +17,10 @@ public class SeparatedListTypeGenerator extends TypeGenerator {
 			SeparatedListType type) {
 		super(params, type);
 		this.type = type;
-		this.typeName = TypeGenerator.className(type);
-		this.elementType = type.getElementType();
-		this.elementTypeName = TypeGenerator.qualifiedClassName(params,
-				elementType);
-		this.factory = FactoryGenerator.qualifiedClassName(params, type
+		typeName = TypeGenerator.className(type);
+		elementType = type.getElementType();
+		elementTypeName = TypeGenerator.qualifiedClassName(params, elementType);
+		factory = FactoryGenerator.qualifiedClassName(params, type
 				.getModuleName());
 	}
 
@@ -115,8 +114,18 @@ public class SeparatedListTypeGenerator extends TypeGenerator {
 				+ "aterm.ATermList next) {");
 		println("     super(factory.getPureFactory(), annos, first, next);");
 		println("     this.factory = factory;");
+		genSeparatorInitAssignments(type);
 		println("  }");
 		println();
+	}
+
+	private void genSeparatorInitAssignments(SeparatedListType type) {
+		Iterator<Field> fields = type.separatorFieldIterator();
+		while (fields.hasNext()) {
+			Field field = fields.next();
+			String fieldId = JavaGenerator.getFieldId(field.getId());
+			println("    this." + fieldId + " = " + fieldId + ";");
+		}
 	}
 
 	private void genFactoryField() {

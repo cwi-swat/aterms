@@ -27,7 +27,7 @@ public class FactoryGenerator extends JavaGenerator {
 			Module module) {
 		super(params);
 		this.adt = adt;
-		this.apiName = params.getApiExtName(module);
+		apiName = params.getApiExtName(module);
 		this.module = module;
 	}
 
@@ -1130,7 +1130,7 @@ public class FactoryGenerator extends JavaGenerator {
 		String emptyName = emptyListVariable(type);
 		println("    " + emptyName + " = (" + className
 				+ ") factory.build(new " + className
-				+ "(factory.getEmpty(), null, "
+				+ "(this, factory.getEmpty(), null, "
 				+ buildAmountOfSeparatorsNullExpressions(type) + "null));");
 	}
 
