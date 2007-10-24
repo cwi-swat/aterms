@@ -125,12 +125,22 @@ public class ATermListImpl extends ATermImpl implements ATermList {
     return getPureFactory().makeList(el, this);
   }
 
+  protected ATermList make(ATerm head, ATermList tail) {
+    return make(head, tail, getPureFactory().makeList());
+  }
+
+  protected ATermList make(ATerm head, ATermList tail, ATermList annos) {
+    return getPureFactory().makeList(head, tail, annos);
+  }
+
   public ATermList getEmpty() {
     return getPureFactory().makeList();
   }
 
   public ATerm setAnnotations(ATermList annos) {
-	  return getPureFactory().makeList(first, next, annos);
+    // return getPureFactory().makeList(first, next, annos);
+    // to be sure that the overloaded function is called
+    return make(first, next, annos);
   }
 
   protected boolean match(ATerm pattern, List<Object> list) {
