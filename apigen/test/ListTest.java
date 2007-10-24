@@ -80,7 +80,7 @@ public class ListTest {
 		try {
 			termExample = factory.getPureFactory().parse(example);
 			testAssert(termExample != null, "need reference to prevent gc");
-			mods[4] = (Modules) factory.makeModules();
+			mods[4] = factory.makeModules();
 		}
 		catch (ClassCastException ex) {
 			testAssert(false, "ClassCastException occurred due to wrong equivalence implementation");
@@ -88,7 +88,7 @@ public class ListTest {
 
 		example = "\"amodule\"";
 		termExample = factory.getPureFactory().parse(example);
-		Module amodule = (Module) factory.makeModule_Default(example);
+		Module amodule = factory.makeModule_Default(example);
 		testAssert(amodule != null, "test cast");
 
 		ATerm pattern =
