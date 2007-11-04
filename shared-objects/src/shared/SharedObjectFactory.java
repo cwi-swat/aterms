@@ -394,7 +394,7 @@ public class SharedObjectFactory {
 
       synchronized(this) {
         // Try again while holding the global lock for this segment.
-        if(entries(hash&hashMask) != stop) {
+        if(entries[hash&hashMask] != stop) {
           SharedObject result = findObjectWhileUnderLock(prototype, hash);
           if(result != null) return result;
         }
