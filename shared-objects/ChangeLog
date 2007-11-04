@@ -1,3 +1,8 @@
+2007-11-04  Pem  <pem@piano.local>
+  * very small improve of the get method (inline of findObject,
+		discriminate on e.hash first, try to avoid the findObjectWhileUnderLock)
+	* re-indent the copyright and apply Java Sun's style
+
 Mon Aug 13 14:53:40 <lankamp@cwi.nl>
   * Made the SharedObjectFactory and SingletonSharedObjectFactory thread-safe.
   * The performance should also be noticably better then that of the 'current' version.
