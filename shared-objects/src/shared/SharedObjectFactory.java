@@ -29,8 +29,10 @@ import java.lang.ref.WeakReference;
  * multi-core / processor systems; while also limiting synchronization overhead.
  * 
  * WARNING: Do not edit this class unless you fully understand both Java's memory and threading model
- * and how the garbage collector(s) work. (You'll likely 'break' something otherwise).<br />
+ * and how the garbage collector(s) work. (You'll almost certainly 'break' something otherwise).<br />
  * The JMM spec (previously known as JSR-133) can be found here: <a href=http://java.sun.com/docs/books/jls/third_edition/html/memory.html>http://java.sun.com/docs/books/jls/third_edition/html/memory.html</a><br />
+ * Even experts should be cautious. Every line of code is in a certain place for a reason. Modifying
+ * anything may break thread-safety and / or can have a serious impact on performance.
  * 
  * @author Arnold Lankamp
  */
@@ -115,7 +117,7 @@ public class SharedObjectFactory{
 	/**
 	 * A segment is a hashtable that represents a certain part of the 'hashset'.
 	 */
-	private static class Segment{
+	private final static class Segment{
 		private final static int MAX_SEGMENT_BITSIZE = 32 - DEFAULT_NR_OF_SEGMENTS_BITSIZE;
 		private final static int DEFAULT_SEGMENT_BITSIZE = 5;
 		private final static float DEFAULT_LOAD_FACTOR = 2f;
@@ -128,14 +130,19 @@ public class SharedObjectFactory{
 		private int threshold;
 		private int load;
 		
-		private boolean attemptCleanup;
-		private int cleanupPercentate;
+		private volatile boolean flaggedForCleanup;
+		private int cleanupScaler;
+		private int cleanupThreshold;
 		
 		private final int segmentID;
-		
-		private FreeID freeIDList;
+
+		private int numberOfFreeIDs;
+		private int[] freeIDs;
+		private int freeIDsIndex;
 		private int nextFreeID;
 		private final int maxFreeIDPlusOne;
+		
+		protected WeakReference<GarbageCollectionDetector> garbageCollectionDetectorReference;
 		
 		/**
 		 * Constructor.
@@ -158,22 +165,27 @@ public class SharedObjectFactory{
 			threshold = (int) (nrOfEntries * DEFAULT_LOAD_FACTOR);
 			load = 0;
 			
-			attemptCleanup = true;
-			cleanupPercentate = 0;
+			flaggedForCleanup = false;
+			cleanupScaler = 50; // Init as 50% average cleanup percentage, to make sure the cleanup can and will be executed the first time.
+			cleanupThreshold = cleanupScaler;
 			
-			freeIDList = null;
+			numberOfFreeIDs = 1 << bitSize;
+			freeIDs = new int[numberOfFreeIDs];
+			freeIDsIndex = 0;
 			nextFreeID = segmentID << MAX_SEGMENT_BITSIZE;
 			maxFreeIDPlusOne = (segmentID + 1) << MAX_SEGMENT_BITSIZE;
+			
+			garbageCollectionDetectorReference = new WeakReference<GarbageCollectionDetector>(new GarbageCollectionDetector(this));
 		}
 		
 		/**
 		 * Removes entries, who's value have been garbage collected, from this segment.
 		 */
 		private void cleanup(){
-			int newLoad = load;
 			Entry[] table = entries;
+			int newLoad = load;
 			
-			for(int i = table.length - 1; i >= 0; i--){
+			for(int i = hashMask; i >= 0; i--){
 				Entry e = table[i];
 				if(e != null){
 					Entry previous = null;
@@ -204,7 +216,70 @@ public class SharedObjectFactory{
 			
 			load = newLoad;
 			
-			entries = table; // Create happens-before edge, to ensure potential changes become visible.
+			entries = table; // Create happens-before edge, to ensure any changes become visible.
+		}
+		
+		/**
+		 * Rehashes the segment. The entries in the bucket will remain in the same order, so there are
+		 * only 'young -> old' references and not the other way around. This will reduce 'minor'
+		 * garbage collection times.
+		 */
+		private void rehash(){
+			int nrOfEntries = 1 << (++bitSize);
+			int newHashMask = nrOfEntries - 1;
+			
+			Entry[] oldEntries = entries;
+			Entry[] newEntries = new Entry[nrOfEntries];
+			
+			// Construct temporary entries that function as roots for the entries that remain in the current bucket
+			// and those that are being shifted.
+			Entry currentEntryRoot = new Entry(null, 0);
+			Entry shiftedEntryRoot = new Entry(null, 0);
+			
+			int newLoad = load;
+			int oldSize = oldEntries.length;
+			for(int i = oldSize - 1; i >= 0; i--){
+				Entry e = oldEntries[i];
+				if(e != null){
+					Entry lastCurrentEntry = currentEntryRoot;
+					Entry lastShiftedEntry = shiftedEntryRoot;
+					do{
+						if(e.get() != null){ // Cleared entries should not be copied.
+							int position = e.hash & newHashMask;
+							
+							if(position == i){
+								lastCurrentEntry.next = e;
+								lastCurrentEntry = e;
+							}else{
+								lastShiftedEntry.next = e;
+								lastShiftedEntry = e;
+							}
+						}else{
+							newLoad --;
+							
+							if(e instanceof EntryWithID){
+								EntryWithID ewid = (EntryWithID) e;
+								releaseID(ewid.id);
+							}
+						}
+						
+						e = e.next;
+					}while(e != null);
+					
+					// Set the next pointers of the last entries in the buckets to null.
+					lastCurrentEntry.next = null;
+					lastShiftedEntry.next = null;
+					
+					newEntries[i] = currentEntryRoot.next;
+					newEntries[i | oldSize] = shiftedEntryRoot.next; // The entries got shifted by the size of the old table.
+				}
+			}
+			
+			load = newLoad;
+			
+			threshold <<= 1;
+			entries = newEntries; // Volatile write. Creates happens-before edge with the above changes.
+			hashMask = newHashMask;
 		}
 		
 		/**
@@ -212,70 +287,13 @@ public class SharedObjectFactory{
 		 * to do a cleanup; if this is successfull enough (if 20%+ of the table was cleaned) we'll
 		 * do a cleanup next time we run low on space as well. Otherwise we'll do a rehash. This
 		 * strategy prevents the segment from growing to large (with would result in space being
-		 * wasted and / or a memory leak).<br />
-		 * NOTE: When rehashing the entries will remain in the same order; so there are only
-		 * 'young -> old' references and not the other way around. This will reduce 'minor' garbage
-		 * collection times.
+		 * wasted and / or a memory leak).
 		 */
 		private void ensureCapacity(){
-			if(load > threshold){
-				if(bitSize >= MAX_SEGMENT_BITSIZE) attemptCleanup = true; // We won't do any more rehashes if the segment is already streched to it's maximum (since this would be a useless thing to do).
-				
-				if(attemptCleanup){ // Cleanup
-					int oldLoad = load;
-					
-					cleanup();
-					
-					cleanupPercentate = 100 - ((load * 100) / oldLoad);
-					if(cleanupPercentate < 20) attemptCleanup = false; // Rehash the next time the table reaches it's threshold if we didn't clean enough (otherwise the cleanups start to cost too much performance % wise).
-				}else{ // Rehash
-					attemptCleanup = true;
-					
-					int nrOfEntries = 1 << (++bitSize);
-					int newHashMask = nrOfEntries - 1;
-					
-					Entry[] oldEntries = entries;
-					Entry[] newEntries = new Entry[nrOfEntries];
-					
-					Entry currentEntryRoot = new Entry(null, 0);
-					Entry shiftedEntryRoot = new Entry(null, 0);
-					int oldSize = oldEntries.length;
-					
-					for(int i = oldSize - 1; i >= 0; i--){
-						Entry e = oldEntries[i];
-						if(e != null){
-							Entry lastCurrentEntry = currentEntryRoot;
-							Entry lastShiftedEntry = shiftedEntryRoot;
-							do{
-								if(e.get() != null){
-									int position = e.hash & newHashMask;
-									
-									if(position == i){
-										lastCurrentEntry.next = e;
-										lastCurrentEntry = e;
-									}else{
-										lastShiftedEntry.next = e;
-										lastShiftedEntry = e;
-									}
-								}else{
-									load--;
-								}
-								
-								e = e.next;
-							}while(e != null);
-							
-							lastShiftedEntry.next = null;
-							lastCurrentEntry.next = null;
-							
-							newEntries[i] = currentEntryRoot.next;
-							newEntries[i | oldSize] = shiftedEntryRoot.next; // The entries got shifted by the size of the old table.
-						}
-					}
-					
-					threshold <<= 1;
-					entries = newEntries;
-					hashMask = newHashMask;
-				}
+			// Rehash if the load exceeds the threshold,
+			// unless the segment is already streched to it's maximum (since that would be a useless thing to do).
+			if(load > threshold && bitSize < MAX_SEGMENT_BITSIZE){
+				rehash();
 			}
 		}
 		
@@ -288,14 +306,14 @@ public class SharedObjectFactory{
 		 *            The hash the corresponds to the given shared object.
 		 */
 		private void put(SharedObject object, int hash){
-			// Assign an id if needed.
 			Entry e;
+			// Assign a unique id if needed.
 			if(object instanceof SharedObjectWithID){
 				SharedObjectWithID sharedObjectWithID = (SharedObjectWithID) object;
 				int id = generateID();
 				sharedObjectWithID.setUniqueIdentifier(id);
 				
-				e = new EntryWithID(object, hash, id);
+				e = new EntryWithID(sharedObjectWithID, hash, id);
 			}else{
 				e = new Entry(object, hash);
 			}
@@ -311,18 +329,62 @@ public class SharedObjectFactory{
 		}
 		
 		/**
-		 * Locates a reference to the shared version of the given object prototype (if present).
+		 * Attempts to run a cleanup if the garbage collector ran before the invokation of this function.
+		 * This ensures that, in most cases, the buckets will contain no cleared entries. By doing this we
+		 * speed up lookups significantly. Note that we will automaticly throttle the frequency of the cleanups;
+		 * in case we hardly every collect anything (either because there is no garbage or collections occur
+		 * very frequently) it will be slowed down to as little as once per four garbage collections. When a lot
+		 * of entries are being cleared the cleanup will run after every collection. Using this strategy 
+		 * ensures us that we clean the segment exactly when it is needed and possible.
+		 */
+		private void tryCleanup(){
+			if(flaggedForCleanup){
+				synchronized(this){
+					if(flaggedForCleanup){ // Yes, in Java DCL works on volatiles.
+						flaggedForCleanup = false;
+						
+						if(cleanupThreshold > 8){ // The 'magic' number 8 is chosen, so the cleanup will be done at least once after every four garbage collections.
+							int oldLoad = load;
+							
+							cleanup();
+							
+							int cleanupPercentate;
+							if(oldLoad == 0) cleanupPercentate = 50; // This prevents division by zero errors in case the table is still empty (keep the cleanup percentage that 50% in this case).
+							else cleanupPercentate = 100 - ((load * 100) / oldLoad); // Calculate the percentage of entries that has been cleaned.
+							cleanupScaler = (((cleanupScaler * 25) + (cleanupPercentate * 7)) >> 5); // Modify the scaler, depending on the history (weight = 25) and how much we cleaned up this time (weight = 7).
+							if(cleanupScaler > 0){
+								cleanupThreshold = cleanupScaler;
+							}else{
+								cleanupThreshold = 1; // If the scaler value became 0 (when we hardly every collect something), set the threshold to 1, so we only skip the next three garbage collections.
+							}
+						}else{
+							cleanupThreshold <<= 1;
+						}
+						
+						garbageCollectionDetectorReference = new WeakReference<GarbageCollectionDetector>(new GarbageCollectionDetector(this));
+					}
+				}
+			}
+		}
+		
+		/**
+		 * Returns a reference to the unique version of the given shared object prototype.
 		 * 
 		 * @param prototype
 		 *            A prototype matching the shared object we want a reference to.
 		 * @param hash
 		 *            The hash associated with the given shared object prototype.
-		 * @return The found shared object; null if it has not been found.
+		 * @return The reference to the unique version of the shared object.
 		 */
-		private SharedObject findObject(SharedObject prototype, int hash){
-			int position = hash & hashMask;
+		public final SharedObject get(SharedObject prototype, int hash){
+			// Cleanup if necessary.
+			tryCleanup();
 			
+			// Find the object (lock free).
+			int currentHashMask = hashMask;
+			int position = hash & currentHashMask;
 			Entry e = entries[position];
+			Entry firstEntry = e;
 			if(e != null){
 				do{
 					if(hash == e.hash){
@@ -337,92 +399,31 @@ public class SharedObjectFactory{
 				}while(e != null);
 			}
 			
-			return null;
-		}
-		
-		/**
-		 * Locates a reference to the shared version of the given object prototype (if present).
-		 * Note that this method also removes stale entries from the bucket and should ONLY be
-		 * called while holding the global lock for this segment; failing to do so will result
-		 * in undefined behaviour.
-		 * 
-		 * @param prototype
-		 *            A prototype matching the shared object we want a reference to.
-		 * @param hash
-		 *            The hash associated with the given shared object prototype.
-		 * @return The found shared object; null if it has not been found.
-		 */
-		private SharedObject findObjectWhileUnderLock(SharedObject prototype, int hash){
-			int position = hash & hashMask;
-			
-			Entry[] table = entries;
-			Entry e = table[position];
-			Entry previous = null;
-			if(e != null){
-				do{
-					Entry next = e.next;
-					SharedObject object = e.get();
-					if(object != null){
-						if(hash == e.hash && prototype.equivalent(object)){
-							return object;
-						}
-						previous = e;
-					}else{
-						if(previous == null){
-							table[position] = next;
-						}else{
-							previous.next = next;
-						}
-						
-						load--;
-						
-						entries = table; // Create a happens-before edge, to ensure visibility of the change.
-					}
-					e = next;
-				}while(e != null);
-			}
-			
-			return null;
-		}
-		
-		/**
-		 * Returns a reference to the unique version of the given shared object prototype.
-		 * 
-		 * @param prototype
-		 *            A prototype matching the shared object we want a reference to.
-		 * @param hash
-		 *            The hash associated with the given shared object prototype.
-		 * @return The reference to the unique version of the shared object.
-		 */
-		public final SharedObject get(SharedObject prototype, int hash){
-			// Find the object (lock free).
-			SharedObject result = findObject(prototype, hash);
-			if(result != null) return result;
-			
 			synchronized(this){
-				// Try again while holding the global lock for this segment.
-				result = findObjectWhileUnderLock(prototype, hash);
-				if(result != null) return result;
+				// Try again while holding the global lock for this segment (if needed).
+				position = hash & hashMask;
+				e = entries[position];
+				if(!(e == firstEntry && currentHashMask == hashMask)){ // Check if there is a possibility that the content of the bucket has changed different, if not, we won't need to check again (this 'if statement' also exploits short circuiting; we hardly ever need to evaluate the second condition this way).
+					if(e != null){
+						do{
+							if(hash == e.hash){
+								SharedObject object = e.get();
+								if(object != null){
+									if(prototype.equivalent(object)){
+										return object;
+									}
+								}
+							}
+							e = e.next;
+						}while(e != null);
+					}
+				}
 				
 				// If we still can't find it, add it.
 				ensureCapacity();
-				result = prototype.duplicate();
+				SharedObject result = prototype.duplicate();
 				put(result, hash);
-			}
-			
-			return result;
-		}
-		
-		/**
-		 * A linked list node holding a free identifier.
-		 */
-		private final static class FreeID{
-			public final int id;
-			public final FreeID next;
-			
-			public FreeID(int id, FreeID next){
-				this.id = id;
-				this.next = next;
+				return result;
 			}
 		}
 		
@@ -432,25 +433,22 @@ public class SharedObjectFactory{
 		 * @return A unique identifier.
 		 */
 		private int generateID(){
-			int id;
-			if(freeIDList != null){
-				id = freeIDList.id;
-				freeIDList = freeIDList.next;
-			}else{
-				id = nextFreeID++;
-				if(id == maxFreeIDPlusOne){ // We ran out of id's.
-					nextFreeID--; // Roll back, otherwise errors might occur on the next call.
-					cleanup(); // Do a cleanup and try again.
-					if(freeIDList != null){
-						id = freeIDList.id;
-						freeIDList = freeIDList.next;
-					}else{
-						// If we still can't get a free id throw an exception.
-						throw new RuntimeException("No more unique identifiers available for segment("+segmentID+").");
-					}
-				}
+			if(freeIDsIndex > 0){
+				return freeIDs[--freeIDsIndex];
 			}
-			return id;
+			
+			if(nextFreeID != maxFreeIDPlusOne){
+				return nextFreeID++;
+			}
+			
+			// We ran out of id's.
+			cleanup(); // In a last desperate attempt, try to do a cleanup to free up ids.
+			if(freeIDsIndex > 0){
+				return freeIDs[--freeIDsIndex];
+			}
+			
+			// If we still can't get a free id throw an exception.
+			throw new RuntimeException("No more unique identifiers available for segment("+segmentID+").");
 		}
 		
 		/**
@@ -460,7 +458,15 @@ public class SharedObjectFactory{
 		 *            The identifier to release.
 		 */
 		private void releaseID(int id){
-			freeIDList = new FreeID(id, freeIDList);
+			if(freeIDsIndex == numberOfFreeIDs){
+				int newNumberOfFreeIDs = numberOfFreeIDs << 1;
+				int[] newFreeIds = new int[newNumberOfFreeIDs];
+				System.arraycopy(freeIDs, 0, newFreeIds, 0, numberOfFreeIDs);
+				freeIDs = newFreeIds;
+				numberOfFreeIDs = newNumberOfFreeIDs;
+			}
+			
+			freeIDs[freeIDsIndex++] = id;
 		}
 		
 		/**
@@ -537,54 +543,86 @@ public class SharedObjectFactory{
 			
 			return sb.toString();
 		}
-	}
-	
-	/**
-	 * A bucket entry for a shared object.
-	 * 
-	 * @author Arnold Lankamp
-	 */
-	private static class Entry extends WeakReference<SharedObject>{
-		public final int hash;
-		public Entry next; // This field is not final because we need to change it during cleanup and while rehashing.
 		
 		/**
-		 * Constructor.
+		 * An object that can be used to detect when a garbage collection has been executed.
+		 * Instances of this object must be made weakly reachable for this to work.
 		 * 
-		 * @param sharedObject
-		 *            The shared object.
-		 * @param hash
-		 *            The hash that is associated with the given shared object.
+		 * @author Arnold Lankamp
 		 */
-		public Entry(SharedObject sharedObject, int hash){
-			super(sharedObject);
+		private static class GarbageCollectionDetector{
+			private Segment segment;
 			
-			this.hash = hash;
+			/**
+			 * Constructor.
+			 * 
+			 * @param segment
+			 *            The segment that we need to flag for cleanup after a garbage collection occurred.
+			 */
+			public GarbageCollectionDetector(Segment segment){
+				this.segment = segment;
+			}
+			
+			/**
+			 * Executed after the garbage collector detectes that this object is eligable for reclamation.
+			 * When this happens it will flag the associated segment for cleanup.
+			 * 
+			 * @see java.lang.Object#finalize
+			 */
+			public void finalize(){
+				segment.flaggedForCleanup = true;
+				segment.garbageCollectionDetectorReference = null; // Make the reference object collectable, as we no longer need it.
+			}
 		}
-	}
-	
-	/**
-	 * A bucket entry for a shared object with a unique identifier.
-	 * 
-	 * @author Arnold Lankamp
-	 */
-	private static class EntryWithID extends Entry{
-		public final int id;
 		
 		/**
-		 * Constructor.
+		 * A bucket entry for a shared object.
 		 * 
-		 * @param sharedObject
-		 *            The shared object.
-		 * @param hash
-		 *            The hash that is associated with the given shared object.
-		 * @param id
-		 *            The unique identifier.
+		 * @author Arnold Lankamp
 		 */
-		public EntryWithID(SharedObject sharedObject, int hash, int id){
-			super(sharedObject, hash);
+		private static class Entry extends WeakReference<SharedObject>{
+			public final int hash;
+			public Entry next; // This field is not final because we need to change it during cleanup and while rehashing.
 			
-			this.id = id;
+			/**
+			 * Constructor.
+			 * 
+			 * @param sharedObject
+			 *            The shared object.
+			 * @param hash
+			 *            The hash that is associated with the given shared object.
+			 */
+			public Entry(SharedObject sharedObject, int hash){
+				super(sharedObject);
+				
+				this.hash = hash;
+			}
+		}
+		
+		
+		/**
+		 * A bucket entry for a shared object with a unique identifier.
+		 * 
+		 * @author Arnold Lankamp
+		 */
+		private static class EntryWithID extends Entry{
+			public final int id;
+			
+			/**
+			 * Constructor.
+			 * 
+			 * @param sharedObjectWithID
+			 *            The shared object.
+			 * @param hash
+			 *            The hash that is associated with the given shared object.
+			 * @param id
+			 *            The unique identifier.
+			 */
+			public EntryWithID(SharedObjectWithID sharedObjectWithID, int hash, int id){
+				super(sharedObjectWithID, hash);
+				
+				this.id = id;
+			}
 		}
 	}
 }
