@@ -435,7 +435,14 @@ public class SharedObjectFactory{
 		 * @return A unique identifier.
 		 */
 		private int generateID(){
-			if(freeIDsIndex > 0){
+			if(freeIDsIndex > 0){// Half the size of the freeIDs array when it is empty for three quarters.
+				if(freeIDsIndex < (numberOfFreeIDs >> 2) && numberOfFreeIDs > 32){
+					int newNumberOfFreeIDs = numberOfFreeIDs >> 1;
+					int[] newFreeIds = new int[newNumberOfFreeIDs];
+					System.arraycopy(freeIDs, 0, newFreeIds, 0, newNumberOfFreeIDs);
+					freeIDs = newFreeIds;
+					numberOfFreeIDs = newNumberOfFreeIDs;
+				}
 				return freeIDs[--freeIDsIndex];
 			}
 			
@@ -460,7 +467,7 @@ public class SharedObjectFactory{
 		 *            The identifier to release.
 		 */
 		private void releaseID(int id){
-			if(freeIDsIndex == numberOfFreeIDs){
+			if(freeIDsIndex == numberOfFreeIDs){// Double the size of the freeIDs array when it is full.
 				int newNumberOfFreeIDs = numberOfFreeIDs << 1;
 				int[] newFreeIds = new int[newNumberOfFreeIDs];
 				System.arraycopy(freeIDs, 0, newFreeIds, 0, numberOfFreeIDs);
