@@ -41,6 +41,7 @@ public class SharedObjectFactory{
 	
 	private final Segment[] segments;
 	
+	
 	/**
 	 * Default constructor.
 	 */
@@ -53,6 +54,7 @@ public class SharedObjectFactory{
 		}
 	}
 	
+	
 	/**
 	 * Constructor. This is only here for backwards compatibility. The user shouldn't specify the
 	 * logsize, we'll resize the table ourselfs when needed.
@@ -63,6 +65,7 @@ public class SharedObjectFactory{
 	public SharedObjectFactory(int initialLogSize){
 		this();
 	}
+	
 	
 	/**
 	 * Removes stale entries from the set.
@@ -76,6 +79,7 @@ public class SharedObjectFactory{
 			}
 		}
 	}
+	
 	
 	/**
 	 * Returns statistics.
@@ -142,8 +146,6 @@ public class SharedObjectFactory{
 		private int nextFreeID;
 		private final int maxFreeIDPlusOne;
 		
-		protected WeakReference<GarbageCollectionDetector> garbageCollectionDetectorReference;
-		
 		/**
 		 * Constructor.
 		 * 
@@ -175,7 +177,7 @@ public class SharedObjectFactory{
 			nextFreeID = segmentID << MAX_SEGMENT_BITSIZE;
 			maxFreeIDPlusOne = (segmentID + 1) << MAX_SEGMENT_BITSIZE;
 			
-			garbageCollectionDetectorReference = new WeakReference<GarbageCollectionDetector>(new GarbageCollectionDetector(this));
+			new GarbageCollectionDetector(this); // Allocate a (unreachable) GC detector.
 		}
 		
 		/**
@@ -298,37 +300,6 @@ public class SharedObjectFactory{
 		}
 		
 		/**
-		 * Inserts the given shared object into the set.
-		 * 
-		 * @param object
-		 *            The shared object to insert.
-		 * @param hash
-		 *            The hash the corresponds to the given shared object.
-		 */
-		private void put(SharedObject object, int hash){
-			Entry e;
-			// Assign a unique id if needed.
-			if(object instanceof SharedObjectWithID){
-				SharedObjectWithID sharedObjectWithID = (SharedObjectWithID) object;
-				int id = generateID();
-				sharedObjectWithID.setUniqueIdentifier(id);
-				
-				e = new EntryWithID(sharedObjectWithID, hash, id);
-			}else{
-				e = new Entry(object, hash);
-			}
-			
-			Entry[] table = entries;
-			int position = hash & hashMask;
-			e.next = table[position];
-			table[position] = e;
-			
-			load++;
-			
-			table = entries; // Create a happens-before edge for the added entry, to ensure visibility.
-		}
-		
-		/**
 		 * Attempts to run a cleanup if the garbage collector ran before the invokation of this function.
 		 * This ensures that, in most cases, the buckets will contain no cleared entries. By doing this we
 		 * speed up lookups significantly. Note that we will automaticly throttle the frequency of the cleanups;
@@ -361,10 +332,41 @@ public class SharedObjectFactory{
 							cleanupThreshold <<= 1;
 						}
 						
-						garbageCollectionDetectorReference = new WeakReference<GarbageCollectionDetector>(new GarbageCollectionDetector(this));
+						new GarbageCollectionDetector(this); // Allocate a new (unreachable) GC detector.
 					}
 				}
 			}
+		}
+		
+		/**
+		 * Inserts the given shared object into the set.
+		 * 
+		 * @param object
+		 *            The shared object to insert.
+		 * @param hash
+		 *            The hash the corresponds to the given shared object.
+		 */
+		private void put(SharedObject object, int hash){
+			Entry e;
+			// Assign a unique id if needed.
+			if(object instanceof SharedObjectWithID){
+				SharedObjectWithID sharedObjectWithID = (SharedObjectWithID) object;
+				int id = generateID();
+				sharedObjectWithID.setUniqueIdentifier(id);
+				
+				e = new EntryWithID(sharedObjectWithID, hash, id);
+			}else{
+				e = new Entry(object, hash);
+			}
+			
+			Entry[] table = entries;
+			int position = hash & hashMask;
+			e.next = table[position];
+			table[position] = e;
+			
+			load++;
+			
+			table = entries; // Create a happens-before edge for the added entry, to ensure visibility.
 		}
 		
 		/**
@@ -539,6 +541,11 @@ public class SharedObjectFactory{
 				
 				sb.append("Maximal bucket length: ");
 				sb.append(maxBucketLength);
+				sb.append(", ");
+				
+				sb.append("Cleanup scaler: ");
+				sb.append(cleanupScaler);
+				sb.append("%");
 			}
 			
 			return sb.toString();
@@ -571,7 +578,6 @@ public class SharedObjectFactory{
 			 */
 			public void finalize(){
 				segment.flaggedForCleanup = true;
-				segment.garbageCollectionDetectorReference = null; // Make the reference object collectable, as we no longer need it.
 			}
 		}
 		
@@ -598,7 +604,6 @@ public class SharedObjectFactory{
 				this.hash = hash;
 			}
 		}
-		
 		
 		/**
 		 * A bucket entry for a shared object with a unique identifier.
