@@ -41,7 +41,6 @@ public class SharedObjectFactory{
 	
 	private final Segment[] segments;
 	
-	
 	/**
 	 * Default constructor.
 	 */
@@ -54,7 +53,6 @@ public class SharedObjectFactory{
 		}
 	}
 	
-	
 	/**
 	 * Constructor. This is only here for backwards compatibility. The user shouldn't specify the
 	 * logsize, we'll resize the table ourselfs when needed.
@@ -65,7 +63,6 @@ public class SharedObjectFactory{
 	public SharedObjectFactory(int initialLogSize){
 		this();
 	}
-	
 	
 	/**
 	 * Removes stale entries from the set.
@@ -79,7 +76,6 @@ public class SharedObjectFactory{
 			}
 		}
 	}
-	
 	
 	/**
 	 * Returns statistics.
@@ -386,7 +382,6 @@ public class SharedObjectFactory{
 			int currentHashMask = hashMask;
 			int position = hash & currentHashMask;
 			Entry e = entries[position];
-			Entry firstEntry = e;
 			if(e != null){
 				do{
 					if(hash == e.hash){
@@ -402,23 +397,21 @@ public class SharedObjectFactory{
 			}
 			
 			synchronized(this){
-				// Try again while holding the global lock for this segment (if needed).
+				// Try again while holding the global lock for this segment.
 				position = hash & hashMask;
 				e = entries[position];
-				if(!(e == firstEntry && currentHashMask == hashMask)){ // Check if there is a possibility that the content of the bucket has changed different, if not, we won't need to check again (this 'if statement' also exploits short circuiting; we hardly ever need to evaluate the second condition this way).
-					if(e != null){
-						do{
-							if(hash == e.hash){
-								SharedObject object = e.get();
-								if(object != null){
-									if(prototype.equivalent(object)){
-										return object;
-									}
+				if(e != null){
+					do{
+						if(hash == e.hash){
+							SharedObject object = e.get();
+							if(object != null){
+								if(prototype.equivalent(object)){
+									return object;
 								}
 							}
-							e = e.next;
-						}while(e != null);
-					}
+						}
+						e = e.next;
+					}while(e != null);
 				}
 				
 				// If we still can't find it, add it.
