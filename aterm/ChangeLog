@@ -1,5 +1,8 @@
 $Id$
 
+Wed Nov 21 09:34:56 CET 2007 <{kooiker,lankamp}@cwi.nl>
+ * aterm/aterm.c: set standard streams to binary mode for WIN32
+
 Tue Aug 14 16:31:18 CEST 2007 <jurgenv@cwi.nl>
  * aterm/aterm1.h: moved struct definitions to aterm/encoding.h such that
    aterm1.h contains only API stuff and not hidden implementation details.
