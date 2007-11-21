@@ -5,7 +5,6 @@ m4_include(float-order.m4)
 m4_pattern_forbid([^META_])
 
 AC_INIT
-AC_CANONICAL_TARGET([])
 META_SETUP
 META_C_SETUP
 AC_PROG_LIBTOOL
