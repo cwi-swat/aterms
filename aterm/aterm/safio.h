@@ -145,6 +145,14 @@ void ATwriteToSAFFile(ATerm aTerm, FILE *file);
 
 ATerm ATreadFromSAFFile(FILE *file);
 
+void ATwriteToNamedSAFFile(ATerm aTerm, const char *filename);
+
+ATerm ATreadFromNamedSAFFile(const char *filename);
+
+char* ATwriteToSAFString(ATerm aTerm, int *length);
+
+ATerm ATreadFromSAFString(char *data, int length);
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

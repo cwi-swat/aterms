@@ -18,7 +18,7 @@ EXTRA_DIST += \
 CLEANFILES += test.taf test.blob terms.c terms.h
 BUILT_SOURCES = terms.c terms.h
 
-AM_LDFLAGS  = -L$(top_builddir)/aterm 
+AM_LDFLAGS  += -L$(top_builddir)/aterm 
 LDADD       += -lATerm
 AM_CPPFLAGS += \
   -I$(top_srcdir) \
