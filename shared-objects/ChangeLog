@@ -1,40 +1,27 @@
-
 Sun Dec  2 21:31:53 EST 2007 <jurgenv@cwi.nl>
  * Added some svn log events to this ChangeLog for completeness, and
    it will trigger a build:
-r24236 | lankamp | 2007-11-16 05:06:31 -0500 (Fri, 16 Nov 2007) | 5 lines
--Fixed a thread-safety problem.
-The initialization of the next pointer in an entry can happen out of order
-with 
-the assignment of the entry in the table.
-In rare cases this could result in (temporarily) broken bucket chains.
-Because of this there was a slight chance that an already shared object could
-no
-t be located eventhough it was present.
 
-------------------------------------------------------------------------
-r24169 | lankamp | 2007-11-09 05:19:26 -0500 (Fri, 09 Nov 2007) | 2 lines
+Fri, 16 10:06:31 2007 <lankamp@cwi.nl>
+ * Fixed a thread-safety problem.
+   The initialization of the next pointer in an entry can happen out of order with the assignment of the entry in the table.
+   In rare cases this could result in (temporarily) broken bucket chains.
+   Because of this there was a slight chance that an already shared object could not be located eventhough it was present.
 
--Reduced memory usage, by scaling down the size of the freeIDs array when it
-con
-tains too much empty space.
-
-------------------------------------------------------------------------
-r24168 | lankamp | 2007-11-09 04:53:56 -0500 (Fri, 09 Nov 2007) | 2 lines
-
--Cleaned up the code a bit.
+Fri Nov 09 10:19:26 2007 <lankamp@cwi.nl>
+ * Reduced memory usage, by scaling down the size of the freeIDs array when it contains too much empty space.
 
 2007-11-04  Pem  <pem@piano.local>
-  * very small improve of the get method (inline of findObject,
-    discriminate on e.hash first, try to avoid the findObjectWhileUnderLock)
-  * re-indent the copyright and apply Java Sun's style
+ * very small improve of the get method (inline of findObject,
+   discriminate on e.hash first, try to avoid the findObjectWhileUnderLock)
+ * re-indent the copyright and apply Java Sun's style
 
 Mon Aug 13 14:53:40 <lankamp@cwi.nl>
-  * Made the SharedObjectFactory and SingletonSharedObjectFactory thread-safe.
-  * The performance should also be noticably better then that of the 'current' version.
+ * Made the SharedObjectFactory and SingletonSharedObjectFactory thread-safe.
+ * The performance should also be noticably better then that of the 'current' version.
 
 2007-05-06  Pem  <pem@piano.local>
-  * Changed license to BSD
+ * Changed license to BSD
 
 Tue Jul 25 09:16:05 CEST 2006 <{kooiker,jurgenv}@cwi.nl,martin.bravenboer@gmail.com>
  * **: adapted package to use the standard meta-build-env.
