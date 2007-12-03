@@ -1,3 +1,8 @@
+Mon Dec 03 11:39 CEST <lankamp@cwi.nl>
+  * Added functions for reading and writing SAF from / to a string.
+    (Well a byte array actually. It is not possible to store the binary data in a Java string,
+    since that will cause it to be encoded in UTF-16, which basically messes everything up).
+
 Tue Aug 14 13:07 CEST <lankamp@cwi.nl>
   * Fixed a bug in SAF I/O related to the serialization of Blobs.
     Writing large blobs in chunks failed.

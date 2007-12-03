@@ -590,7 +590,7 @@ public class BinaryReader{
 				binaryReader.deserialize(byteBuffer);
 			}while(bytesRead > 0);
 			
-			if(!binaryReader.isDone()) throw new IOException("Term incomplete, missing data.\n");
+			if(!binaryReader.isDone()) throw new RuntimeException("Term incomplete, missing data.\n");
 		}finally{
 			if(fc != null){
 				fc.close();
@@ -599,6 +599,30 @@ public class BinaryReader{
 				fis.close();
 			}
 		}
+		
+		return binaryReader.getRoot();
+	}
+	
+	public static ATerm readTermFromSAFString(PureFactory pureFactory, byte[] data){
+		BinaryReader binaryReader = new BinaryReader(pureFactory);
+		
+		int length = data.length;
+		int position = 0;
+		do{
+			
+			int blockSize = data[position++] & 0x000000ff;
+			blockSize += (data[position++] & 0x000000ff) << 8;
+			
+			ByteBuffer byteBuffer = ByteBuffer.allocate(blockSize);
+			
+			byteBuffer.put(data, position, blockSize);
+			position += blockSize;
+			byteBuffer.flip();
+			
+			binaryReader.deserialize(byteBuffer);
+		}while(position < length);
+		
+		if(!binaryReader.isDone()) throw new RuntimeException("Term incomplete, missing data.\n");
 		
 		return binaryReader.getRoot();
 	}

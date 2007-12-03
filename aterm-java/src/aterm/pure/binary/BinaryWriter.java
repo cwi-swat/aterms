@@ -33,9 +33,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-
 import jjtraveler.VisitFailure;
 import aterm.AFun;
 import aterm.ATerm;
@@ -513,5 +514,34 @@ public class BinaryWriter extends ATermFwdVoid{
 				fos.close();
 			}
 		}
+	}
+	
+	public static byte[] writeTermToSAFString(ATerm aTerm) throws VisitFailure{
+		List<ByteBuffer> buffers = new ArrayList<ByteBuffer>();
+		int totalBytesWritten = 0;
+		
+		BinaryWriter binaryWriter = new BinaryWriter(aTerm);
+		do{
+			ByteBuffer byteBuffer = ByteBuffer.allocate(65536);
+			binaryWriter.serialize(byteBuffer);
+			
+			buffers.add(byteBuffer);
+			totalBytesWritten += byteBuffer.limit() + 2; // Increment by: buffer size + 2 bytes length spec.
+		}while(!binaryWriter.isFinished());
+		
+		byte[] data = new byte[totalBytesWritten];
+		int position = 0;
+		int numberOfBuffers = buffers.size();
+		for(int i = 0; i < numberOfBuffers; i++){
+			ByteBuffer buffer = buffers.get(i);
+			int blockSize = buffer.limit();
+			data[position++] = (byte)(blockSize & 0x000000ff);
+			data[position++] = (byte)((blockSize >>> 8) & 0x000000ff);
+			
+			System.arraycopy(buffer.array(), 0, data, position, blockSize);
+			position += blockSize;
+		}
+		
+		return data;
 	}
 }
