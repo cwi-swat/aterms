@@ -472,7 +472,7 @@ public class BinaryWriter extends ATermFwdVoid{
 	 * @param file 
 	 *             The file to write to.
 	 * @throws IOException
-	 *             Thrown when an error occurs while attempting to write to the given file.
+	 *             Thrown when an error occurs while writing to the given file.
 	 * @throws VisitFailure
 	 *             This never happens
 	 */
@@ -516,6 +516,18 @@ public class BinaryWriter extends ATermFwdVoid{
 		}
 	}
 	
+	/**
+	 * Writes the given aterm to a byte array. The reason this method returns a byte array instead
+	 * of a Java String is because otherwise the binary data would be corrupted, since it would be
+	 * automatically encoded in UTF-16 format (which would completely mess everything up). Blocks
+	 * of 65536 bytes will be used.
+	 * 
+	 * @param aTerm
+	 *             The ATerm that needs to be written to a byte array.
+	 * @return The serialized representation of the given ATerm contained in a byte array.
+	 * @throws VisitFailure
+	 *             This never happens
+	 */
 	public static byte[] writeTermToSAFString(ATerm aTerm) throws VisitFailure{
 		List<ByteBuffer> buffers = new ArrayList<ByteBuffer>();
 		int totalBytesWritten = 0;

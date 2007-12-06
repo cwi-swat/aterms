@@ -555,6 +555,16 @@ public class BinaryReader{
 		return result;
 	}
 	
+	/**
+	 * Reads the ATerm from the given SAF encoded file.
+	 * 
+	 * @param pureFactory
+	 *            The factory to use.
+	 * @param file
+	 *            The file that contains the SAF encoded term.
+	 * @return The constructed ATerm.
+	 * @throws IOException Thrown when an error occurs while reading the given file.
+	 */
 	public static ATerm readTermFromSAFFile(PureFactory pureFactory, File file) throws IOException{
 		BinaryReader binaryReader = new BinaryReader(pureFactory);
 		
@@ -603,6 +613,15 @@ public class BinaryReader{
 		return binaryReader.getRoot();
 	}
 	
+	/**
+	 * Reads the ATerm from the given SAF encoded data.
+	 * 
+	 * @param pureFactory
+	 *            The factory to use.
+	 * @param data
+	 *            The SAF encoded data.
+	 * @return The constructed ATerm.
+	 */
 	public static ATerm readTermFromSAFString(PureFactory pureFactory, byte[] data){
 		BinaryReader binaryReader = new BinaryReader(pureFactory);
 		
