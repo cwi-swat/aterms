@@ -205,11 +205,6 @@ ATbool ATwriteToTextFile(ATerm t, FILE *file);
  */ 
 long   ATwriteToSharedTextFile(ATerm t, FILE *f);
 
-/**
- * Serialize a term to file, in a readable shared format (TAF). Every unique 
- * ATerm in only printed out once, a second occurence is replaced by a 
- * a reference.
- */ 
 ATbool ATwriteToBinaryFile(ATerm t, FILE *file);
 
 /**
@@ -256,7 +251,6 @@ char *ATwriteToSharedString(ATerm t, int *len);
  * shared between calls to ATwriteToString, and should not be freed.
  * \arg t term to write
  * \arg len result variable that will hold the length of the string
- *
  */
 unsigned char *ATwriteToBinaryString(ATerm t, int *len);
 
@@ -274,7 +268,7 @@ ATerm ATreadFromSharedTextFile(FILE *f);
 
 
 /**
- * Read a binary ATerm (TAF) from a file.
+ * Read a binary ATerm (BAF) from a file.
  * \arg file file to read from
  */
 ATerm ATreadFromBinaryFile(FILE *file);
@@ -312,6 +306,21 @@ ATerm ATreadFromSharedString(const char *s, int size);
  * \arg size length of the array
  */
 ATerm ATreadFromBinaryString(const unsigned char *s, int size);
+
+
+/* SAF I/O stuff */
+void ATwriteToSAFFile(ATerm aTerm, FILE *file);
+
+ATerm ATreadFromSAFFile(FILE *file);
+
+void ATwriteToNamedSAFFile(ATerm aTerm, const char *filename);
+
+ATerm ATreadFromNamedSAFFile(const char *filename);
+
+char* ATwriteToSAFString(ATerm aTerm, int *length);
+
+ATerm ATreadFromSAFString(char *data, int length);
+
 
 /** A short hand for ATreadFromString() */
 #define ATparse(s)	ATreadFromString((s))

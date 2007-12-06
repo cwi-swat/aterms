@@ -1,6 +1,10 @@
 $Id$
 
-Fri Nov 30 10:44:20 CET 2007 <lankamp@cwi.nl>
+Thu Dec 06 15:35:25 CEST 2007 <lankamp@cwi.nl>
+ * aterm/aterm1.h: Moved ATread/write***SAF*** function declarations from safio.h to aterm1.h.
+                   This is inline with how it is for the other formats.
+
+Fri Nov 30 10:44:20 CEST 2007 <lankamp@cwi.nl>
  * test/Makefile.am: Fixed an error / warning that popped up when running reconf.
  * aterm/safio.c:    Added functions for reading and writing strings in SAF format.
                      Added functions for reading and writing named SAF files.
@@ -13,7 +17,7 @@ Tue Aug 14 16:31:18 CEST 2007 <jurgenv@cwi.nl>
    aterm1.h contains only API stuff and not hidden implementation details.
  * aterm/aterm1.h: doxygen'd aterm1.h
 
-Tue Aug 14 11:48:54 CET 2007 <lankamp@cwi.nl>
+Tue Aug 14 11:48:54 CEST 2007 <lankamp@cwi.nl>
  * aterm/safio.c: Fixed a bug related to writing blobs using SAF I/O that caused the result to be corrupt and could possibly trigger a coredump.
 
 Mon Aug 13 13:15:48 CEST 2007 <jurgenv@cwi.nl>
@@ -30,11 +34,11 @@ Mon Aug  6 11:44:07 CEST 2007 <jurgenv@cwi.nl>
    automatically trigger calls to latex anymore. This should fix our
    continuous builds on Mac OS X and and Solaris 10 in the build farm.
 
-Fri Aug 03 4:12:30 CET 2007 <lankamp@cwi.nl>
+Fri Aug 03 4:12:30 CEST 2007 <lankamp@cwi.nl>
  * aterm/safio.c: Fixed a problem related to the protection of symbols.
    ATprotectArray doesn't support protecting symbols (the garbage collector can't handle it), so now they are being protected and unprotected induvidually.
 
-Mon Jul 23 11:33:58 CET 2007 <lankamp@cwi.nl>
+Mon Jul 23 11:33:58 CEST 2007 <lankamp@cwi.nl>
  * aterm/byteencoding.c: We no longer need to rely on certain header files for
 encoding doubles in ieee754 format. Those were not available on all platforms.
 For portability, we have our own implementation now which also
