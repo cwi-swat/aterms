@@ -1,5 +1,8 @@
 $Id$
 
+Thu Dec 13 11:05:00 CEST 2007 <lankamp@cwi.nl>
+ * aterm/safio.c: Fixed some compiler warnings.
+
 Thu Dec 13 10:52:00 CEST 2007 <lankamp@cwi.nl>
  * aterm/safio.c: The SAF read and write functions no longer use ATerror as error mechanism when something goes wrong.
                   Instead they issue a warning and return either NULL or ATfalse (like the similar BAF read/write functions do).
