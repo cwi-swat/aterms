@@ -1,5 +1,9 @@
 $Id$
 
+Thu Dec 13 10:52:00 CEST 2007 <lankamp@cwi.nl>
+ * aterm/safio.c: The SAF read and write functions no longer use ATerror as error mechanism when something goes wrong.
+                  Instead they issue a warning and return either NULL or ATfalse (like the similar BAF read/write functions do).
+
 Thu Dec 06 15:35:25 CEST 2007 <lankamp@cwi.nl>
  * aterm/aterm1.h: Moved ATread/write***SAF*** function declarations from safio.h to aterm1.h.
                    This is inline with how it is for the other formats.
