@@ -1340,7 +1340,7 @@ ATbool ATwriteToSAFFile(ATerm aTerm, FILE *file){
 ATbool ATwriteToNamedSAFFile(ATerm aTerm, const char *filename){
 	ATbool result;
 	
-	FILE *file = fopen(filename, "w+b");
+	FILE *file = fopen(filename, "wb");
 	if(file == NULL){
 		ATwarning("Unable to open file for writing: %s\n", filename);
 		return ATfalse;
@@ -1421,7 +1421,7 @@ ATerm ATreadFromSAFFile(FILE *file){
 ATerm ATreadFromNamedSAFFile(const char *filename){
 	ATerm result;
 	
-	FILE *file = fopen(filename, "r+b");
+	FILE *file = fopen(filename, "rb");
 	if(file == NULL){
 		ATwarning("Unable to open file for reading: %s\n", filename);
 		return NULL;
