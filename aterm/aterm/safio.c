@@ -1464,12 +1464,13 @@ char* ATwriteToSAFString(ATerm aTerm, int *length){
 	ATinitializeIntegerStore();
 	
 	do{
+		BufferNode *current;
 		ByteBuffer byteBuffer = ATcreateByteBuffer(65536);
 		
 		ATresetByteBuffer(byteBuffer);
 		ATserialize(binaryWriter, byteBuffer);
 		
-		BufferNode *current = (BufferNode*) AT_malloc(sizeof(struct _BufferNode));
+		current = (BufferNode*) AT_malloc(sizeof(struct _BufferNode));
 		current->byteBuffer = byteBuffer;
 		current->next = NULL;
 		last->next = current;
@@ -1517,9 +1518,10 @@ ATerm ATreadFromSAFString(char *data, int length){
 	BinaryReader binaryReader = ATcreateBinaryReader();
 	
 	do{
+		ByteBuffer byteBuffer;
 		int blockSize = (unsigned char) data[position++];
 		blockSize += ((unsigned char) data[position++]) << 8;
-		ByteBuffer byteBuffer = ATwrapBuffer(data + position, blockSize); /* Move the window to the next block. */
+		byteBuffer = ATwrapBuffer(data + position, blockSize); /* Move the window to the next block. */
 		
 		ATdeserialize(binaryReader, byteBuffer);
 		
