@@ -1,5 +1,8 @@
 $Id$
 
+Fri Dec 14 10:58:00 CEST 2007 <lankamp@cwi.nl>
+ * aterm/safio.c: Passing "-" to ATwriteToNamedSAFFile now assumes you mean stdout, like the similarly named BAF function does.
+
 Thu Dec 13 11:05:00 CEST 2007 <lankamp@cwi.nl>
  * aterm/safio.c: Fixed some compiler warnings.
 

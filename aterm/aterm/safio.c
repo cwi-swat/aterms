@@ -474,7 +474,7 @@ static void visitAppl(BinaryWriter binaryWriter, ATermAppl arg, ByteBuffer byteB
 	
 	if(binaryWriter->indexInTerm == 0){
 		SymEntry symEntry = at_lookup_table[fun];
-		unsigned int funHash = (unsigned int) symEntry;
+		unsigned int funHash = (unsigned int)((unsigned long) symEntry);
 		
 		HashTable hashTable = binaryWriter->sharedSymbols;
 		unsigned int *id = (unsigned int*) HTgetElement(hashTable, symEntry, funHash);
@@ -1339,12 +1339,18 @@ ATbool ATwriteToSAFFile(ATerm aTerm, FILE *file){
  */
 ATbool ATwriteToNamedSAFFile(ATerm aTerm, const char *filename){
 	ATbool result;
+	FILE *file;
 	
-	FILE *file = fopen(filename, "wb");
-	if(file == NULL){
-		ATwarning("Unable to open file for writing: %s\n", filename);
-		return ATfalse;
-	}
+	if(strcmp(filename, "-") != 0){
+                file = fopen(filename, "wb");
+		
+		if(file == NULL){
+                	ATwarning("Unable to open file for writing: %s\n", filename);
+                	return ATfalse;
+        	}
+        }else{
+                file = stdout;
+        }
 	
 	result = ATwriteToSAFFile(aTerm, file);
 	
