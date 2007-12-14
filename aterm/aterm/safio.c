@@ -1341,15 +1341,14 @@ ATbool ATwriteToNamedSAFFile(ATerm aTerm, const char *filename){
 	ATbool result;
 	FILE *file;
 	
-	if(strcmp(filename, "-") != 0){
-                file = fopen(filename, "wb");
-		
-		if(file == NULL){
-                	ATwarning("Unable to open file for writing: %s\n", filename);
-                	return ATfalse;
-        	}
-        }else{
-                file = stdout;
+	if(strcmp(filename, "-") == 0){
+		return ATwriteToSAFFile(aTerm, stdout);
+	}
+	
+        file = fopen(filename, "wb");
+	if(file == NULL){
+               	ATwarning("Unable to open file for writing: %s\n", filename);
+               	return ATfalse;
         }
 	
 	result = ATwriteToSAFFile(aTerm, file);
@@ -1426,8 +1425,13 @@ ATerm ATreadFromSAFFile(FILE *file){
  */
 ATerm ATreadFromNamedSAFFile(const char *filename){
 	ATerm result;
+	FILE *file;
 	
-	FILE *file = fopen(filename, "rb");
+	if(strcmp(filename, "-") == 0){
+                return ATreadFromSAFFile(stdin);
+        }
+	
+	file = fopen(filename, "rb");
 	if(file == NULL){
 		ATwarning("Unable to open file for reading: %s\n", filename);
 		return NULL;
