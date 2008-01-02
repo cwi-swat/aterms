@@ -23,7 +23,7 @@ ALLSRCS = \
   tafio.c \
   version.c \
   safio.c \
-  hashtable.c \
+  idmappings.c \
   byteencoding.c
 
 PUBLIC_INCL = \
@@ -35,7 +35,7 @@ PUBLIC_INCL = \
   deprecated.h \
   encoding.h \
   safio.h \
-  hashtable.h
+  idmappings.h
 
 PRIVATE_INCL = \
   _afun.h \

@@ -1,5 +1,10 @@
 $Id$
 
+Wed Jan 01 14:00:22 CEST 2008 <lankamp@cwi.nl>
+ * aterm/safio.c     : Changed the hashtable (void* -> void*) into and an idmap (void* -> int);
+   aterm/hashtable.c : this way we no longer need the integer store in SAF I/O, which reduced memory usage, increases performance and eliminates shared resources.
+   aterm/idmappings.c: This should make things easier for the thread-safe library conversion.
+
 Wed Jan 01 11:49:58 CEST 2008 <lankamp@cwi.nl>
  * aterm/test/testsafio.c: Added a test for SAF I/O to check if the (de-)serialization of deeply nested terms works properly.
 

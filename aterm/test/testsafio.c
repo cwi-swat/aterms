@@ -237,9 +237,6 @@ int main(int argc, char **argv){
 	ATerm bottomOfStack;
   	ATinit(argc, argv, &bottomOfStack);
   	
-  	/* Initialize the integer store, before starting serialization. */
-	ATinitializeIntegerStore();
-  	
   	printf("\n");
   	
   	testIntegerEncoding();
@@ -259,9 +256,6 @@ int main(int argc, char **argv){
 	
 	testDeepNesting();
 	printf("\n");
-	
-	/* Done serializing, destroy the integer store. */
-	ATdestroyIntegerStore();
 	
 	return 0;
 }
