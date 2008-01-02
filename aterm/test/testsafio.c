@@ -212,6 +212,27 @@ static void testChunkification(){
 	else printf("Chunkification FAILED\n");
 }
 
+static void testDeepNesting(){
+	ATerm result;
+	char *serialTerm;
+	
+	
+	AFun f = ATmakeAFun("f",1,ATfalse);
+	ATerm t = (ATerm) ATmakeAppl0(ATmakeAFun("g", 0, ATfalse));
+	
+	int i, s;
+	for(i = 0; i < 256; i++){
+		t = (ATerm) ATmakeAppl1(f, t);
+	}
+	
+	serialTerm = ATwriteToSAFString((ATerm) t, &s);
+	
+	result = ATreadFromSAFString(serialTerm, s);
+	
+	if(result == t) printf("Deep nesting OK\n");
+	else printf("Deep nesting FAILED\n");
+}
+
 int main(int argc, char **argv){
 	ATerm bottomOfStack;
   	ATinit(argc, argv, &bottomOfStack);
@@ -234,6 +255,9 @@ int main(int argc, char **argv){
   	printf("\n");
   	
   	testChunkification();
+	printf("\n");
+	
+	testDeepNesting();
 	printf("\n");
 	
 	/* Done serializing, destroy the integer store. */

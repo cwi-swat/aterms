@@ -1,5 +1,8 @@
 $Id$
 
+Wed Jan 01 11:49:58 CEST 2008 <lankamp@cwi.nl>
+ * aterm/test/testsafio.c: Added a test for SAF I/O to check if the (de-)serialization of deeply nested terms works properly.
+
 Thu Dec 20 10:45:00 CEST 2007 <lankamp@cwi.nl>
  * aterm/safio.c: Fixed off-by-one error in ensure***Capacity functions.
 
