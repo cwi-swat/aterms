@@ -646,4 +646,3 @@ public class BinaryReader{
 		return binaryReader.getRoot();
 	}
 }
-

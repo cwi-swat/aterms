@@ -1,3 +1,7 @@
+Tue Jan 08 9:42 CEST <lankamp@cwi.nl>
+  * Added an autodetection mechanism to the aterm.pure.PureFactory#readFile(String) method.
+  * Fixed a stream leak bug.
+
 Thu Dec 06 9:55 CEST <lankamp@cwi.nl>
   * Added missing JavaDoc to the BinaryWriter and BinaryReader.
 

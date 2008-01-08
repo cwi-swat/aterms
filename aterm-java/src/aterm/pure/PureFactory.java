@@ -29,6 +29,7 @@
 package aterm.pure;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -39,7 +40,6 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
-
 import shared.SharedObjectFactory;
 import aterm.AFun;
 import aterm.ATerm;
@@ -52,6 +52,7 @@ import aterm.ATermLong;
 import aterm.ATermPlaceholder;
 import aterm.ATermReal;
 import aterm.ParseError;
+import aterm.pure.binary.BinaryReader;
 
 public class PureFactory extends SharedObjectFactory implements ATermFactory {
 
@@ -747,26 +748,51 @@ public class PureFactory extends SharedObjectFactory implements ATermFactory {
     reader.readSkippingWS();
 
     int last_char = reader.getLastChar();
-    if (last_char == '!') {
+    if(last_char == '!'){
       reader.readSkippingWS();
       return readFromSharedTextFile(reader);
-    } else if (Character.isLetterOrDigit(last_char)
-        || last_char == '_' || last_char == '[' || last_char == '-') {
+    }else if(last_char == '?'){
+    	throw new RuntimeException("SAF file can not be read from old style I/O streams.");
+    }else if(Character.isLetterOrDigit(last_char) || last_char == '_' || last_char == '[' || last_char == '-'){
       return readFromTextFile(reader);
-    } else {
-      throw new RuntimeException(
-          "BAF files are not supported by this factory.");
+    }else{
+      throw new RuntimeException("BAF files are not supported by this factory.");
     }
   }
-
-  public ATerm readFromFile(String file) throws IOException {
-    return readFromFile(new FileInputStream(file));
+  
+  private char determainType(File file) throws IOException{
+	  FileInputStream fis = new FileInputStream(file);
+	  int typeByte = fis.read();
+	  fis.close();
+	  
+	  if(typeByte == -1) throw new IOException("Cannot read from empty file: "+file);
+	  
+	  return (char) typeByte;
   }
 
-  public ATerm importTerm(ATerm term) {
-    throw new RuntimeException("not yet implemented!");
+  public ATerm readFromFile(String filename) throws IOException{
+	  ATerm result;
+	  
+	  File file = new File(filename);
+	  char type = determainType(file);
+	  
+	  if(type == '?'){
+		  result = BinaryReader.readTermFromSAFFile(this, file);
+	  }else{
+		  FileInputStream fis = new FileInputStream(file);
+		  try{
+			  result = readFromFile(fis);
+		  }finally{
+			  fis.close();
+		  }
+	  }
+	  
+	  return result;
   }
 
+  public ATerm importTerm(ATerm term){
+	  throw new RuntimeException("not yet implemented!");
+  }
 }
 
 class ATermReader {
