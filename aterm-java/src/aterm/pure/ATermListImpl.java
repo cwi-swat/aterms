@@ -317,7 +317,7 @@ public class ATermListImpl extends ATermImpl implements ATermList {
   }
 
   public ATerm elementAt(int index) {
-    if (0 > index || index > length) {
+    if (0 > index || index >= length) {
       throw new IllegalArgumentException("illegal list index: " + index);
     }
 

@@ -1,3 +1,6 @@
+Mon Jan 14 13:23 CEST <lankamp@cwi.nl>
+  * Fixed an off-by-one in the pre-condition check in aterm.pure.ATermListImpl#elementAt(int).
+
 Tue Jan 08 9:42 CEST <lankamp@cwi.nl>
   * Added an autodetection mechanism to the aterm.pure.PureFactory#readFile(String) method.
   * Fixed a stream leak bug.
