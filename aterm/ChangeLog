@@ -1,5 +1,8 @@
 $Id$
 
+Tue Jan 22 15:49:17 CEST 2008 <lankamp@cwi.nl>
+  * Fixed an overflow problem in the SAF I/O reader.
+
 Wed Jan 01 14:00:22 CEST 2008 <lankamp@cwi.nl>
  * aterm/safio.c     : Changed the hashtable (void* -> void*) into and an idmap (void* -> int);
    aterm/hashtable.c : this way we no longer need the integer store in SAF I/O, which reduced memory usage, increases performance and eliminates shared resources.

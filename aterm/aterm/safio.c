@@ -578,7 +578,7 @@ void ATserialize(BinaryWriter binaryWriter, ByteBuffer byteBuffer){
 	ATerm currentTerm = binaryWriter->currentTerm;
 	
 	while(currentTerm != NULL && ATgetRemainingBufferSpace(byteBuffer) >= MINIMUMFREEBUFFERSPACE){
-		unsigned int termHash = (unsigned int) currentTerm;
+		unsigned int termHash = (unsigned int)((unsigned long) currentTerm);
 		int id = IMgetID(binaryWriter->sharedTerms, currentTerm, termHash);
 		if(id != -1){
 			*(byteBuffer->currentPos) = (char) ISSHAREDFLAG;
@@ -1251,12 +1251,12 @@ ATbool ATwriteToNamedSAFFile(ATerm aTerm, const char *filename){
 	if(strcmp(filename, "-") == 0){
 		return ATwriteToSAFFile(aTerm, stdout);
 	}
-	
-        file = fopen(filename, "wb");
+
+	file = fopen(filename, "wb");
 	if(file == NULL){
-               	ATwarning("Unable to open file for writing: %s\n", filename);
-               	return ATfalse;
-        }
+		ATwarning("Unable to open file for writing: %s\n", filename);
+		return ATfalse;
+	}
 	
 	result = ATwriteToSAFFile(aTerm, file);
 	
@@ -1299,6 +1299,7 @@ ATerm ATreadFromSAFFile(FILE *file){
 			return NULL;
 		}
 		blockSize = ((unsigned char) sizeBytes[0]) + (((unsigned char) sizeBytes[1]) << 8);
+		if(blockSize == 0) blockSize = 65536;
 		
 		ATresetByteBuffer(byteBuffer);
 		byteBuffer->limit = blockSize;
@@ -1436,6 +1437,7 @@ ATerm ATreadFromSAFString(char *data, int length){
 		ByteBuffer byteBuffer;
 		int blockSize = (unsigned char) data[position++];
 		blockSize += ((unsigned char) data[position++]) << 8;
+		if(blockSize == 0) blockSize = 65536;
 		byteBuffer = ATwrapBuffer(data + position, blockSize); /* Move the window to the next block. */
 		
 		ATdeserialize(binaryReader, byteBuffer);
