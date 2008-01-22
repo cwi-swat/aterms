@@ -222,7 +222,7 @@ public class BinaryReader{
 	}
 	
 	/**
-	 * Resets the temporary data. We don't want to hold it if it's not nessecarry.
+	 * Resets the temporary data. We don't want to hold it if it's not necessary.
 	 */
 	private void resetTemp(){
 		tempType = -1;
@@ -590,6 +590,7 @@ public class BinaryReader{
 				sizeBuffer.flip();
 				
 				int blockSize = (sizeBuffer.get() & 0x000000ff) + ((sizeBuffer.get() & 0x000000ff) << 8);
+				if(blockSize == 0) blockSize = 65536;
 
 				byteBuffer.clear();
 				byteBuffer.limit(blockSize);

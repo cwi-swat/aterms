@@ -1,3 +1,6 @@
+Tue Jan 22 15:35 CEST <lankamp@cwi.nl>
+  * Fixed an overflow exception problem in the SAF I/O reader.
+
 Mon Jan 14 13:23 CEST <lankamp@cwi.nl>
   * Fixed an off-by-one in the pre-condition check in aterm.pure.ATermListImpl#elementAt(int).
 
