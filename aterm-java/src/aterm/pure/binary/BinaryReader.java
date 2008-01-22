@@ -632,6 +632,7 @@ public class BinaryReader{
 			
 			int blockSize = data[position++] & 0x000000ff;
 			blockSize += (data[position++] & 0x000000ff) << 8;
+			if(blockSize == 0) blockSize = 65536;
 			
 			ByteBuffer byteBuffer = ByteBuffer.allocate(blockSize);
 			
