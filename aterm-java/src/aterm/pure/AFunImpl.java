@@ -28,10 +28,14 @@
 
 package aterm.pure;
 
+import java.io.IOException;
 import jjtraveler.VisitFailure;
 import shared.SharedObject;
-
-import aterm.*;
+import aterm.AFun;
+import aterm.ATerm;
+import aterm.ATermList;
+import aterm.Visitor;
+import aterm.stream.BufferedOutputStreamWriter;
 
 public class AFunImpl extends ATermImpl implements AFun {
   private String name;
@@ -124,6 +128,115 @@ public class AFunImpl extends ATermImpl implements AFun {
 
   public ATerm setAnnotations(ATermList annos) {
     throw new UnsupportedOperationException();
+  }
+  
+  public int serialize(BufferedOutputStreamWriter writer) throws IOException{
+	  int bytesWritten = 0;
+	   	if (isQuoted) {
+	   		writer.write('"');
+	   		bytesWritten++;
+	    }
+	    
+	   	int numberOfCharacters = name.length();
+	    bytesWritten += numberOfCharacters;
+	    for (int i = 0; i < numberOfCharacters; i++) {
+	      char c = name.charAt(i);
+	      switch (c) {
+	        case '\n':
+	        	writer.write('\\');
+	        	writer.write('n');
+	        	bytesWritten++;
+	        	break;
+	        case '\t':
+	        	writer.write('\\');
+	        	writer.write('t');
+	        	bytesWritten++;
+	        	break;
+	        case '\b':
+	        	writer.write('\\');
+	        	writer.write('b');
+	        	bytesWritten++;
+	        	break;
+	        case '\r':
+	        	writer.write('\\');
+	        	writer.write('r');
+	        	bytesWritten++;
+	        	break;
+	        case '\f':
+	        	writer.write('\\');
+	        	writer.write('f');
+	        	bytesWritten++;
+	        	break;
+	        case '\\':
+	        	writer.write('\\');
+	        	writer.write('\\');
+	        	bytesWritten++;
+	          	break;
+	        case '\'':
+	        	writer.write('\\');
+	        	writer.write('\'');
+	        	bytesWritten++;
+	        	break;
+	        case '\"':
+	        	writer.write('\\');
+	        	writer.write('\"');
+	        	bytesWritten++;
+	        	break;
+	
+	        case '!':
+	        case '@':
+	        case '#':
+	        case '$':
+	        case '%':
+	        case '^':
+	        case '&':
+	        case '*':
+	        case '(':
+	        case ')':
+	        case '-':
+	        case '_':
+	        case '+':
+	        case '=':
+	        case '|':
+	        case '~':
+	        case '{':
+	        case '}':
+	        case '[':
+	        case ']':
+	        case ';':
+	        case ':':
+	        case '<':
+	        case '>':
+	        case ',':
+	        case '.':
+	        case '?':
+	        case ' ':
+	        case '/':
+	          writer.write(c);
+	          break;
+	
+	        default:
+	          if (Character.isLetterOrDigit(c)) {
+	        	  writer.write(c);
+	          } else {
+	        	  writer.write('\\');
+	        	  writer.write(('0' + c / 64));
+	        	  c = (char) (c % 64);
+	        	  writer.write(('0' + c / 8));
+	        	  c = (char) (c % 8);
+	        	  writer.write(('0' + c));
+	        	  
+	        	  bytesWritten += 3;
+	          }
+	      }
+	    }
+	    
+	    if(isQuoted){
+	    	writer.write('"');
+	    	bytesWritten++;
+	    }
+	    
+	    return bytesWritten;
   }
 
   public String toString() {

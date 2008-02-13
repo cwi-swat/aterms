@@ -27,13 +27,12 @@
  */
 
 package aterm.pure;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
-
 import jjtraveler.VisitFailure;
-
 import aterm.AFun;
 import aterm.ATerm;
 import aterm.ATermAppl;
@@ -130,10 +129,14 @@ class ATermWriter extends ATermFwdVoid {
 
     public void voidVisitAppl(ATermAppl appl) throws VisitFailure {
       AFun fun = appl.getAFun();
-      String name = fun.toString();
-      stream.write(name);
-      position += name.length();
-      if (fun.getArity() > 0 || name.length() == 0) {
+      int nameLength;
+      try{
+    	  nameLength = fun.serialize(stream);
+      }catch(IOException ioex){
+    	  throw new VisitFailure(ioex.getMessage());
+      }
+      position += nameLength;
+      if (fun.getArity() > 0 || nameLength == 0) {
         stream.write('(');
         position++;
         for (int i = 0; i < fun.getArity(); i++) {

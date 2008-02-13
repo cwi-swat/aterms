@@ -1,33 +1,36 @@
-Tue Jan 22 15:35 CEST <lankamp@cwi.nl>
+Wed Feb 13 13:44 CEST 2008 <lankamp@cwi.nl>
+  * Changed the way function symbols are serialized. This reduces the time it takes to write an ATerm in ASCII format by over 25%.
+
+Tue Jan 22 15:35 CEST 2008 <lankamp@cwi.nl>
   * Fixed an overflow problem in the SAF I/O reader.
 
-Mon Jan 14 13:23 CEST <lankamp@cwi.nl>
+Mon Jan 14 13:23 CEST 2008 <lankamp@cwi.nl>
   * Fixed an off-by-one in the pre-condition check in aterm.pure.ATermListImpl#elementAt(int).
 
-Tue Jan 08 9:42 CEST <lankamp@cwi.nl>
+Tue Jan 08 9:42 CEST 2008 <lankamp@cwi.nl>
   * Added an autodetection mechanism to the aterm.pure.PureFactory#readFile(String) method.
   * Fixed a stream leak bug.
 
-Thu Dec 06 9:55 CEST <lankamp@cwi.nl>
+Thu Dec 06 9:55 CEST 2007 <lankamp@cwi.nl>
   * Added missing JavaDoc to the BinaryWriter and BinaryReader.
 
-Mon Dec 03 11:39 CEST <lankamp@cwi.nl>
+Mon Dec 03 11:39 CEST 2007 <lankamp@cwi.nl>
   * Added functions for reading and writing SAF from / to a string.
     (Well a byte array actually. It is not possible to store the binary data in a Java string,
     since that will cause it to be encoded in UTF-16, which basically messes everything up).
 
-Tue Aug 14 13:07 CEST <lankamp@cwi.nl>
+Tue Aug 14 13:07 CEST 2007 <lankamp@cwi.nl>
   * Fixed a bug in SAF I/O related to the serialization of Blobs.
     Writing large blobs in chunks failed.
 
-Mon Aug 13 14:49 CEST <lankamp@cwi.nl>
+Mon Aug 13 14:49 CEST 2007 <lankamp@cwi.nl>
   * Removed synchronization from the 'parseFromReader' method in the PureFactory.
     This method doesn't require synchronization.
 
-Tue Jul 10 10:28 CEST <lankamp@cwi.nl>
+Tue Jul 10 10:28 CEST 2007 <lankamp@cwi.nl>
   * Fixed an incompatibility with Java's UTF-8 strings in the SAF binary writer.
 
-Mon May 14 10:43 CEST <lankamp@cwi.nl>
+Mon May 14 10:43 CEST 2007 <lankamp@cwi.nl>
   * Ported SAF I/O optimizations in the C version to Java.
   * Added SAF file I/O.
   * Updated documentation.

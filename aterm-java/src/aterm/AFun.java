@@ -28,6 +28,9 @@
 
 package aterm;
 
+import java.io.IOException;
+import aterm.stream.BufferedOutputStreamWriter;
+
 /**
  * An AFun represents a function symbol
  *
@@ -59,4 +62,6 @@ public interface AFun extends ATerm
    * @return true if this application is quoted, false otherwise.
    */
   public boolean isQuoted();
+  
+  int serialize(BufferedOutputStreamWriter writer) throws IOException;
 }
