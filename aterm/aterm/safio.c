@@ -5,6 +5,10 @@
 #include <string.h>
 #include <stdlib.h>
 
+#ifdef WIN32
+#include <fcntl.h>
+#endif
+
 #if __STDC_VERSION__ >= 199901L
   /* "inline" is a keyword */
 #else
