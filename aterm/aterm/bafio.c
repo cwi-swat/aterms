@@ -1192,8 +1192,10 @@ ATbool ATwriteToBinaryFile(ATerm t, FILE *file)
   writer.u.file_data = file;
 
 #ifdef WIN32
-  if( _setmode( _fileno( file ), _O_BINARY ) == -1 ) {
-    perror( "Warning: Cannot set outputfile to binary mode." );
+  if (file == stdout) {
+    if( _setmode( _fileno( file ), _O_BINARY ) == -1 ) {
+      perror( "Warning: Cannot set stdout to binary mode." );
+    }
   }
 #endif
 
@@ -1615,8 +1617,10 @@ ATerm ATreadFromBinaryFile(FILE *file)
   init_file_reader(&reader, file);
 
 #ifdef WIN32
-  if( _setmode( _fileno( file ), _O_BINARY ) == -1 ) {
-    perror( "Warning: Cannot set inputfile to binary mode.");
+  if (file == stdin) {
+    if( _setmode( _fileno( file ), _O_BINARY ) == -1 ) {
+      perror( "Warning: Cannot set stdin to binary mode.");
+    }
   }
 #endif
 

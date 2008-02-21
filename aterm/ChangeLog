@@ -7,6 +7,11 @@ Thu Feb 21 10:04:20 EST 2008 <jurgenv@cwi.nl>
    question remains whether that works for stdin and stdout on Win32 still.
    I added the code to set the file to binary in safio.c, because it was
    missing there.
+ * aterm/safio.c,aterm/aterm.c: added check for stdin/stdout before setting
+   the mode of the file. It is the responsibility of the user to set
+   the file to binary mode if he wants to write a binary file. However,
+   for stdin and stdout we still take care of this for the user since they
+   are already open.
 
 Tue Jan 22 15:49:17 CEST 2008 <lankamp@cwi.nl>
   * Fixed an overflow problem in the SAF I/O reader.

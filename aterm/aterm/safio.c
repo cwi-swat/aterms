@@ -1194,8 +1194,10 @@ ATbool ATwriteToSAFFile(ATerm aTerm, FILE *file){
 	ByteBuffer byteBuffer;
 	
 #ifdef WIN32
-	if( _setmode( _fileno( file ), _O_BINARY ) == -1 ) {
-	  perror( "Warning: Cannot set outputfile to binary mode." );
+	if (file == stdout) {
+	  if( _setmode( _fileno( file ), _O_BINARY ) == -1 ) {
+	    perror( "Warning: Cannot set outputfile to binary mode." );
+	  }
 	}
 #endif
 
@@ -1281,8 +1283,10 @@ ATerm ATreadFromSAFFile(FILE *file){
 	ByteBuffer byteBuffer;
 
 #ifdef WIN32
-	if( _setmode( _fileno( file ), _O_BINARY ) == -1 ) {
-	  perror( "Warning: Cannot set outputfile to binary mode." );
+	if (file == stdin) {
+	  if( _setmode( _fileno( file ), _O_BINARY ) == -1 ) {
+	    perror( "Warning: Cannot set outputfile to binary mode." );
+	  }
 	}
 #endif
 	
