@@ -1193,6 +1193,12 @@ ATbool ATwriteToSAFFile(ATerm aTerm, FILE *file){
 	BinaryWriter binaryWriter;
 	ByteBuffer byteBuffer;
 	
+#ifdef WIN32
+	if( _setmode( _fileno( file ), _O_BINARY ) == -1 ) {
+	  perror( "Warning: Cannot set outputfile to binary mode." );
+	}
+#endif
+
 	int bytesWritten = fwrite("?", sizeof(char), 1, file);
 	if(bytesWritten != 1){
 		ATwarning("Unable to write SAF identifier token to file.\n");
@@ -1273,6 +1279,12 @@ ATerm ATreadFromSAFFile(FILE *file){
 	ATerm term;
 	BinaryReader binaryReader;
 	ByteBuffer byteBuffer;
+
+#ifdef WIN32
+	if( _setmode( _fileno( file ), _O_BINARY ) == -1 ) {
+	  perror( "Warning: Cannot set outputfile to binary mode." );
+	}
+#endif
 	
 	char buffer[1];
 	unsigned int bytesRead = fread(buffer, sizeof(char), 1, file); /* Consume the first character in the stream. */

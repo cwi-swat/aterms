@@ -1,5 +1,13 @@
 $Id$
 
+Thu Feb 21 10:04:20 EST 2008 <jurgenv@cwi.nl>
+ * aterm/safio.c,aterm/aterm.c: removed setting of stdin,stdout and stderr
+   to binary mode by default in ATinit. The code that actually needs it
+   was already doing that just before reading or writing from a file. The
+   question remains whether that works for stdin and stdout on Win32 still.
+   I added the code to set the file to binary in safio.c, because it was
+   missing there.
+
 Tue Jan 22 15:49:17 CEST 2008 <lankamp@cwi.nl>
   * Fixed an overflow problem in the SAF I/O reader.
 

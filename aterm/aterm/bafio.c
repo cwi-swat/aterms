@@ -1616,8 +1616,7 @@ ATerm ATreadFromBinaryFile(FILE *file)
 
 #ifdef WIN32
   if( _setmode( _fileno( file ), _O_BINARY ) == -1 ) {
-    perror( "Warning: Cannot set inputfile to binary mode."
-	    );
+    perror( "Warning: Cannot set inputfile to binary mode.");
   }
 #endif
 

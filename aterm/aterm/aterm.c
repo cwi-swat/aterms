@@ -247,17 +247,6 @@ ATinit(int argc, char *argv[], ATerm * bottomOfStack)
 
   /*}}}  */
 
-#ifdef WIN32
-  if (_setmode(_fileno(stdin), _O_BINARY) == -1) {
-    perror("Warning: Cannot set inputstream to binary mode.");
-  }
-  if (_setmode(_fileno(stdout), _O_BINARY) == -1) {
-    perror("Warning: Cannot set outputstream to binary mode.");
-  }
-  if (_setmode(_fileno(stderr), _O_BINARY) == -1) {
-    perror("Warning: Cannot set errorstream to binary mode.");
-  }
-#endif 
 
   initialized = ATtrue;
 
