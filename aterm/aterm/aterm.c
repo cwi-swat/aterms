@@ -20,6 +20,11 @@
 #include "safio.h"
 #include "md5.h"
 
+#if _WIN32 || WIN32
+#include <fcntl.h>
+#include <io.h>
+#endif
+
 /*}}}  */
 /*{{{  defines */
 
@@ -1835,6 +1840,17 @@ ATreadFromTextFile(FILE * file)
 ATerm ATreadFromFile(FILE *file)
 {
   int c;
+
+#if _WIN32 || WIN32
+  /* This needs to be done before the first character is read from
+   * stdin, otherwise it will not have the proper effect 
+   */
+  if (file == stdin) {
+    if( _setmode( _fileno( file ), _O_BINARY ) == -1 ) {
+      perror( "Warning: Cannot set stdin to binary mode.");
+    }
+  }
+#endif
 
   fnext_char(&c, file);
   if(c == 0) {

@@ -1,5 +1,11 @@
 $Id$
 
+Fri Feb 22 17:58:36 EST 2008 <jurgenv@cwi.nl>
+ * aterm/aterm.c: fix for setting stdio to binary mode. It must be done
+   before the first character is read, after that the _setmode function
+   will not have the desired effect on windows. I don't understand exactly
+   why this is the case, but it works now.
+
 Fri Feb 22 10:55:43 EST 2008 <jurgenv@cwi.nl>
  * aterm/[bs]afio.c: for opening stdin and stdout in binary mode I've 
    replaced the preprocessor conditional 'WIN32' by '_WIN32 || WIN32'. 
