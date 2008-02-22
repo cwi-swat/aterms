@@ -6,10 +6,6 @@
 #include <string.h>
 #include <assert.h>
 
-#ifdef WIN32
-#include <fcntl.h>
-#endif
-
 #include "_aterm.h"
 #include "memory.h"
 #include "afun.h"

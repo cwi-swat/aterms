@@ -1,5 +1,13 @@
 $Id$
 
+Fri Feb 22 10:55:43 EST 2008 <jurgenv@cwi.nl>
+ * aterm/[bs]afio.c: for opening stdin and stdout in binary mode I've 
+   replaced the preprocessor conditional 'WIN32' by '_WIN32 || WIN32'. 
+   WIN32 stands for native windows compilation, such as also can be found
+   in aterm/gc.c, but this seems not to be active for mingw cross compilation.
+   Instead, mingw should defines _WIN32.
+ * aterm/aterm.c: removed superfluous include of fnctl.h
+
 Thu Feb 21 10:04:20 EST 2008 <jurgenv@cwi.nl>
  * aterm/safio.c,aterm/aterm.c: removed setting of stdin,stdout and stderr
    to binary mode by default in ATinit. The code that actually needs it

@@ -5,7 +5,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-#ifdef WIN32
+#if _WIN32 || WIN32
 #include <fcntl.h>
 #endif
 
@@ -1197,7 +1197,7 @@ ATbool ATwriteToSAFFile(ATerm aTerm, FILE *file){
 	BinaryWriter binaryWriter;
 	ByteBuffer byteBuffer;
 	
-#ifdef WIN32
+#if _WIN32 ||  WIN32
 	if (file == stdout) {
 	  if( _setmode( _fileno( file ), _O_BINARY ) == -1 ) {
 	    perror( "Warning: Cannot set outputfile to binary mode." );
@@ -1286,7 +1286,7 @@ ATerm ATreadFromSAFFile(FILE *file){
 	BinaryReader binaryReader;
 	ByteBuffer byteBuffer;
 
-#ifdef WIN32
+#if _WIN32 ||  WIN32
 	if (file == stdin) {
 	  if( _setmode( _fileno( file ), _O_BINARY ) == -1 ) {
 	    perror( "Warning: Cannot set outputfile to binary mode." );

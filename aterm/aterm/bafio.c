@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <assert.h>
 
-#ifdef WIN32
+#if _WIN32 || WIN32
 #include <fcntl.h>
 #include <io.h>
 #endif
@@ -1191,7 +1191,7 @@ ATbool ATwriteToBinaryFile(ATerm t, FILE *file)
   }
   writer.u.file_data = file;
 
-#ifdef WIN32
+#if _WIN32 || WIN32
   if (file == stdout) {
     if( _setmode( _fileno( file ), _O_BINARY ) == -1 ) {
       perror( "Warning: Cannot set stdout to binary mode." );
@@ -1616,7 +1616,7 @@ ATerm ATreadFromBinaryFile(FILE *file)
   
   init_file_reader(&reader, file);
 
-#ifdef WIN32
+#if _WIN32 || WIN32
   if (file == stdin) {
     if( _setmode( _fileno( file ), _O_BINARY ) == -1 ) {
       perror( "Warning: Cannot set stdin to binary mode.");
