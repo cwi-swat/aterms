@@ -20,8 +20,7 @@ Mon Dec 03 11:39 CEST 2007 <lankamp@cwi.nl>
     since that will cause it to be encoded in UTF-16, which basically messes everything up).
 
 Tue Aug 14 13:07 CEST 2007 <lankamp@cwi.nl>
-  * Fixed a bug in SAF I/O related to the serialization of Blobs.
-    Writing large blobs in chunks failed.
+  * Fixed a bug in SAF I/O related to the serialization of Blobs. Writing large blobs in chunks failed.
 
 Mon Aug 13 14:49 CEST 2007 <lankamp@cwi.nl>
   * Removed synchronization from the 'parseFromReader' method in the PureFactory. This method doesn't require synchronization.
