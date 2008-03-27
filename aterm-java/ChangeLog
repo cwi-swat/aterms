@@ -1,3 +1,6 @@
+Thu Mar 27 09:00 CEST 2008 <lankamp@cwi.nl>
+  * Removed dependency with a sun library class.
+
 Wed Feb 13 13:44 CEST 2008 <lankamp@cwi.nl>
   * Changed the way function symbols are serialized. This reduces the time it takes to write an ATerm in ASCII format by over 25%.
 

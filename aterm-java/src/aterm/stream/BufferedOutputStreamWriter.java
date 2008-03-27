@@ -30,10 +30,7 @@ package aterm.stream;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
 import java.io.Writer;
-
-import sun.nio.cs.StreamEncoder;
 
 /**
  * This is an unsynchronized buffered outputstream writer. By using this you can
@@ -46,9 +43,9 @@ import sun.nio.cs.StreamEncoder;
 public class BufferedOutputStreamWriter extends Writer{
 	private final static int DEFAULTBUFFERSIZE = 8192;
 
-	private StreamEncoder se;
+	private OutputStream stream;
 
-	private char[] buffer = null;
+	private byte[] buffer = null;
 	private int bufferPos = 0;
 	private int limit = 0;
 
@@ -75,13 +72,9 @@ public class BufferedOutputStreamWriter extends Writer{
 	public BufferedOutputStreamWriter(OutputStream stream, int bufferSize){
 		super();
 
-		try{
-			se = StreamEncoder.forOutputStreamWriter(stream, this, (String) null);
-		}catch(UnsupportedEncodingException e){
-			throw new Error(e);
-		}
+		this.stream = stream;
 
-		buffer = new char[bufferSize];
+		buffer = new byte[bufferSize];
 		limit = buffer.length;
 	}
 
@@ -92,7 +85,7 @@ public class BufferedOutputStreamWriter extends Writer{
 	 *            The character to write.
 	 */
 	public void write(char c){
-		buffer[bufferPos++] = c;
+		buffer[bufferPos++] = (byte) c;
 
 		if(bufferPos == limit) flush();
 	}
@@ -103,14 +96,25 @@ public class BufferedOutputStreamWriter extends Writer{
 	 * @see Writer#write(char[], int, int)
 	 */
 	public void write(char[] cbuf, int offset, int length){
-		int bytesLeft = length;
-		int startPos = offset;
+		write(new String(cbuf, offset, length));
+	}
+
+	/**
+	 * Bulk write function, specificly meant for strings.
+	 * 
+	 * @see Writer#write(java.lang.String)
+	 */
+	public void write(String s){
+		byte[] bytes = s.getBytes();
+		
+		int bytesLeft = bytes.length;
+		int startPos = 0;
 		while(bytesLeft > 0){
 			int bytesToWrite = bytesLeft;
 			int freeSpace = limit - bufferPos;
 			if(freeSpace < bytesToWrite) bytesToWrite = freeSpace;
 
-			System.arraycopy(cbuf, startPos, buffer, bufferPos, bytesToWrite);
+			System.arraycopy(bytes, startPos, buffer, bufferPos, bytesToWrite);
 			bufferPos += bytesToWrite;
 
 			if(bufferPos == limit) flush();
@@ -121,27 +125,15 @@ public class BufferedOutputStreamWriter extends Writer{
 	}
 
 	/**
-	 * Bulk write function, specificly meant for strings.
-	 * 
-	 * @see Writer#write(java.lang.String)
-	 */
-	public void write(String s){
-		int length = s.length();
-		char[] chars = new char[length];
-		s.getChars(0, length, chars, 0);
-		write(chars, 0, length);
-	}
-
-	/**
 	 * Forces the writing of all buffered data.
 	 * 
 	 * @see Writer#flush()
 	 */
 	public void flush(){
 		try{
-			se.write(buffer, 0, bufferPos);
+			stream.write(buffer, 0, bufferPos);
 			bufferPos = 0;
-			se.flush();
+			stream.flush();
 		}catch(IOException ioex){
 			failures = true;
 		}
@@ -153,7 +145,7 @@ public class BufferedOutputStreamWriter extends Writer{
 	public void close(){
 		try{
 			flush();
-			se.close();
+			stream.close();
 		}catch(IOException ioex){
 			failures = true;
 		}
