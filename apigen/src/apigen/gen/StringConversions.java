@@ -40,6 +40,14 @@ public class StringConversions {
 			"_Underscore",
 			"$Dollar",
 			"'SingleQuote",
+			"!Bang",
+			"?Question",
+			"`Tick",
+			"%Percent",
+			"+Plus",
+			"-Minus",
+			"=Equality",
+			"\"DoubleQuote"
 			};
 
     /** 
