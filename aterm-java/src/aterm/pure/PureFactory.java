@@ -30,7 +30,6 @@ package aterm.pure;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -755,10 +754,14 @@ public class PureFactory extends SharedObjectFactory implements ATermFactory {
   }
 
   public ATerm readFromFile(InputStream stream) throws IOException{
-	  int firstToken = stream.read();
-	  if(firstToken == -1) throw new IOException("Premature EOF.");
+	  int firstToken;
+	  do{
+		  firstToken = stream.read();
+		  if(firstToken == -1) throw new IOException("Premature EOF.");
+	  }while(Character.isWhitespace((char) firstToken));
 	  
 	  char typeByte = (char) firstToken;
+	  
 	  if(typeByte == '!'){
 		  ATermReader reader = new ATermReader(new BufferedReader(new InputStreamReader(stream)));
 		  reader.readSkippingWS();
@@ -773,7 +776,7 @@ public class PureFactory extends SharedObjectFactory implements ATermFactory {
 		  throw new RuntimeException("BAF files are not supported by this factory.");
 	  }
   }
-
+  
   public ATerm readFromFile(String filename) throws IOException{
 	  ATerm result;
 	  
