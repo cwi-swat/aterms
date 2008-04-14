@@ -29,6 +29,7 @@
 package aterm.pure;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -742,49 +743,45 @@ public class PureFactory extends SharedObjectFactory implements ATermFactory {
   public ATerm readFromBinaryFile(InputStream stream) {
     throw new RuntimeException("not yet implemented!");
   }
-
-  public ATerm readFromFile(InputStream stream) throws IOException {
-    ATermReader reader = new ATermReader(new BufferedReader(new InputStreamReader(stream)));
-    reader.readSkippingWS();
-
-    int last_char = reader.getLastChar();
-    if(last_char == '!'){
-      reader.readSkippingWS();
-      return readFromSharedTextFile(reader);
-    }else if(last_char == '?'){
-    	throw new RuntimeException("SAF file can not be read from old style I/O streams.");
-    }else if(Character.isLetterOrDigit(last_char) || last_char == '_' || last_char == '[' || last_char == '-'){
-      return readFromTextFile(reader);
-    }else{
-      throw new RuntimeException("BAF files are not supported by this factory.");
-    }
-  }
   
-  private char determainType(File file) throws IOException{
-	  FileInputStream fis = new FileInputStream(file);
-	  int typeByte = fis.read();
-	  fis.close();
+  private ATerm readSAFFromOldStyleStream(InputStream stream) throws IOException{
+	  ByteArrayOutputStream baos = new ByteArrayOutputStream();
+	  byte[] buffer = new byte[4096];
+	  int nrOfBytesRead;
+	  while((nrOfBytesRead = stream.read(buffer, 0, buffer.length)) != -1){
+		  baos.write(buffer, 0, nrOfBytesRead);
+	  }
+	  return BinaryReader.readTermFromSAFString(this, baos.toByteArray());
+  }
+
+  public ATerm readFromFile(InputStream stream) throws IOException{
+	  int firstToken = stream.read();
+	  if(firstToken == -1) throw new IOException("Premature EOF.");
 	  
-	  if(typeByte == -1) throw new IOException("Cannot read from empty file: "+file);
-	  
-	  return (char) typeByte;
+	  char typeByte = (char) firstToken;
+	  if(typeByte == '!'){
+		  ATermReader reader = new ATermReader(new BufferedReader(new InputStreamReader(stream)));
+		  reader.readSkippingWS();
+		  return readFromSharedTextFile(reader);
+	  }else if(typeByte == '?'){
+		  return readSAFFromOldStyleStream(stream);
+	  }else if(Character.isLetterOrDigit(typeByte) || typeByte == '_' || typeByte == '[' || typeByte == '-'){
+		  ATermReader reader = new ATermReader(new BufferedReader(new InputStreamReader(stream)));
+		  reader.last_char = typeByte; // Reinsert the type into the stream (since in this case it wasn't a type byte).
+		  return readFromTextFile(reader);
+	  }else{
+		  throw new RuntimeException("BAF files are not supported by this factory.");
+	  }
   }
 
   public ATerm readFromFile(String filename) throws IOException{
 	  ATerm result;
 	  
-	  File file = new File(filename);
-	  char type = determainType(file);
-	  
-	  if(type == '?'){
-		  result = BinaryReader.readTermFromSAFFile(this, file);
-	  }else{
-		  FileInputStream fis = new FileInputStream(file);
-		  try{
-			  result = readFromFile(fis);
-		  }finally{
-			  fis.close();
-		  }
+	  FileInputStream fis = new FileInputStream(filename);
+	  try{
+		  result = readFromFile(fis);
+	  }finally{
+		  fis.close();
 	  }
 	  
 	  return result;
@@ -803,7 +800,7 @@ class ATermReader {
 
   private Reader reader;
 
-  private int last_char;
+  int last_char;
   private int pos;
 
   private int nr_terms;
