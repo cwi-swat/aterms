@@ -45,7 +45,6 @@ public class StringConversions {
 			"`Tick",
 			"%Percent",
 			"+Plus",
-			"-Minus",
 			"=Equality",
 			"\"DoubleQuote"
 			};
