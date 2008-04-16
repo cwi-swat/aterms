@@ -827,7 +827,7 @@ public class APIGenerator extends CGenerator {
 		String funName = prefix + type_id + "ToTerm";
 		String funArgs = "(" + type_name + " arg)";
 		String returnType = "ATerm";
-		String macroReplacementString = "(ATerm)(arg)";
+		String macroReplacementString = "(((union {" + type_id + " source; ATerm target; })(arg)).target)";
 		String macroArgs = "(arg)";
 
 		/* \todo Check this works */
@@ -848,7 +848,7 @@ public class APIGenerator extends CGenerator {
 				macroArgs);
 		println(returnType + " _" + funName + funArgs + " {");
 
-		println("  return (ATerm)arg;");
+		println("  return " + macroReplacementString + ";");
 		println("}");
 		println();
 		printFoldClose();
@@ -858,7 +858,7 @@ public class APIGenerator extends CGenerator {
 		String funName = prefix + type_id + "FromTerm";
 		String funArgs = "(ATerm t)";
 		String returnType = type_name;
-		String macroReplacementString = "(" + type_name + ")(t)";
+		String macroReplacementString = "(((union {" + type_id + " target; ATerm source; })(t)).target)";
 		String macroArgs = "(t)";
 
 		/* \todo Check this works. */
@@ -879,7 +879,7 @@ public class APIGenerator extends CGenerator {
 				macroArgs);
 		println(returnType + " _" + funName + funArgs + " {");
 
-		println("  return (" + type_name + ")t;");
+		println("  return " + macroReplacementString + ";");
 		println("}");
 		println();
 		printFoldClose();

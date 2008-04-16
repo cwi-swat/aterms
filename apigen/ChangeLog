@@ -1,5 +1,10 @@
 # $Id$
 
+Wed Apr 16 10:54:17 CEST 2008 <jurgenv@cwi.nl>
+ * src/*/APIGenerator.java: changed conversion functions to use casts
+   via a union to fix type punned aliasing issues in functions that
+   interpret an ATerm in two ways.
+
 Wed Oct 24 10:15:19 CEST 2007 <{kooiker,lankamp}@cwi.nl>
  * src/*/FactoryGenerator.java: Fix missing factory in generated constructor 
    calls
