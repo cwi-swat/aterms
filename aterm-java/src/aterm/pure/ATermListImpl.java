@@ -121,8 +121,10 @@ public class ATermListImpl extends ATermImpl implements ATermList {
     return false;
   }
 
-  public ATermList insert(ATerm el) {
-    return getPureFactory().makeList(el, this);
+  public ATermList insert(ATerm el){
+	  ATermList tail = (!this.hasAnnotations()) ? this : ((ATermList) this.removeAnnotations());
+	  
+	  return getPureFactory().makeList(el, tail);
   }
 
   protected ATermList make(ATerm head, ATermList tail) {
@@ -138,8 +140,6 @@ public class ATermListImpl extends ATermImpl implements ATermList {
   }
 
   public ATerm setAnnotations(ATermList annos) {
-    // return getPureFactory().makeList(first, next, annos);
-    // to be sure that the overloaded function is called
     return make(first, next, annos);
   }
 

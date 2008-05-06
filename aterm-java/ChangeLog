@@ -1,3 +1,6 @@
+Tue May 06 10:50 CEST 2008 <lankamp@cwi.nl>
+  * Fixed a problem related to the tail-sharing of ATermLists which have annotations.
+
 Thu Mar 27 09:00 CEST 2008 <lankamp@cwi.nl>
   * Removed dependency with a sun library class.
 
