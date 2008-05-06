@@ -1,5 +1,9 @@
 $Id$
 
+Tue May 06 11:27:06 CEST 2008 <lankamp@cwi.nl>
+ * aterm/memory.c: Fixed a problem related to the tail-sharing of ATermLists
+ which have annotations.
+
 Fri Feb 22 17:58:36 EST 2008 <jurgenv@cwi.nl>
  * aterm/aterm.c: fix for setting stdio to binary mode. It must be done
    before the first character is read, after that the _setmode function

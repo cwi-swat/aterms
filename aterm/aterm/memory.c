@@ -1708,37 +1708,33 @@ ATermList ATmakeList1(ATerm el)
 
 ATermList ATinsert(ATermList tail, ATerm el)
 {
-  unsigned int curLength = GET_LENGTH(tail->header);
-  unsigned int newLength;
   header_type header;
   HashNumber hnr;
   ATermList cur;
+  unsigned int newLength = GET_LENGTH(tail->header) + 1;
+  
+  if(HAS_ANNO(tail->header)) tail = (ATermList) ATremoveAnnotations((ATerm) tail);
   
   /* If length exceeds the maximum length that can be stored in the header,
      store MAX_LENGTH-1 in the header. ATgetLength will then count the length of the
      list instead of using on the header
   */
-  if (curLength >= MAX_LENGTH-1)
-    newLength = MAX_LENGTH-1;
-  else
-    newLength = curLength+1;
+  if (newLength >= MAX_LENGTH) newLength = MAX_LENGTH - 1;
   
   header = LIST_HEADER(0, newLength);
   
-  CHECK_TERM((ATerm)tail);
+  CHECK_TERM((ATerm) tail);
   CHECK_TERM(el);
 
   assert(ATgetType(tail) == AT_LIST);
 
   hnr = START(header);
-  hnr = COMBINE(hnr, HN((char*)el));
-  hnr = COMBINE(hnr, HN((char*)tail));
+  hnr = COMBINE(hnr, HN((char*) el));
+  hnr = COMBINE(hnr, HN((char*) tail));
   hnr = FINISH(hnr);
 
   cur = (ATermList) hashtable[hnr & table_mask];
-  while (cur && (!EQUAL_HEADER(cur->header,header)
-                 || ATgetFirst(cur) != el
-                 || ATgetNext(cur) != tail)) {
+  while(cur && (!EQUAL_HEADER(cur->header, header) || ATgetFirst(cur) != el || ATgetNext(cur) != tail)){
     cur = (ATermList) cur->aterm.next;
   }
 
