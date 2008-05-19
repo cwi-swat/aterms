@@ -2,7 +2,7 @@ Summary: The ATerm Library
 Name: aterm
 Version: @VERSION@
 Release: 1
-License: LGPL
+License: BSD
 Group: Development
 URL: http://www.cwi.nl/htbin/sen1/twiki/bin/view/SEN1/ATermLibrary
 Source0: %{name}-%{version}.tar.gz
@@ -58,7 +58,3 @@ rm -rf $RPM_BUILD_ROOT
 %doc
 
 %changelog
-* Wed Mar 31 2004 Armijn Hemel <armijn@uulug.nl> 2.0.5
-- cleanups so directories in /usr won't be owned by ATerm RPM
-* Thu Jan  2 2003 Eelco Visser <visser@cs.uu.nl> 1.6.7-1
-- Initial build.
