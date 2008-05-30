@@ -40,6 +40,8 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
+
+import shared.SharedObject;
 import shared.SharedObjectFactory;
 import aterm.AFun;
 import aterm.ATerm;
@@ -789,9 +791,75 @@ public class PureFactory extends SharedObjectFactory implements ATermFactory {
 	  
 	  return result;
   }
-
+  
+  /**
+   * @see ATermFactory#importTerm(ATerm)
+   */
   public ATerm importTerm(ATerm term){
-	  throw new RuntimeException("not yet implemented!");
+	  SharedObject object = (SharedObject) term;
+	  if(contains(object)) return term;
+	  
+	  ATerm result;
+	  
+	  switch(term.getType()){
+	  	case ATerm.APPL:
+	  		ATermAppl appl = (ATermAppl) term;
+	  		
+	  		AFun fun = (AFun) importTerm(appl.getAFun());
+	  		
+	  		int nrOfArguments = appl.getArity();
+	  		ATerm[] newArguments = new ATerm[nrOfArguments];
+	  		for(int i = nrOfArguments - 1; i >= 0; i--){
+	  			newArguments[i] = importTerm(appl.getArgument(i));
+	  		}
+	  		
+	  		result = makeAppl(fun, newArguments);
+	  		break;
+	  	case ATerm.LIST:
+	  		ATermList list = (ATermList) term;
+	  		if(list.isEmpty()){
+	  			result = empty;
+	  			break;
+	  		}
+	  		ATerm first = importTerm(list.getFirst());
+	  		ATermList next = (ATermList) importTerm(list.getNext());
+	  		
+	  		result = makeList(first, next);
+	  		break;
+	  	case ATerm.INT:
+	  		ATermInt integer = (ATermInt) term;
+	  		
+	  		result = makeInt(integer.getInt());
+	  		break;
+	  	case ATerm.LONG:
+	  		ATermLong elongatedType = (ATermLong) term;
+	  		
+	  		result = makeLong(elongatedType.getLong());
+	  		break;
+	  	case ATerm.REAL:
+	  		ATermReal real = (ATermReal) term;
+	  		
+	  		result = makeReal(real.getReal());
+	  		break;
+	  	case ATerm.PLACEHOLDER:
+	  		ATermPlaceholder placeHolder = (ATermPlaceholder) term;
+	  		
+	  		result = makePlaceholder(importTerm(placeHolder.getPlaceholder()));
+	  		break;
+	  	case ATerm.AFUN:
+	  		AFun afun = (AFun) term;
+	  		
+	  		return makeAFun(afun.getName(), afun.getArity(), afun.isQuoted());
+	  	default:
+	  		throw new RuntimeException("Unknown term type id: "+term.getType());
+	  }
+	  
+	  if(term.hasAnnotations()){
+		  ATermList annotations = term.getAnnotations();
+		  result = result.setAnnotations(annotations);
+	  }
+	  
+	  return result;
   }
 }
 

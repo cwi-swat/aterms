@@ -1,3 +1,6 @@
+Fri May 30 14:15 CEST 2008 <lankamp@cwi.nl>
+  * Implemented the importTerm method.
+
 Tue May 06 10:50 CEST 2008 <lankamp@cwi.nl>
   * Fixed a problem related to the tail-sharing of ATermLists which have annotations.
 

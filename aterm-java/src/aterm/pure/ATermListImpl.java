@@ -220,11 +220,7 @@ public class ATermListImpl extends ATermImpl implements ATermList {
   }
 
   public boolean isEmpty() {
-    ATermListImpl empty = (ATermListImpl) getEmpty();
-    if (first == empty.first && next == empty.next) {
-      return true;
-    }
-    return false;
+    return (first == null && next == null);
   }
 
   public int getLength() {
