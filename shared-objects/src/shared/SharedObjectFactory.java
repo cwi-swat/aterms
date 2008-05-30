@@ -115,6 +115,20 @@ public class SharedObjectFactory{
 	}
 	
 	/**
+	 * Checks if the given shared object is present in this factory.
+	 * 
+	 * @param prototype
+	 *            The shared object.
+	 * @return True if this factory contains the given shared object; false otherwise.
+	 */
+	public boolean contains(SharedObject object){
+		int hash = object.hashCode();
+		int segmentNr = hash >>> (32 - DEFAULT_NR_OF_SEGMENTS_BITSIZE);
+		
+		return segments[segmentNr].contains(object, hash);
+	}
+	
+	/**
 	 * A segment is a hashtable that represents a certain part of the 'hashset'.
 	 */
 	private final static class Segment{
@@ -366,7 +380,43 @@ public class SharedObjectFactory{
 		}
 		
 		/**
+		 * Check if the given shared object is present in this segment.
+		 * NOTE: This method contains some duplicate code for efficiency reasons.
+		 * 
+		 * @param prototype
+		 *            The shared object.
+		 * @param hash
+		 *            The hash associated with the given shared object.
+		 * @return True if this segment contains the given shared object; false otherwise.
+		 */
+		public boolean contains(SharedObject prototype, int hash){
+			// Find the object (lock free).
+			int position = hash & hashMask;
+			Entry e = entries[position];
+			if(e != null){
+				do{
+					if(e.get() == prototype) return true;
+					e = e.next;
+				}while(e != null);
+			}
+			
+			synchronized(this){
+				// Try again while holding the global lock for this segment.
+				position = hash & hashMask;
+				e = entries[position];
+				if(e != null){
+					do{
+						if(e.get() == prototype) return true;
+						e = e.next;
+					}while(e != null);
+				}
+			}
+			return false;
+		}
+		
+		/**
 		 * Returns a reference to the unique version of the given shared object prototype.
+		 * NOTE: This method contains some duplicate code for efficiency reasons.
 		 * 
 		 * @param prototype
 		 *            A prototype matching the shared object we want a reference to.
@@ -379,8 +429,7 @@ public class SharedObjectFactory{
 			tryCleanup();
 			
 			// Find the object (lock free).
-			int currentHashMask = hashMask;
-			int position = hash & currentHashMask;
+			int position = hash & hashMask;
 			Entry e = entries[position];
 			if(e != null){
 				do{
