@@ -1,5 +1,8 @@
 $Id$
 
+Mon Jun  9 13:15:55 CEST 2008 <jurgenv@cwi.nl>
+ * aterm.pc.in: bumped to 2.7 because SDF needs to be released.
+
 Tue May 06 11:27:06 CEST 2008 <lankamp@cwi.nl>
  * aterm/memory.c: Fixed a problem related to the tail-sharing of ATermLists
  which have annotations.
