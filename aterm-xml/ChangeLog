@@ -1,5 +1,8 @@
 $Id$
 
+Thu 21 Aug 2008 12:51:24 BST <gre@ecs.soton.ac.uk>
+ * xml2aterm/Makefile.am: fixed sed script error.
+
 Wed Aug 17 10:06:07 CEST 2005 <jong@cwi.nl>
  * configure.in:
    - add libtool support

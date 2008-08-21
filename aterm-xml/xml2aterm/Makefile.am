@@ -12,9 +12,7 @@ INCLUDES          = -I${ATERM}/include -I${top_srcdir}/config ${XMLINCLUDE}
 CLEANFILES = ${bin_SCRIPTS} ${noinst_SCRIPTS}
 
 % : %.sh.src Makefile
-	sed 's@__XMLLIBPATH__@${XML}/lib@g;\
-             s@__XMLTOATERMBIN__@${prefix}/libexec@g' < $< > $@ && chmod +x $@
+	sed 's@__XMLLIBPATH__@${XML}/lib@g;s@__XMLTOATERMBIN__@${prefix}/libexec@g' < $< > $@ && chmod +x $@
 
 %.test: %.sh.src Makefile
-	sed 's@__XMLLIBPATH__@${XML}/lib@g;\
-             s@__XMLTOATERMBIN__@${top_builddir}/xml2aterm@g' < $< > $@ && chmod +x $@
+	sed 's@__XMLLIBPATH__@${XML}/lib@g;s@__XMLTOATERMBIN__@${top_builddir}/xml2aterm@g' < $< > $@ && chmod +x $@
