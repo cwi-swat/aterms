@@ -1,5 +1,5 @@
 [
-  constructor(D, iinteger, int(<integer(int)>)),
+  constructor(D, iinteger, int([<integer(int)>])),
   constructor(D, ddouble, double(<number(real)>)),
   constructor(D, trm, term(<trm(term)>)),
   constructor(D, lst, list(<lst(list)>)),

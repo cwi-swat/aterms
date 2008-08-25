@@ -23,9 +23,10 @@ public class BuiltinsTest {
         testAssert(d.setNumber(2.0).getNumber() == 2.0, "set double test");
 
         test.builtins.types.D i = factory.makeD_Iinteger(1);
-        testAssert(i.toString().equals("int(1)"), "make int test");
+        testAssert(i.toString().equals("int([1])"), "make int test");
         testAssert(i.getInteger() == 1, "get integer test");
         testAssert(i.setInteger(2).getInteger() == 2, "set integer test");
+	testAssert(factory.DFromTerm(i.toTerm()) == i, "fromTerm(toTerm)");
 
         test.builtins.types.D l =
             factory.makeD_Lst((aterm.ATermList) factory.getPureFactory().parse("[one]"));

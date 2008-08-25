@@ -20,7 +20,7 @@ int main(int argc, char *argv[])
    */
 
   data[0] = (ATerm) makeDIinteger(1);
-  assert(data[0] && ATisEqual(data[0], ATparse("int(1)")));
+  assert(data[0] && ATisEqual(data[0], ATparse("int([1])")));
 
   data[1] = (ATerm) makeDDdouble(1.0);
   assert(data[1] && ATisEqual(data[1], ATparse("double(1.0)")));

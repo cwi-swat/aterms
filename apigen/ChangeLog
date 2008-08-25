@@ -1,5 +1,11 @@
 # $Id$
 
+Mon Aug 25 17:13:29 CEST 2008 <jurgenv@cwi.nl>
+ * src/**/AlternativeGenerator.java,FactoryGenerator.java: fixed a bug
+   in the code generated for builtin fields of the 'char' type. Apparently,
+   this was not used a lot before, the code was for deserialization was
+   fawly and triggered a ClassCastException by default.
+
 Wed Apr 16 10:54:17 CEST 2008 <jurgenv@cwi.nl>
  * src/*/APIGenerator.java: changed conversion functions to use casts
    via a union to fix type punned aliasing issues in functions that

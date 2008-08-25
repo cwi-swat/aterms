@@ -287,8 +287,8 @@ public class AlternativeGenerator extends JavaGenerator {
 			JavaGenerationParameters params = getJavaGenerationParameters();
 			String factoryClass = FactoryGenerator.qualifiedClassName(params,
 					type.getModuleName());
-			println("   return " + factoryClass + ".charToByte(getArgument("
-					+ fieldIndex + "));");
+			println("   return " + factoryClass + ".charToByte(((aterm.ATermInt) getArgument("
+					+ fieldIndex + ")).getInt());");
 		} else {
 			println("    return (" + fieldClass + ") getArgument(" + fieldIndex
 					+ ");");

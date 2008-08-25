@@ -90,7 +90,7 @@ builtins.c builtins.h: builtins.adt
 		${top_srcdir}/test/$($*_Main).java \
 		-d ${top_builddir}
 	@(echo "#! /bin/sh"; \
-	  echo "CLASSPATH=.:${top_builddir}:${ATERM_JAVA_JARS}"; \
+		echo "CLASSPATH=.:${top_builddir}:${ATERM_JAVA_JARS}:${EXTERNAL_JARS}"; \
 	  echo "export CLASSPATH"; \
 	  echo "java test.$($*_Main) ${top_srcdir}/test") \
 	> $@ \

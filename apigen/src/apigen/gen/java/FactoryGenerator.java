@@ -101,14 +101,23 @@ public class FactoryGenerator extends JavaGenerator {
 	private void genConversions() {
 		genCharsToString();
 		genCharToByte();
+		genCharToByteFromInt();
 		genStringToChars();
 		genByteToChar();
 	}
 
 	private void genCharToByte() {
-		println("  public static char charToByte(aterm.ATerm arg) {");
+		println("  public static char charToByte(Integer arg) {");
 		println();
-		println("      return((char) ((aterm.ATermInt) arg).getInt());");
+		println("      return((char) arg.intValue());");
+		println("  }");
+		println();
+	}
+	
+	private void genCharToByteFromInt() {
+		println("  public static char charToByte(int arg) {");
+		println();
+		println("      return((char) arg);");
 		println("  }");
 		println();
 	}
@@ -1202,7 +1211,7 @@ public class FactoryGenerator extends JavaGenerator {
 		} else if (fieldType.equals("chars")) {
 			result = "charsToString((aterm.ATerm) children.get(" + argnr + "))";
 		} else if (fieldType.equals("char")) {
-			result = "charToByte((aterm.ATerm) children.get(" + argnr + "))";
+			result = "charToByte((java.lang.Integer) children.get(" + argnr + "))";
 		} else {
 			result = fieldClass + "FromTerm((aterm.ATerm) children.get("
 					+ argnr + "))";
