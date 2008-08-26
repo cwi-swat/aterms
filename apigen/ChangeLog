@@ -1,5 +1,9 @@
 # $Id$
 
+Tue Aug 26 12:24:30 CEST 2008 <jurgenv@cwi.nl>
+ * apigen.pc.in: removed non-existing package name to prevent Eclipse
+   warning.
+
 Mon Aug 25 17:13:29 CEST 2008 <jurgenv@cwi.nl>
  * src/**/AlternativeGenerator.java,FactoryGenerator.java: fixed a bug
    in the code generated for builtin fields of the 'char' type. Apparently,
