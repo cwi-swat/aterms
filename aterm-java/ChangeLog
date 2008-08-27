@@ -1,3 +1,6 @@
+Wed Aug 27 14:06 CEST 2008 <lankamp@cwi.nl>
+  * Added placeholder pattern for blobs (since it was missing).
+
 Fri May 30 14:15 CEST 2008 <lankamp@cwi.nl>
   * Implemented the importTerm method.
 

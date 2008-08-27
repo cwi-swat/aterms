@@ -140,6 +140,11 @@ public class ATermPlaceholderImpl extends ATermImpl implements ATermPlaceholder 
           args.remove(0);
 
           return factory.makeReal(d.doubleValue());
+        } else if (name.equals("blob")) {
+            byte[] data = (byte[]) args.get(0);
+            args.remove(0);
+
+            return factory.makeBlob(data);
         } else if (name.equals("placeholder")) {
           ATerm t = (ATerm) args.get(0);
           args.remove(0);
