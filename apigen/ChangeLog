@@ -1,5 +1,8 @@
 # $Id$
 
+Wed Sep 10 15:18:05 CEST 2008 <jurgenv@cwi.nl>
+ * src/**/StringConversions.java: no translating _ to Underscore anymore.
+
 Tue Aug 26 12:24:30 CEST 2008 <jurgenv@cwi.nl>
  * apigen.pc.in: removed non-existing package name to prevent Eclipse
    warning.

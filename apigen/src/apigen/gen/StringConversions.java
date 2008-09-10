@@ -37,7 +37,7 @@ public class StringConversions {
 			"/Slash",
 			"\\Backslash",
 			"*Star",
-			"_Underscore",
+//			"_Underscore", JV this generates very long names, and I think its unnecessary
 			"$Dollar",
 			"'SingleQuote",
 			"!Bang",
