@@ -922,6 +922,7 @@ ATbool ATwriteToNamedTextFile(ATerm t, const char *name)
   }
 
   if(!(f = fopen(name, "wb"))) {
+    ATwarning("Unable to open file for writing: %s\n", name);
     return ATfalse;
   }
 
@@ -948,6 +949,7 @@ ATbool ATwriteToNamedSharedTextFile(ATerm t, const char *name)
   }
 
   if(!(f = fopen(name, "wb"))) {
+    ATwarning("Unable to open file for writing: %s\n", name);
     return ATfalse;
   }
 
@@ -1890,8 +1892,10 @@ ATerm ATreadFromNamedFile(const char *name)
   if(!strcmp(name, "-"))
     return ATreadFromFile(stdin);
 
-  if(!(f = fopen(name, "rb")))
+  if(!(f = fopen(name, "rb"))) {
+    ATwarning("Unable to open file for reading: %s\n", name);
     return NULL;
+  }
 
   t = ATreadFromFile(f);
   fclose(f);
