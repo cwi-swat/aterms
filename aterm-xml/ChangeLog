@@ -1,5 +1,8 @@
 $Id$
 
+Wed Sep 17 17:34:55 CEST 2008 <jurgenv@cwi.nl>
+ * adapted to current build environment
+
 Thu 21 Aug 2008 12:51:24 BST <gre@ecs.soton.ac.uk>
  * xml2aterm/Makefile.am: fixed sed script error.
 
