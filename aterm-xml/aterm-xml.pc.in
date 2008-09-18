@@ -1,0 +1,6 @@
+prefix=@prefix@
+Maintainers=jurgenv@cwi.nl,economop@cwi.nl
+Name: aterm-xml
+Version: 0.1
+Description: Simple conversion tools between ATerm and XML formats
+Requires: aterm
