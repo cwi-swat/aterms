@@ -6,8 +6,8 @@ EXTRA_DIST = xml2aterm.sh.src
 
 noinst_HEADERS    = xml2aterm.h
 XMLTOATERM_SOURCES = xml2aterm.c
-XMLTOATERM_LDADD   = -L${ATERM}/lib -lATerm ${XMLLIB}
-INCLUDES          = -I${ATERM}/include -I${top_srcdir}/config ${XMLINCLUDE}
+XMLTOATERM_LDADD   = ${ATERM_LIBS} ${XMLLIB}
+INCLUDES          = ${ATERM_CFLAGS} -I${top_srcdir}/config ${XMLINCLUDE}
 
 CLEANFILES = ${bin_SCRIPTS} ${noinst_SCRIPTS}
 

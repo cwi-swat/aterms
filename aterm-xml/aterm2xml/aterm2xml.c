@@ -349,7 +349,7 @@ int axParseAttributes(ATerm at)
     {
       if(verbose) { ATprintf("[ANNO] %t\n", annos); }
 
-      for (i=0; i < ATgetLength(annos); i++)
+      for (i=0; i < ATgetLength((ATermList) annos); i++)
 	{
 	  label = ATgetFirst((ATermList) ATelementAt((ATermList) annos,i));
 	  value = ATgetLast( (ATermList) ATelementAt((ATermList) annos,i));

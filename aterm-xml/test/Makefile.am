@@ -1,7 +1,7 @@
 # set location of tested tools:
 XML2ATERM=${top_builddir}/xml2aterm/xml2aterm.test
 ATERM2XML=${top_builddir}/aterm2xml/aterm2xml
-ATDIFF=${ATERM}/bin/atdiff
+ATDIFF=${ATERM_PREFIX}/bin/atdiff
 
 # all test files should be in the distribution
 EXTRA_DIST=$(wildcard *.trm) $(wildcard *.xml) $(wildcard *.ref)

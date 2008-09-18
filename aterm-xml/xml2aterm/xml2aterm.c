@@ -113,8 +113,8 @@ static void xaStartElement (xmlParserCtxtPtr ctxt, xmlChar *fullname, xmlChar **
     {
       while(atts[i])
 	{
- 	  annos = ATinsert(annos, (ATerm) ATmakeAppl0(ATmakeAFun(atts[i++],0,ATfalse)));
- 	  annos = ATinsert(annos, (ATerm) ATmakeAppl0(ATmakeAFun(atts[i++],0,ATtrue)));
+ 	  annos = ATinsert(annos, (ATerm) ATmakeAppl0(ATmakeAFun((const char*) atts[i++],0,ATfalse)));
+ 	  annos = ATinsert(annos, (ATerm) ATmakeAppl0(ATmakeAFun((const char*) atts[i++],0,ATtrue)));
 	}
 
       for(j=0; j < ATgetLength(annos); j+=2)
@@ -132,7 +132,7 @@ static void xaStartElement (xmlParserCtxtPtr ctxt, xmlChar *fullname, xmlChar **
       ATfprintf(stderr, "attrs = %t\n", attrs);
     }
 
-  appl = ATmakeAppl0(ATmakeAFun(fullname,0,ATfalse));
+  appl = ATmakeAppl0(ATmakeAFun((const char*) fullname,0,ATfalse));
 
   if(!ATisEmpty(attrs))
   {
@@ -246,7 +246,7 @@ static void xaEndElement (xmlParserCtxtPtr ctxt, const xmlChar *name)
 
   while(i < len && !foundit)
     {
-      if(!strcmp(name, ATgetName(ATgetAFun(ATgetFirst(tmp)))))
+      if(!strcmp((const char*) name, ATgetName(ATgetAFun(ATgetFirst(tmp)))))
 	{
 	  foundit = true;
 	}
@@ -264,13 +264,13 @@ static void xaEndElement (xmlParserCtxtPtr ctxt, const xmlChar *name)
       fprintf(stderr, "i   = %d\n", i);
     }
 
-  if(!strcmp(name, quoted_ATermAppl_name))
+  if(!strcmp((const char*) name, quoted_ATermAppl_name))
     {
       xaParseQuotedAFun(len, i);
       return;
     }
 
-  if(!strcmp(name, ax_list_name))
+  if(!strcmp((const char*) name, ax_list_name))
     {
       xaParseATermList(len, i);
       return;

@@ -5,6 +5,6 @@ libaterm2xml_a_SOURCES=aterm2xml.c
 
 noinst_HEADERS    = aterm2xml.h
 aterm2xml_SOURCES = 
-aterm2xml_LDADD   = -L. -laterm2xml -L${ATERM}/lib -lATerm 
+aterm2xml_LDADD   = -L. -laterm2xml ${ATERM_LIBS}
 
-INCLUDES          = -I${ATERM}/include -I${top_srcdir}/config
+INCLUDES          = ${ATERM_CFLAGS} -I${top_srcdir}/config

@@ -1,5 +1,9 @@
 $Id$
 
+Thu Sep 18 10:28:16 CEST 2008 <jurgenv@cwi.nl>
+ * xml2aterm/*.c: added casts to (const char*) to fix a number of warnings.
+   I don't think that actually fixes a bug, so caveat emptor. 
+
 Wed Sep 17 17:34:55 CEST 2008 <jurgenv@cwi.nl>
  * adapted to current build environment
 
