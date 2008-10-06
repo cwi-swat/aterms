@@ -27,7 +27,7 @@ import java.lang.ref.WeakReference;
  * This class is fully thread-safe, but tries to avoid (contended) locking as much as is
  * reasonably achievable. As a result this implementation should scale fairly well on
  * multi-core / processor systems; while also limiting synchronization overhead.
- * 
+ * <br /><br />
  * WARNING: Do not edit this class unless you fully understand both Java's memory and threading model
  * and how the garbage collector(s) work. (You'll almost certainly 'break' something otherwise).<br />
  * The JMM spec (previously known as JSR-133) can be found here: <a href=http://java.sun.com/docs/books/jls/third_edition/html/memory.html>http://java.sun.com/docs/books/jls/third_edition/html/memory.html</a><br />
@@ -310,7 +310,7 @@ public class SharedObjectFactory{
 		}
 		
 		/**
-		 * Attempts to run a cleanup if the garbage collector ran before the invokation of this function.
+		 * Attempts to run a cleanup if the garbage collector ran before the invocation of this function.
 		 * This ensures that, in most cases, the buckets will contain no cleared entries. By doing this we
 		 * speed up lookups significantly. Note that we will automaticly throttle the frequency of the cleanups;
 		 * in case we hardly every collect anything (either because there is no garbage or collections occur
