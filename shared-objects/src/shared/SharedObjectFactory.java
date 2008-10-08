@@ -144,7 +144,7 @@ public class SharedObjectFactory{
 		private int threshold;
 		private int load;
 		
-		private volatile boolean flaggedForCleanup;
+		private volatile WeakReference<GarbageCollectionDetector> cleanupFlag;
 		private int cleanupScaler;
 		private int cleanupThreshold;
 		
@@ -177,7 +177,7 @@ public class SharedObjectFactory{
 			threshold = (int) (nrOfEntries * DEFAULT_LOAD_FACTOR);
 			load = 0;
 			
-			flaggedForCleanup = false;
+			cleanupFlag = new WeakReference<GarbageCollectionDetector>(new GarbageCollectionDetector(this)); // Allocate a (unreachable) GC detector.
 			cleanupScaler = 50; // Init as 50% average cleanup percentage, to make sure the cleanup can and will be executed the first time.
 			cleanupThreshold = cleanupScaler;
 			
@@ -186,8 +186,6 @@ public class SharedObjectFactory{
 			freeIDsIndex = 0;
 			nextFreeID = segmentID << MAX_SEGMENT_BITSIZE;
 			maxFreeIDPlusOne = (segmentID + 1) << MAX_SEGMENT_BITSIZE;
-			
-			new GarbageCollectionDetector(this); // Allocate a (unreachable) GC detector.
 		}
 		
 		/**
@@ -319,11 +317,9 @@ public class SharedObjectFactory{
 		 * ensures us that we clean the segment exactly when it is needed and possible.
 		 */
 		private void tryCleanup(){
-			if(flaggedForCleanup){
+			if(cleanupFlag == null){
 				synchronized(this){
-					if(flaggedForCleanup){ // Yes, in Java DCL works on volatiles.
-						flaggedForCleanup = false;
-						
+					if(cleanupFlag == null){ // Yes, in Java DCL works on volatiles.
 						if(cleanupThreshold > 8){ // The 'magic' number 8 is chosen, so the cleanup will be done at least once after every four garbage collections.
 							int oldLoad = load;
 							
@@ -342,7 +338,7 @@ public class SharedObjectFactory{
 							cleanupThreshold <<= 1;
 						}
 						
-						new GarbageCollectionDetector(this); // Allocate a new (unreachable) GC detector.
+						cleanupFlag = new WeakReference<GarbageCollectionDetector>(new GarbageCollectionDetector(this)); // Allocate a new (unreachable) GC detector.
 					}
 				}
 			}
@@ -626,7 +622,7 @@ public class SharedObjectFactory{
 			 * @see java.lang.Object#finalize
 			 */
 			public void finalize(){
-				segment.flaggedForCleanup = true;
+				segment.cleanupFlag = null;
 			}
 		}
 		
