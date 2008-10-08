@@ -144,7 +144,8 @@ public class SharedObjectFactory{
 		private int threshold;
 		private int load;
 		
-		private volatile WeakReference<GarbageCollectionDetector> cleanupFlag;
+		private volatile boolean flaggedForCleanup;
+		private volatile WeakReference<GarbageCollectionDetector> garbageCollectionDetector;
 		private int cleanupScaler;
 		private int cleanupThreshold;
 		
@@ -177,7 +178,8 @@ public class SharedObjectFactory{
 			threshold = (int) (nrOfEntries * DEFAULT_LOAD_FACTOR);
 			load = 0;
 			
-			cleanupFlag = new WeakReference<GarbageCollectionDetector>(new GarbageCollectionDetector(this)); // Allocate a (unreachable) GC detector.
+			flaggedForCleanup = false;
+			garbageCollectionDetector = new WeakReference<GarbageCollectionDetector>(new GarbageCollectionDetector(this)); // Allocate a (unreachable) GC detector.
 			cleanupScaler = 50; // Init as 50% average cleanup percentage, to make sure the cleanup can and will be executed the first time.
 			cleanupThreshold = cleanupScaler;
 			
@@ -310,16 +312,17 @@ public class SharedObjectFactory{
 		/**
 		 * Attempts to run a cleanup if the garbage collector ran before the invocation of this function.
 		 * This ensures that, in most cases, the buckets will contain no cleared entries. By doing this we
-		 * speed up lookups significantly. Note that we will automaticly throttle the frequency of the cleanups;
+		 * speed up lookups significantly. Note that we will automatically throttle the frequency of the cleanups;
 		 * in case we hardly every collect anything (either because there is no garbage or collections occur
 		 * very frequently) it will be slowed down to as little as once per four garbage collections. When a lot
 		 * of entries are being cleared the cleanup will run after every collection. Using this strategy 
 		 * ensures us that we clean the segment exactly when it is needed and possible.
 		 */
 		private void tryCleanup(){
-			if(cleanupFlag == null){
+			if(flaggedForCleanup){
 				synchronized(this){
-					if(cleanupFlag == null){ // Yes, in Java DCL works on volatiles.
+					if(garbageCollectionDetector == null){ // Yes, in Java DCL works on volatiles.
+						flaggedForCleanup = false;
 						if(cleanupThreshold > 8){ // The 'magic' number 8 is chosen, so the cleanup will be done at least once after every four garbage collections.
 							int oldLoad = load;
 							
@@ -338,7 +341,7 @@ public class SharedObjectFactory{
 							cleanupThreshold <<= 1;
 						}
 						
-						cleanupFlag = new WeakReference<GarbageCollectionDetector>(new GarbageCollectionDetector(this)); // Allocate a new (unreachable) GC detector.
+						garbageCollectionDetector = new WeakReference<GarbageCollectionDetector>(new GarbageCollectionDetector(this)); // Allocate a new (unreachable) GC detector.
 					}
 				}
 			}
@@ -622,7 +625,8 @@ public class SharedObjectFactory{
 			 * @see java.lang.Object#finalize
 			 */
 			public void finalize(){
-				segment.cleanupFlag = null;
+				segment.garbageCollectionDetector = null;
+				segment.flaggedForCleanup = true;
 			}
 		}
 		
