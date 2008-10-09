@@ -28,6 +28,7 @@
 
 package aterm.pure;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
@@ -54,6 +55,7 @@ import aterm.ATermLong;
 import aterm.ATermPlaceholder;
 import aterm.ATermReal;
 import aterm.ParseError;
+import aterm.pure.binary.BAFReader;
 import aterm.pure.binary.BinaryReader;
 
 public class PureFactory extends SharedObjectFactory implements ATermFactory {
@@ -741,8 +743,13 @@ public class PureFactory extends SharedObjectFactory implements ATermFactory {
     return readFromSharedTextFile(reader);
   }
 
-  public ATerm readFromBinaryFile(InputStream stream) {
-    throw new RuntimeException("not yet implemented!");
+  public ATerm readFromBinaryFile(InputStream stream) throws IOException {
+	  return readFromBinaryFile(stream, false);
+  }
+
+  private ATerm readFromBinaryFile(InputStream stream, boolean headerRead) throws ParseError, IOException {
+	  BAFReader r = new BAFReader(this, stream);
+	  return r.readFromBinaryFile(headerRead);
   }
   
   private ATerm readSAFFromOldStyleStream(InputStream stream) throws IOException{
@@ -756,6 +763,11 @@ public class PureFactory extends SharedObjectFactory implements ATermFactory {
   }
 
   public ATerm readFromFile(InputStream stream) throws IOException{
+	  
+	  BufferedInputStream bis = new BufferedInputStream(stream);
+	  if(BAFReader.isBinaryATerm(bis))
+		  return readFromBinaryFile(bis, true);
+
 	  int firstToken;
 	  do{
 		  firstToken = stream.read();
@@ -775,7 +787,7 @@ public class PureFactory extends SharedObjectFactory implements ATermFactory {
 		  reader.last_char = typeByte; // Reinsert the type into the stream (since in this case it wasn't a type byte).
 		  return readFromTextFile(reader);
 	  }else{
-		  throw new RuntimeException("BAF files are not supported by this factory.");
+		  throw new RuntimeException("Unsupported file type");
 	  }
   }
   
@@ -796,8 +808,12 @@ public class PureFactory extends SharedObjectFactory implements ATermFactory {
    * @see ATermFactory#importTerm(ATerm)
    */
   public ATerm importTerm(ATerm term){
+	  
+	  if(true)
+		  throw new RuntimeException("Unimplemented");
+
 	  SharedObject object = (SharedObject) term;
-	  if(contains(object)) return term;
+	  //if(contains(object)) return term;
 	  
 	  ATerm result;
 	  
