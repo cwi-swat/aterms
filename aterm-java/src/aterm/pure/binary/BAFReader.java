@@ -37,7 +37,6 @@ import aterm.pure.PureFactory;
  *
  */
 public class BAFReader {
-
     private static final int BAF_MAGIC = 0xBAF;
     private static final int BAF_VERSION = 0x300;
     private static final int HEADER_BITS = 32;
@@ -95,20 +94,16 @@ public class BAFReader {
     }
 
     public static boolean isBinaryATerm(BufferedInputStream in) throws IOException {
-        in.mark(10);
         if(isBinaryATerm(new BitStream(in)))
             return true;
-        in.reset();
         return false;
     }
 
     private static boolean isBinaryATerm(BitStream in) throws IOException {
         try {
-            int w0 = in.readInt();
             int w1 = in.readInt();
 
-            if (w0 == 0 && w1 == BAF_MAGIC)
-                return true;
+            return (w1 == BAF_MAGIC);
         } catch(EOFException e) {}
 
         return false;

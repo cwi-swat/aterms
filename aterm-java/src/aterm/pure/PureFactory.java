@@ -743,7 +743,7 @@ public class PureFactory extends SharedObjectFactory implements ATermFactory {
     return readFromSharedTextFile(reader);
   }
 
-  public ATerm readFromBinaryFile(InputStream stream) throws IOException {
+  public ATerm readFromBinaryFile(InputStream stream) throws IOException{
 	  return readFromBinaryFile(stream, false);
   }
 
@@ -763,10 +763,6 @@ public class PureFactory extends SharedObjectFactory implements ATermFactory {
   }
 
   public ATerm readFromFile(InputStream stream) throws IOException{
-	  BufferedInputStream bis = new BufferedInputStream(stream);
-	  if(BAFReader.isBinaryATerm(bis))
-		  return readFromBinaryFile(bis, true);
-
 	  int firstToken;
 	  do{
 		  firstToken = stream.read();
@@ -785,9 +781,13 @@ public class PureFactory extends SharedObjectFactory implements ATermFactory {
 		  ATermReader reader = new ATermReader(new BufferedReader(new InputStreamReader(stream)));
 		  reader.last_char = typeByte; // Reinsert the type into the stream (since in this case it wasn't a type byte).
 		  return readFromTextFile(reader);
-	  }else{
-		  throw new RuntimeException("Unsupported file type");
+	  }else if(firstToken == 0){
+		  BufferedInputStream bis = new BufferedInputStream(stream);
+		  if(BAFReader.isBinaryATerm(bis)){
+			  return readFromBinaryFile(bis, true);
+		  }
 	  }
+	  throw new RuntimeException("Unsupported file type");
   }
   
   public ATerm readFromFile(String filename) throws IOException{
