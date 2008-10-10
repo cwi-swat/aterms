@@ -763,7 +763,6 @@ public class PureFactory extends SharedObjectFactory implements ATermFactory {
   }
 
   public ATerm readFromFile(InputStream stream) throws IOException{
-	  
 	  BufferedInputStream bis = new BufferedInputStream(stream);
 	  if(BAFReader.isBinaryATerm(bis))
 		  return readFromBinaryFile(bis, true);
@@ -808,12 +807,8 @@ public class PureFactory extends SharedObjectFactory implements ATermFactory {
    * @see ATermFactory#importTerm(ATerm)
    */
   public ATerm importTerm(ATerm term){
-	  
-	  if(true)
-		  throw new RuntimeException("Unimplemented");
-
 	  SharedObject object = (SharedObject) term;
-	  //if(contains(object)) return term;
+	  if(contains(object)) return term;
 	  
 	  ATerm result;
 	  
