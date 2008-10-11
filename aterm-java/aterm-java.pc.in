@@ -1,9 +1,9 @@
 prefix=@prefix@
-Maintainers=moreau@loria.fr,jurgenv@cwi.nl
+Maintainers=moreau@loria.fr,jurgenv@cwi.nl,lankamp@cwi.nl
 
 Name: aterm-java
 Description: Java version of the ATerm library
-Version: 1.8
+Version: 1.8.1
 Requires: shared-objects,JJTraveler
 JarFile=aterm-java.jar
 Jars=${prefix}/share/${JarFile}
