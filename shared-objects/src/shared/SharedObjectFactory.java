@@ -295,11 +295,7 @@ public class SharedObjectFactory{
 		}
 		
 		/**
-		 * Ensures the load in this segment will not exceed a certain threshold. First we will try
-		 * to do a cleanup; if this is successful enough (if 20%+ of the table was cleaned) we'll
-		 * do a cleanup next time we run low on space as well. Otherwise we'll do a rehash. This
-		 * strategy prevents the segment from growing to large (with would result in space being
-		 * wasted and / or a memory leak).
+		 * Ensures the load in this segment will not exceed a certain threshold.
 		 */
 		private void ensureCapacity(){
 			// Rehash if the load exceeds the threshold,
