@@ -448,7 +448,6 @@ public class PureFactory extends SharedObjectFactory implements ATermFactory {
         return parseAbbrev(reader);
 
       case '[':
-
         c = reader.readSkippingWS();
         if (c == -1) {
           throw new ParseError("premature EOF encountered.");
@@ -468,13 +467,11 @@ public class PureFactory extends SharedObjectFactory implements ATermFactory {
         break;
 
       case '<':
-
         c = reader.readSkippingWS();
         ATerm ph = parseFromReader(reader);
 
         if (reader.getLastChar() != '>') {
-          throw new ParseError("expected '>' but got '"
-              + (char) reader.getLastChar() + "'");
+          throw new ParseError("expected '>' but got '" + (char) reader.getLastChar() + "'");
         }
 
         c = reader.readSkippingWS();
@@ -484,7 +481,6 @@ public class PureFactory extends SharedObjectFactory implements ATermFactory {
         break;
 
       case '"':
-
         funname = parseString(reader);
 
         c = reader.readSkippingWS();
@@ -511,7 +507,6 @@ public class PureFactory extends SharedObjectFactory implements ATermFactory {
         break;
 
       case '(':
-
         c = reader.readSkippingWS();
         if (c == -1) {
           throw new ParseError("premature EOF encountered.");
@@ -522,8 +517,7 @@ public class PureFactory extends SharedObjectFactory implements ATermFactory {
           ATerm[] list = parseATermsArray(reader);
 
           if (reader.getLastChar() != ')') {
-            throw new ParseError("expected ')' but got '"
-                + (char)reader.getLastChar() + "'");
+            throw new ParseError("expected ')' but got '" + (char)reader.getLastChar() + "'");
           }
           result = makeAppl(makeAFun("", list.length, false), list);
         }
@@ -549,7 +543,6 @@ public class PureFactory extends SharedObjectFactory implements ATermFactory {
       default:
         c = reader.getLastChar();
         if (Character.isLetter(c)) {
-
           funname = parseId(reader);
           c = reader.skipWS();
           if (reader.getLastChar() == '(') {
@@ -563,24 +556,20 @@ public class PureFactory extends SharedObjectFactory implements ATermFactory {
               ATerm[] list = parseATermsArray(reader);
 
               if (reader.getLastChar() != ')') {
-                throw new ParseError("expected ')' but got '"
-                    + (char)reader.getLastChar() + "'");
+                throw new ParseError("expected ')' but got '" + (char) reader.getLastChar() + "'");
               }
-              result = makeAppl(
-                  makeAFun(funname, list.length, false), list);
+              result = makeAppl(makeAFun(funname, list.length, false), list);
             }
             c = reader.readSkippingWS();
           } else {
             result = makeAppl(makeAFun(funname, 0, false));
           }
-
         } else {
-          throw new ParseError("illegal character: " + (char)reader.getLastChar());
+          throw new ParseError("illegal character: '" + (char) reader.getLastChar() + "'");
         }
     }
 
     if (reader.getLastChar() == '{') {
-
       ATermList annos;
       if (reader.readSkippingWS() == '}') {
         reader.readSkippingWS();
@@ -588,12 +577,11 @@ public class PureFactory extends SharedObjectFactory implements ATermFactory {
       } else {
         annos = parseATerms(reader);
         if (reader.getLastChar() != '}') {
-          throw new ParseError("'}' expected");
+          throw new ParseError("'}' expected '" + (char) reader.getLastChar() + "'");
         }
         reader.readSkippingWS();
       }
       result = result.setAnnotations(annos);
-
     }
 
     /* Parse some ToolBus anomalies for backwards compatibility */
