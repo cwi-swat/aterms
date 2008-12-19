@@ -460,8 +460,7 @@ public class PureFactory extends SharedObjectFactory implements ATermFactory {
         } else {
           result = parseATerms(reader);
           if (reader.getLastChar() != ']') {
-            throw new ParseError("expected ']' but got '"
-                + (char) reader.getLastChar() + "'");
+            throw new ParseError("expected ']' but got '" + (char) reader.getLastChar() + "'");
           }
           c = reader.readSkippingWS();
         }
@@ -579,8 +578,7 @@ public class PureFactory extends SharedObjectFactory implements ATermFactory {
           }
 
         } else {
-          throw new ParseError("illegal character: "
-              + (char)reader.getLastChar());
+          throw new ParseError("illegal character: " + (char)reader.getLastChar());
         }
     }
 
