@@ -353,9 +353,12 @@ public class PureFactory extends SharedObjectFactory implements ATermFactory {
         reader.read();
         escaped = true;
       }
-
+      
+      int lastChar = reader.getLastChar();
+      if(lastChar == -1) throw new ParseError("Unterminated quoted function symbol: " + str);
+      
       if (escaped) {
-        switch (reader.getLastChar()) {
+        switch (lastChar) {
           case 'n':
             str.append('\n');
             break;
@@ -393,8 +396,9 @@ public class PureFactory extends SharedObjectFactory implements ATermFactory {
           default:
             str.append('\\').append((char) reader.getLastChar());
         }
-      } else if (reader.getLastChar() != '\"')
-        str.append((char) reader.getLastChar());
+      }else if (lastChar != '\"'){
+        str.append((char) lastChar);
+      }
     } while (escaped || reader.getLastChar() != '"');
 
     return str.toString();
@@ -496,16 +500,11 @@ public class PureFactory extends SharedObjectFactory implements ATermFactory {
             ATerm[] list = parseATermsArray(reader);
 
             if (reader.getLastChar() != ')') {
-              throw new ParseError("expected ')' but got '"
-                  + reader.getLastChar() + "'");
+              throw new ParseError("expected ')' but got '" + reader.getLastChar() + "'");
             }
-            result = makeAppl(makeAFun(funname, list.length, true),
-                list);
+            result = makeAppl(makeAFun(funname, list.length, true), list);
           }
           c = reader.readSkippingWS();
-          if (c == -1) {
-            throw new ParseError("premature EOF encountered.");
-          }
         } else {
           result = makeAppl(makeAFun(funname, 0, true));
         }

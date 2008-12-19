@@ -181,6 +181,16 @@ public class Test1 {
     }
     
   }
+  
+  protected void testParseError() {
+	  try {
+		  ATerm t = factory.parse("f(\"");
+	  } catch (ParseError e) {
+		  if (!e.getMessage().startsWith("Unterminated quoted function symbol")) {
+			  throw e;
+		  }
+	  }
+  }
 
   protected  void testFileParser() {
     try {
@@ -582,7 +592,8 @@ public class Test1 {
     testMakeLong();
     testMakeReal();
     testMakeAppl();
-      //testParser();
+    testParser();
+    testParseError();
     testMakeList();
     testPatternMatch();
     testPatternMake();
