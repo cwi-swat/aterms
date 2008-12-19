@@ -528,9 +528,6 @@ public class PureFactory extends SharedObjectFactory implements ATermFactory {
           result = makeAppl(makeAFun("", list.length, false), list);
         }
         c = reader.readSkippingWS();
-        if (c == -1) {
-          throw new ParseError("premature EOF encountered.");
-        }
 
         break;
 

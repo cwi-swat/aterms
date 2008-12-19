@@ -174,7 +174,10 @@ public class Test1 {
     T[index++] = factory.parse("[1,2]");
     T[index++] = factory.parse("[1,3.5,4e6,123.21E-3,-12]");
     T[index++] = factory.parse("[1,a,f(1)]");
-    T[index++] = factory.parse("[1,\"a\",f(1), \"g\"(a,\"b\")]");
+    T[index++] = factory.parse("(1)");
+    T[index++] = factory.parse("[()]");
+    T[index++] = factory.parse("[\"f\"()]");
+    T[index++] = factory.parse("[1, \"a\", f(1), \"g\"(a,\"b\")]");
 
     for(int i=0; i<index; i++) {
       System.out.println("term " + i + ": " + T[i]);
