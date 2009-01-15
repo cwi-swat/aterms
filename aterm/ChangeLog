@@ -1,5 +1,11 @@
 $Id$
 
+Thu Jan 15 16:12:50 CEST 2008 <lankamp@cwi.nl>
+ * aterm/byteencoding.c: Fixed the byteencoding of 64-bit integers. While
+ integers in SAF are defined to be 4 bytes, systems that use 8 byte integers
+ should not encounter problems while reading / writing SAF (though they will
+ naturally loose precision).
+
 Tue Sep 16 11:16:60 CEST 2008 <basten@cwi.nl>
  * aterm/aterm.c: Added warnings for unsuccessful fopen() calls.
 	

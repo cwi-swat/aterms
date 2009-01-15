@@ -40,8 +40,12 @@ union DoubleEncoding{
 #define SEVENBITS 0x0000007fU
 #define SIGNBIT 0x80U
 
+#if SIZEOF_INT != 4 && SIZEOF_INT != 8
+#  warning "Detected an integer size other then 4 or 8 bytes, this can lead to undefined behaviour when reading / writing SAF."
+#endif
+
 /**
- * Converts a signed integer (that uses the left most bit to store the sign) to a unsigned integer.
+ * Converts a (4 or 8 byte) signed integer to a (4 byte) unsigned integer (for internal use).
  */
 inline static unsigned int signedToUnsignedInt(int signedInt){
 	union _Integer{
@@ -50,18 +54,27 @@ inline static unsigned int signedToUnsignedInt(int signedInt){
 	} Integer;
 	Integer.s = signedInt;
 	
-	return Integer.u;
+	#if SIZEOF_INT == 8
+		return ((Integer.u & 0x8000000000000000U) >> 32) | (Integer.u & 0x000000007fffffffU);
+	#else
+		return Integer.u;
+	#endif
 }
 
 /**
- * Converts a unsigned integer to a signed integer (that uses the left most bit to store the sign).
+ * Converts a (4 byte) unsigned integer to a (4 or 8 byte) signed integer.
  */
 inline static int unsignedToSignedInt(unsigned int unsignedInt){
 	union _Integer{
 		int s;
 		unsigned int u;
 	} Integer;
-	Integer.u = unsignedInt;
+	
+	#if SIZEOF_INT == 8
+		Integer.u = ((unsignedInt & 0x0000000080000000U) << 32) | (unsignedInt & 0x000000007fffffffU);
+	#else
+		Integer.u = unsignedInt;
+	#endif
 	
 	return Integer.s;
 }
