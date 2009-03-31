@@ -107,20 +107,22 @@ public class ATermApplImpl extends ATermImpl implements ATermAppl {
     return make(fun, i_args, getPureFactory().makeList());
   }
 
-  public boolean equivalent(SharedObject obj) {
-    if (super.equivalent(obj)) {
-      ATermAppl peer = (ATermAppl) obj;
-      if (peer.getAFun().equals(fun)) {
-        for (int i = 0; i < args.length; i++) {
-          if (!peer.getArgument(i).equals(args[i])) {
-            return false;
-          }
-        }
-        return true;
-      }
-    }
-    return false;
-  }
+	public boolean equivalent(SharedObject obj){
+		if(obj instanceof ATermAppl){
+			ATermAppl peer = (ATermAppl) obj;
+			if(peer.getType() != getType()) return false;
+			
+			if(peer.getAFun().equals(fun)){
+				for(int i = 0; i < args.length; i++){
+					if(!peer.getArgument(i).equals(args[i])){
+						return false;
+					}
+				}
+				return peer.getAnnotations().equals(getAnnotations());
+			}
+		}
+		return false;
+	}
 
   protected boolean match(ATerm pattern, List<Object> list) {
     if (pattern.getType() == APPL) {

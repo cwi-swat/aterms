@@ -80,14 +80,16 @@ public class ATermBlobImpl extends ATermImpl implements ATermBlob {
 	  return this;
   }
 
-  public boolean equivalent(SharedObject obj) {
-    if (super.equivalent(obj)) {
-      ATermBlob peer = (ATermBlob) obj;
-      return peer.getBlobData() == data;
-    }
-
-    return false;
-  }
+	public boolean equivalent(SharedObject obj){
+		if(obj instanceof ATermBlob){
+			ATermBlob peer = (ATermBlob) obj;
+			if(peer.getType() != getType()) return false;
+				
+			return (peer.getBlobData() == data && peer.getAnnotations().equals(getAnnotations()));
+		}
+		
+		return false;
+	}
 
   protected boolean match(ATerm pattern, List<Object> list) {
     if (equals(pattern)) {

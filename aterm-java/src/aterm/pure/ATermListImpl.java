@@ -112,13 +112,15 @@ public class ATermListImpl extends ATermImpl implements ATermList {
     return this;
   }
 
-  public boolean equivalent(SharedObject obj) {
-    if (super.equivalent(obj)) {
-      ATermList peer = (ATermList) obj;
-      return peer.getFirst() == first && peer.getNext() == next;
-    }
-
-    return false;
+	public boolean equivalent(SharedObject obj){
+		if(obj instanceof ATermList){
+			ATermList peer = (ATermList) obj;
+			if(peer.getType() != getType()) return false;
+			
+			return (peer.getFirst() == first && peer.getNext() == next && peer.getAnnotations().equals(getAnnotations()));
+		}
+		
+		return false;
   }
 
   public ATermList insert(ATerm el){

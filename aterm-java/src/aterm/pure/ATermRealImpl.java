@@ -80,14 +80,16 @@ public class ATermRealImpl extends ATermImpl implements ATermReal {
 	  return this;
   }
 
-  public boolean equivalent(SharedObject obj) {
-    if (super.equivalent(obj)) {
-      ATermReal peer = (ATermReal) obj;
-      return peer.getReal() == value;
-    }
-
-    return false;
-  }
+	public boolean equivalent(SharedObject obj){
+		if(obj instanceof ATermReal){
+			ATermReal peer = (ATermReal) obj;
+			if(peer.getType() != getType()) return false;
+			
+			return (peer.getReal() == value && peer.getAnnotations().equals(getAnnotations()));
+		}
+		
+		return false;
+	}
 
   protected boolean match(ATerm pattern, List<Object> list) {
     if (equals(pattern)) {

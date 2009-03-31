@@ -79,13 +79,15 @@ public class ATermPlaceholderImpl extends ATermImpl implements ATermPlaceholder 
 	  return this;
   }
 
-  public boolean equivalent(SharedObject obj) {
-    if (super.equivalent(obj)) {
-      ATermPlaceholder peer = (ATermPlaceholder) obj;
-      return peer.getPlaceholder() == type;
-    }
-
-    return false;
+	public boolean equivalent(SharedObject obj){
+		if(obj instanceof ATermPlaceholder){
+			ATermPlaceholder peer = (ATermPlaceholder) obj;
+			if(peer.getType() != getType()) return false;
+			
+			return (peer.getPlaceholder() == type && peer.getAnnotations().equals(getAnnotations()));
+		}
+		
+		return false;
   }
 
   public boolean match(ATerm pattern, List<Object> list) {

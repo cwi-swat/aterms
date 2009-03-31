@@ -35,8 +35,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import jjtraveler.VisitFailure;
-
-import shared.SharedObject;
 import shared.SharedObjectWithID;
 import aterm.AFun;
 import aterm.ATerm;
@@ -90,16 +88,6 @@ public abstract class ATermImpl extends ATermVisitableImpl implements ATerm, Sha
 	protected void init(int hashCode, ATermList annos){
 		this.hashCode = hashCode;
 		this.annotations = annos;
-	}
-
-	public boolean equivalent(SharedObject obj){
-		if(obj instanceof ATerm){
-			ATerm peer = (ATerm) obj;
-			if(peer.getType() == getType()){
-				return peer.getAnnotations().equals(getAnnotations());
-			}
-		}
-		return false;
 	}
 
 	public ATermFactory getFactory(){

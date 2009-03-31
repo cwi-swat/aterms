@@ -91,14 +91,16 @@ public class ATermIntImpl extends ATermImpl implements ATermInt {
 	  return this;
   }
 
-  public boolean equivalent(SharedObject obj) {
-    if (super.equivalent(obj)) {
-      ATermInt peer = (ATermInt) obj;
-      return peer.getInt() == value;
-    }
-
-    return false;
-  }
+	public boolean equivalent(SharedObject obj) {
+		if(obj instanceof ATermInt){
+			ATermInt peer = (ATermInt) obj;
+			if(peer.getType() != getType()) return false;
+			
+			return (peer.getInt() == value && peer.getAnnotations().equals(getAnnotations()));
+		}
+		
+		return false;
+	}
 
   protected boolean match(ATerm pattern, List<Object> list) {
     if (this.equals(pattern)) {

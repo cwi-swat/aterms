@@ -90,14 +90,16 @@ public class ATermLongImpl extends ATermImpl implements ATermLong {
 	  return this;
   }
 
-  public boolean equivalent(SharedObject obj) {
-    if (super.equivalent(obj)) {
-      ATermLong peer = (ATermLong) obj;
-      return peer.getLong() == value;
-    }
-
-    return false;
-  }
+	public boolean equivalent(SharedObject obj){
+		if(obj instanceof ATermLong){
+			ATermLong peer = (ATermLong) obj;
+			if(peer.getType() != getType()) return false;
+			
+			return (peer.getLong() == value && peer.getAnnotations().equals(getAnnotations()));
+		}
+		
+		return false;
+	}
 
   protected boolean match(ATerm pattern, List<Object> list) {
     if (equals(pattern)) {
