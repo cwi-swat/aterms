@@ -135,22 +135,23 @@ ATerm *stack_top()
 
 /*}}}  */
 
-/*{{{  static void mark_memory(ATerm *start, ATerm *stop) */
+/*{{{  static void mark_memory(ATerm *start, ATerm *stop, ATbool check_term) */
 
-static void mark_memory(ATerm *start, ATerm *stop)
+static void mark_memory(ATerm *start, ATerm *stop, ATbool check_term)
 {
   ATerm *cur, real_term;
-#ifdef AT_64BIT
-  ATerm odd_term;
-  AFun odd_sym;
-#endif
     /*fprintf(stderr,"---> mark_memory phase [%x,%x]\n",start,stop);*/
     /* Traverse the stack */
-  for(cur=start; cur<stop; cur++) {
-    if(AT_isPotentialTerm(*cur)) {
-      real_term = AT_isInsideValidTerm(*cur);
-      if (real_term != NULL) {
-        if(!IS_MARKED((real_term)->header)) {
+  for(cur=start; cur<stop; cur++) { 
+    if ((!check_term) || AT_isPotentialTerm(*cur)) { 
+      if (check_term) { 
+        real_term = AT_isInsideValidTerm(*cur);
+      }
+      else { 
+        real_term = *cur;
+      }
+      if (real_term != NULL) { 
+        if(!IS_MARKED((real_term)->header)) { 
           AT_markTerm(real_term);
             /*printf("mark_memory: cur = %x\ttop sym = %s\n",cur,ATgetName(ATgetAFun(real_term)));*/
             /*nb_cell_in_stack++;*/
@@ -161,40 +162,25 @@ static void mark_memory(ATerm *start, ATerm *stop)
       AT_markSymbol((Symbol)*cur);
         /*nb_cell_in_stack++;*/
     }
-
-#ifdef AT_64BIT
-    odd_term = *((ATerm *)((MachineWord)cur)+4);
-    real_term = AT_isInsideValidTerm(odd_term);
-    if (real_term != NULL) {
-      if(!IS_MARKED((real_term)->header)) {
-        AT_markTerm(odd_term);
-      }
-    }
-
-    odd_sym = *((AFun *)((MachineWord)cur)+4);
-    if (AT_isValidSymbol(odd_sym)) {
-        /*fprintf(stderr,"mark_memory: AT_markSymbol(%d)\n",odd_sym);*/
-      AT_markSymbol(odd_sym);
-    }
-#endif
   }
 }
 
 /*}}}  */
-/*{{{  static void mark_memory_young(ATerm *start, ATerm *stop)  */
+/*{{{  static void mark_memory_young(ATerm *start, ATerm *stop, ATbool check_term)  */
 
-static void mark_memory_young(ATerm *start, ATerm *stop) 
+static void mark_memory_young(ATerm *start, ATerm *stop, ATbool check_term)
 {
   ATerm *cur, real_term;
-#ifdef AT_64BIT
-  ATerm odd_term;
-  AFun odd_sym;
-#endif
     /*fprintf(stderr,"---> mark_memory_young phase [%x,%x]\n",start,stop);*/
     /* Traverse the stack */
-  for(cur=start; cur<stop; cur++) {
-    if(AT_isPotentialTerm(*cur)) {
-      real_term = AT_isInsideValidTerm(*cur);
+  for(cur=start; cur<stop; cur++) { 
+    if ((!check_term) || AT_isPotentialTerm(*cur)) { 
+      if (check_term){ 
+        real_term = AT_isInsideValidTerm(*cur);
+      }
+      else { 
+        real_term = *cur;
+      }
       if (real_term != NULL) {
         if(!IS_MARKED(real_term->header)) {
           AT_markTerm_young(real_term);
@@ -207,22 +193,6 @@ static void mark_memory_young(ATerm *start, ATerm *stop)
       AT_markSymbol_young((Symbol)*cur);
         /*nb_cell_in_stack++;*/
     }
-
-#ifdef AT_64BIT
-    odd_term = *((ATerm *)((MachineWord)cur)+4);
-    real_term = AT_isInsideValidTerm(odd_term);
-    if (real_term != NULL) {
-      if(!IS_MARKED(real_term->header)) {
-        AT_markTerm_young(odd_term);
-      }
-    }
-
-    odd_sym = *((AFun *)((MachineWord)cur)+4);
-    if (AT_isValidSymbol(odd_sym)) {
-        /*fprintf(stderr,"mark_memory_young: AT_markSymbol_young(%d)\n",odd_sym);*/
-      AT_markSymbol_young(odd_sym);
-    }
-#endif
   }
 }
 
@@ -237,9 +207,9 @@ void ATmarkArray(ATerm *start, int size)
 {
   if ( at_mark_young == ATtrue )
   {
-	  mark_memory_young(start,start+size);
+	  mark_memory_young(start,start+size,ATfalse);
   } else {
-	  mark_memory(start,start+size);
+	  mark_memory(start,start+size,ATfalse);
   }
 }
 
@@ -319,7 +289,7 @@ VOIDCDECL mark_phase()
 
   start = (ATerm *)((char *)env);
   stop  = ((ATerm *)(((char *)env) + sizeof(jmp_buf)));
-  mark_memory(start, stop);
+  mark_memory(start, stop, ATtrue);
 #endif
 
   stackTop = stack_top();
@@ -331,7 +301,7 @@ VOIDCDECL mark_phase()
   stack_size = stop-start;
   STATS(stack_depth, stack_size);
 
-  mark_memory(start, stop);
+  mark_memory(start, stop, ATtrue);
 
   /* Traverse protected terms */
   for(i=0; i<at_prot_table_size; i++) {
@@ -346,12 +316,12 @@ VOIDCDECL mark_phase()
   }
 
   for (prot=at_prot_memory; prot != NULL; prot=prot->next) {
-    mark_memory((ATerm *)prot->start, (ATerm *)(((void *)prot->start) + prot->size));
+    mark_memory((ATerm *)prot->start, (ATerm *)(((void *)prot->start) + prot->size), ATfalse);
   }
   
   for (pblock=protected_blocks; pblock != NULL; pblock=pblock->next) {
     if (pblock->protsize>0)
-      mark_memory(pblock->term, &pblock->term[pblock->protsize]);
+      mark_memory(pblock->term, &pblock->term[pblock->protsize], ATfalse);
   }
   
   at_mark_young = ATfalse;
@@ -444,7 +414,7 @@ VOIDCDECL mark_phase_young()
 
   start = (ATerm *)((char *)env);
   stop  = ((ATerm *)(((char *)env) + sizeof(jmp_buf)));
-  mark_memory_young(start, stop);
+  mark_memory_young(start, stop, ATtrue);
 #endif
 
   stackTop = stack_top();
@@ -454,7 +424,7 @@ VOIDCDECL mark_phase_young()
   stack_size = stop-start;
   STATS(stack_depth, stack_size);
 
-  mark_memory_young(start, stop);
+  mark_memory_young(start, stop, ATtrue);
 
   /* Traverse protected terms */
   for(i=0; i<at_prot_table_size; i++) {
@@ -469,12 +439,12 @@ VOIDCDECL mark_phase_young()
   }
 
   for (prot=at_prot_memory; prot != NULL; prot=prot->next) {
-    mark_memory_young((ATerm *)prot->start, (ATerm *)(((void *)prot->start) + prot->size));
+    mark_memory_young((ATerm *)prot->start, (ATerm *)(((void *)prot->start) + prot->size), ATfalse);
   }
   
   for (pblock=protected_blocks; pblock != NULL; pblock=pblock->next) {
     if (pblock->protsize>0)
-      mark_memory_young(pblock->term, &pblock->term[pblock->protsize]);
+      mark_memory_young(pblock->term, &pblock->term[pblock->protsize], ATfalse);
   }
   
   at_mark_young = ATtrue;

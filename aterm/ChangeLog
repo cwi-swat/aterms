@@ -1,6 +1,10 @@
 $Id$
 
-Thu Jan 15 16:12:50 CEST 2008 <lankamp@cwi.nl>
+Thu Apr  9 13:58:00 CEST 2009 <eriks@win.tue.nl>
+ * aterm/gc.c: Applied patch supplied by Jan-Friso Grootte:
+   Reduces garbage collection time
+
+Thu Jan 15 16:12:50 CEST 2009 <lankamp@cwi.nl>
  * aterm/byteencoding.c: Fixed the byteencoding of 64-bit integers. While
  integers in SAF are defined to be 4 bytes, systems that use 8 byte integers
  should not encounter problems while reading / writing SAF (though they will
