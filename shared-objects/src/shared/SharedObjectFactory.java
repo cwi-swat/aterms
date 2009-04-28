@@ -68,8 +68,7 @@ public class SharedObjectFactory{
 	 * Removes stale entries from the set.
 	 */
 	public void cleanup(){
-		int nrOfSegments = segments.length;
-		for(int i = 0; i < nrOfSegments; i++){
+		for(int i = segments.length - 1; i >= 0; i--){
 			Segment segment = segments[i];
 			synchronized(segment){
 				segment.cleanup();
