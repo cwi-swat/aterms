@@ -1,5 +1,5 @@
-#ifndef HASHTABLE_H_
-#define HASHTABLE_H_
+#ifndef IDMAPPINGS_H_
+#define IDMAPPINGS_H_
 
 #ifdef __cplusplus
 extern "C"
@@ -46,4 +46,4 @@ void IMdestroyIDMappings(IDMappings idMappings);
 }
 #endif /* __cplusplus */
 
-#endif /* HASHTABLE_H_ */
+#endif /* IDMAPPINGS_H_ */
