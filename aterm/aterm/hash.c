@@ -96,26 +96,12 @@ static long approximatepowerof2(long n)
 /*{{{  static long calc_long_max() */
 static long calc_long_max()
 {
-  long try_long_max;
-  long long_max;
-  long delta;
-
-  try_long_max = 1;
-  do {
-    long_max = try_long_max;
-    try_long_max = long_max * 2;
-  } while (try_long_max > 0);
-
-  delta = long_max;
-  while (delta > 1) {
-    while (long_max + delta < 0) {
-      delta /= 2;
+    long long_max = 0;
+    int i = 0;
+    for ( ; i < ( sizeof(long)*8 - 1); ++i) {
+	long_max = ( long_max << 1 ) + 1 ;
     }
-    long_max += delta;
-  }
-
-  return long_max;
-
+    return long_max;
 }
 /*}}}  */
 /*{{{  static long calculateNewSize(sizeMinus1, nrdel, nrentries) */

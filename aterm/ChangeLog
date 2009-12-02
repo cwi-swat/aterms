@@ -1,5 +1,10 @@
 $Id$
 
+Wed Dec  2 12:30:12 CEST 2009 <eriks@win.tue.nl>
+ * aterm/hash.c: Applied patch to bug #841 supplied by Mark Hills:
+   Modified calc_long_max() logic to calculate MAX_LONG without depending 
+   on overflow
+
 Thu Apr  9 13:58:00 CEST 2009 <eriks@win.tue.nl>
  * aterm/gc.c: Applied patch supplied by Jan-Friso Grootte:
    Reduces garbage collection time
