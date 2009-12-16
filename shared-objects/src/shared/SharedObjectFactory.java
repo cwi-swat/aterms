@@ -136,8 +136,7 @@ public class SharedObjectFactory{
 		private final static float DEFAULT_LOAD_FACTOR = 2f;
 		
 		private volatile Entry[] entries;
-
-		private volatile int hashMask;
+		
 		private int bitSize;
 		
 		private int threshold;
@@ -170,8 +169,6 @@ public class SharedObjectFactory{
 			bitSize = DEFAULT_SEGMENT_BITSIZE;
 			int nrOfEntries = 1 << bitSize;
 			
-			hashMask = nrOfEntries - 1;
-			
 			entries = new Entry[nrOfEntries];
 			
 			threshold = (int) (nrOfEntries * DEFAULT_LOAD_FACTOR);
@@ -196,7 +193,7 @@ public class SharedObjectFactory{
 			Entry[] table = entries;
 			int newLoad = load;
 			
-			for(int i = hashMask; i >= 0; i--){
+			for(int i = entries.length - 1; i >= 0; i--){
 				Entry e = table[i];
 				if(e != null){
 					Entry previous = null;
@@ -244,8 +241,8 @@ public class SharedObjectFactory{
 			
 			// Construct temporary entries that function as roots for the entries that remain in the current bucket
 			// and those that are being shifted.
-			Entry currentEntryRoot = new Entry(null, 0);
-			Entry shiftedEntryRoot = new Entry(null, 0);
+			Entry currentEntryRoot = new Entry(null, null, 0);
+			Entry shiftedEntryRoot = new Entry(null, null, 0);
 			
 			int newLoad = load;
 			int oldSize = oldEntries.length;
@@ -290,7 +287,6 @@ public class SharedObjectFactory{
 			
 			threshold <<= 1;
 			entries = newEntries; // Volatile write. Creates happens-before edge with the above changes.
-			hashMask = newHashMask;
 		}
 		
 		/**
@@ -351,26 +347,25 @@ public class SharedObjectFactory{
 		 *            The hash the corresponds to the given shared object.
 		 */
 		private void put(SharedObject object, int hash){
-			Entry e;
+			Entry[] table = entries;
+			int hashMask = table.length - 1;
+			int position = hash & hashMask;
+			
+			Entry next = table[position];
 			// Assign a unique id if needed.
 			if(object instanceof SharedObjectWithID){
 				SharedObjectWithID sharedObjectWithID = (SharedObjectWithID) object;
 				int id = generateID();
 				sharedObjectWithID.setUniqueIdentifier(id);
 				
-				e = new EntryWithID(sharedObjectWithID, hash, id);
+				table[position] = new EntryWithID(next, sharedObjectWithID, hash, id);
 			}else{
-				e = new Entry(object, hash);
+				table[position] = new Entry(next, object, hash);
 			}
-			
-			Entry[] table = entries;
-			int position = hash & hashMask;
-			e.next = table[position];
-			table[position] = e;
 			
 			load++;
 			
-			table = entries; // Create a happens-before edge for the added entry, to ensure visibility.
+			entries = table; // Create a happens-before edge for the added entry, to ensure visibility.
 		}
 		
 		/**
@@ -384,9 +379,12 @@ public class SharedObjectFactory{
 		 * @return True if this segment contains the given shared object; false otherwise.
 		 */
 		public boolean contains(SharedObject prototype, int hash){
+			Entry[] currentEntries = entries;
+			int hashMask = currentEntries.length - 1;
+			
 			// Find the object (lock free).
 			int position = hash & hashMask;
-			Entry e = entries[position];
+			Entry e = currentEntries[position];
 			if(e != null){
 				do{
 					if(e.get() == prototype) return true;
@@ -395,9 +393,12 @@ public class SharedObjectFactory{
 			}
 			
 			synchronized(this){
+				currentEntries = entries;
+				hashMask = currentEntries.length - 1;
+				
 				// Try again while holding the global lock for this segment.
 				position = hash & hashMask;
-				e = entries[position];
+				e = currentEntries[position];
 				if(e != null){
 					do{
 						if(e.get() == prototype) return true;
@@ -422,9 +423,12 @@ public class SharedObjectFactory{
 			// Cleanup if necessary.
 			tryCleanup();
 			
+			Entry[] currentEntries = entries;
+			int hashMask = currentEntries.length - 1;
+			
 			// Find the object (lock free).
 			int position = hash & hashMask;
-			Entry e = entries[position];
+			Entry e = currentEntries[position];
 			if(e != null){
 				do{
 					if(hash == e.hash){
@@ -441,8 +445,10 @@ public class SharedObjectFactory{
 			
 			synchronized(this){
 				// Try again while holding the global lock for this segment.
+				currentEntries = entries;
+				hashMask = currentEntries.length - 1;
 				position = hash & hashMask;
-				e = entries[position];
+				e = currentEntries[position];
 				if(e != null){
 					do{
 						if(hash == e.hash){
@@ -632,19 +638,22 @@ public class SharedObjectFactory{
 		 */
 		private static class Entry extends WeakReference<SharedObject>{
 			public final int hash;
-			public Entry next; // This field is not final because we need to change it during cleanup and while rehashing.
+			public volatile Entry next; // This field is not final because we need to change it during cleanup and while rehashing.
 			
 			/**
 			 * Constructor.
 			 * 
+			 * @param next
+			 *            The next entry in the bucket.
 			 * @param sharedObject
 			 *            The shared object.
 			 * @param hash
 			 *            The hash that is associated with the given shared object.
 			 */
-			public Entry(SharedObject sharedObject, int hash){
+			public Entry(Entry next, SharedObject sharedObject, int hash){
 				super(sharedObject);
 				
+				this.next = next;
 				this.hash = hash;
 			}
 		}
@@ -660,6 +669,8 @@ public class SharedObjectFactory{
 			/**
 			 * Constructor.
 			 * 
+			 * @param next
+			 *            The next entry in the bucket.
 			 * @param sharedObjectWithID
 			 *            The shared object.
 			 * @param hash
@@ -667,8 +678,8 @@ public class SharedObjectFactory{
 			 * @param id
 			 *            The unique identifier.
 			 */
-			public EntryWithID(SharedObjectWithID sharedObjectWithID, int hash, int id){
-				super(sharedObjectWithID, hash);
+			public EntryWithID(Entry next, SharedObjectWithID sharedObjectWithID, int hash, int id){
+				super(next, sharedObjectWithID, hash);
 				
 				this.id = id;
 			}
