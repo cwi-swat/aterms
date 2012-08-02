@@ -1,0 +1,31 @@
+Suggestions:
+Uses Enum type for ATerm types INT, REAL, BLOB etc. (see Aterm.cs)
+
+InputStream -> System.IO.Stream
+InputOutputStream -> System.IO.Stream
+
+Questions:
+-How to define constants? e.g. static byte START_OF_SHARED_TEXT_FILE = (byte)'!'; in ATermFactory.java
+
+
+- fillInStackTrace?? (Fwd.cs)
+
+-WeakReference.clear() -> <obj>.Target = null
+-ByteArrayoutputStream -> MemoryStream?
+-String.valueOf -> ToString
+-PrintStream -> StreamWriter
+- lock  private ATerm parseFromReader(ATermReader reader) // throws IOException 
+   what does "lock" mean in PureFactory?
+-Why are constructors of Impl classes protected? How can they get instantiated in PureFactory?
+ Idem for AtermList.init and initHashCode functions
+-ATermVisitableImpl implements ATerm.Visiatable, not JJTraveler.IVisitable.
+   Why then, is accept method not declared in ATermVisitableImpl?
+   
+   
+- Is serialize in ATermApplImple overriding a Java method? What is corresponding C# 
+
+
+- Made names of visitors aterm-specific: 
+   Visitor -> ATermVisitor
+   Visitable -> ATermVisitable
+   Fwd -> ATerm Fwd
