@@ -1,0 +1,15 @@
+package
+identification
+  name=xml
+  version=0.3.1
+  location=http://www.cwi.nl/projects/MetaEnv/__PACKAGE__
+  info=http://www.cwi.nl/projects/MetaEnv/__PACKAGE__
+  description='A package containing aterm2xml and xml2aterm'
+  keywords=ATerm, XML, translation
+
+configuration interface
+  
+requires
+  aterm 2.4.2
+
+libxml2 2.4.22

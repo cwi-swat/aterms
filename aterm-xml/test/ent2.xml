@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE XML
+
+[
+ <!ENTITY hoi '<aap>sjaak</aap>'>
+ <!ENTITY name '&hoi;'>
+]>
+
+<doc a="b" c="d">hoi<br length="3"/>
+                 
+    &name;
+<weg/>
+<test pietje="puk"  aap="mies" jan="piet">hallo</test>
+</doc>

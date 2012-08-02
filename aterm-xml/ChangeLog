@@ -1,0 +1,71 @@
+$Id$
+
+Thu Sep 18 10:28:16 CEST 2008 <jurgenv@cwi.nl>
+ * xml2aterm/*.c: added casts to (const char*) to fix a number of warnings.
+   I don't think that actually fixes a bug, so caveat emptor. 
+
+Wed Sep 17 17:34:55 CEST 2008 <jurgenv@cwi.nl>
+ * adapted to current build environment
+
+Thu 21 Aug 2008 12:51:24 BST <gre@ecs.soton.ac.uk>
+ * xml2aterm/Makefile.am: fixed sed script error.
+
+Wed Aug 17 10:06:07 CEST 2005 <jong@cwi.nl>
+ * configure.in:
+   - add libtool support
+
+Tue Sep 28 13:50:23 CEST 2004 <jurgenv@cwi.nl>
+ * Brought up-to-date with new glt package layout.
+
+Thu Jun 10 09:53:19 CEST 2004 <jong@cwi.nl>
+ * xml2aterm/xml2aterm.c: fix gcc warnings about type punned pointer stuff
+
+2003-10-14 (jurgenv@cwi.nl)
+  * Added generation of aterm2xml static library
+  * Bumped to version 0.3
+
+2003-06-27 (jurgenv@cwi.nl)
+  * Added package definition file
+
+2003-05-30 (jurgenv@cwi.nl)
+  * Fixed error in configure.in script
+
+2003-01-22 (jurgenv@cwi.nl)
+  * Release 0.2
+  * LGPL license
+
+2002-07-29 (jurgenv@cwi.nl)
+  * Bumped to 0.2beta
+
+2002-07-29 (jurgenv@cwi.nl)
+  * Changed configuration option --with-xml to --with-libxml2 to
+    conform with autobundle
+  * Delayed calling xml2-config to build time 
+  * Re-released 0.1 (just enhanced configuration, no new functionality)
+
+2002-07-24 (jurgenv@cwi.nl)
+  * Made aterm2xml compliant with Meta-Environment commandline interface
+  * Made xml2aterm compliant with Meta-Environment commandline interface
+  * Release 0.1
+
+2002-07-10 (jong@cwi.nl)
+  * Fix configuration bug: look for xml2-config, not xml-config
+  * Fix dates in ChangeLog: format yyyy-mm-dd
+
+2002-07-04 (kasperh@science.uva.nl, jurgenv@cwi.nl)
+  * Put aterm-xml in the CVS repository
+
+2002-05-01 (kasperh@science.uva.nl)
+  * rewrote some functions to make better use of the ATerm
+    library.
+
+2002-03-01 (jurgenv@cwi.nl)
+  * added --with-xml option. If config-xml is your PATH
+    the configure scripts finds out automatically where the xml
+    library is. If if it is not in your PATH you need to set
+    it using --with-xml=path/to/xml/directory
+  * added --with-aterm option.
+  * added tests
+
+2002-03-01 (kasperh@science.uva.nl)
+  * initial version 0.1
