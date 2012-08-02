@@ -1,0 +1,135 @@
+
+
+Mon Oct  6 10:46:48 CEST 2008 <jurgenv@cwi.nl>
+ * Bumped version number
+
+Fri May 30 11:38:54 CEST 2007 <lankamp@cwi.nl>
+ * Added a 'contains' method, which can check for the presence of specific shared objects in the factory.
+
+Sun Dec  2 21:31:53 EST 2007 <jurgenv@cwi.nl>
+ * Added some svn log events to this ChangeLog for completeness, and it will trigger a build:
+
+Fri, 16 10:06:31 2007 <lankamp@cwi.nl>
+ * Fixed a thread-safety problem.
+   The initialization of the next pointer in an entry can happen out of order with the assignment of the entry in the table.
+   In rare cases this could result in (temporarily) broken bucket chains.
+   Because of this there was a slight chance that an already shared object could not be located eventhough it was present.
+
+Fri Nov 09 10:19:26 2007 <lankamp@cwi.nl>
+ * Reduced memory usage, by scaling down the size of the freeIDs array when it contains too much empty space.
+
+2007-11-04  Pem  <pem@piano.local>
+ * very small improve of the get method (inline of findObject,
+   discriminate on e.hash first, try to avoid the findObjectWhileUnderLock)
+ * re-indent the copyright and apply Java Sun's style
+
+Mon Aug 13 14:53:40 <lankamp@cwi.nl>
+ * Made the SharedObjectFactory and SingletonSharedObjectFactory thread-safe.
+ * The performance should also be noticably better then that of the 'current' version.
+
+2007-05-06  Pem  <pem@piano.local>
+ * Changed license to BSD
+
+Tue Jul 25 09:16:05 CEST 2006 <{kooiker,jurgenv}@cwi.nl,martin.bravenboer@gmail.com>
+ * **: adapted package to use the standard meta-build-env.
+ * *.jar: removed jarfile from version control
+
+Tue Jun 27 14:24:05 CEST 2006 <jurgenv@cwi.nl>
+ * doc: added generation of documentation site using doxygen.
+
+Thu Jun  8 13:33:30 CEST 2006 <gerco@cwi.nl>
+ * src/sharedSharedObjectFactory.java:
+   - Comment out the declaration of nbHashingCollision since
+     all its uses are also commented out (removes warning).
+
+Thu Mar  2 16:10:25 CET 2006 <Antoine.Reilles@loria.fr>
+ * src/shared/HashFunctions: add stringHashFunction
+
+Mon Aug 15 15:33:29 CEST 2005 <kooiker@cwi.nl>
+ * init-package.m4: fix underquoted GLT_INIT_PACKAGE macro
+
+Mon Jul  4 08:51:22 CEST 2005 <jurgenv@cwi.nl>
+ * Fixed java_make_rule, had wrong reference to top_srcdir
+ * Note that building in Java only works if configured with
+   --enable-maintainer-mode.
+
+Wed May 25 15:58:27 CEST 2005 <kooiker@cwi.nl>
+ * src/shared/SharedObjectFactory.java:
+   - Solved Eclipse warnings about unnecessary else en throws
+
+Wed Apr 27 10:24:47 CEST 2005 <kooiker@cwi.nl>
+ * Create JDK 1.4 compatible jars
+
+Mon Apr 25 13:25:03 CEST 2005 <{jon,kooiker}@cwi.nl>
+ * generate shared-objects-config using JARFILE and ${pkgdatadir}
+
+Mon Apr 25 11:13:09 CEST 2005 <kooiker@cwi.nl>
+ * Change ant build to match general build pattern
+
+Mon Apr 11 15:23:52 CEST 2005 <kooiker@cwi.nl>
+ * build.xml:
+   - add debug information to compiled java sources
+
+Fri Apr  8 11:50:51 CEST 2005 <kooiker@cwi.nl>
+ * use ant
+ * To build the jar you have to use --enable-maintainer-mode
+
+Tue Feb 10 15:27:49 CET 2004 <m336@cwi.nl>
+ * upgrade auto* to: autoconf 2.59, automake 1.7.9, libtool 1.5.2
+
+Mon Feb  2 14:33:06 CET 2004 <jong@cwi.nl>
+ * Makefile.am: add generated package file to CLEANFILES
+ * configure.in: remove prereq on ac 2.13
+
+2004/01/30 <jurgenv@cwi.nl>
+ * Compliant with automake-1.6
+
+2003/07/02    <jurgenv@cwi.nl>
+ * Bumped to 1.4
+ * Added javadoc comments to the SharedObject interface.
+ 
+Tue Aug 12 09:05:01 CEST 2003 <{jong,kooiker}@cwi.nl>
+ * removed private member 'initialCapacity' which was assigned
+   a value which was never locally read (thanks Eclipse).
+
+2003/07/02    <jurgenv@cwi.nl>
+ * Release 1.3
+
+2003/06/26    <jurgenv@cwi.nl>
+ * Added package definition file
+
+2003-05-15    <jurgenv@cwi.nl>
+ * Changed getId() to getUniqueIdentifier() and also for set.
+ * Bumped to 1.3beta
+
+2003-05-15    <Julien.Guyon@loria.fr>
+ * Introduce new interface SharedObjectWithID (With get/setId methods)
+ * Modify factory so that a unique timestamp is assign to each created ATerm
+
+2003-04-22    <jurgenv@cwi.nl>
+  * Release 1.2
+
+2003-03-18    <jurgenv@cwi.nl>
+  * shared-objects-config prints current name of exported jar file
+    including the correct version number
+  * Bumped to 1.2beta
+
+2003-01-22    <jurgenv@cwi.nl>
+  * Release 1.1
+  * Changed license to LGPL
+
+2002-12-16    <jurgenv@cwi.nl>
+  * Bumped to 1.1beta
+  * Renamed 'Object clone()' to 'SharedObject duplicate()'
+  * Renamed 'Object build(SharedObject prototype)' to 'SharedObject build(SharedObject prototype)'
+  
+2002-11-19    <vinju@loria.fr>
+  * Release 1.0
+  
+2002-10-29    <vinju@loria.fr>
+  * Added ugly config script in order to detect the location of this 
+    package easily in the aterm-java package
+    
+2002-10-??    <{jong,olivierp}@cwi.nl> <{vinju,moreau}@loria.fr>
+  * Created new package shared-objects. This was the kernel of the ATerm PureFactory
+    that can now be used to create factories for maximally shared objects of any type
