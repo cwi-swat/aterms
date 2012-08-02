@@ -1,0 +1,1209 @@
+$Id$
+
+Wed Dec  2 12:30:12 CEST 2009 <eriks@win.tue.nl>
+ * aterm/hash.c: Applied patch to bug #841 supplied by Mark Hills:
+   Modified calc_long_max() logic to calculate MAX_LONG without depending 
+   on overflow
+
+Thu Apr  9 13:58:00 CEST 2009 <eriks@win.tue.nl>
+ * aterm/gc.c: Applied patch supplied by Jan-Friso Grootte:
+   Reduces garbage collection time
+
+Thu Jan 15 16:12:50 CEST 2009 <lankamp@cwi.nl>
+ * aterm/byteencoding.c: Fixed the byteencoding of 64-bit integers. While
+ integers in SAF are defined to be 4 bytes, systems that use 8 byte integers
+ should not encounter problems while reading / writing SAF (though they will
+ naturally loose precision).
+
+Tue Sep 16 11:16:60 CEST 2008 <basten@cwi.nl>
+ * aterm/aterm.c: Added warnings for unsuccessful fopen() calls.
+	
+Mon Jun  9 13:15:55 CEST 2008 <jurgenv@cwi.nl>
+ * aterm.pc.in: bumped to 2.7 because SDF needs to be released.
+
+Tue May 06 11:27:06 CEST 2008 <lankamp@cwi.nl>
+ * aterm/memory.c: Fixed a problem related to the tail-sharing of ATermLists
+ which have annotations.
+
+Fri Feb 22 17:58:36 EST 2008 <jurgenv@cwi.nl>
+ * aterm/aterm.c: fix for setting stdio to binary mode. It must be done
+   before the first character is read, after that the _setmode function
+   will not have the desired effect on windows. I don't understand exactly
+   why this is the case, but it works now.
+
+Fri Feb 22 10:55:43 EST 2008 <jurgenv@cwi.nl>
+ * aterm/[bs]afio.c: for opening stdin and stdout in binary mode I've 
+   replaced the preprocessor conditional 'WIN32' by '_WIN32 || WIN32'. 
+   WIN32 stands for native windows compilation, such as also can be found
+   in aterm/gc.c, but this seems not to be active for mingw cross compilation.
+   Instead, mingw should defines _WIN32.
+ * aterm/aterm.c: removed superfluous include of fnctl.h
+
+Thu Feb 21 10:04:20 EST 2008 <jurgenv@cwi.nl>
+ * aterm/safio.c,aterm/aterm.c: removed setting of stdin,stdout and stderr
+   to binary mode by default in ATinit. The code that actually needs it
+   was already doing that just before reading or writing from a file. The
+   question remains whether that works for stdin and stdout on Win32 still.
+   I added the code to set the file to binary in safio.c, because it was
+   missing there.
+ * aterm/safio.c,aterm/aterm.c: added check for stdin/stdout before setting
+   the mode of the file. It is the responsibility of the user to set
+   the file to binary mode if he wants to write a binary file. However,
+   for stdin and stdout we still take care of this for the user since they
+   are already open.
+
+Tue Jan 22 15:49:17 CEST 2008 <lankamp@cwi.nl>
+  * Fixed an overflow problem in the SAF I/O reader.
+
+Wed Jan 01 14:00:22 CEST 2008 <lankamp@cwi.nl>
+ * aterm/safio.c     : Changed the hashtable (void* -> void*) into and an idmap (void* -> int);
+   aterm/hashtable.c : this way we no longer need the integer store in SAF I/O, which reduced memory usage, increases performance and eliminates shared resources.
+   aterm/idmappings.c: This should make things easier for the thread-safe library conversion.
+
+Wed Jan 01 11:49:58 CEST 2008 <lankamp@cwi.nl>
+ * aterm/test/testsafio.c: Added a test for SAF I/O to check if the (de-)serialization of deeply nested terms works properly.
+
+Thu Dec 20 10:45:00 CEST 2007 <lankamp@cwi.nl>
+ * aterm/safio.c: Fixed off-by-one error in ensure***Capacity functions.
+
+Fri Dec 14 13:25:00 CEST 2007 <lankamp@cwi.nl>
+ * aterm/safio.c: ATwriteToNamedSAFFile closed stdout, this no longer happens.
+                  ATreadFromNamedSAFFile is now able to read from stdin.
+
+Fri Dec 14 10:58:00 CEST 2007 <lankamp@cwi.nl>
+ * aterm/safio.c: Passing "-" to ATwriteToNamedSAFFile now assumes you mean stdout, like the similarly named BAF function does.
+
+Thu Dec 13 11:05:00 CEST 2007 <lankamp@cwi.nl>
+ * aterm/safio.c: Fixed some compiler warnings.
+
+Thu Dec 13 10:52:00 CEST 2007 <lankamp@cwi.nl>
+ * aterm/safio.c: The SAF read and write functions no longer use ATerror as error mechanism when something goes wrong.
+                  Instead they issue a warning and return either NULL or ATfalse (like the similar BAF read/write functions do).
+
+Thu Dec 06 15:35:25 CEST 2007 <lankamp@cwi.nl>
+ * aterm/aterm1.h: Moved ATread/write***SAF*** function declarations from safio.h to aterm1.h.
+                   This is inline with how it is for the other formats.
+
+Fri Nov 30 10:44:20 CEST 2007 <lankamp@cwi.nl>
+ * test/Makefile.am: Fixed an error / warning that popped up when running reconf.
+ * aterm/safio.c:    Added functions for reading and writing strings in SAF format.
+                     Added functions for reading and writing named SAF files.
+
+Wed Nov 21 09:34:56 CET 2007 <{kooiker,lankamp}@cwi.nl>
+ * aterm/aterm.c: set standard streams to binary mode for WIN32
+
+Tue Aug 14 16:31:18 CEST 2007 <jurgenv@cwi.nl>
+ * aterm/aterm1.h: moved struct definitions to aterm/encoding.h such that
+   aterm1.h contains only API stuff and not hidden implementation details.
+ * aterm/aterm1.h: doxygen'd aterm1.h
+
+Tue Aug 14 11:48:54 CEST 2007 <lankamp@cwi.nl>
+ * aterm/safio.c: Fixed a bug related to writing blobs using SAF I/O that caused the result to be corrupt and could possibly trigger a coredump.
+
+Mon Aug 13 13:15:48 CEST 2007 <jurgenv@cwi.nl>
+ * doc: removed this directory in its entirety. It is now in meta-doc/
+   sandbox/to-be-converted. 
+
+Mon Aug  6 11:44:07 CEST 2007 <jurgenv@cwi.nl>
+ * doc/Makefile.am: this makefile did not work correctly on SunOs. Also,
+   it depends on the availability of latex and related tools. Also, we
+   are converting all documentation to docbook files in the meta-doc package.
+   As an intermediate step, I've renamed the automatic targets for at.ps
+   (ATerm paper) and manual.ps (ATerm manual) to 'paper' and 'manual', such
+   that automake targets such as 'make distcheck' and 'make doc' do not
+   automatically trigger calls to latex anymore. This should fix our
+   continuous builds on Mac OS X and and Solaris 10 in the build farm.
+
+Fri Aug 03 4:12:30 CEST 2007 <lankamp@cwi.nl>
+ * aterm/safio.c: Fixed a problem related to the protection of symbols.
+   ATprotectArray doesn't support protecting symbols (the garbage collector can't handle it), so now they are being protected and unprotected induvidually.
+
+Mon Jul 23 11:33:58 CEST 2007 <lankamp@cwi.nl>
+ * aterm/byteencoding.c: We no longer need to rely on certain header files for
+encoding doubles in ieee754 format. Those were not available on all platforms.
+For portability, we have our own implementation now which also
+takes care of endianness.
+ * configure.ac: Autoconf now checks the endianness of the system, so we don't have to do it in code.
+ * float-order.m4: Created an autoconf script that is able to determain the float word order.
+   (All of the above changes are needed for SAF I/O's byte encoding).
+ * aterm/memory.c,test/saftest.c: Fixed some 'signedness' warnings that popped up while compiling on MacOS.
+
+Mon Jul 02 11:36:00 CET 2007 <eriks@win.tue.nl>
+ * Merged the protected-memory-management branch with the trunk.
+   This branch offers faster memory management functions for blocks of protected
+   terms. All calls to malloc, alloc, realloc and free in the ATerm library
+   should be replaced with calls to AT_malloc, AT_alloc, AT_realloc and AT_free.
+   Calls like "terms = AT_alloc(size, sizeof(ATerm*)); ATprotectArray(terms)"
+   can be replaced with the much faster call "terms = AT_alloc_protected(size)".
+   The full list of new functions is defined in memory.h
+ * Used the new protected memory allocation routines to speed up the ATtable
+   and ATindexedSet implementations. The result is that some programs that
+   rely heavily on ATindexdSets are up to 20 times faster.
+
+Fri Jun 08 9:28:00 CET 2007 <lankamp@cwi.nl>
+ * Merged the improved serialization branch with the trunk.
+   This branch offers a new high performance (semi-) streamable ATerm format (aka SAF).
+ * Updated Baffle to support reading and writing SAF.
+ * Moved the incrementing of a term's age during garbage collection to the proper location.
+   It will no longer try to increment the age of terms that are already in the old generation, since that isn't nessacary.
+
+Mon Mar 19 12:59:56 CET 2007 <{kooiker,lankamp}@cwi.nl>
+ * aterm/memory.c: In ATsetArgument hide the age and mark fields in newly
+ generated term.
+
+Mon Mar 19 08:52:45 CET 2007 <jurgenv@cwi.nl>
+ * utils/dicttoc.c: added ATprotectAFun for every generated 
+   AFun. This is needed in case the AFun does not occur in any of the
+   terms. 
+
+Thu Mar 15 15:54:12 CET 2007 <eriks@win.tue.nl>
+ * Added patch supplied by Muck van Weerdenburg in bug 722:
+    It would be useful to have a way to tell the garbage collector that certain
+    ATerms need to be protected even though they are not protected with
+    ATprotect(Array). The reason being that, for instance, frequent reallocs of
+    ATerm arrays require a call to ATunprotectArray() and ATprotectArray() every
+    time. Also, in the case one uses C++ STL data structures as vectors, there
+    is no way to protect the internal array(s) used by such structures with
+    ATprotectArray().
+
+    In the mCRL2 toolset we have solved this by extending the ATerm library with
+    a way to register special functions. These functions are then called during
+    the mark phase of the garbage collector during which they can mark ATerms
+    themselves (with a new function ATmarkTerm). To illustrate:
+
+      ATerm *ats; // some dynamic array
+      unsigned int size_ats;
+      ATerm *single_term; // a pointer to a single ATerm
+
+      void protect_local_terms()
+        // this function will be called during the mark phase of the GC
+      {
+        ATmarkArray(ats,size_ats);
+        ATmarkTerm(*single_term);
+      }
+
+      // main code
+      ...
+      ATaddProtectFunction(protect_local_terms); // initialisation
+      ...
+
+Wed Mar 14 13:17:23 CET 2007 <eriks@win.tue.nl>
+ * aterm/*.c: use const unsigned char* (closes bug #411)
+
+Wed Feb 21 15:23:06 CET 2007 <{kooiker,jurgenv}@cwi.nl>
+ * utils/atreverse.c: added commandline tool for reversing a list.
+
+Mon Feb 5 11:34:12 CET 2007 <eriks@win.tue.nl>
+ * aterm/tafio.c: 
+     When writing an APPL with empty symbol and arity 0, write "()" instead 
+     of nothing. Also fixed an off by 1 error in counting the file size
+     when writing.
+   Closes bug #677
+
+Tue Jan 16 13:52:13 CET 2007 <kooiker@cwi.nl>
+ * aterm/aterm1.h:
+   - Add convenience macro ATprotectTerm to circumvent gcc's (correct) warning: 
+     "dereferencing type-punned pointer will break strict-aliasing rules"
+   - Add macro's for ATunprotectXXX
+
+Thu Dec 21 11:07:21 CET 2006 <eriks@win.tue.nl>
+ * All dynamic arrays that depend on the maximum arity have been combined into a single
+   structure.
+
+Tue Dec 19 15:50:27 CET 2006 <eriks@win.tue.nl>
+ * ATermBlob header arity value changed from 1 to 2
+
+Tue Dec 19 12:41:38 CET 2006 <eriks@win.tue.nl>
+ * MAX_ARITY redefined as the absolute maximum arity possible (that fits in the header)
+ * Administrative arrays will not grow more than needed in low_memory situation.
+ * MARK_STACK_MARGE uses dynamic maximum arity
+ * Removed use of MAX_ARITY from test/randgen.c
+
+Mon Dec 18 23:17:00 CET 2006 <eriks@win.tue.nl>
+ * Replaced static arrays in memory.c with dynamically growing arrays
+ * Added option -at-termsize to set initial maximum term size
+
+Mon Dec 18 12:02:00 CET 2006 <eriks@win.tue.nl>
+ * Removed static protoTerm array
+    This array had a fixed size, based on MAX_ARITY. Ultimately, we want to remove MAX_ARITY altogether. 
+    Removal of this static array is the first step.
+ * Moved hashvalue calculation into functions that can quicly calculate the hash instead of calling hash_number()
+ * Removed HASHPEM
+    Since we now use inline hashing in most functions, HASHPEM cannot be used anymore.
+ * Added a temporary ATerm array used by ATmakeAppl() and ATmakeList() that automatically grows when needed 
+   and is destroyed in low memory situations
+    In ATmakeAppl() this replaces the use of the protoTerm array, in ATmakeList() it replaces a local temporary
+    array.
+ * Converted tabs to whitespace
+
+Mon Dec 18 11:53:00 CET 2006 <eriks@win.tue.nl>
+ * Merged patches supplied by Martin Bravenboer:
+   * test/randgen.c: random and srandom are optional POSIX extensions (aka XSI) and
+     not available on all systems, for example not at Win32 when using MinGW for
+     compilation of the aterm library. There are portable alternatives: srand and
+     rand, which are required by ANSI C.
+
+     The attached patch uses srand and rand for generating random numbers on
+     Win32.
+   * The test termstats.c uses sys/times.h (times function, tms struct, clock_t
+     struct), which is not available on ANSI C systems.
+
+     To make the test work on Win32 when compiling using MinGW, the attached patch
+     disables the times-specific parts of the tests if WIN32 is defined.
+
+   Closes bugs #672 and #673
+
+Wed Dec 13 14:41:47 CET 2006 <{kooiker,jurgenv}@cwi.nl>
+ * aterm/aterm.c: fixed a bug in AT_unmarkAll, it did not unmark
+   the terms in the old generation. This fixes Bug #668.
+
+Wed Dec 13 10:31:52 CET 2006 <{lankamp,jurgenv}@cwi.nl>
+ * aterm/make.c: fixed an off by one error in makeArguments that
+   was probably introduced after changing the type of a local variable
+   from int to unsigned int.
+ * aterm/make.c: added curly braces and whitespace
+ * test/stress.c: added a test that triggers the off-by-one error
+
+Tue Dec 12 09:43:24 CET 2006 <jurgenv@cwi.nl,kooiker@cwi.nl>
+ * Merged code-tuning-tue branch with trunk.
+ * Bumped version to 2.5
+
+Tue Dec 12 09:36:17 CET 2006 <{kooiker,jurgenv}@cwi.nl>
+ * Merged in all changes from the trunk, to prepare for merging
+   this branch back to the trunk.
+
+Mon Aug 21 11:10:00 CEST 2006 <eriks@win.tue.nl>
+  * Clarified the Changelog in some areas
+  * Removed the NO_GLOBAL_BUFFERS experiment from this branch
+  * Removed unused arguments from test/fib.c mmain()
+
+Mon Aug 7 17:00:00 CEST 2006 <eriks@win.tue.nl>
+    Lists containing more than 2^22 elements have an invalid length
+    stored in the header. This is fixed by limiting the value stored
+    in the header to a maximum of 2^22-1 and counting the length of 
+    the list in these cases.
+
+Tue Aug  1 13:12:41 CEST 2006 <kooiker@cwi.nl>
+ * test/termstats.c: changed CLK_TCK into CLOCKS_PER_SEC since CLK_TCK appears 
+   to be obsolote.
+
+Thu Jul 27 16:03:37 CEST 2006 <jurgenv@cwi.nl>
+ * aterm/Makefile.am: removed compilation of -profs and -dbg libraries.
+   Reason: now we fully support the value of CFLAGS, so anybody can recompile
+   the library with different CFLAGS. Furthermore, because we install a
+   dynamically linked library, all binaries are updated at once (as long
+   as they link the dynamic version of course.
+
+Tue Jul 25 09:16:05 CEST 2006 <{kooiker,jurgenv}@cwi.nl,martin.bravenboer@gmail.com>
+ * **: adapted package to use the standard meta-build-env.
+ * README: removed all contents
+
+Tue Jun 27 15:38:20 CEST 2006 <jurgenv@cwi.nl>
+ * doc: added doc target for generating doxygen sites in MAINTAINER_MODE
+
+Tue Jun 20 15:36:40 CEST 2006 <jurgenv@cwi.nl>
+ * aterm/aterm.c: added ATwriteToNamedSharedTextFile function.
+
+Mon Jun 12 14:13:00 CEST 2006 <eriks@win.tue.nl>
+    Fixed the aliasing problem with GCC 4.1 by introducing a union.
+    The effect of the union is that accessing internal properties
+    of an ATerm now requires an additional reference, eg. if "at" is
+    an aterm, "at->next" now becomes "at->aterm->next".
+    Other elements of the new union are arrays of MachineWords to access
+    ATerm as an array. "((MachineWord*)at)[1]" can now be written
+    as with "at->word[1]". The first version is invalid according to 
+    the C99 standard.
+    Experimental: added #ifdefs to disable the use of global buffers
+    to allow multi-threading.
+
+Mon May 29 13:04:00 CEST 2006 <eriks@win.tue.nl>
+  * aterm/hash.c
+    Hash table re-alloc bug in hashResizeSet fix by Jan Friso Grootte
+
+Mon May  1 10:23:27 CEST 2006 <eriks@win.tue.nl>
+  * aterm/afun.c
+    Fixed a problem that occures with the GCC 4.0 compiler where fib would fail the
+    check. The problem is not related to GCC but because of a slightly different
+    code generation it manifested itself there.
+
+    The problem occured because of a race condition in gc.c where aterms on the
+    stack were marked in mark_phase(_young). Sometimes an item on the stack was
+    detected as being an aterm, immediatly after that, the stack item was
+    overwritten and right after that the (overwritten) aterm would be marked.
+
+    This was solved by defining AT_isValidSymbol as a macro instead of a
+    function.
+
+Mon Apr  3 14:41:04 CEST 2006 <eriks@win.tue.nl>
+  * Reduced compiler warnings
+  * All statistics gathering code wrapped in an #ifdef
+  * Merged some changes made by Muck van Weerdenburg in a local version of the
+    ATerm library
+
+
+Thu Mar  9 15:02:23 CET 2006 <{jong,kooiker}@cwi.nl>
+ * aterm/memory.c:
+   - Also check on NULL pointer when using CHECK_TERM
+
+Tue Mar  7 14:01:14 CET 2006 <kooiker@cwi.nl>
+ * doc/manual.ltx:
+   - Fixed typos in manual (closes #397)
+
+Wed Feb  8 11:33:24 CET 2006 <economop@cwi.nl>
+ * Added ATisInitialized() to level 1 interface.
+
+Fri Oct  7 12:47:51 CEST 2005 <{gerco,jong}@cwi.nl>
+ * package: version bump to 2.4.2
+ * aterm/memory.c:
+   - fix aliasing problem related to protoTerm and arg_buffer
+     variables. (Closes: #495)
+
+Wed Aug 17 13:42:54 CEST 2005 <jong@cwi.nl>
+	* aterm/tafio.c: fix ATreadFromSharedTextFile is too eager. When two
+	terms are in the same file, checking if the first term has an
+	annotation consumed the first character of the following term.
+
+Wed Aug 17 11:53:13 CEST 2005 <jong@cwi.nl>
+	* package: version bump to 2.4.1
+	* aterm/tafio.c: fix memory leak in ATwriteToSharedString
+	* aterm/list.c: fix unprotected list members in ATsort
+
+Mon Aug 15 15:33:29 CEST 2005 <kooiker@cwi.nl>
+	* init-package.m4: fix underquoted GLT_INIT_PACKAGE macro
+
+Wed Aug  3 16:34:38 CEST 2005 <jurgenv@cwi.nl>
+	* Makefile.am: added aterm.spec to EXTRA_DIST
+
+Wed Aug  3 11:38:08 CEST 2005 <{jong,jurgenv}@cwi.nl>
+	* configure.ac: restored AM_MAINTAINER_MODE
+	* aterm.m4: pass -Werror IFF gcc is used and in MAINTAINER_MODE
+	* aterm/Makefile.am: do not build a shared/dynamic profiling library
+
+Tue Aug  2 14:42:35 CEST 2005 <{jong,jurgenv}@cwi.nl>
+	* package: Bumped version to 2.4
+	Incorporated changed of Martin Bravenboer to create dynamic
+	libraries, and other small improvements in the package structure
+
+2005-07-20  Martin Bravenboer <martin@cs.uu.nl>
+
+	* aterm/Makefile.am: for some platforms, libraries need to be
+	self-contained: it references only symbols that are in the .lo
+	files or specified by -l libraries. Libtool will not build shared
+	libraries on these platforms, unless you declare that your library
+	is self contained. Cygwin is one of these platforms and the ATerm
+	library is indeed self-contained, so we use the -no-undefined
+	flag.
+
+	However, this does not work for a profiled library, since these
+	typically use external symbols. So, -no-undefined is only used for
+	the default library and -dbg.
+
+	The ATerm library will now create a .dll at Cygwin!
+
+	* aterm.m4: optimization at -O3 should not affect all variants, so
+	a more specific variable should be used (OPTIMIZECFLAGS). This
+	variable can be used in the Makefile.am.
+
+	* aterm.m4: CFLAGS is no longer set to an actual value: it is
+	set to the empty string to avoid AC_PROG_CC setting its default
+	values to CFLAGS.
+
+	* configure.ac: invoke AC_LIBTOOL_WIN32_DLL to create a real
+	cygwin dll (cygATerm.dll), besides a shared library. This
+	succeeds, and baffle.exe uses cygATerm.dll according to objdump!!
+
+2005-07-20  Martin Bravenboer <martin@cs.uu.nl>
+
+	* aterm/Makefile.am: cc on SunOS does not support -Wall, so -Wall
+	should only be used for GCC. Configure.ac now invokes the macro
+	"ATERM_WARNINGCFLAGS", which checks if the compiler is GCC (based
+	on $GCC, set by AC_PROG_CC) and sets the WARNINGCFLAGS variable to
+	-Wall if the compiler gcc.
+
+	* aterm/Makefile.am: the -O3 argument was not effective if no
+	CFLAGS are set by the user, since AC_PROG_CC initializes CFLAGS to
+	-O2 -g in that case. We don't want both for the default ATerm
+	library, so we initialize CFLAGS in our way (-O3), but only if
+	CFLAGS is not set.
+
+2005-07-19  Martin Bravenboer <martin@cs.uu.nl>
+
+	* Applied Eelco Dolsta's patch that fixes a pointer aliasing bug
+	in the aterm library. This allows compilation at -O3.
+
+	See:
+	http://sjofar.sen.cwi.nl:8080/bugzilla/show_bug.cgi?id=470
+
+2005-07-19  Martin Bravenboer <martin@cs.uu.nl>
+
+	* test/Makefile.am: terms.c and terms.h are nodist_SOURCES of
+	stress.
+
+2005-07-19  Martin Bravenboer <martin@cs.uu.nl>
+
+	* configure.ac, aterm.pc.in: added support for pkgconfig. The nice
+	thing about pkgconfig is that the package itself can instruct the
+	dependent packages on the cflags and ldflags that should be used.
+
+2005-07-19  Martin Bravenboer <martin@cs.uu.nl>
+
+	* aterm.spec.in: dropped the --with-gcc configuration option from
+	the configure invocation.
+
+2005-07-19  Martin Bravenboer <martin@cs.uu.nl>
+
+	* configure.in: renamed to configure.ac. .in is deprecated.
+
+2005-07-19  Martin Bravenboer <martin@cs.uu.nl>
+
+	* configure.in: don't touch any CFLAGS variable.
+
+	* configure.in: dumped the 64 bits configuration. We cannot
+	possibly cater for all platform specific issues. The most
+	important thing is that the influential environment variable for
+	automake/libtool compilation are respected by the build
+	system. This will allow users to tweak the package for their
+	specific system.
+
+	* configure.in: dumped AC_SUBST(XDEFS). Doesn't seem to be used.
+
+	* configure.in: CURDATE was not substituted. now it is.	
+
+	* aterm.m4: AC_DEFINE WITH_STATS if NO_SHARING is used.
+
+	* aterm/Makefile.am: dumped the optimized variant. The default
+	library is now optimized at level -O3.
+
+	* aterm/Makefile.am: tweaked the variants a bit:
+	
+	- libATerm is compilerd with -03 (this requires the patch by
+	Dolstra for the aliasing bug)
+
+	- libATerm is compiled with -DNDEBUG to disable code generation by
+	asserts.
+
+	- all libraries are compiled -Wall (AM_CFLAGS is not used if a
+	specific _CFLAGS is specified).
+
+	Note that all compilation flags can be overridden by the user,
+	since $(CFLAGS) as appended after _CFLAGS
+
+2005-07-19  Martin Bravenboer <martin@cs.uu.nl>
+
+	* aterm/Makefile.am: don't use pkglib but lib.
+
+2005-07-19  Martin Bravenboer <martin@cs.uu.nl>
+
+	* configure.in: dropped the --with-cflags option. CFLAGS,
+	CPPFLAGS, etc are user variables that should never be overridden
+	in Makefile.am or configure.ac. User defined cflags are already
+	supported by the environment variable CFLAGS, which should not be
+	manipulated or extended (see Automake manual 26.5.1: Compile Flag
+	Variables)
+
+2005-07-19  Martin Bravenboer <martin@cs.uu.nl>
+
+	* configure.in: AC_PROG_MAKE_SET: removed, not necessary.
+	
+	* configure.in: introduced a macro ATERM_WITH_SHARING that adds a
+	--with-sharing argument. No sharing can be specified with
+	--without-sharing or --with-sharing=no. Obviously, the default is
+	yes. This macro uses AC_DEFINE to define NO_SHARING.
+
+2005-07-19  Martin Bravenboer <martin@cs.uu.nl>
+
+	* test/Makefile.am:
+	- don't include make_rules: use automake to compile the test
+	programs.
+	- use check_PROGRAMS instead of noinst_PROGRAMS.
+	- BUILTSOURCES -> BUILT_SOURCES
+	- INCLUDES -> AM_CPPFLAGS
+	- TESTS: run all check_PROGRAMS?
+
+	* make_rules: no longer used: let automake invokes the compiler.
+
+2005-07-19  Martin Bravenboer <martin@cs.uu.nl>
+
+	* utils/Makefile.am: Use AM_CPPFLAGS for including the ATerm
+	headers. Use LDADD to link the ATerm library with all
+	programs. Use automake for compilation (no includes of
+	make_rules).
+
+2005-07-19  Martin Bravenboer <martin@cs.uu.nl>
+
+	* configure.in: invoke AC_PROG_LIBTOOL.
+
+	* aterm/Makefile.am: library creation refactored to libtool.
+
+	* doc/Makefile.am: avoid recreation of *.ps if they already exists
+	(avoids dependency on fig2dev, which isn't very common)
+	
+2005-07-19  Martin Bravenboer <martin@cs.uu.nl>
+
+	* aterm.m4: temporary location for macros (GLT_INIT_PACKAGE,
+	XT_PRE_RELEASE, XT_SVN_REVISION). The XT_ macros are used for our
+	buildfarm and will be removed later.
+
+	* Makefile.am: define ACLOCAL_AMFLAGS, not ACLOCAL_FLAGS.
+
+Fri Jun 24 08:39:36 CEST 2005 <jong@cwi.nl>
+ * package:
+   - bump version to 2.3.2
+ * aterm/aterm.c, ATcompare:
+   - fix asymmetry in order of arguments comparison. (Closes: #477)
+ * test/stress.c:
+   - add unit tests asserting the symmetry.
+
+Tue Jun  7 10:12:34 CEST 2005 <jurgenv@cwi.nl>
+ * aterm/aterm.c: extended data types of several statistics functions from
+   returning 'int' to returning 'unsigned long'. 
+ * utils/termsize.c: added more information about a term to the output.
+
+Tue Feb  8 10:48:21 CET 2005 <jong@cwi.nl>
+ * doc/manual.ltx:
+   - remove double definition of ATerror
+   - fix whitespace issue in macros \Function and \Macro.
+
+Wed Dec  1 13:15:07 CET 2004 <jong@cwi.nl>
+ * Version bump to 2.3.1
+
+Thu Sep 16 14:33:50 CEST 2004 <{jurgenv,storm}@cwi.nl>
+ * Updated package initialization to new standard. 
+ * Also edited reconf to use autoreconf.
+
+Thu Sep  9 15:01:06 CEST 2004 <jong@cwi.nl>
+ * aterm/aterm2.h:
+   explicitly name anonymous structs to avoid C++ pointer casting issues.
+   report and patch by Wieger Wesselink <J.W.Wesselink@tue.nl>
+
+Mon Jun 14 14:03:37 CEST 2004 <jong@cwi.nl>
+ * aterm/hash.c: reverse order in which ATindexedSetElements are returned,
+   so that it matches what the manual says: return elements in the exact
+   order in which they were inserted into the indexed set.
+ * test/stress.c: add test on above fix
+
+Wed Jun  9 10:51:21 CEST 2004 <jong@cwi.nl>
+ * configure.in: bump version to 2.3 because interface changes
+ * aterm/aterm1.h: add convenience macros to circumvent gcc valid warning
+    "dereferencing type-punned pointer will break strict-aliasing rules"
+   ATprotectList, ATprotectAppl, ...
+ * aterm/memory.c: use ATprotectList to protect ATempty
+
+Tue Jun  1 10:24:20 CEST 2004 <jurgenv@cwi.nl>
+ * Removed broken NO_SHARING variant from C source and header files.
+ * Bumped to 2.2
+ * Add abort when ATsetChecking is called in a non-debugging version. 
+
+Tue May  13 16:02:03 CEST 2004 <{jurgenv,kooiker}@cwi.nl>
+ * utils/Makefile.am: made Cygwin complient
+ * utils/stress.dict: renamed to terms.dict
+
+Sat May  1 13:48:03 CEST 2004 <jurgenv@cwi.nl>
+ * Fixed a bug in AT_removeAnnotations. The newly allocated aterm
+   was not initialized at age 0, instead it inherited the age of
+   the aterm with the annotations.
+
+Tue Apr 27 11:09:50 CEST 2004 <jurgenv@cwi.nl>
+ * Removed all #ifndef PO directives from the header files
+ * Added ATisEqualModuloAnnotations function
+
+Wed Apr 14 13:43:28 CEST 2004 <jurgenv@cwi.nl>
+ * GET_SYMBOL macro used shifts to retrieve a symbol key, but did
+   not cast to Symbol type, which results in a 'comparison between
+   signed and unsigned' warning in new compilers. Old compilers can
+   be configured to produce the warning using -Wsign-compare (not in -Wall).
+ * -O4 reactivated in normal optimized compile of aterm library
+
+Thu Apr  1 14:14:57 CEST 2004 <jong@cwi.nl>
+ * patch by Armijn Hemel to add aterm.spec.in (used to generate RPM)
+
+Wed Feb 11 15:36:36 CET 2004 <kooiker@cwi.nl>
+ * aterm/gc.c: remove verbose print: minor_sweep_phase_young 
+
+Tue Feb 10 15:04:08 CET 2004 <m336@cwi.nl>
+ * upgrade auto* to: autoconf 2.59, automake 1.7.9, libtool 1.5.2
+
+Mon Feb  9 14:56:11 CET 2004 <jong@cwi.nl>
+ * aterm/gc.c: remove verbose print: check_unmarked_block
+ * aterm/afun.c: add some debug prints
+
+Mon Feb  9 11:36:34 CET 2004 <jurgenv@cwi.nl>
+ * Used autoupdated to upgrade configure.in, and as a consequence:
+   - removed double AC_PROG_CC calls
+   - moved the now untangled call to AC_CANONICAL_TARGET to a place
+     that does not trigger a warning
+
+Mon Feb  2 14:21:55 CET 2004 <jong@cwi.nl>
+ * configure.in: bumped version to 2.1
+ * doc/Makefile.am: add generated files to CLEANFILES
+ * test/Makefile.am: move *dict_[ch] to CLEANFILES
+ * Makefile.am: add generated package file to CLEANFILES
+
+Mon Feb  2 14:22:41 CET 2004 <jurgenv@cwi.nl>
+ * aterm package is now up-to-date with automake-1.6.3
+ * Removed all unused '#ifndef PO ... #else ... #endif' code and
+   all commented out code from the ATerm implementation.
+
+Mon Feb  2 12:20:01 CET 2004 <jurgenv@cwi.nl>
+ * Removed all unused '#ifndef PO code' and all commented out code
+   from the aterm library.
+ * ATerm library is now up-to-date with automake-1.6.3
+
+Tue Dec 16 10:01:13 CET 2003 <{jong,jurgenv}@cwi.nl>
+ * Added const attributes to ATmakeAFun and ATmakeSymbol and AT_hashSymbol
+   functions on the char* arguments.
+ * Bumped version to 2.0.6
+
+Tue Oct  7 13:55:03 CEST 2003 <{jong,kooiker}@cwi.nl>
+ * configure.in: bump to 2.0.5
+ * utils/dicttoc.c:
+   - slightly change code generation to avoid gcc 3.3.1 warning
+     "dereferencing type-punned pointer will break strict-aliasing rules"
+
+2003-09-24  Jurgen Vinju, Tijs van de Storm <{jurgenv,storm}@cwi.nl>
+ * ATcompare extended: ATblobs are compared using memcmp. Also, annotations
+   are now supported by the ordering. ATcompare is now a complete ordering on 
+   ATerms. 
+ * ATcompare refactored to use (static) small functions.
+ * Extended tests to test completeness and consistency of ATcompare
+
+Tue Sep  2 15:08:51 CEST 2003 <jong@cwi.nl>
+ * configure.in: version bump to 2.0.4
+ * aterm/*.h: insert 'extern "C" { ... }' for C++ compilers
+ * aterm/gc.c:
+   - removed several unused variables in WIN32 specific code. Closes: Bug #15
+   - applied patches by Wieger Wesselink. Closes: Bug #20
+
+2003-08-01  Jurgen Vinju <jurgenv@cwi.nl>
+ * Rewrote use AC_COMPILE_IFELSE to AC_TRY_COMPILE
+ * Released dependency on autoconf 2.52 to autoconf 2.13
+
+Tue Jul 29 14:34:19 CEST 2003 <{jong,jurgenv}@cwi.nl>
+ * aterm/memory.c: use calloc instead of static array for protoTerm.
+   Using a static array is not guaranteed to be sizeof(double) aligned,
+   causing (in this case) bus errors on a Solaris platform
+
+2003-07-21  Jurgen Vinju <jurgenv@cwi.nl>
+ * Set AC_PREREQ to 2.52 because in that version AC_COMPILE_IFELSE
+   is present.
+ 
+2003-07-09  Jurgen Vinju <jurgenv@cwi.nl>
+ * Released aterm-2.0.2 by distchecking a checkout of 07/07/2003
+ * Bumped to 2.0.3
+
+Mon Jul  7 10:54:59 CEST 2003 <jong@cwi.nl>
+ * applied Armijn Hemels patches to make ATerm compile on a 64bit arch.
+
+2003-06-27  Jurgen Vinju <jurgenv@cwi.nl>
+ * aterm.pkg is no longer generated from configure.in ;(
+ * added aterm.pkg to repository
+ * aterm-@VERSION@.pkg is now generated from aterm.pkg
+
+2003-06-26  Jurgen Vinju <jurgenv@cwi.nl>
+ * Removed visitor-pkg configuration option.
+
+2003-06-24  Jurgen Vinju <jurgenv@cwi.nl>
+ * Added a failing test: ATmake("[1]{[a,a]}") results in a "[1]".
+   The annotation is lost, while if you use ATparse, it is ok.
+ * Fixed the bug, ATmake does not throw away annotations anymore.
+   Note that substitution of placeholders in annotations, and matching
+   of annotations seems not to be supported by the current implementation.
+ * Version 2.0.2
+
+Tue Feb 18 15:47:24 CET 2003 <{jong,olivierp}@cwi.nl>
+ * Version 2.0.1
+ * Fix two bugs in tests 5, 37/38
+
+2003-01-22  Jurgen Vinju <jurgenv@cwi.nl>
+ * Release 2.0
+
+2002-12-09  Pierre-Etienne Moreau  <pem@escher.loria.fr>
+ * increase the small_allocation_rate_ratio by a factor 3
+   this improves the efficiency without using much more memory
+
+2002-12-05  Pierre-Etienne Moreau  <pem@escher.loria.fr>
+ * do not activate statistics
+ * improve the "freeze" mechanism: when a block contains many old objects
+   (>TO_OLD_RATIO) the block can be promoted to the second generation only
+   if does not contain any young object. To improve the efficiency of the
+   GC we "freeze" these blocks: not further allocation can be done in the
+   block. 
+	
+2002/10/31 <jong,olivierp@cwi.nl>
+ * Blob size is now stored in a separate word instead of the header
+ * Added test for writing blobs to binary string
+
+2002/10/29 <vinju@loria.fr>
+ * Removed old java ATerm library from this package.
+   The java version is now located in the 'aterm-java' package.
+
+2002/10/29 <jong@cwi.nl,olivierp@cwi.nl>
+ * Added tests in ATmakeBlob and ATinsert to ensure blobs/lists stay
+   within max. bounds
+
+2002/09/23 <vinju@loria.fr>
+* Fixed two bugs in the java library. 
+  - Singletons did not match with [<term>,<list>].
+  - Making [<term>,<list>] resulted in [<term>,[<list>]].  
+
+2002/09/23 <jong@cwi.nl>
+ * Fix dates in ChangeLog (October -> September)
+ * Fix in ATwriteToString: print '<' and '>' around placeholders
+ * Fix in writeToSharedString: terminate string buffer
+ * Add to stress.c: assert that some reported failures work correctly
+
+2002/09/18 <jong@cwi.nl>
+ * Fix bug in read_term (blob data was not copied) reported by Tijs vd Storm
+
+2002/09/17 <jong,olivierp@cwi.nl>
+* Fixed two alignment bugs that only manifested themselves on sun:
+  - 'data' field in Block was not eight byte aligned, we now moved it
+    to the start of the structure to get the default platform alignment.
+  - mark/mark_young: illegal optimization removed, term header dereference
+    can only be done when you are sure it is a valid term so IS_MARKED must
+    be delayed until after 'isValidTerm' check.
+
+2002/09/12 <jong@cwi.nl>
+* Fixed ~100 compiler errors due to the use of '//' as comment char,
+  which (contrary to popular belief) *STILL* is not valid C !!!
+  Several compilers (amongst which Sun's CC) complain and refuse to
+  parse '//', even though gcc is willing to accept it.
+  PLEASE REFRAIN FROM USING '//' AS COMMENT CHAR IN A C PROGRAM :-)
+
+2002/09/11 <olivierp@cwi.nl>
+* Merged GENGC version back into the main tree. Let's see how it holds out!
+
+2002/08/08 <jong@cwi.nl>
+* Include java sourcefiles in jar and name jar after VERSION.
+
+2002/08/06 <jong@cwi.nl>
+* First attempt at creating "aterms.jar" (ends up in $prefix/share/aterms.jar)
+
+2002/08/05 <olivierp@cwi.nl>
+* Added AT_unmarkAll and AT_unmarkAllAFuns. These functions traverse
+  the ATerm memory blocks instead of the actual ATerms. This can be
+  more efficient when most of your terms are marked.
+* Fixed efficiency problem of ATcalcUniqueSubterms: this function now
+  takes time proportional to the number of unique nodes instead of the
+  total number of nodes.
+
+2002/07/02 <olivierp@cwi.nl>
+* Improved hashing of ATprotectArray
+* Fixed potential bug in tafio.c
+
+2002/06/20 <olivierp@cwi.nl>
+* Merged changes by Pierre-Etienne Moreau with our own changes since 1.6.6
+
+2002/06/05 <jong@cwi.nl>
+* minor tweaks to satisfy autoconf/automake versions up to 1.6.1
+* Start 1.6.8beta
+
+2002/04/22 <jurgenv@cwi.nl>
+* Release 1.6.7
+
+2002/03/05 <jong@cwi.nl>
+* Increased magical LENSPEC from 8 to 12 bytes
+
+2002-02-15  Pierre-Etienne Moreau  <pem@escher.loria.fr>
+
+	* aterm/gc.c : new sweep phase
+	  - at_freelist[size] is empty before being re-filled. 
+	    this reduces fragmentation
+	  - empty blocks are detected and recycled
+	  - if at_freeblocklist_size becomes too large, the block is
+	    removed from the block_table and deleted
+	
+	* aterm/memory.c: 
+	  - add a at_freeblocklist and a at_freeblocklist_size
+	  - reuse empty block when possible
+	  - fix a bug in allocate_block: the last cell had a bad header
+
+	* aterm/memory.h: block reduced to 2^12 instead of 2^16
+
+
+2002/02/07 <jong@cwi.nl>
+* Release 1.6.6
+
+2002/01/16 <jong@cwi.nl>
+* Removed all '-O' optimization flags due to gcc optimizer bugs
+* Added "Note on Compiler Optimizations" to README 
+
+2002/01/04 <jong@cwi.nl>
+* Added "--with-cflags=" support to configure.in
+* Removed explicit overwriting of CFLAGS in aterm/Makefile.am
+* Removed all leading spaces in ChangeLog entries.
+
+2001/12/20 <{jurgenv,olivierp,jong}@cwi.nl>
+* Added assert in ATconcat, second argument should be an AT_LIST.
+
+2001/12/11 <mdejonge@cwi.nl>
+* Makefile.am: added LICENSE to EXTRA_DIST variable because this file was
+  not distributed yet.
+
+2001/11/28 <jong@cwi.nl>
+* version 1.6.6beta started
+* Generated files 'stress_dict.[ch]' moved to MAINTAINERCLEANFILES.
+
+2001/11/22 <jong@cwi.nl>
+* Version 1.6.5 released, containing C-support for tuple syntax.
+
+2001/11/21 (jong@cwi.nl)
+* Quoted, empty tuple is now printed as "", rather than ""()
+* Changed the output of the empty tuple to be "()", rather than ""
+* Fixed several typo's in aterm.c ("to long" -> "too long").
+* Toplevel Makefile.am now uses 'install' rather than 'cp+chmod'
+
+2001/11/15 (jong@cwi.nl)
+* version 1.6.5beta started
+* Implemented tuple syntax at Eelco Visser's request.
+   example: ("a","b") is now allowed by the ATerm parser.
+
+2001/11/12 (jong@cwi.nl)
+* Version 1.6.4 released
+
+2001/10/08 (Joost.Visser@cwi.nl)
+* Added declaration of method setChildAt to the aterm.visitor.Visitable
+  class and corresponding implementations to aterm.pure.*, in order to 
+  conform to the JJTraveler framework (version 0.1).
+
+2001/08/28 (jong@cwi.nl)
+* C-library warnings issued by gcc-3.0.1 fixed
+
+2001/08/17 (jong@cwi.nl)
+* Version 1.6.4beta started
+* Started work on doc/xootic.ltx
+
+2001/08/14 (jong@cwi.nl)
+* Version 1.6.3 released
+* Added script utils/genpkg.sh which generates toplevel "aterm.pkg"
+  for package-base from information in configure.in
+
+2001/08/07 (jong@cwi.nl)
+* Changed direct prints to stderr to ATwarning calls in bafio.c
+* ChangeLog entry for ATcompare and ATsort added
+
+2001/07/31 (jurgenv@cwi.nl)
+* Bumped version to 1.6.3
+
+2001/07/12 (jong@cwi.nl)
+* Java-source for toolbus support moved from ATerm-pkg to TB-pkg
+
+2001/07/11 (jong@cwi.nl)
+* C-source for toolbus support moved from ATerm-pkg to TB-pkg
+
+2001/07/09 (olivierp@cwi.nl)
+* version is now 1.6.2
+* Added some functions to ToolBus layer in order to support the
+  new toolbus adapter
+
+2001/07/02 (olivierp@cwi.nl)
+* Fixed CLASSPATH problem with tifstojava
+
+2001/06/25 ({jong,olivierp}@cwi.nl)
+* Version is now 1.6.1
+* Fixed bug in Java in removing of 'empty' weak references,
+  thanks to Bert Huijben
+* Fixed performance problem in hash function calculation.
+* Added first version of visitor benchmark.
+* Replaced generic hashfunction with specific HASHNUMBER{3,4} macros,
+  thanks to Pierre-Etienne
+
+
+2001/06/19 (olivierp@cwi.nl)
+* Worked on bringing visitor implementation closer to Joost's official
+  framework.
+
+2001/06/08 (olivierp@cwi.nl)
+* Fixed implementation of AT(un)registerBlobDestructor
+
+2001/06/01 (olivierp@cwi.nl)
+* Added ATprotectMemory/ATunprotectMemory functions requested by
+  Pierre-Etienne Moreau
+
+2001/05/31 ({jong,olivierp}@cwi.nl)
+* version is now 1.6
+* Added support for pointers that point INSIDE aterms:
+  this should fix the strange gc problems in gcc-2.95.2 related
+  to strength-reduce optimizations.
+* fixed ATermList.concat bug in Java aterm library.
+
+2001/05/17 (jong@cwi.nl)
+* added configure option: --with-texdoclet <PATH_TO_JAR> which activates
+  generation of java-api.ltx which is used to build java-api.ps.
+
+2001/05/16 (jong@cwi.nl)
+* version 1.5.7
+* added --best to gzip on installed documentation
+* added java.pure.PureFactory to generated documentation
+* Made public versions of AT_writeToStringBuffer and AT_calcTextSize to
+  prepare move of ToolBus specific code from ATerm-distro to ToolBus.
+* Added make(String trm) (synonym for parse(String trm)) as per C-interface.
+* Added documentation on "Connecting Java Tools"
+
+2001/05/15 ({jong,olivierp}@cwi.nl)
+* Optimized ATremoveAllAnnotations
+
+2001/05/04 ({jong,olivierp}@cwi.nl)
+* Removed debug spam in AbstractTool.java
+* Added support for javadoc generation
+
+2001/05/03 (jong@cwi.nl)
+* version 1.5.6
+* Added convenience macros AT{get,set,remove}Annotatations for their
+  "AT_XX" counterparts
+
+2001/04/24 ({jong,olivierp}@cwi.nl)
+* Added java-api documentation in LaTeX
+* Adapted manual.ltx to conform to the specs of the new Java Library.
+* Added example to java toolbus support
+* Fixed a bug in java toolbus support (mread)
+
+2001/04/04 ({jong,olivierp}@cwi.nl)
+* Fixed locking in Java toolbus support
+* Added support for <str> pattern in Java library
+
+2001/03/30 ({jong,olivierp}@cwi.nl)
+* version 1.5.5
+* added --with-visitor-pkg option to configure.in
+* configure.in now also creates ATerm{Visitable,Visitor,VisitFailure}.java
+* moved subdir "visitor" from aterm/java to aterm/java/aterm
+* folded ATerm{Visitable,Visitor,VisitFailure}.java.in
+* fixed accept-method in ATermListImpl.java (return-type was: vooid)
+* added support for shared text files to Java library
+* fixed support for external visitor packages
+
+2001/03/29 ({jong,olivierp}@cwi.nl)
+* added java/visitor/.cvsignore
+* moved example file Accu.java from java/visitor to java/aterm
+* fixed some compilation errors in Java traversal combinator support
+
+2001/03/28 ({jong,olivierp}@cwi.nl)
+* Added traversal combinator support
+
+2001/03/26 ({markvdb,olivierp}@cwi.nl)
+* Fixed a bug in lists with annotations.
+
+2001/03/26 ({jong,markvdb,olivierp}@cwi.nl)
+* Version 1.5.4
+* Fixed bug in ATisEmpty: the annotated empty list was not considered empty!
+
+2001/03/21 (olivierp@cwi.nl)
+* Version 1.5.3
+* added object locking in java ToolBus support.
+* fixed tifstojava to generate correct tifs for methods taking complex args
+* fixed error propagation in java ToolBus support
+
+2001/03/06 ({jong,olivierp@cwi.nl})
+* Version 1.5.3beta
+* deprecated.h is now empty (and deprecated)
+* moved ATmatchTerm and friends to aterm1.h
+* added ATcalcUniqueSubterms/Symbols (alias for AT_calcUniqueXxx)
+* Introduced buffered input/output streams in Java ToolBus support
+
+2001/03/05 (jong@cwi.nl)
+* Version 1.5.2beta
+* Arne de Bruijn goes on a killing spree :-) Yet another three fixes
+  were submitted: ATermReals are now represented in strings using the
+  %.15e format. Arne also fixed a possible buffer-overflow and a missing
+  '\0' termination in ATermReal handling.
+
+2001/03/02 (jong@cwi.nl)
+* The ATermLibrary is now distributed under LGPL.
+* All remaining references to GPL removed
+* LGPL license added (See toplevel file: COPYING)
+* brushed up README, NEWS, AUTHORS somewhat
+
+2001/03/01 (jong@cwi.nl)
+* Version 1.5.1
+* deprecated java support removed entirely
+* some GPL headers removed as we are in transition to LGPL
+
+2001/02/28 ({jong,olivierp}@cwi.nl)
+* Version 1.5
+* Fixed several bugs in JFG's hash code reported by Arne de Bruijn
+* Implemented annotations in Java ATerm code
+
+2001/02/27 (jong@cwi.nl)
+* Added switch "-no-date" to prevent outputting timestamp in utils/dicttoc.c
+
+2001/02/23 ({jong,olivierp}@cwi.nl)
+* Fixed garbage collection bug reported by Arne de Bruijn <arne@knoware.nl>
+* JavaTif now generates xxxTif.java interface, xxxTool.java class, and
+  xxxBridge.java class
+* Version is now 1.5beta
+
+2001/02/20 (jong@cwi.nl)
+In utils/atrmannos.c:
+* Folding added
+* Superfluous #includes removed (aterm1.h, stdlib.h, unistd.h)
+* CVS-id added to header
+* Copyright extended to 2001
+
+2001/02/20 (jurgenv@cwi.nl)
+* Added utility atrmannos. This utility can be used to remove a number
+  of specific annotations or all annotations from a term.
+
+2001/02/19 (jong@cwi.nl)
+* out-of-place sglr-header removed from atremove-annotation.c
+
+2001/02/19 ({jong,olivierp}@cwi.nl)
+* Fixed dates in ChangeLog
+* Added generation of separate xxxTif and xxxBridge java code
+
+2001/02/18 (jong@cwi.nl)
+* Improved checks for lrand48() and srand48() by letting configure.in
+  find this out for us, rather than having to #define _APPLE_ (Hi js!)
+  This should make test/randgen.c compile under CygWin.
+
+2001/02/15 (olivierp@cwi.nl)
+* Implemented first layer of Java ToolBus support
+
+2001/02/05 (jong@cwi.nl)
+* TODO file removed as we never us it anyway
+* CWI-phonenumbers removed from several info files
+* Some lingering AsFix remnants removed
+* .depend files removed as automake uses its own depency mechanism
+
+2001/01/22 (jong@cwi.nl)
+* Fixed bug in utils/dicttoc.c which caused 'make distcheck' to fail
+* Version 1.4.7b released for testing.
+
+2001/01/16 (jong@cwi.nl)
+* contracted separate isLetter() and isDigit() to Java's isLetterOrDigit()
+
+2001/01/11 (jong@cwi.nl)
+* fixed bug in parsing of unquoted afuns (digits were ignored)                  
+
+2001/01/11 (jong@cwi.nl)
+* Version 1.4.6pl1 released. An omission in configure.in degraded
+  the usefulness of release 1.4.6 for those who use it for the
+  Java implementation.
+
+2001/01/09 (jong@cwi.nl)
+* Version 1.4.6 (released)
+* Significant progress made in de Java implementation (i.e. the version
+  in java/aterm/pure). This code is still under construction, but is
+  released so external parties who cannot use the cvs-tree can have a
+  go at the Java implementation as well.
+
+2000/11/17 (markvdb@cwi.nl)
+* Memory leak fixed in reading baf.
+
+2000/11/07 (jong@cwi.nl)
+* Version 1.4.5 (released)
+
+2000/10/31 ({jong,markvdb,olivierp}@cwi.nl)
+* Fixed off-by-one bug in ATwriteToString
+
+2000/10/31 (jong@cwi.nl)
+* Fixed "configure --help" statement for --with-prof
+
+2000/10/05 (olivierp@cwi.nl)
+* Annotations are now kept by ATsetArgument
+
+2000/9/06 ({jong,olivierp}@cwi.nl)
+* Added _ for struct names to avoid C++ problems
+* Version 1.4.4
+* Renamed TABLE_SIZE and TABLE_MASK to AT_TABLE_SIZE and AT_TABLE_MASK
+* Renamed new and template variable names to keep C++ compatibility
+
+2000/9/05 ({jong,olivierp}@cwi.nl)
+* Added functions ATgetTail, ATreplaceTail
+* Version 1.4.3
+
+2000/8/17 ({jong,olivierp}@cwi.nl)
+* Added and documented ATchecksum function and atsum utility
+* Added %a format (%y is now deprecated, but still supported)
+* Added %h format to print checksum of a term
+
+2000/8/16 ({jong,olivierp}@cwi.nl)
+* Version is now 1.4.2
+* Introduced some macro's to hide table size calculations
+* AFun table size now always a power of 2 (abolished % operator).
+* AFun table now resizes dynamically
+* Replaced -at-symboltable <size> with -at-afuntable <class>
+* Added explanation of the taf format and taf related functions and scripts
+* Fixed ATindexedSet documentation
+
+2000/8/15 ({jong,olivierp}@cwi.nl)
+* Version is now 1.4.1
+* Introduced _afun.h exporting afun-functionality for internal use
+* moved #inclusion of byteio.h to _afun.h so installed includes
+  no longer need byteio.h
+
+2000/8/8 ({jong,olivierp}@cwi.nl)
+* Version is now 1.4.0
+* Added shared textual aterm format (.taf files)
+* Improved naming of ATindexedSet functions (sets have elements, not keys)
+* Baffle only autodetects when no -rx option was given.
+
+2000/7/27 ({jong,olivierp}@cwi.nl)
+* Release 1.3.4
+* Bugfix which could cause symbol to be unprotected under very
+  specific circumstances
+
+2000/7/14 (jong@cwi.nl)
+* Release 1.3.2 (first release that passes "make distcheck" :-)
+
+2000/7/14 (mdejonge@cwi.nl)
+* added definition for COMPILE in make_rules to get around a bug in
+  automake
+
+2000/7/14 (jong@cwi.nl)
+* Improved dependencies and cleaning in toolbus/Makefile.am
+
+2000/7/14 ({jong,olivierp}@cwi.nl)
+* relaxed ATerm parser to accept TB legacy constructs (:,?,$)
+* added tblog tool that can be used as a replacement for the old
+  Tcl/Tk logger to log executed atoms to a file.
+* fixed handling of rec-monitor atoms by tifstoc
+
+2000/7/12 ({jong,olivierp}@cwi.nl)
+* introduced subdir 'utils' with utility programs
+* added dicttoc program so constant terms and afuns can be placed in a 
+  special '.dict' file.
+	
+2000/6/28 (jong@cwi.nl)
+* version is now 1.1
+* ToolBus-tools using the ATerm-library can now ATBpack() terms
+  before sending them. This causes terms to travel over the TB
+  in BAF-encoded form as a binary string.
+
+2000/4/25 (olivierp@cwi.nl)
+* Version 1.0.1: fixed overflow bug in gc heuristics.
+* Fixed alignment bug in memory.c
+	
+2000/4/18 (mdejonge@cwi.nl)
+* make dist no longer depends on the existence of ./toolbus/tifstoc
+
+2000/4/13 (jong@cwi.nl)
+* Added support for 64bits architecture.
+  Use --with-64bit configure option to create the 64bit library.
+
+2000/4/8 (mdejonge@cwi.nl)
+* Removed all asfix related stuff because the asfix library is now
+  distributed separately (http://www.cwi.nl/projects/MetaEnv)
+
+2000/3/31 (mdejonge@cwi.nl)
+* The toolbus is no longer required during the build process of the aterm
+  library
+
+2000/03/28 (mdejonge@cwi.nl)
+* no longer distribute reconf script
+* version is now 0.24
+* Added GPL license headers to the files in the distribution
+* (re) Added \$(DEFS) to compiler flags in configure.in
+* Updated address of developers of aterm library
+
+2000/03/06 (olivierp@cwi.nl)
+* Cleaned up support for gcc/cc/dbg/prof variants of the 
+	libraries.
+* Added an ATerm specific section to the INSTALL file.
+	
+2000/03/01 (mdejonge@cwi.nl)
+* generation of shared libraries temporarily disabled because of
+  instability of libtool/automake.
+
+2000/02/27 (mdejonge@cwi.nl)
+* aterm library is now configured/build using automake/libtool
+

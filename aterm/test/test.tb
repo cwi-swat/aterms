@@ -1,0 +1,13 @@
+process TEST is
+let
+  T : test,
+  T1 : term, T2 : term
+in
+  execute(test, T?) .
+  snd-do(T, just-a-test) .
+  tau delay(sec(10))
+endlet
+
+tool test is { command = "./test-tool" }
+
+toolbus(TEST)

@@ -1,0 +1,3 @@
+#!/bin/sh
+
+baffle -rs -wb -silent $@

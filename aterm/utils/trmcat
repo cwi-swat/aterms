@@ -1,0 +1,25 @@
+#! /bin/sh
+Args=""
+Files=""
+
+while [ $# -gt 0 ] ; do
+	case $1 in
+		-i|-o)
+			Args="$Args $1 $2" ; shift ;;
+		-*)
+			Args="$Args $1" ;;
+		*)
+			Files="$Files $1" ;;
+	esac
+	shift
+done
+
+if [ -z "$Files" ] ; then
+	baffle -wt -silent $Args
+else
+	for File in $Files ; do
+		baffle -wt -silent $Args -i $File
+	done
+fi
+
+exit 0

@@ -1,0 +1,51 @@
+process TEST is
+let
+  T : tool2,
+  T1 : term, T2 : term,
+  B : term,
+  I : int, 
+  S : str
+in
+  T1 := "just a test!" .
+  T2 := just-a-test .
+  B := abc .
+  I := 7 .
+  S := "Hello World!" .
+  execute(tool2, T?) .
+
+  rec-event(T, baf-term(T1?)) .
+  snd-ack-event(T, baf-term(T1)) .
+
+  %% do tests
+  snd-do(T, test-do-0) .
+  snd-do(T, test-do-1(1)) .
+  snd-do(T, test-do-2("abc", [])) .
+  snd-do(T, test-do-2("abc", [1,2,3]
+)) .
+  snd-do(T, test-do-3(f(abc),1.234,true)) .
+
+  %% eval tests
+  snd-eval(T, test-eval-0) .
+  rec-value(T, ok) .
+  snd-eval(T, test-eval-1(B)) .
+  rec-value(T, ok(B)) .
+  snd-eval(T, test-eval-2(I, S)) .
+  rec-value(T,	 ok(I, S)) .
+  snd-eval(T, test-eval-3(S, I, T1)) .
+  rec-value(T, ok(S, I, T1)) .
+  
+  %% event tests
+  snd-do(T, start-events) .
+  rec-event(T, test-event-1(T1?)) .
+  snd-ack-event(T, test-event-1(T1)) .
+  rec-event(T, test-event-2(T1?, T2?)) .
+  snd-ack-event(T, test-event-2(T1, T2)) .
+
+  rec-event(T, pack-test(T1?)) .
+  snd-ack-event(T, pack-test(T1)) .
+  shutdown("TEST SUCCEEDED!\n")
+endlet
+
+tool tool2 is { command = "./test-tool2" }
+
+toolbus(TEST)
