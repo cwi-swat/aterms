@@ -1,0 +1,11 @@
+prefix=@prefix@
+Maintainers=storm@cwi.nl
+
+Name: balanced-binary-aterms
+Version: 0.1
+Description:
+Requires: aterm
+Cflags: -I${prefix}/include
+Libs: -L${prefix}/lib -lbbtree
+#uninstalled Libs: -L@abs_top_builddir@/src -lbbtree
+#uninstalled Cflags: -I@abs_top_builddir@/src
