@@ -1,0 +1,1003 @@
+# $Id$
+
+Wed Sep 10 15:18:05 CEST 2008 <jurgenv@cwi.nl>
+ * src/**/StringConversions.java: no translating _ to Underscore anymore.
+
+Tue Aug 26 12:24:30 CEST 2008 <jurgenv@cwi.nl>
+ * apigen.pc.in: removed non-existing package name to prevent Eclipse
+   warning.
+
+Mon Aug 25 17:13:29 CEST 2008 <jurgenv@cwi.nl>
+ * src/**/AlternativeGenerator.java,FactoryGenerator.java: fixed a bug
+   in the code generated for builtin fields of the 'char' type. Apparently,
+   this was not used a lot before, the code was for deserialization was
+   fawly and triggered a ClassCastException by default.
+
+Wed Apr 16 10:54:17 CEST 2008 <jurgenv@cwi.nl>
+ * src/*/APIGenerator.java: changed conversion functions to use casts
+   via a union to fix type punned aliasing issues in functions that
+   interpret an ATerm in two ways.
+ * src/*/StringConversions.java: removed '-' minus from StringConversions,
+   it's a word separator. 
+
+Wed Oct 24 10:15:19 CEST 2007 <{kooiker,lankamp}@cwi.nl>
+ * src/*/FactoryGenerator.java: Fix missing factory in generated constructor 
+   calls
+ * src/*/SeparatedListTypeGenerator.java: Fix missing assignments of
+   seperators in generated constructor
+
+Tue Oct 23 14:36:30 CEST 2007 <kooiker@cwi.nl>
+ * src/*/*.java: apigen generates Java 1.5 generics compliant API's
+
+Fri Oct 19 10:25:42 CEST 2007 <kooiker@cwi.nl>
+ * src/apigen/gen/java/*.java: match new aterm-java constructors
+
+Wed Mar 14 16:29:37 CET 2007 <{economop,jurgenv}@cwi.nl>
+ * src/apigen/gen/src/APIGenerator.java: fixed bug -- added brackets around the    macro replacement string's arguments.
+
+Thu Mar  8 15:48:59 CET 2007 <{kooiker,economop,jurgenv}@cwi.nl>
+ * src/apigen/gen/src/CDictionaryGenerator.java: fixed a small
+   bug with generating code for matching builtin data-types
+ * refactored the code again
+ * removed superfluous generation of aterm patterns again
+ *  src/apigen/gen/src/CDictionaryGenerator.java: added constant detection,
+    but it does not work if there are annotations on the terms that are
+    matched.
+
+Thu Mar  8 11:15:59 CET 2007 <jurgenv@cwi.nl>
+ * src/apigen/gen/src/CDictionaryGenerator.java: removed superfluous
+   generation of aterm patterns.
+ * src/apigen/gen/src/APIGenerator.java: fixed small bug in
+     getSeparatedListLength generator.
+
+Thu Mar  8 10:46:19 CET 2007 <jurgenv@cwi.nl>
+ * src/apigen/gen/src/APIGenerator.java: fixed a number of small bugs in the
+   isAlt generator concerning lists.
+
+Thu Mar  1 18:38:59 CET 2007 <economop@cwi.nl>
+ * src/apigen/gen/c/APIGenerator.java: generated macros for the isEqualsApi.
+
+Thu Mar  1 18:00:49 CET 2007 <economop@cwi.nl>
+ * src/apigen/gen/c/APIGenerator.java: generated more macros for the
+   genListApi.
+
+Thu Mar  1 12:06:31 CET 2007 <economop@cwi.nl>
+ * src/apigen/gen/c/APIGenerator.java: in the process of generating macros.
+
+Fri Feb 16 14:22:11 CET 2007 <economop@cwi.nl>
+ * src/apigen/gen/c/APIGenerator.java: Removed debug code and only generate
+   the optimized inspector functions. This accounts for about a 28%
+   improvement in the performance of the sglr-refactored branch.
+
+Fri Feb 16 14:09:43 CET 2007 <economop@cwi.nl>
+ * src/apigen/gen/c/APIGenerator.java: Added new implementation of the
+   inspector function generator that calls both the original and the optimized
+   versions of the code. This can be used to ensure that the optimized code
+   returns the same result as the original.
+
+Fri Feb 16 13:35:56 CET 2007 <economop@cwi.nl>
+ * Created and added this ChangeLog to make the merge with trunk easier.
+ * Initialized merge tracking via "svnmerge" with revisions "1-21366" from 
+   svn+ssh://economop@svn.cwi.nl/apigen/trunk
+Tue Feb 13 14:03:33 CET 2007 <jurgenv@cwi.nl>
+ * scripts/adt-to-java.src: adding source files to jar, such that browsing
+   of the API in Eclipse is easier. TODO: generate javadoc for the Java
+   generated code.
+
+2006-12-14    <storm@cwi.nl>
+ * scripts/adt-to-java.src: added "-source 1.4 -target 1.5" options to
+ javac invocation to be able to actually compile java apis. (Although
+ javac shows only warnings, I get no classes.)
+
+Tue Oct  3 11:36:50 CEST 2006 <kooiker@cwi.nl>
+ * scripts/adt-to-c.src:
+   - Missing space before ] in if expression
+ * scripts/adt-to-tom.src:
+   - If apigen.env does not exist do nothing
+
+Mon Oct  2 14:29:48 CEST 2006 <kooiker@cwi.nl>
+ * scripts/adt-to-{c,java}.src:
+   - If apigen.env does not exist do nothing (closes #429)
+
+Mon Oct  2 13:33:48 CEST 2006 <kooiker@cwi.nl>
+ * src/apigen/gen/java/SeparatedListTypeGenerator.java:
+   - Use TypeGenerator to compute classname from type (closes #400)
+
+Thu Jul 27 15:51:53 CEST 2006 <martin.bravenboer@gmail.com>
+ * lib-1.0: removed
+ * lib-2.0: removed (library was installed with same name as
+   lib-3.0!)
+ * lib-3.0: renamed to lib.
+ * lib/Makefile.am: build libtool library
+ * utils/upgrade-adt.c: removed
+
+Wed Jun 28 10:35:57 CEST 2006 <jurgenv@cwi.nl>
+ * **/APIGenerator.java: fixed the names of parameters (proper
+   capitalization in the doxygen markup.
+
+Tue Jun 27 22:25:02 CEST 2006 <jurgenv@cwi.nl>
+ * **/APIGenerator.java: added to the C generator, the generation
+   of doxygen markup for each generator function.
+
+Tue Jun 27 16:04:18 CEST 2006 <jurgenv@cwi.nl>
+ * **/APIGenerator.java: fixed a serious bug in genMakeLists. 
+   For example: makeList2 would generate a tuple of two times the seconf
+   argument, instead of the first and second argument consecutive in a list.
+
+Fri Mar 10 11:44:02 CET 2006 <kooiker@cwi.nl>
+ * **/Makefile.am:
+   - Maintainters use ATerm-dbg library
+
+Mon Feb 27 15:32:59 CET 2006 <kooiker@cwi.nl>
+ * test/Makefile.am:
+   - Changed clean and distclean targets to clean-local and distclean-local.
+     This fixes buildfiles being left because a normal make clean was overrided
+     by the given clean target, not extended by the given clean target.
+ * {configure.in,doc/Makefile.am}:
+   - Removed building of documentation until ant has been configured correctly
+
+Mon Feb 13 14:01:34 CET 2006 <reilles@loria.fr>
+  * generate %op a() for 0-ary symbols in Tom mapping
+    (note the "()") to be compatible with newer versions of Tom
+
+Tue Jan 31 17:17:42 CET 2006 <economop@cwi.nl>
+  * Added newlines after generated function definitions.
+
+Tue Jan 31 14:47:31 CET 2006 <{economop,kooiker}@cwi.nl>
+  * Implemented the --folding option for C correctly :-)
+
+2006-01-26 Antoine Reilles   <Antoine.Reilles@loria.fr>
+  * src/apigen/gen/tom/java/*:
+  Use the "getInstance" method of singleton factories in tom signatures
+
+Tue Dec  6 18:37:33 CET 2005 <reilles@loria.fr>
+ * Handle operators with builtin codomain : 
+	do not generate classes for those operators and
+	do not generate make, visitor and forward functions for those operators
+	The Tom mapping defines if_fsym=false and use an external function for make.
+	Intend to fix Tom bug 359
+
+Thu Nov 17 14:04:01 CET 2005 <{jurgenv,kooiker}@cwi.nl>
+ * Added unprotect functions to C generator
+
+Tue Sep 13 14:44:57 CEST 2005 <reilles@loria.fr>
+ * test/ListTest.java:
+ Add a test for empty.setAnnotations(empty.getAnnotations()) == empty
+ * src/apigen/gen/java/FactoryGenerator.java:
+ Use initHashCode() instead of init() with a dummy hashCode, to let the
+ test success
+
+Wed Aug 17 10:06:07 CEST 2005 <jong@cwi.nl>
+ * configure.in:
+   - add libtool support
+
+Mon Jul  4 15:59:57 CEST 2005 <jurgenv@cwi.nl>
+  * {build.xml,Makefile.am,configure.in}: automake now uses 'ant'
+    to compile apigen. The skeleton is still run by automake, but 
+    ant is used to compile the Java code. 
+  * apigen/**,src/**: moved the apigen package directory to src for
+    consistency. The src directory does not need to contain Makefile.am
+    files any more containing lists of Java files. So, refactoring apigen
+    has become much easier.
+  * apigen/**/Makefileam: The above also fixes some bugs in the Makefile.am 
+    files that made the daily build fail.
+  * ./configure: You have to run './configure --enable-maintainer-mode' to 
+    make ant active.
+  * test/Makefile.am: added escape \ before --no-jar option.
+  * ./Makefile.am: we no longer install class files, just the jar 'apigen.jar'
+    is installed in ${prefix}/share. 
+
+2005-05-18  Antoine Reilles  <tonio@arcelot.loria.fr>
+  * apigen/gen/c/Main.java: generates apigen.env file in the output directory
+
+2005-05-11  Antoine Reilles  <tonio@bonzai>
+  * apigen/gen/tom/c/Main.java: allow -cgen to generate C api
+
+2005-04-22  pem  <pem@polly.loria.fr>
+  * make list visitable
+  * introduced AbstractListGenerator
+  * generate accept method for list (not yet for separated-list)
+
+2005-04-21  pem  <pem@polly.loria.fr>
+  * generate simplified Tom mapping 
+
+Wed Mar 16 11:38:09 CET 2005 <jong@cwi.nl>
+  * README: fix missing parenthesis in example ADT
+
+2005-02-15  pem  <pem@polly.loria.fr>
+  * lib-3.0/ADT.adt: 
+    renamed 'Name' and 'Type' into 'name' and 'type'
+    renamed 'NamedList' into 'Named-List'
+    updated the generated java api accordingly
+
+2005-01-22  Antoine Reilles  <tonio@arcelot.loria.fr>
+  * apigen/adt/NamedListType.java: added NamedList, allow to specify
+    the list operator name for tom generation.
+
+2005-01-20 pem
+  * fix a naming convention problem: only operator whose sort is reserved are
+  not capitalized. In the previous version only operator whose name was
+  reserved was not capitalized
+
+2004-12-17  pem
+  * improved isEmpty() implementation
+
+Thu Dec 16 10:59:44 CET 2004 <jurgenv@cwi.nl>
+ * Added new builtin type 'char', which leads to arguments of type
+   char in both C and Java, but constructs a corresponding ATermInt
+   in ASCII value underneath the API. This is needed to implement
+   structured lexicals (sdf-to-adt).
+
+2004-11-22  pem  <pem@becky.local>
+ * added a --traveler option to parameterize the jjtraveler package.
+ * set to 'jjtraveler' by default
+ * this option is not used for the moment
+
+Tue Sep 28 13:41:05 CEST 2004 <{jurgenv,jong}@cwi.nl>
+ * Printing of APINAME was commented out in the Main of the Java generator,
+   that's why the script adt-to-java was broken.
+ * adt-to-java script complains if it can not find and APINAME now.
+
+Wed Sep 22 12:24:44 CEST 2004 <jurgenv@cwi.nl>
+ * Fixed some distcheck problems in apigen/adt/api
+ * Added cyclic.adt to EXTRA_DIST
+
+2004-09-16  pem  <pem@becky.local>
+ * apigen/gen/tom/TomSignatureGenerator.java: generate stamps for
+  concrete ADT
+
+2004-09-03  pem
+ * extended the generation of visitor/visitable
+   - to visit types (in addition to constructors)
+   - support the replacementVisitor (in addtion to the voidVisitor)
+
+2004-08-06  Antoine Reilles  <tonio@bonzai>
+ * try to fix --visitable with modules
+ * generates singletons for java factories
+
+2004-08-05 pem
+  * allows cyclic importations
+
+2004-07-28 Julien Guyom
+  * bootstrap new ADT with module
+  * still compatible with previous adt format
+  * new design code for Java
+
+2004-06-21  pem  <pem@polly.loria.fr>
+  * apigen/gen/tom/TomSignatureGenerator.java: import aterm.tom 
+    and atermlist.tom instead of generating them
+
+2004-05-19  pem  <pem@polly.loria.fr>
+  * apigen/gen/java/ListTypeGenerator.java: renamed factory into
+      localFactory and atermFactory
+  * apigen/gen/java/AbstractTypeGenerator.java: renamed local
+    factory into abstractTypeFactory to remove warnings reported by Jikes  
+
+2004-05-07  pem  <pem@polly.loria.fr>
+ * apigen/gen/tom/TomSignatureGenerator.java: implementation of %typeterm 
+   and %typelist are now prefixed by the package and the apiname
+
+Thu Apr 29 07:48:23 CEST 2004 <jurgenv@cwi.nl>
+ * Added JavaTomSignatureGenerator.java to Makefile.am. Where is the
+   ChangeLog entry for adding this file? 
+
+Fri Apr 23 09:53:59 CEST 2004 <jurgenv@cwi.nl>
+ * Fixed bug 227; an extra check is generated in the getTail for
+   separated lists. Now you can program a loop over a separated list
+   by checking !isEmpty in the loop condition. The old if (!hasTail) {break;}
+   idiom is now needed anymore after regenerating your API.
+ * Added a test for this behaviour
+
+Sat Apr 17 09:42:12 CEST 2004 <jurgenv@cwi.nl>
+ * Fixed a number of Makefile.am problems (automake 1.7.9 related) 
+ * Next problem fixed by adding generated source files to BUILT_SOURCES
+ * Fiddled around with java -d ${top_builddir}, and other occurrences
+   of ${top_srcdir} and ${top_builddir} to get test directory
+   distcheck-compliant.
+ * Added special distclean target in test directory to let distcheck
+   succeed. 
+
+Fri Mar 26 10:12:10 CET 2004 <{jong,kooiker}@cwi.nl>
+ * apigen/apigen/gen/c/APIGenerator.java:
+   - generate makeXYZ(void) instead of makeXYZ() when there are no
+     parameters. Explicitly saying a function is (void) forces gcc
+     to check the parameters.
+
+Mon Mar  8 13:57:37 CET 2004 <{jong,kooiker}@cwi.nl>
+ * disable generation of bottom types in C
+ * generate 'const' for all 'char *' parameters in constructor and setXXX
+ * relax typechecking on builtin types
+
+Thu Feb 12 14:56:08 CET 2004 <jong@cwi.nl>
+ * upgrade to automake 1.7.9, aclocal 2.59
+
+Tue Feb  3 18:11:16 CET 2004 <kooiker@cwi.nl>
+ * Fixed bug not adding prefix to C version of list reverse functions 
+
+Mon Jan 26 09:42:14 CET 2004 <{jurgenv,jong}@cwi.nl>
+ * Generate protect functions instead of protect macros such that
+   we get early compile warnings
+   
+Wed Jan  7 14:04:02 CET 2004 <jurgenv@cwi.nl>
+ * Introduced ADTException and GenerationException to deal with errors better
+ 
+Mon Dec 15 11:53:59 CET 2003 <{jong,jurgenv}@cwi.nl>
+ * Implemented reverse, append, concat, elementAt, and fixed-numbered
+   make(...) methods for normal lists
+ * Added new builtin field datatype <chars>. The API representation is
+   char* for C and String for Java. The ATerm representation is an
+   ATermList containing the ASCII values of the <chars> in the string.
+
+Thu Dec  4 13:38:22 CET 2003 <{jong,jurgenv}@cwi.nl>
+ * Separated lists with builtins fixed in Java. We are planning to
+   reduce normal lists to separated lists with no separators in the near
+   future (normal lists with builtins are now still broken).
+ * Bottom types in C generator print a warning an generate an
+ implementation
+   as follows: typedef ATerm <prefix><type>
+
+Tue Dec  2 10:54:54 CET 2003 <{jong,jurgenv}@cwi.nl>
+ * generated jar-file now also contains the java sources *
+ gen/c/CGenerationParameters: also show super.usage() * Split of a
+ scripts directory from the utils directory  to prevent
+   a circular dependency.
+ * Bumped to version 2.0 * Added support for lists of elements of
+ builtin types (int, str, etc) in C * Separated lists in C are now
+ fully functional
+
+Mon Dec  1 14:12:47 CET 2003 <{jong,jurgenv}@cwi.nl>
+ * apigen/gen/c:
+   - write generation parameters after generation to shell variables
+ * apigen/gen/java:
+   - normalize generated packagenames to all-lowercase. This is needed
+     because Java does not allow package <X> and class <X>.java in the
+     same directory.
+   - generate Nat in types/Nat.java, Zero/Succ in types/nat/{Zero,Succ}.java
+   - renamed GenericConstructor into AbstractType
+   - remove <Apiname> in <Apiname>Factory.java
+   - update tests to reflect recent changes.
+ * apigen/utils/adt-to-java.src: forcefully remove generated apigen.env
+ * apigen/utils/adt-to-c.src: adapted to be analogous to adt-to-java.src
+
+Fri Nov 28 10:18:16 CET 2003 <jong@cwi.nl>
+ * adt-to-java.src: sunos' /bin/sh does not know "source", only "."
+
+Thu Nov 27 10:19:25 CET 2003 <jong@cwi.nl>
+ * adt-to-java.src: now invokes javac and jar to compile the generated
+   classes and assemble a versioned jar of both source and classes.
+ * VerboseGenerationObserver.java: instance of GeneratorObserver that
+   takes care of echoing which files are generated in verbose mode.
+ * GeneratorObserver.java: the Observer pattern applied to the Generator.
+ * GeneratedJavaFileCollector.java: collects .java files during generation.
+   this information can be used to create a jar-file containing (exactly)
+   all the files that make up the generated API. This replaces the
+   MakeRulesGenerator which was a separate generator which magically "knew"
+   which files were created by all other generators.
+ * --folding pushed down from GenerationParameters to CGenerationParameters,
+   as that is the only generator (still) using folding.
+
+Wed Nov 26 10:15:32 CET 2003 <jong@cwi.nl>
+ * generate separate adt-to-java{,-test} to account for different paths
+   to apigen during check/distcheck and final installed version.
+ * several Makefile.am fixes to get distcheck working
+ * removed all functionality to check command line arguments
+   as this is now done in the GenerationParameters mechanism
+   in the Generator itself.
+ * first attempt to compile generated classes and build a jar
+   of both generated source and classes.
+
+Mon Nov 24 16:05:19 CET 2003 <jong@cwi.nl>
+ * fixed list-generation, separated-list generation
+ * tests are working again
+
+Thu Nov 20 11:31:31 CET 2003 <jong@cwi.nl>
+ * introduce ADTReader which does the multiple input file ADT reading.
+ * refactor Tom generation out of the apigen's Main (into
+   apigen.gen.tom.{c,java}.Main) because Tom-generation does not affect
+   the core API generation (rather it adds to it).
+ * introduce TomGenerationParameters which encapsulate the --jtype notion
+   (it extends GenerationParameters, so it automatically gets --verbose,
+    --prefix, ...)
+
+Tue Nov 18 11:33:44 CET 2003 <jong@cwi.nl>
+ * refactor generation parameters into generic and (java-) specific parameters.
+   Still have to put jtom specifics (-jtype) in TomGenerationParameters.
+ * add support for multiple input files
+ * generate each subsort in each own package
+ * no longer generate the user-extendable *Impl classes
+
+2003/11/09 <jurgenv@cwi.nl>
+ * Bumped to 1.8
+ * Changed Makefile generation to not generate every filename twice.
+ * List functions in C could not deal with API prefix well
+
+Fri Nov  7 08:31:47 CET 2003 <jong@cwi.nl>
+ * fix distcheck issue
+
+2003/09/26 <jurgenv@cwi.nl>
+ * Release 1.7 to accomodate release of jtom
+
+2003/09/01 <kooiker@cwi.nl>
+ * remove all warnings found by Eclipse in the non-generated code
+
+2003/09/01 <kooiker@cwi.nl>
+ * updated tests to use delegate instance factory
+ * fixed factory calls to PureFactory calls in non-generated code
+
+2003/08/29 <kooiker@cwi.nl>
+ * generated api factories no longer extend aterm.pure.PureFactory, but
+   contain a delegate instance factory instead.
+
+Fri Aug 29 10:13:03 CEST 2003 <jong@cwi.nl>
+ * remove make_rules and update Makefile.ams accordingly
+
+Wed Aug 27 14:23:46 CEST 2003 <{jong,kooiker}@cwi.nl>
+ * cleanup generated code, so it doesn't contain so many warnings for Eclipse
+ * remove all warnings found by Eclipse in the non-generated code 
+ * remove unused imports as noted by Eclipse
+ * banish use of static 'empty' notions
+
+2003/08/21 ({jong,jurgenv}@cwi.nl)
+ * Reimplemented fromTerm and toTerm for separated lists. They are correct now!
+ * Reimplemented reverse in C and Java for separated lists.
+ * Implemented concat for separated lists in Java
+ 
+2003/08/20 (jurgenv@cwi.nl)
+ * isEqual implementation changed from term.isEqual(peer.toTerm()) to
+   super.isEqual(peer). This should be much faster. Also, somehow the toTerm
+   resulted in null references. This problem is still unsolved.
+ * Added fromTerm for separated lists. This is a rather complicated algorithm ;-(
+ * Extended the list types of the ADT formalism with some convenience iterators
+   over fields and separator fields
+ * NOTE: the current implementation of separated lists in both C and Java is
+   very incomplete!
+
+2003-08-19  (jurgenv@cwi.nl)
+ * Committed basic setup for generating separated lists in Java
+ * Added several TODO comments where the generated code will have to be
+   adapted pretty soon.
+      
+2003-08-14  (jurgenv@cwi.nl)
+ * Generating reverse method is unnecessary again.
+ * Renamed lib directory to lib-2.0 and old-lib directory to lib-1.0
+ * Renamed convert-old-adt tool to upgrade-adt
+ * Renamed OLDADT library to ADT10 library
+ * Added generation of init and initHashCode methods to deal with better
+   access restrictions in aterm-java library
+ * Refactored generated code for insert methods (one uses the other)
+ * Minimized access to generated methods that should not be used by the user.
+ * Changed ADT.adt to use list constructors, bootstrapped apigen
+ * Java generator generates builtin int and double instead of Integer and Double
+   fields if the builtins <int> or <real> are used in an ADT. So the make methods,
+   the setters and the getters use int and double instead of Integer and Double.
+ * Added separated lists to the ADT format
+ * Added basic implementation of separated list functions to C backend.
+   It is impossible to create ill-formed lists if the separated list api is used.
+   Reverse, append, length and concat are supported. 
+
+2003-08-13  (jurgenv@cwi.nl)
+ * Major change in code generation. The first step toward no more static
+   references
+   to factories. All things related to patterns are moved to the generated
+   factory to prevent static methods. All generated classes have a
+   constructor that initializes a local factory field. The factory is
+   not added to the init method to prevent copying the factory reference
+   when it is not needed at all because of sharing.
+ * The fromTerm() and fromString methods have been moved to the factory.
+   For example: Nat.fromTerm(ATerm trm) is now
+   PeanoFactory.NatFromTerm(ATerm trm).
+ * Each class overrides the equivalent method that uses an instanceof
+   and then
+   super.equivalent. This prevents that the SharedObjectFactory returns
+   an object of the wrong type, but with the same hashCode.
+ * Bootstrapped ApiGen with new ADT api * aterm-java was changed not to
+   use static references to factories anymore. So
+   now apigen had to be adapted to the new aterm-java implementation.
+   WARNING: because the ATerm library for Java has changed, it is now
+   imperative to regenerate all Java libraries.
+
+2003-08-13    <pem@bach>
+ * apigen/gen/java/FactoryGenerator.java: fix a major bug in the
+   initialization of empty<List>: annotation was null!
+
+2003-08-10  (moreau@loria.fr)
+ * fix several bugs related to Tom
+ * introduced a TomTypeConverter
+ * for each list operator: list(ListSort, EltSort)
+   generates 2 free Tom  operators and 1 associative Tom operator: 
+   - <ListSort> empty<ListSort>()
+   - <ListSort> many<ListSort>(<ListSort>,<EltSort>)
+   - <ListSort> conc<EltSort>(<EltSort>*)
+   
+2003-08-10  (jurgenv@cwi.nl)
+ * Added caching of ATerm representation in list classes (just like normal
+   constructors) If they were constructed by calling fromTerm(), the toTerm()
+   will be cheap. Also consecutive calls to toTerm are cheap now.
+ * Added test ADT with all builtins in there to test support for int, double,
+   term and lists. Added C and Java tests for this ADT.
+ * Fixed a number of bugs concerning builtins in the Java backend
+ * Added an error message when an ADT uses a builtin name as the name of an
+   alternative. That is not allowed.
+ * Added an error message when within a type a field name is used more times but
+   for different types of fields. For the same type of field (for example the 'lhs'
+   of the Boolean and and or) it is still allowed.
+ * Added basic generation of Tom list constructions from list data-types.
+ 
+2003-08-08  (jurgenv@cwi.nl)
+ * Set dependency on aterm-java 1.4 because of visibility of ATermListImpl
+ * Added implementation of lists for Java. Lists inherit from ATermListImpl.
+ * Only basic support for lists works: fromTerm and make. 
+ * Had to add generation of 'insert' and 'reverse' (copied from ATermLibrary) 
+   because of ClassCastExceptions concerning ATempty
+ * Generic toTerm method is not possible anymore because not every term inherits
+   from ATermApplImpl anymore. Every alternative class not generates its own
+   toTerm method
+   
+2003-08-06 (jurgenv@cwi.nl)
+ * Refactored generation of list constructors to a simpler design. There
+   is a special Type ListType that generates two constructors on the fly now.
+ * C ApiGen generates wrappers for a large part of the ATermList API. To is be 
+   extended to full coverage of the ATermList API.
+   
+2003-08-05  (jurgenv@cwi.nl,moreau@loria.fr)
+ * Fixed a number of small problems in configure.in and Makefile.am's
+
+2003-08-05  (jurgenv@cwi.nl)
+ * Apified ApiGen by using ADT.adt for reading in ADT files
+ * Changed ADT format, an Entry used to look like [Sort,Alt,Pattern],
+   now its: constructor(Sort,Alt,Pattern)
+ * Added tool convert-old-adt to convert old-style ADT to new style
+   ADT's. WARNING: this tool does not pretty-print the output, you get
+   an ATerm one-liner as a result!
+ * Added new type of entry to ADT formalism: list(Sort,ElementSort). It generates
+   two normal constructors:
+    constructor(Sort,empty,[]) and
+    constructor(Sort,many,[<head(ElementSort)>,<[tail(Sort)]>).
+   No specialized code for lists is generated yet, but I will add some soon.
+ * Added switch to conversion tool (-l) if you want to automatically detect list
+   idioms and generate list entries in the new ADT
+   
+2003-07-07   (jurgenv@cwi.nl)
+ * Added generation of is<type> predicates. You can now ask any term that is build by a generated
+    factory if he is of a specific type.
+    
+2003-06-27    (jurgenv@cwi.nl)
+ * Bumped to 1.7beta
+ * Added package definition file
+
+2003-06-25    (jurgenv@cwi.nl)
+ * Release 1.6
+
+2003-05-30    <pem@bach>
+ * apigen/gen/java/TypeImplGenerator.java: generate public 
+   fromString and fromTextFile static functions
+  
+2003-04-14    <pem@bach>
+ * apigen/gen/java/AlternativeImplGenerator.java: fix a hashing
+   problem. 'b' is now initialized by the AFun().hashCode() instead
+   of the goldenRatio.
+
+2003-05-06  Pierre-Etienne Moreau  <pem@escher.loria.fr>
+ * added "list" type for ATermList
+ 
+2003-04-28  Pierre-Etienne Moreau  <pem@escher.loria.fr>
+ * apigen/gen/java/TypeGenerator.java: added a test to prefix the "ATerm"
+   sort by the "aterm." package name in TypeGenerator.className
+
+2003-03-20  (jurgenv@cwi.nl)
+ * Removed dependency on shared-objects and jjtraveler. This is handled 
+   by aterm-java-config from now on
+
+2003-03-18  (jurgenv@cwi.nl)
+ * Use aterm-java-config and shared-objects-config to obtain the names
+   of the jar files.
+ * Changed test directory to generate API's in subdirectories. automake-time
+   inclusion of generated Makefiles is no longer necessary in this new setup.
+ * Added test of jjtraveller interface
+ * Set version to 1.6 to start wrapping up a release
+
+2003-03-15  (jurgenv@cwi.nl)
+ * Added generation of jjtraveler interface
+ * Fixed some bugs in C generation that were introduced in the last refactoring 
+ * Internal AFun name of a constructor is now equal to the ADT constructor name 
+   in the Java backend.
+
+2003-03-11  Pierre-Etienne Moreau  <pem@escher.loria.fr>
+ * --jtype option added to generate tom constructors with prefix
+ * jtom signature generated only if --jtom is active    
+ * fix several bugs related to prefix and type conversions
+   (String has been replaced by Str, Integer by Int,...) 
+      
+2003-02-28  (jurgenv@cwi.nl)
+ * Big refactoring in C and Java versions to prevent code-cloning
+
+2003-02-27  (pem@bach.loria.fr)
+ * Tom Signature generation improved to support C code
+
+2003/02/26 (jurgenv@cwi.nl)
+ * Refactored Tom Signature generation in an abstract class which generates
+   a skeleton and a Java Tom Signature class which is specific for Java.
+ * Refactored string and type identifier manipulation into separate classes
+
+2003/02/06 (jurgenv@cwi.nl)
+ * Bumped to 1.6beta
+ * Make functions of factory now return type of alternative not of the abstract
+   type.
+ * Removed generation of implementations of Visitor interface because it
+   is already implemented by ATermApplImpl.
+ * Added overriding of accept method to choose type specific behaviour
+   when traversing a generated Java hierarchy.
+
+2003/01/29 (jong@cwi.nl)
+ * Remove generated binary libraries in test/ from CVS
+ * Add generated binary libraries in test/ to .cvsignore
+ * Remove COPYING from .cvsignore
+
+2003/01/22 (jurgenv@cwi.nl)
+ * Release 1.5
+ * LGPL license
+
+2002/12/18 (jurgenv@cwi.nl)
+ * Changed overriding of setArgument. It uses an instanceof to test if the argument is of 
+   the correct type. If not, descriptive RuntimeExceptions are thrown. "super.setArgument" is
+   used to set the argument in case the type is correct.
+    
+2002/12/09 (jurgenv@cwi.nl)
+ * Changed generation of java code according to some changes in SharedObject 
+   interface
+ * Added overriding of setArgument that immediately throws an exception. 
+   This prevents construction illegal trees using the ATerm API directly.
+   
+2002/12/11 (jong@cwi.nl)
+ * explicitly link libADT.a, rather than looking for it in install-dir
+
+2002/11/26 (vinju@loria.fr)
+ * Added a tool for concatenating adts: concat-adt
+ * fix a problem related to capitalize and Tom
+
+2002-11-21 (pem@bach)
+ * apigen/gen/java/JavaGen.java: remove casts in genTomAltOperator
+
+2002/11/21 (vinju@loria.fr)
+ * adt-to-java generates a file containing a make variable that contains a list of all generated
+   java files
+
+2002/11/14 (vinju@loria.fr)
+ * adt-to-java generates empty classes for every type and every constructor. These classes
+   can contain user defined methods and are not overwritten if the API is regenerated.
+ * adt-to-java creates the output directory automatically if it does not exist. Exceptions are thrown
+   when that fails and when a file exists with the same name as the output directory.
+ * fixed a bug in adt-to-c, it was not able to handle pattern that consist of only one placeholder
+ * added overriding of hashFunction() for every constructor that has no builtin arguments. The 
+   hashFunction is specialized using the known arity of the constructor
+ * added heuristic that guesses the argument that is most likely to change in order to prevent
+   collisions that sometimes occur using the basic hashFunctions.
+   
+2002/11/12 (vinju@loria.fr)
+ * adt-to-{c,java} throws runtime exceptions if:
+     - the name of an alternative occurs more than once for a certain type
+     - the name of a field occurs more than once within a certain alternative
+     
+2002/11/07 ({moreau,vinju}@loria.fr)
+ * Reimplemented adt-to-java for the most part. It now generates specialized factories.
+   The factory inherits from PureFactory, the types inherit from ATermApplImpl. The result
+   is a maximally shared typed term representation.
+ * Bumped to 1.5beta
+
+2002/11/04 (vinju@loria.fr)
+ * ADT class computes bottom sorts
+ * Generate initialize calls for bottom sorts to in JavaGen
+ * Release 1.4
+
+2002/10/30 (vinju@loria.fr)
+ * Bumped to 1.4beta
+ * Added dependency on aterm-java and shared-objects
+ * Using jarfiles instead of .class files
+
+2002/09/31 (vinju@loria.fr)
+ * Removed sdf2 dependencies by creating a new package sdf-apigen which contains
+   sdf2-to-adt and all that is related to it. 
+ * Put ADT library in lib subdirectory
+ * Release 1.3
+
+2002/09/24 (vinju@loria.fr)
+ * Renamed API class to ADT class (eclipse rules!)
+ * Made deeper package hierarchy in apigen to be able to reuse more code 
+ * Extracted common functionality out of CGen en JavaGEN into a Generator 
+   superclass 
+ 
+2002/09/23 (vinju@loria.fr)
+ * Partly re-implemented and finished initial functionality of adt-to-java
+ * Added --folding to adt-to-java to (de)activate folding support in the generated classes
+ * Added --visitable to adt-to-java (functionality not yet fixed)
+ 
+2002/05/29 (jong@cwi.nl)
+ * Replaced sdf2-to-imploded-adt script by a "-I|--imploded" flag to
+   sdf2-to-adt
+ * Many additions and improvements to the doc/apigen paper.
+
+2001/03/04 (jurgenv@cwi.nl)
+ * Added sdf2-to-imploded-adt tool. 
+ * Bumped to 1.3beta
+
+2001/12/13 (jurgenv@cwi.nl)
+ * Added --with-asf-support needed for compiled specifications.
+
+2001/11/29 (jurgenv@cwi.nl)
+ * Removed automatic quote insertion in production attributes.
+ * Regenerated with new parsetable generator and adapted asf[e,c].
+ * Bumped to 1.2beta
+
+2001/11/22 (jong@cwi.nl)
+ * Copied warning in CGen to JavaGen.
+   (warns against defining '-' as a special symbol)
+
+2001/11/22 (vandenbr@loria.fr)
+ * Added a few special symbols encountered in ELAN.
+
+2001/11/14 (jong@cwi.nl)
+ * Removed '-w on' invocation on asfe
+ * Removed '-m' invocations and now uses apply-function from
+   pt-support, rather than asc-support
+
+2001/11/05 ({jurgenv,markvdb}@cwi.nl)
+ * Modulename id are no longer added to exported productions.
+ * Adapted tests.
+ * Regenerated.
+
+2001/10/01 (jurgenv@cwi.nl)
+ * Regenerated Sdf2-To-AsFix2ME and AddLabels to work with latest
+   pt-support.
+
+2001/09/27 (jurgenv@cwi.nl)
+ * Made some changes in the Sdf grammar:
+     - added:   ATerm                      -> Attribute 
+     - removed: "cons" "(" term:ATerm ")"  -> Attribute 
+                "constructor"              -> Attribute 
+                "memo"                     -> Attribute 
+                "traverse"                 -> Attribute 
+     - refactored the ATerm grammar a bit
+ * Added the builtin type "term" to adt-to-c. The generated C type for this
+   type is "ATerm". 
+ * Adapted sdf2-to-adt to generate the new AsFix attribute format. See the
+   ChangeLog of pt-support for details.
+ * In sdf2-to-adt all AFun literals are now automatically quoted, mimicking the
+   behaviour of the pgen normalizer.
+
+2001/08/07 ({jong,olivierp}@cwi.nl)
+ * Retracted quotes in cons list
+ * Version is now 1.1beta
+ 
+2001/07/13 ({jong,markvdb}@cwi.nl)
+ * Removed AsFix1 functionality.
+ * Uses the new Asf+Sdf compiler.
+ * Version 1.0.
+               
+2001/07/04 (jurgenv@cwi.nl)
+ * generated lex-to-cf injections no longer inherit the attributes of the
+   user defined lexical productions.
+ * Bumped to 0.8.7
+
+2001/06/18 ({jong,jurgenv}@cwi.nl)
+ * sdf2-to-adt now uses asfix2me
+ * Version 0.8.6
+
+2001/06/15 (jong@cwi.nl)
+ * Removed heuristic for '-' as it is already used as a word-separator!
+
+2001/06/14 ({jong,jurgenv}@cwi.nl)
+ * Added some more heuristics for literals in CGEN
+
+2001/06/01 ({jong,olivierp}@cwi.nl)
+ * Version 0.8.5
+ * Renamed makeTermFromXXX/makeXXXFromTerm into
+   XXXtoTerm and XXXfromTerm. Added -term-compat flag to generate
+   'old-style' compatibility using macros
+
+2001/05/15 (jurgenv@cwi.nl)
+ * added support for SDF prefix productions
+
+2001/05/07 (jong@cwi.nl)
+ * version 0.8.4
+ * rehabilitated "test" directory (got accidentally deleted)
+ * LABEL_EQS in test now uses spec/add-labels/AddLabels.asf
+ * Renamed AddLabels to new-style naming scheme
+ * added meta.conf to make AddLabels.{sdf,asf} meta-env readable
+
+2001/04/23 (markvdb@cwi.nl)
+ * ADT generation based on AsFix2ME.
+
+2001/04/04 ({jong,olivierp}@cwi.nl)
+ * Fixed some bugs in native type support of JavaGen
+ * Added $(ATERM)/classes to CLASSPATH in apigen/java
+ * moved "brainstorm" session (test/rolodex2.act) to new autocode project
+
+2001/03/30 ({jong,olivierp}@cwi.nl)
+ * version 0.8.3
+ * improved capitalization of generated alt-factory-methodnames
+ * added support for native types in java-generation
+ * factored out buildMatchPattern from CGen-specific to Alternative
+ * changed adt-to-java.in according to adt-to-c standards
+
+2001/03/27 ({jong,olivierp}@cwi.nl)
+ * version 0.8.2
+ * added generation of isXXX() methods to java Apigen.
+ * added generation of hasXXX() methods to java Apigen.
+ * added generation of get-, set-, equals-, isEqual- methods
+ * added generation of toTerm() and static makeXXX() methods
+
+2001/03/26 ({jong,olivierp}@cwi.nl)
+ * added initial adt-to-java support
+ * version 0.8.1
+
+2001/03/02 (jong@cwi.nl)
+ * change == to = in shell-scripts to check string-equality
+
+2001/02/28 (jong@cwi.nl)
+ * apigen classes are now built before the utils directory is entered
+ * several references to ${top_srcdir} changed to ${top_builddir}
+   to fix problems revealed by the build-script (mainly CLASSPATH related)
+
+2001/02/27 (jong@cwi.nl)
+ * Version 0.8
+ * Several fixes to prepare apigen for a dailybuild regime
+ * apigen succesfully handles "gmake clean all check install distcheck"
+ * added `-t | --no-timestamp' option to adt-to-c; should reduce CVS
+   conflicts when generated adts are put under CVS' control.
+
+2001/02/20 (markvdb@cwi.nl)
+ * Bug fixed in specification which removes the constructor annotations
+   from the productions.
+
+2001/02/19 (jong@cwi.nl)
+ * version 0.7.3
+ * The use of prologue files is now optional in adt-to-c. If no prologue
+   file is specified, no special prologue code is generated.
+ * test/rolotest and test/booltest no longer have (a zero byte) prologue
+ * removed test/rolodex.pro and test/Booleans.pro
+ * fixed output of usage() in utils/adt-to-c (conforming to new behaviour)
+ * silenced output of test/rolotest (new visit/acceptor code was verbose)
+ * added ChangeLog entry for Jurgen's fix to his changes of 2001/01/16
+ * utils/ADT.adt and utils/ADT.pro added to EXTRA_DIST
+ * spec/Sdf2-to-ADT.trm.tbl added to EXTRA_DIST so external users don't
+   need pgen to build apigen.
+ * configure.in adapted to inform users that pgen is for developers only
+
+2001/02/19 (jurgenv@cwi.nl)
+ * adapted test/booltest to conform to the new functions generated for
+   the bottomsorts (see immediately below)
+
+2001/02/16 (jurgenv@cwi.nl)
+ * removed generation of bottomsorts Lexical, Separator and Layout and
+    replaced them by generating lex(<name(str)>), sep(<name(str)>) and 
+    w(<name(str)>).  
+
+2001/02/16 ({jong,olivierp}@cwi.nl)
+ * Added prefix to the front of visitor names
+ * patched ChangeLog entry date
+
+2001/02/16 (jong@cwi.nl)
+ * utils/adt-to-c rewritten, option handling is now the same as in
+    sdf2-to-adt, so be sure to check "adt-to-c --help" before using
+    it!
+ * test/Makefile.am now uses the appropriate switches in both sdf2-to-adt
+    and adt-to-c calls to avoid {classpath,binary,script}-location confusion.
+ * utils/Makefile.am uses the appropriate switches in adt-to-adt
+
+2001/02/15 ({jong,olivierp}@cwi.nl)
+ * Added support for basic types: int (int), real (double), str (char *)
+ * Added support for sort specific visitors
+
+2001/02/15 (jong@cwi.nl)
+ * Version 0.7.1
+ * --verbose in sdf2-to-adt was called --VERBOSE (fixed)
+ * added -g, --generator option to sdf2-to-adt which overrides default
+    location of compiled apigen-specification
+ * Added -l <FILE> option to sdf2-to-adt which overrides default location
+    of labeling equations.
+ * The -h option now shows the default locations of the APIGEN parsetable
+     and the labeling equations.
+
+2001/02/14 (jong@cwi.nl)
+ * sdf2-to-adt script enhanced to conform to mainstream options
+    (-i, --input, -o, --output to specify input/output files)
+
+2001/02/08 (jong@cwi.nl)
+ * utils/sdf2-to-adt rewritten: uses temporary files and does proper cleanup
+    upon exit. Several flags added, amongst which is -t to specify location
+    of the parsetable used by the script.
+ * utils/sdf2-to-adt is now more robust: the exit code of each substep is
+    checked and the script refuses to continue after encountering errors
+    Replaced the redundant "unparse-'hack function symbol'-reparse" fase
+    by adding more support in the specification.
+
+2001/02/08 (jong@cwi.nl)
+ * Added reflexive ADT to access adt's (creates: libADT.a)
+ * sdf directory removed entirely
+ * configuration improved (using AC_PACKAGE_REQUIRE)
+ * dependency on xt tools removed
+ * labeling now done by asf-evaluator (implemented using traversals)
+ * directories test and doc re-activated, tests work again
+ * obsolete <("",Sort)> notation cleaned up from list-test
+ * expand-cons and remove-cons support added to sdf2-to-adt
+
+2001/01/15 ({jong,markvdb}@cwi.nl)
+ * sdf directory removed from top-level Makefile.am
+ * gen-c-api stuff removed, adt-to-c introduced
+ * several improvements in c-backend needed to get c-code compiled
+ * heuristic added in sdf2-to-adt spec. for productions with only 1 alt.
+
+2000/09/27 (jong@cwi.nl)
+ * Version 0.6
+ * Fixed capitalization bug in build-valid-c-afun's
+ * Relaxed syntax in C-FILE-NAME to allow `-'
+ * Any existing `-' characters are stripped in the prefix,
+    this fixes a bug where '-' characters where passed all the way
+    through to C functionnames (where they are illegal)
+
+2000/09/20 (jong@cwi.nl)
+ * removed capitalization of FieldId's in build-valid-c-afun
+ * sorted variables in Gen-C-API.sdf alphabetically.
+
+2000/09/15 (jong@cwi.nl)
+ * Bugfix in Sdf2-to-ADT.eqs, imports were handled improperly.
+ * Removed double definition of %%-layout.
+
+2000/09/10 (jong@cwi.nl)
+ * Version 0.5
+ * Added heuristics for translating unlabeled tokens into valid C-ids.
+ * Fields now have a prefix and an id ("wsAfter", "openBracket").
+ * Updated tests to reflect recent changes in specification.
+
+2000/09/08 (jong@cwi.nl)
+ * Removed unlabeled sdf-specification now that pgen understands labels.
+ * Makefile.am generates parsetables for Sdf2-to-ADT and Gen-C-API.
+
+2000/09/06 ({jong,olivierp}@cwi.nl)
+ * Version 0.4
+ * Lexical support works
+
+2000/09/05 ({jong,olivierp}@cwi.nl)
+ * Version 0.3, (cvs tag: v0_3)
+ * List support works
+
+2000/08/31 (jong@cwi.nl)
+ * Initiated list-support, including tentative testcase.
+
+2000/08/29 (jong@cwi.nl)
+ * "===" changed to "===>" in specifications
+
+2000/08/28 (jong@cwi.nl)
+ * Version 0.2.1
+ * Removed unused layout definitions in C-Layout
+ * test/Makefile.am used obsolete 'apigen' instead of 'gen-c-api'
+ * fixed dependency problem in check target
+ * Updated SDF_FILES in spec/Makefile.am to reflect recent changes
+    in specification structure.
+
+2000/08/22 ({jong,olivierp}@cwi.nl)
+ * Version is now 0.2
+ * Renamed apigen script to gen-c-api
+ * Added sdf2-to-adt script
+ * Added test-case for sdf2-to-adt
+ * Added top module 'Sdf2-to-C-API'
+ * Attributes are now supported in Sdf2 spec.
+  
+2000/08/22 ({jong,olivierp}@cwi.nl)
+ * Now ignoring generated baf files
+ * Added Sdf2-to-ADT specification: we are now able to generate an API
+    for a basic SDF spec (no specials like lists, lexicals, optionals... yet)
+
+2000/08/07 (jong@cwi.nl)
+ * repository: removed apigen, added apigen.in
+ * tables are now found using @top_srcdir@, rather than /ufs/olivierp/...
+ * apigen now generates sensible AUTHORS, NEWS, README, ChangeLog as well.
+ * Added date+timestamp to generated {configure.in, Makefile.am, reconf} files
+
+2000/08/04 ({jong,olivierp}@cwi.nl)
+ * First working version of apigen stuff.
+ * Added generation of isValidxxx, makeTermFromxxx, 
+    and makexxxfromTerm functions.
+
+2000/08/01
+ * Initial revision

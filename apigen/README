@@ -1,0 +1,43 @@
+Apigen
+------
+
+This package contains tools to generate C and Java Apies based on the ATerm
+library. 
+
+The input of these tools is a file in ADT format. The ADT format is a signature
+definition format for ATerms. It is an ATerm itself. One can compare the ADT
+format somewhat with the DDT's of XML.
+
+An ADT file is a list of entries. Each entry is a triple:
+
+constructor(<sortname>,<constructorname>,<atermpattern>)
+
+For example, an ADT defining the Booleans could look like this:
+
+[
+  constructor(Bool, true, true),
+  constructor(Bool, false, false),
+  constructor(Bool, and , and(<lhs(Bool)>,<rhs(Bool)>)),
+  constructor(Bool, or, or(<lhs(Bool)>,<rhs(Bool)>)),
+  constructor(Bool, not, not(<arg(Bool)>))
+]
+ 
+With the information specified in an ADT file, C and Java code can be generated
+that implements a data structure according to such a signature. 
+
+Benefits:
+  - the data structure is generated, so you don't have to type it anymore
+  - it is based on the ATerm library so you get all (or most of) its benefits 
+    for free (e.g. garbage collection, maximal sharing, in/output of terms)
+  - you get a typed API for your data structure so the Java or C compiler can 
+    warn early if you make errors.
+
+In short; apigen is an ATerm programmers best friend!
+
+See also: sdf-apigen package for generating ADT files directly from SDF2
+          syntax definitions.
+
+To start using apigen, take a look at 'adt-to-c --help'. Examples of the use of
+apigen can be found in the Meta-Environment. The packages pt-support,
+sdf-support etc. all contain parts that are generated using apigen.  See
+http://www.cwi.nl/projects/MetaEnv

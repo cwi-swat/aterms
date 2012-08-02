@@ -1,0 +1,8 @@
+[
+  list(RoloList, Rolodex),
+  
+  constructor( Rolodex, Home, home([<name(str)>,<phone(PhoneNumber)>]) ),
+  constructor( Rolodex, Work, work([<company(str)>,<phone(PhoneNumber)>]) ),
+  constructor( PhoneNumber, Voice, voice(<voice(int)>)),
+  constructor( PhoneNumber, Fax,   fax(<fax(int)>))
+]

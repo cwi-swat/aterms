@@ -1,0 +1,17 @@
+#! /bin/sh
+
+set -e
+
+APIGEN=apigen.gen.c.Main
+CLASSPATH=__APIGEN_CLASSES__:__JAVA_ATERM__
+DICTTOC=__DICT_TO_C__
+
+java -classpath ${CLASSPATH} ${APIGEN} $*
+
+PARAMS=./apigen.env
+if [ -f ${PARAMS} ]; then
+  . ${PARAMS}
+  ${DICTTOC} -no-date -dict ${APINAME}.dict
+
+  rm -f ${PARAMS}
+fi

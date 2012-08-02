@@ -1,0 +1,44 @@
+#! /bin/sh
+
+set -e
+
+APIGEN=apigen.gen.java.Main
+CLASSPATH=__APIGEN_CLASSES__:__JAVA_ATERM__
+JAR=true
+
+java -classpath ${CLASSPATH} ${APIGEN} $*
+
+while [ $# -gt 0 ]; do
+  case $1 in
+    --nojar)
+      JAR=false ;
+  esac
+  shift
+done
+
+if [ "a${JAR}" = "atrue" ]; then
+  PARAMS=./apigen.env
+  if [ -f ${PARAMS} ]; then
+    . ${PARAMS}
+    if [ "a${APINAME}" = "a" ]; then
+      echo "No APINAME defined in ${PARAMS}"
+      exit 1
+    fi
+        
+    CLASSES=`echo ${FILES} | sed -e 's/.java/.class/g'`
+    JARFILE=${APINAME}-${VERSION}.jar
+    javac -source 1.5 -target 1.5 -classpath ${DIRECTORY}:${CLASSPATH} ${FILES}
+
+    SOURCES=""
+    for f in ${FILES}; do
+      mkdir -p src/`dirname $f`
+      cp $f src/`dirname $f`
+      SOURCES="src/$f ${SOURCES}"
+    done
+
+    jar cf ${JARFILE} ${CLASSES} ${SOURCES}
+
+    rm -f ${PARAMS}
+    rm -rf ${SOURCES}
+  fi
+fi

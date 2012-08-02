@@ -1,0 +1,17 @@
+Both versions:
+* Extend adt formalism with support for aterm annotations like:
+  annotation(posinfo, Area) which declares that the annotation with
+  label posinfo has type Area. Normal adt entries can then be used to
+  define the Area type. Every sort should receive a hasAttributePosInfo
+  or something. Note that this implies an explosion of functions in 
+  case there are several annotations...
+* Use lex/yacc/javacc for a readable less abstract version of the adt formalism...
+* support list of builtin types
+* Add the generation of placeholder constructors such that the full match/make
+  paradigm of the ATerm library is covered in a typed fashion.
+
+C version:
+* generate makeSingle for separated and normal lists in C
+
+Java version:
+* make reverse and concat for normal lists + check functionality wrt generated C api

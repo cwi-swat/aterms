@@ -1,0 +1,19 @@
+[
+	modulentry(
+		name("Ying"),
+		[name("Yang")],
+		[type("Moon")],
+		[
+			constructor(Moon,ping,ping(<slot(Sun)>))
+		]
+	),
+	modulentry(
+		name("Yang"),
+		[name("Ying")],
+		[type("Sun")],
+		[
+			constructor(Sun,pong,pong(<slot(Moon)>)),
+			constructor(Sun,shi,shi)
+		]
+	)
+]
