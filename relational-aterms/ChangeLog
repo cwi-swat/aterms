@@ -1,0 +1,11 @@
+2006-06-28    <storm@cwi.nl>
+
+	* Enabled documentation generation using Doxygen
+
+# $Id$
+
+Wed Aug 17 10:06:07 CEST 2005 <jong@cwi.nl>
+ * configure.in:
+   - add libtool support
+
+* Added support for comprehensions. <storm@cwi.nl>

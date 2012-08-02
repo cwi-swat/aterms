@@ -1,0 +1,10 @@
+prefix=@prefix@
+Maintainers=storm@cwi.nl,jurgenv@cwi.nl,paulk@cwi.nl
+Name: relational-aterms
+Version: 0.1
+Description:
+Requires: aterm,balanced-binary-aterms
+Cflags: -I${prefix}/include
+Libs: -L${prefix}/lib -lrelational-aterms
+#uninstalled Libs: -L@abs_top_builddir@/src -lrelational-aterms
+#uninstalled Cflags: -I@abs_top_builddir@/src
