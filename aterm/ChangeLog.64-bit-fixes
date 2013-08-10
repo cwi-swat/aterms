@@ -1,0 +1,7 @@
+
+
+Wed May 24 12:11:07 CEST 2006 <jurgenv@cwi.nl,eelco@cs.vu.nl,bertl@cwi.nl>
+ * aterm/*.c: applied Eelco Dolstra's patch with fixes in the 64_BIT
+   part of the code. See bug 606. The patch fixes problems in the 
+   configure script, in md5.c, as well as in the garbage collector.
+
